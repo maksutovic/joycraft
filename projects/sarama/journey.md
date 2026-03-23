@@ -9,18 +9,21 @@
 ## Table of Contents
 
 1. [Executive Summary](#1-executive-summary)
-2. [The Challenge: Why Hardware is Different](#2-the-challenge-why-hardware-is-different)
-3. [The Assessment: Where Sarama Actually Stood](#3-the-assessment-where-sarama-actually-stood)
-4. [What We Built: The Level 4 Harness](#4-what-we-built-the-level-4-harness)
-5. [The Road to 4.5: Automated Testing for Hardware + iOS + Server](#5-the-road-to-45-automated-testing-for-hardware--ios--server)
-6. [The Scenarios Structure: External Holdout Tests](#6-the-scenarios-structure-external-holdout-tests)
-7. [Roadmap: Level 4 → 4.5 → 5](#7-roadmap-level-4--45--5)
+2. [Why We Did This: The Dark Factory Vision](#2-why-we-did-this-the-dark-factory-vision)
+3. [The Challenge: Why Hardware is Different](#3-the-challenge-why-hardware-is-different)
+4. [The Assessment: Where Sarama Actually Stood](#4-the-assessment-where-sarama-actually-stood)
+5. [What We Built: The Level 4 Harness](#5-what-we-built-the-level-4-harness)
+6. [The Road to 4.5: Automated Testing for Hardware + iOS + Server](#6-the-road-to-45-automated-testing-for-hardware--ios--server)
+7. [The Scenarios Structure: External Holdout Tests](#7-the-scenarios-structure-external-holdout-tests)
+8. [Roadmap: Level 4 → 4.5 → 5](#8-roadmap-level-4--45--5)
 
 ---
 
 ## 1. Executive Summary
 
-We upgraded the Sarama CollarPrototype monorepo from Level 3.5 to Level 4 on the Joysmith framework. This is a distributed hardware+software system — a dog collar (firmware/MicroPython), relay server (Python), intelligence service (Gemini AI), and iOS app (Swift/UIKit) — which makes it significantly harder to automate than a typical web app.
+We upgraded the Sarama CollarPrototype monorepo from Level 3.5 to Level 4 on the Joysmith framework — our methodology for systematically improving how we work with AI coding agents.
+
+**Why this matters:** Most teams using AI tools are stuck at Level 2 (telling Claude what to code line by line) and think they've hit the ceiling. We've been pushing toward Level 5 — where you drop a spec in and working software comes out. This upgrade brings Sarama's harness infrastructure up to the standard needed for that progression.
 
 **What we did:**
 - Ran 6 parallel analysis agents across every component (firmware, iOS, server, upscale service, Tauri lab, root)
@@ -33,9 +36,68 @@ We upgraded the Sarama CollarPrototype monorepo from Level 3.5 to Level 4 on the
 
 ---
 
-## 2. The Challenge: Why Hardware is Different
+## 2. Why We Did This: The Dark Factory Vision
 
-The Pie journey (our first Level 4 upgrade) was a server + Mac app. API calls, MCP tools, SSE streams — all testable with HTTP requests and bash scripts. Sarama is fundamentally harder:
+If you haven't read the [Pie journey](../pie/journey.md), this section gives you the context. If you have, skip to [Section 3](#3-the-challenge-why-hardware-is-different).
+
+### The 5 Levels of Vibe Coding
+
+Dan Shapiro (CEO of Glowforge) published a framework in January 2026 that maps how teams use AI for coding, modeled after the 5 levels of self-driving cars:
+
+| Level | Name | What You Do | What AI Does |
+|-------|------|------------|-------------|
+| 0 | Spicy Autocomplete | Write all code, AI suggests | Tab completion |
+| 1 | Coding Intern | Delegate atomic tasks | Write functions/tests |
+| 2 | Junior Developer | Guide direction | Multi-file changes |
+| 3 | Developer as Manager | Review diffs all day | Primary developer |
+| **4** | **Developer as PM** | **Write specs, check outcomes** | **End-to-end development** |
+| 5 | Dark Factory | Define what + why only | Specs in, software out |
+
+**90% of "AI-native" developers are at Level 2** and think they've reached the ceiling. The psychological difficulty at Level 3 ("letting go of the code") is where most people get stuck.
+
+### The Productivity Paradox
+
+The METR 2025 randomized control trial found that experienced developers using AI tools were **19% slower** — while believing they were **24% faster**. That's a 40-point perception gap.
+
+Why? Debugging spirals with almost-right code, context switching between coding and prompting, sunk cost fallacy (30+ minutes hoping the LLM will crack it), and enjoyment bias (it *feels* faster).
+
+**The J-Curve:** Productivity dips before it rises. The teams who broke through (25-30%+ gains) redesigned their **entire workflow** — not just added tools. For every $1 on AI licenses, they spent $10 on process transformation.
+
+**The critical quote:** "Generating code has become cheap. Owning code remains expensive. The cost hasn't disappeared; it has transferred from creation to comprehension, validation, and maintenance."
+
+### The Core Insight: Specification Quality is the Bottleneck
+
+The bottleneck has shifted from **implementation speed** to **specification quality**. The dark factory doesn't reduce the demand for deep system understanding — it makes it the only thing that matters.
+
+This is why we built Joysmith: a methodology for upgrading projects from "tell Claude what to code" to "write specs, Claude delivers working software." The name is a deliberate counter-narrative to "dark factory" — we believe this work should bring light, joy, and craftsmanship to engineering, not darkness.
+
+### StrongDM's Software Factory: The Level 5 Example
+
+Three engineers at StrongDM have been running a dark factory since July 2025. Two rules: "Code must not be written by humans" and "Code must not be reviewed by humans."
+
+Their key innovations:
+- **Attractor** — their coding agent is literally just 3 markdown specification files. Zero code. The specs, fed to AI agents, produced 16K lines Rust + 9.5K Go + 6.7K TypeScript.
+- **External Scenarios** — tests stored OUTSIDE the codebase so the AI can't game them. Like a holdout set in ML.
+- **Digital Twin Universe** — behavioral clones of Okta, Jira, Slack for safe integration testing.
+
+Simon Willison called it "the most ambitious form of AI-assisted software development I've seen yet."
+
+### What Joysmith Actually Does
+
+Joysmith is the playbook for getting from Level 2 to Level 5. For each project, we:
+
+1. **Assess** — Rate the project against the 5-level framework using analysis agents
+2. **Interview** — Understand pain points, constraints, and what "done" looks like
+3. **Design** — Write a spec for the harness upgrade itself
+4. **Implement** — Add boundary framework, interface contracts, skills, deployment runbook
+5. **Build scenarios** — External holdout tests that validate the AI's work
+6. **Automate the loop** — Scenarios run automatically, failures feed back to Claude
+
+We already did this for Pie (see the [Pie journey](../pie/journey.md)). That was a server + Mac app — straightforward HTTP-testable software. Sarama is fundamentally harder because it's a hardware product.
+
+---
+
+## 3. The Challenge: Why Hardware is Different
 
 ### The Five-Layer Problem
 
@@ -79,7 +141,7 @@ Each layer has its own toolchain, deployment target, and testing constraints:
 
 ---
 
-## 3. The Assessment: Where Sarama Actually Stood
+## 4. The Assessment: Where Sarama Actually Stood
 
 We ran 6 parallel analysis agents — one per component — to assess the entire monorepo against the Joysmith 5-level framework. Here's what we found.
 
@@ -104,11 +166,13 @@ We ran 6 parallel analysis agents — one per component — to assess the entire
 
 ### The Diagnosis
 
-Sarama's harness was **strong within each component** (especially firmware and iOS docs) but **weak at the boundaries between components**. The pain points Max described — context loss, autonomy ceiling, agents modifying the wrong component — all traced back to the same root cause: no system-level coordination layer.
+Sarama's harness was **strong within each component** (especially firmware and iOS docs) but **weak at the boundaries between components**. The pain points — context loss, autonomy ceiling, agents modifying the wrong component — all traced back to the same root cause: no system-level coordination layer.
+
+This is exactly the gap between Level 3.5 and Level 4. Individual components are well-documented enough for Claude to work within them. But nobody told Claude how the components talk to each other, what's safe to change across boundaries, or how to deploy changes that span firmware + server + iOS.
 
 ---
 
-## 4. What We Built: The Level 4 Harness
+## 5. What We Built: The Level 4 Harness
 
 We chose a **top-down approach** — build the root-level "constitution" first, then push patterns into each component. This addresses the coordination problem before touching individual components.
 
@@ -116,7 +180,7 @@ We chose a **top-down approach** — build the root-level "constitution" first, 
 
 **BOUNDARY_FRAMEWORK.md** — Unified behavioral boundaries for the entire system.
 
-Three tiers applied system-wide:
+This is the #1 gap between Level 4 and Level 5, per the Joysmith research. Without explicit behavioral boundaries, Claude doesn't know when to proceed autonomously vs. pause and ask. Three tiers applied system-wide:
 - **ALWAYS:** Commit style, contract references, test before push, tag firmware releases
 - **ASK FIRST:** Cross-component changes, dependency additions, protocol modifications, production deployments
 - **NEVER:** Hardcode credentials, modify C modules, add deps to relay server, skip CRC validation
@@ -132,17 +196,17 @@ Each component then defines additional boundaries specific to its domain (e.g., 
 | `tcp-streaming.md` | Relay commands (SUB, LIST, STATUS), backpressure | Firmware → Server → iOS |
 | `ble-characteristics.md` | Service UUIDs, control commands, mode switching | Firmware ↔ iOS |
 
-These are the **single source of truth**. Component docs reference them, not duplicate them. Any protocol change must update the contract first.
+These are the **single source of truth**. Before this, the binary protocol was documented in firmware docs, partially copied in server docs, and referenced differently in iOS docs. Now there's one place, and every component's CLAUDE.md links to it. Any protocol change must update the contract first.
 
 ### Phase 2: Cross-Component Skills
 
-Three new skills for both Claude Code (`.claude/skills/`) and Codex (`.codex/skills/`):
+Skills are reusable workflows that Claude can invoke. Before this upgrade, only firmware had skills (build, flash, verify, OTA, dev-deploy). Now there are three cross-component skills for both Claude Code and Codex:
 
-| Skill | What It Does |
-|---|---|
-| `cross-component-change` | Safe workflow for changes spanning multiple components: update contract → implement in dependency order → verify at each step |
-| `system-health-check` | Verify all services are running and communicating: relay status, SSE endpoint, collar connection, firmware version |
-| `deploy-coordinated` | Safe multi-component deployment: server first → firmware second → iOS last, with rollback at each step |
+| Skill | What It Does | Why It Matters |
+|---|---|---|
+| `cross-component-change` | Safe workflow for changes spanning multiple components: update contract → implement in dependency order → verify at each step | Prevents the "changed the protocol in firmware but forgot to update the iOS parser" problem |
+| `system-health-check` | Verify all services are running and communicating: relay status, SSE endpoint, collar connection, firmware version | First thing to run when "something isn't working" |
+| `deploy-coordinated` | Safe multi-component deployment: server first → firmware second → iOS last, with rollback at each step | Prevents deploy ordering bugs (e.g., deploying firmware before server is ready for new protocol) |
 
 ### Phase 3: Component Upgrades
 
@@ -152,17 +216,17 @@ All 10 CLAUDE.md and AGENTS.md files (root + firmware + server + iOS + upscale) 
 - References to boundary framework
 - Verification sections
 
-The existing content wasn't removed — it was reorganized. Battle-tested rules (like "relay_server.py stays zero-dependency") got promoted to the ALWAYS tier.
+The existing content wasn't removed — it was reorganized. Battle-tested rules (like "relay_server.py stays zero-dependency" and "MicroPython, not standard Python") got promoted to the ALWAYS tier where they belong.
 
 ### Phase 4: Deployment Runbook
 
-`docs/DEPLOYMENT_RUNBOOK.md` — copy-paste-ready operational guide covering:
+`docs/DEPLOYMENT_RUNBOOK.md` — copy-paste-ready operational guide. This is the document you reach for when deploying:
 - Pre-deployment checklist
-- Server deployment (relay, intelligence, recording, upscale — each with exact commands)
+- Server deployment (relay, intelligence, recording, upscale — each with exact `scp` and `systemctl` commands)
 - Firmware deployment (Python-only fast path vs. full build + DFU flash)
-- iOS deployment
-- Coordinated release procedure (order: server → firmware → iOS)
-- Rollback procedures with time estimates
+- iOS deployment (Xcode build, App Store submission)
+- Coordinated release procedure (deploy order: server → firmware → iOS)
+- Rollback procedures with time estimates (server: seconds, firmware: minutes, iOS App Store: days)
 - Version compatibility matrix
 - Monitoring and troubleshooting
 
@@ -175,14 +239,18 @@ The existing content wasn't removed — it was reorganized. Battle-tested rules 
 | Total commits | 6 |
 | Branch | `maksu/joysmith-implementation` |
 | PR | [#11](https://github.com/saramaxyz/CollarPrototype/pull/11) |
-| Code changes | 0 (all documentation/harness) |
+| Code changes | 0 (all documentation/harness infrastructure) |
 | Time from first assessment to PR | ~2 hours |
+
+**Important:** This is all documentation and harness infrastructure. Zero lines of product code were changed. The goal was to upgrade how Claude works with the codebase, not to change what the codebase does.
 
 ---
 
-## 5. The Road to 4.5: Automated Testing for Hardware + iOS + Server
+## 6. The Road to 4.5: Automated Testing for Hardware + iOS + Server
 
-This is where Sarama diverges from the Pie playbook. Level 4.5 requires **automated validation** — scenarios that run without human intervention and feed failures back to Claude. For a hardware product, that means solving three distinct testing problems.
+Level 4.5 requires **automated validation** — scenarios that run without human intervention and feed failures back to Claude. For Sarama, that means solving three distinct testing problems. We ran 3 parallel research agents to investigate what's possible.
+
+Full research details: [testing-research.md](./testing-research.md)
 
 ### The Layered Testing Strategy
 
@@ -209,74 +277,6 @@ Layer 3: Hardware-in-the-Loop (manual trigger, real devices)
 
 **The key insight:** Layer 1 catches 80% of regressions and is fully automatable. Layer 2 catches another 15%. Layer 3 catches the remaining 5% (real hardware bugs) but requires human involvement.
 
-### Server Testing (Highest ROI, Start Here)
-
-The server is the easiest to test and the relay server is the biggest risk (3,000+ LOC, zero tests).
-
-**Key off-the-shelf tools discovered:**
-
-| Tool | Purpose | Effort | URL |
-|---|---|---|---|
-| **pytest-asyncio** | Async test fixtures for TCP relay | Low | pypi.org/project/pytest-asyncio |
-| **Hypothesis** | Property-based protocol fuzzing — generates random valid/invalid packets, tests roundtrip properties | Medium | hypothesis.works |
-| **construct** | Declarative binary protocol parser/builder — define packet format once, use for both parsing and building | Low | construct.readthedocs.io |
-| **httpx-sse** | Async SSE client for testing intelligence service events | Low | github.com/florimondmanca/httpx-sse |
-| **respx** | Mock httpx requests (for Gemini API mocking in tests) | Low | lundberg.github.io/respx |
-
-**What to build:**
-
-1. **Binary protocol library** (using `construct`) — Define all 6 packet types declaratively. One definition serves both parsing and building. Test properties with Hypothesis: `parse(serialize(packet)) == packet`, corrupted CRC always rejected, parser recovers after garbage bytes.
-
-2. **Fake collar simulator** — Python asyncio TCP client that sends valid binary protocol packets to the relay. Parameterizable: valid packets, corrupted CRC, truncated, out-of-order. This is the **single highest-value testing investment** for Level 4.5.
-
-3. **Relay server test suite** (~400 lines) — async tests for queue overflow/backpressure, stream routing (SUB, auto-subscribe, UUID binding), text commands, multi-client broadcast, disconnect handling.
-
-4. **SSE scenario tests** — validate intelligence service event flow: emotion → Gemini translation → bark event, SSE reconnection with Last-Event-ID replay, calm timer, credential failure handling.
-
-### iOS Testing (Medium ROI, Strategic)
-
-iOS testing splits into two categories: things that need hardware and things that don't. The research uncovered one game-changing tool.
-
-**CoreBluetoothMock (Nordic Semiconductor)** — The single most impactful addition. Drop-in replacement for CoreBluetooth that runs entirely on simulator. Define a `CBMPeripheralSpec` that mimics the collar's GATT profile, and all BLE tests run in CI without hardware. URL: github.com/NordicSemiconductor/IOS-CoreBluetooth-Mock
-
-**What can run on simulator (no hardware):**
-
-| Tool | Purpose | Effort |
-|---|---|---|
-| **xcodebuild test** (CLI) | Run XCTest suites from command line | Low |
-| **CoreBluetoothMock** | BLE testing without collar — connection, commands, mode switching | Medium |
-| **Swifter/Embassy** | Mock SSE server for BarkEventClient testing | Low |
-| **swift-snapshot-testing** | Visual regression of emotion displays, onboarding | Low |
-| **Maestro** (YAML flows) | AI-agent-friendly E2E UI testing — no code, just YAML | Low-Medium |
-| **CoreML on simulator** | Model loading + inference correctness validation | Low |
-
-**Maestro** (maestro.dev) deserves special mention: it's YAML-based E2E testing that an AI agent can write and iterate on without understanding XCUITest APIs. Example: `tapOn: "Get Started"`, `assertVisible: "Welcome"`. CLI output is clean pass/fail.
-
-**What still needs real hardware:** BLE radio (actual advertising, interference), camera + video upscaling, audio playback, WiFi direct mode.
-
-**CI requirement:** A Mac with Xcode is mandatory for iOS testing. Options: GitHub Actions macOS runners (~$0.08/min), self-hosted Mac Mini (~$600 one-time), or MacStadium (~$50-150/month).
-
-### Firmware Testing (Complex, Protocol-First)
-
-Firmware is the hardest to test automatically. The research identified practical approaches that don't require emulating the full microcontroller.
-
-**Key tools discovered:**
-
-| Tool | What It Tests | Hardware Needed? | Effort |
-|---|---|---|---|
-| **MicroPython Unix port** | Pure logic (state machines, protocol parsing, CRC, config) | No | Low |
-| **construct** library | Binary protocol roundtrip testing | No | Low |
-| **TFLite runtime on host** | ML model inference with pre-recorded audio | No | Low |
-| **librosa** (Python) | MFCC feature extraction validation vs C module | No | Medium |
-| **Bleak** (Python BLE) | BLE service testing from host machine | Yes (collar + BLE adapter) | Low |
-| **mpremote + pytest** | On-device function execution, flash-and-test | Yes (USB) | Low |
-
-**The Golioth model** (gold standard for embedded CI): Raspberry Pi as self-hosted GitHub Actions runner, collar connected via USB, pytest fixtures handle flash/connect/reset. They run 530+ HIL tests per PR.
-
-**What still needs real hardware:** WiFi AP/STA routing bug, audio DMA timing, IMU under real sensor noise, memory pressure with all peripherals running. The existing soak tests (2hr/12hr/60hr) cover this well.
-
-**Key insight from Fitbit's Golden Gate project:** They invested heavily in making the firmware side simulatable — abstracting BLE transport behind IP-based protocols so CI can run protocol-level tests without hardware. The pattern: test the protocol on host, test the hardware integration on device.
-
 ### The Testing Pyramid for Hardware Products
 
 ```
@@ -296,11 +296,57 @@ Firmware is the hardest to test automatically. The research identified practical
 /____________________\
 ```
 
+### Server Testing (Highest ROI, Start Here)
+
+The server is the easiest to test and the relay server is the biggest risk (3,000+ LOC, zero tests).
+
+**Key off-the-shelf tools:**
+
+| Tool | Purpose | Effort | URL |
+|---|---|---|---|
+| **pytest-asyncio** | Async test fixtures for TCP relay | Low | pypi.org/project/pytest-asyncio |
+| **Hypothesis** | Property-based protocol fuzzing — generates random valid/invalid packets, tests roundtrip properties | Medium | hypothesis.works |
+| **construct** | Declarative binary protocol parser/builder — define packet format once, use for both parsing and building | Low | construct.readthedocs.io |
+| **httpx-sse** | Async SSE client for testing intelligence service events | Low | github.com/florimondmanca/httpx-sse |
+| **respx** | Mock httpx requests (for Gemini API mocking in tests) | Low | lundberg.github.io/respx |
+
+**What to build:**
+
+1. **Binary protocol library** (using `construct`) — Define all 6 packet types declaratively. Test with Hypothesis: `parse(serialize(packet)) == packet`, corrupted CRC always rejected, parser recovers after garbage bytes.
+
+2. **Fake collar simulator** — Python asyncio TCP client that sends valid binary protocol packets to the relay. This is the **single highest-value testing investment** for Level 4.5. It's a "digital twin" of the collar at the protocol level — the same pattern StrongDM uses for their integration services.
+
+3. **Relay server test suite** (~400 lines) — async tests for backpressure, stream routing, text commands, multi-client broadcast, disconnect handling.
+
+4. **SSE scenario tests** — validate intelligence service event flow end-to-end.
+
+### iOS Testing (Medium ROI, Strategic)
+
+**CoreBluetoothMock (Nordic Semiconductor)** — The game-changer. Drop-in replacement for CoreBluetooth that runs on simulator. Define a mock peripheral matching the collar's GATT profile, and all BLE tests run in CI without hardware. This is built by Nordic, the chip vendor most BLE products use.
+
+**Maestro** (maestro.dev) — YAML-based E2E testing. An AI agent can write and iterate on Maestro flows without understanding XCUITest APIs. Example: `tapOn: "Get Started"`, `assertVisible: "Welcome"`. This is the most AI-agent-friendly testing tool we found.
+
+**CI requirement:** iOS testing requires a Mac with Xcode. No way around this. Options: GitHub Actions macOS runners ($0.08/min), self-hosted Mac Mini ($600 one-time), or MacStadium ($50-150/month).
+
+### Firmware Testing (Complex, Protocol-First)
+
+**MicroPython Unix port** — Runs MicroPython on macOS/Linux. Test all pure logic (protocol parsing, state machines, CRC, config) without hardware.
+
+**TFLite runtime on host** — Full ML pipeline test: pre-recorded bark WAV → MFCC extraction → TFLite inference → emotion label. Validates the entire emotion detection pipeline without a dog.
+
+**The Golioth model** (gold standard for embedded CI): Raspberry Pi as self-hosted GitHub Actions runner, collar connected via USB, pytest fixtures handle flash/connect/reset. They run 530+ hardware-in-the-loop tests per PR.
+
+**Key insight from Fitbit's Golden Gate project:** They invested heavily in making firmware simulatable by abstracting BLE transport behind IP-based protocols. Pattern: test the protocol on host, test the hardware integration on device.
+
 ---
 
-## 6. The Scenarios Structure: External Holdout Tests
+## 7. The Scenarios Structure: External Holdout Tests
 
-Following the StrongDM pattern (and what we did for Pie), scenario tests live **outside** the codebase. The agent building the software can't see them, can't game them.
+Following the StrongDM pattern (and what we did for Pie), scenario tests live **outside** the codebase. The agent building the software can't see them, can't game them. This is like a holdout set in ML — it prevents the AI from "teaching to the test."
+
+### Why Outside the Repo?
+
+If the tests live inside the repo, Claude can read them while coding. It can (intentionally or not) write code that passes the specific test cases without actually solving the general problem. By storing scenarios in `~/Developer/scenarios/sarama/` (not in `CollarPrototype/`), we create a genuine holdout evaluation.
 
 ### Directory Structure
 
@@ -328,77 +374,49 @@ Following the StrongDM pattern (and what we did for Pie), scenario tests live **
 │   └── results/             # Test run output (timestamped, gitignored)
 ```
 
-### Scenario Script Pattern
+### How Scenarios Work
 
-Each scenario follows the same structure:
+Each scenario answers ONE question and follows: **setup → execute → evaluate → report.**
 
 ```bash
 #!/bin/bash
-# scenario-02-binary-protocol.sh
-# QUESTION: Does the relay correctly receive and broadcast all 6 binary packet types?
+# QUESTION: Does the relay correctly broadcast all 6 binary packet types?
 # PASS CRITERIA:
 # 1. Fake collar connects to port 8554
 # 2. Test client connects to port 8555 and subscribes
-# 3. All 6 packet types received by client with valid CRC
-# 4. Emotion packet contains correct emotion char (A/L/P)
-# 5. Battery packet contains valid percent and voltage
+# 3. All 6 packet types received with valid CRC
 
-source "$(dirname "$0")/../lib/common.sh"
-
-# Setup
-start_scenario "Binary Protocol Broadcast"
-
-# Execute
-python3 ../lib/fake_collar.py --server "$RELAY_HOST" --packets all --count 10 &
-COLLAR_PID=$!
-sleep 1
-RESULT=$(python3 ../lib/test_client.py --server "$RELAY_HOST" --timeout 5 --expect-types "0x01,0x02,0x03,0x04,0x05,0x06")
-
-# Evaluate
-assert_contains "$RESULT" "video_frames: 10"
-assert_contains "$RESULT" "emotion_events: 10"
-assert_contains "$RESULT" "crc_valid: true"
-
-# Cleanup
-kill $COLLAR_PID 2>/dev/null
-end_scenario
+# Setup: start fake collar
+# Execute: send packets, capture on client side
+# Evaluate: check all packet types received, CRC valid
+# Report: PASS/FAIL with details
 ```
 
 ### CLI Integration
 
-The `setup.sh` entry point supports two modes:
-
-**Interactive mode** (human runs manually):
 ```bash
-cd ~/Developer/scenarios/sarama
+# Interactive (first run prompts for config)
 ./setup.sh
-# Prompts for config on first run, then runs all scenarios with colored output
-```
 
-**CI mode** (Claude Code hook or GitHub Actions):
-```bash
+# CI mode (no prompts, JSON output, exit code = failures)
 ./setup.sh --ci
-# No prompts (loads .env.test), JSON output, non-zero exit on failure
-```
 
-**Single scenario** (debugging):
-```bash
+# Single scenario for debugging
 ./setup.sh --scenario 03-sse-emotion-flow
 ```
 
 ### Hooking Into Claude Code (Level 4.5)
 
-Once scenarios are built, the automation loop looks like:
+Once scenarios are built, a Claude Code hook auto-runs them after test commands:
 
 ```json
-// .claude/settings.json (in CollarPrototype repo)
 {
   "hooks": {
     "PostToolUse": [{
       "matcher": "Bash",
       "hooks": [{
         "type": "command",
-        "command": "if echo '$TOOL_INPUT' | grep -q 'pytest\\|test'; then cd ~/Developer/scenarios/sarama && ./setup.sh --ci --scenario server-only; fi",
+        "command": "if echo '$TOOL_INPUT' | grep -q 'pytest\\|test'; then cd ~/Developer/scenarios/sarama && ./setup.sh --ci --tag server 2>&1 | tail -20; fi",
         "timeout": 120000
       }]
     }]
@@ -406,11 +424,11 @@ Once scenarios are built, the automation loop looks like:
 }
 ```
 
-When Claude runs tests, the external scenarios auto-run. Failures feed back into the conversation. Claude iterates until green.
+Claude runs tests → scenarios auto-run → failures feed back → Claude iterates → green → ship.
 
 ---
 
-## 7. Roadmap: Level 4 → 4.5 → 5
+## 8. Roadmap: Level 4 → 4.5 → 5
 
 ### Where We Are Now: Level 4
 
@@ -440,33 +458,17 @@ Claude iterates → automated layers green →
 Human runs Layer 3 (hardware) → Ship
 ```
 
-**Step 1: Build the scenario infrastructure** (1-2 days)
-- `~/Developer/scenarios/sarama/` with fake collar, SSE client, protocol library
-- 6 initial scenarios covering relay, protocol, SSE, reconnection, errors, multi-client
+**Estimated effort: ~15-20 engineering days, starting with server testing.**
 
-**Step 2: Build server test suite** (2-3 days)
-- pytest-asyncio tests for relay server (the biggest untested risk)
-- Mock Gemini for intelligence service integration tests
-- Binary protocol property-based tests with Hypothesis
-
-**Step 3: Build iOS unit tests** (2-3 days)
-- XCTest for BarkEventClient, EmotionStateManager, JpegStreamClient
-- Mock SSE server for network layer testing
-- Run via `xcodebuild test` from command line
-
-**Step 4: Hook scenarios into Claude Code** (1 hour)
-- PostToolUse hook runs Layer 1 scenarios after test commands
-- CI mode with JSON output for machine parsing
-- Non-zero exit feeds failures back to Claude
-
-**Step 5: CI/CD integration** (1 day)
-- GitHub Actions runs Layer 1+2 tests on every push
-- Protocol tests + server tests + iOS simulator tests
-- Results posted to PR
+| Step | What | Effort |
+|---|---|---|
+| 1 | Scenario infrastructure (fake collar, SSE client, protocol lib) | 1-2 days |
+| 2 | Server test suite (relay, intelligence, protocol) | 2-3 days |
+| 3 | iOS unit tests (SSE parsing, state transitions, protocol) | 2-3 days |
+| 4 | Hook scenarios into Claude Code | 1 hour |
+| 5 | CI/CD integration (GitHub Actions) | 1 day |
 
 ### Level 5: The Hardware Dark Factory
-
-Level 5 for hardware products looks different from Level 5 for web apps. Full autonomy over Layers 1+2, human-in-the-loop for Layer 3.
 
 ```
 Spec drops → Claude implements → Layer 1+2 auto-validated →
@@ -479,16 +481,11 @@ Human triggers Layer 3 (real collar + phone) → Ship
 - Claude writes ALL the code
 - Automated tests catch 95% of regressions
 - Human only touches hardware for the final 5% that can't be simulated
-- The human role shifts from "developer reviewing code" to "QA engineer running hardware tests"
-
-**What makes it different from web app Level 5:**
-- Can't fully eliminate human from the loop (hardware requires physical presence)
-- But the human effort drops from "writing/reviewing all code" to "plugging in a collar and pressing a button"
-- That's still a massive productivity gain — spec to working software in hours, not days
+- The human role shifts from "developer reviewing code" to "QA engineer plugging in a collar and pressing a button"
 
 ### The StrongDM Comparison
 
-StrongDM's dark factory works because their product is pure software — APIs, databases, CLI tools. They can build "digital twin universes" (behavioral clones of Okta, Jira, Slack) to test everything in simulation.
+StrongDM's dark factory works because their product is pure software. They can build "digital twin universes" to test everything in simulation.
 
 **We can't clone a dog.** But we can:
 - Clone the binary protocol (fake collar simulator)
@@ -497,7 +494,7 @@ StrongDM's dark factory works because their product is pure software — APIs, d
 - Clone BLE behavior (CoreBluetooth mock framework)
 - Test 95% of the software this way
 
-The remaining 5% — real sensors, real WiFi, real BLE radio, real dog barks — will always need hardware. And that's OK. Level 5 for hardware means **automating everything that CAN be automated** and making the hardware testing as push-button as possible.
+The remaining 5% — real sensors, real WiFi, real BLE radio, real dog barks — will always need hardware. And that's OK. **Level 5 for hardware means automating everything that CAN be automated and making the hardware testing as push-button as possible.**
 
 ---
 
