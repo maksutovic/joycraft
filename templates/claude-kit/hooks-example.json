@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '--- POST-EDIT REMINDER ---\nDid you check: boundary tiers (Always/Ask First/Never) before this change?\nWill you verify: type-check + lint before committing?'",
+            "timeout": 5000
+          }
+        ]
+      }
+    ]
+  }
+}
