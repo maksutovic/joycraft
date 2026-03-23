@@ -24,7 +24,7 @@ We upgraded the Sarama CollarPrototype monorepo from Level 3.5 to Level 4 on the
 
 **What we did:**
 - Ran 6 parallel analysis agents across every component (firmware, iOS, server, upscale service, Tauri lab, root)
-- Asked Max quick-fire questions during brainstorming (pain points, target level, mono vs multi-repo preference) — not a full structured interview per the Joysmith methodology
+- Asked Max quick-fire questions during brainstorming (pain points, target level, mono vs multi-repo preference) — not a full structured interview per the Joysmith methodology. **TODO: Conduct full interview with Praful (co-founder, primary developer on Sarama the past few weeks) to validate harness upgrades against his actual pain points and update accordingly.**
 - Designed and implemented a top-down harness upgrade: boundary framework → interface contracts → cross-component skills → component upgrades → deployment runbook
 - Delivered 22 files (11 new, 10 modified, 1 design spec) in 6 commits on branch `maksu/joysmith-implementation`
 - Researched automated testing strategies for the unique challenges of hardware + iOS + server
