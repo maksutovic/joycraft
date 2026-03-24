@@ -77,26 +77,33 @@ Specs 8 and 2 can start in parallel. Spec 1 depends on 8. Specs 4, 5, 6, 7, 9 de
 
 ## Execution Strategy
 
-- [x] Mixed (some parallel, some sequential)
+- [x] Agent teams (parallel teammates per phase, sequential between phases)
 
-**Phase 1 (parallel):**
-| Worktree | Specs | Branch |
-|----------|-------|--------|
-| main | Spec 8 (stack-detection) | `feature/stack-detection` |
-| worktree-2 | Spec 2 (assess-skill) | `feature/assess-skill` |
+Use Claude Code agent teams to parallelize within each phase. Each teammate owns one spec file and works independently. The lead agent coordinates phase transitions.
 
-**Phase 2 (after Phase 1 merges):**
-| Worktree | Specs | Branch |
-|----------|-------|--------|
-| main | Spec 1 (init-cli) | `feature/init-cli` |
-| worktree-2 | Spec 3 (upgrade-apply) | `feature/upgrade-apply` |
+**Prompt to kick off execution:**
+```
+Read docs/briefs/2026-03-23-joysmith-cli-plugin.md for the full plan.
 
-**Phase 3 (parallel, after Spec 1 merges):**
-| Worktree | Specs | Branch |
-|----------|-------|--------|
-| main | Specs 4 + 5 + 6 (workflow skills — small, do together) | `feature/workflow-skills` |
-| worktree-2 | Spec 7 (upgrade CLI) | `feature/upgrade-cli` |
-| worktree-3 | Spec 9 (AGENTS.md) | `feature/agents-md` |
+This repo needs to be scaffolded as a TypeScript npm package first (pnpm, vitest, tsup, commander).
+
+Then implement all specs in 3 phases using agent teams:
+
+Phase 1 — scaffold the repo, then assign teammates:
+  - Teammate A: docs/specs/2026-03-23-stack-detection.md
+  - Teammate B: docs/specs/2026-03-23-assess-skill.md
+
+Phase 2 — after Phase 1 merges:
+  - Teammate A: docs/specs/2026-03-23-init-cli.md
+  - Teammate B: docs/specs/2026-03-23-upgrade-apply-skill.md
+
+Phase 3 — after Phase 2 merges:
+  - Teammate A: docs/specs/2026-03-23-workflow-skills.md
+  - Teammate B: docs/specs/2026-03-23-upgrade-cli.md
+  - Teammate C: docs/specs/2026-03-23-agents-md-support.md
+
+Each teammate should read their spec fully before starting, implement it, write tests, and commit.
+```
 
 ## Success Criteria
 

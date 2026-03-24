@@ -63,10 +63,19 @@ Break this feature into atomic specs. Each row becomes its own ATOMIC_SPEC_TEMPL
 How should these specs be executed?
 
 - [ ] Sequential (specs have chain dependencies)
-- [ ] Parallel worktrees (specs are independent)
-- [ ] Mixed (some parallel, some sequential — annotate in table above)
+- [ ] Agent teams (parallel teammates within phases, sequential between phases)
+- [ ] Parallel worktrees (specs are independent, one session per worktree)
+- [ ] Mixed (annotate in decomposition table above)
 
-**Worktree assignment** (if parallel):
+**Agent teams (recommended for 3+ specs):**
+Use Claude Code agent teams to parallelize within each phase. Each teammate owns one spec file. The lead agent scaffolds shared infrastructure first, then assigns teammates per phase.
+
+```
+Phase 1: Teammate A → Spec X, Teammate B → Spec Y (no dependencies)
+Phase 2: Teammate A → Spec Z (depends on Phase 1)
+```
+
+**Worktree assignment** (alternative to agent teams):
 | Worktree | Specs | Branch |
 |----------|-------|--------|
 | main workspace | Spec 1 | `feature/verb-object-1` |
