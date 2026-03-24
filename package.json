@@ -1,6 +1,6 @@
 {
   "name": "joysmith",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "CLI + Claude Code plugin that scaffolds and upgrades AI development harnesses",
   "type": "module",
   "bin": {
