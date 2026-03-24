@@ -94,19 +94,19 @@ _TODO: Add any gotchas, quirks, or non-obvious behaviors that developers should 
 }
 
 function generateGettingStartedSection(): string {
-  return `## Getting Started with Joysmith
+  return `## Getting Started with Joycraft
 
-This project uses [Joysmith](https://github.com/maksutovic/joysmith) for AI development workflow. Available skills:
+This project uses [Joycraft](https://github.com/maksutovic/joycraft) for AI development workflow. Available skills:
 
 | Skill | Purpose |
 |-------|---------|
-| \`/joy\` | Assess your harness, apply upgrades, see path to Level 5 |
+| \`/tune\` | Assess your harness, apply upgrades, see path to Level 5 |
 | \`/new-feature\` | Interview -> Feature Brief -> Atomic Specs |
 | \`/interview\` | Lightweight brainstorm — yap about ideas, get a structured summary |
 | \`/decompose\` | Break a brief into small, testable specs |
 | \`/session-end\` | Capture discoveries, verify, commit |
 
-Run \`/joy\` to see where your project stands and what to improve next.`;
+Run \`/tune\` to see where your project stands and what to improve next.`;
 }
 
 export function improveCLAUDEMd(existing: string, stack: StackInfo): string {
@@ -133,7 +133,7 @@ export function improveCLAUDEMd(existing: string, stack: StackInfo): string {
     additions.push(generateGotchasSection());
   }
 
-  if (!hasSection(sections, /getting\s*started.*joysmith/i) && !hasSection(sections, /joysmith.*skills/i)) {
+  if (!hasSection(sections, /getting\s*started.*joycraft/i) && !hasSection(sections, /joycraft.*skills/i)) {
     additions.push(generateGettingStartedSection());
   }
 

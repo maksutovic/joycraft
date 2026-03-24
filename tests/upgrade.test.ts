@@ -8,7 +8,7 @@ import { readVersion, writeVersion, hashContent } from '../src/version';
 import { SKILLS, TEMPLATES } from '../src/bundled-files';
 
 function createTmpDir(): string {
-  const dir = join(tmpdir(), `joysmith-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const dir = join(tmpdir(), `joycraft-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
   mkdirSync(dir, { recursive: true });
   return dir;
 }
@@ -36,7 +36,7 @@ describe('upgrade', () => {
     }
 
     expect(logs.some(l => l.includes('not been initialized'))).toBe(true);
-    expect(logs.some(l => l.includes('npx joysmith init'))).toBe(true);
+    expect(logs.some(l => l.includes('npx joycraft init'))).toBe(true);
   });
 
   it('reports already up to date when nothing changed', async () => {
@@ -59,7 +59,7 @@ describe('upgrade', () => {
 
     // Simulate that the installed version had different content by changing the recorded hash
     const versionInfo = readVersion(tmpDir)!;
-    const skillPath = join('.claude', 'skills', 'joy', 'SKILL.md');
+    const skillPath = join('.claude', 'skills', 'tune', 'SKILL.md');
     // Write a different version of the file that matches the old hash (unmodified by user)
     const oldContent = 'old bundled content';
     writeFileSync(join(tmpDir, skillPath), oldContent, 'utf-8');
@@ -77,7 +77,7 @@ describe('upgrade', () => {
 
     // The file should now contain the latest bundled content
     const updated = readFileSync(join(tmpDir, skillPath), 'utf-8');
-    expect(updated).toBe(SKILLS['joy.md']);
+    expect(updated).toBe(SKILLS['tune.md']);
     expect(logs.some(l => l.includes('Updated'))).toBe(true);
   });
 
@@ -85,7 +85,7 @@ describe('upgrade', () => {
     await init(tmpDir, { force: false });
 
     // User customizes a skill file
-    const skillPath = join(tmpDir, '.claude', 'skills', 'joy', 'SKILL.md');
+    const skillPath = join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md');
     writeFileSync(skillPath, 'my custom joy skill', 'utf-8');
 
     // Also change the bundled content by writing old hash (simulating a new version)
@@ -112,7 +112,7 @@ describe('upgrade', () => {
     // but the user changed the file. So currentHash != newHash → it's a change.
     // And currentHash != originalHash → it's user-customized.
     // With --yes, it gets overwritten with the bundled content.
-    expect(content).toBe(SKILLS['joy.md']);
+    expect(content).toBe(SKILLS['tune.md']);
   });
 
   it('adds new files that did not exist before with --yes', async () => {
@@ -140,12 +140,12 @@ describe('upgrade', () => {
     expect(logs.some(l => l.includes('added 1 new'))).toBe(true);
   });
 
-  it('writes updated .joysmith-version after upgrade', async () => {
+  it('writes updated .joycraft-version after upgrade', async () => {
     await init(tmpDir, { force: false });
 
     // Simulate old version
     const versionInfo = readVersion(tmpDir)!;
-    const skillRelPath = join('.claude', 'skills', 'joy', 'SKILL.md');
+    const skillRelPath = join('.claude', 'skills', 'tune', 'SKILL.md');
     const oldContent = 'old content';
     writeFileSync(join(tmpDir, skillRelPath), oldContent, 'utf-8');
     versionInfo.files[skillRelPath] = hashContent(oldContent);

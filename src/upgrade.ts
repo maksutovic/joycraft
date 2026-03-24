@@ -46,12 +46,13 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
 
   // Check if project was initialized
   const versionInfo = readVersion(targetDir);
-  const hasSkill = existsSync(join(targetDir, '.claude', 'skills', 'joy', 'SKILL.md'))
+  const hasSkill = existsSync(join(targetDir, '.claude', 'skills', 'tune', 'SKILL.md'))
+    || existsSync(join(targetDir, '.claude', 'skills', 'joy', 'SKILL.md'))
     || existsSync(join(targetDir, '.claude', 'skills', 'joysmith', 'SKILL.md'));
 
   if (!versionInfo && !hasSkill) {
-    console.log('This project has not been initialized with Joysmith.');
-    console.log('Run `npx joysmith init` first.');
+    console.log('This project has not been initialized with Joycraft.');
+    console.log('Run `npx joycraft init` first.');
     return;
   }
 

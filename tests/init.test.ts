@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { init } from '../src/init';
 
 function createTmpDir(): string {
-  const dir = join(tmpdir(), `joysmith-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const dir = join(tmpdir(), `joycraft-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
   mkdirSync(dir, { recursive: true });
   return dir;
 }
@@ -43,7 +43,7 @@ describe('init', () => {
       expect(claude).toContain('### NEVER');
 
       // Skills
-      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joy', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'))).toBe(true);
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'new-feature', 'SKILL.md'))).toBe(true);
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'decompose', 'SKILL.md'))).toBe(true);
 
@@ -73,7 +73,7 @@ describe('init', () => {
       await init(tmpDir, { force: false });
 
       // Skills installed
-      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joy', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'))).toBe(true);
       // Templates installed
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'ATOMIC_SPEC_TEMPLATE.md'))).toBe(true);
       // CLAUDE.md untouched
@@ -85,12 +85,12 @@ describe('init', () => {
     it('second run skips existing files', async () => {
       await init(tmpDir, { force: false });
       const firstClaude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
-      const firstSkill = readFileSync(join(tmpDir, '.claude', 'skills', 'joy', 'SKILL.md'), 'utf-8');
+      const firstSkill = readFileSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'), 'utf-8');
 
       // Run again
       await init(tmpDir, { force: false });
       const secondClaude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
-      const secondSkill = readFileSync(join(tmpDir, '.claude', 'skills', 'joy', 'SKILL.md'), 'utf-8');
+      const secondSkill = readFileSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'), 'utf-8');
 
       // Files should be identical
       expect(secondClaude).toBe(firstClaude);
@@ -104,14 +104,14 @@ describe('init', () => {
       await init(tmpDir, { force: false });
 
       // Modify a skill file
-      writeFileSync(join(tmpDir, '.claude', 'skills', 'joy', 'SKILL.md'), 'custom content');
+      writeFileSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'), 'custom content');
 
       // Init with force
       await init(tmpDir, { force: true });
 
-      const skill = readFileSync(join(tmpDir, '.claude', 'skills', 'joy', 'SKILL.md'), 'utf-8');
+      const skill = readFileSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'), 'utf-8');
       expect(skill).not.toBe('custom content');
-      expect(skill).toContain('Joysmith');
+      expect(skill).toContain('Joycraft');
     });
 
     it('regenerates CLAUDE.md with force', async () => {
@@ -205,7 +205,7 @@ describe('init', () => {
       expect(existsSync(join(tmpDir, 'docs', 'specs'))).toBe(true);
       expect(existsSync(join(tmpDir, 'docs', 'discoveries'))).toBe(true);
       // Skills still get installed
-      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joy', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'))).toBe(true);
     });
 
     it('preserves existing user skills', async () => {
@@ -216,8 +216,8 @@ describe('init', () => {
 
       // User skill is preserved
       expect(readFileSync(join(tmpDir, '.claude', 'skills', 'my-custom-skill.md'), 'utf-8')).toBe('my skill');
-      // Joysmith skills are added
-      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joy', 'SKILL.md'))).toBe(true);
+      // Joycraft skills are added
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'))).toBe(true);
     });
   });
 });

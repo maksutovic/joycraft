@@ -1,10 +1,10 @@
 {
-  "name": "joysmith",
+  "name": "joycraft",
   "version": "0.2.0",
   "description": "CLI + Claude Code plugin that scaffolds and upgrades AI development harnesses",
   "type": "module",
   "bin": {
-    "joysmith": "dist/cli.js"
+    "joycraft": "dist/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

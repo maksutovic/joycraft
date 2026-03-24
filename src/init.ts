@@ -84,7 +84,7 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     result.created.push(agentsMdPath);
   }
 
-  // 6. Write .joysmith-version with hashes of all managed files
+  // 6. Write .joycraft-version with hashes of all managed files
   const fileHashes: Record<string, string> = {};
   for (const [filename, content] of Object.entries(SKILLS)) {
     const skillName = filename.replace(/\.md$/, '');
@@ -98,19 +98,19 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   // 7. Install version check hook
   const hooksDir = join(targetDir, '.claude', 'hooks');
   ensureDir(hooksDir);
-  const hookScript = `// Joysmith version check — runs on Claude Code session start
+  const hookScript = `// Joycraft version check — runs on Claude Code session start
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 try {
-  const data = JSON.parse(readFileSync(join(process.cwd(), '.joysmith-version'), 'utf-8'));
-  const res = await fetch('https://registry.npmjs.org/joysmith/latest', { signal: AbortSignal.timeout(3000) });
+  const data = JSON.parse(readFileSync(join(process.cwd(), '.joycraft-version'), 'utf-8'));
+  const res = await fetch('https://registry.npmjs.org/joycraft/latest', { signal: AbortSignal.timeout(3000) });
   if (res.ok) {
     const latest = (await res.json()).version;
-    if (data.version !== latest) console.log('Joysmith ' + latest + ' available (you have ' + data.version + '). Run: npx joysmith upgrade');
+    if (data.version !== latest) console.log('Joycraft ' + latest + ' available (you have ' + data.version + '). Run: npx joycraft upgrade');
   }
 } catch {}
 `;
-  writeFile(join(hooksDir, 'joysmith-version-check.mjs'), hookScript, opts.force, result);
+  writeFile(join(hooksDir, 'joycraft-version-check.mjs'), hookScript, opts.force, result);
 
   // Update .claude/settings.json with SessionStart hook
   const settingsPath = join(targetDir, '.claude', 'settings.json');
@@ -126,16 +126,16 @@ try {
   const hooksConfig = settings.hooks as Record<string, unknown>;
   if (!hooksConfig.SessionStart) hooksConfig.SessionStart = [];
   const sessionStartHooks = hooksConfig.SessionStart as Array<Record<string, unknown>>;
-  const hasJoysmithHook = sessionStartHooks.some(h => {
+  const hasJoycraftHook = sessionStartHooks.some(h => {
     const innerHooks = h.hooks as Array<Record<string, unknown>> | undefined;
-    return innerHooks?.some(ih => typeof ih.command === 'string' && ih.command.includes('joysmith'));
+    return innerHooks?.some(ih => typeof ih.command === 'string' && ih.command.includes('joycraft'));
   });
-  if (!hasJoysmithHook) {
+  if (!hasJoycraftHook) {
     sessionStartHooks.push({
       matcher: '',
       hooks: [{
         type: 'command',
-        command: 'node .claude/hooks/joysmith-version-check.mjs',
+        command: 'node .claude/hooks/joycraft-version-check.mjs',
       }],
     });
     writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
@@ -148,7 +148,7 @@ try {
     const gitignore = readFileSync(gitignorePath, 'utf-8');
     if (/^\.claude\/?$/m.test(gitignore) || /^\.claude\/\*$/m.test(gitignore)) {
       result.warnings.push(
-        '.claude/ is in your .gitignore — teammates won\'t get Joysmith skills.\n' +
+        '.claude/ is in your .gitignore — teammates won\'t get Joycraft skills.\n' +
         '    Add this line to .gitignore to fix: !.claude/skills/'
       );
     }
@@ -159,7 +159,7 @@ try {
 }
 
 function printSummary(result: InitResult, stack: import('./detect.js').StackInfo): void {
-  console.log('\nJoysmith initialized!\n');
+  console.log('\nJoycraft initialized!\n');
 
   if (stack.language !== 'unknown') {
     const fw = stack.framework ? ` + ${stack.framework}` : '';
@@ -200,7 +200,7 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
 
   console.log('\n  Next steps:');
   if (hasExistingClaude) {
-    console.log('    1. Run Claude Code and try /joy to assess and improve your existing CLAUDE.md');
+    console.log('    1. Run Claude Code and try /tune to assess and improve your existing CLAUDE.md');
   } else {
     console.log('    1. Review and customize the generated CLAUDE.md for your project');
   }

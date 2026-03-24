@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { createHash } from 'node:crypto';
 
-const VERSION_FILE = '.joysmith-version';
+const VERSION_FILE = '.joycraft-version';
 
 export interface VersionInfo {
   version: string;
