@@ -1,9 +1,9 @@
 ---
-name: joy
+name: tune
 description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show path to Level 5
 ---
 
-# Joy — Project Harness Assessment & Upgrade
+# Tune — Project Harness Assessment & Upgrade
 
 You are evaluating and upgrading this project's AI development harness. Follow these steps in order.
 
@@ -23,7 +23,7 @@ Check the following and note what exists:
 
 Tell the user:
 - Their project has no AI development harness
-- Recommend running `npx joysmith init` to scaffold one
+- Recommend running `npx joycraft init` to scaffold one
 - Briefly explain what it sets up: CLAUDE.md with boundaries, spec/brief templates, skills, documentation structure
 - **Stop here** — do not run the full assessment on a bare project
 
@@ -125,10 +125,10 @@ Look for test config, CI setup, and validation commands.
 
 ## Step 4: Write Assessment
 
-Write the assessment to `docs/joysmith-assessment.md` AND display it in the conversation. Use this format:
+Write the assessment to `docs/joycraft-assessment.md` AND display it in the conversation. Use this format:
 
 ```markdown
-# Joysmith Assessment — [Project Name]
+# Joycraft Assessment — [Project Name]
 
 **Date:** [today's date]
 **Overall Level:** [1-5, based on average score]
@@ -175,7 +175,7 @@ These are safe, additive operations. Apply them without asking:
 
 ### Tier 2: Apply and Show Diff (do it, then report)
 These modify important files but are additive (append-only). Apply them, then show what changed so the user can review. Git is the undo button.
-- Add missing sections to CLAUDE.md (Behavioral Boundaries, Development Workflow, Getting Started with Joysmith, Key Files, Common Gotchas)
+- Add missing sections to CLAUDE.md (Behavioral Boundaries, Development Workflow, Getting Started with Joycraft, Key Files, Common Gotchas)
 - Draft section content from the actual codebase — not generic placeholders. Read the project's real rules, real commands, real structure.
 - Only append — never modify or reformat existing content
 
@@ -187,11 +187,11 @@ These are potentially destructive or opinionated. Ask before proceeding:
 
 ### Reading a Previous Assessment
 
-If `docs/joysmith-assessment.md` already exists, read it first. If all recommendations have been applied, report "nothing to upgrade" and offer to re-assess.
+If `docs/joycraft-assessment.md` already exists, read it first. If all recommendations have been applied, report "nothing to upgrade" and offer to re-assess.
 
 ### After Applying
 
-Append a history entry to `docs/joysmith-history.md` (create if needed):
+Append a history entry to `docs/joycraft-history.md` (create if needed):
 ```
 | [date] | [new avg score] | [change from last] | [summary of what changed] |
 ```
@@ -215,7 +215,7 @@ Then display a single consolidated report:
 - [anything still below 3.5, with specific next action]
 ```
 
-Update `docs/joysmith-assessment.md` with the new scores and today's date.
+Update `docs/joycraft-assessment.md` with the new scores and today's date.
 
 ## Step 6: Show Path to Level 5
 
@@ -251,16 +251,16 @@ You're at Level [X]. Here's what each level looks like:
 - Failed CI runs generate their own fix specs
 - Your harness improves without you manually editing CLAUDE.md
 
-This is a significant journey. Most teams are at Level 2. Getting to Level 4 with Joysmith's workflow is achievable — Level 5 requires building validation infrastructure (scenario tests, spec queues, CI feedback loops) that goes beyond what Joysmith scaffolds today. But the harness you're building now is the foundation.
+This is a significant journey. Most teams are at Level 2. Getting to Level 4 with Joycraft's workflow is achievable — Level 5 requires building validation infrastructure (scenario tests, spec queues, CI feedback loops) that goes beyond what Joycraft scaffolds today. But the harness you're building now is the foundation.
 ```
 
 Tailor the "Next Steps" section based on the project's actual gaps — don't show generic advice.
 
 ## Edge Cases
 
-- **Not a git repo:** Note this. Joysmith works best in a git repo.
+- **Not a git repo:** Note this. Joycraft works best in a git repo.
 - **CLAUDE.md is just a README:** Treat as "no harness."
-- **Non-Joysmith skills already installed:** Acknowledge them. Do not replace — suggest additions.
+- **Non-Joycraft skills already installed:** Acknowledge them. Do not replace — suggest additions.
 - **Monorepo:** Assess the root CLAUDE.md. Note if component-level CLAUDE.md files exist.
 - **Project has rules under non-standard headings:** Give credit. Suggest reformatting as Always/Ask First/Never but acknowledge the rules are there.
 - **Assessment file missing when upgrading:** Run the full assessment first, then offer to apply.
@@ -268,4 +268,4 @@ Tailor the "Next Steps" section based on the project's actual gaps — don't sho
 - **All recommendations already applied:** Report "nothing to upgrade" and stop.
 - **User declines a recommendation:** Skip it, continue, include in "What Was Skipped."
 - **CLAUDE.md does not exist at all:** Create it with recommended sections, but ask the user first.
-- **Non-Joysmith content in CLAUDE.md:** Preserve exactly as-is. Only append or merge — never remove or reformat existing content.
+- **Non-Joycraft content in CLAUDE.md:** Preserve exactly as-is. Only append or merge — never remove or reformat existing content.
