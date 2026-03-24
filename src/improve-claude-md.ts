@@ -93,6 +93,22 @@ function generateGotchasSection(): string {
 _TODO: Add any gotchas, quirks, or non-obvious behaviors that developers should know about._`;
 }
 
+function generateGettingStartedSection(): string {
+  return `## Getting Started with Joysmith
+
+This project uses [Joysmith](https://github.com/maksutovic/joysmith) for AI development workflow. Available skills:
+
+| Skill | Purpose |
+|-------|---------|
+| \`/joy\` | Assess your harness, apply upgrades, see path to Level 5 |
+| \`/new-feature\` | Interview -> Feature Brief -> Atomic Specs |
+| \`/interview\` | Lightweight brainstorm — yap about ideas, get a structured summary |
+| \`/decompose\` | Break a brief into small, testable specs |
+| \`/session-end\` | Capture discoveries, verify, commit |
+
+Run \`/joy\` to see where your project stands and what to improve next.`;
+}
+
 export function improveCLAUDEMd(existing: string, stack: StackInfo): string {
   const sections = parseSections(existing);
   const additions: string[] = [];
@@ -115,6 +131,10 @@ export function improveCLAUDEMd(existing: string, stack: StackInfo): string {
 
   if (!hasSection(sections, /common\s*gotchas/i) && !hasSection(sections, /gotchas/i)) {
     additions.push(generateGotchasSection());
+  }
+
+  if (!hasSection(sections, /getting\s*started.*joysmith/i) && !hasSection(sections, /joysmith.*skills/i)) {
+    additions.push(generateGettingStartedSection());
   }
 
   if (additions.length === 0) {
@@ -146,6 +166,8 @@ export function generateCLAUDEMd(projectName: string, stack: StackInfo): string 
     generateKeyFilesSection(),
     '',
     generateGotchasSection(),
+    '',
+    generateGettingStartedSection(),
     '',
   ];
 

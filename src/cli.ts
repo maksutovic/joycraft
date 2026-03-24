@@ -27,4 +27,24 @@ program
     await upgrade(dir, { yes: opts.yes ?? false });
   });
 
+program
+  .command('check-version')
+  .description('Check if a newer version of Joysmith is available')
+  .action(async () => {
+    try {
+      const { readFileSync } = await import('node:fs');
+      const { join } = await import('node:path');
+      const data = JSON.parse(readFileSync(join(process.cwd(), '.joysmith-version'), 'utf-8'));
+      const res = await fetch('https://registry.npmjs.org/joysmith/latest', { signal: AbortSignal.timeout(3000) });
+      if (res.ok) {
+        const latest = ((await res.json()) as { version: string }).version;
+        if (data.version !== latest) {
+          console.log(`Joysmith ${latest} available (you have ${data.version}). Run: npx joysmith upgrade`);
+        }
+      }
+    } catch {
+      // Silent — don't block session start
+    }
+  });
+
 program.parse();

@@ -162,56 +162,43 @@ To reach Level [current + 1], complete these steps:
 [up to 5 actions, ordered by impact]
 ```
 
-## Step 5: Offer to Apply Fixes
+## Step 5: Apply Upgrades
 
-After presenting the assessment, ask the user:
+Immediately after presenting the assessment, apply upgrades using the three-tier model below. Do NOT ask for per-item permission — batch everything and show a consolidated report at the end.
 
-"Would you like me to start applying these upgrades? I'll go through each recommendation and ask before making changes to your CLAUDE.md or project files."
+### Tier 1: Silent Apply (just do it)
+These are safe, additive operations. Apply them without asking:
+- Create missing directories (`docs/specs/`, `docs/briefs/`, `docs/discoveries/`, `docs/templates/`)
+- Install missing skills to `.claude/skills/`
+- Copy missing templates to `docs/templates/`
+- Create AGENTS.md if it doesn't exist
 
-If the user agrees, work through the upgrade plan one item at a time:
-- For each recommendation, explain what you'll do and ask for confirmation
-- **Always ask before modifying CLAUDE.md** — show what you'll add
-- Creating missing directories is safe to do without asking
-- Installing missing templates is safe if the directory is empty
-- After applying changes, briefly re-score the affected dimensions to show improvement
+### Tier 2: Apply and Show Diff (do it, then report)
+These modify important files but are additive (append-only). Apply them, then show what changed so the user can review. Git is the undo button.
+- Add missing sections to CLAUDE.md (Behavioral Boundaries, Development Workflow, Getting Started with Joysmith, Key Files, Common Gotchas)
+- Draft section content from the actual codebase — not generic placeholders. Read the project's real rules, real commands, real structure.
+- Only append — never modify or reformat existing content
+
+### Tier 3: Confirm First (ask before acting)
+These are potentially destructive or opinionated. Ask before proceeding:
+- Rewriting or reorganizing existing CLAUDE.md sections
+- Overwriting files the user has customized
+- Suggesting test framework installation or CI setup (present as recommendations, don't auto-install)
 
 ### Reading a Previous Assessment
 
-If `docs/joysmith-assessment.md` already exists, read it first and check the date. If the assessment is more than 7 days old, or if there have been significant commits since, warn:
+If `docs/joysmith-assessment.md` already exists, read it first. If all recommendations have been applied, report "nothing to upgrade" and offer to re-assess.
 
-> This assessment may be stale — it was written on [date] and there have been changes since. Would you like to re-assess, or proceed with the existing recommendations?
+### After Applying
 
-If proceeding with an existing assessment, parse its recommendations and check what has already been applied. Skip anything that already exists. If ALL recommendations have been applied, report "nothing to upgrade" and offer to re-assess from scratch.
-
-### Applying Upgrades (Priority Order)
-
-When applying fixes, work in this order — high-impact, low-effort first:
-
-**Priority 1: Create Missing Directories**
-Create any missing directories (`docs/specs/`, `docs/briefs/`, `docs/discoveries/`, `docs/templates/`, `.claude/skills/`). No confirmation needed.
-
-**Priority 2: Add Missing CLAUDE.md Sections**
-For each missing section: draft content from the codebase (not placeholders), show the user, ask for confirmation. Only append — never overwrite existing content.
-
-**Priority 3: Install Missing Skills**
-Copy missing skill files to `.claude/skills/`. Available skills:
-- `joy.md` — Assessment, scoring, and upgrade application (this skill)
-- `new-feature.md` — Structured feature development with brief and specs
-- `interview.md` — Lightweight brainstorming and idea exploration
-- `decompose.md` — Break large tasks into atomic specs
-- `session-end.md` — End-of-session knowledge capture
-
-**Priority 4: Copy Missing Templates**
-Copy missing templates to `docs/templates/`.
-
-**Priority 5: Suggest Testing & Knowledge Capture Improvements**
-Do NOT auto-apply. Present specific suggestions and ask.
-
-### After Applying Upgrades
-
-Re-evaluate each dimension and display a before/after comparison:
-
+Append a history entry to `docs/joysmith-history.md` (create if needed):
 ```
+| [date] | [new avg score] | [change from last] | [summary of what changed] |
+```
+
+Then display a single consolidated report:
+
+```markdown
 ## Upgrade Results
 
 | Dimension              | Before | After | Change |
@@ -224,14 +211,50 @@ Re-evaluate each dimension and display a before/after comparison:
 ### What Changed
 - [list each change applied]
 
-### What Was Skipped
-- [list declined recommendations]
-
 ### Remaining Gaps
-- [anything still below 3.5]
+- [anything still below 3.5, with specific next action]
 ```
 
 Update `docs/joysmith-assessment.md` with the new scores and today's date.
+
+## Step 6: Show Path to Level 5
+
+After the upgrade report, always show the Level 5 roadmap tailored to the project's current state:
+
+```markdown
+## Path to Level 5 — Autonomous Development
+
+You're at Level [X]. Here's what each level looks like:
+
+| Level | You | AI | Key Skill |
+|-------|-----|-----|-----------|
+| 2 | Guide direction | Multi-file changes | AI-native tooling |
+| 3 | Review diffs | Primary developer | Code review at scale |
+| 4 | Write specs, check tests | End-to-end development | Specification writing |
+| 5 | Define what + why | Specs in, software out | Systems design |
+
+### Your Next Steps Toward Level [X+1]:
+1. [Specific action based on current gaps — e.g., "Write your first atomic spec using /new-feature"]
+2. [Next action — e.g., "Add vitest and write tests for your core logic"]
+3. [Next action — e.g., "Use /session-end consistently to build your discoveries log"]
+
+### What Level 5 Looks Like (Your North Star):
+- A backlog of ready specs that agents pull from and execute autonomously
+- CI failures auto-generate fix specs — no human triage for regressions
+- Multi-agent execution with parallel worktrees, one spec per agent
+- External holdout scenarios (tests the agent can't see) prevent overfitting
+- CLAUDE.md evolves from discoveries — the harness improves itself
+
+### You'll Know You're at Level 5 When:
+- You describe a feature in one sentence and walk away
+- The system produces a PR with tests, docs, and discoveries — without further input
+- Failed CI runs generate their own fix specs
+- Your harness improves without you manually editing CLAUDE.md
+
+This is a significant journey. Most teams are at Level 2. Getting to Level 4 with Joysmith's workflow is achievable — Level 5 requires building validation infrastructure (scenario tests, spec queues, CI feedback loops) that goes beyond what Joysmith scaffolds today. But the harness you're building now is the foundation.
+```
+
+Tailor the "Next Steps" section based on the project's actual gaps — don't show generic advice.
 
 ## Edge Cases
 

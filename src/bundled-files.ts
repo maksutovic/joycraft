@@ -1,5 +1,5 @@
 // Bundled file contents — embedded at build time since tsup bundles everything
-// and we can't read files from the package at runtime.
+// and we cannot read files from the package at runtime.
 
 export const SKILLS: Record<string, string> = {
   'decompose.md': `---
@@ -133,159 +133,111 @@ Ready to start execution?
 \`\`\`
 `,
 
-  'joysmith-upgrade.md': `---
-name: joysmith-upgrade
-description: Apply assessment upgrades — read the latest assessment and fix identified gaps in your project harness
+  'interview.md': `---
+name: interview
+description: Brainstorm freely about what you want to build — yap, explore ideas, and get a structured summary you can use later
 ---
 
-# Joysmith — Apply Assessment Upgrades
+# Interview — Idea Exploration
 
-You are applying recommended upgrades to this project's AI development harness. Follow these steps precisely.
+You are helping the user brainstorm and explore what they want to build. This is a lightweight, low-pressure conversation — not a formal spec process. Let them yap.
 
-## Step 1: Read the Assessment
+## How to Run the Interview
 
-Look for \`docs/joysmith-assessment.md\`. If it does not exist, tell the user:
+### 1. Open the Floor
 
-> No assessment found. Run \`/joysmith\` first to assess your project's harness, then come back here.
+Start with something like:
+"What are you thinking about building? Just talk — I'll listen and ask questions as we go."
 
-Stop and do not continue.
+Let the user talk freely. Do not interrupt their flow. Do not push toward structure yet.
 
-If the file exists, read it and check the date. If the assessment date is more than 7 days old, or if there have been significant commits since the assessment was written, warn the user:
+### 2. Ask Clarifying Questions
 
-> This assessment may be stale — it was written on [date] and there have been changes since. Would you like to re-assess first with \`/joysmith\`, or proceed with these recommendations?
+As they talk, weave in questions naturally — don't fire them all at once:
 
-If the user wants to re-assess, stop and let them run \`/joysmith\`. Otherwise, continue.
+- **What problem does this solve?** Who feels the pain today?
+- **What does "done" look like?** If this worked perfectly, what would a user see?
+- **What are the constraints?** Time, tech, team, budget — what boxes are we in?
+- **What's NOT in scope?** What's tempting but should be deferred?
+- **What are the edge cases?** What could go wrong? What's the weird input?
+- **What exists already?** Are we building on something or starting fresh?
 
-## Step 2: Parse Recommendations
+### 3. Play Back Understanding
 
-Extract every gap and recommendation from the assessment. Group them into these categories:
+After the user has gotten their ideas out, reflect back:
+"So if I'm hearing you right, you want to [summary]. The core problem is [X], and done looks like [Y]. Is that right?"
 
-1. **Missing directories** — \`docs/specs/\`, \`docs/briefs/\`, \`docs/discoveries/\`, \`docs/templates/\`, \`.claude/skills/\`
-2. **Missing CLAUDE.md sections** — Behavioral Boundaries (Always/Ask First/Never), Architecture, Key Files, Development Workflow, Common Gotchas
-3. **Missing skills** — Skill files that should be in \`.claude/skills/\`
-4. **Missing templates** — Template files that should be in \`docs/templates/\`
-5. **Testing gaps** — Missing test configuration, CI setup, or validation commands in CLAUDE.md
-6. **Knowledge capture gaps** — Missing \`docs/discoveries/\`, session-end workflow, decision log
+Let them correct and refine. Iterate until they say "yes, that's it."
 
-## Step 3: Check What Already Exists
+### 4. Write a Draft Brief
 
-Before applying anything, check the current state of every item. Skip anything that already exists. If ALL recommendations have already been applied, tell the user:
+Create a draft file at \`docs/briefs/YYYY-MM-DD-topic-draft.md\`. Create the \`docs/briefs/\` directory if it doesn't exist.
 
-> Nothing to upgrade — your harness is current with the latest assessment recommendations.
+Use this format:
 
-Stop and do not continue.
+\`\`\`markdown
+# [Topic] — Draft Brief
 
-## Step 4: Apply Upgrades (in priority order)
+> **Date:** YYYY-MM-DD
+> **Status:** DRAFT
+> **Origin:** /interview session
 
-Apply fixes in this order — high-impact, low-effort first:
+---
 
-### Priority 1: Create Missing Directories
+## The Idea
+[2-3 paragraphs capturing what the user described — their words, their framing]
 
-For each missing directory, create it. No confirmation needed — directories are safe to create.
+## Problem
+[What pain or gap this addresses]
 
-- \`docs/specs/\`
-- \`docs/briefs/\`
-- \`docs/discoveries/\`
-- \`docs/templates/\`
-- \`.claude/skills/\`
+## What "Done" Looks Like
+[The user's description of success — observable outcomes]
 
-After creating, briefly note what was created.
+## Constraints
+- [constraint 1]
+- [constraint 2]
 
-### Priority 2: Add Missing CLAUDE.md Sections
+## Open Questions
+- [things that came up but weren't resolved]
+- [decisions that need more thought]
 
-**This requires user confirmation for every change.**
+## Out of Scope (for now)
+- [things explicitly deferred]
 
-For each missing section identified in the assessment:
-
-1. Draft the section content based on what you know about the project (read the codebase to gather real information — do not use placeholder text)
-2. Show the user the exact content that will be added
-3. Ask: "I'm going to add a [section name] section to CLAUDE.md. OK?"
-4. If the user approves, append the section to CLAUDE.md — do NOT replace or rewrite existing content
-5. If the user declines, note it was skipped and move on
-
-**Important:** Never overwrite or reformat existing CLAUDE.md content. Only append new sections or merge into existing sections.
-
-### Priority 3: Install Missing Skills
-
-For each missing skill identified in the assessment, copy the skill file to \`.claude/skills/\`. Available Joysmith skills:
-
-- \`joysmith.md\` — Assessment, scoring, and upgrade recommendations
-- \`joysmith-upgrade.md\` — This skill (apply upgrades)
-- \`new-feature.md\` — Structured feature development with brief and specs
-- \`decompose.md\` — Break large tasks into atomic specs
-- \`session-end.md\` — End-of-session knowledge capture
-
-Note which skills were installed.
-
-### Priority 4: Copy Missing Templates
-
-For each missing template identified in the assessment, copy it to \`docs/templates/\`. Standard Joysmith templates include:
-
-- \`spec.md\` — Atomic spec template
-- \`brief.md\` — Feature brief template
-- \`discovery.md\` — Discovery/learning capture template
-
-Note which templates were copied.
-
-### Priority 5: Suggest Testing & Knowledge Capture Improvements
-
-For testing and knowledge capture gaps, do NOT make changes automatically. Instead, present specific suggestions:
-
-- If test commands are missing from CLAUDE.md, draft an addition and ask the user
-- If CI is not configured, suggest what to add and where
-- If knowledge capture workflows are missing, recommend \`/session-end\` and explain how it works
-
-## Step 5: Re-assess and Report
-
-After all upgrades are applied (or skipped), re-evaluate each of the 7 dimensions against the current state of the project. Use the same scoring rubric from \`/joysmith\`.
-
-Display a before/after comparison:
-
-\`\`\`
-## Upgrade Results
-
-| Dimension              | Before | After | Change |
-|------------------------|--------|-------|--------|
-| Spec Quality           | X/5    | X/5   | +X     |
-| Spec Granularity       | X/5    | X/5   | +X     |
-| Behavioral Boundaries  | X/5    | X/5   | +X     |
-| Skills & Hooks         | X/5    | X/5   | +X     |
-| Documentation          | X/5    | X/5   | +X     |
-| Knowledge Capture      | X/5    | X/5   | +X     |
-| Testing & Validation   | X/5    | X/5   | +X     |
-
-**Previous Level:** X — **New Level:** X
-
-### What Changed
-- [list each change that was applied]
-
-### What Was Skipped
-- [list each recommendation the user declined, if any]
-
-### Remaining Gaps
-- [list anything still below 3.5 that wasn't addressed]
+## Raw Notes
+[Any additional context, quotes, or tangents worth preserving]
 \`\`\`
 
-Update \`docs/joysmith-assessment.md\` with the new scores and today's date.
+### 5. Hand Off
 
-## Edge Cases
+After writing the draft, tell the user:
 
-- **Assessment file missing:** Tell the user to run \`/joysmith\` first. Do not proceed.
-- **Assessment is stale:** Warn and offer to re-assess before proceeding.
-- **All recommendations already applied:** Report "nothing to upgrade" and stop.
-- **User declines a recommendation:** Skip it, continue to the next, and include it in the "What Was Skipped" section of the report.
-- **CLAUDE.md does not exist at all:** Create it with the recommended sections, but ask the user first: "No CLAUDE.md found. I'll create one with [list of sections]. OK?"
-- **Non-Joysmith content in CLAUDE.md:** Preserve it exactly as-is. Only append or merge Joysmith sections — never remove or reformat existing content.
+\`\`\`
+Draft brief saved to docs/briefs/YYYY-MM-DD-topic-draft.md
+
+When you're ready to move forward:
+- /new-feature — formalize this into a full Feature Brief with specs
+- /decompose — break it directly into atomic specs if scope is clear
+- Or just keep brainstorming — run /interview again anytime
+\`\`\`
+
+## Guidelines
+
+- **This is NOT /new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
+- **Let the user lead.** Your job is to listen, clarify, and capture — not to structure or direct.
+- **Mark everything as DRAFT.** The output is a starting point, not a commitment.
+- **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.
+- **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
 `,
 
-  'joysmith.md': `---
-name: joysmith
-description: Assess your project's AI development harness — detect state, score 7 dimensions, recommend upgrades, and offer to apply fixes
+  'joy.md': `---
+name: joy
+description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show path to Level 5
 ---
 
-# Joysmith — Project Harness Assessment
+# Joy — Project Harness Assessment & Upgrade
 
-You are evaluating this project's AI development harness. Follow these steps in order.
+You are evaluating and upgrading this project's AI development harness. Follow these steps in order.
 
 ## Step 1: Detect Harness State
 
@@ -442,18 +394,99 @@ To reach Level [current + 1], complete these steps:
 [up to 5 actions, ordered by impact]
 \`\`\`
 
-## Step 5: Offer to Apply Fixes
+## Step 5: Apply Upgrades
 
-After presenting the assessment, ask the user:
+Immediately after presenting the assessment, apply upgrades using the three-tier model below. Do NOT ask for per-item permission — batch everything and show a consolidated report at the end.
 
-"Would you like me to start applying these upgrades? I'll go through each recommendation and ask before making changes to your CLAUDE.md or project files."
+### Tier 1: Silent Apply (just do it)
+These are safe, additive operations. Apply them without asking:
+- Create missing directories (\`docs/specs/\`, \`docs/briefs/\`, \`docs/discoveries/\`, \`docs/templates/\`)
+- Install missing skills to \`.claude/skills/\`
+- Copy missing templates to \`docs/templates/\`
+- Create AGENTS.md if it doesn't exist
 
-If the user agrees, work through the upgrade plan one item at a time:
-- For each recommendation, explain what you'll do and ask for confirmation
-- **Always ask before modifying CLAUDE.md** — show what you'll add
-- Creating missing directories is safe to do without asking
-- Installing missing templates is safe if the directory is empty
-- After applying changes, briefly re-score the affected dimensions to show improvement
+### Tier 2: Apply and Show Diff (do it, then report)
+These modify important files but are additive (append-only). Apply them, then show what changed so the user can review. Git is the undo button.
+- Add missing sections to CLAUDE.md (Behavioral Boundaries, Development Workflow, Getting Started with Joysmith, Key Files, Common Gotchas)
+- Draft section content from the actual codebase — not generic placeholders. Read the project's real rules, real commands, real structure.
+- Only append — never modify or reformat existing content
+
+### Tier 3: Confirm First (ask before acting)
+These are potentially destructive or opinionated. Ask before proceeding:
+- Rewriting or reorganizing existing CLAUDE.md sections
+- Overwriting files the user has customized
+- Suggesting test framework installation or CI setup (present as recommendations, don't auto-install)
+
+### Reading a Previous Assessment
+
+If \`docs/joysmith-assessment.md\` already exists, read it first. If all recommendations have been applied, report "nothing to upgrade" and offer to re-assess.
+
+### After Applying
+
+Append a history entry to \`docs/joysmith-history.md\` (create if needed):
+\`\`\`
+| [date] | [new avg score] | [change from last] | [summary of what changed] |
+\`\`\`
+
+Then display a single consolidated report:
+
+\`\`\`markdown
+## Upgrade Results
+
+| Dimension              | Before | After | Change |
+|------------------------|--------|-------|--------|
+| Spec Quality           | X/5    | X/5   | +X     |
+| ...                    | ...    | ...   | ...    |
+
+**Previous Level:** X — **New Level:** X
+
+### What Changed
+- [list each change applied]
+
+### Remaining Gaps
+- [anything still below 3.5, with specific next action]
+\`\`\`
+
+Update \`docs/joysmith-assessment.md\` with the new scores and today's date.
+
+## Step 6: Show Path to Level 5
+
+After the upgrade report, always show the Level 5 roadmap tailored to the project's current state:
+
+\`\`\`markdown
+## Path to Level 5 — Autonomous Development
+
+You're at Level [X]. Here's what each level looks like:
+
+| Level | You | AI | Key Skill |
+|-------|-----|-----|-----------|
+| 2 | Guide direction | Multi-file changes | AI-native tooling |
+| 3 | Review diffs | Primary developer | Code review at scale |
+| 4 | Write specs, check tests | End-to-end development | Specification writing |
+| 5 | Define what + why | Specs in, software out | Systems design |
+
+### Your Next Steps Toward Level [X+1]:
+1. [Specific action based on current gaps — e.g., "Write your first atomic spec using /new-feature"]
+2. [Next action — e.g., "Add vitest and write tests for your core logic"]
+3. [Next action — e.g., "Use /session-end consistently to build your discoveries log"]
+
+### What Level 5 Looks Like (Your North Star):
+- A backlog of ready specs that agents pull from and execute autonomously
+- CI failures auto-generate fix specs — no human triage for regressions
+- Multi-agent execution with parallel worktrees, one spec per agent
+- External holdout scenarios (tests the agent can't see) prevent overfitting
+- CLAUDE.md evolves from discoveries — the harness improves itself
+
+### You'll Know You're at Level 5 When:
+- You describe a feature in one sentence and walk away
+- The system produces a PR with tests, docs, and discoveries — without further input
+- Failed CI runs generate their own fix specs
+- Your harness improves without you manually editing CLAUDE.md
+
+This is a significant journey. Most teams are at Level 2. Getting to Level 4 with Joysmith's workflow is achievable — Level 5 requires building validation infrastructure (scenario tests, spec queues, CI feedback loops) that goes beyond what Joysmith scaffolds today. But the harness you're building now is the foundation.
+\`\`\`
+
+Tailor the "Next Steps" section based on the project's actual gaps — don't show generic advice.
 
 ## Edge Cases
 
@@ -462,6 +495,12 @@ If the user agrees, work through the upgrade plan one item at a time:
 - **Non-Joysmith skills already installed:** Acknowledge them. Do not replace — suggest additions.
 - **Monorepo:** Assess the root CLAUDE.md. Note if component-level CLAUDE.md files exist.
 - **Project has rules under non-standard headings:** Give credit. Suggest reformatting as Always/Ask First/Never but acknowledge the rules are there.
+- **Assessment file missing when upgrading:** Run the full assessment first, then offer to apply.
+- **Assessment is stale:** Warn and offer to re-assess before proceeding.
+- **All recommendations already applied:** Report "nothing to upgrade" and stop.
+- **User declines a recommendation:** Skip it, continue, include in "What Was Skipped."
+- **CLAUDE.md does not exist at all:** Create it with recommended sections, but ask the user first.
+- **Non-Joysmith content in CLAUDE.md:** Preserve exactly as-is. Only append or merge — never remove or reformat existing content.
 `,
 
   'new-feature.md': `---
@@ -623,7 +662,7 @@ Ready to start?
 
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
 
-You can also use \`/decompose\` to re-decompose a brief if the breakdown needs adjustment.
+You can also use \`/decompose\` to re-decompose a brief if the breakdown needs adjustment, or run \`/interview\` first for a lighter brainstorm before committing to the full workflow.
 `,
 
   'session-end.md': `---
@@ -881,4 +920,143 @@ What are we building and why? This is the "yap" distilled — the full picture i
 - Commit code that doesn't build
 - Remove or weaken existing tests
 - Hardcode secrets, API keys, or credentials`,
+  'examples/example-brief.md': `# Add User Notifications — Feature Brief
+
+> **Date:** 2026-03-15
+> **Project:** acme-web
+> **Status:** Specs Ready
+
+---
+
+## Vision
+
+Our users have no idea when things happen in their account. A teammate comments on their pull request, a deployment finishes, a billing threshold is hit — they find out by accident, minutes or hours later. This is the #1 complaint in our last user survey.
+
+We are building a notification system that delivers real-time and batched notifications across in-app, email, and (later) Slack channels. Users will have fine-grained control over what they receive and how. When this ships, no important event goes unnoticed, and no user gets buried in noise they didn't ask for.
+
+The system is designed to be extensible — new event types plug in without touching the notification infrastructure. We start with three event types (PR comments, deploy status, billing alerts) and prove the pattern works before expanding.
+
+## User Stories
+
+- As a developer, I want to see a notification badge in the app when someone comments on my PR so that I can respond quickly
+- As a team lead, I want to receive an email when a production deployment fails so that I can coordinate the response
+- As a billing admin, I want to get alerted when usage exceeds 80% of our plan limit so that I can upgrade before service is disrupted
+- As any user, I want to control which notifications I receive and through which channels so that I am not overwhelmed
+
+## Hard Constraints
+
+- MUST: All notifications go through a single event bus — no direct coupling between event producers and delivery channels
+- MUST: Email delivery uses the existing SendGrid integration (do not add a new email provider)
+- MUST: Respect user preferences before delivering — never send a notification the user has opted out of
+- MUST NOT: Store notification content in plaintext in the database — use the existing encryption-at-rest pattern
+- MUST NOT: Send more than 50 emails per user per day (batch if necessary)
+
+## Out of Scope
+
+- NOT: Slack/Discord integration (Phase 2)
+- NOT: Push notifications / mobile (Phase 2)
+- NOT: Notification templates with rich HTML — plain text and simple markdown only for now
+- NOT: Admin dashboard for monitoring notification delivery rates
+- NOT: Retroactive notifications for events that happened before the feature ships
+
+## Decomposition
+
+| # | Spec Name | Description | Dependencies | Est. Size |
+|---|-----------|-------------|--------------|-----------|
+| 1 | add-notification-preferences-api | Create REST endpoints for users to read and update their notification preferences | None | M |
+| 2 | add-event-bus-infrastructure | Set up the internal event bus that decouples event producers from notification delivery | None | M |
+| 3 | add-notification-delivery-service | Build the service that consumes events, checks preferences, and dispatches to channels (in-app, email) | Spec 1, Spec 2 | L |
+| 4 | add-in-app-notification-ui | Add notification bell, dropdown, and badge count to the app header | Spec 3 | M |
+| 5 | add-email-batching | Implement daily digest batching for email notifications that exceed the per-user threshold | Spec 3 | S |
+
+## Execution Strategy
+
+- [x] Agent teams (parallel teammates within phases, sequential between phases)
+
+\`\`\`
+Phase 1: Teammate A -> Spec 1 (preferences API), Teammate B -> Spec 2 (event bus)
+Phase 2: Teammate A -> Spec 3 (delivery service) — depends on Phase 1
+Phase 3: Teammate A -> Spec 4 (UI), Teammate B -> Spec 5 (batching) — both depend on Spec 3
+\`\`\`
+
+## Success Criteria
+
+- [ ] User updates notification preferences via API, and subsequent events respect those preferences
+- [ ] A PR comment event triggers an in-app notification visible in the UI within 2 seconds
+- [ ] A deploy failure event sends an email to subscribed users via SendGrid
+- [ ] When email threshold (50/day) is exceeded, remaining notifications are batched into a daily digest
+- [ ] No regressions in existing PR, deployment, or billing features
+
+## External Scenarios
+
+| Scenario | What It Tests | Pass Criteria |
+|----------|--------------|---------------|
+| opt-out-respected | User disables email for deploy events, deploy fails | No email sent, in-app notification still appears |
+| batch-threshold | Send 51 email-eligible events for one user in a day | 50 individual emails + 1 digest containing the overflow |
+| preference-persistence | User sets preferences, logs out, logs back in | Preferences are unchanged |
+`,
+
+  'examples/example-spec.md': `# Add Notification Preferences API — Atomic Spec
+
+> **Parent Brief:** \`docs/briefs/2026-03-15-add-user-notifications.md\`
+> **Status:** Ready
+> **Date:** 2026-03-15
+> **Estimated scope:** 1 session / 4 files / ~250 lines
+
+---
+
+## What
+
+Add REST API endpoints that let users read and update their notification preferences. Each user gets a preferences record with per-event-type, per-channel toggles (e.g., "PR comments: in-app=on, email=off"). Preferences default to all-on for new users and are stored encrypted alongside the user profile.
+
+## Why
+
+The notification delivery service (Spec 3) needs to check preferences before dispatching. Without this API, there is no way for users to control what they receive, and we cannot build the delivery pipeline.
+
+## Acceptance Criteria
+
+- [ ] \`GET /api/v1/notifications/preferences\` returns the current user's preferences as JSON
+- [ ] \`PATCH /api/v1/notifications/preferences\` updates one or more preference fields and returns the updated record
+- [ ] New users get default preferences (all channels enabled for all event types) on first read
+- [ ] Preferences are validated — unknown event types or channels return 400
+- [ ] Preferences are stored using the existing encryption-at-rest pattern (\`EncryptedJsonColumn\`)
+- [ ] Endpoint requires authentication (returns 401 for unauthenticated requests)
+- [ ] Build passes
+- [ ] Tests pass (unit + integration)
+
+## Constraints
+
+- MUST: Use the existing \`EncryptedJsonColumn\` utility for storage — do not roll a new encryption pattern
+- MUST: Follow the existing REST controller pattern in \`src/controllers/\`
+- MUST NOT: Expose other users' preferences (scope queries to authenticated user only)
+- SHOULD: Return the full preferences object on PATCH (not just the changed fields), so the frontend can replace state without merging
+
+## Affected Files
+
+| Action | File | What Changes |
+|--------|------|-------------|
+| Create | \`src/controllers/notification-preferences.controller.ts\` | New controller with GET and PATCH handlers |
+| Create | \`src/models/notification-preferences.model.ts\` | Sequelize model with EncryptedJsonColumn for preferences blob |
+| Create | \`src/migrations/20260315-add-notification-preferences.ts\` | Database migration to create notification_preferences table |
+| Create | \`tests/controllers/notification-preferences.test.ts\` | Unit and integration tests for both endpoints |
+| Modify | \`src/routes/index.ts\` | Register the new controller routes |
+
+## Approach
+
+Create a \`NotificationPreferences\` model backed by a single \`notification_preferences\` table with columns: \`id\`, \`user_id\` (unique FK), \`preferences\` (EncryptedJsonColumn), \`created_at\`, \`updated_at\`. The \`preferences\` column stores a JSON blob shaped like \`{ "pr_comment": { "in_app": true, "email": true }, "deploy_status": { ... } }\`.
+
+The GET endpoint does a find-or-create: if no record exists for the user, create one with defaults and return it. The PATCH endpoint deep-merges the request body into the existing preferences, validates the result against a known schema of event types and channels, and saves.
+
+**Rejected alternative:** Storing preferences as individual rows (one per event-type-channel pair). This would make queries more complex and would require N rows per user instead of 1. The JSON blob approach is simpler and matches how the frontend will consume the data.
+
+## Edge Cases
+
+| Scenario | Expected Behavior |
+|----------|------------------|
+| PATCH with empty body \`{}\` | Return 200 with unchanged preferences (no-op) |
+| PATCH with unknown event type \`{"foo": {"email": true}}\` | Return 400 with validation error listing valid event types |
+| GET for user with no existing record | Create default preferences, return 200 |
+| Concurrent PATCH requests | Last-write-wins (optimistic, no locking) — acceptable for user preferences |
+`,
+
 };

@@ -17,8 +17,9 @@ That's it. Joysmith auto-detects your tech stack and creates:
 - **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
 - **AGENTS.md** for Codex compatibility
 - **Claude Code skills** installed to `.claude/skills/`:
-  - `/joysmith` — Assess your harness, score 7 dimensions, get an upgrade plan
+  - `/joy` — Assess your harness, apply upgrades, see your path to Level 5
   - `/new-feature` — Interview → Feature Brief → Atomic Specs
+  - `/interview` — Lightweight brainstorm — yap about ideas, get a structured summary
   - `/decompose` — Break a brief into small, testable specs
   - `/session-end` — Capture discoveries, verify, commit
 - **docs/** structure — `briefs/`, `specs/`, `discoveries/`, `contracts/`, `decisions/`
@@ -35,8 +36,9 @@ Frameworks auto-detected: Next.js, FastAPI, Django, Flask, Actix, Axum, Express,
 After init, open Claude Code and use the installed skills:
 
 ```
-/joysmith              # Assess your harness — get a score and upgrade plan
-/new-feature           # Interview → brief → atomic specs → ready to execute
+/joy                   # Assess your harness, apply upgrades, see path to Level 5
+/interview             # Brainstorm freely — yap about ideas, get a structured summary
+/new-feature           # Interview → Feature Brief → Atomic Specs → ready to execute
 /decompose             # Break any feature into small, independent specs
 /session-end           # Wrap up — discoveries, verification, commit
 ```
@@ -64,6 +66,17 @@ Joysmith tracks what it installed vs. what you've customized. Unmodified files u
 **Codex** reads `AGENTS.md` — same boundaries and commands in a concise format optimized for smaller context windows.
 
 Both agents get the same guardrails and the same development workflow. Joysmith doesn't write your project code — it builds the *system* that makes AI-assisted development reliable.
+
+### Team Sharing
+
+Skills live in `.claude/skills/` which is **not** gitignored by default. Commit it so your whole team gets the workflow:
+
+```bash
+git add .claude/skills/ docs/
+git commit -m "add: Joysmith harness"
+```
+
+Joysmith also installs a session-start hook that checks for updates — if your templates are outdated, you'll see a one-line nudge when Claude Code starts.
 
 ## Why This Exists
 
