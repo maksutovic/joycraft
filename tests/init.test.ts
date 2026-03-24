@@ -55,35 +55,28 @@ describe('init', () => {
   });
 
   describe('directory with existing CLAUDE.md', () => {
-    it('improves CLAUDE.md without destroying content', async () => {
+    it('leaves existing CLAUDE.md untouched', async () => {
       const existingContent = '# My Project\n\nThis is my project description.\n\n## Custom Section\n\nMy custom content here.\n';
       writeFileSync(join(tmpDir, 'CLAUDE.md'), existingContent);
 
       await init(tmpDir, { force: false });
 
       const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
-      // Preserves existing content
-      expect(claude).toContain('# My Project');
-      expect(claude).toContain('This is my project description.');
-      expect(claude).toContain('## Custom Section');
-      expect(claude).toContain('My custom content here.');
-      // Adds missing sections
-      expect(claude).toContain('## Behavioral Boundaries');
-      expect(claude).toContain('## Development Workflow');
+      // File is completely unchanged
+      expect(claude).toBe(existingContent);
     });
 
-    it('does not duplicate sections that already exist', async () => {
-      const existingContent = '# My Project\n\n## Behavioral Boundaries\n\nMy custom boundaries.\n';
-      writeFileSync(join(tmpDir, 'CLAUDE.md'), existingContent);
+    it('still installs skills and templates alongside existing CLAUDE.md', async () => {
+      writeFileSync(join(tmpDir, 'CLAUDE.md'), '# Existing project\n');
 
       await init(tmpDir, { force: false });
 
-      const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
-      // Only one Behavioral Boundaries section
-      const matches = claude.match(/## Behavioral Boundaries/g);
-      expect(matches).toHaveLength(1);
-      // But still adds other missing sections
-      expect(claude).toContain('## Development Workflow');
+      // Skills installed
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joysmith', 'SKILL.md'))).toBe(true);
+      // Templates installed
+      expect(existsSync(join(tmpDir, 'docs', 'templates', 'ATOMIC_SPEC_TEMPLATE.md'))).toBe(true);
+      // CLAUDE.md untouched
+      expect(readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8')).toBe('# Existing project\n');
     });
   });
 

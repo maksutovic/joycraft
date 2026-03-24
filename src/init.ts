@@ -1,8 +1,8 @@
-import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs';
+import { mkdirSync, existsSync, writeFileSync } from 'node:fs';
 import { join, basename, resolve } from 'node:path';
 import { detectStack } from './detect.js';
-import { generateCLAUDEMd, improveCLAUDEMd } from './improve-claude-md.js';
-import { generateAgentsMd, improveAgentsMd } from './agents-md.js';
+import { generateCLAUDEMd } from './improve-claude-md.js';
+import { generateAgentsMd } from './agents-md.js';
 import { SKILLS, TEMPLATES } from './bundled-files.js';
 import { writeVersion, hashContent } from './version.js';
 
@@ -60,17 +60,10 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     writeFile(join(templatesDir, filename), content, opts.force, result);
   }
 
-  // 4. Handle CLAUDE.md
+  // 4. Handle CLAUDE.md — only create if missing, never modify existing (unless --force)
   const claudeMdPath = join(targetDir, 'CLAUDE.md');
   if (existsSync(claudeMdPath) && !opts.force) {
-    const existing = readFileSync(claudeMdPath, 'utf-8');
-    const improved = improveCLAUDEMd(existing, stack);
-    if (improved !== existing) {
-      writeFileSync(claudeMdPath, improved, 'utf-8');
-      result.modified.push(claudeMdPath);
-    } else {
-      result.skipped.push(claudeMdPath);
-    }
+    result.skipped.push(claudeMdPath);
   } else {
     const projectName = basename(targetDir);
     const content = generateCLAUDEMd(projectName, stack);
@@ -78,17 +71,10 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     result.created.push(claudeMdPath);
   }
 
-  // 5. Handle AGENTS.md
+  // 5. Handle AGENTS.md — only create if missing, never modify existing (unless --force)
   const agentsMdPath = join(targetDir, 'AGENTS.md');
   if (existsSync(agentsMdPath) && !opts.force) {
-    const existing = readFileSync(agentsMdPath, 'utf-8');
-    const improved = improveAgentsMd(existing, stack);
-    if (improved !== existing) {
-      writeFileSync(agentsMdPath, improved, 'utf-8');
-      result.modified.push(agentsMdPath);
-    } else {
-      result.skipped.push(agentsMdPath);
-    }
+    result.skipped.push(agentsMdPath);
   } else {
     const projectName = basename(targetDir);
     const content = generateAgentsMd(projectName, stack);
@@ -142,8 +128,14 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
     }
   }
 
+  const hasExistingClaude = result.skipped.some(f => f.endsWith('CLAUDE.md'));
+
   console.log('\n  Next steps:');
-  console.log('    1. Review and customize CLAUDE.md for your project');
-  console.log('    2. Run Claude Code in this project and try /joysmith to assess your harness');
+  if (hasExistingClaude) {
+    console.log('    1. Run Claude Code and try /joysmith to assess and improve your existing CLAUDE.md');
+  } else {
+    console.log('    1. Review and customize the generated CLAUDE.md for your project');
+  }
+  console.log('    2. Try /new-feature to start building with the spec-driven workflow');
   console.log('');
 }
