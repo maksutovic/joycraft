@@ -1,0 +1,13 @@
+{
+  "name": "test-pnpm-project",
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^3.0.0",
+    "tsup": "^8.0.0"
+  }
+}

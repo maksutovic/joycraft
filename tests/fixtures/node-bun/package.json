@@ -1,0 +1,7 @@
+{
+  "name": "test-bun-project",
+  "scripts": {
+    "build": "bun build ./src/index.ts",
+    "test": "bun test"
+  }
+}

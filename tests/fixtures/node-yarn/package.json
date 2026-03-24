@@ -1,0 +1,10 @@
+{
+  "name": "test-yarn-project",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0"
+  }
+}
