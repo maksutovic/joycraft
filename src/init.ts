@@ -2,7 +2,9 @@ import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs';
 import { join, basename, resolve } from 'node:path';
 import { detectStack } from './detect.js';
 import { generateCLAUDEMd, improveCLAUDEMd } from './improve-claude-md.js';
+import { generateAgentsMd, improveAgentsMd } from './agents-md.js';
 import { SKILLS, TEMPLATES } from './bundled-files.js';
+import { writeVersion, hashContent } from './version.js';
 
 export interface InitOptions {
   force: boolean;
@@ -74,7 +76,35 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     result.created.push(claudeMdPath);
   }
 
-  // 5. Print summary
+  // 5. Handle AGENTS.md
+  const agentsMdPath = join(targetDir, 'AGENTS.md');
+  if (existsSync(agentsMdPath) && !opts.force) {
+    const existing = readFileSync(agentsMdPath, 'utf-8');
+    const improved = improveAgentsMd(existing, stack);
+    if (improved !== existing) {
+      writeFileSync(agentsMdPath, improved, 'utf-8');
+      result.modified.push(agentsMdPath);
+    } else {
+      result.skipped.push(agentsMdPath);
+    }
+  } else {
+    const projectName = basename(targetDir);
+    const content = generateAgentsMd(projectName, stack);
+    writeFileSync(agentsMdPath, content, 'utf-8');
+    result.created.push(agentsMdPath);
+  }
+
+  // 6. Write .joysmith-version with hashes of all managed files
+  const fileHashes: Record<string, string> = {};
+  for (const [filename, content] of Object.entries(SKILLS)) {
+    fileHashes[join('.claude', 'skills', filename)] = hashContent(content);
+  }
+  for (const [filename, content] of Object.entries(TEMPLATES)) {
+    fileHashes[join('docs', 'templates', filename)] = hashContent(content);
+  }
+  writeVersion(targetDir, '0.1.0', fileHashes);
+
+  // 7. Print summary
   printSummary(result, stack);
 }
 
