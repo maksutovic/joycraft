@@ -59,7 +59,7 @@ describe('upgrade', () => {
 
     // Simulate that the installed version had different content by changing the recorded hash
     const versionInfo = readVersion(tmpDir)!;
-    const skillPath = join('.claude', 'skills', 'joysmith.md');
+    const skillPath = join('.claude', 'skills', 'joysmith', 'SKILL.md');
     // Write a different version of the file that matches the old hash (unmodified by user)
     const oldContent = 'old bundled content';
     writeFileSync(join(tmpDir, skillPath), oldContent, 'utf-8');
@@ -85,7 +85,7 @@ describe('upgrade', () => {
     await init(tmpDir, { force: false });
 
     // User customizes a skill file
-    const skillPath = join(tmpDir, '.claude', 'skills', 'joysmith.md');
+    const skillPath = join(tmpDir, '.claude', 'skills', 'joysmith', 'SKILL.md');
     writeFileSync(skillPath, 'my custom joysmith skill', 'utf-8');
 
     // Also change the bundled content by writing old hash (simulating a new version)
@@ -145,7 +145,7 @@ describe('upgrade', () => {
 
     // Simulate old version
     const versionInfo = readVersion(tmpDir)!;
-    const skillRelPath = join('.claude', 'skills', 'joysmith.md');
+    const skillRelPath = join('.claude', 'skills', 'joysmith', 'SKILL.md');
     const oldContent = 'old content';
     writeFileSync(join(tmpDir, skillRelPath), oldContent, 'utf-8');
     versionInfo.files[skillRelPath] = hashContent(oldContent);

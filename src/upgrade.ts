@@ -18,7 +18,8 @@ interface FileChange {
 function getManagedFiles(): Record<string, string> {
   const files: Record<string, string> = {};
   for (const [name, content] of Object.entries(SKILLS)) {
-    files[join('.claude', 'skills', name)] = content;
+    const skillName = name.replace(/\.md$/, '');
+    files[join('.claude', 'skills', skillName, 'SKILL.md')] = content;
   }
   for (const [name, content] of Object.entries(TEMPLATES)) {
     files[join('docs', 'templates', name)] = content;
@@ -45,7 +46,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
 
   // Check if project was initialized
   const versionInfo = readVersion(targetDir);
-  const hasSkill = existsSync(join(targetDir, '.claude', 'skills', 'joysmith.md'));
+  const hasSkill = existsSync(join(targetDir, '.claude', 'skills', 'joysmith', 'SKILL.md'));
 
   if (!versionInfo && !hasSkill) {
     console.log('This project has not been initialized with Joysmith.');

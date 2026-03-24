@@ -44,11 +44,13 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     ensureDir(join(targetDir, 'docs', sub));
   }
 
-  // 2. Copy skill files to .claude/skills/
+  // 2. Copy skill files to .claude/skills/<name>/SKILL.md
   const skillsDir = join(targetDir, '.claude', 'skills');
-  ensureDir(skillsDir);
   for (const [filename, content] of Object.entries(SKILLS)) {
-    writeFile(join(skillsDir, filename), content, opts.force, result);
+    const skillName = filename.replace(/\.md$/, '');
+    const skillDir = join(skillsDir, skillName);
+    ensureDir(skillDir);
+    writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
   }
 
   // 3. Copy template files to docs/templates/
@@ -97,7 +99,8 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   // 6. Write .joysmith-version with hashes of all managed files
   const fileHashes: Record<string, string> = {};
   for (const [filename, content] of Object.entries(SKILLS)) {
-    fileHashes[join('.claude', 'skills', filename)] = hashContent(content);
+    const skillName = filename.replace(/\.md$/, '');
+    fileHashes[join('.claude', 'skills', skillName, 'SKILL.md')] = hashContent(content);
   }
   for (const [filename, content] of Object.entries(TEMPLATES)) {
     fileHashes[join('docs', 'templates', filename)] = hashContent(content);
