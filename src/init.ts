@@ -1,5 +1,5 @@
 import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs';
-import { join, basename, resolve } from 'node:path';
+import { join, basename, resolve, dirname } from 'node:path';
 import { detectStack } from './detect.js';
 import { generateCLAUDEMd } from './improve-claude-md.js';
 import { generateAgentsMd } from './agents-md.js';
@@ -58,6 +58,7 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   const templatesDir = join(targetDir, 'docs', 'templates');
   ensureDir(templatesDir);
   for (const [filename, content] of Object.entries(TEMPLATES)) {
+    ensureDir(dirname(join(templatesDir, filename)));
     writeFile(join(templatesDir, filename), content, opts.force, result);
   }
 
@@ -94,7 +95,54 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   }
   writeVersion(targetDir, '0.1.0', fileHashes);
 
-  // 7. Check .gitignore for .claude/ exclusion
+  // 7. Install version check hook
+  const hooksDir = join(targetDir, '.claude', 'hooks');
+  ensureDir(hooksDir);
+  const hookScript = `// Joysmith version check — runs on Claude Code session start
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+try {
+  const data = JSON.parse(readFileSync(join(process.cwd(), '.joysmith-version'), 'utf-8'));
+  const res = await fetch('https://registry.npmjs.org/joysmith/latest', { signal: AbortSignal.timeout(3000) });
+  if (res.ok) {
+    const latest = (await res.json()).version;
+    if (data.version !== latest) console.log('Joysmith ' + latest + ' available (you have ' + data.version + '). Run: npx joysmith upgrade');
+  }
+} catch {}
+`;
+  writeFile(join(hooksDir, 'joysmith-version-check.mjs'), hookScript, opts.force, result);
+
+  // Update .claude/settings.json with SessionStart hook
+  const settingsPath = join(targetDir, '.claude', 'settings.json');
+  let settings: Record<string, unknown> = {};
+  if (existsSync(settingsPath)) {
+    try {
+      settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
+    } catch {
+      // If settings.json is malformed, start fresh
+    }
+  }
+  if (!settings.hooks) settings.hooks = {};
+  const hooksConfig = settings.hooks as Record<string, unknown>;
+  if (!hooksConfig.SessionStart) hooksConfig.SessionStart = [];
+  const sessionStartHooks = hooksConfig.SessionStart as Array<Record<string, unknown>>;
+  const hasJoysmithHook = sessionStartHooks.some(h => {
+    const innerHooks = h.hooks as Array<Record<string, unknown>> | undefined;
+    return innerHooks?.some(ih => typeof ih.command === 'string' && ih.command.includes('joysmith'));
+  });
+  if (!hasJoysmithHook) {
+    sessionStartHooks.push({
+      matcher: '',
+      hooks: [{
+        type: 'command',
+        command: 'node .claude/hooks/joysmith-version-check.mjs',
+      }],
+    });
+    writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
+    result.created.push(settingsPath);
+  }
+
+  // 8. Check .gitignore for .claude/ exclusion
   const gitignorePath = join(targetDir, '.gitignore');
   if (existsSync(gitignorePath)) {
     const gitignore = readFileSync(gitignorePath, 'utf-8');
@@ -106,7 +154,7 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     }
   }
 
-  // 8. Print summary
+  // 9. Print summary
   printSummary(result, stack);
 }
 
@@ -152,7 +200,7 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
 
   console.log('\n  Next steps:');
   if (hasExistingClaude) {
-    console.log('    1. Run Claude Code and try /joysmith to assess and improve your existing CLAUDE.md');
+    console.log('    1. Run Claude Code and try /joy to assess and improve your existing CLAUDE.md');
   } else {
     console.log('    1. Review and customize the generated CLAUDE.md for your project');
   }

@@ -1,11 +1,11 @@
 ---
-name: joysmith
-description: Assess your project's AI development harness — detect state, score 7 dimensions, recommend upgrades, and offer to apply fixes
+name: joy
+description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show path to Level 5
 ---
 
-# Joysmith — Project Harness Assessment
+# Joy — Project Harness Assessment & Upgrade
 
-You are evaluating this project's AI development harness. Follow these steps in order.
+You are evaluating and upgrading this project's AI development harness. Follow these steps in order.
 
 ## Step 1: Detect Harness State
 
@@ -175,6 +175,64 @@ If the user agrees, work through the upgrade plan one item at a time:
 - Installing missing templates is safe if the directory is empty
 - After applying changes, briefly re-score the affected dimensions to show improvement
 
+### Reading a Previous Assessment
+
+If `docs/joysmith-assessment.md` already exists, read it first and check the date. If the assessment is more than 7 days old, or if there have been significant commits since, warn:
+
+> This assessment may be stale — it was written on [date] and there have been changes since. Would you like to re-assess, or proceed with the existing recommendations?
+
+If proceeding with an existing assessment, parse its recommendations and check what has already been applied. Skip anything that already exists. If ALL recommendations have been applied, report "nothing to upgrade" and offer to re-assess from scratch.
+
+### Applying Upgrades (Priority Order)
+
+When applying fixes, work in this order — high-impact, low-effort first:
+
+**Priority 1: Create Missing Directories**
+Create any missing directories (`docs/specs/`, `docs/briefs/`, `docs/discoveries/`, `docs/templates/`, `.claude/skills/`). No confirmation needed.
+
+**Priority 2: Add Missing CLAUDE.md Sections**
+For each missing section: draft content from the codebase (not placeholders), show the user, ask for confirmation. Only append — never overwrite existing content.
+
+**Priority 3: Install Missing Skills**
+Copy missing skill files to `.claude/skills/`. Available skills:
+- `joy.md` — Assessment, scoring, and upgrade application (this skill)
+- `new-feature.md` — Structured feature development with brief and specs
+- `interview.md` — Lightweight brainstorming and idea exploration
+- `decompose.md` — Break large tasks into atomic specs
+- `session-end.md` — End-of-session knowledge capture
+
+**Priority 4: Copy Missing Templates**
+Copy missing templates to `docs/templates/`.
+
+**Priority 5: Suggest Testing & Knowledge Capture Improvements**
+Do NOT auto-apply. Present specific suggestions and ask.
+
+### After Applying Upgrades
+
+Re-evaluate each dimension and display a before/after comparison:
+
+```
+## Upgrade Results
+
+| Dimension              | Before | After | Change |
+|------------------------|--------|-------|--------|
+| Spec Quality           | X/5    | X/5   | +X     |
+| ...                    | ...    | ...   | ...    |
+
+**Previous Level:** X — **New Level:** X
+
+### What Changed
+- [list each change applied]
+
+### What Was Skipped
+- [list declined recommendations]
+
+### Remaining Gaps
+- [anything still below 3.5]
+```
+
+Update `docs/joysmith-assessment.md` with the new scores and today's date.
+
 ## Edge Cases
 
 - **Not a git repo:** Note this. Joysmith works best in a git repo.
@@ -182,3 +240,9 @@ If the user agrees, work through the upgrade plan one item at a time:
 - **Non-Joysmith skills already installed:** Acknowledge them. Do not replace — suggest additions.
 - **Monorepo:** Assess the root CLAUDE.md. Note if component-level CLAUDE.md files exist.
 - **Project has rules under non-standard headings:** Give credit. Suggest reformatting as Always/Ask First/Never but acknowledge the rules are there.
+- **Assessment file missing when upgrading:** Run the full assessment first, then offer to apply.
+- **Assessment is stale:** Warn and offer to re-assess before proceeding.
+- **All recommendations already applied:** Report "nothing to upgrade" and stop.
+- **User declines a recommendation:** Skip it, continue, include in "What Was Skipped."
+- **CLAUDE.md does not exist at all:** Create it with recommended sections, but ask the user first.
+- **Non-Joysmith content in CLAUDE.md:** Preserve exactly as-is. Only append or merge — never remove or reformat existing content.

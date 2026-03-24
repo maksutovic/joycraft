@@ -46,7 +46,8 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
 
   // Check if project was initialized
   const versionInfo = readVersion(targetDir);
-  const hasSkill = existsSync(join(targetDir, '.claude', 'skills', 'joysmith', 'SKILL.md'));
+  const hasSkill = existsSync(join(targetDir, '.claude', 'skills', 'joy', 'SKILL.md'))
+    || existsSync(join(targetDir, '.claude', 'skills', 'joysmith', 'SKILL.md'));
 
   if (!versionInfo && !hasSkill) {
     console.log('This project has not been initialized with Joysmith.');
