@@ -59,6 +59,15 @@ npx joycraft upgrade
 
 Joycraft tracks what it installed vs. what you've customized. Unmodified files update automatically. Customized files show a diff and ask before overwriting. Use `--yes` for CI.
 
+## Git Autonomy
+
+When `/tune` runs for the first time, it asks one question: **how autonomous should git be?**
+
+- **Cautious** (default) — commits freely, asks before pushing or opening PRs. Good for learning the workflow.
+- **Autonomous** — commits, pushes to feature branches, and opens PRs without asking. Good for spec-driven development where you want full send.
+
+Either way, Joycraft generates explicit git boundaries in your CLAUDE.md: commit message format (`verb: message`), specific file staging (no `git add -A`), no secrets in commits, no force-pushing.
+
 ## How It Works with AI Agents
 
 **Claude Code** reads `CLAUDE.md` automatically and discovers skills in `.claude/skills/`. The behavioral boundaries guide every action. The skills provide structured workflows accessible via `/slash-commands`.
