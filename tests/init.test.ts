@@ -174,6 +174,24 @@ describe('init', () => {
     });
   });
 
+  describe('gitignore warning', () => {
+    it('warns when .gitignore blocks .claude/', async () => {
+      writeFileSync(join(tmpDir, '.gitignore'), '.claude/\nnode_modules/\n');
+
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => logs.push(args.join(' '));
+      try {
+        await init(tmpDir, { force: false });
+      } finally {
+        console.log = origLog;
+      }
+
+      expect(logs.some(l => l.includes('.gitignore'))).toBe(true);
+      expect(logs.some(l => l.includes('!.claude/skills/'))).toBe(true);
+    });
+  });
+
   describe('partial harness', () => {
     it('handles some dirs existing already', async () => {
       // Pre-create some dirs

@@ -1,4 +1,4 @@
-import { mkdirSync, existsSync, writeFileSync } from 'node:fs';
+import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs';
 import { join, basename, resolve } from 'node:path';
 import { detectStack } from './detect.js';
 import { generateCLAUDEMd } from './improve-claude-md.js';
@@ -14,6 +14,7 @@ interface InitResult {
   created: string[];
   skipped: string[];
   modified: string[];
+  warnings: string[];
 }
 
 function ensureDir(dir: string): void {
@@ -33,7 +34,7 @@ function writeFile(path: string, content: string, force: boolean, result: InitRe
 
 export async function init(dir: string, opts: InitOptions): Promise<void> {
   const targetDir = resolve(dir);
-  const result: InitResult = { created: [], skipped: [], modified: [] };
+  const result: InitResult = { created: [], skipped: [], modified: [], warnings: [] };
 
   // Detect stack
   const stack = await detectStack(targetDir);
@@ -93,7 +94,19 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   }
   writeVersion(targetDir, '0.1.0', fileHashes);
 
-  // 7. Print summary
+  // 7. Check .gitignore for .claude/ exclusion
+  const gitignorePath = join(targetDir, '.gitignore');
+  if (existsSync(gitignorePath)) {
+    const gitignore = readFileSync(gitignorePath, 'utf-8');
+    if (/^\.claude\/?$/m.test(gitignore) || /^\.claude\/\*$/m.test(gitignore)) {
+      result.warnings.push(
+        '.claude/ is in your .gitignore — teammates won\'t get Joysmith skills.\n' +
+        '    Add this line to .gitignore to fix: !.claude/skills/'
+      );
+    }
+  }
+
+  // 8. Print summary
   printSummary(result, stack);
 }
 
@@ -128,6 +141,13 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
     }
   }
 
+  if (result.warnings.length > 0) {
+    console.log('\n  Warnings:');
+    for (const w of result.warnings) {
+      console.log(`    ⚠ ${w}`);
+    }
+  }
+
   const hasExistingClaude = result.skipped.some(f => f.endsWith('CLAUDE.md'));
 
   console.log('\n  Next steps:');
@@ -137,5 +157,6 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
     console.log('    1. Review and customize the generated CLAUDE.md for your project');
   }
   console.log('    2. Try /new-feature to start building with the spec-driven workflow');
+  console.log('    3. Commit .claude/skills/ and docs/ so your team gets the same workflow');
   console.log('');
 }
