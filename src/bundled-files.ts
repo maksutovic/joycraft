@@ -233,6 +233,372 @@ These skills are installed and can help with upgrades:
 \`\`\`
 
 Write this assessment to \`docs/joysmith-assessment.md\`. Create the \`docs/\` directory if it doesn't exist.`,
+
+  'new-feature.md': `---
+name: new-feature
+description: Guided feature development — interview the user, produce a Feature Brief, then decompose into atomic specs
+---
+
+# New Feature Workflow
+
+You are starting a new feature. Follow this process in order. Do not skip steps.
+
+## Phase 1: Interview
+
+Interview the user about what they want to build. Let them talk — your job is to listen, then sharpen.
+
+**Why:** A thorough interview prevents wasted implementation time. Most failed features fail because the problem wasn't understood, not because the code was wrong.
+
+**Ask about:**
+- What problem does this solve? Who is affected?
+- What does "done" look like? How will a user know this works?
+- What are the hard constraints? (business rules, tech limitations, deadlines)
+- What is explicitly NOT in scope? (push hard on this — aggressive scoping is key)
+- Are there edge cases or error conditions we need to handle?
+- What existing code/patterns should this follow?
+
+**Interview technique:**
+- Let the user "yap" — don't interrupt their flow of ideas
+- After they finish, play back your understanding: "So if I'm hearing you right..."
+- Ask clarifying questions that force specificity: "When you say 'handle errors,' what should the user see?"
+- Push toward testable statements: "How would we verify that works?"
+
+Keep asking until you can fill out a Feature Brief. When ready, say:
+"I have enough context. Let me write the Feature Brief for your review."
+
+## Phase 2: Feature Brief
+
+Write a Feature Brief to \`docs/briefs/YYYY-MM-DD-feature-name.md\`. Create the \`docs/briefs/\` directory if it doesn't exist.
+
+**Why:** The brief is the single source of truth for what we're building. It prevents scope creep and gives every spec a shared reference point.
+
+Use this structure:
+
+\\\`\\\`\\\`markdown
+# [Feature Name] — Feature Brief
+
+> **Date:** YYYY-MM-DD
+> **Project:** [project name]
+> **Status:** Interview | Decomposing | Specs Ready | In Progress | Complete
+
+---
+
+## Vision
+What are we building and why? The full picture in 2-4 paragraphs.
+
+## User Stories
+- As a [role], I want [capability] so that [benefit]
+
+## Hard Constraints
+- MUST: [constraint that every spec must respect]
+- MUST NOT: [prohibition that every spec must respect]
+
+## Out of Scope
+- NOT: [tempting but deferred]
+
+## Decomposition
+| # | Spec Name | Description | Dependencies | Est. Size |
+|---|-----------|-------------|--------------|-----------|
+| 1 | [verb-object] | [one sentence] | None | [S/M/L] |
+
+## Execution Strategy
+- [ ] Sequential (specs have chain dependencies)
+- [ ] Parallel worktrees (specs are independent)
+- [ ] Mixed
+
+## Success Criteria
+- [ ] [End-to-end behavior 1]
+- [ ] [No regressions in existing features]
+\\\`\\\`\\\`
+
+If \`docs/templates/FEATURE_BRIEF_TEMPLATE.md\` exists, reference it for the full template with additional guidance.
+
+Present the brief to the user. Focus review on:
+- "Does the decomposition match how you think about this?"
+- "Is anything in scope that shouldn't be?"
+- "Are the specs small enough? Can each be described in one sentence?"
+
+Iterate until approved.
+
+## Phase 3: Generate Atomic Specs
+
+For each row in the decomposition table, create a self-contained spec file at \`docs/specs/YYYY-MM-DD-spec-name.md\`. Create the \`docs/specs/\` directory if it doesn't exist.
+
+**Why:** Each spec must be understandable WITHOUT reading the Feature Brief. This prevents the "Curse of Instructions" — no spec should require holding the entire feature in context. Copy relevant context into each spec.
+
+Use this structure for each spec:
+
+\\\`\\\`\\\`markdown
+# [Verb + Object] — Atomic Spec
+
+> **Parent Brief:** \\\`docs/briefs/YYYY-MM-DD-feature-name.md\\\`
+> **Status:** Ready
+> **Date:** YYYY-MM-DD
+> **Estimated scope:** [1 session / N files / ~N lines]
+
+---
+
+## What
+One paragraph — what changes when this spec is done?
+
+## Why
+One sentence — what breaks or is missing without this?
+
+## Acceptance Criteria
+- [ ] [Observable behavior]
+- [ ] Build passes
+- [ ] Tests pass
+
+## Constraints
+- MUST: [hard requirement]
+- MUST NOT: [hard prohibition]
+
+## Affected Files
+| Action | File | What Changes |
+|--------|------|-------------|
+
+## Approach
+Strategy, data flow, key decisions. Name one rejected alternative.
+
+## Edge Cases
+| Scenario | Expected Behavior |
+|----------|------------------|
+\\\`\\\`\\\`
+
+If \`docs/templates/ATOMIC_SPEC_TEMPLATE.md\` exists, reference it for the full template with additional guidance.
+
+## Phase 4: Hand Off for Execution
+
+Tell the user:
+\\\`\\\`\\\`
+Feature Brief and [N] atomic specs are ready.
+
+Specs:
+1. [spec-name] — [one sentence] [S/M/L]
+2. [spec-name] — [one sentence] [S/M/L]
+...
+
+Recommended execution:
+- [Parallel/Sequential/Mixed strategy]
+- Estimated: [N] sessions total
+
+To execute: Start a fresh session per spec. Each session should:
+1. Read the spec
+2. Implement
+3. Run /session-end to capture discoveries
+4. Commit and PR
+
+Ready to start?
+\\\`\\\`\\\`
+
+**Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
+
+You can also use \`/decompose\` to re-decompose a brief if the breakdown needs adjustment.`,
+
+  'decompose.md': `---
+name: decompose
+description: Break a feature brief into atomic specs — small, testable, independently executable units
+---
+
+# Decompose Feature into Atomic Specs
+
+You have a Feature Brief (or the user has described a feature). Your job is to decompose it into atomic specs that can be executed independently — one spec per session.
+
+## Step 1: Verify the Brief Exists
+
+Look for a Feature Brief in \`docs/briefs/\`. If one doesn't exist yet, tell the user:
+
+> No feature brief found. Run \`/new-feature\` first to interview and create one, or describe the feature now and I'll work from your description.
+
+If the user describes the feature inline, work from that description directly. You don't need a formal brief to decompose — but recommend creating one for complex features.
+
+## Step 2: Identify Natural Boundaries
+
+**Why:** Good boundaries make specs independently testable and committable. Bad boundaries create specs that can't be verified without other specs also being done.
+
+Read the brief (or description) and identify natural split points:
+
+- **Data layer changes** (schemas, types, migrations) — always a separate spec
+- **Pure functions / business logic** — separate from I/O
+- **UI components** — separate from data fetching
+- **API endpoints / route handlers** — separate from business logic
+- **Test infrastructure** (mocks, fixtures, helpers) — can be its own spec if substantial
+- **Configuration / environment** — separate from code changes
+
+Ask yourself: "Can this piece be committed and tested without the other pieces existing?" If yes, it's a good boundary.
+
+## Step 3: Build the Decomposition Table
+
+For each atomic spec, define:
+
+| # | Spec Name | Description | Dependencies | Size |
+|---|-----------|-------------|--------------|------|
+
+**Rules:**
+- Each spec name is \`verb-object\` format (e.g., \`add-terminal-detection\`, \`extract-prompt-module\`)
+- Each description is ONE sentence — if you need two, the spec is too big
+- Dependencies reference other spec numbers — keep the dependency graph shallow
+- More than 2 dependencies on a single spec = it's too big, split further
+- Aim for 3-7 specs per feature. Fewer than 3 = probably not decomposed enough. More than 10 = the feature brief is too big
+
+## Step 4: Present and Iterate
+
+Show the decomposition table to the user. Ask:
+1. "Does this breakdown match how you think about this feature?"
+2. "Are there any specs that feel too big or too small?"
+3. "Should any of these run in parallel (separate worktrees)?"
+
+Iterate until the user approves.
+
+## Step 5: Generate Atomic Specs
+
+For each approved row, create \`docs/specs/YYYY-MM-DD-spec-name.md\`. Create the \`docs/specs/\` directory if it doesn't exist.
+
+**Why:** Each spec must be self-contained — a fresh Claude session should be able to execute it without reading the Feature Brief. Copy relevant constraints and context into each spec.
+
+Use this structure:
+
+\\\`\\\`\\\`markdown
+# [Verb + Object] — Atomic Spec
+
+> **Parent Brief:** \\\`docs/briefs/YYYY-MM-DD-feature-name.md\\\` (or "standalone")
+> **Status:** Ready
+> **Date:** YYYY-MM-DD
+> **Estimated scope:** [1 session / N files / ~N lines]
+
+---
+
+## What
+One paragraph — what changes when this spec is done?
+
+## Why
+One sentence — what breaks or is missing without this?
+
+## Acceptance Criteria
+- [ ] [Observable behavior]
+- [ ] Build passes
+- [ ] Tests pass
+
+## Constraints
+- MUST: [hard requirement]
+- MUST NOT: [hard prohibition]
+
+## Affected Files
+| Action | File | What Changes |
+|--------|------|-------------|
+
+## Approach
+Strategy, data flow, key decisions. Name one rejected alternative.
+
+## Edge Cases
+| Scenario | Expected Behavior |
+|----------|------------------|
+\\\`\\\`\\\`
+
+If \`docs/templates/ATOMIC_SPEC_TEMPLATE.md\` exists, reference it for the full template with additional guidance.
+
+Fill in all sections — each spec must be self-contained (no "see the brief for context"). Copy relevant constraints from the Feature Brief into each spec. Write acceptance criteria specific to THIS spec, not the whole feature.
+
+## Step 6: Recommend Execution Strategy
+
+Based on the dependency graph:
+- **Independent specs** — "These can run in parallel worktrees"
+- **Sequential specs** — "Execute these in order: 1 -> 2 -> 4"
+- **Mixed** — "Start specs 1 and 3 in parallel. After 1 completes, start 2."
+
+Update the Feature Brief's Execution Strategy section with the plan (if a brief exists).
+
+## Step 7: Hand Off
+
+Tell the user:
+\\\`\\\`\\\`
+Decomposition complete:
+- [N] atomic specs created in docs/specs/
+- [N] can run in parallel, [N] are sequential
+- Estimated total: [N] sessions
+
+To execute:
+- Sequential: Open a session, point Claude at each spec in order
+- Parallel: Use worktrees — one spec per worktree, merge when done
+- Each session should end with /session-end to capture discoveries
+
+Ready to start execution?
+\\\`\\\`\\\``,
+
+  'session-end.md': `---
+name: session-end
+description: Wrap up a session — capture discoveries, verify, prepare for PR or next session
+---
+
+# Session Wrap-Up
+
+Before ending this session, complete these steps in order.
+
+## 1. Capture Discoveries
+
+**Why:** Discoveries are the surprises — things that weren't in the spec or that contradicted expectations. They prevent future sessions from hitting the same walls.
+
+Check: did anything surprising happen during this session? If yes, create or update a discovery file at \`docs/discoveries/YYYY-MM-DD-topic.md\`. Create the \`docs/discoveries/\` directory if it doesn't exist.
+
+Only capture what's NOT obvious from the code or git diff:
+- "We thought X but found Y" — assumptions that were wrong
+- "This API/library behaves differently than documented" — external gotchas
+- "This edge case needs handling in a future spec" — deferred work with context
+- "The approach in the spec didn't work because..." — spec-vs-reality gaps
+- Key decisions made during implementation that aren't in the spec
+
+**Do NOT capture:**
+- Files changed (that's the diff)
+- What you set out to do (that's the spec)
+- Step-by-step narrative of the session (nobody re-reads these)
+
+Use this format:
+
+\\\`\\\`\\\`markdown
+# Discoveries — [topic]
+
+**Date:** YYYY-MM-DD
+**Spec:** [link to spec if applicable]
+
+## [Discovery title]
+**Expected:** [what we thought would happen]
+**Actual:** [what actually happened]
+**Impact:** [what this means for future work]
+\\\`\\\`\\\`
+
+If nothing surprising happened, skip the discovery file entirely. No discovery is a good sign — the spec was accurate.
+
+## 2. Run Validation
+
+Run the project's validation commands. Check CLAUDE.md for project-specific commands. Common checks:
+
+- Type-check (e.g., \`tsc --noEmit\`, \`mypy\`, \`cargo check\`)
+- Tests (e.g., \`npm test\`, \`pytest\`, \`cargo test\`)
+- Lint (e.g., \`eslint\`, \`ruff\`, \`clippy\`)
+
+Fix any failures before proceeding.
+
+## 3. Update Spec Status
+
+If working from an atomic spec in \`docs/specs/\`:
+- All acceptance criteria met — update status to \`Complete\`
+- Partially done — update status to \`In Progress\`, note what's left
+
+If working from a Feature Brief in \`docs/briefs/\`, check off completed specs in the decomposition table.
+
+## 4. Commit
+
+Commit all changes including the discovery file (if created) and spec status updates. The commit message should reference the spec if applicable.
+
+## 5. Report
+
+\\\`\\\`\\\`
+Session complete.
+- Spec: [spec name] — [Complete / In Progress]
+- Build: [passing / failing]
+- Discoveries: [N items / none]
+- Next: [what the next session should tackle, or "ready for PR"]
+\\\`\\\`\\\``,
 };
 
 export const TEMPLATES: Record<string, string> = {
