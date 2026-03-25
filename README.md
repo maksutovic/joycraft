@@ -2,9 +2,46 @@
 
 > The craft of AI development — with joy, not darkness.
 
-**Joycraft** is a CLI tool and Claude Code plugin that takes any project from Level 1 to Level 4 on [Dan Shapiro's 5 Levels of Vibe Coding](https://www.danshapiro.com/blog/2026/01/the-five-levels-from-spicy-autocomplete-to-the-software-factory/). One command gives you behavioral boundaries, atomic spec workflows, skill-driven development, and structured knowledge capture.
+## What is Joycraft?
+
+Joycraft is a CLI tool and [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin that upgrades your AI development workflow. It installs skills, behavioral boundaries, templates, and documentation structure into any project — taking you from unstructured prompting to autonomous spec-driven development.
+
+If you've been using Claude Code (or any AI coding tool) and your workflow looks like this:
+
+> Prompt → wait → read output → "no, not that" → re-prompt → fix hallucination → re-prompt → manually fix → "ok close enough" → commit
+
+...then Joycraft is for you.
+
+This project started as a personal exploration by [@maksutovic](https://github.com/maksutovic). I was working across multiple client projects, spending more time wrestling with prompts than building software. I knew Claude Code was capable of extraordinary work, but my *process* was holding it back. I was vibe coding — and vibe coding doesn't scale.
+
+The spark was [Nate B Jones' video on the 5 Levels of Vibe Coding](https://www.youtube.com/watch?v=bDcgHzCBgmQ). It mapped out a progression I hadn't seen articulated before — from "spicy autocomplete" to fully autonomous development — and lit my brain up to the potential of what Claude Code could do with the right harness around it. Joycraft is the result of that exploration: a tool that encodes the patterns, boundaries, and workflows that make AI-assisted development actually deterministic.
+
+### The core idea
+
+Joycraft is simple. It's a set of **skills** (slash commands for Claude Code) and **instructions** (CLAUDE.md boundaries) that guide you and your agent through a structured development process:
+
+- **Levels 1-4:** Skills like `/joycraft-tune`, `/joycraft-new-feature`, and `/joycraft-interview` replace unstructured prompting with spec-driven development. You interview, you write specs, the agent executes. No back-and-forth.
+- **Level 5:** The `/joycraft-implement-level5` skill sets up the autonomous loop — where specs go in and validated software comes out, with holdout scenario testing that prevents the agent from gaming its own tests.
 
 The name is a deliberate counter-narrative to "dark factory." Autonomous software development should bring craft and joy to engineering, not darkness.
+
+### What are the levels?
+
+[Dan Shapiro's 5 Levels of Vibe Coding](https://www.danshapiro.com/blog/2026/01/the-five-levels-from-spicy-autocomplete-to-the-software-factory/) provides the framework:
+
+| Level | Name | What it looks like | Joycraft's role |
+|-------|------|--------------------|-----------------|
+| 1 | Autocomplete | Tab-complete suggestions | — |
+| 2 | Junior Developer | Prompt → iterate → fix → repeat | `/joycraft-tune` assesses where you are |
+| 3 | Developer as Manager | Your life is reviewing diffs | Behavioral boundaries in CLAUDE.md |
+| 4 | Developer as PM | You write specs, agent writes code | `/joycraft-new-feature` + `/joycraft-decompose` |
+| 5 | Software Factory | Specs in, validated software out | `/joycraft-implement-level5` sets up the autonomous loop |
+
+Most developers plateau at Level 2. Joycraft's job is to move you up.
+
+### Platform support
+
+Joycraft is currently focused on making the Claude Code experience state-of-the-art. Better [Codex](https://openai.com/codex) support is coming — `AGENTS.md` generation is already included, and deeper integration is on the roadmap.
 
 ## Quick Start
 
@@ -26,7 +63,7 @@ That's it. Joycraft auto-detects your tech stack and creates:
 - **docs/** structure — `briefs/`, `specs/`, `discoveries/`, `contracts/`, `decisions/`
 - **Templates** — Atomic spec, feature brief, implementation plan, boundary framework, and workflow templates for scenario generation and autofix loops
 
-Once you reach Level 4, you can set up the autonomous fix loop with `npx joycraft init-autofix`. See [Level 5: Autofix Loop](#level-5-autofix-loop) below.
+Once you reach Level 4, you can set up the autonomous loop with `/joycraft-implement-level5`. See [Level 5: The Autonomous Loop](#level-5-the-autonomous-loop) below.
 
 ### Supported Stacks
 
@@ -52,6 +89,54 @@ The core loop:
 ```
 Interview → Spec → Fresh Session → Execute → Discoveries → Ship
 ```
+
+## The Interview: Why It Matters
+
+The single biggest upgrade Joycraft makes to your workflow is replacing the prompt-iterate-fix cycle with a **structured interview**.
+
+Here's the problem with how most of us use AI coding tools: we open a session and start typing. "Build me a notification system." The agent starts writing code immediately. It makes assumptions about your data model, your UI framework, your error handling strategy, your deployment target. You catch some of these mid-flight, correct them, the agent adjusts, introduces new assumptions. Three hours later you have something that *kind of* works but is built on a foundation of guesses.
+
+Joycraft flips this. Before the agent writes a single line of code, you have a conversation about *what you're building and why*.
+
+### Two interview modes
+
+**`/joycraft-interview`** — The lightweight brainstorm. You yap about an idea, the agent asks clarifying questions, and you get a structured summary saved to `docs/briefs/`. Good for early-stage thinking when you're not ready to commit to building anything yet. No pressure, no specs — just organized thought.
+
+**`/joycraft-new-feature`** — The full workflow. This is the structured interview that produces a **Feature Brief** (the what and why) and then decomposes it into **Atomic Specs** (small, testable, independently executable units of work). Each spec is self-contained — an agent in a fresh session can pick it up and execute without reading anything else.
+
+### Why this works
+
+The insight comes from [Boris Cherny](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens) (Head of Claude Code at Anthropic): interview in one session, write the spec, then execute in a *fresh session* with clean context. The interview captures your intent. The spec is the contract. The execution session has only the spec — no baggage from the conversation, no accumulated misunderstandings, no context window full of abandoned approaches.
+
+This is what separates Level 2 (back-and-forth prompting) from Level 4 (spec-driven development). You stop being a typist correcting an agent's guesses and start being a PM defining what needs to be built.
+
+```mermaid
+flowchart LR
+    A["/joycraft-interview<br/>(brainstorm)"] --> B["Draft Brief<br/>docs/briefs/"]
+    B --> C["/joycraft-new-feature<br/>(structured interview)"]
+    C --> D["Feature Brief<br/>(what & why)"]
+    D --> E["/joycraft-decompose"]
+    E --> F["Atomic Specs<br/>docs/specs/"]
+    F --> G["Fresh Session<br/>Execute each spec"]
+    G --> H["/joycraft-session-end<br/>(discoveries + commit)"]
+
+    style A fill:#e8f4fd,stroke:#369
+    style C fill:#e8f4fd,stroke:#369
+    style F fill:#cfc,stroke:#393
+    style G fill:#ffd,stroke:#993
+```
+
+### What a good spec looks like
+
+An atomic spec produced by `/joycraft-decompose` has:
+
+- **What** — One paragraph. A developer with zero context understands the change in 15 seconds.
+- **Why** — One sentence. What breaks or is missing without this?
+- **Acceptance criteria** — Checkboxes. Testable. No ambiguity.
+- **Affected files** — Exact paths, what changes in each.
+- **Edge cases** — Table of scenarios and expected behavior.
+
+The agent doesn't guess. It reads the spec and executes. If something's unclear, the spec is wrong — fix the spec, not the conversation.
 
 ## Upgrade
 
