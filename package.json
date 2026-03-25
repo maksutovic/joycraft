@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "CLI + Claude Code plugin that scaffolds and upgrades AI development harnesses",
   "type": "module",
   "bin": {
@@ -26,6 +26,14 @@
   ],
   "author": "Maximilian Maksutovic",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maksutovic/joycraft"
+  },
+  "homepage": "https://github.com/maksutovic/joycraft#readme",
+  "bugs": {
+    "url": "https://github.com/maksutovic/joycraft/issues"
+  },
   "packageManager": "pnpm@10.19.0",
   "dependencies": {
     "commander": "^13.1.0"
