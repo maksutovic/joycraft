@@ -1,5 +1,9 @@
 # Joycraft
 
+<p align="center">
+  <img src="docs/joycraft-banner.png" alt="Joycraft — the craft of AI development" width="700" />
+</p>
+
 > The craft of AI development — with joy, not darkness.
 
 ## What is Joycraft?
