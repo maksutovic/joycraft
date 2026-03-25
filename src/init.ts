@@ -41,7 +41,7 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   const stack = await detectStack(targetDir);
 
   // 1. Create docs/ subdirectories
-  const docsDirs = ['briefs', 'specs', 'discoveries', 'contracts', 'decisions'];
+  const docsDirs = ['briefs', 'specs', 'discoveries', 'contracts', 'decisions', 'context'];
   for (const sub of docsDirs) {
     ensureDir(join(targetDir, 'docs', sub));
   }
