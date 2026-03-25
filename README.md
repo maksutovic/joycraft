@@ -528,6 +528,20 @@ Joycraft synthesizes ideas and patterns from people doing extraordinary work in 
 - **[Simon Willison](https://x.com/simonw)** — [Analysis of the Software Factory](https://simonwillison.net/2026/Feb/7/software-factory/) that helped contextualize StrongDM's approach for the broader community
 - **[Anthropic](https://www.anthropic.com/)** — Claude Code's skills, hooks, and CLAUDE.md system that makes tool-native AI development possible, and the [harness patterns for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+
+The short version:
+
+1. Fork, branch from `main`
+2. `pnpm install && pnpm test --run` to verify your setup
+3. Write tests first, then implement
+4. `pnpm test --run && pnpm typecheck && pnpm build`
+5. Open a PR — one approval required
+
+Look for [`good first issue`](https://github.com/maksutovic/joycraft/labels/good%20first%20issue) labels if you're new. Areas we'd especially love help with: stack detection for new languages, skill improvements, documentation, and Codex integration.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE) for details.
