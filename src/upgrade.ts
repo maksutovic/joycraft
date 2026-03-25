@@ -30,13 +30,19 @@ function getManagedFiles(): Record<string, string> {
 // Deprecated skill names from previous versions of Joycraft.
 // These get removed during upgrade to prevent stale slash commands.
 const DEPRECATED_SKILL_DIRS = [
-  'tune',              // pre-namespace (was /tune, now /joycraft-tune)
-  'joy',               // merged into joycraft-tune
-  'joysmith',          // pre-rebrand
+  // Pre-rebrand names
+  'joysmith',          // pre-rebrand main skill
   'joysmith-assess',   // merged into joycraft-tune
   'joysmith-upgrade',  // merged into joycraft-tune
+  // Pre-namespace names (bare names without joycraft- prefix)
+  'tune',              // now /joycraft-tune
   'tune-assess',       // merged into joycraft-tune
   'tune-upgrade',      // merged into joycraft-tune
+  'joy',               // merged into joycraft-tune
+  'interview',         // now /joycraft-interview
+  'new-feature',       // now /joycraft-new-feature
+  'decompose',         // now /joycraft-decompose
+  'session-end',       // now /joycraft-session-end
 ];
 
 // Flat .md files from the pre-directory skill format
@@ -48,6 +54,10 @@ const DEPRECATED_SKILL_FILES = [
   'joysmith-upgrade.md',
   'tune-assess.md',
   'tune-upgrade.md',
+  'interview.md',
+  'new-feature.md',
+  'decompose.md',
+  'session-end.md',
 ];
 
 function cleanupDeprecatedSkills(targetDir: string): number {

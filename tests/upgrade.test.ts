@@ -169,7 +169,7 @@ describe('upgrade', () => {
     await init(tmpDir, { force: false });
 
     // Simulate old skill directories that should be cleaned up
-    const deprecatedSkills = ['tune', 'joy', 'joysmith', 'joysmith-assess', 'joysmith-upgrade', 'tune-assess', 'tune-upgrade'];
+    const deprecatedSkills = ['tune', 'joy', 'joysmith', 'joysmith-assess', 'joysmith-upgrade', 'tune-assess', 'tune-upgrade', 'interview', 'new-feature', 'decompose', 'session-end'];
     for (const name of deprecatedSkills) {
       const dir = join(tmpDir, '.claude', 'skills', name);
       mkdirSync(dir, { recursive: true });
