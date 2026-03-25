@@ -47,11 +47,10 @@ describe('init', () => {
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-new-feature', 'SKILL.md'))).toBe(true);
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-decompose', 'SKILL.md'))).toBe(true);
 
-      // Templates
-      expect(existsSync(join(tmpDir, 'docs', 'templates', 'ATOMIC_SPEC_TEMPLATE.md'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'templates', 'FEATURE_BRIEF_TEMPLATE.md'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'templates', 'IMPLEMENTATION_PLAN_TEMPLATE.md'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'templates', 'BOUNDARY_FRAMEWORK.md'))).toBe(true);
+      // Templates (keyed by relative path from src/templates/)
+      expect(existsSync(join(tmpDir, 'docs', 'templates', 'examples', 'example-spec.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, 'docs', 'templates', 'examples', 'example-brief.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, 'docs', 'templates', 'context', 'production-map.md'))).toBe(true);
     });
   });
 
@@ -75,7 +74,7 @@ describe('init', () => {
       // Skills installed
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
       // Templates installed
-      expect(existsSync(join(tmpDir, 'docs', 'templates', 'ATOMIC_SPEC_TEMPLATE.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, 'docs', 'templates', 'examples', 'example-spec.md'))).toBe(true);
       // CLAUDE.md untouched
       expect(readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8')).toBe('# Existing project\n');
     });

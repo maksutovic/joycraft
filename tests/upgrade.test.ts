@@ -119,12 +119,12 @@ describe('upgrade', () => {
     await init(tmpDir, { force: false });
 
     // Remove a template file to simulate it being new in a future version
-    const templatePath = join(tmpDir, 'docs', 'templates', 'BOUNDARY_FRAMEWORK.md');
+    const templatePath = join(tmpDir, 'docs', 'templates', 'context', 'production-map.md');
     rmSync(templatePath);
 
     // Also remove it from the version hashes
     const versionInfo = readVersion(tmpDir)!;
-    delete versionInfo.files[join('docs', 'templates', 'BOUNDARY_FRAMEWORK.md')];
+    delete versionInfo.files[join('docs', 'templates', 'context', 'production-map.md')];
     writeVersion(tmpDir, versionInfo.version, versionInfo.files);
 
     const logs: string[] = [];
