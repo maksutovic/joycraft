@@ -1,8 +1,9 @@
 # `npx joycraft init-autofix` CLI Command — Atomic Spec
 
 > **Parent:** docs/research/autofix-loop-closing.md
-> **Status:** Ready
+> **Status:** Ready (updated with Pipit trial fixes 2026-03-25)
 > **Date:** 2026-03-24
+> **GitHub App ID:** 3180156 (Joycraft Autofix, registered 2026-03-24)
 > **Estimated scope:** 1-2 sessions / 4 files / ~200 lines
 > **Depends on:** autofix-workflow-templates, github-app-registration
 

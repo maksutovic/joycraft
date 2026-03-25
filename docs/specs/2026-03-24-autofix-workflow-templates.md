@@ -1,7 +1,7 @@
 # Autofix Workflow Templates — Atomic Spec
 
 > **Parent:** docs/research/autofix-loop-closing.md
-> **Status:** Ready
+> **Status:** Ready (updated with Pipit trial fixes 2026-03-25)
 > **Date:** 2026-03-24
 > **Estimated scope:** 1 session / 4 files / ~200 lines
 > **Depends on:** github-app-registration (need App ID)
@@ -53,7 +53,30 @@ The autofix workflow uses:
 - `actions/create-github-app-token@v1` for App token generation
 - `claude -p` (Claude Code CLI) for the fix — NOT `claude-code-action`
 - Iteration counting via `git log --oneline | grep "^autofix:" | wc -l`
-- `--max-turns 20` and `--model claude-sonnet-4-6` for cost control
+- `--max-turns 20` for cost control (do NOT use `--model` flag — Claude CLI has its own model resolution)
+
+## Pipit Trial Fixes (apply to templates)
+
+These issues were found during the live Pipit trial on 2026-03-25:
+
+1. **No duplicate `env:` blocks** — YAML rejects two `env:` keys on the same step. Merge all env vars into a single `env:` block.
+2. **Do NOT use `--model` with `claude -p`** — Claude Code CLI is not an API wrapper. It has its own model management. Passing `--model claude-sonnet-4-6-20250514` causes an error. Just omit `--model`.
+3. **All workflows must be on `main` branch** — `repository_dispatch` only triggers workflows on the default branch. Templates must include a note about this.
+4. **`pnpm/action-setup` + `packageManager` conflict** — If the project has `"packageManager"` in package.json, don't set explicit `version:` in the action. Pick one, not both.
+5. **`repository_dispatch` trigger uses different approach than `workflow_run`** — The Pipit trial used `repository_dispatch` (scenarios repo dispatches `scenario-failed` to main repo) rather than `workflow_run`. This works and carries context via `client_payload`. The spec originally suggested `workflow_run` but `repository_dispatch` is what was validated in production.
+
+## Validated Architecture (from Pipit trial)
+
+```
+PR → CI passes → dispatch to scenarios repo (repository_dispatch)
+→ Scenarios run → FAIL → post comment + dispatch scenario-failed to main repo
+→ autofix.yml triggers (repository_dispatch) → generate App token
+→ checkout PR branch → claude -p with failure context → fix → push
+→ Push triggers CI (different identity) → CI passes → scenarios pass
+→ ~3 minutes total, zero human intervention
+```
+
+App ID for Joycraft Autofix: **3180156** (hardcode in templates)
 
 ## Edge Cases
 
