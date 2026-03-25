@@ -1,0 +1,63 @@
+# Publish to npm via Trusted Publishing (OIDC)
+#
+# No NPM_TOKEN needed — npm verifies this workflow cryptographically
+# via OpenID Connect. Provenance attestations are automatic.
+#
+# Only publishes when package.json version differs from what's on npm.
+
+name: Publish to npm
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test --run
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Check if version changed
+        id: version
+        run: |
+          LOCAL=$(node -e "import fs from 'fs'; const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8')); process.stdout.write(pkg.version);" --input-type=module)
+          REMOTE=$(npm view joycraft version 2>/dev/null || echo "0.0.0")
+          echo "local=$LOCAL" >> "$GITHUB_OUTPUT"
+          echo "remote=$REMOTE" >> "$GITHUB_OUTPUT"
+          if [ "$LOCAL" != "$REMOTE" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Version changed: $REMOTE -> $LOCAL"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Version unchanged ($LOCAL), skipping publish"
+          fi
+
+      - name: Publish to npm
+        if: steps.version.outputs.changed == 'true'
+        run: npm publish --access public
