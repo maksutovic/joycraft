@@ -3,6 +3,7 @@ import { join, basename, resolve, dirname } from 'node:path';
 import { detectStack } from './detect.js';
 import { generateCLAUDEMd } from './improve-claude-md.js';
 import { generateAgentsMd } from './agents-md.js';
+import { generatePermissions } from './permissions.js';
 import { SKILLS, TEMPLATES } from './bundled-files.js';
 import { writeVersion, hashContent } from './version.js';
 
@@ -142,7 +143,29 @@ try {
     result.created.push(settingsPath);
   }
 
-  // 8. Check .gitignore for .claude/ exclusion
+  // 8. Generate and merge permission rules into settings.json
+  const permissions = generatePermissions(stack);
+  // Re-read settings in case it was just created by hook step
+  if (existsSync(settingsPath)) {
+    try {
+      settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
+    } catch {
+      // keep existing settings object
+    }
+  }
+  if (!settings.permissions) settings.permissions = {};
+  const perms = settings.permissions as Record<string, string[]>;
+  if (!perms.allow) perms.allow = [];
+  if (!perms.deny) perms.deny = [];
+  for (const rule of permissions.allow) {
+    if (!perms.allow.includes(rule)) perms.allow.push(rule);
+  }
+  for (const rule of permissions.deny) {
+    if (!perms.deny.includes(rule)) perms.deny.push(rule);
+  }
+  writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
+
+  // 9. Check .gitignore for .claude/ exclusion
   const gitignorePath = join(targetDir, '.gitignore');
   if (existsSync(gitignorePath)) {
     const gitignore = readFileSync(gitignorePath, 'utf-8');
@@ -200,11 +223,11 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
 
   console.log('\n  Next steps:');
   if (hasExistingClaude) {
-    console.log('    1. Run Claude Code and try /tune to assess and improve your existing CLAUDE.md');
+    console.log('    1. Run Claude Code and try /joycraft-tune to assess and improve your existing CLAUDE.md');
   } else {
     console.log('    1. Review and customize the generated CLAUDE.md for your project');
   }
-  console.log('    2. Try /new-feature to start building with the spec-driven workflow');
+  console.log('    2. Try /joycraft-new-feature to start building with the spec-driven workflow');
   console.log('    3. Commit .claude/skills/ and docs/ so your team gets the same workflow');
   console.log('');
 }

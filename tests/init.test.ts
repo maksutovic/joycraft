@@ -43,9 +43,9 @@ describe('init', () => {
       expect(claude).toContain('### NEVER');
 
       // Skills
-      expect(existsSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'))).toBe(true);
-      expect(existsSync(join(tmpDir, '.claude', 'skills', 'new-feature', 'SKILL.md'))).toBe(true);
-      expect(existsSync(join(tmpDir, '.claude', 'skills', 'decompose', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-new-feature', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-decompose', 'SKILL.md'))).toBe(true);
 
       // Templates
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'ATOMIC_SPEC_TEMPLATE.md'))).toBe(true);
@@ -73,7 +73,7 @@ describe('init', () => {
       await init(tmpDir, { force: false });
 
       // Skills installed
-      expect(existsSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
       // Templates installed
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'ATOMIC_SPEC_TEMPLATE.md'))).toBe(true);
       // CLAUDE.md untouched
@@ -85,12 +85,12 @@ describe('init', () => {
     it('second run skips existing files', async () => {
       await init(tmpDir, { force: false });
       const firstClaude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
-      const firstSkill = readFileSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'), 'utf-8');
+      const firstSkill = readFileSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'), 'utf-8');
 
       // Run again
       await init(tmpDir, { force: false });
       const secondClaude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
-      const secondSkill = readFileSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'), 'utf-8');
+      const secondSkill = readFileSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'), 'utf-8');
 
       // Files should be identical
       expect(secondClaude).toBe(firstClaude);
@@ -104,12 +104,12 @@ describe('init', () => {
       await init(tmpDir, { force: false });
 
       // Modify a skill file
-      writeFileSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'), 'custom content');
+      writeFileSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'), 'custom content');
 
       // Init with force
       await init(tmpDir, { force: true });
 
-      const skill = readFileSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'), 'utf-8');
+      const skill = readFileSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'), 'utf-8');
       expect(skill).not.toBe('custom content');
       expect(skill).toContain('Joycraft');
     });
@@ -192,6 +192,60 @@ describe('init', () => {
     });
   });
 
+  describe('permissions in settings.json', () => {
+    it('adds permission rules to settings.json', async () => {
+      await init(tmpDir, { force: false });
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, '.claude', 'settings.json'), 'utf-8'));
+      expect(settings.permissions).toBeDefined();
+      expect(settings.permissions.deny).toContain('Bash(rm -rf *)');
+      expect(settings.permissions.deny).toContain('Edit(//.env*)');
+      expect(settings.permissions.allow).toContain('Bash(git status)');
+    });
+
+    it('adds stack-specific permissions for Node.js', async () => {
+      writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
+        name: 'test-project',
+        scripts: { test: 'vitest', build: 'tsc' },
+        devDependencies: { vitest: '^1.0.0' },
+      }));
+      writeFileSync(join(tmpDir, 'pnpm-lock.yaml'), '');
+
+      await init(tmpDir, { force: false });
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, '.claude', 'settings.json'), 'utf-8'));
+      expect(settings.permissions.allow).toContain('Bash(pnpm *)');
+      expect(settings.permissions.deny).toContain('Bash(npm install *)');
+      expect(settings.permissions.deny).toContain('Bash(yarn add *)');
+    });
+
+    it('does not duplicate permissions on second init', async () => {
+      await init(tmpDir, { force: false });
+      await init(tmpDir, { force: false });
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, '.claude', 'settings.json'), 'utf-8'));
+      const denyCount = settings.permissions.deny.filter((r: string) => r === 'Bash(rm -rf *)').length;
+      expect(denyCount).toBe(1);
+    });
+
+    it('preserves existing permissions', async () => {
+      mkdirSync(join(tmpDir, '.claude'), { recursive: true });
+      writeFileSync(join(tmpDir, '.claude', 'settings.json'), JSON.stringify({
+        permissions: {
+          allow: ['Bash(custom-tool *)'],
+          deny: ['Bash(dangerous-thing *)'],
+        },
+      }, null, 2) + '\n');
+
+      await init(tmpDir, { force: false });
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, '.claude', 'settings.json'), 'utf-8'));
+      expect(settings.permissions.allow).toContain('Bash(custom-tool *)');
+      expect(settings.permissions.deny).toContain('Bash(dangerous-thing *)');
+      expect(settings.permissions.deny).toContain('Bash(rm -rf *)');
+    });
+  });
+
   describe('partial harness', () => {
     it('handles some dirs existing already', async () => {
       // Pre-create some dirs
@@ -205,7 +259,7 @@ describe('init', () => {
       expect(existsSync(join(tmpDir, 'docs', 'specs'))).toBe(true);
       expect(existsSync(join(tmpDir, 'docs', 'discoveries'))).toBe(true);
       // Skills still get installed
-      expect(existsSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
     });
 
     it('preserves existing user skills', async () => {
@@ -217,7 +271,7 @@ describe('init', () => {
       // User skill is preserved
       expect(readFileSync(join(tmpDir, '.claude', 'skills', 'my-custom-skill.md'), 'utf-8')).toBe('my skill');
       // Joycraft skills are added
-      expect(existsSync(join(tmpDir, '.claude', 'skills', 'tune', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
     });
   });
 });
