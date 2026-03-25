@@ -28,6 +28,19 @@ program
   });
 
 program
+  .command('init-autofix')
+  .description('Set up the Level 5 auto-fix loop with holdout scenarios')
+  .argument('[dir]', 'Target directory', '.')
+  .option('--scenarios-repo <name>', 'Name for scenarios repo')
+  .option('--app-id <id>', 'GitHub App ID for Joycraft Autofix')
+  .option('--force', 'Overwrite existing workflow files')
+  .option('--dry-run', 'Show what would be created without creating it')
+  .action(async (dir: string, opts: { scenariosRepo?: string; appId?: string; force?: boolean; dryRun?: boolean }) => {
+    const { initAutofix } = await import('./init-autofix.js');
+    await initAutofix(dir, opts);
+  });
+
+program
   .command('check-version')
   .description('Check if a newer version of Joycraft is available')
   .action(async () => {
