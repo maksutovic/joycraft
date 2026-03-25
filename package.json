@@ -24,8 +24,9 @@
     "harness",
     "scaffolding"
   ],
-  "author": "",
+  "author": "Maximilian Maksutovic",
   "license": "MIT",
+  "packageManager": "pnpm@10.19.0",
   "dependencies": {
     "commander": "^13.1.0"
   },
