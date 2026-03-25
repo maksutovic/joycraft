@@ -17,11 +17,11 @@ That's it. Joycraft auto-detects your tech stack and creates:
 - **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
 - **AGENTS.md** for Codex compatibility
 - **Claude Code skills** installed to `.claude/skills/`:
-  - `/tune` — Assess your harness, apply upgrades, see your path to Level 5
-  - `/new-feature` — Interview → Feature Brief → Atomic Specs
-  - `/interview` — Lightweight brainstorm — yap about ideas, get a structured summary
-  - `/decompose` — Break a brief into small, testable specs
-  - `/session-end` — Capture discoveries, verify, commit
+  - `/joycraft-tune` — Assess your harness, apply upgrades, see your path to Level 5
+  - `/joycraft-new-feature` — Interview → Feature Brief → Atomic Specs
+  - `/joycraft-interview` — Lightweight brainstorm — yap about ideas, get a structured summary
+  - `/joycraft-decompose` — Break a brief into small, testable specs
+  - `/joycraft-session-end` — Capture discoveries, verify, commit
 - **docs/** structure — `briefs/`, `specs/`, `discoveries/`, `contracts/`, `decisions/`
 - **Templates** — Atomic spec, feature brief, implementation plan, boundary framework
 
@@ -36,11 +36,11 @@ Frameworks auto-detected: Next.js, FastAPI, Django, Flask, Actix, Axum, Express,
 After init, open Claude Code and use the installed skills:
 
 ```
-/tune                  # Assess your harness, apply upgrades, see path to Level 5
-/interview             # Brainstorm freely — yap about ideas, get a structured summary
-/new-feature           # Interview → Feature Brief → Atomic Specs → ready to execute
-/decompose             # Break any feature into small, independent specs
-/session-end           # Wrap up — discoveries, verification, commit
+/joycraft-tune                  # Assess your harness, apply upgrades, see path to Level 5
+/joycraft-interview             # Brainstorm freely — yap about ideas, get a structured summary
+/joycraft-new-feature           # Interview → Feature Brief → Atomic Specs → ready to execute
+/joycraft-decompose             # Break any feature into small, independent specs
+/joycraft-session-end           # Wrap up — discoveries, verification, commit
 ```
 
 The core loop:
@@ -61,7 +61,7 @@ Joycraft tracks what it installed vs. what you've customized. Unmodified files u
 
 ## Git Autonomy
 
-When `/tune` runs for the first time, it asks one question: **how autonomous should git be?**
+When `/joycraft-tune` runs for the first time, it asks one question: **how autonomous should git be?**
 
 - **Cautious** (default) — commits freely, asks before pushing or opening PRs. Good for learning the workflow.
 - **Autonomous** — commits, pushes to feature branches, and opens PRs without asking. Good for spec-driven development where you want full send.
@@ -101,15 +101,15 @@ Joycraft's approach is synthesized from several sources:
 
 **Spec-driven development.** Instead of prompting AI in conversation, you write structured specifications — Feature Briefs that capture the *what* and *why*, then Atomic Specs that break work into small, testable, independently executable units. Each spec is self-contained: an agent can pick it up without reading anything else. This follows [Addy Osmani's](https://addyosmani.com/blog/good-spec/) principles for AI-consumable specs and [GitHub's Spec Kit](https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/) 4-phase process (Specify → Plan → Tasks → Implement).
 
-**Context isolation.** [Boris Cherny](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens) (Head of Claude Code at Anthropic) recommends: interview in one session, write the spec, then execute in a *fresh session* with clean context. Joycraft's `/new-feature` → `/decompose` → execute workflow enforces this naturally. The interview session captures intent; the execution session has only the spec.
+**Context isolation.** [Boris Cherny](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens) (Head of Claude Code at Anthropic) recommends: interview in one session, write the spec, then execute in a *fresh session* with clean context. Joycraft's `/joycraft-new-feature` → `/joycraft-decompose` → execute workflow enforces this naturally. The interview session captures intent; the execution session has only the spec.
 
 **Behavioral boundaries.** CLAUDE.md isn't a suggestion box — it's a contract. Joycraft installs a three-tier boundary framework (Always / Ask First / Never) that prevents the most common AI development failures: overwriting user files, skipping tests, pushing without approval, hardcoding secrets. This is [Addy Osmani's](https://addyosmani.com/blog/good-spec/) "boundaries" principle made concrete.
 
-**Knowledge capture over session notes.** Most session notes are never re-read. Joycraft's `/session-end` skill captures only *discoveries* — assumptions that were wrong, APIs that behaved unexpectedly, decisions made during implementation that aren't in the spec. If nothing surprising happened, you capture nothing. This keeps the signal-to-noise ratio high.
+**Knowledge capture over session notes.** Most session notes are never re-read. Joycraft's `/joycraft-session-end` skill captures only *discoveries* — assumptions that were wrong, APIs that behaved unexpectedly, decisions made during implementation that aren't in the spec. If nothing surprising happened, you capture nothing. This keeps the signal-to-noise ratio high.
 
 **External holdout scenarios.** [StrongDM's Software Factory](https://factory.strongdm.ai/) proved that AI agents will [actively game visible test suites](https://palisaderesearch.org/blog/specification-gaming). Their solution: scenarios that live *outside* the codebase, invisible to the agent during development. Like a holdout set in ML, this prevents overfitting. Joycraft provides the template for building these.
 
-**The 5-level framework.** [Dan Shapiro's levels](https://www.danshapiro.com/blog/2026/01/the-five-levels-from-spicy-autocomplete-to-the-software-factory/) give you a map. Level 2 (Junior Developer) is where most teams plateau. Level 3 (Developer as Manager) means your life is diffs. Level 4 (Developer as PM) means you write specs, not code. Level 5 (Dark Factory) means specs in, software out. Joycraft's `/tune` assessment tells you where you are and what to do next.
+**The 5-level framework.** [Dan Shapiro's levels](https://www.danshapiro.com/blog/2026/01/the-five-levels-from-spicy-autocomplete-to-the-software-factory/) give you a map. Level 2 (Junior Developer) is where most teams plateau. Level 3 (Developer as Manager) means your life is diffs. Level 4 (Developer as PM) means you write specs, not code. Level 5 (Dark Factory) means specs in, software out. Joycraft's `/joycraft-tune` assessment tells you where you are and what to do next.
 
 ## Standing on the Shoulders of Giants
 

@@ -1,5 +1,5 @@
 ---
-name: interview
+name: joycraft-interview
 description: Brainstorm freely about what you want to build — yap, explore ideas, and get a structured summary you can use later
 ---
 
@@ -45,7 +45,7 @@ Use this format:
 
 > **Date:** YYYY-MM-DD
 > **Status:** DRAFT
-> **Origin:** /interview session
+> **Origin:** /joycraft-interview session
 
 ---
 
@@ -81,14 +81,14 @@ After writing the draft, tell the user:
 Draft brief saved to docs/briefs/YYYY-MM-DD-topic-draft.md
 
 When you're ready to move forward:
-- /new-feature — formalize this into a full Feature Brief with specs
-- /decompose — break it directly into atomic specs if scope is clear
-- Or just keep brainstorming — run /interview again anytime
+- /joycraft-new-feature — formalize this into a full Feature Brief with specs
+- /joycraft-decompose — break it directly into atomic specs if scope is clear
+- Or just keep brainstorming — run /joycraft-interview again anytime
 ```
 
 ## Guidelines
 
-- **This is NOT /new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
+- **This is NOT /joycraft-new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
 - **Let the user lead.** Your job is to listen, clarify, and capture — not to structure or direct.
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.

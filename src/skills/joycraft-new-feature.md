@@ -1,5 +1,5 @@
 ---
-name: new-feature
+name: joycraft-new-feature
 description: Guided feature development — interview the user, produce a Feature Brief, then decompose into atomic specs
 ---
 
@@ -149,7 +149,7 @@ Recommended execution:
 To execute: Start a fresh session per spec. Each session should:
 1. Read the spec
 2. Implement
-3. Run /session-end to capture discoveries
+3. Run /joycraft-session-end to capture discoveries
 4. Commit and PR
 
 Ready to start?
@@ -157,4 +157,4 @@ Ready to start?
 
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
 
-You can also use `/decompose` to re-decompose a brief if the breakdown needs adjustment, or run `/interview` first for a lighter brainstorm before committing to the full workflow.
+You can also use `/joycraft-decompose` to re-decompose a brief if the breakdown needs adjustment, or run `/joycraft-interview` first for a lighter brainstorm before committing to the full workflow.

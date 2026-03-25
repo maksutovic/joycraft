@@ -1,9 +1,8 @@
-// Bundled file contents — embedded at build time since tsup bundles everything
-// and we cannot read files from the package at runtime.
+// Bundled file contents — embedded at build time
 
 export const SKILLS: Record<string, string> = {
-  'decompose.md': `---
-name: decompose
+  'joycraft-decompose.md': `---
+name: joycraft-decompose
 description: Break a feature brief into atomic specs — small, testable, independently executable units
 ---
 
@@ -15,7 +14,7 @@ You have a Feature Brief (or the user has described a feature). Your job is to d
 
 Look for a Feature Brief in \`docs/briefs/\`. If one doesn't exist yet, tell the user:
 
-> No feature brief found. Run \`/new-feature\` first to interview and create one, or describe the feature now and I'll work from your description.
+> No feature brief found. Run \`/joycraft-new-feature\` first to interview and create one, or describe the feature now and I'll work from your description.
 
 If the user describes the feature inline, work from that description directly. You don't need a formal brief to decompose — but recommend creating one for complex features.
 
@@ -127,14 +126,14 @@ Decomposition complete:
 To execute:
 - Sequential: Open a session, point Claude at each spec in order
 - Parallel: Use worktrees — one spec per worktree, merge when done
-- Each session should end with /session-end to capture discoveries
+- Each session should end with /joycraft-session-end to capture discoveries
 
 Ready to start execution?
 \`\`\`
 `,
 
-  'interview.md': `---
-name: interview
+  'joycraft-interview.md': `---
+name: joycraft-interview
 description: Brainstorm freely about what you want to build — yap, explore ideas, and get a structured summary you can use later
 ---
 
@@ -180,7 +179,7 @@ Use this format:
 
 > **Date:** YYYY-MM-DD
 > **Status:** DRAFT
-> **Origin:** /interview session
+> **Origin:** /joycraft-interview session
 
 ---
 
@@ -216,22 +215,22 @@ After writing the draft, tell the user:
 Draft brief saved to docs/briefs/YYYY-MM-DD-topic-draft.md
 
 When you're ready to move forward:
-- /new-feature — formalize this into a full Feature Brief with specs
-- /decompose — break it directly into atomic specs if scope is clear
-- Or just keep brainstorming — run /interview again anytime
+- /joycraft-new-feature — formalize this into a full Feature Brief with specs
+- /joycraft-decompose — break it directly into atomic specs if scope is clear
+- Or just keep brainstorming — run /joycraft-interview again anytime
 \`\`\`
 
 ## Guidelines
 
-- **This is NOT /new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
+- **This is NOT /joycraft-new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
 - **Let the user lead.** Your job is to listen, clarify, and capture — not to structure or direct.
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.
 - **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
 `,
 
-  'new-feature.md': `---
-name: new-feature
+  'joycraft-new-feature.md': `---
+name: joycraft-new-feature
 description: Guided feature development — interview the user, produce a Feature Brief, then decompose into atomic specs
 ---
 
@@ -381,7 +380,7 @@ Recommended execution:
 To execute: Start a fresh session per spec. Each session should:
 1. Read the spec
 2. Implement
-3. Run /session-end to capture discoveries
+3. Run /joycraft-session-end to capture discoveries
 4. Commit and PR
 
 Ready to start?
@@ -389,11 +388,11 @@ Ready to start?
 
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
 
-You can also use \`/decompose\` to re-decompose a brief if the breakdown needs adjustment, or run \`/interview\` first for a lighter brainstorm before committing to the full workflow.
+You can also use \`/joycraft-decompose\` to re-decompose a brief if the breakdown needs adjustment, or run \`/joycraft-interview\` first for a lighter brainstorm before committing to the full workflow.
 `,
 
-  'session-end.md': `---
-name: session-end
+  'joycraft-session-end.md': `---
+name: joycraft-session-end
 description: Wrap up a session — capture discoveries, verify, prepare for PR or next session
 ---
 
@@ -435,6 +434,17 @@ Use this format:
 
 If nothing surprising happened, skip the discovery file entirely. No discovery is a good sign — the spec was accurate.
 
+## 1b. Update Context Documents
+
+If \`docs/context/\` exists, quickly check whether this session revealed anything about:
+
+- **Production risks** — did you interact with or learn about production vs staging systems? → Update \`docs/context/production-map.md\`
+- **Wrong assumptions** — did the agent (or you) assume something that turned out to be false? → Update \`docs/context/dangerous-assumptions.md\`
+- **Key decisions** — did you make an architectural or tooling choice? → Add a row to \`docs/context/decision-log.md\`
+- **Unwritten rules** — did you discover a convention or constraint not documented anywhere? → Update \`docs/context/institutional-knowledge.md\`
+
+Skip this if nothing applies. Don't force it — only update when there's genuine new context.
+
 ## 2. Run Validation
 
 Run the project's validation commands. Check CLAUDE.md for project-specific commands. Common checks:
@@ -468,8 +478,8 @@ Session complete.
 \`\`\`
 `,
 
-  'tune.md': `---
-name: tune
+  'joycraft-tune.md': `---
+name: joycraft-tune
 description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show path to Level 5
 ---
 
@@ -569,17 +579,19 @@ Examine \`docs/\` directory structure and content.
 | 4 | Structured docs/ with templates and clear organization |
 | 5 | Full structure: briefs/, specs/, templates/, architecture docs, referenced from CLAUDE.md |
 
-### Dimension 6: Knowledge Capture
+### Dimension 6: Knowledge Capture & Contextual Stewardship
 
-Look for discoveries, decisions, and session notes.
+Look for discoveries, decisions, session notes, and context documents.
 
 | Score | Criteria |
 |-------|----------|
 | 1 | No knowledge capture mechanism |
-| 2 | Ad-hoc notes in random locations |
-| 3 | A dedicated notes or decisions directory exists |
-| 4 | Structured discoveries/decisions directory with entries |
-| 5 | Active capture: discoveries with entries, session-end workflow, decision log |
+| 2 | Ad-hoc notes or a discoveries directory with no entries |
+| 3 | Discoveries directory with some entries, or context docs exist but empty |
+| 4 | Active discoveries + at least 2 context docs with content (production-map, dangerous-assumptions, decision-log, institutional-knowledge) |
+| 5 | Full contextual stewardship: discoveries with entries, all 4 context docs maintained, session-end workflow in active use |
+
+**Check for:** \`docs/discoveries/\`, \`docs/context/production-map.md\`, \`docs/context/dangerous-assumptions.md\`, \`docs/context/decision-log.md\`, \`docs/context/institutional-knowledge.md\`. Score based on both existence AND whether they have real content (not just templates).
 
 ### Dimension 7: Testing & Validation
 
@@ -681,7 +693,42 @@ Based on their answer, use the appropriate git rules in the Behavioral Boundarie
 - Amend commits that have been pushed to remote
 \`\`\`
 
-This is the ONLY question asked during the upgrade flow. Everything else is batch-applied.
+### Risk Interview
+
+Before applying upgrades, ask 3-5 targeted questions to capture what's dangerous in this project. Skip this if \`docs/context/production-map.md\` or \`docs/context/dangerous-assumptions.md\` already exist (offer to update instead).
+
+**Question 1:** "What could this agent break that would ruin your day? Think: production databases, live APIs, billing systems, user data, infrastructure."
+
+From the answer, generate:
+- NEVER rules for CLAUDE.md (e.g., "NEVER connect to production DB at postgres://prod.example.com")
+- Deny patterns for .claude/settings.json (e.g., deny Bash commands containing production hostnames)
+
+**Question 2:** "What external services does this project connect to? Which are production vs. staging/dev?"
+
+From the answer, generate:
+- \`docs/context/production-map.md\` documenting what's real vs safe to touch
+- Include: service name, URL/endpoint, environment (prod/staging/dev), what happens if corrupted
+
+**Question 3:** "What are the unwritten rules a new developer would need months to learn about this project?"
+
+From the answer, generate:
+- Additions to CLAUDE.md boundaries (new ALWAYS/ASK FIRST/NEVER rules)
+- \`docs/context/dangerous-assumptions.md\` with "Agent might assume X, but actually Y"
+
+**Question 4 (optional):** "What happened last time something went wrong with an automated tool or deploy?"
+
+If the user has a story, capture the lesson as a specific NEVER rule and add to dangerous-assumptions.md.
+
+**Question 5:** "Any files, directories, or commands that should be completely off-limits?"
+
+From the answer, generate deny rules for .claude/settings.json and add to NEVER section.
+
+**Rules for the interview:**
+- Ask questions ONE AT A TIME, not all at once
+- If the user says "nothing" or "skip", respect that and move on
+- Keep it to 2-3 minutes total — don't interrogate
+- Generate artifacts immediately after the interview, don't wait for all questions
+- This is the SECOND and LAST set of questions during /joycraft-tune (first is git autonomy)
 
 ### Tier 2: Apply and Show Diff (do it, then report)
 These modify important files but are additive (append-only). Apply them, then show what changed so the user can review. Git is the undo button.
@@ -745,9 +792,9 @@ You're at Level [X]. Here's what each level looks like:
 | 5 | Define what + why | Specs in, software out | Systems design |
 
 ### Your Next Steps Toward Level [X+1]:
-1. [Specific action based on current gaps — e.g., "Write your first atomic spec using /new-feature"]
+1. [Specific action based on current gaps — e.g., "Write your first atomic spec using /joycraft-new-feature"]
 2. [Next action — e.g., "Add vitest and write tests for your core logic"]
-3. [Next action — e.g., "Use /session-end consistently to build your discoveries log"]
+3. [Next action — e.g., "Use /joycraft-session-end consistently to build your discoveries log"]
 
 ### What Level 5 Looks Like (Your North Star):
 - A backlog of ready specs that agents pull from and execute autonomously
@@ -1098,6 +1145,113 @@ The GET endpoint does a find-or-create: if no record exists for the user, create
 | PATCH with unknown event type \`{"foo": {"email": true}}\` | Return 400 with validation error listing valid event types |
 | GET for user with no existing record | Create default preferences, return 200 |
 | Concurrent PATCH requests | Last-write-wins (optimistic, no locking) — acceptable for user preferences |
+`,
+
+  'context/dangerous-assumptions.md': `# Dangerous Assumptions
+
+> Things the AI agent might assume that are wrong in this project.
+> Generated by Joycraft risk interview. Update when you discover new gotchas.
+
+## Assumptions
+
+| Agent Might Assume | But Actually | Impact If Wrong |
+|-------------------|-------------|----------------|
+| _Example: All databases are dev/test_ | _The default connection is production_ | _Data loss_ |
+| _Example: Deleting and recreating is safe_ | _Some resources have manual config not in code_ | _Hours of manual recovery_ |
+
+## Historical Incidents
+
+| Date | What Happened | Lesson | Rule Added |
+|------|-------------|--------|------------|
+| _Example: 2026-03-15_ | _Agent deleted staging infra thinking it was temp_ | _Always verify environment before destructive ops_ | _NEVER: Delete cloud resources without listing them first_ |
+`,
+
+  'context/decision-log.md': `# Decision Log
+
+> Why choices were made, not just what was chosen.
+> Update this when making architectural, tooling, or process decisions.
+> This is the institutional memory that prevents re-litigating settled questions.
+
+## Decisions
+
+| Date | Decision | Why | Alternatives Rejected | Revisit When |
+|------|----------|-----|----------------------|-------------|
+| _Example: 2026-03-15_ | _Use Supabase over Firebase_ | _Postgres flexibility, row-level security, self-hostable_ | _Firebase (vendor lock-in), PlanetScale (no RLS)_ | _If we need real-time sync beyond Supabase's capabilities_ |
+
+## Principles
+
+_Capture recurring decision patterns here — they save time on future choices._
+
+- _Example: "Prefer tools we can self-host over pure SaaS — reduces vendor risk"_
+- _Example: "Choose boring technology for infrastructure, cutting-edge only for core differentiators"_
+`,
+
+  'context/institutional-knowledge.md': `# Institutional Knowledge
+
+> Unwritten rules, team conventions, and organizational context that AI agents can't derive from code.
+> This is the knowledge that takes a new developer months to absorb.
+> Update when you catch yourself saying "oh, you didn't know about that?"
+
+## Team Conventions
+
+_Things everyone on the team knows but nobody wrote down._
+
+- _Example: "We never deploy on Fridays"_
+- _Example: "The CEO reviews all UI changes before they ship"_
+- _Example: "PR titles must reference the Jira ticket number"_
+
+## Organizational Constraints
+
+_Business rules, compliance requirements, or political realities that affect technical decisions._
+
+- _Example: "Legal requires all user data to be stored in EU regions"_
+- _Example: "The payments team owns the billing schema — never modify without their approval"_
+- _Example: "We have an informal agreement with Vendor X about API rate limits"_
+
+## Historical Context
+
+_Why things are the way they are — especially when it looks wrong._
+
+- _Example: "The auth module uses an old pattern because it predates our TypeScript migration — don't refactor without a spec"_
+- _Example: "The caching layer has a 5-second TTL because we had a consistency bug in 2025 — increasing it requires careful testing"_
+
+## People & Ownership
+
+_Who owns what, who to ask, who cares about what._
+
+- _Example: "Alice owns the payment pipeline — all changes need her review"_
+- _Example: "The data team is sensitive about query performance on the analytics tables"_
+`,
+
+  'context/production-map.md': `# Production Map
+
+> What's real, what's staging, what's safe to touch.
+> Generated by Joycraft risk interview. Update as your infrastructure evolves.
+
+## Services
+
+| Service | Environment | URL/Endpoint | Impact if Corrupted |
+|---------|-------------|-------------|-------------------|
+| _Example: Main DB_ | _Production_ | _postgres://prod.example.com_ | _1.9M user records lost_ |
+| _Example: Staging DB_ | _Staging_ | _postgres://staging.example.com_ | _Test data only, safe to reset_ |
+
+## Secrets & Credentials
+
+| Secret | Location | Notes |
+|--------|----------|-------|
+| _Example: DATABASE_URL_ | _.env.local_ | _Production connection — NEVER commit_ |
+
+## Safe to Touch
+
+- [ ] Staging environment at [URL]
+- [ ] Test/fixture data in [location]
+- [ ] Development API keys
+
+## NEVER Touch Without Explicit Approval
+
+- [ ] Production database
+- [ ] Live API endpoints
+- [ ] User-facing infrastructure
 `,
 
 };
