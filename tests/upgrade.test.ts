@@ -115,6 +115,31 @@ describe('upgrade', () => {
     expect(content).toBe(SKILLS['joycraft-tune.md']);
   });
 
+  it('auto-adds new files without prompting', async () => {
+    await init(tmpDir, { force: false });
+
+    // Remove a template file to simulate it being new in a future version
+    const templatePath = join(tmpDir, 'docs', 'templates', 'context', 'production-map.md');
+    rmSync(templatePath);
+
+    const versionInfo = readVersion(tmpDir)!;
+    delete versionInfo.files[join('docs', 'templates', 'context', 'production-map.md')];
+    writeVersion(tmpDir, versionInfo.version, versionInfo.files);
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      // No --yes flag — new files should still be auto-added
+      await upgrade(tmpDir, { yes: false });
+    } finally {
+      console.log = origLog;
+    }
+
+    expect(existsSync(templatePath)).toBe(true);
+    expect(logs.some(l => l.includes('added 1 new'))).toBe(true);
+  });
+
   it('adds new files that did not exist before with --yes', async () => {
     await init(tmpDir, { force: false });
 
@@ -144,7 +169,7 @@ describe('upgrade', () => {
     await init(tmpDir, { force: false });
 
     // Simulate old skill directories that should be cleaned up
-    const deprecatedSkills = ['tune', 'joy', 'joysmith', 'joysmith-assess', 'tune-assess', 'tune-upgrade'];
+    const deprecatedSkills = ['tune', 'joy', 'joysmith', 'joysmith-assess', 'joysmith-upgrade', 'tune-assess', 'tune-upgrade'];
     for (const name of deprecatedSkills) {
       const dir = join(tmpDir, '.claude', 'skills', name);
       mkdirSync(dir, { recursive: true });

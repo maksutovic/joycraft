@@ -30,12 +30,13 @@ function getManagedFiles(): Record<string, string> {
 // Deprecated skill names from previous versions of Joycraft.
 // These get removed during upgrade to prevent stale slash commands.
 const DEPRECATED_SKILL_DIRS = [
-  'tune',            // pre-namespace (was /tune, now /joycraft-tune)
-  'joy',             // merged into joycraft-tune
-  'joysmith',        // pre-rebrand
-  'joysmith-assess', // merged into joycraft-tune
-  'tune-assess',     // merged into joycraft-tune
-  'tune-upgrade',    // merged into joycraft-tune
+  'tune',              // pre-namespace (was /tune, now /joycraft-tune)
+  'joy',               // merged into joycraft-tune
+  'joysmith',          // pre-rebrand
+  'joysmith-assess',   // merged into joycraft-tune
+  'joysmith-upgrade',  // merged into joycraft-tune
+  'tune-assess',       // merged into joycraft-tune
+  'tune-upgrade',      // merged into joycraft-tune
 ];
 
 // Flat .md files from the pre-directory skill format
@@ -44,6 +45,7 @@ const DEPRECATED_SKILL_FILES = [
   'joy.md',
   'joysmith.md',
   'joysmith-assess.md',
+  'joysmith-upgrade.md',
   'tune-assess.md',
   'tune-upgrade.md',
 ];
@@ -163,16 +165,11 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
 
   for (const change of changes) {
     if (change.kind === 'new') {
-      const label = `New file: ${change.relativePath}`;
-      const accept = opts.yes || await askUser(`${label} — add it?`);
-      if (accept) {
-        mkdirSync(dirname(change.absolutePath), { recursive: true });
-        writeFileSync(change.absolutePath, change.newContent, 'utf-8');
-        added++;
-        if (!opts.yes) console.log(`  + ${change.relativePath}`);
-      } else {
-        skipped++;
-      }
+      // New Joycraft files are always auto-added — no prompt needed
+      mkdirSync(dirname(change.absolutePath), { recursive: true });
+      writeFileSync(change.absolutePath, change.newContent, 'utf-8');
+      added++;
+      console.log(`  + ${change.relativePath}`);
     } else if (change.kind === 'updated') {
       // Safe to auto-update — user hasn't touched the file
       writeFileSync(change.absolutePath, change.newContent, 'utf-8');
