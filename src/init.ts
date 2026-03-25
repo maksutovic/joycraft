@@ -4,6 +4,7 @@ import { detectStack } from './detect.js';
 import { generateCLAUDEMd } from './improve-claude-md.js';
 import { generateAgentsMd } from './agents-md.js';
 import { generatePermissions } from './permissions.js';
+import { installSafeguardHooks } from './safeguard.js';
 import { SKILLS, TEMPLATES } from './bundled-files.js';
 import { writeVersion, hashContent } from './version.js';
 
@@ -165,7 +166,12 @@ try {
   }
   writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
 
-  // 9. Check .gitignore for .claude/ exclusion
+  // 9. Install safeguard hooks (PreToolUse deny-pattern blocking)
+  const hookResult = installSafeguardHooks(targetDir, [], opts.force);
+  result.created.push(...hookResult.created);
+  result.skipped.push(...hookResult.skipped);
+
+  // 10. Check .gitignore for .claude/ exclusion
   const gitignorePath = join(targetDir, '.gitignore');
   if (existsSync(gitignorePath)) {
     const gitignore = readFileSync(gitignorePath, 'utf-8');
@@ -177,7 +183,7 @@ try {
     }
   }
 
-  // 9. Print summary
+  // 11. Print summary
   printSummary(result, stack);
 }
 
