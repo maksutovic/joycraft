@@ -27,7 +27,7 @@ Joycraft is simple. It's a set of **skills** (slash commands for Claude Code) an
 - **Levels 1-4:** Skills like `/joycraft-tune`, `/joycraft-new-feature`, and `/joycraft-interview` replace unstructured prompting with spec-driven development. You interview, you write specs, the agent executes. No back-and-forth.
 - **Level 5:** The `/joycraft-implement-level5` skill sets up the autonomous loop — where specs go in and validated software comes out, with holdout scenario testing that prevents the agent from gaming its own tests.
 
-The name is a deliberate counter-narrative to "dark factory." Autonomous software development should bring craft and joy to engineering, not darkness.
+StrongDM calls their Level 5 fully autonomous loop a "Dark Factory" — which, albeit a cool name, the world has so much darkness in it right now. I wanted a name that extolled more of what I believe tools like this can provide: joy and craftsmanship. Hence "Joycraft."
 
 ### What are the levels?
 
@@ -49,11 +49,20 @@ Joycraft is currently focused on making the Claude Code experience state-of-the-
 
 ## Quick Start
 
+First, install the CLI:
+
 ```bash
+npm install -g joycraft
+```
+
+Then navigate to your project's root directory and initialize:
+
+```bash
+cd /path/to/your/project
 npx joycraft init
 ```
 
-That's it. Joycraft auto-detects your tech stack and creates:
+Joycraft auto-detects your tech stack and creates:
 
 - **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
 - **AGENTS.md** for Codex compatibility
@@ -152,7 +161,11 @@ npx joycraft upgrade
 
 Joycraft tracks what it installed vs. what you've customized. Unmodified files update automatically. Customized files show a diff and ask before overwriting. Use `--yes` for CI.
 
+> **Note:** If you're upgrading from an early version, you may have old skill files (e.g., `/joy`, `/joysmith`) that are no longer used. Automatic cleanup of deprecated skills is on the roadmap — for now, you can safely delete any `.claude/skills/` entries that don't start with `joycraft-`.
+
 ## Level 5: The Autonomous Loop
+
+> **A note on complexity:** Setting up Level 5 does have some moving parts and, depending on the complexity of your stack (software vs. hardware, monorepo vs. single app, etc.), this will require a good amount of prompting and trial-and-error to get right. I've done my best to make this as painless as possible, but just note — this is not a one-shot-prompt-done-in-5-minutes kind of thing. For small projects and simple stacks it will be easy, but any level of complexity is going to take some iteration, so plan ahead. Full step-by-step guides along with a video coming soon.
 
 Level 5 is where specs go in and validated software comes out. Joycraft implements this as four interlocking GitHub Actions workflows, a separate scenarios repository, and two independent AI agents that can never see each other's work.
 
@@ -435,9 +448,24 @@ Validated in the Pipit trial (~3 minutes, one iteration, zero human intervention
 
 The iteration guard and max-turns cap prevent runaway costs.
 
-## Git Autonomy
+## Tuning: Risk Interview & Git Autonomy
 
-When `/joycraft-tune` runs for the first time, it asks one question: **how autonomous should git be?**
+When `/joycraft-tune` runs for the first time, it does two things:
+
+### Risk interview
+
+3-5 targeted questions about what's dangerous in your project — production databases, live APIs, secrets, files that should be off-limits. From your answers, Joycraft generates:
+
+- **NEVER rules** for CLAUDE.md (e.g., "NEVER connect to production DB")
+- **Deny patterns** for `.claude/settings.json` (blocks dangerous bash commands)
+- **`docs/context/production-map.md`** — what's real vs. safe to touch
+- **`docs/context/dangerous-assumptions.md`** — "Agent might assume X, but actually Y"
+
+This takes 2-3 minutes and dramatically reduces the chance of your agent doing something catastrophic.
+
+### Git autonomy
+
+One question: **how autonomous should git be?**
 
 - **Cautious** (default) — commits freely, asks before pushing or opening PRs. Good for learning the workflow.
 - **Autonomous** — commits, pushes to feature branches, and opens PRs without asking. Good for spec-driven development where you want full send.
@@ -491,13 +519,13 @@ Joycraft's approach is synthesized from several sources:
 
 Joycraft synthesizes ideas and patterns from people doing extraordinary work in AI-assisted software development:
 
-- **[Dan Shapiro](https://www.danshapiro.com/)** ([@danshapiro](https://github.com/danshapiro)) — The [5 Levels of Vibe Coding](https://www.danshapiro.com/blog/2026/01/the-five-levels-from-spicy-autocomplete-to-the-software-factory/) framework that Joycraft's assessment and level system is built on
-- **[StrongDM](https://www.strongdm.com/)** / **Justin McCarthy** ([@justinmccarthy](https://github.com/justinmccarthy)) — The [Software Factory](https://factory.strongdm.ai/): spec-driven autonomous development, NLSpec, external holdout scenarios, and the proof that 3 engineers can outproduce 30
-- **[Boris Cherny](https://performancejs.com/)** ([@bcherny](https://github.com/bcherny)) — Head of Claude Code at Anthropic. The interview → spec → fresh session → execute pattern, and the insight that [context isolation produces better results](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens)
-- **[Addy Osmani](https://addyosmani.com/)** ([@addyosmani](https://github.com/addyosmani)) — [What makes a good spec for AI](https://addyosmani.com/blog/good-spec/): commands, testing, project structure, code style, git workflow, and boundaries
+- **[Dan Shapiro](https://x.com/danshapiro)** — The [5 Levels of Vibe Coding](https://www.danshapiro.com/blog/2026/01/the-five-levels-from-spicy-autocomplete-to-the-software-factory/) framework that Joycraft's assessment and level system is built on
+- **[StrongDM](https://www.strongdm.com/)** / **[Justin McCarthy](https://x.com/BuiltByJustin)** — The [Software Factory](https://factory.strongdm.ai/): spec-driven autonomous development, NLSpec, external holdout scenarios, and the proof that 3 engineers can outproduce 30
+- **[Boris Cherny](https://x.com/bcherny)** — Head of Claude Code at Anthropic. The interview → spec → fresh session → execute pattern, and the insight that [context isolation produces better results](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens)
+- **[Addy Osmani](https://x.com/addyosmani)** — [What makes a good spec for AI](https://addyosmani.com/blog/good-spec/): commands, testing, project structure, code style, git workflow, and boundaries
 - **[METR](https://metr.org/)** — The [randomized control trial](https://metr.org/) that proved unstructured AI use makes experienced developers slower, validating the need for harnesses
-- **[Nate B Jones](https://www.youtube.com/@natebj)** ([@nateBJ](https://github.com/nateBJ)) — His [video on the 5 Levels of Vibe Coding](https://www.youtube.com/watch?v=bDcgHzCBgmQ) made this research accessible and inspired turning Joycraft into a tool anyone can use
-- **[Simon Willison](https://simonwillison.net/)** ([@simonw](https://github.com/simonw)) — [Analysis of the Software Factory](https://simonwillison.net/2026/Feb/7/software-factory/) that helped contextualize StrongDM's approach for the broader community
+- **[Nate B Jones](https://x.com/natebjones)** — His [video on the 5 Levels of Vibe Coding](https://www.youtube.com/watch?v=bDcgHzCBgmQ) made this research accessible and inspired turning Joycraft into a tool anyone can use
+- **[Simon Willison](https://x.com/simonw)** — [Analysis of the Software Factory](https://simonwillison.net/2026/Feb/7/software-factory/) that helped contextualize StrongDM's approach for the broader community
 - **[Anthropic](https://www.anthropic.com/)** — Claude Code's skills, hooks, and CLAUDE.md system that makes tool-native AI development possible, and the [harness patterns for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
 
 ## License
