@@ -1,0 +1,129 @@
+# Scenarios Run Workflow
+#
+# Triggered by a `repository_dispatch` event (type: run-scenarios) sent from
+# the main project's CI pipeline after a PR passes its internal tests.
+#
+# This workflow:
+#   1. Clones the main repo's PR branch to ../main-repo
+#   2. Builds the artifact
+#   3. Runs the scenario tests in this repo
+#   4. Posts a PASS or FAIL comment on the originating PR
+#
+# Prerequisites:
+#   - A GitHub App ("Joycraft Autofix" or equivalent) installed on BOTH repos.
+#     $JOYCRAFT_APP_ID is replaced with the actual App ID number at install time.
+#     JOYCRAFT_APP_PRIVATE_KEY must be stored as a repository secret in this repo.
+#   - This scenarios repo must be added to the App's repository access list.
+
+name: Run Scenarios
+
+on:
+  repository_dispatch:
+    types: [run-scenarios]
+
+jobs:
+  run-scenarios:
+    name: Run holdout scenario tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Check out the scenarios repo ─────────────────────────────────────
+      - name: Checkout scenarios repo
+        uses: actions/checkout@v4
+        with:
+          path: scenarios
+
+      # ── 2. Mint a GitHub App token ───────────────────────────────────────────
+      # $JOYCRAFT_APP_ID is replaced with the numeric App ID at install time
+      # (e.g., app-id: 3180156). It is NOT a secret — App IDs are public.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: $JOYCRAFT_APP_ID
+          private-key: ${{ secrets.JOYCRAFT_APP_PRIVATE_KEY }}
+          repositories: ${{ github.event.client_payload.repo }}
+
+      # ── 3. Clone the main repo's PR branch ──────────────────────────────────
+      # Cloned to ./main-repo so scenario tests can reference ../main-repo
+      # relative to the scenarios/ checkout.
+      - name: Clone main repo PR branch
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          git clone \
+            --branch ${{ github.event.client_payload.branch }} \
+            --depth 1 \
+            https://x-access-token:${GH_TOKEN}@github.com/${{ github.event.client_payload.repo }}.git \
+            main-repo
+
+      # ── 4. Set up Node.js ────────────────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: main-repo/package-lock.json
+
+      # ── 5. Build the main repo artifact ─────────────────────────────────────
+      - name: Build main repo
+        working-directory: main-repo
+        run: npm ci && npm run build
+
+      # ── 6. Install scenario test dependencies ────────────────────────────────
+      - name: Install scenario dependencies
+        working-directory: scenarios
+        run: npm ci
+
+      # ── 7. Run scenario tests ────────────────────────────────────────────────
+      # set +e    — don't abort on non-zero exit; we capture it manually
+      # set -o pipefail — propagate failures through pipes (for tee)
+      # NO_COLOR=1 — strip color codes before they reach tee
+      # ANSI codes are also stripped via sed as a belt-and-suspenders measure
+      - name: Run scenario tests
+        id: scenarios
+        working-directory: scenarios
+        run: |
+          set +e
+          set -o pipefail
+          NO_COLOR=1 npx vitest run 2>&1 \
+            | sed 's/\x1b\[[0-9;]*m//g' \
+            | tee test-output.txt
+          VITEST_EXIT=$?
+          echo "exit_code=$VITEST_EXIT" >> "$GITHUB_OUTPUT"
+          exit $VITEST_EXIT
+
+      # ── 8. Post PASS or FAIL comment on the originating PR ──────────────────
+      # Always runs so the PR author always gets feedback.
+      - name: Post result comment on PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ github.event.client_payload.pr_number }}
+          MAIN_REPO: ${{ github.event.client_payload.repo }}
+          VITEST_EXIT: ${{ steps.scenarios.outputs.exit_code }}
+        run: |
+          # Read test output (cap at 100 lines to keep the comment manageable)
+          OUTPUT=$(head -100 scenarios/test-output.txt 2>/dev/null || echo "(no output captured)")
+
+          if [ "$VITEST_EXIT" = "0" ]; then
+            STATUS_LINE="**Scenario tests: PASS**"
+          else
+            STATUS_LINE="**Scenario tests: FAIL** (exit code: $VITEST_EXIT)"
+          fi
+
+          BODY="${STATUS_LINE}
+
+          <details>
+          <summary>Test output</summary>
+
+          \`\`\`
+          ${OUTPUT}
+          \`\`\`
+
+          </details>
+
+          Run triggered by commit \`${{ github.event.client_payload.sha }}\`."
+
+          gh api "repos/${MAIN_REPO}/issues/${PR_NUMBER}/comments" \
+            -f body="$BODY"
