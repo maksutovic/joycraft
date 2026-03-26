@@ -177,19 +177,21 @@ Accept the default or the user's choice.
 
 ### Question 2: GitHub App
 
-> Level 5 needs a GitHub App to provide a separate identity for autofix pushes (this avoids GitHub's anti-recursion protection).
+> Level 5 needs a GitHub App to provide a separate identity for autofix pushes (this avoids GitHub's anti-recursion protection). Creating one takes about 2 minutes:
 >
-> **Option A:** Install the shared Joycraft Autofix app (quickest — 1 click)
-> **Option B:** Create your own GitHub App (more control)
+> 1. Go to https://github.com/settings/apps/new
+> 2. Give it a name (e.g., "My Project Autofix")
+> 3. Uncheck "Webhook > Active" (not needed)
+> 4. Under **Repository permissions**, set:
+>    - **Contents**: Read & Write
+>    - **Pull requests**: Read & Write
+>    - **Actions**: Read & Write
+> 5. Click **Create GitHub App**
+> 6. Note the **App ID** from the settings page
+> 7. Scroll to **Private keys** > click **Generate a private key** > save the \`.pem\` file
+> 8. Click **Install App** in the left sidebar > install it on your repo
 >
-> Which do you prefer?
-
-If Option A: The App ID is \`3180156\`. Note this for later.
-If Option B: Guide them to create an app at \`https://github.com/settings/apps/new\` with permissions: Contents (Read & Write), Pull Requests (Read & Write), Actions (Read & Write). They'll need the App ID from the settings page.
-
-### Question 3: App ID
-
-If they chose Option B, ask for their App ID. If Option A, use \`3180156\`.
+> What's your App ID?
 
 ## Step 3: Run init-autofix
 
@@ -205,28 +207,15 @@ Review the output with the user. Confirm files were created.
 
 Guide the user step by step:
 
-### 4a: GitHub App Private Key
+### 4a: Add Secrets to Main Repo
 
-> If you chose the shared Joycraft Autofix app, you'll need to generate a private key:
-> 1. Go to https://github.com/settings/apps/joycraft-autofix
-> 2. Scroll to "Private keys" and generate one
-> 3. Download the \`.pem\` file
->
-> If you created your own app, generate a private key from your app's settings page.
-
-### 4b: Add Secrets to Main Repo
+> You should already have the \`.pem\` file from when you created the app in Step 2.
 
 > Go to your repo's Settings > Secrets and variables > Actions, and add:
 > - \`JOYCRAFT_APP_PRIVATE_KEY\` — paste the contents of your \`.pem\` file
 > - \`ANTHROPIC_API_KEY\` — your Anthropic API key
 
-### 4c: Install the App
-
-> The GitHub App needs to be installed on your repo:
-> - Shared app: https://github.com/apps/joycraft-autofix/installations/new
-> - Own app: Go to your app's settings > Install App
-
-### 4d: Create the Scenarios Repo
+### 4b: Create the Scenarios Repo
 
 > Create the private scenarios repo:
 > \`\`\`bash
@@ -241,9 +230,9 @@ Guide the user step by step:
 > git push
 > \`\`\`
 
-### 4e: Add Secrets to Scenarios Repo
+### 4c: Add Secrets to Scenarios Repo
 
-> The scenarios repo also needs the App private key:
+> The scenarios repo also needs the same secrets:
 > - \`JOYCRAFT_APP_PRIVATE_KEY\` — same \`.pem\` file as the main repo
 > - \`ANTHROPIC_API_KEY\` — same key (needed for scenario generation)
 

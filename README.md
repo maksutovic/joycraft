@@ -437,35 +437,32 @@ sequenceDiagram
 
 The fastest way: run `/joycraft-implement-level5` in Claude Code and it walks you through everything interactively. Or follow these steps manually:
 
-#### Step 1: Install the GitHub App
+#### Step 1: Create a GitHub App
 
-The autofix workflow needs a GitHub App identity to push commits (GitHub blocks workflows from triggering other workflows with the default `GITHUB_TOKEN` -- a separate App identity solves this).
+The autofix workflow needs a GitHub App identity to push commits. GitHub blocks workflows from triggering other workflows with the default `GITHUB_TOKEN` -- a separate App identity solves this. Creating one takes about 2 minutes:
 
-**Option A: Shared Joycraft Autofix app (quickest)**
-1. Install the app: https://github.com/apps/joycraft-autofix/installations/new
-2. Select the repo(s) you want to use with Level 5
-3. Generate a private key: go to https://github.com/settings/apps/joycraft-autofix > "Private keys" > Generate
-4. Download the `.pem` file -- you'll need it in Step 3
-5. Your App ID is `3180156`
-
-**Option B: Create your own GitHub App (more control)**
 1. Go to https://github.com/settings/apps/new
-2. Set permissions: Contents (Read & Write), Pull Requests (Read & Write), Actions (Read & Write)
-3. Create the app and note the App ID from the settings page
-4. Generate a private key and download the `.pem` file
-5. Install the app on your repo(s)
+2. Give it a name (e.g., "My Project Autofix")
+3. Uncheck "Webhook > Active" (not needed)
+4. Under **Repository permissions**, set:
+   - **Contents**: Read & Write
+   - **Pull requests**: Read & Write
+   - **Actions**: Read & Write
+5. Click **Create GitHub App**
+6. Note the **App ID** from the settings page (you'll need it in Step 2)
+7. Scroll to **Private keys** > click **Generate a private key**
+8. Save the downloaded `.pem` file -- you'll need it in Step 3
+9. Click **Install App** in the left sidebar > install it on the repo(s) you want to use
+
+> **Coming soon:** We're working on a shared Joycraft Autofix app that will reduce this to a single click. For now, creating your own app gives you full control and takes just a couple minutes.
 
 #### Step 2: Run the CLI
 
 ```bash
-# Option A (shared app)
-npx joycraft init-autofix --scenarios-repo my-project-scenarios --app-id 3180156
-
-# Option B (your own app)
 npx joycraft init-autofix --scenarios-repo my-project-scenarios --app-id YOUR_APP_ID
 ```
 
-This installs the four workflow files in your main repo and copies scenario templates to `docs/templates/scenarios/`.
+Replace `YOUR_APP_ID` with the App ID from Step 1. This installs the four workflow files in your main repo and copies scenario templates to `docs/templates/scenarios/`.
 
 #### Step 3: Add secrets to your main repo
 

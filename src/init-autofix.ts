@@ -133,21 +133,17 @@ function printSummary(result: AutofixResult, dryRun: boolean, scenariosRepo: str
     }
   }
 
-  console.log('\n  Setup checklist:\n');
-  console.log('  1. Create a GitHub App with these permissions:');
-  console.log('       - Contents: Read & Write');
-  console.log('       - Actions: Read & Write');
-  console.log('       - Pull requests: Read & Write');
-  console.log('');
-  console.log('  2. Add these secrets to your main repo (GitHub Settings > Secrets):');
-  console.log('       JOYCRAFT_APP_PRIVATE_KEY   — private key PEM from your GitHub App');
+  console.log('\n  Remaining setup:\n');
+  console.log('  1. Add secrets to your main repo (Settings > Secrets and variables > Actions):');
+  console.log('       JOYCRAFT_APP_PRIVATE_KEY   — the .pem file from your GitHub App');
   console.log('       ANTHROPIC_API_KEY           — your Anthropic API key');
   console.log('');
-  console.log('  3. Create the scenarios repo (private):');
-  console.log(`       ${scenariosRepo}`);
-  console.log('     Copy docs/templates/scenarios/ into it as the repo root.');
+  console.log('  2. Create the scenarios repo (private):');
+  console.log(`       gh repo create ${scenariosRepo} --private`);
+  console.log(`       cp -r docs/templates/scenarios/* ../${scenariosRepo}/`);
+  console.log(`       cd ../${scenariosRepo} && git add -A && git commit -m "init: scaffold" && git push`);
   console.log('');
-  console.log('  4. Update autofix.yml with your GitHub App ID if not already set.');
+  console.log('  3. Add the same two secrets to the scenarios repo.');
   console.log('');
-  console.log('  Run `npx joycraft init-autofix --help` for options.\n');
+  console.log('  See README.md for the full setup guide.\n');
 }
