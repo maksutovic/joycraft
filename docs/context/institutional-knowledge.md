@@ -13,6 +13,8 @@
 ## Organizational Constraints
 
 - Single maintainer (Maximilian Maksutovic) — all publishing goes through npm trusted publishing via GitHub Actions
+- Every merge to main auto-publishes to npm (patch bump if no manual version change) — no manual releases needed
+- The `RELEASE_TOKEN` secret (fine-grained PAT) is required for the publish workflow to push version bump commits to protected main
 - Public open-source project — all code, issues, and PRs are visible
 - Users run this via `npx` — no guarantee they have Joycraft installed globally
 
