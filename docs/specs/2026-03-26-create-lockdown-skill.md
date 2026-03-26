@@ -1,7 +1,7 @@
 # Create Lockdown Skill — Atomic Spec
 
 > **Parent Brief:** `docs/briefs/2026-03-26-test-first-new-feature.md`
-> **Status:** Ready
+> **Status:** Complete
 > **Date:** 2026-03-26
 > **Estimated scope:** 1 session / 2-3 files / ~80 lines
 

@@ -28,4 +28,5 @@
 ## People & Ownership
 
 - Maximilian Maksutovic — sole maintainer, handles all publishing, reviews all PRs
+- Praful Mathur — cofounder, primary power user, drives feature requirements from real autonomous development experience (hardware/firmware stack)
 - The "craft" metaphor is intentional — Joycraft enables human contextual stewardship of AI-assisted development

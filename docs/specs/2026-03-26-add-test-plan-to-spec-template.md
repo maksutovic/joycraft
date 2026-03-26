@@ -1,7 +1,7 @@
 # Add Test Plan Section to Spec Template — Atomic Spec
 
 > **Parent Brief:** `docs/briefs/2026-03-26-test-first-new-feature.md`
-> **Status:** Ready
+> **Status:** Complete
 > **Date:** 2026-03-26
 > **Estimated scope:** 1 session / 2-3 files / ~40 lines
 

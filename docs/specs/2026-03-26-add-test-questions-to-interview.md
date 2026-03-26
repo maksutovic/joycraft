@@ -1,7 +1,7 @@
 # Add Test Questions to New Feature Interview — Atomic Spec
 
 > **Parent Brief:** `docs/briefs/2026-03-26-test-first-new-feature.md`
-> **Status:** Ready
+> **Status:** Complete
 > **Date:** 2026-03-26
 > **Estimated scope:** 1 session / 1 file / ~30 lines
 

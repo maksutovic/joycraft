@@ -1,7 +1,7 @@
 # Improve CLI Version and Upgrade UX — Atomic Spec
 
 > **Parent Brief:** `docs/briefs/2026-03-26-test-first-new-feature.md`
-> **Status:** Ready
+> **Status:** Complete
 > **Date:** 2026-03-26
 > **Estimated scope:** 1 session / 1-2 files / ~50 lines
 
