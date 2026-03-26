@@ -12,6 +12,9 @@ on:
   push:
     branches: [main]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -21,8 +24,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -66,13 +67,15 @@ jobs:
           fi
           echo "version=$LOCAL" >> "$GITHUB_OUTPUT"
 
-      - name: Commit version bump
+      - name: Commit and push version bump
         if: steps.version.outputs.bumped == 'true'
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${RELEASE_TOKEN}@github.com/maksutovic/joycraft.git"
           git add package.json
           git commit -m "release: v$VERSION [skip ci]"
           git push origin main
@@ -83,9 +86,11 @@ jobs:
       - name: Create git tag
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${RELEASE_TOKEN}@github.com/maksutovic/joycraft.git"
           git tag -a "v$VERSION" -m "v$VERSION"
           git push origin "v$VERSION"
 
