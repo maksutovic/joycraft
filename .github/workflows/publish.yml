@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -71,11 +73,9 @@ jobs:
         if: steps.version.outputs.bumped == 'true'
         env:
           VERSION: ${{ steps.version.outputs.version }}
-          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:${RELEASE_TOKEN}@github.com/maksutovic/joycraft.git"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package.json
           git commit -m "release: v$VERSION [skip ci]"
           git push origin main
@@ -86,11 +86,7 @@ jobs:
       - name: Create git tag
         env:
           VERSION: ${{ steps.version.outputs.version }}
-          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:${RELEASE_TOKEN}@github.com/maksutovic/joycraft.git"
           git tag -a "v$VERSION" -m "v$VERSION"
           git push origin "v$VERSION"
 
