@@ -11,7 +11,7 @@ const program = new Command();
 program
   .name('joycraft')
   .description('Scaffold and upgrade AI development harnesses')
-  .version(pkg.version);
+  .version(pkg.version, '-v, --version');
 
 program
   .command('init')
@@ -65,5 +65,37 @@ program
       // Silent — don't block session start
     }
   });
+
+// Start update check immediately so it runs in parallel with the command
+const updateCheckPromise = (async (): Promise<string | null> => {
+  try {
+    const res = await fetch('https://registry.npmjs.org/joycraft/latest', {
+      signal: AbortSignal.timeout(3000)
+    });
+    if (res.ok) {
+      const latest = ((await res.json()) as { version: string }).version;
+      if (latest !== pkg.version) {
+        return `\nJoycraft ${latest} available (you have ${pkg.version}). Run: npm install -g joycraft`;
+      }
+    }
+  } catch {
+    // Silent — don't block or error on network issues
+  }
+  return null;
+})();
+
+// Print update nudge after every command
+program.hook('postAction', async () => {
+  const message = await updateCheckPromise;
+  if (message) {
+    console.log(message);
+  }
+});
+
+// Show help when no arguments provided
+if (process.argv.length <= 2) {
+  program.outputHelp();
+  process.exit(0);
+}
 
 program.parse();

@@ -21,6 +21,18 @@ Interview the user about what they want to build. Let them talk — your job is 
 - Are there edge cases or error conditions we need to handle?
 - What existing code/patterns should this follow?
 
+**Ask about testing:**
+
+Tests are how your agent knows it succeeded — they're the mechanism that unlocks autonomous execution. Ask these naturally as part of the conversation, not as a separate checklist.
+
+- Do you have an existing test setup? What framework?
+- How comfortable are you with writing tests? (helps calibrate how much guidance to provide)
+- What types of tests does your project use? (smoke, unit, integration, e2e, hardware, etc.)
+- How fast do your tests need to run for iteration? (a 30-second smoke test vs. a 10-minute full suite changes the workflow)
+- Would you like to constrain the execution agent to only write code and run tests? (lockdown mode — optional, useful for complex stacks where you want tighter control. Don't push this as a default.)
+
+If the user doesn't have tests yet, that's fine — offer to help set up a test strategy as part of the specs. If they have extensive tests, ask how new tests should integrate with the existing suite.
+
 **Interview technique:**
 - Let the user "yap" — don't interrupt their flow of ideas
 - After they finish, play back your understanding: "So if I'm hearing you right..."
@@ -59,6 +71,13 @@ What are we building and why? The full picture in 2-4 paragraphs.
 
 ## Out of Scope
 - NOT: [tempting but deferred]
+
+## Test Strategy
+- **Existing setup:** [framework and tools, or "none yet"]
+- **User expertise:** [comfortable / learning / needs guidance]
+- **Test types:** [smoke, unit, integration, e2e, etc.]
+- **Smoke test budget:** [target time for fast-feedback tests]
+- **Lockdown mode:** [yes/no — constrain agent to code + tests only]
 
 ## Decomposition
 | # | Spec Name | Description | Dependencies | Est. Size |

@@ -26,6 +26,31 @@ The notification delivery service (Spec 3) needs to check preferences before dis
 - [ ] Build passes
 - [ ] Tests pass (unit + integration)
 
+## Test Plan
+
+| Acceptance Criterion | Test | Type |
+|---------------------|------|------|
+| GET returns preferences as JSON | Call GET with authenticated user, assert 200 + JSON shape matches preferences schema | integration |
+| PATCH updates preferences | Call PATCH with valid partial update, assert 200 + returned record reflects changes | integration |
+| New users get defaults | Call GET for user with no existing record, assert default preferences (all channels enabled) | unit |
+| Unknown event types return 400 | Call PATCH with `{"foo": {"email": true}}`, assert 400 + validation error | unit |
+| Stored with EncryptedJsonColumn | Verify model uses EncryptedJsonColumn for preferences field | unit |
+| Auth required | Call GET/PATCH without auth token, assert 401 | integration |
+| Build passes | Verified by build step — no separate test needed | build |
+| Tests pass | Verified by test runner — no separate test needed | meta |
+
+**Execution order:**
+1. Write all tests above — they should fail against current/stubbed code
+2. Run tests to confirm they fail (red)
+3. Implement until all tests pass (green)
+
+**Smoke test:** The "New users get defaults" unit test — no database or HTTP needed, fastest feedback loop.
+
+**Before implementing, verify your test harness:**
+1. Run all tests — they must FAIL (if they pass, you're testing the wrong thing)
+2. Each test calls your actual function/endpoint — not a reimplementation or the underlying library
+3. Identify your smoke test — it must run in seconds, not minutes, so you get fast feedback on each change
+
 ## Constraints
 
 - MUST: Use the existing `EncryptedJsonColumn` utility for storage — do not roll a new encryption pattern
