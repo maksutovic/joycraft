@@ -1,11 +1,17 @@
 import { Command } from 'commander';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
 
 const program = new Command();
 
 program
   .name('joycraft')
   .description('Scaffold and upgrade AI development harnesses')
-  .version('0.1.0');
+  .version(pkg.version);
 
 program
   .command('init')
