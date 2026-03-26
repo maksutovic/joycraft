@@ -3,7 +3,8 @@
 # No NPM_TOKEN needed — npm verifies this workflow cryptographically
 # via OpenID Connect. Provenance attestations are automatic.
 #
-# Only publishes when package.json version differs from what's on npm.
+# Every merge to main auto-bumps the patch version if no manual bump
+# was made, then publishes, tags, and creates a GitHub Release.
 
 name: Publish to npm
 
@@ -47,29 +48,39 @@ jobs:
       - name: Type check
         run: pnpm typecheck
 
-      - name: Check if version changed
+      - name: Bump version if needed
         id: version
         run: |
           LOCAL=$(node -e "import fs from 'fs'; const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8')); process.stdout.write(pkg.version);" --input-type=module)
           REMOTE=$(npm view joycraft version 2>/dev/null || echo "0.0.0")
-          echo "local=$LOCAL" >> "$GITHUB_OUTPUT"
-          echo "remote=$REMOTE" >> "$GITHUB_OUTPUT"
-          if [ "$LOCAL" != "$REMOTE" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "Version changed: $REMOTE -> $LOCAL"
+          if [ "$LOCAL" = "$REMOTE" ]; then
+            echo "Version unchanged ($LOCAL), auto-bumping patch..."
+            npm version patch --no-git-tag-version
+            LOCAL=$(node -e "import fs from 'fs'; const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8')); process.stdout.write(pkg.version);" --input-type=module)
+            echo "bumped=true" >> "$GITHUB_OUTPUT"
           else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "Version unchanged ($LOCAL), skipping publish"
+            echo "Version already bumped: $REMOTE -> $LOCAL"
+            echo "bumped=false" >> "$GITHUB_OUTPUT"
           fi
+          echo "version=$LOCAL" >> "$GITHUB_OUTPUT"
+
+      - name: Commit version bump
+        if: steps.version.outputs.bumped == 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json
+          git commit -m "release: v$VERSION [skip ci]"
+          git push origin main
 
       - name: Publish to npm
-        if: steps.version.outputs.changed == 'true'
         run: npm publish --access public
 
       - name: Create git tag
-        if: steps.version.outputs.changed == 'true'
         env:
-          VERSION: ${{ steps.version.outputs.local }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -77,10 +88,9 @@ jobs:
           git push origin "v$VERSION"
 
       - name: Create GitHub Release
-        if: steps.version.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.version.outputs.local }}
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           gh release create "v$VERSION" \
             --title "v$VERSION" \
