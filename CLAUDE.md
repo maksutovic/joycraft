@@ -13,6 +13,9 @@
 - Commit style: `verb: concise message`
 - Reference atomic specs when implementing features — each spec is in `docs/specs/`
 - Test against multiple stack types (Node.js, Python, Rust, Go at minimum)
+- Push to feature branches after each commit
+- Open a PR when all specs in a feature are complete
+- Use descriptive branch names: feature/spec-name
 
 ### ASK FIRST
 - Adding dependencies — this is a CLI tool, keep it minimal
@@ -20,12 +23,16 @@
 - Changing skill content — skills are the user-facing interface
 - Modifying the CLAUDE.md merge/improve logic — this touches user files
 - Publishing to npm
+- Merging PRs to main/master
+- Any destructive git operation (force-push, reset --hard, branch deletion)
 
 ### NEVER
 - Overwrite user files without explicit confirmation or `--force` flag
 - Add runtime dependencies that aren't strictly necessary
 - Reference absolute paths — all templates and skills must use project-relative paths
 - Include methodology research, project assessments, or personal notes in the tool
+- Push directly to main/master (always use feature branches + PR)
+- Amend commits that have been pushed to remote
 
 ---
 
