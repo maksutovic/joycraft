@@ -46,6 +46,7 @@ describe('init', () => {
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-new-feature', 'SKILL.md'))).toBe(true);
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-decompose', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-bugfix', 'SKILL.md'))).toBe(true);
 
       // Templates (keyed by relative path from src/templates/)
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'examples', 'example-spec.md'))).toBe(true);
