@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "CLI + Claude Code plugin that scaffolds and upgrades AI development harnesses",
   "type": "module",
   "bin": {
