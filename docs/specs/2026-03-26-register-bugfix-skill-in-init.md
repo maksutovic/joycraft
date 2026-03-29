@@ -1,7 +1,7 @@
 # Register Bug Fix Skill in Init — Atomic Spec
 
 > **Parent Brief:** `docs/briefs/2026-03-26-bugfix-workflow-skill.md`
-> **Status:** Ready
+> **Status:** Complete
 > **Date:** 2026-03-26
 > **Estimated scope:** 1 session / 2-3 files / ~20 lines
 

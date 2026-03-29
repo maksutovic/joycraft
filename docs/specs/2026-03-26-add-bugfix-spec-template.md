@@ -1,7 +1,7 @@
 # Add Bug Fix Spec Template — Atomic Spec
 
 > **Parent Brief:** `docs/briefs/2026-03-26-bugfix-workflow-skill.md`
-> **Status:** Ready
+> **Status:** Complete
 > **Date:** 2026-03-26
 > **Estimated scope:** 1 session / 1 file / ~40 lines modified
 
