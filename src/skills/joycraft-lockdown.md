@@ -1,6 +1,7 @@
 ---
 name: joycraft-lockdown
 description: Generate constrained execution boundaries for an implementation session -- NEVER rules and deny patterns to prevent agent overreach
+instructions: 28
 ---
 
 # Lockdown Mode

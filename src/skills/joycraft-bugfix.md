@@ -1,70 +1,44 @@
 ---
 name: joycraft-bugfix
 description: Structured bug fix workflow — triage, diagnose, discuss with user, write a focused spec, hand off for implementation
+instructions: 32
 ---
 
 # Bug Fix Workflow
 
 You are fixing a bug. Follow this process in order. Do not skip steps.
 
-**Guard clause:** If the user's request is clearly a new feature — not a bug, error, or unexpected behavior — say:
-"This sounds like a new feature rather than a bug fix. Try `/joycraft-new-feature` for a guided feature workflow."
-Then stop.
+**Guard clause:** If this is clearly a new feature, redirect to `/joycraft-new-feature` and stop.
 
 ---
 
 ## Phase 1: Triage
 
-Establish what's broken. Your goal is to reproduce the bug or at minimum understand the symptom clearly.
+Establish what's broken. Gather: symptom, steps to reproduce, expected vs actual behavior, when it started, relevant logs/errors. If an error message or stack trace is provided, read the referenced files immediately. Try to reproduce if steps are given.
 
-**Ask / gather:**
-- What is the symptom? (error message, unexpected behavior, crash, wrong output)
-- What are the steps to reproduce?
-- What is the expected behavior vs. actual behavior?
-- When did it start? (recent change, always been this way, intermittent)
-- Any relevant logs, screenshots, or error output?
-
-**Actions:**
-- If the user provides an error message or stack trace, read the referenced files immediately
-- If steps to reproduce are provided, try to reproduce the bug (run the failing command, test, or request)
-- If the bug is intermittent or hard to reproduce, gather more context: environment, OS, versions, config
-
-**Done when:** You can describe the symptom in one sentence and have either reproduced it or have enough context to diagnose without reproduction.
+**Done when:** You can describe the symptom in one sentence.
 
 ---
 
 ## Phase 2: Diagnose
 
-Find the root cause. Read code, trace the execution path, identify what's wrong and why.
+Find the root cause. Start from the error site and trace backward. Read source files — don't guess. Identify the specific line(s) and logic error. Check git blame if it's a recent regression.
 
-**Actions:**
-- Start from the error site (stack trace, failing test, broken UI) and trace backward
-- Read the relevant source files — don't guess based on file names alone
-- Identify the specific line(s), condition, or logic error causing the bug
-- Check git blame or recent commits if the bug was introduced by a recent change
-- Look for related bugs — is this a symptom of a deeper issue?
-
-**Done when:** You can explain the root cause in 2-3 sentences: what's wrong, why it's wrong, and where in the code it happens.
+**Done when:** You can explain what's wrong, why, and where in 2-3 sentences.
 
 ---
 
 ## Phase 3: Discuss
 
-Present your findings to the user. Do NOT start writing code or a spec yet.
+Present findings to the user BEFORE writing any code or spec:
+1. **Symptom** — confirm it matches what they see
+2. **Root cause** — specific file(s) and line(s)
+3. **Proposed fix** — what changes, where
+4. **Risk** — side effects? scope?
 
-**Present:**
-1. **Symptom:** What the user sees (confirm your understanding matches theirs)
-2. **Root cause:** What's actually wrong in the code and why
-3. **Proposed fix:** What you think the fix is — be specific (which files, what changes)
-4. **Risk assessment:** What could go wrong with this fix? Any side effects?
-5. **Scope check:** Is this a simple fix or does it touch multiple systems?
+Ask: "Does this match? Comfortable with this approach?" If large/risky, suggest decomposing into multiple specs.
 
-**Ask:**
-- "Does this match what you're seeing?"
-- "Are you comfortable with this approach, or do you want to explore alternatives?"
-- If the fix is large or risky: "Should we decompose this into smaller specs?"
-
-**Done when:** The user agrees with the diagnosis and proposed fix direction.
+**Done when:** User agrees with the diagnosis and fix direction.
 
 ---
 

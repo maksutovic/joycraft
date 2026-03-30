@@ -1,6 +1,7 @@
 ---
 name: joycraft-decompose
 description: Break a feature brief into atomic specs — small, testable, independently executable units
+instructions: 32
 ---
 
 # Decompose Feature into Atomic Specs

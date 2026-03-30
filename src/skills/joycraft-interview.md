@@ -1,6 +1,7 @@
 ---
 name: joycraft-interview
 description: Brainstorm freely about what you want to build — yap, explore ideas, and get a structured summary you can use later
+instructions: 18
 ---
 
 # Interview — Idea Exploration

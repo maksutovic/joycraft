@@ -1,6 +1,7 @@
 ---
 name: joycraft-implement-level5
 description: Set up Level 5 autonomous development — autofix loop, holdout scenario testing, and scenario evolution from specs
+instructions: 35
 ---
 
 # Implement Level 5 — Autonomous Development Loop
