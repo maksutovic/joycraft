@@ -70,6 +70,8 @@ Joycraft auto-detects your tech stack and creates:
   - `/joycraft-tune` Assess your harness, apply upgrades, see your path to Level 5
   - `/joycraft-new-feature` Interview → Feature Brief → Atomic Specs
   - `/joycraft-interview` Lightweight brainstorm. Yap about ideas, get a structured summary
+  - `/joycraft-research` Objective codebase research — subagent sees only questions, never the brief
+  - `/joycraft-design` Design discussion checkpoint — ~200-line artifact for human review before decompose
   - `/joycraft-decompose` Break a brief into small, testable specs
   - `/joycraft-add-fact` Capture project knowledge on the fly -- routes to the right context doc
   - `/joycraft-lockdown` Generate constrained execution boundaries (read-only tests, deny patterns)
@@ -96,6 +98,8 @@ After init, open Claude Code and use the installed skills:
 /joycraft-tune                  # Assess your harness, apply upgrades, see path to Level 5
 /joycraft-interview             # Brainstorm freely, yap about ideas, get a structured summary
 /joycraft-new-feature           # Interview → Feature Brief → Atomic Specs → ready to execute
+/joycraft-research              # Objective codebase research (subagent never sees the brief)
+/joycraft-design                # Design discussion — patterns, decisions, open questions for review
 /joycraft-decompose             # Break any feature into small, independent specs
 /joycraft-add-fact              # Capture a fact mid-session -- auto-routes to the right context doc
 /joycraft-lockdown              # Generate constrained execution boundaries for autonomous sessions
@@ -107,7 +111,8 @@ After init, open Claude Code and use the installed skills:
 The core loop:
 
 ```
-Interview → Spec → Fresh Session → Execute → Discoveries → Ship
+Interview → Brief → Research → Design → Decompose → Specs → Implement → Verify
+                    (optional)  (optional)
 ```
 
 ## The Interview: Why It Matters
@@ -135,16 +140,46 @@ flowchart LR
     A["/joycraft-interview<br/>(brainstorm)"] --> B["Draft Brief<br/>docs/briefs/"]
     B --> C["/joycraft-new-feature<br/>(structured interview)"]
     C --> D["Feature Brief<br/>(what & why)"]
-    D --> E["/joycraft-decompose"]
+    D --> R["/joycraft-research<br/>(objective facts)"]
+    R --> DS["/joycraft-design<br/>(human checkpoint)"]
+    DS --> E["/joycraft-decompose"]
     E --> F["Atomic Specs<br/>docs/specs/"]
     F --> G["Fresh Session<br/>Execute each spec"]
     G --> H["/joycraft-session-end<br/>(discoveries + commit)"]
 
     style A fill:#e8f4fd,stroke:#369
     style C fill:#e8f4fd,stroke:#369
+    style R fill:#f0e8fd,stroke:#639
+    style DS fill:#f0e8fd,stroke:#639
     style F fill:#cfc,stroke:#393
     style G fill:#ffd,stroke:#993
 ```
+
+## Research Isolation & Design Checkpoints
+
+These two skills were inspired by [Dex Horthy](https://x.com/dexhorthy)'s work at [HumanLayer](https://humanlayer.dev) on what went wrong with the Research-Plan-Implement (RPI) methodology and the evolution to [CRISPY](https://humanlayer.dev/blog) (Context, Research, Investigate, Structure, Plan, Yield).
+
+### The problem with "research the codebase"
+
+When you tell an agent "research how endpoints work — I'm going to build a new one," the research comes back contaminated with opinions about how to build the new endpoint. Good research is pure facts. The moment the researcher knows the intent, it editorializes.
+
+**`/joycraft-research`** fixes this with context isolation: one context window generates research questions from the brief, then a separate subagent researches the codebase using *only those questions* — it never sees the brief. The output is a research document in `docs/research/` that contains file paths, function signatures, data flows, and patterns. No recommendations. No opinions. Just compressed truth.
+
+This is the same "query planning" technique Dex describes: separate the intent from the investigation, like a database separates query planning from execution.
+
+### The 200-line checkpoint
+
+HumanLayer found that engineers were reviewing 1,000-line plans — which is the same effort as reviewing 1,000 lines of code, and the plans often diverged from what was actually implemented. The leverage was terrible.
+
+**`/joycraft-design`** produces a ~200-line design discussion artifact instead. It contains five sections: current state, desired end state, patterns to follow, resolved design decisions, and open questions with concrete options. This is where you catch "that's not how we do atomic SQL updates — go find the pattern in `/services/billing`" *before* 2,000 lines of code follow the wrong pattern.
+
+[Matt Pocock](https://x.com/mattpocockuk) calls this the "design concept" — the shared understanding between you and the agent that exists separately from the code. Joycraft materializes it as a markdown document and forces a human checkpoint: the skill will not proceed to decomposition until you've reviewed and approved.
+
+Both steps are optional. You can skip straight from brief to decompose for simple features. But for anything complex enough to get wrong, the 15 minutes of human review on a 200-line document saves hours of rework on code that followed the wrong patterns.
+
+### Instruction budget discipline
+
+Every Joycraft skill now includes an `instructions` count in its frontmatter. No skill exceeds 40 instructions. This is based on [research](https://arxiv.org/pdf/2507.11538) showing that frontier LLMs can reliably follow ~150-200 instructions — but your skill shares that budget with the system prompt, CLAUDE.md, tools, and MCP servers. A skill with 85 instructions (as Joycraft's `/joycraft-tune` had before this refactor) is competing for attention with everything else in the context window. Smaller, focused skills with clear handoffs produce more reliable results than monolithic mega-prompts.
 
 ### What a good spec looks like
 
@@ -294,7 +329,7 @@ Joycraft's approach is synthesized from several sources:
 
 **Spec-driven development.** Instead of prompting AI in conversation, you write structured specifications. Feature Briefs capture the *what* and *why*, then Atomic Specs break work into small, testable, independently executable units. Each spec is self-contained: an agent can pick it up without reading anything else. This follows [Addy Osmani's](https://addyosmani.com/blog/good-spec/) principles for AI-consumable specs and [GitHub's Spec Kit](https://github.blog/ai-and-ml/generative-ai/spec-driven-development-with-ai-get-started-with-a-new-open-source-toolkit/) 4-phase process (Specify → Plan → Tasks → Implement).
 
-**Context isolation.** [Boris Cherny](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens) (Head of Claude Code at Anthropic) recommends: interview in one session, write the spec, then execute in a *fresh session* with clean context. Joycraft's `/joycraft-new-feature` → `/joycraft-decompose` → execute workflow enforces this naturally. The interview session captures intent; the execution session has only the spec.
+**Context isolation.** [Boris Cherny](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens) (Head of Claude Code at Anthropic) recommends: interview in one session, write the spec, then execute in a *fresh session* with clean context. [Dex Horthy](https://humanlayer.dev) at HumanLayer took this further: even *research* should be isolated from intent — the researching agent should never see the ticket, only objective questions derived from it. Joycraft's `/joycraft-research` → `/joycraft-design` → `/joycraft-decompose` pipeline enforces this at every stage: the interview captures intent, research gathers objective facts, design aligns human and agent on approach, and the execution session has only the spec.
 
 **Behavioral boundaries.** CLAUDE.md isn't a suggestion box, it's a contract. Joycraft installs a three-tier boundary framework (Always / Ask First / Never) that prevents the most common AI development failures: overwriting user files, skipping tests, pushing without approval, hardcoding secrets. This is [Addy Osmani's](https://addyosmani.com/blog/good-spec/) "boundaries" principle made concrete.
 
@@ -314,6 +349,7 @@ Joycraft synthesizes ideas and patterns from people doing extraordinary work in 
 
 - **[Dan Shapiro](https://x.com/danshapiro)** for the [5 Levels of Vibe Coding](https://www.danshapiro.com/blog/2026/01/the-five-levels-from-spicy-autocomplete-to-the-software-factory/) framework that Joycraft's assessment and level system is built on
 - **[StrongDM](https://www.strongdm.com/)** / **[Justin McCarthy](https://x.com/BuiltByJustin)** for the [Software Factory](https://factory.strongdm.ai/): spec-driven autonomous development, NLSpec, external holdout scenarios, and the proof that 3 engineers can outproduce 30
+- **[Dex Horthy](https://x.com/dexhorthy)** / **[HumanLayer](https://humanlayer.dev)** for the [RPI to CRISPY evolution](https://humanlayer.dev/blog): research isolation (hide the ticket from the researcher), the instruction budget concept (~150-200 instructions max), design discussions as high-leverage checkpoints, vertical-over-horizontal planning, and the conviction that "if your tool requires magic words, go fix the tool"
 - **[Boris Cherny](https://x.com/bcherny)**, Head of Claude Code at Anthropic, for the interview → spec → fresh session → execute pattern and the insight that [context isolation produces better results](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens)
 - **[Addy Osmani](https://x.com/addyosmani)** for [What makes a good spec for AI](https://addyosmani.com/blog/good-spec/): commands, testing, project structure, code style, git workflow, and boundaries
 - **[METR](https://metr.org/)** for the [randomized control trial](https://metr.org/) that proved unstructured AI use makes experienced developers slower, validating the need for harnesses
