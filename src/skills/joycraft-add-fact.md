@@ -1,6 +1,7 @@
 ---
 name: joycraft-add-fact
 description: Capture a project fact and route it to the correct context document -- production map, dangerous assumptions, decision log, institutional knowledge, or troubleshooting
+instructions: 38
 ---
 
 # Add Fact

@@ -1,6 +1,7 @@
 ---
 name: joycraft-new-feature
 description: Guided feature development — interview the user, produce a Feature Brief, then decompose into atomic specs
+instructions: 35
 ---
 
 # New Feature Workflow
@@ -11,36 +12,21 @@ You are starting a new feature. Follow this process in order. Do not skip steps.
 
 Interview the user about what they want to build. Let them talk — your job is to listen, then sharpen.
 
-**Why:** A thorough interview prevents wasted implementation time. Most failed features fail because the problem wasn't understood, not because the code was wrong.
-
 **Ask about:**
 - What problem does this solve? Who is affected?
-- What does "done" look like? How will a user know this works?
-- What are the hard constraints? (business rules, tech limitations, deadlines)
-- What is explicitly NOT in scope? (push hard on this — aggressive scoping is key)
-- Are there edge cases or error conditions we need to handle?
+- What does "done" look like?
+- Hard constraints? (business rules, tech limitations, deadlines)
+- What is explicitly NOT in scope? (push hard on this)
+- Edge cases or error conditions?
 - What existing code/patterns should this follow?
-
-**Ask about testing:**
-
-Tests are how your agent knows it succeeded — they're the mechanism that unlocks autonomous execution. Ask these naturally as part of the conversation, not as a separate checklist.
-
-- Do you have an existing test setup? What framework?
-- How comfortable are you with writing tests? (helps calibrate how much guidance to provide)
-- What types of tests does your project use? (smoke, unit, integration, e2e, hardware, etc.)
-- How fast do your tests need to run for iteration? (a 30-second smoke test vs. a 10-minute full suite changes the workflow)
-- Would you like to constrain the execution agent to only write code and run tests? (lockdown mode — optional, useful for complex stacks where you want tighter control. Don't push this as a default.)
-
-If the user doesn't have tests yet, that's fine — offer to help set up a test strategy as part of the specs. If they have extensive tests, ask how new tests should integrate with the existing suite.
+- Testing: existing setup? framework? smoke test budget? lockdown mode desired?
 
 **Interview technique:**
-- Let the user "yap" — don't interrupt their flow of ideas
-- After they finish, play back your understanding: "So if I'm hearing you right..."
-- Ask clarifying questions that force specificity: "When you say 'handle errors,' what should the user see?"
+- Let the user "yap" — don't interrupt their flow
+- Play back your understanding: "So if I'm hearing you right..."
 - Push toward testable statements: "How would we verify that works?"
 
-Keep asking until you can fill out a Feature Brief. When ready, say:
-"I have enough context. Let me write the Feature Brief for your review."
+Keep asking until you can fill out a Feature Brief.
 
 ## Phase 2: Feature Brief
 

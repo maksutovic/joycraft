@@ -1,6 +1,7 @@
 ---
 name: joycraft-session-end
 description: Wrap up a session — capture discoveries, verify, prepare for PR or next session
+instructions: 22
 ---
 
 # Session Wrap-Up
