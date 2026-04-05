@@ -54,6 +54,15 @@ describe('init', () => {
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'context', 'production-map.md'))).toBe(true);
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'context', 'troubleshooting.md'))).toBe(true);
     });
+
+    it('creates pipit-examples directory with README', async () => {
+      await init(tmpDir, { force: false });
+      expect(existsSync(join(tmpDir, 'docs', 'pipit-examples'))).toBe(true);
+      expect(existsSync(join(tmpDir, 'docs', 'pipit-examples', 'README.md'))).toBe(true);
+      const readme = readFileSync(join(tmpDir, 'docs', 'pipit-examples', 'README.md'), 'utf-8');
+      expect(readme).toContain('Pipit');
+      expect(readme).toContain('optional');
+    });
   });
 
   describe('directory with existing CLAUDE.md', () => {
