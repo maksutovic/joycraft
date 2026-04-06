@@ -5,7 +5,7 @@ import { generateCLAUDEMd } from './improve-claude-md.js';
 import { generateAgentsMd } from './agents-md.js';
 import { generatePermissions } from './permissions.js';
 import { installSafeguardHooks } from './safeguard.js';
-import { SKILLS, TEMPLATES } from './bundled-files.js';
+import { SKILLS, TEMPLATES, CODEX_SKILLS } from './bundled-files.js';
 import { writeVersion, hashContent } from './version.js';
 
 export interface InitOptions {
@@ -95,6 +95,29 @@ Each golden example is a Markdown file with YAML frontmatter containing:
     writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
   }
 
+  // 2b. Copy Codex skill files to .agents/skills/<name>/SKILL.md
+  const codexSkillsDir = join(targetDir, '.agents', 'skills');
+  let existingCodexSkills: string[] = [];
+  if (existsSync(codexSkillsDir)) {
+    existingCodexSkills = readdirSync(codexSkillsDir)
+      .filter(name => {
+        if (name.startsWith('joycraft-')) return false;
+        if (name.startsWith('.')) return false;
+        const fullPath = join(codexSkillsDir, name);
+        try {
+          return statSync(fullPath).isDirectory();
+        } catch {
+          return false;
+        }
+      });
+  }
+  for (const [filename, content] of Object.entries(CODEX_SKILLS)) {
+    const skillName = filename.replace(/\.md$/, '');
+    const skillDir = join(codexSkillsDir, skillName);
+    ensureDir(skillDir);
+    writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
+  }
+
   // 3. Copy template files to docs/templates/
   const templatesDir = join(targetDir, 'docs', 'templates');
   ensureDir(templatesDir);
@@ -130,6 +153,10 @@ Each golden example is a Markdown file with YAML frontmatter containing:
   for (const [filename, content] of Object.entries(SKILLS)) {
     const skillName = filename.replace(/\.md$/, '');
     fileHashes[join('.claude', 'skills', skillName, 'SKILL.md')] = hashContent(content);
+  }
+  for (const [filename, content] of Object.entries(CODEX_SKILLS)) {
+    const skillName = filename.replace(/\.md$/, '');
+    fileHashes[join('.agents', 'skills', skillName, 'SKILL.md')] = hashContent(content);
   }
   for (const [filename, content] of Object.entries(TEMPLATES)) {
     fileHashes[join('docs', 'templates', filename)] = hashContent(content);

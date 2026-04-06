@@ -383,6 +383,77 @@ describe('init', () => {
     });
   });
 
+  describe('Codex skills (.agents/skills/)', () => {
+    it('creates all 12 .agents/skills/*/SKILL.md files on empty dir', async () => {
+      await init(tmpDir, { force: false });
+
+      const expectedSkills = [
+        'joycraft-add-fact',
+        'joycraft-bugfix',
+        'joycraft-decompose',
+        'joycraft-design',
+        'joycraft-implement-level5',
+        'joycraft-interview',
+        'joycraft-lockdown',
+        'joycraft-new-feature',
+        'joycraft-research',
+        'joycraft-session-end',
+        'joycraft-tune',
+        'joycraft-verify',
+      ];
+      for (const skill of expectedSkills) {
+        expect(existsSync(join(tmpDir, '.agents', 'skills', skill, 'SKILL.md'))).toBe(true);
+      }
+    });
+
+    it('preserves existing non-Joycraft content in .agents/skills/', async () => {
+      mkdirSync(join(tmpDir, '.agents', 'skills', 'custom-tool'), { recursive: true });
+      writeFileSync(join(tmpDir, '.agents', 'skills', 'custom-tool', 'SKILL.md'), 'my custom tool');
+
+      await init(tmpDir, { force: false });
+
+      // Custom skill preserved
+      expect(readFileSync(join(tmpDir, '.agents', 'skills', 'custom-tool', 'SKILL.md'), 'utf-8')).toBe('my custom tool');
+      // Joycraft Codex skills installed
+      expect(existsSync(join(tmpDir, '.agents', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
+    });
+
+    it('overwrites existing Joycraft Codex skills with force: true', async () => {
+      await init(tmpDir, { force: false });
+
+      // Modify a Codex skill
+      writeFileSync(join(tmpDir, '.agents', 'skills', 'joycraft-tune', 'SKILL.md'), 'custom content');
+
+      await init(tmpDir, { force: true });
+
+      const skill = readFileSync(join(tmpDir, '.agents', 'skills', 'joycraft-tune', 'SKILL.md'), 'utf-8');
+      expect(skill).not.toBe('custom content');
+      expect(skill).toContain('Joycraft');
+    });
+
+    it('skips existing Joycraft Codex skills without force', async () => {
+      await init(tmpDir, { force: false });
+
+      // Modify a Codex skill
+      writeFileSync(join(tmpDir, '.agents', 'skills', 'joycraft-tune', 'SKILL.md'), 'custom content');
+
+      await init(tmpDir, { force: false });
+
+      const skill = readFileSync(join(tmpDir, '.agents', 'skills', 'joycraft-tune', 'SKILL.md'), 'utf-8');
+      expect(skill).toBe('custom content');
+    });
+
+    it('includes .agents/skills/ hashes in .joycraft-version', async () => {
+      await init(tmpDir, { force: false });
+
+      const version = JSON.parse(readFileSync(join(tmpDir, '.joycraft-version'), 'utf-8'));
+      const agentsKeys = Object.keys(version.files).filter(k => k.startsWith('.agents'));
+      expect(agentsKeys.length).toBe(12);
+      expect(agentsKeys.some(k => k.includes('joycraft-tune'))).toBe(true);
+      expect(agentsKeys.some(k => k.includes('joycraft-decompose'))).toBe(true);
+    });
+  });
+
   describe('partial harness', () => {
     it('handles some dirs existing already', async () => {
       // Pre-create some dirs
