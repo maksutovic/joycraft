@@ -33,13 +33,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: latest
           registry-url: https://registry.npmjs.org
           cache: pnpm
-
-      # GitHub runners ship outdated npm — OIDC trusted publishing needs npm >= 11.5.1
-      - name: Update npm for OIDC support
-        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: pnpm install
