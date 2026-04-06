@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync
 import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
 import { readVersion, writeVersion, hashContent } from './version.js';
-import { SKILLS, TEMPLATES } from './bundled-files.js';
+import { SKILLS, TEMPLATES, CODEX_SKILLS } from './bundled-files.js';
 
 export interface UpgradeOptions {
   yes: boolean;
@@ -23,6 +23,10 @@ function getManagedFiles(): Record<string, string> {
   }
   for (const [name, content] of Object.entries(TEMPLATES)) {
     files[join('docs', 'templates', name)] = content;
+  }
+  for (const [name, content] of Object.entries(CODEX_SKILLS)) {
+    const skillName = name.replace(/\.md$/, '');
+    files[join('.agents', 'skills', skillName, 'SKILL.md')] = content;
   }
   return files;
 }

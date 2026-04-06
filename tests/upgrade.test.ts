@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { upgrade } from '../src/upgrade';
 import { init } from '../src/init';
 import { readVersion, writeVersion, hashContent } from '../src/version';
-import { SKILLS, TEMPLATES } from '../src/bundled-files';
+import { SKILLS, TEMPLATES, CODEX_SKILLS } from '../src/bundled-files';
 
 function createTmpDir(): string {
   const dir = join(tmpdir(), `joycraft-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -215,6 +215,71 @@ describe('upgrade', () => {
     // Custom skill should be untouched
     expect(existsSync(join(customDir, 'SKILL.md'))).toBe(true);
     expect(readFileSync(join(customDir, 'SKILL.md'), 'utf-8')).toBe('my custom skill');
+  });
+
+  it('installs Codex skills in .agents/skills/ after upgrade', async () => {
+    await init(tmpDir, { force: false });
+
+    // Verify that .agents/skills/ files exist after init + upgrade
+    await upgrade(tmpDir, { yes: true });
+
+    for (const name of Object.keys(CODEX_SKILLS)) {
+      const skillName = name.replace(/\.md$/, '');
+      const skillPath = join(tmpDir, '.agents', 'skills', skillName, 'SKILL.md');
+      expect(existsSync(skillPath)).toBe(true);
+      expect(readFileSync(skillPath, 'utf-8')).toBe(CODEX_SKILLS[name]);
+    }
+  });
+
+  it('auto-adds new Codex skills not in old project', async () => {
+    await init(tmpDir, { force: false });
+
+    // Remove a Codex skill to simulate it being new in a future version
+    const firstSkillName = Object.keys(CODEX_SKILLS)[0].replace(/\.md$/, '');
+    const codexSkillPath = join(tmpDir, '.agents', 'skills', firstSkillName, 'SKILL.md');
+    const codexSkillRelPath = join('.agents', 'skills', firstSkillName, 'SKILL.md');
+    rmSync(join(tmpDir, '.agents', 'skills', firstSkillName), { recursive: true, force: true });
+
+    // Remove from version hashes
+    const versionInfo = readVersion(tmpDir)!;
+    delete versionInfo.files[codexSkillRelPath];
+    writeVersion(tmpDir, versionInfo.version, versionInfo.files);
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: false });
+    } finally {
+      console.log = origLog;
+    }
+
+    // New Codex skill should be auto-installed without prompting
+    expect(existsSync(codexSkillPath)).toBe(true);
+    expect(logs.some(l => l.includes('added') && l.includes('new'))).toBe(true);
+  });
+
+  it('includes .agents/skills/ hashes in .joycraft-version after upgrade', async () => {
+    await init(tmpDir, { force: false });
+
+    // Simulate old version to trigger an upgrade
+    const versionInfo = readVersion(tmpDir)!;
+    const firstSkillName = Object.keys(CODEX_SKILLS)[0].replace(/\.md$/, '');
+    const codexSkillRelPath = join('.agents', 'skills', firstSkillName, 'SKILL.md');
+    const oldContent = 'old codex content';
+    writeFileSync(join(tmpDir, codexSkillRelPath), oldContent, 'utf-8');
+    versionInfo.files[codexSkillRelPath] = hashContent(oldContent);
+    writeVersion(tmpDir, '0.0.1', versionInfo.files);
+
+    await upgrade(tmpDir, { yes: true });
+
+    const newVersion = readVersion(tmpDir)!;
+    // Check that .agents/skills/ paths have hashes
+    const agentsPaths = Object.keys(newVersion.files).filter(p => p.startsWith(join('.agents', 'skills')));
+    expect(agentsPaths.length).toBeGreaterThan(0);
+    // Verify the hash matches the current file content
+    const currentContent = readFileSync(join(tmpDir, codexSkillRelPath), 'utf-8');
+    expect(newVersion.files[codexSkillRelPath]).toBe(hashContent(currentContent));
   });
 
   it('writes updated .joycraft-version after upgrade', async () => {
