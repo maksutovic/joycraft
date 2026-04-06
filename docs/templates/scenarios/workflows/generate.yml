@@ -1,0 +1,148 @@
+# Scenario Generation Workflow
+#
+# Triggered by a `spec-pushed` repository_dispatch event sent from the main
+# project when a spec is added or modified on main. A scenario agent triages
+# the spec and writes or updates holdout tests in this repo.
+#
+# After the agent commits changes, fires `scenarios-updated` back to the main
+# repo so that any open PRs are re-tested with the new/updated scenarios.
+#
+# Prerequisites:
+#   - ANTHROPIC_API_KEY secret: Anthropic API key for Claude Code
+#   - JOYCRAFT_APP_PRIVATE_KEY secret: GitHub App private key (.pem)
+#   - $JOYCRAFT_APP_ID is replaced with the actual App ID number at install time
+
+name: Generate Scenarios
+
+on:
+  repository_dispatch:
+    types: [spec-pushed]
+
+jobs:
+  generate:
+    name: Run scenario agent
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Check out the scenarios repo ──────────────────────────────────
+      - name: Checkout scenarios repo
+        uses: actions/checkout@v4
+
+      # ── 2. Save incoming spec to local mirror ─────────────────────────────
+      # The agent reads this file to understand what changed.
+      - name: Save spec to mirror
+        run: |
+          mkdir -p specs
+          cat > "specs/${{ github.event.client_payload.spec_filename }}" << 'SPEC_EOF'
+          ${{ github.event.client_payload.spec_content }}
+          SPEC_EOF
+          echo "Saved ${{ github.event.client_payload.spec_filename }} to specs/"
+
+      # ── 3. Gather context for the agent ───────────────────────────────────
+      # Bounded context: filenames only (not file contents) to stay within
+      # token limits. The agent uses these lists to decide whether to create
+      # a new test file or update an existing one.
+      - name: Gather context
+        id: context
+        run: |
+          EXISTING_TESTS=$(find . -name "*.test.ts" -not -path "./.git/*" \
+            | sed 's|^\./||' | sort | tr '\n' ',' | sed 's/,$//')
+          EXISTING_SPECS=$(find specs/ -name "*.md" 2>/dev/null \
+            | sed 's|^specs/||' | sort | tr '\n' ',' | sed 's/,$//')
+
+          echo "existing_tests=$EXISTING_TESTS" >> "$GITHUB_OUTPUT"
+          echo "existing_specs=$EXISTING_SPECS" >> "$GITHUB_OUTPUT"
+          echo "Existing test files: $EXISTING_TESTS"
+          echo "Existing spec mirrors: $EXISTING_SPECS"
+
+      # ── 4. Set up Node.js ─────────────────────────────────────────────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # ── 5. Install Claude Code CLI ────────────────────────────────────────
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      # ── 6. Run scenario agent ─────────────────────────────────────────────
+      # - Uses `claude -p` (prompt mode) for non-interactive execution.
+      # - No --model flag: the environment's default model is used.
+      # - --dangerously-skip-permissions lets Claude write files without prompts.
+      # - --max-turns 20 caps the agentic loop so it can't run indefinitely.
+      - name: Run scenario agent
+        id: agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          PROMPT=$(cat .claude/prompts/scenario-agent.md 2>/dev/null || cat prompts/scenario-agent.md)
+
+          claude -p \
+            --dangerously-skip-permissions \
+            --max-turns 20 \
+            "${PROMPT}
+
+          ---
+
+          ## Incoming Spec
+
+          Filename: ${{ github.event.client_payload.spec_filename }}
+
+          Content:
+          $(cat 'specs/${{ github.event.client_payload.spec_filename }}')
+
+          ---
+
+          ## Context
+
+          Existing test files in this repo: ${{ steps.context.outputs.existing_tests }}
+          Existing spec mirrors: ${{ steps.context.outputs.existing_specs }}"
+
+      # ── 7. Commit any changes the agent made ──────────────────────────────
+      - name: Commit scenario changes
+        id: commit
+        run: |
+          git config user.name  "Joycraft Scenario Agent"
+          git config user.email "joycraft-scenarios@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit — spec triaged as no-op."
+            echo "committed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "scenarios: update tests for ${{ github.event.client_payload.spec_filename }}"
+          git push
+          echo "committed=true" >> "$GITHUB_OUTPUT"
+
+      # ── 8. Generate GitHub App token for cross-repo dispatch ──────────────
+      # Only needed if the agent committed changes (otherwise nothing to re-run).
+      - name: Generate GitHub App token
+        id: app-token
+        if: steps.commit.outputs.committed == 'true'
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: $JOYCRAFT_APP_ID
+          private-key: ${{ secrets.JOYCRAFT_APP_PRIVATE_KEY }}
+          repositories: ${{ github.event.client_payload.repo }}
+
+      # ── 9. Notify main repo that scenarios were updated ───────────────────
+      # Fires `scenarios-updated` so the main repo's re-run workflow can
+      # trigger scenario runs against any open PRs that may now be affected.
+      - name: Dispatch scenarios-updated to main repo
+        if: steps.commit.outputs.committed == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          REPO="${{ github.event.client_payload.repo }}"
+          REPO_OWNER="${REPO%%/*}"
+          REPO_NAME="${REPO##*/}"
+
+          gh api "repos/${REPO_OWNER}/${REPO_NAME}/dispatches" \
+            -f event_type=scenarios-updated \
+            -f "client_payload[spec_filename]=${{ github.event.client_payload.spec_filename }}" \
+            -f "client_payload[scenarios_repo]=${{ github.repository }}"
+
+          echo "Dispatched scenarios-updated to ${REPO}"

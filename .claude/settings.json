@@ -8,10 +8,58 @@
       "Bash(Scripts/design_system_guard.sh:*)",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
-      "Bash(open:*)"
+      "Bash(open:*)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(git branch *)",
+      "Bash(pnpm *)",
+      "Bash(pnpm test)",
+      "Bash(pnpm build)",
+      "Bash(pnpm typecheck)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Bash(git push -f *)",
+      "Bash(git reset --hard *)",
+      "Edit(//.env*)",
+      "Edit(//*.pem)",
+      "Edit(//*.key)",
+      "Edit(//.git/**)",
+      "Bash(npm install *)",
+      "Bash(yarn add *)",
+      "Bash(bun add *)"
     ]
   },
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/joycraft-version-check.mjs"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/joycraft/block-dangerous.sh"
+          }
+        ]
+      }
+    ]
   }
 }
