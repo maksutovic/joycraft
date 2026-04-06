@@ -2,6 +2,8 @@
 *.bak
 .DS_Store
 node_modules/
+.claude/worktrees/
+.claude/projects/
 dist/
 *.tsbuildinfo
 .build/

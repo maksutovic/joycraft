@@ -1,0 +1,31 @@
+{
+  "version": "0.1.0",
+  "files": {
+    ".claude/skills/joycraft-decompose/SKILL.md": "0f4991f58ecd608772de1c038ce2e6960db0a6dcba9dce543c36eb0eba5896fe",
+    ".claude/skills/joycraft-implement-level5/SKILL.md": "57336cf5db7674a3235a196056ed7745f40875fab295446fc204c65ce678be0f",
+    ".claude/skills/joycraft-interview/SKILL.md": "862b5fdcecd98371398046b30f6db030a2f27da4ebb95fb6b1d0b7ffbd442606",
+    ".claude/skills/joycraft-new-feature/SKILL.md": "9f0775b283970de517f31d194198dd22176bbc5b6070958450aeff2a2d3ee14e",
+    ".claude/skills/joycraft-session-end/SKILL.md": "852a6e2235cb9d9627fbf9cc0d5c960ce16fbaa0f91722af5dc6862ecc5871a3",
+    ".claude/skills/joycraft-tune/SKILL.md": "212e09144615408e3bea4c5dbc95b6bc9b32a05f103d16558874f03b9b469844",
+    ".claude/skills/joycraft-add-fact/SKILL.md": "4f37a330be6a45591cee089173791c31cc5860565e43184311f4394cf2b3473b",
+    ".claude/skills/joycraft-lockdown/SKILL.md": "9e0a8466bddbf0f3c468d5bc01ed1263f77b7fc4337caff6f72eebefe6cd388d",
+    ".claude/skills/joycraft-verify/SKILL.md": "c5ddb9b3dccb570828127cc7a63b60ab29b19ca4b35133d281da1f187ce36d78",
+    "docs/templates/context/dangerous-assumptions.md": "3a284c31bf6b11a47d9b6a0ac3280835c04e816c6001ca7b5bb38c144f30f1e0",
+    "docs/templates/context/decision-log.md": "2cba6fe33e7ec97141fc2aaa7765d60de5bc5be84dfb56042e11287718cfaf9d",
+    "docs/templates/context/institutional-knowledge.md": "b2087bcbf493864a54e1eb463803d0df3b2594757db2b61c26b1c9b017e5ce78",
+    "docs/templates/context/production-map.md": "d6cee1d5335deac40d9a2e56b2fc27bc2122eef77f6cf77c015e34d6e24ead07",
+    "docs/templates/context/troubleshooting.md": "08256329808b2d51c45ec23ac7b3efd163dacea172cb491bf57cfdf54cdb35f1",
+    "docs/templates/examples/example-brief.md": "9c3a3f36aaf9779936bfc980edb66c0bacee001ca0fe33ba53d676da4487855f",
+    "docs/templates/examples/example-spec.md": "a7279dcb57e68fa0996d14ddd60b6b1a1194d188db87e35a6e24ee05986d2bfd",
+    "docs/templates/scenarios/README.md": "4ce92c2e67f62b11d054cd38944baf69fc7bb63890c8b44e48a75cf9912f052c",
+    "docs/templates/scenarios/example-scenario.test.ts": "ca55be6f7a0f11bda7cc51aa5f8ba93ea363d1e6ada67c48287010c7e4a6e559",
+    "docs/templates/scenarios/package.json": "9c1bf58f3cd555bc2c805bf9910eed0eb8768adc3b3cbd74906fbf8f57f0e9fc",
+    "docs/templates/scenarios/prompts/scenario-agent.md": "f37ed346807ce667473af9db227ed7d5f043c97b01bc97fb1887696346f476c6",
+    "docs/templates/scenarios/workflows/generate.yml": "bc2cc231148eb5d7224b5a7e5e982fc85f6aac7166baea1ea6a377b8ecad5a56",
+    "docs/templates/scenarios/workflows/run.yml": "c50fa2d0ba201eba842ba87f140d0531e86d43339e17bcfc4ced0600e2e6869c",
+    "docs/templates/workflows/autofix.yml": "d3900967afe005a8ebd524f7a18a7e06b40ec73db01c921b76c6429abc36fe3f",
+    "docs/templates/workflows/scenarios-dispatch.yml": "ca325380f86f834c54d5290f4b8cff4064ae3fb5be31b51ded1ad44aa10d306f",
+    "docs/templates/workflows/scenarios-rerun.yml": "7bffeac1e8f49bdef2d6978c2df21c51d896befde02d5fb6b2bf3d6db12e6301",
+    "docs/templates/workflows/spec-dispatch.yml": "9a6f59b6fe2aa79a5ad553745725a9c6b21a1850149a6b9d72e0541d8c23af1b"
+  }
+}

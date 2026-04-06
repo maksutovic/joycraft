@@ -1,0 +1,23 @@
+# Joycraft Safeguard — Deny Patterns
+# One regex pattern per line. Lines starting with # are comments.
+# Commands matching any pattern will be blocked (exit 2).
+# Edit this file to customize what's blocked.
+
+# Destructive file operations
+rm\s+-rf\s+/
+rm\s+-rf\s+\.
+
+# Dangerous git operations
+git\s+push\s+--force
+git\s+push\s+-f\b
+git\s+reset\s+--hard
+
+# SQL destruction
+DROP\s+TABLE
+DROP\s+DATABASE
+TRUNCATE
+
+# System security
+chmod\s+777
+curl.*\|.*sh
+wget.*\|.*sh
