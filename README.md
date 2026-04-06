@@ -45,7 +45,7 @@ Most developers plateau at Level 2. Joycraft's job is to move you up.
 
 ### Platform support
 
-Joycraft is currently focused on making the Claude Code experience state-of-the-art. Better [Codex](https://openai.com/codex) support is coming. `AGENTS.md` generation is already included, and deeper integration is on the roadmap.
+Joycraft supports both **Claude Code** and **OpenAI Codex** out of the box. Running `npx joycraft init` installs skills to both `.claude/skills/` and `.agents/skills/` — no flags, no configuration. Both platforms get the same structured workflows, adapted for each tool's invocation model (`/joycraft-*` for Claude Code, `$joycraft-*` for Codex).
 
 ## Quick Start
 
@@ -66,7 +66,7 @@ Joycraft auto-detects your tech stack and creates:
 
 - **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
 - **AGENTS.md** for Codex compatibility
-- **Claude Code skills** installed to `.claude/skills/`:
+- **Claude Code skills** installed to `.claude/skills/` and **Codex skills** installed to `.agents/skills/`:
   - `/joycraft-tune` Assess your harness, apply upgrades, see your path to Level 5
   - `/joycraft-new-feature` Interview → Feature Brief → Atomic Specs
   - `/joycraft-interview` Lightweight brainstorm. Yap about ideas, get a structured summary
@@ -369,7 +369,7 @@ The short version:
 4. `pnpm test --run && pnpm typecheck && pnpm build`
 5. Open a PR (one approval required)
 
-Look for [`good first issue`](https://github.com/maksutovic/joycraft/labels/good%20first%20issue) labels if you're new. Areas we'd especially love help with: stack detection for new languages, skill improvements, documentation, and Codex integration.
+Look for [`good first issue`](https://github.com/maksutovic/joycraft/labels/good%20first%20issue) labels if you're new. Areas we'd especially love help with: stack detection for new languages, skill improvements, and documentation.
 
 ## License
 
