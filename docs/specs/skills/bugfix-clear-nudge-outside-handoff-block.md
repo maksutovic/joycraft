@@ -2,7 +2,7 @@
 
 > **Parent Brief:** none (bug fix)
 > **Issue/Error:** `/clear` nudge placed outside code-fenced handoff template — model skips it inconsistently
-> **Status:** Ready
+> **Status:** Complete
 > **Date:** 2026-04-07
 > **Estimated scope:** 1 session / 5 skill files + 5 bundled source files / ~20 lines changed
 
