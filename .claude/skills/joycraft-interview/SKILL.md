@@ -85,6 +85,8 @@ When you're ready to move forward:
 - /joycraft-new-feature — formalize this into a full Feature Brief with specs
 - /joycraft-decompose — break it directly into atomic specs if scope is clear
 - Or just keep brainstorming — run /joycraft-interview again anytime
+
+Run /clear before your next step — your artifacts are saved to files.
 ```
 
 ## Guidelines
@@ -94,5 +96,3 @@ When you're ready to move forward:
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.
 - **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
-
-**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.

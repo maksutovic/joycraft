@@ -117,8 +117,9 @@ To execute: Start a fresh session per spec. Each session should:
 4. Commit and PR
 
 Ready to start?
+
+Run /clear before your next step — your artifacts are saved to files.
 ```
 
 **Important:** Recommend a fresh session for execution. The interview session has too much context noise — a clean session with just the spec produces better results. Research and design catch wrong assumptions before they propagate into specs — but skip them if the scope is clear and well-understood.
 
-**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
