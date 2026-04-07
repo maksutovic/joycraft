@@ -115,4 +115,6 @@ To execute: Start a fresh session and:
 6. Commit and PR
 
 Ready to start?
+
+Run /clear before your next step — your artifacts are saved to files.
 ```

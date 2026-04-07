@@ -93,11 +93,11 @@ SIMPLE (scope is clear, < 5 files, well-understood area):
   /joycraft-new-feature → /joycraft-decompose
 
 Not sure yet? Just keep brainstorming — run /joycraft-interview again anytime.
+
+Run /clear before your next step — your artifacts are saved to files.
 ```
 
 If the idea sounds complex — touches many files, involves architectural decisions, or the user is working in an unfamiliar area — nudge them toward research and design. But present it as a recommendation, not a gate.
-
-**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
 
 ## Guidelines
 

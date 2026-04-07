@@ -145,6 +145,6 @@ To execute:
 - Each session should end with /joycraft-session-end to capture discoveries
 
 Ready to start execution?
-```
 
-**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+Run /clear before your next step — your artifacts are saved to files.
+```
