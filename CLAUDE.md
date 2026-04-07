@@ -33,6 +33,17 @@
 - Include methodology research, project assessments, or personal notes in the tool
 - Push directly to main/master (always use feature branches + PR)
 - Amend commits that have been pushed to remote
+- Access, read, or reference the scenarios repo (`joycraft-scenarios`)
+- Mention scenario test names or contents
+- Modify the scenarios dispatch workflow to leak test information
+
+---
+
+## External Validation
+
+This project uses holdout scenario tests in a separate private repo (`joycraft-scenarios`).
+
+The scenarios repo is deliberately invisible to the coding agent. This is the holdout guarantee — like a validation set in machine learning. Do not attempt to circumvent this boundary.
 
 ---
 

@@ -33,3 +33,12 @@ export function writeVersion(dir: string, version: string, files: Record<string,
   const data: VersionInfo = { version, files };
   writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
 }
+
+export function getLevel(dir: string): number {
+  const hasAutofix = existsSync(join(dir, '.github', 'workflows', 'autofix.yml'));
+  if (!hasAutofix) return 4;
+  const claudeMdPath = join(dir, 'CLAUDE.md');
+  if (!existsSync(claudeMdPath)) return 4;
+  const content = readFileSync(claudeMdPath, 'utf-8');
+  return content.includes('## External Validation') ? 5 : 4;
+}

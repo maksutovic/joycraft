@@ -1,0 +1,57 @@
+# Scenarios Dispatch Workflow
+#
+# Triggered when CI passes on a PR. Fires a `repository_dispatch` event to a
+# separate scenarios repository so that integration / end-to-end scenario tests
+# can run against the PR's code without living in this repo.
+#
+# Prerequisites:
+#   - JOYCRAFT_APP_PRIVATE_KEY secret: GitHub App private key (.pem)
+#   - joycraft-scenarios is replaced with the actual repo name at install time
+
+name: Scenarios Dispatch
+
+on:
+  workflow_run:
+    workflows: ["Test"]
+    types: [completed]
+
+jobs:
+  dispatch:
+    name: Fire scenarios dispatch
+    runs-on: ubuntu-latest
+
+    # Only run when CI succeeded and the triggering workflow was on a PR
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.pull_requests[0] != null
+
+    steps:
+      # ── 1. Generate GitHub App token for cross-repo dispatch ─────────────
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: 3307840
+          private-key: ${{ secrets.JOYCRAFT_APP_PRIVATE_KEY }}
+          repositories: joycraft-scenarios
+
+      # ── 2. Fire repository_dispatch to the scenarios repo ──────────────────
+      # Sends a `run-scenarios` event carrying enough context for the scenarios
+      # repo to check out the correct branch/SHA and know which PR triggered it.
+      # joycraft-scenarios is replaced with the actual repo name at install time.
+      - name: Dispatch run-scenarios event
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          PR_NUMBER=${{ github.event.workflow_run.pull_requests[0].number }}
+          BRANCH=${{ github.event.workflow_run.pull_requests[0].head.ref }}
+          SHA=${{ github.event.workflow_run.head_sha }}
+
+          gh api repos/${{ github.repository_owner }}/joycraft-scenarios/dispatches \
+            -f event_type=run-scenarios \
+            -f "client_payload[pr_number]=$PR_NUMBER" \
+            -f "client_payload[branch]=$BRANCH" \
+            -f "client_payload[sha]=$SHA" \
+            -f "client_payload[repo]=${{ github.repository }}"
+
+          echo "Dispatched run-scenarios to joycraft-scenarios for PR #$PR_NUMBER"
