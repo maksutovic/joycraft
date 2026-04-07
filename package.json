@@ -12,7 +12,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "node scripts/generate-bundled-files.mjs && tsup",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm build"

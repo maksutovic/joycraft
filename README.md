@@ -52,7 +52,7 @@ Joycraft auto-detects your tech stack and creates:
 
 - **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
 - **AGENTS.md** for Codex compatibility
-- **11 skills** installed to `.claude/skills/` (Claude Code) and `.agents/skills/` (Codex) — see [Which skill do I need?](#which-skill-do-i-need) below
+- **14 skills** installed to `.claude/skills/` (Claude Code) and `.agents/skills/` (Codex) — see [Which skill do I need?](#which-skill-do-i-need) below
 - **docs/** structure: `briefs/`, `specs/`, `discoveries/`, `contracts/`, `decisions/`, `context/`
 - **Context documents** in `docs/context/`: production map, dangerous assumptions, decision log, institutional knowledge, and troubleshooting guide
 - **Templates** including atomic spec, feature brief, implementation plan, boundary framework, and workflow templates for scenario generation and autofix loops
@@ -75,6 +75,7 @@ Frameworks auto-detected: Next.js, FastAPI, Django, Flask, Actix, Axum, Express,
 | Align on approach before writing code | `/joycraft-design` | Design discussion → ~200-line artifact for human review |
 | Break a feature into small, independent tasks | `/joycraft-decompose` | Feature Brief → testable Atomic Specs |
 | Fix a bug with a structured workflow | `/joycraft-bugfix` | Reproduce → isolate → fix → verify loop |
+| Implement a spec with TDD | `/joycraft-implement` | Read spec → write failing tests → implement until green |
 | Run specs autonomously without hand-holding | `/joycraft-implement-level5` | Autofix loop + holdout scenario testing |
 | Verify an implementation independently | `/joycraft-verify` | Read-only subagent checks work against the spec |
 
@@ -84,23 +85,23 @@ The core loop:
 flowchart LR
     A[Interview] --> B[Feature Brief]
     B --> C{Complex?}
-    C -- "Simple/clear scope" --> F[Decompose]
-    C -- "Complex/unfamiliar" --> D[Research]
+    C -- "Simple" --> F[Decompose]
+    C -- "Complex" --> D[Research]
     D --> E[Design]
     E --> F
     F --> G[Atomic Specs]
-    G --> H[Execute]
+    G --> H[Implement]
     H --> I[Session End]
 
-    style A fill:#e8f4fd,stroke:#4a90d9
-    style B fill:#e8f4fd,stroke:#4a90d9
-    style C fill:#fef3cd,stroke:#d4a843
-    style D fill:#f0e8fd,stroke:#9b72cf
-    style E fill:#f0e8fd,stroke:#9b72cf
-    style F fill:#e8f4fd,stroke:#4a90d9
-    style G fill:#e8f4fd,stroke:#4a90d9
-    style H fill:#d4edda,stroke:#5a9a6e
-    style I fill:#d4edda,stroke:#5a9a6e
+    style A fill:#fff,stroke:#333,stroke-width:2px
+    style B fill:#fff,stroke:#333,stroke-width:2px
+    style C fill:#fff,stroke:#333,stroke-width:2px
+    style D fill:#e8e8e8,stroke:#333,stroke-width:2px
+    style E fill:#e8e8e8,stroke:#333,stroke-width:2px
+    style F fill:#fff,stroke:#333,stroke-width:2px
+    style G fill:#fff,stroke:#333,stroke-width:2px
+    style H fill:#333,stroke:#333,color:#fff,stroke-width:2px
+    style I fill:#333,stroke:#333,color:#fff,stroke-width:2px
 ```
 
 ### The Interview
