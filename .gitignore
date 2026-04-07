@@ -7,3 +7,4 @@ node_modules/
 dist/
 *.tsbuildinfo
 .build/
+src/bundled-files.ts
