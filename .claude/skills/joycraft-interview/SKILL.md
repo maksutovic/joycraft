@@ -96,4 +96,3 @@ Run /clear before your next step — your artifacts are saved to files.
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.
 - **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
-

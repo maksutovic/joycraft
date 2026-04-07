@@ -98,3 +98,5 @@ Session complete.
 
 Run /clear before your next step — your artifacts are saved to files.
 ```
+
+**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.

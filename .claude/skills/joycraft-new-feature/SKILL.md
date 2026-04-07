@@ -183,4 +183,3 @@ Run /clear before your next step — your artifacts are saved to files.
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
 
 You can also use `/joycraft-decompose` to re-decompose a brief if the breakdown needs adjustment, or run `/joycraft-interview` first for a lighter brainstorm before committing to the full workflow.
-

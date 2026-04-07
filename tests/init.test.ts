@@ -448,7 +448,7 @@ describe('init', () => {
 
       const version = JSON.parse(readFileSync(join(tmpDir, '.joycraft-version'), 'utf-8'));
       const agentsKeys = Object.keys(version.files).filter(k => k.startsWith('.agents'));
-      expect(agentsKeys.length).toBe(13);
+      expect(agentsKeys.length).toBe(14);
       expect(agentsKeys.some(k => k.includes('joycraft-tune'))).toBe(true);
       expect(agentsKeys.some(k => k.includes('joycraft-decompose'))).toBe(true);
     });
