@@ -81,13 +81,23 @@ After writing the draft, tell the user:
 ```
 Draft brief saved to docs/briefs/YYYY-MM-DD-topic-draft.md
 
-When you're ready to move forward:
-- /joycraft-new-feature — formalize this into a full Feature Brief with specs
-- /joycraft-decompose — break it directly into atomic specs if scope is clear
-- Or just keep brainstorming — run /joycraft-interview again anytime
+When you're ready to move forward, pick the path that fits the complexity:
 
-Run /clear before your next step — your artifacts are saved to files.
+COMPLEX (5+ files, architectural decisions, unfamiliar area):
+  /joycraft-new-feature → /joycraft-research → /joycraft-design → /joycraft-decompose
+
+MEDIUM (clear scope but non-trivial):
+  /joycraft-new-feature → /joycraft-design → /joycraft-decompose
+
+SIMPLE (scope is clear, < 5 files, well-understood area):
+  /joycraft-new-feature → /joycraft-decompose
+
+Not sure yet? Just keep brainstorming — run /joycraft-interview again anytime.
 ```
+
+If the idea sounds complex — touches many files, involves architectural decisions, or the user is working in an unfamiliar area — nudge them toward research and design. But present it as a recommendation, not a gate.
+
+**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
 
 ## Guidelines
 

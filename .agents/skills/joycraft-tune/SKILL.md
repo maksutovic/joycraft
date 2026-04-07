@@ -59,6 +59,8 @@ After applying, append to `docs/joycraft-history.md` and show a consolidated upg
 
 Show a tailored roadmap: Level 2-5 table, specific next steps based on actual gaps, and the Level 5 north star (spec queue, autofix, holdout scenarios, self-improving harness).
 
+**Tip:** Run `$joycraft-optimize` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.
+
 ## Edge Cases
 
 - **CLAUDE.md is just a README:** Treat as no harness.
@@ -66,5 +68,3 @@ Show a tailored roadmap: Level 2-5 table, specific next steps based on actual ga
 - **Rules under non-standard headings:** Give credit for substance.
 - **Previous assessment exists:** Read it first. If nothing to upgrade, say so.
 - **Non-Joycraft content in CLAUDE.md:** Preserve as-is. Only append.
-
-**Tip:** Run `$joycraft-optimize` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.
