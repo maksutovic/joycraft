@@ -12,8 +12,7 @@ name: Scenarios Dispatch
 
 on:
   workflow_run:
-    # Replace with the exact name of your CI workflow
-    workflows: ["CI"]
+    workflows: ["Test"]
     types: [completed]
 
 jobs:

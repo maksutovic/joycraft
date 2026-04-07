@@ -15,8 +15,7 @@ name: Autofix
 
 on:
   workflow_run:
-    # Replace with the exact name of your CI workflow
-    workflows: ["CI"]
+    workflows: ["Test"]
     types: [completed]
 
 # One autofix run per PR at a time — cancel in-flight runs for the same PR
