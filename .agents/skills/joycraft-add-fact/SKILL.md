@@ -1,16 +1,15 @@
 ---
 name: joycraft-add-fact
 description: Capture a project fact and route it to the correct context document -- production map, dangerous assumptions, decision log, institutional knowledge, or troubleshooting
-instructions: 38
 ---
 
 # Add Fact
 
-The user has a fact to capture. Your job is to classify it, route it to the correct context document, append it in the right format, and optionally add a CLAUDE.md boundary rule.
+The user has a fact to capture. Your job is to classify it, route it to the correct context document, append it in the right format, and optionally add a boundary rule to CLAUDE.md or AGENTS.md.
 
 ## Step 1: Get the Fact
 
-If the user already provided the fact (e.g., `/joycraft-add-fact the staging DB resets every Sunday`), use it directly.
+If the user already provided the fact (e.g., `$joycraft-add-fact the staging DB resets every Sunday`), use it directly.
 
 If not, ask: "What fact do you want to capture?" -- then wait for their response.
 
@@ -131,21 +130,21 @@ Remove any italic example rows (rows where all cells start with `_`) before appe
 
 **Append only. Never modify or remove existing real content.**
 
-## Step 6: Evaluate CLAUDE.md Boundary Rule
+## Step 6: Evaluate Boundary Rule
 
-Decide whether the fact also warrants a rule in CLAUDE.md's behavioral boundaries:
+Decide whether the fact also warrants a rule in the project's boundary configuration (CLAUDE.md and/or AGENTS.md -- check which files the project uses and update accordingly):
 
-**Add a CLAUDE.md rule if the fact:**
+**Add a boundary rule if the fact:**
 - Describes something that should ALWAYS or NEVER be done
 - Could cause real damage if violated (data loss, broken deployments, security issues)
 - Is a hard constraint that applies across all work, not just a one-time note
 
-**Do NOT add a CLAUDE.md rule if the fact is:**
+**Do NOT add a boundary rule if the fact is:**
 - Purely informational (e.g., "staging DB is at this URL")
 - A one-time decision that's already captured
 - A diagnostic tip rather than a prohibition
 
-If a rule is warranted, read CLAUDE.md, find the appropriate section (ALWAYS, ASK FIRST, or NEVER under Behavioral Boundaries), and append the rule. If no Behavioral Boundaries section exists, append one.
+If a rule is warranted, read the project's boundary file(s) -- CLAUDE.md and/or AGENTS.md -- find the appropriate section (ALWAYS, ASK FIRST, or NEVER under Behavioral Boundaries), and append the rule. If no Behavioral Boundaries section exists, append one. Update whichever boundary files the project uses (some projects have CLAUDE.md, some have AGENTS.md, some have both).
 
 ## Step 7: Confirm
 
@@ -155,8 +154,8 @@ Report what you did in this format:
 Added to [document name]:
   [summary of what was added]
 
-[If CLAUDE.md was also updated:]
-Added CLAUDE.md rule:
+[If boundary file(s) were also updated:]
+Added boundary rule to [CLAUDE.md / AGENTS.md / both]:
   [ALWAYS/ASK FIRST/NEVER]: [rule text]
 
 [If the fact was ambiguous:]
