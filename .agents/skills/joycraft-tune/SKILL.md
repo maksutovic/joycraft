@@ -1,7 +1,6 @@
 ---
 name: joycraft-tune
 description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show path to Level 5
-instructions: 15
 ---
 
 # Tune — Project Harness Assessment & Upgrade
@@ -10,7 +9,7 @@ You are evaluating and upgrading this project's AI development harness.
 
 ## Step 1: Detect Harness State
 
-Check for: CLAUDE.md (with meaningful content), `docs/specs/`, `docs/briefs/`, `docs/discoveries/`, `.claude/skills/`, and test configuration.
+Search the codebase for: CLAUDE.md (with meaningful content), `docs/specs/`, `docs/briefs/`, `docs/discoveries/`, `.agents/skills/`, and test configuration.
 
 ## Step 2: Route
 
@@ -26,7 +25,7 @@ Read CLAUDE.md and explore the project. Score each with specific evidence:
 | Spec Quality | `docs/specs/` (scan recursively) — structured? acceptance criteria? self-contained? |
 | Spec Granularity | Can each spec be done in one session? |
 | Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading) |
-| Skills & Hooks | `.claude/skills/` files, hooks config |
+| Skills & Hooks | `.agents/skills/` files, hooks config |
 | Documentation | `docs/` structure, templates, referenced from CLAUDE.md |
 | Knowledge Capture | `docs/discoveries/`, `docs/context/*.md` — existence AND real content |
 | Testing & Validation | Test framework, CI pipeline, validation commands in CLAUDE.md |
@@ -48,7 +47,7 @@ Apply using three tiers — do NOT ask per-item permission:
 1. **Git autonomy:** Cautious (ask before push/PR) or Autonomous (push + PR without asking)?
 2. **Risk interview (3-5 questions, one at a time):** What could break? What services connect to prod? Unwritten rules? Off-limits files/commands? Skip if `docs/context/` already has content.
 
-From answers, generate: CLAUDE.md boundary rules, `.claude/settings.json` deny patterns, `docs/context/` documents. Also recommend a permission mode (`auto` for most; `dontAsk` + allowlist for high-risk).
+From answers, generate: CLAUDE.md boundary rules, deny patterns configuration, `docs/context/` documents. Also recommend a permission mode (`auto` for most; `dontAsk` + allowlist for high-risk).
 
 **Tier 2 (show diff):** Add missing CLAUDE.md sections (Boundaries, Workflow, Key Files). Draft from real codebase content. Append only — never reformat existing content.
 
@@ -68,4 +67,4 @@ Show a tailored roadmap: Level 2-5 table, specific next steps based on actual ga
 - **Previous assessment exists:** Read it first. If nothing to upgrade, say so.
 - **Non-Joycraft content in CLAUDE.md:** Preserve as-is. Only append.
 
-**Tip:** Run `/joycraft-optimize` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.
+**Tip:** Run `$joycraft-optimize` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.

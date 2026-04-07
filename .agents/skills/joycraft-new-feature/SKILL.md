@@ -1,7 +1,6 @@
 ---
 name: joycraft-new-feature
 description: Guided feature development — interview the user, produce a Feature Brief, then decompose into atomic specs
-instructions: 35
 ---
 
 # New Feature Workflow
@@ -72,7 +71,7 @@ What are we building and why? The full picture in 2-4 paragraphs.
 
 ## Execution Strategy
 - [ ] Sequential (specs have chain dependencies)
-- [ ] Parallel worktrees (specs are independent)
+- [ ] Parallel (specs are independent)
 - [ ] Mixed
 
 ## Success Criteria
@@ -172,7 +171,7 @@ Recommended execution:
 To execute: Start a fresh session per spec. Each session should:
 1. Read the spec
 2. Implement
-3. Run /joycraft-session-end to capture discoveries
+3. Run $joycraft-session-end to capture discoveries
 4. Commit and PR
 
 Ready to start?
@@ -180,6 +179,6 @@ Ready to start?
 
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
 
-You can also use `/joycraft-decompose` to re-decompose a brief if the breakdown needs adjustment, or run `/joycraft-interview` first for a lighter brainstorm before committing to the full workflow.
+You can also use `$joycraft-decompose` to re-decompose a brief if the breakdown needs adjustment, or run `$joycraft-interview` first for a lighter brainstorm before committing to the full workflow.
 
-**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+**Tip:** Run `/new` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
