@@ -1,0 +1,185 @@
+# Autofix Workflow
+#
+# Triggered when CI fails on a PR. Uses Claude Code to attempt an automated fix,
+# then pushes a commit and re-triggers CI. Limits to 3 autofix attempts per PR
+# before escalating to human review.
+#
+# Prerequisites:
+#   - A GitHub App called "Joycraft Autofix" (or equivalent) installed on the repo.
+#     Its credentials must be stored as repository secrets:
+#       JOYCRAFT_APP_ID          — the App's numeric ID
+#       JOYCRAFT_APP_PRIVATE_KEY — the App's PEM private key
+#   - ANTHROPIC_API_KEY secret for Claude Code
+
+name: Autofix
+
+on:
+  workflow_run:
+    # Replace with the exact name of your CI workflow
+    workflows: ["CI"]
+    types: [completed]
+
+# One autofix run per PR at a time — cancel in-flight runs for the same PR
+concurrency:
+  group: autofix-pr-${{ github.event.workflow_run.pull_requests[0].number }}
+  cancel-in-progress: true
+
+jobs:
+  autofix:
+    name: Attempt automated fix
+    runs-on: ubuntu-latest
+
+    # Only run when CI failed and the triggering workflow was on a PR
+    if: |
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.pull_requests[0] != null
+
+    steps:
+      # ── 1. Mint a short-lived GitHub App token ──────────────────────────────
+      # Using a dedicated App identity lets this workflow push commits without
+      # triggering GitHub's anti-recursion protection on the GITHUB_TOKEN.
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          # 3307840 is replaced with the actual App ID number at install time
+          app-id: 3307840
+          private-key: ${{ secrets.JOYCRAFT_APP_PRIVATE_KEY }}
+
+      # ── 2. Check out the PR branch ──────────────────────────────────────────
+      # We check out the exact branch (not a merge ref) so that any commit we
+      # push lands directly on the PR branch.
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.event.workflow_run.pull_requests[0].head.ref }}
+          fetch-depth: 0
+
+      # ── 3. Count previous autofix attempts ─────────────────────────────────
+      # Count "autofix:" commits in the log. If we have already made 3 attempts
+      # on this PR, stop and ask a human to review instead.
+      - name: Check autofix iteration count
+        id: iteration
+        run: |
+          COUNT=$(git log --oneline | grep "autofix:" | wc -l | tr -d ' ')
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "Autofix attempts so far: $COUNT"
+
+      # ── 4. Post "human review needed" and exit if limit reached ─────────────
+      - name: Post human-review comment and exit
+        if: steps.iteration.outputs.count >= 3
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+        run: |
+          gh pr comment "$PR_NUMBER" \
+            --body "**Autofix limit reached (3 attempts).** Please review manually — Claude was unable to resolve the CI failures automatically."
+          echo "Max iterations reached. Exiting without further autofix."
+          exit 0
+
+      # ── 5. Fetch the CI failure logs ────────────────────────────────────────
+      # Download logs from the failed workflow run so Claude has concrete
+      # failure context to work from. ANSI escape codes are stripped so the
+      # logs are readable as plain text.
+      - name: Fetch CI failure logs
+        id: logs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          gh run view "$RUN_ID" --log-failed 2>&1 \
+            | sed 's/\x1b\[[0-9;]*m//g' \
+            > /tmp/ci-failure.log
+          echo "=== CI failure log (first 200 lines) ==="
+          head -200 /tmp/ci-failure.log
+
+      # ── 6. Set up Node.js (adjust version to match your project) ───────────
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # ── 7. Install project dependencies ─────────────────────────────────────
+      - name: Install dependencies
+        run: npm ci
+
+      # ── 8. Install Claude Code CLI ───────────────────────────────────────────
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      # ── 9. Run Claude Code to fix the failure ───────────────────────────────
+      # - Uses `claude -p` (prompt mode) so it runs non-interactively.
+      # - No --model flag: the environment's default model is used.
+      # - --dangerously-skip-permissions lets Claude edit files without prompts.
+      # - --max-turns 20 caps the agentic loop so it can't run indefinitely.
+      # - set +e captures the exit code without aborting the step immediately.
+      # - set -o pipefail ensures piped commands propagate failures correctly.
+      - name: Run Claude Code autofix
+        id: claude
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set +e
+          set -o pipefail
+
+          FAILURE_LOG=$(cat /tmp/ci-failure.log)
+
+          claude -p \
+            --dangerously-skip-permissions \
+            --max-turns 20 \
+            "CI is failing on this PR. Here are the failure logs:
+
+          ${FAILURE_LOG}
+
+          Please investigate the root cause, fix the code, and make sure the tests pass.
+          Do not modify workflow files. Focus only on source code and test files.
+          After making changes, run the test suite to verify the fix works." \
+            2>&1 | sed 's/\x1b\[[0-9;]*m//g' | tee /tmp/claude-output.log
+
+          CLAUDE_EXIT=$?
+          echo "exit_code=$CLAUDE_EXIT" >> "$GITHUB_OUTPUT"
+          exit $CLAUDE_EXIT
+
+      # ── 10. Commit and push any changes Claude made ──────────────────────────
+      # If Claude modified files, commit them with an "autofix:" prefix so the
+      # iteration counter in step 3 can find them on future runs.
+      - name: Commit and push autofix changes
+        if: steps.claude.outputs.exit_code == '0'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          git config user.name  "Joycraft Autofix"
+          git config user.email "autofix@joycraft.dev"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit — Claude made no file modifications."
+            exit 0
+          fi
+
+          ITERATION=${{ steps.iteration.outputs.count }}
+          NEXT=$(( ITERATION + 1 ))
+
+          git commit -m "autofix: attempt $NEXT — fix CI failures [skip autofix]"
+          git push
+
+      # ── 11. Post a summary comment on the PR ─────────────────────────────────
+      # Always post a comment so the PR author knows what happened.
+      - name: Post result comment
+        if: always()
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+          CLAUDE_EXIT: ${{ steps.claude.outputs.exit_code }}
+        run: |
+          if [ "$CLAUDE_EXIT" = "0" ]; then
+            BODY="**Autofix pushed a fix.** CI has been re-triggered. If it still fails, another autofix attempt will run (up to 3 total)."
+          else
+            BODY="**Autofix ran but could not produce a clean fix** (exit code: $CLAUDE_EXIT). Please review the logs and fix manually."
+          fi
+
+          gh pr comment "$PR_NUMBER" --body "$BODY"

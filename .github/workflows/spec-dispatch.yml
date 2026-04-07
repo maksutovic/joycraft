@@ -1,0 +1,79 @@
+# Spec Dispatch Workflow
+#
+# Triggered when specs are pushed to main. For each added or modified spec,
+# fires a `spec-pushed` repository_dispatch event to the scenarios repo so
+# that a scenario agent can triage the spec and write/update holdout tests.
+#
+# Prerequisites:
+#   - JOYCRAFT_APP_PRIVATE_KEY secret: GitHub App private key (.pem)
+#   - 3307840 is replaced with the actual App ID number at install time
+#   - joycraft-scenarios is replaced with the actual scenarios repo name at install time
+
+name: Spec Dispatch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/specs/**"
+
+jobs:
+  dispatch:
+    name: Dispatch changed specs to scenarios repo
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Check out with depth 2 to enable HEAD~1 diff ──────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      # ── 2. Find added or modified spec files ──────────────────────────────
+      # --diff-filter=AM: Added or Modified only — ignore deletions.
+      - name: Find changed specs
+        id: changed
+        run: |
+          FILES=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'docs/specs/**/*.md')
+          echo "files<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$FILES" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "Changed specs: $FILES"
+
+      # ── 3. Generate GitHub App token for cross-repo dispatch ──────────────
+      # Skipped if no specs changed (token unused, save the round-trip).
+      - name: Generate GitHub App token
+        id: app-token
+        if: steps.changed.outputs.files != ''
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: 3307840
+          private-key: ${{ secrets.JOYCRAFT_APP_PRIVATE_KEY }}
+          repositories: joycraft-scenarios
+
+      # ── 4. Dispatch each changed spec to the scenarios repo ───────────────
+      # Sends a `spec-pushed` event with the spec filename, full content,
+      # commit SHA, branch, and originating repo. The scenario agent uses
+      # this payload to triage and generate/update tests.
+      - name: Dispatch spec-pushed events
+        if: steps.changed.outputs.files != ''
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          while IFS= read -r SPEC_FILE; do
+            [ -z "$SPEC_FILE" ] && continue
+
+            SPEC_FILENAME=$(basename "$SPEC_FILE")
+            SPEC_CONTENT=$(cat "$SPEC_FILE")
+
+            echo "Dispatching spec-pushed for $SPEC_FILENAME"
+
+            gh api repos/${{ github.repository_owner }}/joycraft-scenarios/dispatches \
+              -f event_type=spec-pushed \
+              -f "client_payload[spec_filename]=$SPEC_FILENAME" \
+              -f "client_payload[spec_content]=$SPEC_CONTENT" \
+              -f "client_payload[commit_sha]=${{ github.sha }}" \
+              -f "client_payload[branch]=${{ github.ref_name }}" \
+              -f "client_payload[repo]=${{ github.repository }}"
+
+          done <<< "${{ steps.changed.outputs.files }}"

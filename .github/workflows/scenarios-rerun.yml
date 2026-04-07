@@ -1,0 +1,63 @@
+# Scenarios Re-run Workflow
+#
+# Triggered when the scenarios repo reports that it has updated its tests
+# (type: scenarios-updated). Finds all open PRs and fires a `run-scenarios`
+# dispatch to the scenarios repo for each one, so that newly generated or
+# updated tests are exercised against in-flight PR branches.
+#
+# This handles the race condition where a PR's implementation completes before
+# the scenario agent has finished writing its holdout tests.
+#
+# Prerequisites:
+#   - JOYCRAFT_APP_PRIVATE_KEY secret: GitHub App private key (.pem)
+#   - 3307840 is replaced with the actual App ID number at install time
+#   - joycraft-scenarios is replaced with the actual scenarios repo name at install time
+
+name: Scenarios Re-run
+
+on:
+  repository_dispatch:
+    types: [scenarios-updated]
+
+jobs:
+  rerun:
+    name: Re-run scenarios against open PRs
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Generate GitHub App token for cross-repo dispatch ──────────────
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: 3307840
+          private-key: ${{ secrets.JOYCRAFT_APP_PRIVATE_KEY }}
+          repositories: joycraft-scenarios
+
+      # ── 2. List open PRs and dispatch run-scenarios for each ──────────────
+      # If there are no open PRs, exits cleanly — nothing to do.
+      - name: Dispatch run-scenarios for each open PR
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          OPEN_PRS=$(gh api repos/${{ github.repository }}/pulls \
+            --jq '.[] | "\(.number) \(.head.ref) \(.head.sha)"')
+
+          if [ -z "$OPEN_PRS" ]; then
+            echo "No open PRs — nothing to re-run."
+            exit 0
+          fi
+
+          while IFS=' ' read -r PR_NUMBER BRANCH SHA; do
+            [ -z "$PR_NUMBER" ] && continue
+
+            echo "Dispatching run-scenarios for PR #$PR_NUMBER (branch: $BRANCH, sha: $SHA)"
+
+            gh api repos/${{ github.repository_owner }}/joycraft-scenarios/dispatches \
+              -f event_type=run-scenarios \
+              -f "client_payload[pr_number]=$PR_NUMBER" \
+              -f "client_payload[branch]=$BRANCH" \
+              -f "client_payload[sha]=$SHA" \
+              -f "client_payload[repo]=${{ github.repository }}"
+
+          done <<< "$OPEN_PRS"
