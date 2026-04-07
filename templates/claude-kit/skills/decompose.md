@@ -53,7 +53,7 @@ Iterate until the user approves.
 ## Step 5: Generate Atomic Specs
 
 For each approved row in the decomposition table:
-1. Create `docs/specs/YYYY-MM-DD-spec-name.md` using ATOMIC_SPEC_TEMPLATE.md
+1. Create `docs/specs/<feature-name>/spec-name.md` using ATOMIC_SPEC_TEMPLATE.md (derive feature-name from the brief filename, stripped of date prefix)
 2. Fill in all sections — each spec must be self-contained (no "see the brief for context")
 3. Copy relevant constraints from the Feature Brief into each spec
 4. Write acceptance criteria specific to THIS spec, not the whole feature
@@ -83,3 +83,5 @@ To execute:
 
 Ready to start execution?
 ```
+
+**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.

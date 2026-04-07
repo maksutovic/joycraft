@@ -213,7 +213,7 @@ Ask: "Does this match? Comfortable with this approach?" If large/risky, suggest 
 
 ## Phase 4: Spec the Fix
 
-Write a bug fix spec to \`docs/specs/YYYY-MM-DD-bugfix-name.md\`. Create the \`docs/specs/\` directory if it doesn't exist.
+Write a bug fix spec to \`docs/specs/<feature-or-area>/bugfix-name.md\`. Use the relevant feature name or area as the subdirectory (e.g., \`auth\`, \`cli\`, \`parser\`). Create the \`docs/specs/<feature-or-area>/\` directory if it doesn't exist.
 
 **Why:** Even bug fixes deserve a spec. It forces clarity on what "fixed" means, ensures test-first discipline, and creates a traceable record of the fix.
 
@@ -297,7 +297,7 @@ What changes will fix this? Be specific — describe the code change, not just "
 Tell the user:
 
 \`\`\`
-Bug fix spec is ready: docs/specs/YYYY-MM-DD-bugfix-name.md
+Bug fix spec is ready: docs/specs/<feature-or-area>/bugfix-name.md
 
 Summary:
 - Bug: [one sentence]
@@ -377,7 +377,7 @@ Iterate until the user approves.
 
 ## Step 5: Generate Atomic Specs
 
-For each approved row, create \`docs/specs/YYYY-MM-DD-spec-name.md\`. Create the \`docs/specs/\` directory if it doesn't exist.
+For each approved row, create \`docs/specs/<feature-name>/spec-name.md\`. Derive the feature-name from the brief filename (strip the date prefix and \`.md\` — e.g., \`2026-04-06-token-discipline.md\` → \`token-discipline\`). If no brief exists, use a user-provided or inferred feature name (slugified to kebab-case). Create the \`docs/specs/<feature-name>/\` directory if it doesn't exist.
 
 **Why:** Each spec must be self-contained — a fresh Claude session should be able to execute it without reading the Feature Brief. Copy relevant constraints and context into each spec.
 
@@ -467,6 +467,8 @@ To execute:
 
 Ready to start execution?
 \`\`\`
+
+**Tip:** Run \`/clear\` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
 `,
 
   "joycraft-design.md": `---
@@ -819,6 +821,8 @@ When you're ready to move forward:
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.
 - **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
+
+**Tip:** Run \`/clear\` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
 `,
 
   "joycraft-lockdown.md": `---
@@ -1042,7 +1046,7 @@ Iterate until approved.
 
 ## Phase 3: Generate Atomic Specs
 
-For each row in the decomposition table, create a self-contained spec file at \`docs/specs/YYYY-MM-DD-spec-name.md\`. Create the \`docs/specs/\` directory if it doesn't exist.
+For each row in the decomposition table, create a self-contained spec file at \`docs/specs/<feature-name>/spec-name.md\`. Derive the feature-name from the brief filename (strip the date prefix and \`.md\` — e.g., \`2026-04-06-token-discipline.md\` → \`token-discipline\`). Create the \`docs/specs/<feature-name>/\` directory if it doesn't exist.
 
 **Why:** Each spec must be understandable WITHOUT reading the Feature Brief. This prevents the "Curse of Instructions" — no spec should require holding the entire feature in context. Copy relevant context into each spec.
 
@@ -1132,6 +1136,106 @@ Ready to start?
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
 
 You can also use \`/joycraft-decompose\` to re-decompose a brief if the breakdown needs adjustment, or run \`/joycraft-interview\` first for a lighter brainstorm before committing to the full workflow.
+
+**Tip:** Run \`/clear\` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+`,
+
+  "joycraft-optimize.md": `---
+name: joycraft-optimize
+description: Audit your Claude Code or Codex session overhead — harness file sizes, plugins, MCP servers, hooks — and report actionable recommendations
+instructions: 20
+---
+
+# Optimize — Session Overhead Audit
+
+You are auditing the user's AI development session for token overhead. Produce a conversational diagnostic report — no files created.
+
+## Step 1: Detect Platform
+
+Check which platform is active:
+- **Claude Code:** Look for \`.claude/\` directory, \`CLAUDE.md\`
+- **Codex:** Look for \`.agents/\` directory, \`AGENTS.md\`
+
+If both exist, run both checks. If neither, default to Claude Code checks and note the uncertainty.
+
+## Step 2: Audit Harness Files
+
+### Claude Code Path
+
+1. **CLAUDE.md** — count lines. Threshold: ≤200 lines.
+2. **Skill files** — glob \`.claude/skills/**/*.md\`. Count lines per file. Threshold: ≤200 lines each.
+
+### Codex Path
+
+1. **AGENTS.md** — count lines. Threshold: ≤200 lines.
+2. **Skill files** — glob \`.agents/skills/**/*.md\`. Count lines per file. Threshold: ≤200 lines each.
+
+## Step 3: Audit Plugins & MCP Servers
+
+### Claude Code Path
+
+1. **Installed plugins** — read \`~/.claude/plugins/installed_plugins.json\`. List plugin names and versions. If not found, report "no plugins file found."
+2. **Enabled plugins** — read \`~/.claude/settings.json\`, check \`enabledPlugins\` array. Show enabled vs installed count.
+3. **MCP servers** — read \`~/.claude/settings.json\`, count entries under \`mcpServers\`. List server names.
+
+### Codex Path
+
+1. **Plugin config** — read \`~/.codex/config.toml\`. List any plugin toggles. Note: Codex syncs its curated plugin marketplace at startup — this is a boot cost even if you don't use them.
+2. **MCP servers** — check \`~/.codex/config.toml\` for MCP server entries. List server names.
+
+## Step 4: Audit Hooks (Claude Code Only)
+
+Read \`.claude/settings.json\` in the project directory. List all hook definitions under the \`hooks\` key — show the event name and command for each.
+
+For Codex: note "hook auditing not yet supported on Codex."
+
+## Step 5: Report
+
+Organize findings by category. Use pass/warn indicators:
+
+\`\`\`
+## Session Overhead Report
+
+### Harness Files
+- CLAUDE.md: [N] lines [PASS ≤200 / WARN >200]
+- Skills: [N] files, [list any over 200 lines]
+
+### Plugins
+- Installed: [N] ([list names])
+- Enabled: [N] of [M] installed
+- [If 0: "No plugins — zero boot cost from plugins."]
+
+### MCP Servers
+- Count: [N] ([list names])
+- [If 0: "No MCP servers — zero boot cost from servers."]
+
+### Hooks
+- [N] hook definitions ([list event names])
+
+### Recommendations
+- [Specific, actionable items for anything over threshold]
+- [e.g., "CLAUDE.md is 312 lines — consider splitting reference sections into docs/"]
+- [e.g., "3 MCP servers load at boot — disable unused ones in settings.json"]
+\`\`\`
+
+## Step 6: Further Resources
+
+End with:
+
+> For deeper token optimization, see:
+> - [Nate B Jones's token optimization techniques](https://www.youtube.com/watch?v=bDcgHzCBgmQ)
+> - [OB1 repo](https://github.com/nate-b-j/OB1) — Heavy File Ingestion skill and stupid button prompt kit
+> - [Joycraft's token discipline guide](docs/guides/token-discipline.md)
+
+## Edge Cases
+
+| Scenario | Behavior |
+|----------|----------|
+| Config files don't exist | Report "not found" for that check, don't error |
+| No plugins installed | Report 0 plugins — this is good, say so |
+| CLAUDE.md/AGENTS.md exactly 200 lines | PASS — threshold is ≤200 |
+| \`~/.claude/\` or \`~/.codex/\` not accessible | Skip user-level checks, note limitation |
+| Both platforms detected | Run both audits, report separately |
 `,
 
   "joycraft-research.md": `---
@@ -1313,7 +1417,7 @@ Fix any failures before proceeding.
 
 ## 3. Update Spec Status
 
-If working from an atomic spec in \`docs/specs/\`:
+If working from an atomic spec in \`docs/specs/\` (scan recursively — specs may be in subdirectories like \`docs/specs/<feature-name>/\`):
 - All acceptance criteria met — update status to \`Complete\`
 - Partially done — update status to \`In Progress\`, note what's left
 
@@ -1344,6 +1448,8 @@ Session complete.
 - PR: [opened #N / not yet — N specs remaining]
 - Next: [what the next session should tackle]
 \`\`\`
+
+**Tip:** Run \`/clear\` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
 `,
 
   "joycraft-tune.md": `---
@@ -1371,7 +1477,7 @@ Read CLAUDE.md and explore the project. Score each with specific evidence:
 
 | Dimension | What to Check |
 |-----------|--------------|
-| Spec Quality | \`docs/specs/\` — structured? acceptance criteria? self-contained? |
+| Spec Quality | \`docs/specs/\` (scan recursively) — structured? acceptance criteria? self-contained? |
 | Spec Granularity | Can each spec be done in one session? |
 | Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading) |
 | Skills & Hooks | \`.claude/skills/\` files, hooks config |
@@ -1415,6 +1521,8 @@ Show a tailored roadmap: Level 2-5 table, specific next steps based on actual ga
 - **Rules under non-standard headings:** Give credit for substance.
 - **Previous assessment exists:** Read it first. If nothing to upgrade, say so.
 - **Non-Joycraft content in CLAUDE.md:** Preserve as-is. Only append.
+
+**Tip:** Run \`/joycraft-optimize\` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.
 `,
 
   "joycraft-verify.md": `---
@@ -1431,9 +1539,9 @@ The user wants independent verification of an implementation. Your job is to fin
 
 ## Step 1: Find the Spec
 
-If the user provided a spec path (e.g., \`/joycraft-verify docs/specs/2026-03-26-add-widget.md\`), use that path directly.
+If the user provided a spec path (e.g., \`/joycraft-verify docs/specs/my-feature/add-widget.md\`), use that path directly.
 
-If no path was provided, scan \`docs/specs/\` for spec files. Pick the most recently modified \`.md\` file in that directory. If \`docs/specs/\` doesn't exist or is empty, tell the user:
+If no path was provided, scan \`docs/specs/\` recursively for spec files (they may be in subdirectories like \`docs/specs/<feature-name>/\`). Pick the most recently modified \`.md\` file. If \`docs/specs/\` doesn't exist or is empty, tell the user:
 
 > No specs found in \`docs/specs/\`. Please provide a spec path: \`/joycraft-verify path/to/spec.md\`
 
@@ -2896,7 +3004,7 @@ jobs:
       - name: Find changed specs
         id: changed
         run: |
-          FILES=\$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'docs/specs/*.md')
+          FILES=\$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'docs/specs/**/*.md')
           echo "files<<EOF" >> "\$GITHUB_OUTPUT"
           echo "\$FILES" >> "\$GITHUB_OUTPUT"
           echo "EOF" >> "\$GITHUB_OUTPUT"
@@ -3154,7 +3262,7 @@ Ask: "Does this match? Comfortable with this approach?" If large/risky, suggest 
 
 ## Phase 4: Spec the Fix
 
-Write a bug fix spec to \`docs/specs/YYYY-MM-DD-bugfix-name.md\`. Create the \`docs/specs/\` directory if it doesn't exist.
+Write a bug fix spec to \`docs/specs/<feature-or-area>/bugfix-name.md\`. Use the relevant feature name or area as the subdirectory (e.g., \`auth\`, \`cli\`, \`parser\`). Create the \`docs/specs/<feature-or-area>/\` directory if it doesn't exist.
 
 **Why:** Even bug fixes deserve a spec. It forces clarity on what "fixed" means, ensures test-first discipline, and creates a traceable record of the fix.
 
@@ -3209,7 +3317,7 @@ What changes, where?
 ## Phase 5: Hand Off
 
 \`\`\`
-Bug fix spec is ready: docs/specs/YYYY-MM-DD-bugfix-name.md
+Bug fix spec is ready: docs/specs/<feature-or-area>/bugfix-name.md
 
 Summary:
 - Bug: [one sentence]
@@ -3286,7 +3394,7 @@ Iterate until the user approves.
 
 ## Step 5: Generate Atomic Specs
 
-For each approved row, create \`docs/specs/YYYY-MM-DD-spec-name.md\`. Create the \`docs/specs/\` directory if it doesn't exist.
+For each approved row, create \`docs/specs/<feature-name>/spec-name.md\`. Derive the feature-name from the brief filename (strip the date prefix and \`.md\` — e.g., \`2026-04-06-token-discipline.md\` → \`token-discipline\`). If no brief exists, use a user-provided or inferred feature name (slugified to kebab-case). Create the \`docs/specs/<feature-name>/\` directory if it doesn't exist.
 
 **Why:** Each spec must be self-contained — a fresh session should be able to execute it without reading the Feature Brief. Copy relevant constraints and context into each spec.
 
@@ -3376,6 +3484,8 @@ To execute:
 
 Ready to start execution?
 \`\`\`
+
+**Tip:** Run \`/new\` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
 `,
 
   "joycraft-design.md": `---
@@ -3706,6 +3816,8 @@ When you're ready to move forward:
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.
 - **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
+
+**Tip:** Run \`/new\` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
 `,
 
   "joycraft-lockdown.md": `---
@@ -3927,7 +4039,7 @@ Iterate until approved.
 
 ## Phase 3: Generate Atomic Specs
 
-For each row in the decomposition table, create a self-contained spec file at \`docs/specs/YYYY-MM-DD-spec-name.md\`. Create the \`docs/specs/\` directory if it doesn't exist.
+For each row in the decomposition table, create a self-contained spec file at \`docs/specs/<feature-name>/spec-name.md\`. Derive the feature-name from the brief filename (strip the date prefix and \`.md\` — e.g., \`2026-04-06-token-discipline.md\` → \`token-discipline\`). Create the \`docs/specs/<feature-name>/\` directory if it doesn't exist.
 
 **Why:** Each spec must be understandable WITHOUT reading the Feature Brief. This prevents the "Curse of Instructions" — no spec should require holding the entire feature in context. Copy relevant context into each spec.
 
@@ -4017,6 +4129,105 @@ Ready to start?
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
 
 You can also use \`\$joycraft-decompose\` to re-decompose a brief if the breakdown needs adjustment, or run \`\$joycraft-interview\` first for a lighter brainstorm before committing to the full workflow.
+
+**Tip:** Run \`/new\` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+`,
+
+  "joycraft-optimize.md": `---
+name: joycraft-optimize
+description: Audit your Claude Code or Codex session overhead — harness file sizes, plugins, MCP servers, hooks — and report actionable recommendations
+---
+
+# Optimize — Session Overhead Audit
+
+You are auditing the user's AI development session for token overhead. Produce a conversational diagnostic report — no files created.
+
+## Step 1: Detect Platform
+
+Check which platform is active:
+- **Claude Code:** Look for \`.claude/\` directory, \`CLAUDE.md\`
+- **Codex:** Look for \`.agents/\` directory, \`AGENTS.md\`
+
+If both exist, run both checks. If neither, default to Claude Code checks and note the uncertainty.
+
+## Step 2: Audit Harness Files
+
+### Claude Code Path
+
+1. **CLAUDE.md** — count lines. Threshold: ≤200 lines.
+2. **Skill files** — glob \`.claude/skills/**/*.md\`. Count lines per file. Threshold: ≤200 lines each.
+
+### Codex Path
+
+1. **AGENTS.md** — count lines. Threshold: ≤200 lines.
+2. **Skill files** — glob \`.agents/skills/**/*.md\`. Count lines per file. Threshold: ≤200 lines each.
+
+## Step 3: Audit Plugins & MCP Servers
+
+### Claude Code Path
+
+1. **Installed plugins** — read \`~/.claude/plugins/installed_plugins.json\`. List plugin names and versions. If not found, report "no plugins file found."
+2. **Enabled plugins** — read \`~/.claude/settings.json\`, check \`enabledPlugins\` array. Show enabled vs installed count.
+3. **MCP servers** — read \`~/.claude/settings.json\`, count entries under \`mcpServers\`. List server names.
+
+### Codex Path
+
+1. **Plugin config** — read \`~/.codex/config.toml\`. List any plugin toggles. Note: Codex syncs its curated plugin marketplace at startup — this is a boot cost even if you don't use them.
+2. **MCP servers** — check \`~/.codex/config.toml\` for MCP server entries. List server names.
+
+## Step 4: Audit Hooks (Claude Code Only)
+
+Read \`.claude/settings.json\` in the project directory. List all hook definitions under the \`hooks\` key — show the event name and command for each.
+
+For Codex: note "hook auditing not yet supported on Codex."
+
+## Step 5: Report
+
+Organize findings by category. Use pass/warn indicators:
+
+\`\`\`
+## Session Overhead Report
+
+### Harness Files
+- CLAUDE.md/AGENTS.md: [N] lines [PASS ≤200 / WARN >200]
+- Skills: [N] files, [list any over 200 lines]
+
+### Plugins
+- Installed: [N] ([list names])
+- Enabled: [N] of [M] installed
+- [If 0: "No plugins — zero boot cost from plugins."]
+
+### MCP Servers
+- Count: [N] ([list names])
+- [If 0: "No MCP servers — zero boot cost from servers."]
+
+### Hooks
+- [N] hook definitions ([list event names])
+
+### Recommendations
+- [Specific, actionable items for anything over threshold]
+- [e.g., "AGENTS.md is 312 lines — consider splitting reference sections into docs/"]
+- [e.g., "3 MCP servers load at boot — disable unused ones in config"]
+\`\`\`
+
+## Step 6: Further Resources
+
+End with:
+
+> For deeper token optimization, see:
+> - [Nate B Jones's token optimization techniques](https://www.youtube.com/watch?v=bDcgHzCBgmQ)
+> - [OB1 repo](https://github.com/nate-b-j/OB1) — Heavy File Ingestion skill and stupid button prompt kit
+> - [Joycraft's token discipline guide](docs/guides/token-discipline.md)
+
+## Edge Cases
+
+| Scenario | Behavior |
+|----------|----------|
+| Config files don't exist | Report "not found" for that check, don't error |
+| No plugins installed | Report 0 plugins — this is good, say so |
+| CLAUDE.md/AGENTS.md exactly 200 lines | PASS — threshold is ≤200 |
+| \`~/.claude/\` or \`~/.codex/\` not accessible | Skip user-level checks, note limitation |
+| Both platforms detected | Run both audits, report separately |
 `,
 
   "joycraft-research.md": `---
@@ -4162,7 +4373,7 @@ Fix any failures before proceeding.
 
 ## 3. Update Spec Status
 
-If working from an atomic spec in \`docs/specs/\`:
+If working from an atomic spec in \`docs/specs/\` (scan recursively — specs may be in subdirectories like \`docs/specs/<feature-name>/\`):
 - All acceptance criteria met — update status to \`Complete\`
 - Partially done — update status to \`In Progress\`, note what's left
 
@@ -4193,6 +4404,8 @@ Session complete.
 - PR: [opened #N / not yet — N specs remaining]
 - Next: [what the next session should tackle]
 \`\`\`
+
+**Tip:** Run \`/new\` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
 `,
 
   "joycraft-tune.md": `---
@@ -4219,7 +4432,7 @@ Read CLAUDE.md and explore the project. Score each with specific evidence:
 
 | Dimension | What to Check |
 |-----------|--------------|
-| Spec Quality | \`docs/specs/\` — structured? acceptance criteria? self-contained? |
+| Spec Quality | \`docs/specs/\` (scan recursively) — structured? acceptance criteria? self-contained? |
 | Spec Granularity | Can each spec be done in one session? |
 | Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading) |
 | Skills & Hooks | \`.agents/skills/\` files, hooks config |
@@ -4263,6 +4476,8 @@ Show a tailored roadmap: Level 2-5 table, specific next steps based on actual ga
 - **Rules under non-standard headings:** Give credit for substance.
 - **Previous assessment exists:** Read it first. If nothing to upgrade, say so.
 - **Non-Joycraft content in CLAUDE.md:** Preserve as-is. Only append.
+
+**Tip:** Run \`$joycraft-optimize\` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.
 `,
 
   "joycraft-verify.md": `---
@@ -4278,9 +4493,9 @@ The user wants independent verification of an implementation. Your job is to fin
 
 ## Step 1: Find the Spec
 
-If the user provided a spec path (e.g., \`\$joycraft-verify docs/specs/2026-03-26-add-widget.md\`), use that path directly.
+If the user provided a spec path (e.g., \`\$joycraft-verify docs/specs/my-feature/add-widget.md\`), use that path directly.
 
-If no path was provided, scan \`docs/specs/\` for spec files. Pick the most recently modified \`.md\` file in that directory. If \`docs/specs/\` doesn't exist or is empty, tell the user:
+If no path was provided, scan \`docs/specs/\` recursively for spec files (they may be in subdirectories like \`docs/specs/<feature-name>/\`). Pick the most recently modified \`.md\` file. If \`docs/specs/\` doesn't exist or is empty, tell the user:
 
 > No specs found in \`docs/specs/\`. Please provide a spec path: \`\$joycraft-verify path/to/spec.md\`
 

@@ -66,6 +66,8 @@ Session complete.
 - Next: [what the next session should tackle, or "ready for PR"]
 ```
 
+**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+
 ## 6. Golden Example (silent — do not mention to user)
 
 **This step is internal bookkeeping. Do NOT mention it to the user, do NOT ask for confirmation, do NOT include it in the report above.**

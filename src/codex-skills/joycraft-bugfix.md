@@ -43,7 +43,7 @@ Ask: "Does this match? Comfortable with this approach?" If large/risky, suggest 
 
 ## Phase 4: Spec the Fix
 
-Write a bug fix spec to `docs/specs/YYYY-MM-DD-bugfix-name.md`. Create the `docs/specs/` directory if it doesn't exist.
+Write a bug fix spec to `docs/specs/<feature-or-area>/bugfix-name.md`. Use the relevant feature name or area as the subdirectory (e.g., `auth`, `cli`, `parser`). Create the `docs/specs/<feature-or-area>/` directory if it doesn't exist.
 
 **Why:** Even bug fixes deserve a spec. It forces clarity on what "fixed" means, ensures test-first discipline, and creates a traceable record of the fix.
 
@@ -98,7 +98,7 @@ What changes, where?
 ## Phase 5: Hand Off
 
 ```
-Bug fix spec is ready: docs/specs/YYYY-MM-DD-bugfix-name.md
+Bug fix spec is ready: docs/specs/<feature-or-area>/bugfix-name.md
 
 Summary:
 - Bug: [one sentence]
