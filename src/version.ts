@@ -34,6 +34,10 @@ export function writeVersion(dir: string, version: string, files: Record<string,
   writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
 }
 
+/**
+ * Detect the current Joycraft harness level for a project directory.
+ * Returns 5 if Level 5 artifacts (autofix workflow + External Validation) are present, 4 otherwise.
+ */
 export function getLevel(dir: string): number {
   const hasAutofix = existsSync(join(dir, '.github', 'workflows', 'autofix.yml'));
   if (!hasAutofix) return 4;
