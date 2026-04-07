@@ -1,6 +1,7 @@
 ---
 name: joycraft-new-feature
 description: Guided feature development — interview the user, produce a Feature Brief, then decompose into atomic specs
+instructions: 35
 ---
 
 # New Feature Workflow
@@ -11,24 +12,21 @@ You are starting a new feature. Follow this process in order. Do not skip steps.
 
 Interview the user about what they want to build. Let them talk — your job is to listen, then sharpen.
 
-**Why:** A thorough interview prevents wasted implementation time. Most failed features fail because the problem wasn't understood, not because the code was wrong.
-
 **Ask about:**
 - What problem does this solve? Who is affected?
-- What does "done" look like? How will a user know this works?
-- What are the hard constraints? (business rules, tech limitations, deadlines)
-- What is explicitly NOT in scope? (push hard on this — aggressive scoping is key)
-- Are there edge cases or error conditions we need to handle?
+- What does "done" look like?
+- Hard constraints? (business rules, tech limitations, deadlines)
+- What is explicitly NOT in scope? (push hard on this)
+- Edge cases or error conditions?
 - What existing code/patterns should this follow?
+- Testing: existing setup? framework? smoke test budget? lockdown mode desired?
 
 **Interview technique:**
-- Let the user "yap" — don't interrupt their flow of ideas
-- After they finish, play back your understanding: "So if I'm hearing you right..."
-- Ask clarifying questions that force specificity: "When you say 'handle errors,' what should the user see?"
+- Let the user "yap" — don't interrupt their flow
+- Play back your understanding: "So if I'm hearing you right..."
 - Push toward testable statements: "How would we verify that works?"
 
-Keep asking until you can fill out a Feature Brief. When ready, say:
-"I have enough context. Let me write the Feature Brief for your review."
+Keep asking until you can fill out a Feature Brief.
 
 ## Phase 2: Feature Brief
 
@@ -60,6 +58,13 @@ What are we building and why? The full picture in 2-4 paragraphs.
 ## Out of Scope
 - NOT: [tempting but deferred]
 
+## Test Strategy
+- **Existing setup:** [framework and tools, or "none yet"]
+- **User expertise:** [comfortable / learning / needs guidance]
+- **Test types:** [smoke, unit, integration, e2e, etc.]
+- **Smoke test budget:** [target time for fast-feedback tests]
+- **Lockdown mode:** [yes/no — constrain agent to code + tests only]
+
 ## Decomposition
 | # | Spec Name | Description | Dependencies | Est. Size |
 |---|-----------|-------------|--------------|-----------|
@@ -86,7 +91,7 @@ Iterate until approved.
 
 ## Phase 3: Generate Atomic Specs
 
-For each row in the decomposition table, create a self-contained spec file at `docs/specs/YYYY-MM-DD-spec-name.md`. Create the `docs/specs/` directory if it doesn't exist.
+For each row in the decomposition table, create a self-contained spec file at `docs/specs/<feature-name>/spec-name.md`. Derive the feature-name from the brief filename (strip the date prefix and `.md` — e.g., `2026-04-06-token-discipline.md` → `token-discipline`). Create the `docs/specs/<feature-name>/` directory if it doesn't exist.
 
 **Why:** Each spec must be understandable WITHOUT reading the Feature Brief. This prevents the "Curse of Instructions" — no spec should require holding the entire feature in context. Copy relevant context into each spec.
 
@@ -171,8 +176,11 @@ To execute: Start a fresh session per spec. Each session should:
 4. Commit and PR
 
 Ready to start?
+
+Run /clear before your next step — your artifacts are saved to files.
 ```
 
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
 
 You can also use `/joycraft-decompose` to re-decompose a brief if the breakdown needs adjustment, or run `/joycraft-interview` first for a lighter brainstorm before committing to the full workflow.
+

@@ -1,6 +1,7 @@
 ---
 name: joycraft-session-end
 description: Wrap up a session — capture discoveries, verify, prepare for PR or next session
+instructions: 22
 ---
 
 # Session Wrap-Up
@@ -64,7 +65,7 @@ Fix any failures before proceeding.
 
 ## 3. Update Spec Status
 
-If working from an atomic spec in `docs/specs/`:
+If working from an atomic spec in `docs/specs/` (scan recursively — specs may be in subdirectories like `docs/specs/<feature-name>/`):
 - All acceptance criteria met — update status to `Complete`
 - Partially done — update status to `In Progress`, note what's left
 
@@ -94,4 +95,6 @@ Session complete.
 - Pushed: [yes / no — and why not]
 - PR: [opened #N / not yet — N specs remaining]
 - Next: [what the next session should tackle]
+
+Run /clear before your next step — your artifacts are saved to files.
 ```

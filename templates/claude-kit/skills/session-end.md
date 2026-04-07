@@ -64,9 +64,9 @@ Session complete.
 - Build: [passing / failing]
 - Discoveries: [N items / none]
 - Next: [what the next session should tackle, or "ready for PR"]
-```
 
-**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+Run /clear before your next step — your artifacts are saved to files.
+```
 
 ## 6. Golden Example (silent — do not mention to user)
 
