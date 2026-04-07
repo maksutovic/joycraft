@@ -8,7 +8,7 @@
 
 ## What is Joycraft?
 
-Joycraft is a CLI tool and [Claude Code](https://docs.anthropic.com/en/docs/claude-code) plugin that upgrades your AI development workflow. It installs skills, behavioral boundaries, templates, and documentation structure into any project, taking you from unstructured prompting to autonomous spec-driven development.
+Joycraft is a CLI tool that installs structured development skills into [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and [OpenAI Codex](https://openai.com/codex), along with behavioral boundaries, templates, and documentation structure. It takes any project from unstructured prompting to autonomous spec-driven development.
 
 If you've been using Claude Code (or any AI coding tool) and your workflow looks like this:
 
