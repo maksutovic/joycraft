@@ -7,6 +7,31 @@ description: Guided feature development — interview the user, produce a Featur
 
 You are starting a new feature. Follow this process in order. Do not skip steps.
 
+## Phase 0: Check for Existing Drafts
+
+Before starting the interview, check if the user has already drafted a brief.
+
+**Skip this phase if:** the user provided a brief path as an argument (they already know what to work from).
+
+**Steps:**
+1. Check if `docs/briefs/` exists. If not, skip to Phase 1.
+2. Look for files matching `*-draft.md` in `docs/briefs/`.
+3. For any other `.md` files in `docs/briefs/`, read the first 10 lines and check for `Status: DRAFT`.
+4. If draft(s) found, present them:
+
+```
+I found draft brief(s) in docs/briefs/:
+- [path] (drafted YYYY-MM-DD)
+- [path] (drafted YYYY-MM-DD)
+
+Want me to:
+1. **Formalize** one of these into a full Feature Brief (skip interview, go to Phase 2)
+2. **Start a new interview** from scratch
+```
+
+5. If user chooses to formalize: read the full draft, extract the idea/problem/constraints, and jump to Phase 2 with that context pre-filled.
+6. If user chooses to start fresh, or no drafts found: proceed to Phase 1.
+
 ## Phase 1: Interview
 
 Interview the user about what they want to build. Let them talk — your job is to listen, then sharpen.
@@ -155,7 +180,8 @@ If `docs/templates/ATOMIC_SPEC_TEMPLATE.md` exists, reference it for the full te
 
 ## Phase 4: Hand Off for Execution
 
-Tell the user:
+Before jumping to execution, consider whether research or design would catch wrong assumptions early:
+
 ```
 Feature Brief and [N] atomic specs are ready.
 
@@ -163,6 +189,20 @@ Specs:
 1. [spec-name] — [one sentence] [S/M/L]
 2. [spec-name] — [one sentence] [S/M/L]
 ...
+
+Before executing, consider the complexity of this feature:
+
+COMPLEX (5+ files, architectural decisions, unfamiliar area):
+  → $joycraft-research — gather codebase facts before committing to a design
+  → $joycraft-design — make architectural decisions explicit
+  → Then execute specs
+
+MEDIUM (clear scope but non-trivial):
+  → $joycraft-design — make key decisions explicit before building
+  → Then execute specs
+
+SIMPLE (scope is clear, < 5 files, well-understood area):
+  → Skip to execution
 
 Recommended execution:
 - [Parallel/Sequential/Mixed strategy]
@@ -177,6 +217,6 @@ To execute: Start a fresh session per spec. Each session should:
 Ready to start?
 ```
 
-**Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
+**Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused. Research and design catch wrong assumptions before they propagate into specs — but skip them if the scope is clear and well-understood.
 
 You can also use `$joycraft-decompose` to re-decompose a brief if the breakdown needs adjustment, or run `$joycraft-interview` first for a lighter brainstorm before committing to the full workflow.

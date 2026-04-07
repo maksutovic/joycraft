@@ -1,6 +1,324 @@
 // Bundled file contents — embedded at build time
 
 export const SKILLS: Record<string, string> = {
+  "joycraft-add-fact.md": `---
+name: joycraft-add-fact
+description: Capture a project fact and route it to the correct context document -- production map, dangerous assumptions, decision log, institutional knowledge, or troubleshooting
+instructions: 38
+---
+
+# Add Fact
+
+The user has a fact to capture. Your job is to classify it, route it to the correct context document, append it in the right format, and optionally add a CLAUDE.md boundary rule.
+
+## Step 1: Get the Fact
+
+If the user already provided the fact (e.g., \`/joycraft-add-fact the staging DB resets every Sunday\`), use it directly.
+
+If not, ask: "What fact do you want to capture?" -- then wait for their response.
+
+If the user provides multiple facts at once, process each one separately through all the steps below, then give a combined confirmation at the end.
+
+## Step 2: Classify the Fact
+
+Route the fact to one of these 5 context documents based on its content:
+
+### \`docs/context/production-map.md\`
+The fact is about **infrastructure, services, environments, URLs, endpoints, credentials, or what is safe/unsafe to touch**.
+- Signal words: "production", "staging", "endpoint", "URL", "database", "service", "deployed", "hosted", "credentials", "secret", "environment"
+- Examples: "The staging DB is at postgres://staging.example.com", "We use Vercel for the frontend and Railway for the API"
+
+### \`docs/context/dangerous-assumptions.md\`
+The fact is about **something an AI agent might get wrong -- a false assumption that leads to bad outcomes**.
+- Signal words: "assumes", "might think", "but actually", "looks like X but is Y", "not what it seems", "trap", "gotcha"
+- Examples: "The \`users\` table looks like a test table but it's production", "Deleting a workspace doesn't delete the billing subscription"
+
+### \`docs/context/decision-log.md\`
+The fact is about **an architectural or tooling choice and why it was made**.
+- Signal words: "decided", "chose", "because", "instead of", "we went with", "the reason we use", "trade-off"
+- Examples: "We chose SQLite over Postgres because this runs on embedded devices", "We use pnpm instead of npm for workspace support"
+
+### \`docs/context/institutional-knowledge.md\`
+The fact is about **team conventions, unwritten rules, organizational context, or who owns what**.
+- Signal words: "convention", "rule", "always", "never", "team", "process", "review", "approval", "owns", "responsible"
+- Examples: "The design team reviews all color changes", "We never deploy on Fridays", "PR titles must start with the ticket number"
+
+### \`docs/context/troubleshooting.md\`
+The fact is about **diagnostic knowledge -- when X happens, do Y (or don't do Z)**.
+- Signal words: "when", "fails", "error", "if you see", "stuck", "broken", "fix", "workaround", "before trying", "reboot", "restart", "reset"
+- Examples: "If Wi-Fi disconnects during flash, wait and retry -- don't switch networks", "When tests fail with ECONNREFUSED, check if Docker is running"
+
+### Ambiguous Facts
+
+If the fact fits multiple categories, pick the **best fit** based on the primary intent. You will mention the alternative in your confirmation message so the user can correct you.
+
+## Step 3: Ensure the Target Document Exists
+
+1. If \`docs/context/\` does not exist, create the directory.
+2. If the target document does not exist, create it from the template structure. Check \`docs/templates/\` for the matching template. If no template exists, use this minimal structure:
+
+For **production-map.md**:
+\`\`\`markdown
+# Production Map
+
+> What's real, what's staging, what's safe to touch.
+
+## Services
+
+| Service | Environment | URL/Endpoint | Impact if Corrupted |
+|---------|-------------|-------------|-------------------|
+\`\`\`
+
+For **dangerous-assumptions.md**:
+\`\`\`markdown
+# Dangerous Assumptions
+
+> Things the AI agent might assume that are wrong in this project.
+
+## Assumptions
+
+| Agent Might Assume | But Actually | Impact If Wrong |
+|-------------------|-------------|----------------|
+\`\`\`
+
+For **decision-log.md**:
+\`\`\`markdown
+# Decision Log
+
+> Why choices were made, not just what was chosen.
+
+## Decisions
+
+| Date | Decision | Why | Alternatives Rejected | Revisit When |
+|------|----------|-----|----------------------|-------------|
+\`\`\`
+
+For **institutional-knowledge.md**:
+\`\`\`markdown
+# Institutional Knowledge
+
+> Unwritten rules, team conventions, and organizational context.
+
+## Team Conventions
+
+- (none yet)
+\`\`\`
+
+For **troubleshooting.md**:
+\`\`\`markdown
+# Troubleshooting
+
+> What to do when things go wrong for non-code reasons.
+
+## Common Failures
+
+| When This Happens | Do This | Don't Do This |
+|-------------------|---------|---------------|
+\`\`\`
+
+## Step 4: Read the Target Document
+
+Read the target document to understand its current structure. Note:
+- Which section to append to
+- Whether it uses tables or lists
+- The column format if it's a table
+
+## Step 5: Append the Fact
+
+Add the fact to the appropriate section of the target document. Match the existing format exactly:
+
+- **Table-based documents** (production-map, dangerous-assumptions, decision-log, troubleshooting): Add a new table row in the correct columns. Use today's date where a date column exists.
+- **List-based documents** (institutional-knowledge): Add a new list item (\`- \`) to the most appropriate section.
+
+Remove any italic example rows (rows where all cells start with \`_\`) before appending, so the document transitions from template to real content. Only remove examples from the specific table you are appending to.
+
+**Append only. Never modify or remove existing real content.**
+
+## Step 6: Evaluate CLAUDE.md Boundary Rule
+
+Decide whether the fact also warrants a rule in CLAUDE.md's behavioral boundaries:
+
+**Add a CLAUDE.md rule if the fact:**
+- Describes something that should ALWAYS or NEVER be done
+- Could cause real damage if violated (data loss, broken deployments, security issues)
+- Is a hard constraint that applies across all work, not just a one-time note
+
+**Do NOT add a CLAUDE.md rule if the fact is:**
+- Purely informational (e.g., "staging DB is at this URL")
+- A one-time decision that's already captured
+- A diagnostic tip rather than a prohibition
+
+If a rule is warranted, read CLAUDE.md, find the appropriate section (ALWAYS, ASK FIRST, or NEVER under Behavioral Boundaries), and append the rule. If no Behavioral Boundaries section exists, append one.
+
+## Step 7: Confirm
+
+Report what you did in this format:
+
+\`\`\`
+Added to [document name]:
+  [summary of what was added]
+
+[If CLAUDE.md was also updated:]
+Added CLAUDE.md rule:
+  [ALWAYS/ASK FIRST/NEVER]: [rule text]
+
+[If the fact was ambiguous:]
+Routed to [chosen doc] -- move to [alternative doc] if this is more about [alternative category description].
+\`\`\`
+`,
+
+  "joycraft-bugfix.md": `---
+name: joycraft-bugfix
+description: Structured bug fix workflow — triage, diagnose, discuss with user, write a focused spec, hand off for implementation
+instructions: 32
+---
+
+# Bug Fix Workflow
+
+You are fixing a bug. Follow this process in order. Do not skip steps.
+
+**Guard clause:** If this is clearly a new feature, redirect to \`/joycraft-new-feature\` and stop.
+
+---
+
+## Phase 1: Triage
+
+Establish what's broken. Gather: symptom, steps to reproduce, expected vs actual behavior, when it started, relevant logs/errors. If an error message or stack trace is provided, read the referenced files immediately. Try to reproduce if steps are given.
+
+**Done when:** You can describe the symptom in one sentence.
+
+---
+
+## Phase 2: Diagnose
+
+Find the root cause. Start from the error site and trace backward. Read source files — don't guess. Identify the specific line(s) and logic error. Check git blame if it's a recent regression.
+
+**Done when:** You can explain what's wrong, why, and where in 2-3 sentences.
+
+---
+
+## Phase 3: Discuss
+
+Present findings to the user BEFORE writing any code or spec:
+1. **Symptom** — confirm it matches what they see
+2. **Root cause** — specific file(s) and line(s)
+3. **Proposed fix** — what changes, where
+4. **Risk** — side effects? scope?
+
+Ask: "Does this match? Comfortable with this approach?" If large/risky, suggest decomposing into multiple specs.
+
+**Done when:** User agrees with the diagnosis and fix direction.
+
+---
+
+## Phase 4: Spec the Fix
+
+Write a bug fix spec to \`docs/specs/YYYY-MM-DD-bugfix-name.md\`. Create the \`docs/specs/\` directory if it doesn't exist.
+
+**Why:** Even bug fixes deserve a spec. It forces clarity on what "fixed" means, ensures test-first discipline, and creates a traceable record of the fix.
+
+Use this template:
+
+\`\`\`markdown
+# Fix [Bug Description] — Bug Fix Spec
+
+> **Parent Brief:** none (bug fix)
+> **Issue/Error:** [error message, issue link, or symptom description]
+> **Status:** Ready
+> **Date:** YYYY-MM-DD
+> **Estimated scope:** [1 session / N files / ~N lines]
+
+---
+
+## Bug
+
+What is broken? Describe the symptom the user experiences.
+
+## Root Cause
+
+What is wrong in the code and why? Name the specific file(s) and line(s).
+
+## Fix
+
+What changes will fix this? Be specific — describe the code change, not just "fix the bug."
+
+## Acceptance Criteria
+
+- [ ] [The bug no longer occurs — describe the correct behavior]
+- [ ] [No regressions in related functionality]
+- [ ] Build passes
+- [ ] Tests pass
+
+## Test Plan
+
+| Acceptance Criterion | Test | Type |
+|---------------------|------|------|
+| [Bug no longer occurs] | [Test that reproduces the bug, then verifies the fix] | [unit/integration/e2e] |
+| [No regressions] | [Existing tests still pass, or new regression test] | [unit/integration] |
+
+**Execution order:**
+1. Write a test that reproduces the bug — it should FAIL (red)
+2. Run the test to confirm it fails
+3. Apply the fix
+4. Run the test to confirm it passes (green)
+5. Run the full test suite to check for regressions
+
+**Smoke test:** [The bug reproduction test — fastest way to verify the fix works]
+
+**Before implementing, verify your test harness:**
+1. Run the reproduction test — it must FAIL (if it passes, you're not testing the actual bug)
+2. The test must exercise your actual code — not a reimplementation or mock
+3. Identify your smoke test — it must run in seconds, not minutes
+
+## Constraints
+
+- MUST: [any hard requirements for the fix]
+- MUST NOT: [any prohibitions — e.g., don't change the public API]
+
+## Affected Files
+
+| Action | File | What Changes |
+|--------|------|-------------|
+
+## Edge Cases
+
+| Scenario | Expected Behavior |
+|----------|------------------|
+\`\`\`
+
+**For trivial bugs:** The spec will be short. That's fine — the structure is the point, not the length.
+
+**For large bugs that span multiple files/systems:** Consider whether this should be decomposed into multiple specs. If so, create a brief first using \`/joycraft-new-feature\`, then decompose. A bug fix spec should be implementable in a single session.
+
+---
+
+## Phase 5: Hand Off
+
+Tell the user:
+
+\`\`\`
+Bug fix spec is ready: docs/specs/YYYY-MM-DD-bugfix-name.md
+
+Summary:
+- Bug: [one sentence]
+- Root cause: [one sentence]
+- Fix: [one sentence]
+- Estimated: 1 session
+
+To execute: Start a fresh session and:
+1. Read the spec
+2. Write the reproduction test (must fail)
+3. Apply the fix (test must pass)
+4. Run full test suite
+5. Run /joycraft-session-end to capture discoveries
+6. Commit and PR
+
+Ready to start?
+\`\`\`
+
+**Why:** A fresh session for implementation produces better results. This diagnostic session has context noise from exploration — a clean session with just the spec is more focused.
+`,
+
   "joycraft-decompose.md": `---
 name: joycraft-decompose
 description: Break a feature brief into atomic specs — small, testable, independently executable units
@@ -149,6 +467,101 @@ To execute:
 
 Ready to start execution?
 \`\`\`
+`,
+
+  "joycraft-design.md": `---
+name: joycraft-design
+description: Design discussion before decomposition — produce a ~200-line design artifact for human review, catching wrong assumptions before they propagate into specs
+---
+
+# Design Discussion
+
+You are producing a design discussion document for a feature. This sits between research and decomposition — it captures your understanding so the human can catch wrong assumptions before specs are written.
+
+**Guard clause:** If no brief path is provided and no brief exists in \`docs/briefs/\`, say:
+"No feature brief found. Run \`/joycraft-new-feature\` first to create one, or provide the path to your brief."
+Then stop.
+
+---
+
+## Step 1: Read Inputs
+
+Read the feature brief at the path the user provides. If the user also provides a research document path, read that too. Research is optional — if none exists, note that you'll explore the codebase directly.
+
+## Step 2: Explore the Codebase
+
+Spawn subagents to explore the codebase for patterns relevant to the brief. Focus on:
+
+- Files and functions that will be touched or extended
+- Existing patterns this feature should follow (naming, data flow, error handling)
+- Similar features already implemented that serve as models
+- Boundaries and interfaces the feature must integrate with
+
+Gather file paths, function signatures, and code snippets. You need concrete evidence, not guesses.
+
+## Step 3: Write the Design Document
+
+Create \`docs/designs/\` directory if it doesn't exist. Write the design document to \`docs/designs/YYYY-MM-DD-feature-name.md\`.
+
+The document has exactly five sections:
+
+### Section 1: Current State
+
+What exists today in the codebase that is relevant to this feature. Include file paths, function signatures, and data flows. Be specific — reference actual code, not abstractions. If no research doc was provided, note that and describe what you found through direct exploration.
+
+### Section 2: Desired End State
+
+What the codebase should look like when this feature is complete. Describe the change at a high level — new files, modified interfaces, new data flows. Do NOT include implementation steps. This is the "what," not the "how."
+
+### Section 3: Patterns to Follow
+
+Existing patterns in the codebase that this feature should match. Include short code snippets and \`file:line\` references. Show the pattern, don't just name it.
+
+If this is a greenfield project with no existing patterns, propose conventions and note that no precedent exists.
+
+### Section 4: Resolved Design Decisions
+
+Decisions you have already made, with brief rationale. Format each as:
+
+> **Decision:** [what you decided]
+> **Rationale:** [why, referencing existing code or constraints]
+> **Alternative rejected:** [what you considered and why you rejected it]
+
+### Section 5: Open Questions
+
+Things you don't know or where multiple valid approaches exist. Each question MUST present 2-3 concrete options with pros and cons. Format:
+
+> **Q: [question]**
+> - **Option A:** [description] — Pro: [benefit]. Con: [cost].
+> - **Option B:** [description] — Pro: [benefit]. Con: [cost].
+> - **Option C (if applicable):** [description] — Pro: [benefit]. Con: [cost].
+
+Do NOT ask vague questions like "what do you think?" Every question must have actionable options the human can choose from.
+
+## Step 4: Present and STOP
+
+Present the design document to the user. Say:
+
+\`\`\`
+Design discussion written to docs/designs/YYYY-MM-DD-feature-name.md
+
+Please review the document above. Specifically:
+1. Are the patterns in Section 3 the right ones to follow, or should I use different ones?
+2. Do you agree with the resolved decisions in Section 4?
+3. Pick an option for each open question in Section 5 (or propose your own).
+
+Reply with your feedback. I will NOT proceed to decomposition until you have reviewed and approved this design.
+\`\`\`
+
+**CRITICAL: Do NOT proceed to \`/joycraft-decompose\` or generate specs.** Wait for the human to review, answer open questions, and correct any wrong assumptions. The entire value of this skill is the pause — it forces a human checkpoint before mistakes propagate.
+
+## After Human Review
+
+Once the human responds:
+- Update the design document with their corrections and chosen options
+- Move answered questions from "Open Questions" to "Resolved Design Decisions"
+- Present the updated document for final confirmation
+- Only after explicit approval, tell the user: "Design approved. Run \`/joycraft-decompose\` with this brief to generate atomic specs."
 `,
 
   "joycraft-implement-level5.md": `---
@@ -408,6 +821,134 @@ When you're ready to move forward:
 - **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
 `,
 
+  "joycraft-lockdown.md": `---
+name: joycraft-lockdown
+description: Generate constrained execution boundaries for an implementation session -- NEVER rules and deny patterns to prevent agent overreach
+instructions: 28
+---
+
+# Lockdown Mode
+
+The user wants to constrain agent behavior for an implementation session. Your job is to interview them about what should be off-limits, then generate CLAUDE.md NEVER rules and \`.claude/settings.json\` deny patterns they can review and apply.
+
+## When Is Lockdown Useful?
+
+Lockdown is most valuable for:
+- **Complex tech stacks** (hardware, firmware, multi-device) where agents can cause real damage
+- **Long-running autonomous sessions** where you won't be monitoring every action
+- **Production-adjacent work** where accidental network calls or package installs are risky
+
+For simple feature work on a well-tested codebase, lockdown is usually overkill. Mention this context to the user so they can decide.
+
+## Step 1: Check for Tests
+
+Before starting the interview, check if the project has test files or directories (look for \`tests/\`, \`test/\`, \`__tests__/\`, \`spec/\`, or files matching \`*.test.*\`, \`*.spec.*\`).
+
+If no tests are found, tell the user:
+
+> Lockdown mode is most useful when you already have tests in place -- it prevents the agent from modifying them while constraining behavior to writing code and running tests. Consider running \`/joycraft-new-feature\` first to set up a test-driven workflow, then come back to lock it down.
+
+If the user wants to proceed anyway, continue with the interview.
+
+## Step 2: Interview -- What to Lock Down
+
+Ask these three questions, one at a time. Wait for the user's response before proceeding to the next question.
+
+### Question 1: Read-Only Files
+
+> What test files or directories should be off-limits for editing? (e.g., \`tests/\`, \`__tests__/\`, \`spec/\`, specific test files)
+>
+> I'll generate NEVER rules to prevent editing these.
+
+If the user isn't sure, suggest the test directories you found in Step 1.
+
+### Question 2: Allowed Commands
+
+> What commands should the agent be allowed to run? Defaults:
+> - Write and edit source code files
+> - Run the project's smoke test command
+> - Run the full test suite
+>
+> Any other commands to explicitly allow? Or should I restrict to just these?
+
+### Question 3: Denied Commands
+
+> What commands should be denied? Defaults:
+> - Package installs (\`npm install\`, \`pip install\`, \`cargo add\`, \`go get\`, etc.)
+> - Network tools (\`curl\`, \`wget\`, \`ping\`, \`ssh\`)
+> - Direct log file reading
+>
+> Any specific commands to add or remove from this list?
+
+**Edge case -- user wants to allow some network access:** If the user mentions API tests or specific endpoints that need network access, exclude those from the deny list and note the exception in the output.
+
+**Edge case -- user wants to lock down file writes:** If the user wants to prevent ALL file writes, warn them:
+
+> Denying all file writes would prevent the agent from doing any work. I recommend keeping source code writes allowed and only locking down test files, config files, or other sensitive directories.
+
+## Step 3: Generate Boundaries
+
+Based on the interview responses, generate output in this exact format:
+
+\`\`\`
+## Lockdown boundaries generated
+
+Review these suggestions and add them to your project:
+
+### CLAUDE.md -- add to NEVER section:
+
+- Edit any file in \`[user's test directories]\`
+- Run \`[denied package manager commands]\`
+- Use \`[denied network tools]\`
+- Read log files directly -- interact with logs only through test assertions
+- [Any additional NEVER rules based on user responses]
+
+### .claude/settings.json -- suggested deny patterns:
+
+Add these to the \`permissions.deny\` array:
+
+["[command1]", "[command2]", "[command3]"]
+
+---
+
+Copy these into your project manually, or tell me to apply them now (I'll show you the exact changes for approval first).
+\`\`\`
+
+Adjust the content based on the actual interview responses:
+- Only include deny patterns for commands the user confirmed should be denied
+- Only include NEVER rules for directories/files the user specified
+- If the user allowed certain network tools or package managers, exclude those
+
+## Recommended Permission Mode
+
+After generating the boundaries above, also recommend a Claude Code permission mode. Include this section in your output:
+
+\`\`\`
+### Recommended Permission Mode
+
+You don't need \`--dangerously-skip-permissions\`. Safer alternatives exist:
+
+| Your situation | Use | Why |
+|---|---|---|
+| Autonomous spec execution | \`--permission-mode dontAsk\` + allowlist above | Only pre-approved commands run |
+| Long session with some trust | \`--permission-mode auto\` | Safety classifier reviews each action |
+| Interactive development | \`--permission-mode acceptEdits\` | Auto-approves file edits, prompts for commands |
+
+**For lockdown mode, we recommend \`--permission-mode dontAsk\`** combined with the deny patterns above. This gives you full autonomy for allowed operations while blocking everything else -- no classifier overhead, no prompts, and no safety bypass.
+
+\`--dangerously-skip-permissions\` disables ALL safety checks. The modes above give you autonomy without removing the guardrails.
+\`\`\`
+
+## Step 4: Offer to Apply
+
+If the user asks you to apply the changes:
+
+1. **For CLAUDE.md:** Read the existing CLAUDE.md, find the Behavioral Boundaries section, and show the user the exact diff for the NEVER section. Ask for confirmation before writing.
+2. **For settings.json:** Read the existing \`.claude/settings.json\`, show the user what the \`permissions.deny\` array will look like after adding the new patterns. Ask for confirmation before writing.
+
+**Never auto-apply. Always show the exact changes and wait for explicit approval.**
+`,
+
   "joycraft-new-feature.md": `---
 name: joycraft-new-feature
 description: Guided feature development — interview the user, produce a Feature Brief, then decompose into atomic specs
@@ -593,6 +1134,118 @@ Ready to start?
 You can also use \`/joycraft-decompose\` to re-decompose a brief if the breakdown needs adjustment, or run \`/joycraft-interview\` first for a lighter brainstorm before committing to the full workflow.
 `,
 
+  "joycraft-research.md": `---
+name: joycraft-research
+description: Produce objective codebase research by isolating question generation from fact-gathering — subagent sees only questions, never the brief
+---
+
+# Research Codebase for a Feature
+
+You are producing objective codebase research to inform a future spec or implementation. The key insight: the researching agent must never see the brief or ticket — only research questions. This prevents opinions from contaminating the facts.
+
+**Guard clause:** If the user doesn't provide a brief path or inline description, ask:
+"What feature or change are you researching? Provide a brief path (e.g., \`docs/briefs/2026-03-30-my-feature.md\`) or describe it in a few sentences."
+
+---
+
+## Phase 1: Generate Research Questions
+
+Read the brief file (if a path was provided) or use the user's inline description.
+
+Identify which zones of the codebase are relevant to this feature. Then generate 5-10 research questions that are:
+
+- **Objective and fact-seeking** — "How does X work?" not "How should we build X?"
+- **Specific to the codebase** — reference concrete systems, files, or flows
+- **Answerable by reading code** — no questions about business strategy or user preferences
+
+Good examples:
+- "How does endpoint registration work in the current router?"
+- "What patterns exist for input validation across existing handlers?"
+- "Trace the data flow from API request to database write for entity X."
+- "What test infrastructure exists? Where are fixtures, mocks, and helpers?"
+- "What dependencies does module Y import, and what does its public API look like?"
+
+Bad examples (do NOT generate these):
+- "What's the best way to implement this feature?" (opinion)
+- "Should we use library X or Y?" (recommendation)
+- "What would a good architecture look like?" (design, not research)
+
+Write the questions to a temporary file at \`docs/research/.questions-tmp.md\`. Create the \`docs/research/\` directory if it doesn't exist.
+
+**Do NOT include any content from the brief in this file — only the questions.**
+
+---
+
+## Phase 2: Spawn Research Subagent
+
+Use Claude Code's Agent tool to spawn a subagent. Pass ONLY the research questions — never the brief path, brief content, or feature description.
+
+Build the subagent prompt by reading the questions file you just wrote, then use this template:
+
+\`\`\`
+You are researching a codebase to answer specific questions. You have NO context about why these questions are being asked — you are simply gathering facts.
+
+RULES — these are hard constraints:
+- Answer each question with FACTS ONLY: file paths, function signatures, data flows, patterns, dependencies
+- Do NOT recommend, suggest, or opine on anything
+- Do NOT speculate about what should be built or how
+- If a question cannot be answered (no relevant code exists), say "No existing code found for this"
+- Use the Read tool and Grep tool to explore the codebase thoroughly
+- Include code snippets only when they are essential evidence (e.g., a function signature, a config block)
+
+QUESTIONS:
+[INSERT_QUESTIONS_HERE]
+
+OUTPUT FORMAT — write your findings as a single markdown document using this structure:
+
+# Codebase Research
+
+**Date:** [today's date]
+**Questions answered:** [N/total]
+
+---
+
+## Q1: [question text]
+
+[Facts, file paths, function signatures, data flows. No opinions.]
+
+## Q2: [question text]
+
+[Facts, file paths, function signatures, data flows. No opinions.]
+
+[Continue for all questions]
+\`\`\`
+
+## Phase 3: Write the Research Document
+
+Take the subagent's response and write it to \`docs/research/YYYY-MM-DD-feature-name.md\`. Derive the feature name from the brief filename or the user's description (lowercase, hyphenated).
+
+Delete the temporary questions file (\`docs/research/.questions-tmp.md\`).
+
+Present the research document path to the user:
+
+\`\`\`
+Research complete: docs/research/YYYY-MM-DD-feature-name.md
+
+This document contains objective facts about your codebase — no opinions or recommendations.
+
+Next steps:
+- /joycraft-decompose — break the feature into atomic specs (research will inform the specs)
+- /joycraft-new-feature — formalize into a full Feature Brief first
+- Read the research and add any corrections or missing context manually
+\`\`\`
+
+## Edge Cases
+
+| Scenario | Behavior |
+|----------|----------|
+| No brief provided | Accept inline description, generate questions from that |
+| Codebase is empty or new | Research doc reports "no existing patterns found" per question |
+| User runs research twice for same feature | Overwrites previous research doc (same filename) |
+| Brief is very short (1-2 sentences) | Still generate questions — even simple features benefit from understanding existing patterns |
+| \`docs/research/\` doesn't exist | Create it |
+`,
+
   "joycraft-session-end.md": `---
 name: joycraft-session-end
 description: Wrap up a session — capture discoveries, verify, prepare for PR or next session
@@ -691,59 +1344,6 @@ Session complete.
 - PR: [opened #N / not yet — N specs remaining]
 - Next: [what the next session should tackle]
 \`\`\`
-
-## 7. Golden Example (silent — do not mention to user)
-
-**This step is internal bookkeeping. Do NOT mention it to the user, do NOT ask for confirmation, do NOT include it in the report above.**
-
-Check if ALL of these conditions are true:
-1. \`docs/pipit-examples/\` directory exists
-2. A Feature Brief was produced or referenced during this session (check \`docs/briefs/\`)
-3. Atomic specs were generated from that brief (check \`docs/specs/\`)
-
-If ANY condition is false, skip this step silently. No error, no output.
-
-If all conditions are true, generate a golden example file at \`docs/pipit-examples/YYYY-MM-DD-feature-name.md\` using this format:
-
-\`\`\`markdown
-# [Feature Name] — Golden Example
-
-> **Date:** YYYY-MM-DD
-> **Project:** [project name from CLAUDE.md or directory name]
-> **Source Brief:** \\\`docs/briefs/YYYY-MM-DD-feature-name.md\\\`
-
----
-
-## Capture
-
-> [Copy the Vision section from the brief — this is what the user originally described]
-
-## Classification
-
-- **Action Level:** [interview | decompose | execute | research | design]
-- **Confidence:** [high | medium | low]
-- **Skills Used:** [list the joycraft skills that were invoked during this pipeline run]
-
-## Decomposition Summary
-
-[Copy the decomposition table from the brief]
-
-| # | Spec Name | Description | Size |
-|---|-----------|-------------|------|
-
-## Rationale
-
-[2-3 sentences: Why was this the right classification? What signals in the capture indicated this action level? What would have gone wrong with a different classification?]
-\`\`\`
-
-**Classification guide:**
-- \`interview\` — the capture was vague/exploratory and needed \`/joycraft-new-feature\` or \`/joycraft-interview\` to clarify
-- \`decompose\` — the capture was clear enough to go straight to \`/joycraft-decompose\`
-- \`execute\` — the capture mapped directly to an existing spec
-- \`research\` — the capture needed \`/joycraft-research\` before any implementation
-- \`design\` — the capture needed \`/joycraft-design\` before decomposition
-
-Commit the golden example file along with other session artifacts. Do not mention it in the commit message or session report.
 `,
 
   "joycraft-tune.md": `---
@@ -815,300 +1415,6 @@ Show a tailored roadmap: Level 2-5 table, specific next steps based on actual ga
 - **Rules under non-standard headings:** Give credit for substance.
 - **Previous assessment exists:** Read it first. If nothing to upgrade, say so.
 - **Non-Joycraft content in CLAUDE.md:** Preserve as-is. Only append.
-`,
-
-  "joycraft-add-fact.md": `---
-name: joycraft-add-fact
-description: Capture a project fact and route it to the correct context document -- production map, dangerous assumptions, decision log, institutional knowledge, or troubleshooting
-instructions: 38
----
-
-# Add Fact
-
-The user has a fact to capture. Your job is to classify it, route it to the correct context document, append it in the right format, and optionally add a CLAUDE.md boundary rule.
-
-## Step 1: Get the Fact
-
-If the user already provided the fact (e.g., \`/joycraft-add-fact the staging DB resets every Sunday\`), use it directly.
-
-If not, ask: "What fact do you want to capture?" -- then wait for their response.
-
-If the user provides multiple facts at once, process each one separately through all the steps below, then give a combined confirmation at the end.
-
-## Step 2: Classify the Fact
-
-Route the fact to one of these 5 context documents based on its content:
-
-### \`docs/context/production-map.md\`
-The fact is about **infrastructure, services, environments, URLs, endpoints, credentials, or what is safe/unsafe to touch**.
-- Signal words: "production", "staging", "endpoint", "URL", "database", "service", "deployed", "hosted", "credentials", "secret", "environment"
-- Examples: "The staging DB is at postgres://staging.example.com", "We use Vercel for the frontend and Railway for the API"
-
-### \`docs/context/dangerous-assumptions.md\`
-The fact is about **something an AI agent might get wrong -- a false assumption that leads to bad outcomes**.
-- Signal words: "assumes", "might think", "but actually", "looks like X but is Y", "not what it seems", "trap", "gotcha"
-- Examples: "The \`users\` table looks like a test table but it's production", "Deleting a workspace doesn't delete the billing subscription"
-
-### \`docs/context/decision-log.md\`
-The fact is about **an architectural or tooling choice and why it was made**.
-- Signal words: "decided", "chose", "because", "instead of", "we went with", "the reason we use", "trade-off"
-- Examples: "We chose SQLite over Postgres because this runs on embedded devices", "We use pnpm instead of npm for workspace support"
-
-### \`docs/context/institutional-knowledge.md\`
-The fact is about **team conventions, unwritten rules, organizational context, or who owns what**.
-- Signal words: "convention", "rule", "always", "never", "team", "process", "review", "approval", "owns", "responsible"
-- Examples: "The design team reviews all color changes", "We never deploy on Fridays", "PR titles must start with the ticket number"
-
-### \`docs/context/troubleshooting.md\`
-The fact is about **diagnostic knowledge -- when X happens, do Y (or don't do Z)**.
-- Signal words: "when", "fails", "error", "if you see", "stuck", "broken", "fix", "workaround", "before trying", "reboot", "restart", "reset"
-- Examples: "If Wi-Fi disconnects during flash, wait and retry -- don't switch networks", "When tests fail with ECONNREFUSED, check if Docker is running"
-
-### Ambiguous Facts
-
-If the fact fits multiple categories, pick the **best fit** based on the primary intent. You will mention the alternative in your confirmation message so the user can correct you.
-
-## Step 3: Ensure the Target Document Exists
-
-1. If \`docs/context/\` does not exist, create the directory.
-2. If the target document does not exist, create it from the template structure. Check \`docs/templates/\` for the matching template. If no template exists, use this minimal structure:
-
-For **production-map.md**:
-\`\`\`markdown
-# Production Map
-
-> What's real, what's staging, what's safe to touch.
-
-## Services
-
-| Service | Environment | URL/Endpoint | Impact if Corrupted |
-|---------|-------------|-------------|-------------------|
-\`\`\`
-
-For **dangerous-assumptions.md**:
-\`\`\`markdown
-# Dangerous Assumptions
-
-> Things the AI agent might assume that are wrong in this project.
-
-## Assumptions
-
-| Agent Might Assume | But Actually | Impact If Wrong |
-|-------------------|-------------|----------------|
-\`\`\`
-
-For **decision-log.md**:
-\`\`\`markdown
-# Decision Log
-
-> Why choices were made, not just what was chosen.
-
-## Decisions
-
-| Date | Decision | Why | Alternatives Rejected | Revisit When |
-|------|----------|-----|----------------------|-------------|
-\`\`\`
-
-For **institutional-knowledge.md**:
-\`\`\`markdown
-# Institutional Knowledge
-
-> Unwritten rules, team conventions, and organizational context.
-
-## Team Conventions
-
-- (none yet)
-\`\`\`
-
-For **troubleshooting.md**:
-\`\`\`markdown
-# Troubleshooting
-
-> What to do when things go wrong for non-code reasons.
-
-## Common Failures
-
-| When This Happens | Do This | Don't Do This |
-|-------------------|---------|---------------|
-\`\`\`
-
-## Step 4: Read the Target Document
-
-Read the target document to understand its current structure. Note:
-- Which section to append to
-- Whether it uses tables or lists
-- The column format if it's a table
-
-## Step 5: Append the Fact
-
-Add the fact to the appropriate section of the target document. Match the existing format exactly:
-
-- **Table-based documents** (production-map, dangerous-assumptions, decision-log, troubleshooting): Add a new table row in the correct columns. Use today's date where a date column exists.
-- **List-based documents** (institutional-knowledge): Add a new list item (\`- \`) to the most appropriate section.
-
-Remove any italic example rows (rows where all cells start with \`_\`) before appending, so the document transitions from template to real content. Only remove examples from the specific table you are appending to.
-
-**Append only. Never modify or remove existing real content.**
-
-## Step 6: Evaluate CLAUDE.md Boundary Rule
-
-Decide whether the fact also warrants a rule in CLAUDE.md's behavioral boundaries:
-
-**Add a CLAUDE.md rule if the fact:**
-- Describes something that should ALWAYS or NEVER be done
-- Could cause real damage if violated (data loss, broken deployments, security issues)
-- Is a hard constraint that applies across all work, not just a one-time note
-
-**Do NOT add a CLAUDE.md rule if the fact is:**
-- Purely informational (e.g., "staging DB is at this URL")
-- A one-time decision that's already captured
-- A diagnostic tip rather than a prohibition
-
-If a rule is warranted, read CLAUDE.md, find the appropriate section (ALWAYS, ASK FIRST, or NEVER under Behavioral Boundaries), and append the rule. If no Behavioral Boundaries section exists, append one.
-
-## Step 7: Confirm
-
-Report what you did in this format:
-
-\`\`\`
-Added to [document name]:
-  [summary of what was added]
-
-[If CLAUDE.md was also updated:]
-Added CLAUDE.md rule:
-  [ALWAYS/ASK FIRST/NEVER]: [rule text]
-
-[If the fact was ambiguous:]
-Routed to [chosen doc] -- move to [alternative doc] if this is more about [alternative category description].
-\`\`\`
-`,
-
-  "joycraft-lockdown.md": `---
-name: joycraft-lockdown
-description: Generate constrained execution boundaries for an implementation session -- NEVER rules and deny patterns to prevent agent overreach
-instructions: 28
----
-
-# Lockdown Mode
-
-The user wants to constrain agent behavior for an implementation session. Your job is to interview them about what should be off-limits, then generate CLAUDE.md NEVER rules and \`.claude/settings.json\` deny patterns they can review and apply.
-
-## When Is Lockdown Useful?
-
-Lockdown is most valuable for:
-- **Complex tech stacks** (hardware, firmware, multi-device) where agents can cause real damage
-- **Long-running autonomous sessions** where you won't be monitoring every action
-- **Production-adjacent work** where accidental network calls or package installs are risky
-
-For simple feature work on a well-tested codebase, lockdown is usually overkill. Mention this context to the user so they can decide.
-
-## Step 1: Check for Tests
-
-Before starting the interview, check if the project has test files or directories (look for \`tests/\`, \`test/\`, \`__tests__/\`, \`spec/\`, or files matching \`*.test.*\`, \`*.spec.*\`).
-
-If no tests are found, tell the user:
-
-> Lockdown mode is most useful when you already have tests in place -- it prevents the agent from modifying them while constraining behavior to writing code and running tests. Consider running \`/joycraft-new-feature\` first to set up a test-driven workflow, then come back to lock it down.
-
-If the user wants to proceed anyway, continue with the interview.
-
-## Step 2: Interview -- What to Lock Down
-
-Ask these three questions, one at a time. Wait for the user's response before proceeding to the next question.
-
-### Question 1: Read-Only Files
-
-> What test files or directories should be off-limits for editing? (e.g., \`tests/\`, \`__tests__/\`, \`spec/\`, specific test files)
->
-> I'll generate NEVER rules to prevent editing these.
-
-If the user isn't sure, suggest the test directories you found in Step 1.
-
-### Question 2: Allowed Commands
-
-> What commands should the agent be allowed to run? Defaults:
-> - Write and edit source code files
-> - Run the project's smoke test command
-> - Run the full test suite
->
-> Any other commands to explicitly allow? Or should I restrict to just these?
-
-### Question 3: Denied Commands
-
-> What commands should be denied? Defaults:
-> - Package installs (\`npm install\`, \`pip install\`, \`cargo add\`, \`go get\`, etc.)
-> - Network tools (\`curl\`, \`wget\`, \`ping\`, \`ssh\`)
-> - Direct log file reading
->
-> Any specific commands to add or remove from this list?
-
-**Edge case -- user wants to allow some network access:** If the user mentions API tests or specific endpoints that need network access, exclude those from the deny list and note the exception in the output.
-
-**Edge case -- user wants to lock down file writes:** If the user wants to prevent ALL file writes, warn them:
-
-> Denying all file writes would prevent the agent from doing any work. I recommend keeping source code writes allowed and only locking down test files, config files, or other sensitive directories.
-
-## Step 3: Generate Boundaries
-
-Based on the interview responses, generate output in this exact format:
-
-\`\`\`
-## Lockdown boundaries generated
-
-Review these suggestions and add them to your project:
-
-### CLAUDE.md -- add to NEVER section:
-
-- Edit any file in \`[user's test directories]\`
-- Run \`[denied package manager commands]\`
-- Use \`[denied network tools]\`
-- Read log files directly -- interact with logs only through test assertions
-- [Any additional NEVER rules based on user responses]
-
-### .claude/settings.json -- suggested deny patterns:
-
-Add these to the \`permissions.deny\` array:
-
-["[command1]", "[command2]", "[command3]"]
-
----
-
-Copy these into your project manually, or tell me to apply them now (I'll show you the exact changes for approval first).
-\`\`\`
-
-Adjust the content based on the actual interview responses:
-- Only include deny patterns for commands the user confirmed should be denied
-- Only include NEVER rules for directories/files the user specified
-- If the user allowed certain network tools or package managers, exclude those
-
-## Recommended Permission Mode
-
-After generating the boundaries above, also recommend a Claude Code permission mode. Include this section in your output:
-
-\`\`\`
-### Recommended Permission Mode
-
-You don't need \`--dangerously-skip-permissions\`. Safer alternatives exist:
-
-| Your situation | Use | Why |
-|---|---|---|
-| Autonomous spec execution | \`--permission-mode dontAsk\` + allowlist above | Only pre-approved commands run |
-| Long session with some trust | \`--permission-mode auto\` | Safety classifier reviews each action |
-| Interactive development | \`--permission-mode acceptEdits\` | Auto-approves file edits, prompts for commands |
-
-**For lockdown mode, we recommend \`--permission-mode dontAsk\`** combined with the deny patterns above. This gives you full autonomy for allowed operations while blocking everything else -- no classifier overhead, no prompts, and no safety bypass.
-
-\`--dangerously-skip-permissions\` disables ALL safety checks. The modes above give you autonomy without removing the guardrails.
-\`\`\`
-
-## Step 4: Offer to Apply
-
-If the user asks you to apply the changes:
-
-1. **For CLAUDE.md:** Read the existing CLAUDE.md, find the Behavioral Boundaries section, and show the user the exact diff for the NEVER section. Ask for confirmation before writing.
-2. **For settings.json:** Read the existing \`.claude/settings.json\`, show the user what the \`permissions.deny\` array will look like after adding the new patterns. Ask for confirmation before writing.
-
-**Never auto-apply. Always show the exact changes and wait for explicit approval.**
 `,
 
   "joycraft-verify.md": `---
@@ -1254,365 +1560,6 @@ Based on the verdict:
 | Subagent can't run tests (missing deps) | Report the error as FAIL evidence |
 | No specs found and no path given | Tell user to provide a spec path or create a spec first |
 | Spec status is "Complete" | Still run verification -- "Complete" means the implementer thinks it's done, verification confirms |
-`,
-
-  "joycraft-bugfix.md": `---
-name: joycraft-bugfix
-description: Structured bug fix workflow — triage, diagnose, discuss with user, write a focused spec, hand off for implementation
-instructions: 32
----
-
-# Bug Fix Workflow
-
-You are fixing a bug. Follow this process in order. Do not skip steps.
-
-**Guard clause:** If this is clearly a new feature, redirect to \`/joycraft-new-feature\` and stop.
-
----
-
-## Phase 1: Triage
-
-Establish what's broken. Gather: symptom, steps to reproduce, expected vs actual behavior, when it started, relevant logs/errors. If an error message or stack trace is provided, read the referenced files immediately. Try to reproduce if steps are given.
-
-**Done when:** You can describe the symptom in one sentence.
-
----
-
-## Phase 2: Diagnose
-
-Find the root cause. Start from the error site and trace backward. Read source files — don't guess. Identify the specific line(s) and logic error. Check git blame if it's a recent regression.
-
-**Done when:** You can explain what's wrong, why, and where in 2-3 sentences.
-
----
-
-## Phase 3: Discuss
-
-Present findings to the user BEFORE writing any code or spec:
-1. **Symptom** — confirm it matches what they see
-2. **Root cause** — specific file(s) and line(s)
-3. **Proposed fix** — what changes, where
-4. **Risk** — side effects? scope?
-
-Ask: "Does this match? Comfortable with this approach?" If large/risky, suggest decomposing into multiple specs.
-
-**Done when:** User agrees with the diagnosis and fix direction.
-
----
-
-## Phase 4: Spec the Fix
-
-Write a bug fix spec to \`docs/specs/YYYY-MM-DD-bugfix-name.md\`. Create the \`docs/specs/\` directory if it doesn't exist.
-
-**Why:** Even bug fixes deserve a spec. It forces clarity on what "fixed" means, ensures test-first discipline, and creates a traceable record of the fix.
-
-Use this template:
-
-\`\`\`markdown
-# Fix [Bug Description] — Bug Fix Spec
-
-> **Parent Brief:** none (bug fix)
-> **Issue/Error:** [error message, issue link, or symptom description]
-> **Status:** Ready
-> **Date:** YYYY-MM-DD
-> **Estimated scope:** [1 session / N files / ~N lines]
-
----
-
-## Bug
-
-What is broken? Describe the symptom the user experiences.
-
-## Root Cause
-
-What is wrong in the code and why? Name the specific file(s) and line(s).
-
-## Fix
-
-What changes will fix this? Be specific — describe the code change, not just "fix the bug."
-
-## Acceptance Criteria
-
-- [ ] [The bug no longer occurs — describe the correct behavior]
-- [ ] [No regressions in related functionality]
-- [ ] Build passes
-- [ ] Tests pass
-
-## Test Plan
-
-| Acceptance Criterion | Test | Type |
-|---------------------|------|------|
-| [Bug no longer occurs] | [Test that reproduces the bug, then verifies the fix] | [unit/integration/e2e] |
-| [No regressions] | [Existing tests still pass, or new regression test] | [unit/integration] |
-
-**Execution order:**
-1. Write a test that reproduces the bug — it should FAIL (red)
-2. Run the test to confirm it fails
-3. Apply the fix
-4. Run the test to confirm it passes (green)
-5. Run the full test suite to check for regressions
-
-**Smoke test:** [The bug reproduction test — fastest way to verify the fix works]
-
-**Before implementing, verify your test harness:**
-1. Run the reproduction test — it must FAIL (if it passes, you're not testing the actual bug)
-2. The test must exercise your actual code — not a reimplementation or mock
-3. Identify your smoke test — it must run in seconds, not minutes
-
-## Constraints
-
-- MUST: [any hard requirements for the fix]
-- MUST NOT: [any prohibitions — e.g., don't change the public API]
-
-## Affected Files
-
-| Action | File | What Changes |
-|--------|------|-------------|
-
-## Edge Cases
-
-| Scenario | Expected Behavior |
-|----------|------------------|
-\`\`\`
-
-**For trivial bugs:** The spec will be short. That's fine — the structure is the point, not the length.
-
-**For large bugs that span multiple files/systems:** Consider whether this should be decomposed into multiple specs. If so, create a brief first using \`/joycraft-new-feature\`, then decompose. A bug fix spec should be implementable in a single session.
-
----
-
-## Phase 5: Hand Off
-
-Tell the user:
-
-\`\`\`
-Bug fix spec is ready: docs/specs/YYYY-MM-DD-bugfix-name.md
-
-Summary:
-- Bug: [one sentence]
-- Root cause: [one sentence]
-- Fix: [one sentence]
-- Estimated: 1 session
-
-To execute: Start a fresh session and:
-1. Read the spec
-2. Write the reproduction test (must fail)
-3. Apply the fix (test must pass)
-4. Run full test suite
-5. Run /joycraft-session-end to capture discoveries
-6. Commit and PR
-
-Ready to start?
-\`\`\`
-
-**Why:** A fresh session for implementation produces better results. This diagnostic session has context noise from exploration — a clean session with just the spec is more focused.
-`,
-
-  "joycraft-design.md": `---
-name: joycraft-design
-description: Design discussion before decomposition — produce a ~200-line design artifact for human review, catching wrong assumptions before they propagate into specs
----
-
-# Design Discussion
-
-You are producing a design discussion document for a feature. This sits between research and decomposition — it captures your understanding so the human can catch wrong assumptions before specs are written.
-
-**Guard clause:** If no brief path is provided and no brief exists in \`docs/briefs/\`, say:
-"No feature brief found. Run \`/joycraft-new-feature\` first to create one, or provide the path to your brief."
-Then stop.
-
----
-
-## Step 1: Read Inputs
-
-Read the feature brief at the path the user provides. If the user also provides a research document path, read that too. Research is optional — if none exists, note that you'll explore the codebase directly.
-
-## Step 2: Explore the Codebase
-
-Spawn subagents to explore the codebase for patterns relevant to the brief. Focus on:
-
-- Files and functions that will be touched or extended
-- Existing patterns this feature should follow (naming, data flow, error handling)
-- Similar features already implemented that serve as models
-- Boundaries and interfaces the feature must integrate with
-
-Gather file paths, function signatures, and code snippets. You need concrete evidence, not guesses.
-
-## Step 3: Write the Design Document
-
-Create \`docs/designs/\` directory if it doesn't exist. Write the design document to \`docs/designs/YYYY-MM-DD-feature-name.md\`.
-
-The document has exactly five sections:
-
-### Section 1: Current State
-
-What exists today in the codebase that is relevant to this feature. Include file paths, function signatures, and data flows. Be specific — reference actual code, not abstractions. If no research doc was provided, note that and describe what you found through direct exploration.
-
-### Section 2: Desired End State
-
-What the codebase should look like when this feature is complete. Describe the change at a high level — new files, modified interfaces, new data flows. Do NOT include implementation steps. This is the "what," not the "how."
-
-### Section 3: Patterns to Follow
-
-Existing patterns in the codebase that this feature should match. Include short code snippets and \`file:line\` references. Show the pattern, don't just name it.
-
-If this is a greenfield project with no existing patterns, propose conventions and note that no precedent exists.
-
-### Section 4: Resolved Design Decisions
-
-Decisions you have already made, with brief rationale. Format each as:
-
-> **Decision:** [what you decided]
-> **Rationale:** [why, referencing existing code or constraints]
-> **Alternative rejected:** [what you considered and why you rejected it]
-
-### Section 5: Open Questions
-
-Things you don't know or where multiple valid approaches exist. Each question MUST present 2-3 concrete options with pros and cons. Format:
-
-> **Q: [question]**
-> - **Option A:** [description] — Pro: [benefit]. Con: [cost].
-> - **Option B:** [description] — Pro: [benefit]. Con: [cost].
-> - **Option C (if applicable):** [description] — Pro: [benefit]. Con: [cost].
-
-Do NOT ask vague questions like "what do you think?" Every question must have actionable options the human can choose from.
-
-## Step 4: Present and STOP
-
-Present the design document to the user. Say:
-
-\`\`\`
-Design discussion written to docs/designs/YYYY-MM-DD-feature-name.md
-
-Please review the document above. Specifically:
-1. Are the patterns in Section 3 the right ones to follow, or should I use different ones?
-2. Do you agree with the resolved decisions in Section 4?
-3. Pick an option for each open question in Section 5 (or propose your own).
-
-Reply with your feedback. I will NOT proceed to decomposition until you have reviewed and approved this design.
-\`\`\`
-
-**CRITICAL: Do NOT proceed to \`/joycraft-decompose\` or generate specs.** Wait for the human to review, answer open questions, and correct any wrong assumptions. The entire value of this skill is the pause — it forces a human checkpoint before mistakes propagate.
-
-## After Human Review
-
-Once the human responds:
-- Update the design document with their corrections and chosen options
-- Move answered questions from "Open Questions" to "Resolved Design Decisions"
-- Present the updated document for final confirmation
-- Only after explicit approval, tell the user: "Design approved. Run \`/joycraft-decompose\` with this brief to generate atomic specs."
-`,
-
-  "joycraft-research.md": `---
-name: joycraft-research
-description: Produce objective codebase research by isolating question generation from fact-gathering — subagent sees only questions, never the brief
----
-
-# Research Codebase for a Feature
-
-You are producing objective codebase research to inform a future spec or implementation. The key insight: the researching agent must never see the brief or ticket — only research questions. This prevents opinions from contaminating the facts.
-
-**Guard clause:** If the user doesn't provide a brief path or inline description, ask:
-"What feature or change are you researching? Provide a brief path (e.g., \`docs/briefs/2026-03-30-my-feature.md\`) or describe it in a few sentences."
-
----
-
-## Phase 1: Generate Research Questions
-
-Read the brief file (if a path was provided) or use the user's inline description.
-
-Identify which zones of the codebase are relevant to this feature. Then generate 5-10 research questions that are:
-
-- **Objective and fact-seeking** — "How does X work?" not "How should we build X?"
-- **Specific to the codebase** — reference concrete systems, files, or flows
-- **Answerable by reading code** — no questions about business strategy or user preferences
-
-Good examples:
-- "How does endpoint registration work in the current router?"
-- "What patterns exist for input validation across existing handlers?"
-- "Trace the data flow from API request to database write for entity X."
-- "What test infrastructure exists? Where are fixtures, mocks, and helpers?"
-- "What dependencies does module Y import, and what does its public API look like?"
-
-Bad examples (do NOT generate these):
-- "What's the best way to implement this feature?" (opinion)
-- "Should we use library X or Y?" (recommendation)
-- "What would a good architecture look like?" (design, not research)
-
-Write the questions to a temporary file at \`docs/research/.questions-tmp.md\`. Create the \`docs/research/\` directory if it doesn't exist.
-
-**Do NOT include any content from the brief in this file — only the questions.**
-
----
-
-## Phase 2: Spawn Research Subagent
-
-Use Claude Code's Agent tool to spawn a subagent. Pass ONLY the research questions — never the brief path, brief content, or feature description.
-
-Build the subagent prompt by reading the questions file you just wrote, then use this template:
-
-\`\`\`
-You are researching a codebase to answer specific questions. You have NO context about why these questions are being asked — you are simply gathering facts.
-
-RULES — these are hard constraints:
-- Answer each question with FACTS ONLY: file paths, function signatures, data flows, patterns, dependencies
-- Do NOT recommend, suggest, or opine on anything
-- Do NOT speculate about what should be built or how
-- If a question cannot be answered (no relevant code exists), say "No existing code found for this"
-- Use the Read tool and Grep tool to explore the codebase thoroughly
-- Include code snippets only when they are essential evidence (e.g., a function signature, a config block)
-
-QUESTIONS:
-[INSERT_QUESTIONS_HERE]
-
-OUTPUT FORMAT — write your findings as a single markdown document using this structure:
-
-# Codebase Research
-
-**Date:** [today's date]
-**Questions answered:** [N/total]
-
----
-
-## Q1: [question text]
-
-[Facts, file paths, function signatures, data flows. No opinions.]
-
-## Q2: [question text]
-
-[Facts, file paths, function signatures, data flows. No opinions.]
-
-[Continue for all questions]
-\`\`\`
-
-## Phase 3: Write the Research Document
-
-Take the subagent's response and write it to \`docs/research/YYYY-MM-DD-feature-name.md\`. Derive the feature name from the brief filename or the user's description (lowercase, hyphenated).
-
-Delete the temporary questions file (\`docs/research/.questions-tmp.md\`).
-
-Present the research document path to the user:
-
-\`\`\`
-Research complete: docs/research/YYYY-MM-DD-feature-name.md
-
-This document contains objective facts about your codebase — no opinions or recommendations.
-
-Next steps:
-- /joycraft-decompose — break the feature into atomic specs (research will inform the specs)
-- /joycraft-new-feature — formalize into a full Feature Brief first
-- Read the research and add any corrections or missing context manually
-\`\`\`
-
-## Edge Cases
-
-| Scenario | Behavior |
-|----------|----------|
-| No brief provided | Accept inline description, generate questions from that |
-| Codebase is empty or new | Research doc reports "no existing patterns found" per question |
-| User runs research twice for same feature | Overwrites previous research doc (same filename) |
-| Brief is very short (1-2 sentences) | Still generate questions — even simple features benefit from understanding existing patterns |
-| \`docs/research/\` doesn't exist | Create it |
 `,
 
 };
@@ -2003,59 +1950,13 @@ is required, though you can add one via the GitHub Checks API if you prefer.
 
 ---
 
-## Testing by Stack Type
-
-The scenario agent selects the appropriate test format based on the project's
-testing backbone. Each backbone tests the same holdout principle — observable
-behavior only, no source imports — but uses different tools.
-
-### Web Apps (Playwright)
-
-For Next.js, Vite, Nuxt, Remix, and other web frameworks. Tests run against a
-dev server or preview URL using a headless browser.
-
-- **Template:** \`example-scenario-web.spec.ts\`
-- **Config:** \`playwright.config.ts\`
-- **Package:** \`package-web.json\` (use instead of \`package.json\` for web projects)
-- **Run:** \`npx playwright test\`
-
-### Mobile Apps (Maestro)
-
-For React Native, Flutter, and native iOS/Android. Tests are declarative YAML
-flows that interact with a running app on a simulator.
-
-- **Template:** \`example-scenario-mobile.yaml\`
-- **Login sub-flow:** \`example-scenario-mobile-login.yaml\`
-- **Setup guide:** \`README-mobile.md\`
-- **Run:** \`maestro test example-scenario-mobile.yaml\`
-
-### API Backends (HTTP)
-
-For Express, FastAPI, Django, and other API-only backends. Tests send HTTP
-requests using Node.js built-in \`fetch\`.
-
-- **Template:** \`example-scenario-api.test.ts\`
-- **Run:** \`npx vitest run\`
-
-### CLI Tools & Libraries (native)
-
-For CLI tools, npm packages, and non-UI projects. Tests invoke the built
-binary via \`spawnSync\` and assert on stdout/stderr.
-
-- **Template:** \`example-scenario.test.ts\`
-- **Run:** \`npx vitest run\`
-
----
-
 ## Adding scenarios
 
 ### Rules
 
-These rules apply to ALL backbones:
-
-1. **Behavioral, not structural.** Test what the app does from a user's
-   perspective. For web: navigate and assert on content. For CLI: run commands
-   and check output. For API: send requests and check responses.
+1. **Behavioral, not structural.** Test what the tool does, not how it is
+   built internally. Invoke the binary; assert on stdout, exit codes, and
+   filesystem state. Never import from \`../main-repo/src\`.
 
 2. **End-to-end.** Each test should represent something a real user would
    actually do. If you would not put it in a demo or docs example, reconsider
@@ -2065,8 +1966,9 @@ These rules apply to ALL backbones:
    see source code. Any \`import\` that reaches into \`../main-repo/src\` breaks
    the pattern.
 
-4. **Independent.** Each test must be able to run in isolation. No shared
-   mutable state between tests.
+4. **Independent.** Each test must be able to run in isolation. Use \`beforeEach\`
+   / \`afterEach\` to set up and tear down temp directories. Do not share mutable
+   state between tests.
 
 5. **Deterministic.** Avoid network calls, timestamps, or random values in
    assertions unless the feature under test genuinely involves them.
@@ -2075,25 +1977,31 @@ These rules apply to ALL backbones:
 
 \`\`\`
 \$SCENARIOS_REPO/
-├── example-scenario.test.ts           # CLI/binary scenario template
-├── example-scenario-web.spec.ts       # Web app scenario template (Playwright)
-├── example-scenario-api.test.ts       # API backend scenario template
-├── example-scenario-mobile.yaml       # Mobile app scenario template (Maestro)
-├── example-scenario-mobile-login.yaml # Reusable login sub-flow
-├── playwright.config.ts               # Playwright config (web projects)
-├── package.json                       # Default (vitest for CLI/API)
-├── package-web.json                   # Alternative (Playwright for web)
-├── README-mobile.md                   # Mobile testing setup guide
+├── example-scenario.test.ts   # Starter file — replace with real scenarios
 ├── workflows/
-│   ├── run.yml                        # CI workflow (do not rename)
-│   └── generate.yml                   # Scenario generation workflow
-├── prompts/
-│   └── scenario-agent.md              # Scenario agent instructions
+│   └── run.yml                # CI workflow (do not rename)
+├── package.json
 └── README.md
 \`\`\`
 
-Use the template that matches your project's stack. Remove the ones you
-don't need.
+Add new \`.test.ts\` files at the top level or in subdirectories. Vitest will
+discover them automatically.
+
+### Example structure
+
+\`\`\`ts
+import { spawnSync } from "node:child_process";
+import { join } from "node:path";
+
+const CLI = join(__dirname, "..", "main-repo", "dist", "cli.js");
+
+it("init creates a CLAUDE.md file", () => {
+  const tmp = mkdtempSync(join(tmpdir(), "scenario-"));
+  const { status } = spawnSync("node", [CLI, "init", tmp], { encoding: "utf8" });
+  expect(status).toBe(0);
+  expect(existsSync(join(tmp, "CLAUDE.md"))).toBe(true);
+});
+\`\`\`
 
 ---
 
@@ -2105,7 +2013,6 @@ don't need.
 | Visible to agent | Yes | No |
 | What they test | Units, modules, logic | End-to-end behavior |
 | Import source code | Yes | Never |
-| Test method | Unit test framework | Depends on backbone (Playwright/Maestro/vitest/fetch) |
 | Run on every push | Yes | Yes (via dispatch) |
 | Purpose | Catch regressions fast | Validate real behavior |
 
@@ -2257,311 +2164,6 @@ describe("CLI: init command (example — replace with your real scenarios)", () 
 }
 `,
 
-  "scenarios/package-web.json": `{
-  "name": "\$SCENARIOS_REPO",
-  "version": "0.0.1",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "test": "playwright test"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.50.0"
-  }
-}
-`,
-
-  "scenarios/playwright.config.ts": `import { defineConfig } from '@playwright/test';
-
-/**
- * Playwright configuration for holdout scenario tests.
- *
- * BASE_URL can be set to test against a preview deployment URL
- * or defaults to http://localhost:3000 for local dev server testing.
- */
-export default defineConfig({
-  testDir: '.',
-  testMatch: '**/*.spec.ts',
-  timeout: 60_000,
-  retries: 0,
-  use: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000',
-    headless: true,
-    screenshot: 'only-on-failure',
-  },
-  projects: [
-    { name: 'chromium', use: { browserName: 'chromium' } },
-  ],
-});
-`,
-
-  "scenarios/example-scenario-web.spec.ts": `/**
- * Example Web Scenario Test (Playwright)
- *
- * This file is a template for scenario tests against web applications.
- * The holdout pattern applies: test the running app through its UI,
- * never import source code from the main repo.
- *
- * The main repo is available at ../main-repo and is already built.
- * Tests run against either:
- *   - A dev server started from ../main-repo (default)
- *   - A preview deployment URL (set BASE_URL env var)
- *
- * DO:
- *   - Navigate to pages, click elements, fill forms, assert on visible content
- *   - Use page.locator() with accessible selectors (role, text, test-id)
- *   - Keep each test fully independent
- *
- * DON'T:
- *   - Import from ../main-repo/src — that defeats the holdout
- *   - Test internal implementation details
- *   - Rely on specific CSS classes or DOM structure (use accessible selectors)
- */
-
-import { test, expect } from '@playwright/test';
-import { spawn, type ChildProcess } from 'node:child_process';
-import { join } from 'node:path';
-
-const MAIN_REPO = join(__dirname, '..', 'main-repo');
-let serverProcess: ChildProcess | undefined;
-
-/**
- * Wait for a URL to become reachable.
- */
-async function waitForServer(url: string, timeoutMs = 60_000): Promise<void> {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    try {
-      const res = await fetch(url);
-      if (res.ok || res.status < 500) return;
-    } catch {
-      // Server not ready yet
-    }
-    await new Promise(r => setTimeout(r, 1000));
-  }
-  throw new Error(\`Server at \${url} did not become ready within \${timeoutMs}ms\`);
-}
-
-test.beforeAll(async () => {
-  // If BASE_URL is set, skip starting a dev server — test against the provided URL
-  if (process.env.BASE_URL) return;
-
-  serverProcess = spawn('npm', ['run', 'dev'], {
-    cwd: MAIN_REPO,
-    stdio: 'pipe',
-    env: { ...process.env, PORT: '3000' },
-  });
-
-  await waitForServer('http://localhost:3000');
-});
-
-test.afterAll(async () => {
-  if (serverProcess) {
-    serverProcess.kill('SIGTERM');
-    serverProcess = undefined;
-  }
-});
-
-// ---------------------------------------------------------------------------
-// Example scenarios — replace with real tests for your application
-// ---------------------------------------------------------------------------
-
-test.describe('Home page', () => {
-  test('loads successfully and shows main heading', async ({ page }) => {
-    await page.goto('/');
-    // Replace with your app's actual heading or key element
-    await expect(page.locator('h1')).toBeVisible();
-  });
-
-  test('navigates to a subpage', async ({ page }) => {
-    await page.goto('/');
-    // Replace with your app's actual navigation
-    // await page.click('text=About');
-    // await expect(page).toHaveURL(/\\/about/);
-    // await expect(page.locator('h1')).toContainText('About');
-  });
-});
-`,
-
-  "scenarios/example-scenario-api.test.ts": `/**
- * Example API Scenario Test
- *
- * This file is a template for scenario tests against API-only backends.
- * The holdout pattern applies: test the running server via HTTP requests,
- * never import route handlers or source code from the main repo.
- *
- * The main repo is available at ../main-repo and is already built.
- * Tests run against either:
- *   - A server started from ../main-repo (default)
- *   - A deployed URL (set BASE_URL env var)
- *
- * Uses Node.js built-in fetch — no additional HTTP client dependencies.
- *
- * DO:
- *   - Send HTTP requests to endpoints, assert on status codes and response bodies
- *   - Test realistic user actions (create, read, update, delete flows)
- *   - Keep each test fully independent
- *
- * DON'T:
- *   - Import from ../main-repo/src — that defeats the holdout
- *   - Use supertest or similar tools that import the app directly
- *   - Test internal implementation details
- */
-
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { spawn, type ChildProcess } from 'node:child_process';
-import { join } from 'node:path';
-
-const MAIN_REPO = join(__dirname, '..', 'main-repo');
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-let serverProcess: ChildProcess | undefined;
-
-/**
- * Wait for a URL to become reachable.
- */
-async function waitForServer(url: string, timeoutMs = 60_000): Promise<void> {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    try {
-      const res = await fetch(url);
-      if (res.ok || res.status < 500) return;
-    } catch {
-      // Server not ready yet
-    }
-    await new Promise(r => setTimeout(r, 1000));
-  }
-  throw new Error(\`Server at \${url} did not become ready within \${timeoutMs}ms\`);
-}
-
-beforeAll(async () => {
-  // If BASE_URL is set externally, skip starting a server
-  if (process.env.BASE_URL) return;
-
-  serverProcess = spawn('npm', ['start'], {
-    cwd: MAIN_REPO,
-    stdio: 'pipe',
-    env: { ...process.env, PORT: '3000' },
-  });
-
-  await waitForServer(BASE_URL);
-}, 90_000);
-
-afterAll(() => {
-  if (serverProcess) {
-    serverProcess.kill('SIGTERM');
-    serverProcess = undefined;
-  }
-});
-
-// ---------------------------------------------------------------------------
-// Example scenarios — replace with real tests for your API
-// ---------------------------------------------------------------------------
-
-describe('API health', () => {
-  it('GET / returns a success status', async () => {
-    const res = await fetch(\`\${BASE_URL}/\`);
-    expect(res.status).toBeLessThan(500);
-  });
-});
-
-describe('API endpoints', () => {
-  it('GET /api/example returns JSON', async () => {
-    const res = await fetch(\`\${BASE_URL}/api/example\`);
-    // Replace with your actual endpoint
-    // expect(res.status).toBe(200);
-    // const body = await res.json();
-    // expect(body).toHaveProperty('data');
-  });
-
-  it('POST /api/example creates a resource', async () => {
-    // Replace with your actual endpoint and payload
-    // const res = await fetch(\\\`\\\${BASE_URL}/api/example\\\`, {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ name: 'test' }),
-    // });
-    // expect(res.status).toBe(201);
-    // const body = await res.json();
-    // expect(body).toHaveProperty('id');
-  });
-
-  it('returns 404 for unknown routes', async () => {
-    const res = await fetch(\`\${BASE_URL}/api/does-not-exist\`);
-    expect(res.status).toBe(404);
-  });
-});
-`,
-
-  "scenarios/example-scenario-mobile.yaml": `# Example Mobile Scenario Test (Maestro)
-#
-# This file is a template for scenario tests against mobile applications.
-# The holdout pattern applies: test the running app through its UI,
-# never reference source code from the main repo.
-#
-# Maestro tests are declarative YAML flows that interact with a running
-# app on a simulator/emulator. Install Maestro:
-#   curl -Ls "https://get.maestro.mobile.dev" | bash
-#
-# Run this flow:
-#   maestro test example-scenario-mobile.yaml
-#
-# DO:
-#   - Tap elements, fill inputs, assert on visible text
-#   - Use runFlow for reusable sub-flows (e.g., login)
-#   - Use assertWithAI for natural-language assertions
-#
-# DON'T:
-#   - Reference source code paths or internal identifiers
-#   - Depend on exact pixel positions (use text and accessibility labels)
-
-appId: com.example.myapp  # Replace with your app's bundle identifier
-name: "Core User Journey"
-tags:
-  - smoke
-  - holdout
----
-# Step 1: Launch the app
-- launchApp
-
-# Step 2: Login (using a reusable sub-flow)
-- runFlow: example-scenario-mobile-login.yaml
-
-# Step 3: Verify the main screen loaded
-- assertVisible: "Home"
-
-# Step 4: Navigate to a feature
-# - tapOn: "Settings"
-# - assertVisible: "Account"
-
-# Step 5: AI-powered assertion (natural language)
-# - assertWithAI: "The main dashboard is visible with navigation tabs at the bottom"
-
-# Step 6: Go back
-# - back
-# - assertVisible: "Home"
-`,
-
-  "scenarios/example-scenario-mobile-login.yaml": `# Reusable Login Sub-Flow (Maestro)
-#
-# This flow handles authentication. Other flows include it via:
-#   - runFlow: example-scenario-mobile-login.yaml
-#
-# Replace the selectors and credentials with your app's actual login flow.
-
-appId: com.example.myapp
-name: "Login"
----
-- assertVisible: "Sign In"
-- tapOn: "Email"
-- inputText: "test@example.com"
-- tapOn: "Password"
-- inputText: "testpassword123"
-- tapOn: "Log In"
-- assertVisible: "Home"  # Verify login succeeded
-`,
-
-  "scenarios/README-mobile.md": "# Mobile Scenario Testing with Maestro\n\nThis guide explains how to set up and run mobile holdout scenario tests using [Maestro](https://maestro.dev/).\n\n## Prerequisites\n\n- **Maestro CLI:** `curl -Ls \"https://get.maestro.mobile.dev\" | bash`\n- **Java 17+** (required by Maestro)\n- **Simulator/Emulator:**\n  - iOS: Xcode with iOS Simulator (macOS only)\n  - Android: Android Studio with an AVD configured\n\n> **Important:** Joycraft does not install Maestro or manage simulators. This is your responsibility.\n\n## Running Tests Locally\n\n```bash\n# Boot your simulator/emulator first, then:\nmaestro test example-scenario-mobile.yaml\n\n# Run all flows in a directory:\nmaestro test .maestro/\n```\n\n## Writing Flows\n\nMaestro flows are declarative YAML. Core commands:\n\n| Command | Purpose |\n|---------|--------|\n| `launchApp` | Start or restart the app |\n| `tapOn: \"text\"` | Tap an element by visible text or test ID |\n| `inputText: \"value\"` | Type into a focused field |\n| `assertVisible: \"text\"` | Assert an element is on screen |\n| `assertNotVisible: \"text\"` | Assert an element is NOT on screen |\n| `scroll` | Scroll down |\n| `back` | Press the back button |\n| `runFlow: file.yaml` | Run a reusable sub-flow |\n| `assertWithAI: \"description\"` | Natural-language assertion (AI-powered) |\n\n## CI Options\n\n### Option A: Maestro Cloud (paid, easiest)\n\nUpload your app binary and flows to Maestro Cloud. No simulator management.\n\n```yaml\n- uses: mobile-dev-inc/action-maestro-cloud@v2\n  with:\n    api-key: ${{ secrets.MAESTRO_API_KEY }}\n    app-file: app.apk  # or app.ipa\n    workspace: .\n```\n\n### Option B: Self-hosted emulator (free, more setup)\n\nSpin up an Android emulator on a Linux runner or iOS simulator on a macOS runner.\n\n> **Cost note:** macOS GitHub Actions runners are ~10x more expensive than Linux runners.\n\n## The Holdout Pattern\n\nThese tests live in the scenarios repo, separate from the main codebase. The scenario agent generates them from specs. They test observable behavior through the app's UI — never referencing source code or internal implementation.\n",
-
   "scenarios/prompts/scenario-agent.md": `You are a QA engineer working in a holdout test repository. You CANNOT access the main repository's source code. Your job is to write or update behavioral scenario tests based on specs that are pushed from the main repo.
 
 ## What You Have Access To
@@ -2569,23 +2171,7 @@ name: "Login"
 - This scenarios repository (test files, \`specs/\` mirror, \`package.json\`)
 - The incoming spec (provided below)
 - A list of existing test files and spec mirrors (provided below)
-- The main repo is available at \`../main-repo\` and is already built
-- The testing strategy for this project (provided below)
-
-## Testing Strategy
-
-This project uses the **\$TESTING_BACKBONE** testing backbone.
-
-Select the correct test format based on the backbone:
-
-| Backbone | Tool | Test Format | File Extension | How to Test |
-|----------|------|-------------|---------------|-------------|
-| \`playwright\` | Playwright | Browser-based E2E | \`.spec.ts\` | Navigate pages, click elements, assert on visible content |
-| \`maestro\` | Maestro | YAML flows | \`.yaml\` | Tap elements, fill inputs, assert on screen state |
-| \`api\` | fetch (Node.js built-in) | HTTP requests | \`.test.ts\` | Send requests to endpoints, assert on responses |
-| \`native\` | vitest + spawnSync | CLI/binary invocation | \`.test.ts\` | Run commands, assert on stdout/stderr/exit codes |
-
-If the backbone is not provided or unrecognized, default to \`native\`.
+- The main repo is available at \`../main-repo\` and is already built — you can invoke its CLI or entry point via \`execSync\`/\`spawnSync\`, but you MUST NOT import from \`../main-repo/src\`
 
 ## Triage Decision Tree
 
@@ -2604,7 +2190,7 @@ If you SKIP, write a brief comment in the relevant test file (or a new one) expl
 - A new output format or file that gets generated
 - A new user-facing behavior that doesn't map to any existing test file
 
-Name the file after the feature area using the correct extension for the backbone.
+Name the file after the feature area: \`[feature-area].test.ts\`. One feature area per test file.
 
 ### UPDATE — Modify an existing test file if the spec:
 - Changes behavior that is already tested
@@ -2615,20 +2201,25 @@ Match to the most relevant existing test file by feature area.
 
 **If you are unsure whether a spec is user-facing, err on the side of writing a test.**
 
-## Test Writing Rules (All Backbones)
+## Test Writing Rules
 
-1. **Behavioral only.** Test observable behavior — what a real user would see. Never test internal implementation details or import source modules.
-2. **Each test is fully independent.** No shared mutable state between tests.
-3. **Assert on realistic user actions.** Write tests that reflect what a real user would do.
-4. **Never import from the parent repo's source.** If you find yourself writing \`import { ... } from '../main-repo/src/...'\`, stop — that defeats the holdout.
+1. **Behavioral only.** Test observable output — stdout, stderr, exit codes, files created/modified on disk. Never test internal implementation details or import source modules.
 
-## Backbone: native (CLI/Binary)
+2. **Use \`execSync\` or \`spawnSync\`.** Invoke the built binary at \`../main-repo/dist/cli.js\` (or whatever the main repo's entry point is). Check \`../main-repo/package.json\` to find the correct entry point if unsure.
 
-Use when the project is a CLI tool, library, or has no web/mobile UI.
+3. **Use vitest.** Import \`describe\`, \`it\`, \`expect\` from \`vitest\`. Use \`beforeEach\`/\`afterEach\` for temp directory setup/teardown.
+
+4. **Each test is fully independent.** No shared mutable state between tests. Each test that touches the filesystem gets its own temp directory via \`mkdtempSync\`.
+
+5. **Assert on realistic user actions.** Write tests that reflect what a real user would do — not what the implementation happens to do.
+
+6. **Never import from the parent repo's source.** If you find yourself writing \`import { ... } from '../main-repo/src/...'\`, stop — that defeats the holdout.
+
+## Test File Template
 
 \`\`\`typescript
-import { spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { execSync, spawnSync } from 'node:child_process';
+import { existsSync, mkdtempSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
@@ -2641,15 +2232,25 @@ function runCLI(args: string[], cwd?: string) {
     cwd: cwd ?? process.cwd(),
     env: { ...process.env, NO_COLOR: '1' },
   });
-  return { stdout: result.stdout ?? '', stderr: result.stderr ?? '', status: result.status ?? 1 };
+  return {
+    stdout: result.stdout ?? '',
+    stderr: result.stderr ?? '',
+    status: result.status ?? 1,
+  };
 }
 
-describe('[feature area]', () => {
+describe('[feature area]: [behavior being tested]', () => {
   let tmpDir: string;
-  beforeEach(() => { tmpDir = mkdtempSync(join(tmpdir(), 'scenarios-')); });
-  afterEach(() => { rmSync(tmpDir, { recursive: true, force: true }); });
 
-  it('[observable behavior]', () => {
+  beforeEach(() => {
+    tmpDir = mkdtempSync(join(tmpdir(), 'scenarios-'));
+  });
+
+  afterEach(() => {
+    rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('[specific observable behavior]', () => {
     const { stdout, status } = runCLI(['command', 'args'], tmpDir);
     expect(status).toBe(0);
     expect(stdout).toContain('expected output');
@@ -2657,106 +2258,13 @@ describe('[feature area]', () => {
 });
 \`\`\`
 
-## Backbone: playwright (Web Apps)
-
-Use when the project is a web application (Next.js, Vite, Nuxt, etc.).
-
-\`\`\`typescript
-import { test, expect } from '@playwright/test';
-
-// Tests run against BASE_URL (configured in playwright.config.ts)
-// The dev server is started automatically or BASE_URL points to a preview deploy
-
-test.describe('[feature area]', () => {
-  test('[observable behavior]', async ({ page }) => {
-    await page.goto('/');
-    await expect(page.locator('h1')).toBeVisible();
-  });
-
-  test('[user interaction]', async ({ page }) => {
-    await page.goto('/login');
-    await page.fill('[name="email"]', 'test@example.com');
-    await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/dashboard/);
-  });
-});
-\`\`\`
-
-## Backbone: api (API Backends)
-
-Use when the project is an API-only backend (Express, FastAPI, etc.).
-
-\`\`\`typescript
-import { describe, it, expect } from 'vitest';
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
-
-describe('[feature area]', () => {
-  it('[endpoint behavior]', async () => {
-    const res = await fetch(\\\`\\\${BASE_URL}/api/endpoint\\\`);
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body).toHaveProperty('data');
-  });
-
-  it('[error handling]', async () => {
-    const res = await fetch(\\\`\\\${BASE_URL}/api/not-found\\\`);
-    expect(res.status).toBe(404);
-  });
-});
-\`\`\`
-
-## Backbone: maestro (Mobile Apps)
-
-Use when the project is a mobile application (React Native, Flutter, native iOS/Android).
-
-\`\`\`yaml
-appId: com.example.myapp
-name: "[feature area]: [behavior being tested]"
-tags:
-  - holdout
----
-- launchApp
-- tapOn: "Sign In"
-- inputText: "test@example.com"
-- tapOn: "Submit"
-- assertVisible: "Welcome"
-# Use assertWithAI for complex visual assertions:
-# - assertWithAI: "The dashboard shows a list of recent items"
-\`\`\`
-
-## Graceful Degradation
-
-If the primary backbone tool is not available in this repo, fall back to the next deepest testable layer:
-
-| Layer | What's Tested | When to Use |
-|-------|-------------|-------------|
-| **Layer 4: UI** | Full user flows through browser/simulator | \`@playwright/test\` or Maestro is installed |
-| **Layer 3: API** | HTTP requests against running server | Server can be started from \`../main-repo\` |
-| **Layer 2: Logic** | Unit tests via test runner | Test runner (vitest/jest) is available |
-| **Layer 1: Static** | Build, typecheck, lint | Build toolchain is available |
-
-**Fallback rules:**
-- If backbone is \`playwright\` but \`@playwright/test\` is NOT in this repo's \`package.json\`: fall back to \`api\` (fetch-based HTTP tests)
-- If backbone is \`maestro\` but no simulator context is available: fall back to \`api\` if a server can be started, else \`native\`
-- If backbone is \`api\` but no server start script exists: fall back to \`native\`
-- \`native\` is always available as the floor
-
-Start each test file with a comment indicating the testing layer:
-\`// Testing Layer: [4|3|2|1] - [UI|API|Logic|Static]\`
-
-If you fell back from the intended backbone, note this in your commit message:
-\`scenarios: [action] for [spec] (layer: [N], reason: [why])\`
-
 ## Checklist Before Committing
 
 - [ ] Decision: SKIP / NEW / UPDATE (and why)
-- [ ] Correct backbone selected (or fallback justified)
 - [ ] Tests assert on observable behavior, not implementation
 - [ ] No imports from \`../main-repo/src\`
-- [ ] Each test is independent (own temp dir, own state)
-- [ ] File uses the correct extension for the backbone
-- [ ] Testing layer comment at top of file
+- [ ] Each test has its own temp directory if it touches the filesystem
+- [ ] File is named after the feature area, not the spec
 `,
 
   "scenarios/workflows/generate.yml": `# Scenario Generation Workflow
@@ -2857,9 +2365,7 @@ jobs:
           ## Context
 
           Existing test files in this repo: \${{ steps.context.outputs.existing_tests }}
-          Existing spec mirrors: \${{ steps.context.outputs.existing_specs }}
-
-          Testing backbone: \${{ github.event.client_payload.testing_backbone || 'native' }}"
+          Existing spec mirrors: \${{ steps.context.outputs.existing_specs }}"
 
       # ── 7. Commit any changes the agent made ──────────────────────────────
       - name: Commit scenario changes
@@ -3435,49 +2941,6 @@ jobs:
           done <<< "\${{ steps.changed.outputs.files }}"
 `,
 
-  "GOLDEN_EXAMPLE_TEMPLATE.md": `# [Feature Name] — Golden Example
-
-> **Date:** YYYY-MM-DD
-> **Project:** [project name]
-> **Source Brief:** \`docs/briefs/YYYY-MM-DD-feature-name.md\`
-
----
-
-## Capture
-
-The original user request or description that initiated this feature. Copied verbatim or lightly edited from the brief's Vision section.
-
-> [Paste the original capture text here — what the user said/typed that kicked off the pipeline]
-
-## Classification
-
-- **Action Level:** [interview | decompose | execute | research | design]
-- **Confidence:** [high | medium | low]
-- **Skills Used:** [comma-separated list of Joycraft skills invoked, e.g., joycraft-new-feature, joycraft-decompose]
-
-## Decomposition Summary
-
-The resulting spec breakdown from this capture:
-
-| # | Spec Name | Description | Size |
-|---|-----------|-------------|------|
-| 1 | [spec-name] | [one sentence] | [S/M/L] |
-
-## Rationale
-
-2-3 sentences explaining why this classification was correct for this capture. What signals in the capture text indicated this action level? What would have gone wrong with a different classification?
-
----
-
-## Template Usage Notes
-
-**This template is for Pipit golden examples.** Golden examples are auto-generated by Joycraft's session-end skill after a successful pipeline run. They provide few-shot examples that improve Pipit's level classifier over time.
-
-**Do not edit generated examples** unless the classification was wrong. If it was wrong, correct the Classification section — this teaches Pipit the right answer.
-
-**One example per pipeline run.** Each successful interview → brief → specs → execution cycle produces one golden example.
-`,
-
 };
 
 export const CODEX_SKILLS: Record<string, string> = {
@@ -3492,7 +2955,7 @@ The user has a fact to capture. Your job is to classify it, route it to the corr
 
 ## Step 1: Get the Fact
 
-If the user already provided the fact (e.g., \`$joycraft-add-fact the staging DB resets every Sunday\`), use it directly.
+If the user already provided the fact (e.g., \`\$joycraft-add-fact the staging DB resets every Sunday\`), use it directly.
 
 If not, ask: "What fact do you want to capture?" -- then wait for their response.
 
@@ -3655,7 +3118,7 @@ description: Structured bug fix workflow — triage, diagnose, discuss with user
 
 You are fixing a bug. Follow this process in order. Do not skip steps.
 
-**Guard clause:** If this is clearly a new feature, redirect to \`$joycraft-new-feature\` and stop.
+**Guard clause:** If this is clearly a new feature, redirect to \`\$joycraft-new-feature\` and stop.
 
 ---
 
@@ -3739,7 +3202,7 @@ What changes, where?
 |----------|------------------|
 \`\`\`
 
-**For large bugs that span multiple files/systems:** Consider whether this should be decomposed into multiple specs. If so, create a brief first using \`$joycraft-new-feature\`, then decompose.
+**For large bugs that span multiple files/systems:** Consider whether this should be decomposed into multiple specs. If so, create a brief first using \`\$joycraft-new-feature\`, then decompose.
 
 ---
 
@@ -3759,7 +3222,7 @@ To execute: Start a fresh session and:
 2. Write the reproduction test (must fail)
 3. Apply the fix (test must pass)
 4. Run full test suite
-5. Run $joycraft-session-end to capture discoveries
+5. Run \$joycraft-session-end to capture discoveries
 6. Commit and PR
 
 Ready to start?
@@ -3779,7 +3242,7 @@ You have a Feature Brief (or the user has described a feature). Your job is to d
 
 Look for a Feature Brief in \`docs/briefs/\`. If one doesn't exist yet, tell the user:
 
-> No feature brief found. Run \`$joycraft-new-feature\` first to interview and create one, or describe the feature now and I'll work from your description.
+> No feature brief found. Run \`\$joycraft-new-feature\` first to interview and create one, or describe the feature now and I'll work from your description.
 
 If the user describes the feature inline, work from that description directly. You don't need a formal brief to decompose — but recommend creating one for complex features.
 
@@ -3909,7 +3372,7 @@ Decomposition complete:
 To execute:
 - Sequential: Open a session, point at each spec in order
 - Parallel: One spec per branch, merge when done
-- Each session should end with $joycraft-session-end to capture discoveries
+- Each session should end with \$joycraft-session-end to capture discoveries
 
 Ready to start execution?
 \`\`\`
@@ -3925,7 +3388,7 @@ description: Design discussion before decomposition — produce a ~200-line desi
 You are producing a design discussion document for a feature. This sits between research and decomposition — it captures your understanding so the human can catch wrong assumptions before specs are written.
 
 **Guard clause:** If no brief path is provided and no brief exists in \`docs/briefs/\`, say:
-"No feature brief found. Run \`$joycraft-new-feature\` first to create one, or provide the path to your brief."
+"No feature brief found. Run \`\$joycraft-new-feature\` first to create one, or provide the path to your brief."
 Then stop.
 
 ---
@@ -3980,14 +3443,14 @@ Please review. Specifically:
 Reply with your feedback. I will NOT proceed to decomposition until you have reviewed and approved.
 \`\`\`
 
-**CRITICAL: Do NOT proceed to \`$joycraft-decompose\` or generate specs.** Wait for human review.
+**CRITICAL: Do NOT proceed to \`\$joycraft-decompose\` or generate specs.** Wait for human review.
 
 ## After Human Review
 
 - Update the design document with corrections
 - Move answered questions to Resolved Design Decisions
 - Present for final confirmation
-- Only after explicit approval: "Design approved. Run \`$joycraft-decompose\` with this brief to generate atomic specs."
+- Only after explicit approval: "Design approved. Run \`\$joycraft-decompose\` with this brief to generate atomic specs."
 `,
 
   "joycraft-implement-level5.md": `---
@@ -4004,7 +3467,7 @@ You are guiding the user through setting up Level 5: the autonomous feedback loo
 Check prerequisites:
 
 1. **Project must be initialized.** Search for \`.joycraft-version\`. If missing, tell the user to run \`npx joycraft init\` first.
-2. **Project should be at Level 4.** Read \`docs/joycraft-assessment.md\` if it exists. If the project hasn't been assessed yet, suggest running \`$joycraft-tune\` first. But don't block -- the user may know they're ready.
+2. **Project should be at Level 4.** Read \`docs/joycraft-assessment.md\` if it exists. If the project hasn't been assessed yet, suggest running \`\$joycraft-tune\` first. But don't block -- the user may know they're ready.
 3. **Git repo with GitHub remote.** This setup requires GitHub Actions. Check for \`.git/\` and a GitHub remote.
 
 If prerequisites aren't met, explain what's needed and stop.
@@ -4195,7 +3658,7 @@ Use this format:
 
 > **Date:** YYYY-MM-DD
 > **Status:** DRAFT
-> **Origin:** $joycraft-interview session
+> **Origin:** \$joycraft-interview session
 
 ---
 
@@ -4231,14 +3694,14 @@ After writing the draft, tell the user:
 Draft brief saved to docs/briefs/YYYY-MM-DD-topic-draft.md
 
 When you're ready to move forward:
-- $joycraft-new-feature — formalize this into a full Feature Brief with specs
-- $joycraft-decompose — break it directly into atomic specs if scope is clear
-- Or just keep brainstorming — run $joycraft-interview again anytime
+- \$joycraft-new-feature — formalize this into a full Feature Brief with specs
+- \$joycraft-decompose — break it directly into atomic specs if scope is clear
+- Or just keep brainstorming — run \$joycraft-interview again anytime
 \`\`\`
 
 ## Guidelines
 
-- **This is NOT $joycraft-new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
+- **This is NOT \$joycraft-new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
 - **Let the user lead.** Your job is to listen, clarify, and capture — not to structure or direct.
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.
@@ -4269,7 +3732,7 @@ Before starting the interview, search the codebase for test files or directories
 
 If no tests are found, tell the user:
 
-> Lockdown mode is most useful when you already have tests in place -- it prevents the agent from modifying them while constraining behavior to writing code and running tests. Consider running \`$joycraft-new-feature\` first to set up a test-driven workflow, then come back to lock it down.
+> Lockdown mode is most useful when you already have tests in place -- it prevents the agent from modifying them while constraining behavior to writing code and running tests. Consider running \`\$joycraft-new-feature\` first to set up a test-driven workflow, then come back to lock it down.
 
 If the user wants to proceed anyway, continue with the interview.
 
@@ -4545,7 +4008,7 @@ Recommended execution:
 To execute: Start a fresh session per spec. Each session should:
 1. Read the spec
 2. Implement
-3. Run $joycraft-session-end to capture discoveries
+3. Run \$joycraft-session-end to capture discoveries
 4. Commit and PR
 
 Ready to start?
@@ -4553,7 +4016,7 @@ Ready to start?
 
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused.
 
-You can also use \`$joycraft-decompose\` to re-decompose a brief if the breakdown needs adjustment, or run \`$joycraft-interview\` first for a lighter brainstorm before committing to the full workflow.
+You can also use \`\$joycraft-decompose\` to re-decompose a brief if the breakdown needs adjustment, or run \`\$joycraft-interview\` first for a lighter brainstorm before committing to the full workflow.
 `,
 
   "joycraft-research.md": `---
@@ -4627,8 +4090,8 @@ Research complete: docs/research/YYYY-MM-DD-feature-name.md
 This document contains objective facts — no opinions or recommendations.
 
 Next steps:
-- $joycraft-decompose — break the feature into atomic specs
-- $joycraft-new-feature — formalize into a full Feature Brief first
+- \$joycraft-decompose — break the feature into atomic specs
+- \$joycraft-new-feature — formalize into a full Feature Brief first
 - Read the research and add corrections manually
 \`\`\`
 `,
@@ -4815,11 +4278,11 @@ The user wants independent verification of an implementation. Your job is to fin
 
 ## Step 1: Find the Spec
 
-If the user provided a spec path (e.g., \`$joycraft-verify docs/specs/2026-03-26-add-widget.md\`), use that path directly.
+If the user provided a spec path (e.g., \`\$joycraft-verify docs/specs/2026-03-26-add-widget.md\`), use that path directly.
 
 If no path was provided, scan \`docs/specs/\` for spec files. Pick the most recently modified \`.md\` file in that directory. If \`docs/specs/\` doesn't exist or is empty, tell the user:
 
-> No specs found in \`docs/specs/\`. Please provide a spec path: \`$joycraft-verify path/to/spec.md\`
+> No specs found in \`docs/specs/\`. Please provide a spec path: \`\$joycraft-verify path/to/spec.md\`
 
 ## Step 2: Read and Parse the Spec
 
@@ -4931,8 +4394,8 @@ N criteria need manual verification -- they can't be checked by reading code or 
 
 Based on the verdict:
 
-- **All PASS:** Suggest committing and opening a PR, or running \`$joycraft-session-end\` to capture discoveries.
-- **Some FAIL:** List the failed criteria and suggest the user fix them, then run \`$joycraft-verify\` again.
+- **All PASS:** Suggest committing and opening a PR, or running \`\$joycraft-session-end\` to capture discoveries.
+- **Some FAIL:** List the failed criteria and suggest the user fix them, then run \`\$joycraft-verify\` again.
 - **MANUAL CHECK NEEDED items:** Explain what needs human eyes and why automation couldn't verify it.
 
 **Do NOT offer to fix failures yourself.** The verifier reports; the human (or implementation agent in a separate turn) decides what to do. This separation is the whole point.

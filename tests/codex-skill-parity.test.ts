@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const SKILLS_DIR = join(__dirname, '..', 'src', 'skills');
+const SKILLS_DIR = join(__dirname, '..', 'src', 'claude-skills');
 const CODEX_SKILLS_DIR = join(__dirname, '..', 'src', 'codex-skills');
 
 function parseFrontmatter(content: string): Record<string, string> {
