@@ -2,7 +2,11 @@
 
 > [Back to README](../../README.md)
 
-This guide covers the full architecture, setup, and operation of Joycraft's Level 5 autonomous development loop. For a quick overview, see the [Level 5 section in the README](../../README.md#level-5-the-autonomous-loop).
+This guide covers the full architecture, setup, and operation of Joycraft's Level 5 autonomous development loop.
+
+## Overview
+
+Level 5 is where specs go in and validated software comes out — four GitHub Actions workflows, a separate scenarios repo, and two AI agents that can never see each other's work. Run `/joycraft-implement-level5` for guided setup, or `npx joycraft init-autofix` via CLI.
 
 ---
 

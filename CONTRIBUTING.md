@@ -45,7 +45,7 @@ Look for issues labeled [`good first issue`](https://github.com/maksutovic/joycr
 ### Areas we'd love help with
 
 - **Stack detection** (`src/detect.ts`) — Adding support for new languages, frameworks, and package managers
-- **Skills** (`src/skills/`) — Improving the prompts, adding new workflow skills
+- **Skills** (`src/claude-skills/`) — Improving the prompts, adding new workflow skills
 - **Templates** — Better atomic spec templates, new context document templates
 - **Documentation** — Guides, tutorials, examples of Joycraft in real projects
 - **Testing** — More edge cases, integration tests, real-world fixture projects
@@ -72,7 +72,7 @@ src/
   safeguard.ts        # PreToolUse deny-pattern hooks
   version.ts          # .joycraft-version tracking
   bundled-files.ts    # All skills + templates as embedded strings
-  skills/             # Skill markdown files (source of truth)
+  claude-skills/      # Skill markdown files (source of truth)
   templates/          # Template files (source of truth)
 
 tests/                # Vitest tests — one file per module
@@ -80,7 +80,7 @@ tests/                # Vitest tests — one file per module
 
 ### Key things to know
 
-1. **`src/bundled-files.ts` is generated.** Don't edit it by hand. After changing files in `src/skills/` or `src/templates/`, run the regeneration script (see below).
+1. **`src/bundled-files.ts` is generated.** Don't edit it by hand. After changing files in `src/claude-skills/` or `src/templates/`, run the regeneration script (see below).
 
 2. **Skills must be self-contained.** A skill file in `.claude/skills/` can't import from other files. All context must be inline.
 
@@ -90,13 +90,13 @@ tests/                # Vitest tests — one file per module
 
 ### Regenerating bundled-files.ts
 
-After changing any file in `src/skills/` or `src/templates/`:
+After changing any file in `src/claude-skills/` or `src/templates/`:
 
 ```bash
 node -e "
 const fs = require('fs');
 const path = require('path');
-const skillsDir = 'src/skills';
+const skillsDir = 'src/claude-skills';
 const skills = {};
 for (const f of fs.readdirSync(skillsDir).filter(f => f.endsWith('.md'))) {
   skills[f] = fs.readFileSync(path.join(skillsDir, f), 'utf-8');

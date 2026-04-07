@@ -48,7 +48,7 @@ Joycraft/
 │   ├── improve-claude-md.ts # Merge Joycraft sections into existing CLAUDE.md
 │   ├── agents-md.ts        # Generate AGENTS.md for Codex
 │   ├── version.ts          # Version tracking (.joycraft-version)
-│   ├── skills/             # Installable skill files (copied to .claude/skills/)
+│   ├── claude-skills/      # Installable skill files (copied to .claude/skills/)
 │   │   ├── tune.md         # Main entry — assess + route
 │   │   ├── tune-assess.md
 │   │   ├── tune-upgrade.md

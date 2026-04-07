@@ -93,8 +93,13 @@ Research complete: docs/research/YYYY-MM-DD-feature-name.md
 
 This document contains objective facts about your codebase — no opinions or recommendations.
 
-Next steps:
-- /joycraft-decompose — break the feature into atomic specs (research will inform the specs)
+Recommended next step:
+- /joycraft-design — translate research findings into architectural decisions before building
+
+If the scope is simple (< 5 files, well-understood area, no architectural decisions):
+- /joycraft-decompose — skip design and break directly into atomic specs
+
+Other options:
 - /joycraft-new-feature — formalize into a full Feature Brief first
 - Read the research and add any corrections or missing context manually
 ```
