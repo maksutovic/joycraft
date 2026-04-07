@@ -1,7 +1,6 @@
 ---
 name: joycraft-decompose
 description: Break a feature brief into atomic specs — small, testable, independently executable units
-instructions: 32
 ---
 
 # Decompose Feature into Atomic Specs
@@ -12,7 +11,7 @@ You have a Feature Brief (or the user has described a feature). Your job is to d
 
 Look for a Feature Brief in `docs/briefs/`. If one doesn't exist yet, tell the user:
 
-> No feature brief found. Run `/joycraft-new-feature` first to interview and create one, or describe the feature now and I'll work from your description.
+> No feature brief found. Run `$joycraft-new-feature` first to interview and create one, or describe the feature now and I'll work from your description.
 
 If the user describes the feature inline, work from that description directly. You don't need a formal brief to decompose — but recommend creating one for complex features.
 
@@ -50,7 +49,7 @@ For each atomic spec, define:
 Show the decomposition table to the user. Ask:
 1. "Does this breakdown match how you think about this feature?"
 2. "Are there any specs that feel too big or too small?"
-3. "Should any of these run in parallel (separate worktrees)?"
+3. "Should any of these run in parallel (separate branches)?"
 
 Iterate until the user approves.
 
@@ -58,7 +57,7 @@ Iterate until the user approves.
 
 For each approved row, create `docs/specs/<feature-name>/spec-name.md`. Derive the feature-name from the brief filename (strip the date prefix and `.md` — e.g., `2026-04-06-token-discipline.md` → `token-discipline`). If no brief exists, use a user-provided or inferred feature name (slugified to kebab-case). Create the `docs/specs/<feature-name>/` directory if it doesn't exist.
 
-**Why:** Each spec must be self-contained — a fresh Claude session should be able to execute it without reading the Feature Brief. Copy relevant constraints and context into each spec.
+**Why:** Each spec must be self-contained — a fresh session should be able to execute it without reading the Feature Brief. Copy relevant constraints and context into each spec.
 
 Use this structure:
 
@@ -124,7 +123,7 @@ Fill in all sections — each spec must be self-contained (no "see the brief for
 ## Step 6: Recommend Execution Strategy
 
 Based on the dependency graph:
-- **Independent specs** — "These can run in parallel worktrees"
+- **Independent specs** — "These can run in parallel branches"
 - **Sequential specs** — "Execute these in order: 1 -> 2 -> 4"
 - **Mixed** — "Start specs 1 and 3 in parallel. After 1 completes, start 2."
 
@@ -140,11 +139,11 @@ Decomposition complete:
 - Estimated total: [N] sessions
 
 To execute:
-- Sequential: Open a session, point Claude at each spec in order
-- Parallel: Use worktrees — one spec per worktree, merge when done
-- Each session should end with /joycraft-session-end to capture discoveries
+- Sequential: Open a session, point at each spec in order
+- Parallel: One spec per branch, merge when done
+- Each session should end with $joycraft-session-end to capture discoveries
 
 Ready to start execution?
 ```
 
-**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+**Tip:** Run `/new` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.

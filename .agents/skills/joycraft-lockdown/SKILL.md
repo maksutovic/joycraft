@@ -1,12 +1,11 @@
 ---
 name: joycraft-lockdown
 description: Generate constrained execution boundaries for an implementation session -- NEVER rules and deny patterns to prevent agent overreach
-instructions: 28
 ---
 
 # Lockdown Mode
 
-The user wants to constrain agent behavior for an implementation session. Your job is to interview them about what should be off-limits, then generate CLAUDE.md NEVER rules and `.claude/settings.json` deny patterns they can review and apply.
+The user wants to constrain agent behavior for an implementation session. Your job is to interview them about what should be off-limits, then generate AGENTS.md NEVER rules and Codex configuration deny patterns they can review and apply.
 
 ## When Is Lockdown Useful?
 
@@ -19,11 +18,11 @@ For simple feature work on a well-tested codebase, lockdown is usually overkill.
 
 ## Step 1: Check for Tests
 
-Before starting the interview, check if the project has test files or directories (look for `tests/`, `test/`, `__tests__/`, `spec/`, or files matching `*.test.*`, `*.spec.*`).
+Before starting the interview, search the codebase for test files or directories (look for `tests/`, `test/`, `__tests__/`, `spec/`, or files matching `*.test.*`, `*.spec.*`).
 
 If no tests are found, tell the user:
 
-> Lockdown mode is most useful when you already have tests in place -- it prevents the agent from modifying them while constraining behavior to writing code and running tests. Consider running `/joycraft-new-feature` first to set up a test-driven workflow, then come back to lock it down.
+> Lockdown mode is most useful when you already have tests in place -- it prevents the agent from modifying them while constraining behavior to writing code and running tests. Consider running `$joycraft-new-feature` first to set up a test-driven workflow, then come back to lock it down.
 
 If the user wants to proceed anyway, continue with the interview.
 
@@ -72,7 +71,7 @@ Based on the interview responses, generate output in this exact format:
 
 Review these suggestions and add them to your project:
 
-### CLAUDE.md -- add to NEVER section:
+### AGENTS.md -- add to NEVER section:
 
 - Edit any file in `[user's test directories]`
 - Run `[denied package manager commands]`
@@ -80,9 +79,9 @@ Review these suggestions and add them to your project:
 - Read log files directly -- interact with logs only through test assertions
 - [Any additional NEVER rules based on user responses]
 
-### .claude/settings.json -- suggested deny patterns:
+### Codex configuration -- suggested deny patterns:
 
-Add these to the `permissions.deny` array:
+Add these to your Codex sandbox configuration to restrict command execution:
 
 ["[command1]", "[command2]", "[command3]"]
 
@@ -96,31 +95,31 @@ Adjust the content based on the actual interview responses:
 - Only include NEVER rules for directories/files the user specified
 - If the user allowed certain network tools or package managers, exclude those
 
-## Recommended Permission Mode
+## Recommended Execution Model
 
-After generating the boundaries above, also recommend a Claude Code permission mode. Include this section in your output:
+After generating the boundaries above, also recommend a Codex execution configuration. Include this section in your output:
 
 ```
-### Recommended Permission Mode
+### Recommended Execution Configuration
 
-You don't need `--dangerously-skip-permissions`. Safer alternatives exist:
+Codex runs in a sandboxed environment by default. To maximize safety during lockdown:
 
-| Your situation | Use | Why |
+| Your situation | Configuration | Why |
 |---|---|---|
-| Autonomous spec execution | `--permission-mode dontAsk` + allowlist above | Only pre-approved commands run |
-| Long session with some trust | `--permission-mode auto` | Safety classifier reviews each action |
-| Interactive development | `--permission-mode acceptEdits` | Auto-approves file edits, prompts for commands |
+| Autonomous spec execution | Sandbox with deny patterns above | Only pre-approved commands run |
+| Long session with some trust | Default sandbox | Network-disabled sandbox prevents external access |
+| Interactive development | Default with manual review | Review outputs before applying |
 
-**For lockdown mode, we recommend `--permission-mode dontAsk`** combined with the deny patterns above. This gives you full autonomy for allowed operations while blocking everything else -- no classifier overhead, no prompts, and no safety bypass.
+**For lockdown mode, we recommend the default sandboxed execution** combined with the deny patterns above. Codex's sandbox already disables network access by default -- the deny patterns add file-level and command-level restrictions on top.
 
-`--dangerously-skip-permissions` disables ALL safety checks. The modes above give you autonomy without removing the guardrails.
+If you need network access for specific commands (e.g., API tests), configure explicit network allowances in your Codex setup rather than disabling the sandbox entirely.
 ```
 
 ## Step 4: Offer to Apply
 
 If the user asks you to apply the changes:
 
-1. **For CLAUDE.md:** Read the existing CLAUDE.md, find the Behavioral Boundaries section, and show the user the exact diff for the NEVER section. Ask for confirmation before writing.
-2. **For settings.json:** Read the existing `.claude/settings.json`, show the user what the `permissions.deny` array will look like after adding the new patterns. Ask for confirmation before writing.
+1. **For AGENTS.md:** Read the existing AGENTS.md, find the Behavioral Boundaries section, and show the user the exact diff for the NEVER section. Ask for confirmation before writing.
+2. **For Codex configuration:** Show the user what the deny patterns will look like after adding the new restrictions. Ask for confirmation before writing.
 
 **Never auto-apply. Always show the exact changes and wait for explicit approval.**

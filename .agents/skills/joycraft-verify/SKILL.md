@@ -1,22 +1,21 @@
 ---
 name: joycraft-verify
 description: Spawn an independent verifier subagent to check an implementation against its spec -- read-only, no code edits, structured pass/fail verdict
-instructions: 30
 ---
 
 # Verify Implementation Against Spec
 
 The user wants independent verification of an implementation. Your job is to find the relevant spec, extract its acceptance criteria and test plan, then spawn a separate verifier subagent that checks each criterion and produces a structured verdict.
 
-**Why a separate subagent?** Anthropic's research found that agents reliably skew positive when grading their own work. Separating the agent doing the work from the agent judging it consistently outperforms self-evaluation. The verifier gets a clean context window with no implementation bias.
+**Why a separate subagent?** Research found that agents reliably skew positive when grading their own work. Separating the agent doing the work from the agent judging it consistently outperforms self-evaluation. The verifier gets a clean context window with no implementation bias.
 
 ## Step 1: Find the Spec
 
-If the user provided a spec path (e.g., `/joycraft-verify docs/specs/my-feature/add-widget.md`), use that path directly.
+If the user provided a spec path (e.g., `$joycraft-verify docs/specs/my-feature/add-widget.md`), use that path directly.
 
 If no path was provided, scan `docs/specs/` recursively for spec files (they may be in subdirectories like `docs/specs/<feature-name>/`). Pick the most recently modified `.md` file. If `docs/specs/` doesn't exist or is empty, tell the user:
 
-> No specs found in `docs/specs/`. Please provide a spec path: `/joycraft-verify path/to/spec.md`
+> No specs found in `docs/specs/`. Please provide a spec path: `$joycraft-verify path/to/spec.md`
 
 ## Step 2: Read and Parse the Spec
 
@@ -38,7 +37,7 @@ If the spec has no Test Plan section, note this but proceed -- the verifier can 
 Look for test commands in these locations (in priority order):
 
 1. The spec's Test Plan section (look for commands in backticks or "Type" column entries like "unit", "integration", "e2e", "build")
-2. The project's CLAUDE.md (look for test/build commands in the Development Workflow section)
+2. The project's CLAUDE.md or AGENTS.md (look for test/build commands in the Development Workflow section)
 3. Common defaults based on the project type:
    - Node.js: `npm test` or `pnpm test --run`
    - Python: `pytest`
@@ -49,13 +48,15 @@ Build a list of specific commands the verifier should run.
 
 ## Step 4: Spawn the Verifier Subagent
 
-Use Claude Code's Agent tool to spawn a subagent with the following prompt. Replace the placeholders with the actual content extracted in Steps 2-3.
+Spawn a concurrent subagent thread with the following prompt. Replace the placeholders with the actual content extracted in Steps 2-3.
+
+**Important:** The subagent must be given read-only constraints. It may search the codebase, read files, and run the specified test/build commands, but it must NOT edit or create any files.
 
 ```
 You are a QA verifier. Your job is to independently verify an implementation against its spec. You have NO context about how the implementation was done -- you are checking it fresh.
 
 RULES -- these are hard constraints, not suggestions:
-- You may READ any file using the Read tool or cat
+- You may search the codebase and read any file
 - You may RUN these specific test/build commands: [TEST_COMMANDS]
 - You may NOT edit, create, or delete any files
 - You may NOT run commands that modify state (no git commit, no npm install, no file writes)
@@ -126,8 +127,8 @@ N criteria need manual verification -- they can't be checked by reading code or 
 
 Based on the verdict:
 
-- **All PASS:** Suggest committing and opening a PR, or running `/joycraft-session-end` to capture discoveries.
-- **Some FAIL:** List the failed criteria and suggest the user fix them, then run `/joycraft-verify` again.
+- **All PASS:** Suggest committing and opening a PR, or running `$joycraft-session-end` to capture discoveries.
+- **Some FAIL:** List the failed criteria and suggest the user fix them, then run `$joycraft-verify` again.
 - **MANUAL CHECK NEEDED items:** Explain what needs human eyes and why automation couldn't verify it.
 
 **Do NOT offer to fix failures yourself.** The verifier reports; the human (or implementation agent in a separate turn) decides what to do. This separation is the whole point.
