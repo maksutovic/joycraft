@@ -116,7 +116,7 @@ Iterate until approved.
 
 ## Phase 3: Generate Atomic Specs
 
-For each row in the decomposition table, create a self-contained spec file at `docs/specs/YYYY-MM-DD-spec-name.md`. Create the `docs/specs/` directory if it doesn't exist.
+For each row in the decomposition table, create a self-contained spec file at `docs/specs/<feature-name>/spec-name.md`. Derive the feature-name from the brief filename (strip the date prefix and `.md` — e.g., `2026-04-06-token-discipline.md` → `token-discipline`). Create the `docs/specs/<feature-name>/` directory if it doesn't exist.
 
 **Why:** Each spec must be understandable WITHOUT reading the Feature Brief. This prevents the "Curse of Instructions" — no spec should require holding the entire feature in context. Copy relevant context into each spec.
 
@@ -221,3 +221,5 @@ Ready to start?
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused. Research and design catch wrong assumptions before they propagate into specs — but skip them if the scope is clear and well-understood.
 
 You can also use `/joycraft-decompose` to re-decompose a brief if the breakdown needs adjustment, or run `/joycraft-interview` first for a lighter brainstorm before committing to the full workflow.
+
+**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.

@@ -66,7 +66,7 @@ _Scale to complexity: 3 sentences for a bug fix, 1 page max for a feature. If yo
 
 **Size test:** If the Affected Files table has more than 8 rows, consider splitting. If the Acceptance Criteria has more than 8 items, consider splitting.
 
-**Naming convention:** `docs/specs/YYYY-MM-DD-verb-object.md` (e.g., `2026-03-23-add-terminal-detection-tests.md`)
+**Naming convention:** `docs/specs/<feature-name>/verb-object.md` (e.g., `docs/specs/terminal-detection/add-tests.md`). The feature-name is derived from the parent brief filename (strip the date prefix and `.md`). Spec filenames use `verb-object.md` format — no date prefix (the brief and git history provide dating).
 
 **Relationship to Feature Brief:** A Feature Brief decomposes into N atomic specs. Each atomic spec is self-contained — it includes enough context that Claude can execute it without reading the brief. The brief is for humans; the specs are for Claude.
 

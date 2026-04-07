@@ -55,7 +55,7 @@ Iterate until the user approves.
 
 ## Step 5: Generate Atomic Specs
 
-For each approved row, create `docs/specs/YYYY-MM-DD-spec-name.md`. Create the `docs/specs/` directory if it doesn't exist.
+For each approved row, create `docs/specs/<feature-name>/spec-name.md`. Derive the feature-name from the brief filename (strip the date prefix and `.md` — e.g., `2026-04-06-token-discipline.md` → `token-discipline`). If no brief exists, use a user-provided or inferred feature name (slugified to kebab-case). Create the `docs/specs/<feature-name>/` directory if it doesn't exist.
 
 **Why:** Each spec must be self-contained — a fresh session should be able to execute it without reading the Feature Brief. Copy relevant constraints and context into each spec.
 
@@ -145,3 +145,5 @@ To execute:
 
 Ready to start execution?
 ```
+
+**Tip:** Run `/new` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.

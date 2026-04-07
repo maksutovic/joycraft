@@ -64,7 +64,7 @@ Fix any failures before proceeding.
 
 ## 3. Update Spec Status
 
-If working from an atomic spec in `docs/specs/`:
+If working from an atomic spec in `docs/specs/` (scan recursively — specs may be in subdirectories like `docs/specs/<feature-name>/`):
 - All acceptance criteria met — update status to `Complete`
 - Partially done — update status to `In Progress`, note what's left
 
@@ -95,3 +95,5 @@ Session complete.
 - PR: [opened #N / not yet — N specs remaining]
 - Next: [what the next session should tackle]
 ```
+
+**Tip:** Run `/new` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.

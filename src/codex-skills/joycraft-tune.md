@@ -22,7 +22,7 @@ Read CLAUDE.md and explore the project. Score each with specific evidence:
 
 | Dimension | What to Check |
 |-----------|--------------|
-| Spec Quality | `docs/specs/` — structured? acceptance criteria? self-contained? |
+| Spec Quality | `docs/specs/` (scan recursively) — structured? acceptance criteria? self-contained? |
 | Spec Granularity | Can each spec be done in one session? |
 | Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading) |
 | Skills & Hooks | `.agents/skills/` files, hooks config |
@@ -58,6 +58,8 @@ After applying, append to `docs/joycraft-history.md` and show a consolidated upg
 ## Step 6: Show Path to Level 5
 
 Show a tailored roadmap: Level 2-5 table, specific next steps based on actual gaps, and the Level 5 north star (spec queue, autofix, holdout scenarios, self-improving harness).
+
+**Tip:** Run `$joycraft-optimize` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.
 
 ## Edge Cases
 

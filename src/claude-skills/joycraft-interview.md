@@ -97,6 +97,8 @@ Not sure yet? Just keep brainstorming — run /joycraft-interview again anytime.
 
 If the idea sounds complex — touches many files, involves architectural decisions, or the user is working in an unfamiliar area — nudge them toward research and design. But present it as a recommendation, not a gate.
 
+**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+
 ## Guidelines
 
 - **This is NOT /joycraft-new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.

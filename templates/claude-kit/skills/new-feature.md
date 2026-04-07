@@ -74,7 +74,7 @@ Iterate until approved.
 
 ## Phase 3: Generate Atomic Specs
 
-For each row in the decomposition table, create a self-contained spec file at `docs/specs/YYYY-MM-DD-spec-name.md` using ATOMIC_SPEC_TEMPLATE.md.
+For each row in the decomposition table, create a self-contained spec file at `docs/specs/<feature-name>/spec-name.md` using ATOMIC_SPEC_TEMPLATE.md. Derive the feature-name from the brief filename (strip the date prefix and `.md`).
 
 **Critical rule:** Each spec must be understandable WITHOUT reading the Feature Brief. Copy relevant context into each spec. The brief is the map; each spec is a complete set of turn-by-turn directions.
 
@@ -120,3 +120,5 @@ Ready to start?
 ```
 
 **Important:** Recommend a fresh session for execution. The interview session has too much context noise — a clean session with just the spec produces better results. Research and design catch wrong assumptions before they propagate into specs — but skip them if the scope is clear and well-understood.
+
+**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.

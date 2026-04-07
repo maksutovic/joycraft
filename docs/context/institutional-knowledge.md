@@ -5,7 +5,7 @@
 ## Team Conventions
 
 - Commit style is `verb: concise message` — no conventional commits prefix like `feat:` or `fix:`
-- All specs go in `docs/specs/` with date prefix: `YYYY-MM-DD-name.md`
+- All specs go in `docs/specs/<feature-name>/verb-object.md` — grouped by feature, no date prefix (brief and git history provide dating)
 - Feature briefs go in `docs/briefs/` with the same date prefix pattern
 - Skills are namespaced `joycraft-*` to avoid collisions with other plugins
 - Discoveries are logged in `docs/discoveries/` — capture surprises, not routine work
