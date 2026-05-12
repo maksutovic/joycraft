@@ -83,15 +83,28 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          git tag -a "v$VERSION" -m "v$VERSION"
-          git push origin "v$VERSION"
+          # Identity is needed for annotated tags. The "Commit and push version
+          # bump" step sets it too, but only runs on auto-bump — set it here
+          # unconditionally so manual version bumps still produce a tag.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION already exists on origin — skipping."
+          else
+            git tag -a "v$VERSION" -m "v$VERSION"
+            git push origin "v$VERSION"
+          fi
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
-          gh release create "v$VERSION" \
-            --title "v$VERSION" \
-            --generate-notes \
-            --latest
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            echo "Release v$VERSION already exists — skipping."
+          else
+            gh release create "v$VERSION" \
+              --title "v$VERSION" \
+              --generate-notes \
+              --latest
+          fi
