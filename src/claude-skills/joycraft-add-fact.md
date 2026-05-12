@@ -131,6 +131,21 @@ Remove any italic example rows (rows where all cells start with `_`) before appe
 
 **Append only. Never modify or remove existing real content.**
 
+## Step 5b: Update Shared Frontmatter
+
+Context docs are *shared* artifacts (no single owner). After appending, update (or add) YAML frontmatter — the 2-field shared schema:
+
+```yaml
+---
+last_updated: YYYY-MM-DD
+last_updated_by: <resolved name>
+---
+```
+
+If the file already has a frontmatter block, update the `last_updated` and `last_updated_by` fields in place. If it doesn't, prepend a fresh block ABOVE the existing `# Heading`.
+
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
+
 ## Step 6: Evaluate CLAUDE.md Boundary Rule
 
 Decide whether the fact also warrants a rule in CLAUDE.md's behavioral boundaries:
@@ -147,7 +162,7 @@ Decide whether the fact also warrants a rule in CLAUDE.md's behavioral boundarie
 
 If a rule is warranted, read CLAUDE.md, find the appropriate section (ALWAYS, ASK FIRST, or NEVER under Behavioral Boundaries), and append the rule. If no Behavioral Boundaries section exists, append one.
 
-## Step 7: Confirm
+## Step 7: Confirm and Hand Off
 
 Report what you did in this format:
 
@@ -162,3 +177,13 @@ Added CLAUDE.md rule:
 [If the fact was ambiguous:]
 Routed to [chosen doc] -- move to [alternative doc] if this is more about [alternative category description].
 ```
+
+End with the canonical Handoff block. For most facts, the next move is back to whatever the user was doing — the Handoff block degrades to just a slash command pointing them home.
+
+## Recommended Next Steps
+
+Next:
+```bash
+/joycraft-session-end
+```
+Run /clear first.

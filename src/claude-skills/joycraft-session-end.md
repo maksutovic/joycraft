@@ -12,7 +12,22 @@ Before ending this session, complete these steps in order.
 
 **Why:** Discoveries are the surprises — things that weren't in the spec or that contradicted expectations. They prevent future sessions from hitting the same walls.
 
-Check: did anything surprising happen during this session? If yes, create or update a discovery file at `docs/discoveries/YYYY-MM-DD-topic.md`. Create the `docs/discoveries/` directory if it doesn't exist.
+Check: did anything surprising happen during this session? If yes, create or update a discovery file at `docs/discoveries/YYYY-MM-DD-topic.md`. Lazy-create the `docs/discoveries/` directory if it doesn't exist.
+
+(Discoveries stay flat at `docs/discoveries/` rather than per-feature, since they often span features and are read serendipitously rather than via a known path.)
+
+The discovery file MUST start with YAML frontmatter — the 4-field personal schema:
+
+```yaml
+---
+status: active
+owner: <resolved name>
+created: YYYY-MM-DD
+feature: <slug-of-related-feature>   # omit if not feature-tied
+---
+```
+
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
 
 Only capture what's NOT obvious from the code or git diff:
 - "We thought X but found Y" — assumptions that were wrong
@@ -51,6 +66,17 @@ If `docs/context/` exists, quickly check whether this session revealed anything 
 - **Key decisions** — did you make an architectural or tooling choice? → Add a row to `docs/context/decision-log.md`
 - **Unwritten rules** — did you discover a convention or constraint not documented anywhere? → Update `docs/context/institutional-knowledge.md`
 
+When you UPDATE a context doc, also bump (or add) its YAML frontmatter — the 2-field shared schema:
+
+```yaml
+---
+last_updated: YYYY-MM-DD
+last_updated_by: <resolved name>
+---
+```
+
+If the file already has the frontmatter, update the `last_updated` and `last_updated_by` fields in place. If it doesn't, prepend a fresh block. Context docs are *shared* artifacts (no single owner) — the shared schema reflects that.
+
 Skip this if nothing applies. Don't force it — only update when there's genuine new context.
 
 ## 2. Run Validation
@@ -65,11 +91,11 @@ Fix any failures before proceeding.
 
 ## 3. Update Spec Status
 
-If working from an atomic spec in `docs/specs/` (scan recursively — specs may be in subdirectories like `docs/specs/<feature-name>/`):
-- All acceptance criteria met — update status to `Complete`
-- Partially done — update status to `In Progress`, note what's left
+If working from an atomic spec in `docs/features/<slug>/specs/` (or the legacy `docs/specs/<area>/` for bugfixes — scan recursively):
+- All acceptance criteria met — update the spec's frontmatter `status:` to reflect completion (e.g., `shipped`) and the body's Status field to `Complete`
+- Partially done — leave `status: active` and update the body's Status field to `In Progress`, note what's left
 
-If working from a Feature Brief in `docs/briefs/`, check off completed specs in the decomposition table.
+If working from a Feature Brief at `docs/features/<slug>/brief.md`, check off completed specs in the decomposition table.
 
 ## 4. Commit
 
@@ -85,7 +111,7 @@ Commit all changes including the discovery file (if created) and spec status upd
 
 If CLAUDE.md does NOT have autonomous git rules (or has "ASK FIRST" for pushing), ask the user before pushing.
 
-## 6. Report
+## 6. Report and Hand Off
 
 ```
 Session complete.
@@ -95,6 +121,16 @@ Session complete.
 - Pushed: [yes / no — and why not]
 - PR: [opened #N / not yet — N specs remaining]
 - Next: [what the next session should tackle]
-
-Run /clear before your next step — your artifacts are saved to files.
 ```
+
+End with the canonical Handoff block. Include any discovery and updated-context paths produced.
+
+## Recommended Next Steps
+
+Next:
+```bash
+/joycraft-implement docs/features/<slug>/specs/<next-spec>.md
+```
+Run /clear first.
+
+If all specs in the feature are complete, hand off to a feature-level wrap-up instead (PR review, etc.) — the Handoff block is just the slash command for whatever the next move is.

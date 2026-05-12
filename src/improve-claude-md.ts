@@ -1,4 +1,10 @@
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import type { StackInfo } from './detect.js';
+
+export interface ImproveOptions {
+  projectDir?: string;
+}
 
 interface Section {
   header: string;
@@ -131,6 +137,25 @@ This project uses holdout scenario tests in a separate private repo.
 The scenarios repo is deliberately invisible to you. This is the holdout guarantee — like a validation set in ML.`;
 }
 
+function generateAreasSection(): string {
+  return `## Areas
+
+This project organizes some work by area. When working on a specific area, read its README first; check for area-specific boundaries.
+
+- For each area: see \`docs/areas/<area-name>/README.md\`
+- Area-level boundaries (when present): \`docs/areas/<area-name>/boundaries.md\``;
+}
+
+function projectHasAreas(opts?: ImproveOptions): boolean {
+  if (!opts?.projectDir) return false;
+  return existsSync(join(opts.projectDir, 'docs', 'areas'));
+}
+
+function stripAreasSection(content: string): string {
+  // Remove an existing "## Areas" section (header + body up to next "## " header or EOF).
+  return content.replace(/\n##\s+Areas\b[\s\S]*?(?=\n##\s|\n*$)/, '').trimEnd() + '\n';
+}
+
 function generateProjectToolsSection(existingSkills: string[]): string {
   const MAX_LISTED = 10;
   let skillList: string;
@@ -145,8 +170,16 @@ function generateProjectToolsSection(existingSkills: string[]): string {
 This project has additional tools beyond Joycraft. Always check \`.claude/skills/\` for available skills: ${skillList}`;
 }
 
-export function improveCLAUDEMd(existing: string, stack: StackInfo, existingSkills: string[] = []): string {
-  const sections = parseSections(existing);
+export function improveCLAUDEMd(
+  existing: string,
+  stack: StackInfo,
+  existingSkills: string[] = [],
+  opts?: ImproveOptions,
+): string {
+  // Areas pointer: idempotent in both directions.
+  // Always strip an existing "## Areas" section first so we re-evaluate cleanly.
+  let working = stripAreasSection(existing);
+  const sections = parseSections(working);
   const additions: string[] = [];
 
   if (!hasSection(sections, /behavioral\s*boundar/i)) {
@@ -181,16 +214,24 @@ export function improveCLAUDEMd(existing: string, stack: StackInfo, existingSkil
     additions.push(generateProjectToolsSection(existingSkills));
   }
 
-  if (additions.length === 0) {
-    return existing;
+  if (projectHasAreas(opts)) {
+    additions.push(generateAreasSection());
   }
 
-  // Append missing sections
-  const trimmed = existing.trimEnd();
+  if (additions.length === 0) {
+    return working === existing ? existing : working;
+  }
+
+  const trimmed = working.trimEnd();
   return trimmed + '\n\n' + additions.join('\n\n') + '\n';
 }
 
-export function generateCLAUDEMd(projectName: string, stack: StackInfo, existingSkills: string[] = []): string {
+export function generateCLAUDEMd(
+  projectName: string,
+  stack: StackInfo,
+  existingSkills: string[] = [],
+  opts?: ImproveOptions,
+): string {
   const frameworkNote = stack.framework ? ` (${stack.framework})` : '';
   const langLabel = stack.language === 'unknown' ? '' : ` | **Stack:** ${stack.language}${frameworkNote}`;
 
@@ -217,6 +258,10 @@ export function generateCLAUDEMd(projectName: string, stack: StackInfo, existing
 
   if (existingSkills.length > 0) {
     lines.push(generateProjectToolsSection(existingSkills), '');
+  }
+
+  if (projectHasAreas(opts)) {
+    lines.push(generateAreasSection(), '');
   }
 
   return lines.join('\n');

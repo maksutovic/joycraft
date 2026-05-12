@@ -8,7 +8,17 @@ description: Produce objective codebase research by isolating question generatio
 You are producing objective codebase research to inform a future spec or implementation. The key insight: the researching agent must never see the brief or ticket — only research questions. This prevents opinions from contaminating the facts.
 
 **Guard clause:** If the user doesn't provide a brief path or inline description, ask:
-"What feature or change are you researching? Provide a brief path (e.g., `docs/briefs/2026-03-30-my-feature.md`) or describe it in a few sentences."
+"What feature or change are you researching? Provide a brief path (e.g., `docs/features/2026-03-30-my-feature/brief.md`) or describe it in a few sentences."
+
+## Scanning Prior Research (Status Filter)
+
+Before generating fresh questions, scan `docs/features/*/research.md` for prior research on similar topics. Read the YAML frontmatter at the top of each file:
+
+- Treat each file as `status: active` unless its frontmatter explicitly says otherwise.
+- **Skip / ignore** any file whose `status:` is `shipped`, `deprecated`, or `superseded` — they are no longer load-bearing.
+- Also ignore anything under `docs/archive/` entirely — archived research is out-of-scope.
+
+Files without frontmatter at all are treated as `status: active` (legacy artifacts).
 
 ---
 
@@ -34,7 +44,8 @@ Bad examples (do NOT generate these):
 - "Should we use library X or Y?" (recommendation)
 - "What would a good architecture look like?" (design, not research)
 
-Write the questions to a temporary file at `docs/research/.questions-tmp.md`. Create the `docs/research/` directory if it doesn't exist.
+Derive a slug `YYYY-MM-DD-<feature-name>`. Lazy-create the folder `docs/features/<slug>/`.
+Write the questions to a temporary file at `docs/features/<slug>/.questions-tmp.md`.
 
 **Do NOT include any content from the brief in this file — only the questions.**
 
@@ -82,27 +93,32 @@ OUTPUT FORMAT — write your findings as a single markdown document using this s
 
 ## Phase 3: Write the Research Document
 
-Take the subagent's response and write it to `docs/research/YYYY-MM-DD-feature-name.md`. Derive the feature name from the brief filename or the user's description (lowercase, hyphenated).
+Take the subagent's response and write it to `docs/features/<slug>/research.md`. The file MUST start with YAML frontmatter — the 4-field personal schema:
 
-Delete the temporary questions file (`docs/research/.questions-tmp.md`).
-
-Present the research document path to the user:
-
+```yaml
+---
+status: active
+owner: <resolved name>
+created: YYYY-MM-DD
+feature: <slug>
+---
 ```
-Research complete: docs/research/YYYY-MM-DD-feature-name.md
 
-This document contains objective facts about your codebase — no opinions or recommendations.
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
 
-Recommended next step:
-- /joycraft-design — translate research findings into architectural decisions before building
+Delete the temporary questions file (`docs/features/<slug>/.questions-tmp.md`).
 
-If the scope is simple (< 5 files, well-understood area, no architectural decisions):
-- /joycraft-decompose — skip design and break directly into atomic specs
+End with the canonical Handoff block.
 
-Other options:
-- /joycraft-new-feature — formalize into a full Feature Brief first
-- Read the research and add any corrections or missing context manually
+## Recommended Next Steps
+
+Next:
+```bash
+/joycraft-design docs/features/<slug>/research.md
 ```
+Run /clear first.
+
+If the scope is simple (< 5 files, well-understood area, no architectural decisions), instead hand off to `/joycraft-decompose docs/features/<slug>/brief.md` to skip design and break directly into atomic specs.
 
 ## Edge Cases
 
@@ -112,4 +128,4 @@ Other options:
 | Codebase is empty or new | Research doc reports "no existing patterns found" per question |
 | User runs research twice for same feature | Overwrites previous research doc (same filename) |
 | Brief is very short (1-2 sentences) | Still generate questions — even simple features benefit from understanding existing patterns |
-| `docs/research/` doesn't exist | Create it |
+| `docs/features/<slug>/` doesn't exist | Lazy-create it |

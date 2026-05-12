@@ -8,30 +8,39 @@ instructions: 35
 
 You are starting a new feature. Follow this process in order. Do not skip steps.
 
-## Phase 0: Check for Existing Drafts
+## Phase 0: Check for Existing Drafts and In-Flight Features
 
-Before starting the interview, check if the user has already drafted a brief.
+Before starting the interview, scan `docs/features/` for existing artifacts the user may want to continue from.
 
 **Skip this phase if:** the user provided a brief path as an argument (they already know what to work from).
 
 **Steps:**
-1. Check if `docs/briefs/` exists. If not, skip to Phase 1.
-2. Look for files matching `*-draft.md` in `docs/briefs/`.
-3. For any other `.md` files in `docs/briefs/`, read the first 10 lines and check for `Status: DRAFT`.
-4. If draft(s) found, present them:
+1. Check if `docs/features/` exists. If not, skip to Phase 1.
+2. List subdirectories. For each `docs/features/<slug>/brief.md`, read the YAML frontmatter at the top.
+3. **Filter by status:** treat each brief as `status: active` unless its frontmatter says otherwise. **Skip** any brief whose `status:` is `shipped`, `deprecated`, or `superseded`. Also skip anything under `docs/archive/` — those are out-of-scope for new feature work.
+4. Group what you find:
+   - **Drafts** (frontmatter `status: draft`) — likely from `/joycraft-interview`.
+   - **Active in-flight** (frontmatter `status: active`) — work the user already started.
+
+5. Present them:
 
 ```
-I found draft brief(s) in docs/briefs/:
-- [path] (drafted YYYY-MM-DD)
-- [path] (drafted YYYY-MM-DD)
+I found existing artifacts in docs/features/:
+
+Drafts:
+- docs/features/<slug>/brief.md (drafted YYYY-MM-DD)
+
+Active features:
+- docs/features/<slug>/brief.md (started YYYY-MM-DD)
 
 Want me to:
-1. **Formalize** one of these into a full Feature Brief (skip interview, go to Phase 2)
-2. **Start a new interview** from scratch
+1. **Formalize** a draft into a full Feature Brief
+2. **Continue** an active feature
+3. **Start a new interview** from scratch
 ```
 
-5. If user chooses to formalize: read the full draft, extract the idea/problem/constraints, and jump to Phase 2 with that context pre-filled.
-6. If user chooses to start fresh, or no drafts found: proceed to Phase 1.
+6. If user picks formalize/continue: read the full brief, extract context, and jump to Phase 2 with that context pre-filled.
+7. If user picks start fresh, or nothing found: proceed to Phase 1.
 
 ## Phase 1: Interview
 
@@ -55,18 +64,35 @@ Keep asking until you can fill out a Feature Brief.
 
 ## Phase 2: Feature Brief
 
-Write a Feature Brief to `docs/briefs/YYYY-MM-DD-feature-name.md`. Create the `docs/briefs/` directory if it doesn't exist.
+Derive a slug `YYYY-MM-DD-<feature-name>` (today's date + kebab-case feature name).
+Write the Feature Brief to `docs/features/<slug>/brief.md`. Lazy-create the folder if needed.
+
+**Slug derivation:** today's date in `YYYY-MM-DD` format, then `-`, then the feature name lower-cased and hyphen-separated. Example: a feature about "Token Discipline" started on 2026-04-06 → slug `2026-04-06-token-discipline` → folder `docs/features/2026-04-06-token-discipline/`.
 
 **Why:** The brief is the single source of truth for what we're building. It prevents scope creep and gives every spec a shared reference point.
 
-Use this structure:
+The brief MUST start with YAML frontmatter — the 4-field personal schema:
+
+```yaml
+---
+status: active
+owner: <resolved name>
+created: YYYY-MM-DD
+feature: <slug>
+---
+```
+
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist. If you can't get a name, leave the field as `<resolved name>` and note it for the user.
+
+If the brief was formalized from an existing draft, parse the existing draft's frontmatter and update `status:` from `draft` to `active`. Never silently overwrite — if the draft already has body content, preserve it and append/refine rather than replacing.
+
+Use this structure for the body:
 
 ```markdown
 # [Feature Name] — Feature Brief
 
 > **Date:** YYYY-MM-DD
 > **Project:** [project name]
-> **Status:** Interview | Decomposing | Specs Ready | In Progress | Complete
 
 ---
 
@@ -116,16 +142,31 @@ Iterate until approved.
 
 ## Phase 3: Generate Atomic Specs
 
-For each row in the decomposition table, create a self-contained spec file at `docs/specs/<feature-name>/spec-name.md`. Derive the feature-name from the brief filename (strip the date prefix and `.md` — e.g., `2026-04-06-token-discipline.md` → `token-discipline`). Create the `docs/specs/<feature-name>/` directory if it doesn't exist.
+For each row in the decomposition table, create a self-contained spec file at `docs/features/<slug>/specs/<spec-name>.md`. Lazy-create the `specs/` subfolder if it doesn't exist.
 
 **Why:** Each spec must be understandable WITHOUT reading the Feature Brief. This prevents the "Curse of Instructions" — no spec should require holding the entire feature in context. Copy relevant context into each spec.
 
-Use this structure for each spec:
+Each spec file MUST start with YAML frontmatter — the 4-field personal schema:
+
+```yaml
+---
+status: active
+owner: <resolved name>
+created: YYYY-MM-DD
+feature: <slug>
+---
+```
+
+When listing existing in-flight features in Phase 0, ignore briefs whose `status:` is `shipped`, `deprecated`, or `superseded`. Also ignore anything under `docs/archive/`.
+
+If `docs/backlog/` items surface during the interview as "deferred work" candidates, ask the user before writing — never auto-write to `docs/backlog/`.
+
+Use this structure for each spec body:
 
 ```markdown
 # [Verb + Object] — Atomic Spec
 
-> **Parent Brief:** `docs/briefs/YYYY-MM-DD-feature-name.md`
+> **Parent Brief:** `docs/features/<slug>/brief.md`
 > **Status:** Ready
 > **Date:** YYYY-MM-DD
 > **Estimated scope:** [1 session / N files / ~N lines]
@@ -179,6 +220,25 @@ Strategy, data flow, key decisions. Name one rejected alternative.
 
 If `docs/templates/ATOMIC_SPEC_TEMPLATE.md` exists, reference it for the full template with additional guidance.
 
+## Phase 3.5: Offer to Capture Deferred Items to Backlog
+
+If during the interview deferred work surfaces (out-of-scope items, "later" features, tangents), ASK the user:
+
+> "This looks like deferred work — want me to capture it to `docs/backlog/`?"
+
+Only on user confirmation, write a backlog entry at `docs/backlog/YYYY-MM-DD-<short-name>.md` with backlog frontmatter:
+
+```yaml
+---
+status: backlog
+owner: <resolved name>
+created: YYYY-MM-DD
+source: docs/features/<slug>/brief.md
+---
+```
+
+**Never auto-write to `docs/backlog/`.** Every backlog entry is user-confirmed.
+
 ## Phase 4: Hand Off for Execution
 
 Before jumping to execution, consider whether research or design would catch wrong assumptions early:
@@ -216,9 +276,17 @@ To execute: Start a fresh session per spec. Each session should:
 4. Commit and PR
 
 Ready to start?
-
-Run /clear before your next step — your artifacts are saved to files.
 ```
+
+End with the canonical Handoff block. Include any backlog paths produced as a side effect.
+
+## Recommended Next Steps
+
+Next:
+```bash
+/joycraft-decompose docs/features/<slug>/brief.md
+```
+Run /clear first.
 
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused. Research and design catch wrong assumptions before they propagate into specs — but skip them if the scope is clear and well-understood.
 

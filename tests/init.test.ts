@@ -1,8 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { init } from '../src/init';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function createTmpDir(): string {
   const dir = join(tmpdir(), `joycraft-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -23,15 +26,20 @@ describe('init', () => {
   });
 
   describe('empty directory', () => {
-    it('creates all directories, CLAUDE.md, skills, and templates', async () => {
+    it('creates lazy-only directory layout, CLAUDE.md, skills, and templates', async () => {
       await init(tmpDir, { force: false });
 
-      // docs subdirectories
-      expect(existsSync(join(tmpDir, 'docs', 'briefs'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'specs'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'discoveries'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'contracts'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'decisions'))).toBe(true);
+      // Only context/ and templates/ should be present under docs/
+      const docsDir = join(tmpDir, 'docs');
+      const contents = existsSync(docsDir)
+        ? require('node:fs').readdirSync(docsDir).sort()
+        : [];
+      expect(contents).toEqual(['context', 'templates']);
+
+      // Dropped directories must NOT exist
+      for (const sub of ['briefs', 'specs', 'discoveries', 'contracts', 'decisions', 'pipit-examples', 'features', 'backlog', 'areas', 'archive']) {
+        expect(existsSync(join(tmpDir, 'docs', sub))).toBe(false);
+      }
 
       // CLAUDE.md
       expect(existsSync(join(tmpDir, 'CLAUDE.md'))).toBe(true);
@@ -55,13 +63,28 @@ describe('init', () => {
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'context', 'troubleshooting.md'))).toBe(true);
     });
 
-    it('creates pipit-examples directory with README', async () => {
+    it('summary mentions docs/features/<slug>/ as the feature destination', async () => {
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => logs.push(args.join(' '));
+      try {
+        await init(tmpDir, { force: false });
+      } finally {
+        console.log = origLog;
+      }
+      const joined = logs.join('\n');
+      expect(joined).toContain('docs/features/');
+    });
+
+    it('writes the real CLI version to .joycraft-version', async () => {
       await init(tmpDir, { force: false });
-      expect(existsSync(join(tmpDir, 'docs', 'pipit-examples'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'pipit-examples', 'README.md'))).toBe(true);
-      const readme = readFileSync(join(tmpDir, 'docs', 'pipit-examples', 'README.md'), 'utf-8');
-      expect(readme).toContain('Pipit');
-      expect(readme).toContain('optional');
+      const versionFile = JSON.parse(readFileSync(join(tmpDir, '.joycraft-version'), 'utf-8'));
+      const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
+      expect(versionFile.version).toBe(pkg.version);
+      // Sanity: it's not the deprecated hardcoded value (unless package.json actually has 0.1.0)
+      if (pkg.version !== '0.1.0') {
+        expect(versionFile.version).not.toBe('0.1.0');
+      }
     });
   });
 
@@ -448,7 +471,7 @@ describe('init', () => {
 
       const version = JSON.parse(readFileSync(join(tmpDir, '.joycraft-version'), 'utf-8'));
       const agentsKeys = Object.keys(version.files).filter(k => k.startsWith('.agents'));
-      expect(agentsKeys.length).toBe(14);
+      expect(agentsKeys.length).toBe(15);
       expect(agentsKeys.some(k => k.includes('joycraft-tune'))).toBe(true);
       expect(agentsKeys.some(k => k.includes('joycraft-decompose'))).toBe(true);
     });
@@ -456,16 +479,17 @@ describe('init', () => {
 
   describe('partial harness', () => {
     it('handles some dirs existing already', async () => {
-      // Pre-create some dirs
+      // Pre-create user dirs that init does not manage anymore
       mkdirSync(join(tmpDir, 'docs', 'specs'), { recursive: true });
       mkdirSync(join(tmpDir, '.claude', 'skills'), { recursive: true });
 
       await init(tmpDir, { force: false });
 
-      // All dirs should exist
-      expect(existsSync(join(tmpDir, 'docs', 'briefs'))).toBe(true);
+      // User-pre-existing docs/specs is preserved (init never deletes)
       expect(existsSync(join(tmpDir, 'docs', 'specs'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'discoveries'))).toBe(true);
+      // Joycraft-managed dirs that ARE created
+      expect(existsSync(join(tmpDir, 'docs', 'context'))).toBe(true);
+      expect(existsSync(join(tmpDir, 'docs', 'templates'))).toBe(true);
       // Skills still get installed
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
     });

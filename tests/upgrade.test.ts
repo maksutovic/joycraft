@@ -1,11 +1,15 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { upgrade } from '../src/upgrade';
 import { init } from '../src/init';
 import { readVersion, writeVersion, hashContent } from '../src/version';
 import { SKILLS, TEMPLATES, CODEX_SKILLS } from '../src/bundled-files';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const PKG_VERSION = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8')).version;
 
 function createTmpDir(): string {
   const dir = join(tmpdir(), `joycraft-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -296,10 +300,136 @@ describe('upgrade', () => {
     await upgrade(tmpDir, { yes: true });
 
     const newVersion = readVersion(tmpDir)!;
-    expect(newVersion.version).toBe('0.1.0');
+    expect(newVersion.version).toBe(PKG_VERSION);
     // The hash should now match the current file content
     const currentContent = readFileSync(join(tmpDir, skillRelPath), 'utf-8');
     expect(newVersion.files[skillRelPath]).toBe(hashContent(currentContent));
+  });
+
+  describe('forced migration (flat → per-feature)', () => {
+    it('detects flat layout and migrates briefs/research/designs', async () => {
+      await init(tmpDir, { force: false });
+      // Pre-create flat layout artifacts
+      mkdirSync(join(tmpDir, 'docs', 'briefs'), { recursive: true });
+      writeFileSync(join(tmpDir, 'docs', 'briefs', '2026-04-01-foo.md'), '# foo brief', 'utf-8');
+      mkdirSync(join(tmpDir, 'docs', 'research'), { recursive: true });
+      writeFileSync(join(tmpDir, 'docs', 'research', '2026-04-01-foo.md'), '# foo research', 'utf-8');
+
+      await upgrade(tmpDir, { yes: true });
+
+      expect(existsSync(join(tmpDir, 'docs', 'features', '2026-04-01-foo', 'brief.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, 'docs', 'features', '2026-04-01-foo', 'research.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, 'docs', 'briefs', '2026-04-01-foo.md'))).toBe(false);
+    });
+
+    it('does not prompt and does not hang (forced)', async () => {
+      await init(tmpDir, { force: false });
+      mkdirSync(join(tmpDir, 'docs', 'briefs'), { recursive: true });
+      writeFileSync(join(tmpDir, 'docs', 'briefs', 'foo.md'), '# foo', 'utf-8');
+
+      // Run upgrade with yes:false — migration should still happen without prompting
+      await upgrade(tmpDir, { yes: false });
+
+      expect(existsSync(join(tmpDir, 'docs', 'features', 'foo', 'brief.md'))).toBe(true);
+    });
+
+    it('prints a summary of moves before applying', async () => {
+      await init(tmpDir, { force: false });
+      mkdirSync(join(tmpDir, 'docs', 'briefs'), { recursive: true });
+      writeFileSync(join(tmpDir, 'docs', 'briefs', 'foo.md'), '# foo', 'utf-8');
+
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => logs.push(args.join(' '));
+      try {
+        await upgrade(tmpDir, { yes: true });
+      } finally {
+        console.log = origLog;
+      }
+
+      const all = logs.join('\n');
+      expect(all).toContain('docs/briefs/foo.md');
+      expect(all).toContain('docs/features/foo/brief.md');
+    });
+
+    it('lists orphan spec dirs in the summary', async () => {
+      await init(tmpDir, { force: false });
+      mkdirSync(join(tmpDir, 'docs', 'specs', 'random-bugfix'), { recursive: true });
+      writeFileSync(join(tmpDir, 'docs', 'specs', 'random-bugfix', 'foo.md'), '# spec', 'utf-8');
+
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => logs.push(args.join(' '));
+      try {
+        await upgrade(tmpDir, { yes: true });
+      } finally {
+        console.log = origLog;
+      }
+
+      const all = logs.join('\n');
+      expect(all).toContain('random-bugfix');
+      expect(all.toLowerCase()).toContain('left in place');
+    });
+
+    it('banner mentions README and git status after applying', async () => {
+      await init(tmpDir, { force: false });
+      mkdirSync(join(tmpDir, 'docs', 'briefs'), { recursive: true });
+      writeFileSync(join(tmpDir, 'docs', 'briefs', 'foo.md'), '# foo', 'utf-8');
+
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => logs.push(args.join(' '));
+      try {
+        await upgrade(tmpDir, { yes: true });
+      } finally {
+        console.log = origLog;
+      }
+
+      const all = logs.join('\n');
+      expect(all.toLowerCase()).toContain('readme');
+      expect(all).toContain('git status');
+    });
+
+    it('is silent when no flat layout is present', async () => {
+      await init(tmpDir, { force: false });
+
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => logs.push(args.join(' '));
+      try {
+        await upgrade(tmpDir, { yes: true });
+      } finally {
+        console.log = origLog;
+      }
+
+      const all = logs.join('\n');
+      expect(all.toLowerCase()).not.toContain('migration');
+      expect(all).not.toContain('docs/features/');
+    });
+  });
+
+  it('upgrade refreshes the version stamp from a stale 0.1.0', async () => {
+    await init(tmpDir, { force: false });
+
+    // Manually overwrite the version stamp to look like an older install
+    const versionInfo = readVersion(tmpDir)!;
+    writeVersion(tmpDir, '0.1.0', versionInfo.files);
+
+    // Force a content change so upgrade does work
+    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+    const stale = readVersion(tmpDir)!;
+    const oldContent = 'old content';
+    writeFileSync(join(tmpDir, skillRelPath), oldContent, 'utf-8');
+    stale.files[skillRelPath] = hashContent(oldContent);
+    writeVersion(tmpDir, '0.1.0', stale.files);
+
+    await upgrade(tmpDir, { yes: true });
+
+    const after = readVersion(tmpDir)!;
+    expect(after.version).toBe(PKG_VERSION);
+    if (PKG_VERSION !== '0.1.0') {
+      expect(after.version).not.toBe('0.1.0');
+    }
   });
 });
 
