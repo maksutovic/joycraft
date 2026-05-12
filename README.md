@@ -52,8 +52,8 @@ Joycraft auto-detects your tech stack and creates:
 
 - **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
 - **AGENTS.md** for Codex compatibility
-- **14 skills** installed to `.claude/skills/` (Claude Code) and `.agents/skills/` (Codex) — see [Which skill do I need?](#which-skill-do-i-need) below
-- **docs/** structure: `briefs/`, `specs/`, `discoveries/`, `contracts/`, `decisions/`, `context/`
+- **15 skills** installed to `.claude/skills/` (Claude Code) and `.agents/skills/` (Codex) — see [Which skill do I need?](#which-skill-do-i-need) below
+- **docs/** structure: `docs/context/` is created up front; feature work lands in `docs/features/<slug>/{brief.md, research.md, design.md, specs/}` and deferred work in `docs/backlog/` — these are created lazily by the skills that write to them
 - **Context documents** in `docs/context/`: production map, dangerous assumptions, decision log, institutional knowledge, and troubleshooting guide
 - **Templates** including atomic spec, feature brief, implementation plan, boundary framework, and workflow templates for scenario generation and autofix loops
 
@@ -78,6 +78,7 @@ Frameworks auto-detected: Next.js, FastAPI, Django, Flask, Actix, Axum, Express,
 | Implement a spec with TDD | `/joycraft-implement` | Read spec → write failing tests → implement until green |
 | Run specs autonomously without hand-holding | `/joycraft-implement-level5` | Autofix loop + holdout scenario testing |
 | Verify an implementation independently | `/joycraft-verify` | Read-only subagent checks work against the spec |
+| Set up Joycraft for a team | `/joycraft-collaborative-setup` | Scaffold `docs/areas/`, owner conventions, a team CONTRIBUTING doc |
 
 The core loop:
 
