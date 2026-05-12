@@ -3,6 +3,8 @@ import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
 import { readVersion, writeVersion, hashContent } from './version.js';
 import { SKILLS, TEMPLATES, CODEX_SKILLS } from './bundled-files.js';
+import { getPackageVersion } from './package-version.js';
+import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
 
 export interface UpgradeOptions {
   yes: boolean;
@@ -105,6 +107,77 @@ async function askUser(question: string): Promise<boolean> {
   });
 }
 
+function printMigrationSummary(plan: MigrationPlan, projectDir: string): void {
+  console.log('');
+  console.log('Joycraft is migrating your docs/ to the new per-feature layout:');
+  console.log('');
+
+  // Group moves by feature folder for readability
+  const bySlug = new Map<string, typeof plan.moves>();
+  for (const move of plan.moves) {
+    const rel = move.to.startsWith(projectDir) ? move.to.slice(projectDir.length + 1) : move.to;
+    const parts = rel.split(/[\\/]/);
+    // docs/features/<slug>/...
+    const slug = parts.length >= 3 ? parts[2] : '(root)';
+    if (!bySlug.has(slug)) bySlug.set(slug, []);
+    bySlug.get(slug)!.push(move);
+  }
+  for (const [slug, moves] of bySlug) {
+    console.log(`  ${slug}/`);
+    for (const move of moves) {
+      const fromRel = move.from.startsWith(projectDir) ? move.from.slice(projectDir.length + 1) : move.from;
+      const toRel = move.to.startsWith(projectDir) ? move.to.slice(projectDir.length + 1) : move.to;
+      console.log(`    ${fromRel} → ${toRel}`);
+    }
+  }
+
+  if (plan.orphans.specsDirs.length > 0) {
+    console.log('');
+    console.log('  Left in place — area-level specs (e.g., bugfix areas):');
+    for (const orphan of plan.orphans.specsDirs) {
+      console.log(`    docs/specs/${orphan}/`);
+    }
+  }
+  console.log('');
+}
+
+function printMigrationBanner(): void {
+  console.log('');
+  console.log('Migration complete. See the README section "Migration: Flat → Per-Feature Layout"');
+  console.log('for context on what changed and why. If your project is a git repo, run');
+  console.log('`git status` to inspect the moves before committing.');
+  console.log('');
+}
+
+function runForcedMigration(projectDir: string): void {
+  const plan = planMigration(projectDir);
+  if (plan.moves.length === 0 && plan.orphans.specsDirs.length === 0) {
+    return; // No flat layout — silent no-op.
+  }
+
+  printMigrationSummary(plan, projectDir);
+  const result = applyMigration(plan);
+
+  // Abort threshold: if more than 50% of attempted moves failed, bail loudly.
+  const attempted = result.applied + result.errors.length;
+  if (attempted > 0 && result.errors.length / attempted > 0.5) {
+    console.error('Migration failed for more than half of attempted moves. Aborting upgrade.');
+    for (const e of result.errors) {
+      console.error(`  ${e.move.from} → ${e.move.to}: ${e.error}`);
+    }
+    throw new Error('Migration aborted: too many failures');
+  }
+
+  if (result.errors.length > 0) {
+    console.log('Some moves had errors but upgrade will continue:');
+    for (const e of result.errors) {
+      console.log(`  warn: ${e.move.from} → ${e.move.to}: ${e.error}`);
+    }
+  }
+
+  printMigrationBanner();
+}
+
 export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> {
   const targetDir = resolve(dir);
 
@@ -126,6 +199,12 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   if (deprecatedRemoved > 0) {
     console.log(`Removed ${deprecatedRemoved} deprecated skill(s) from previous Joycraft versions.`);
   }
+
+  // Forced migration: flat docs/{briefs,research,designs,specs/<feature>}/
+  // → docs/features/<slug>/{brief,research,design,specs/}/
+  // Runs before the managed-file diff loop so any new managed files end up
+  // correctly placed in an already-migrated tree.
+  runForcedMigration(targetDir);
 
   // Get current package version
   const pkgVersion = getPackageVersion();
@@ -231,12 +310,3 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   console.log(`\nUpgrade complete: ${parts.join(', ')}.`);
 }
 
-function getPackageVersion(): string {
-  try {
-    // In bundled CLI, __dirname won't help — use a hardcoded fallback
-    // The version is set in package.json and read at build time
-    return '0.1.0';
-  } catch {
-    return '0.0.0';
-  }
-}

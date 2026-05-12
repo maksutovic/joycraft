@@ -38,6 +38,8 @@ What this feature explicitly does NOT include. Be generous — aggressive scopin
 - NOT: [related but separate]
 - NOT: [nice-to-have that would bloat scope]
 
+> Deferred work that you might come back to belongs in `docs/backlog/`. "Out of Scope" catches misunderstandings; the backlog catches "yes, later." They serve different purposes — keep both.
+
 ## Decomposition
 
 Break this feature into atomic specs. Each row becomes its own ATOMIC_SPEC_TEMPLATE.md file.

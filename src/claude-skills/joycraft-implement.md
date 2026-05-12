@@ -17,7 +17,24 @@ If no spec path was provided, tell the user:
 > No spec path provided. Check `docs/specs/` for available specs, or provide a path like:
 > `/joycraft-implement docs/specs/feature-name/spec-name.md`
 
-## Step 2: Read and Understand the Spec
+## Step 2: Read the Sibling README.md FIRST (if present)
+
+Before reading the spec itself, check for a sibling `README.md` in the same folder as the spec — i.e., `<spec-path>/../README.md`. This file is the wave-plan + spec-table that `/joycraft-decompose` writes per feature.
+
+- **If present:** Read the README first. It tells you the spec's position in the wave plan, its dependencies, and which sibling specs (in the same folder) need to be done before this one.
+- **If absent:** That's fine — proceed normally. The convention is forward-only and many legacy spec folders pre-date it.
+
+### Warn on Unmet Dependencies
+
+If the README shows that this spec depends on other specs in the same folder, check whether those dependencies are complete. A spec is complete when its frontmatter `status:` is `shipped` (or its body says `Status: Complete`).
+
+If any dependency is **not** complete, tell the user:
+
+> "This spec lists unmet dependencies in the sibling README.md: [list]. Proceed anyway, or stop?"
+
+Wait for confirmation before continuing. The user might be deliberately running out of order (a hotfix, an exploration, etc.) — your job is to surface the warning, not to gate.
+
+## Step 3: Read and Understand the Spec
 
 For each spec path:
 
@@ -31,11 +48,11 @@ For each spec path:
 
 Specs are designed to be self-contained, but if you need more context:
 
-- **Parent brief:** Linked in the spec's frontmatter (`> **Parent Brief:**` line). Read it for broader feature context.
-- **Related specs:** Live in the same directory. The spec directory convention is `docs/specs/<feature-name>/` where the feature name is derived from the brief filename (strip the date prefix and `.md` — e.g., `2026-04-06-token-discipline.md` → `token-discipline`).
+- **Parent brief:** Linked in the spec's body (`> **Parent Brief:**` line). The new convention is `docs/features/<slug>/brief.md`. Read it for broader feature context.
+- **Related specs:** Live in the same directory (typically `docs/features/<slug>/specs/`). The sibling `README.md` (read in Step 2 above) is the index.
 - **Affected Files:** The spec's Affected Files table tells you which files to create or modify.
 
-## Step 3: Execute the TDD Cycle
+## Step 4: Execute the TDD Cycle
 
 **This is not optional. Write tests FIRST.**
 
@@ -66,14 +83,14 @@ Walk through every Acceptance Criterion in the spec:
 
 If any criterion is not met, keep implementing. Do not move on until all criteria are green.
 
-## Step 4: Handle Edge Cases
+## Step 5: Handle Edge Cases
 
 Check the spec's Edge Cases table. For each scenario:
 
 - Verify the expected behavior is handled.
 - If the spec says "warn the user" or "prompt," make sure that path works.
 
-## Step 5: Multi-Spec Handling
+## Step 6: Multi-Spec Handling
 
 If the user provided multiple specs:
 
@@ -87,18 +104,14 @@ Spec [name] complete. [N] specs remaining.
 
 **Tip:** Run `/clear` before starting the next spec. Your artifacts are saved to files — this conversation context is disposable.
 
-## Step 6: Hand Off
+## Step 7: Hand Off
 
-When all specs are implemented and passing:
+When all specs are implemented and passing, end with the canonical Handoff block:
 
+## Recommended Next Steps
+
+Next:
+```bash
+/joycraft-session-end
 ```
-Implementation complete:
-- Spec(s): [list spec names] — all Acceptance Criteria met
-- Tests: [N] written, all passing
-- Build: passing
-
-Next steps:
-- Run /joycraft-session-end to capture discoveries and wrap up
-```
-
-**Tip:** Run `/clear` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+Run /clear first.

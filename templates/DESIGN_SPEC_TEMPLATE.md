@@ -76,6 +76,8 @@ What this spec explicitly does NOT cover. Prevents scope creep during implementa
 - NOT: [thing that's tempting but deferred]
 - NOT: [related feature that's a separate spec]
 
+> Deferred work that you might come back to belongs in `docs/backlog/`. "Out of Scope" catches misunderstandings; the backlog catches "yes, later." They serve different purposes — keep both.
+
 ## 8. Verification (REQUIRED)
 
 How do we know this works? These become the acceptance criteria.

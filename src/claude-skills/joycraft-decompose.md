@@ -10,7 +10,11 @@ You have a Feature Brief (or the user has described a feature). Your job is to d
 
 ## Step 1: Verify the Brief Exists
 
-Look for a Feature Brief in `docs/briefs/`. If one doesn't exist yet, tell the user:
+Look for a Feature Brief at `docs/features/<slug>/brief.md`. If the user provided a brief path as an argument, use that. Otherwise, scan `docs/features/*/brief.md`.
+
+**Status filter when scanning neighbor briefs and specs:** read the YAML frontmatter at the top of each file. Treat each as `status: active` unless the frontmatter says otherwise. **Skip / ignore** any file whose `status:` is `shipped`, `deprecated`, or `superseded`. Also ignore anything under `docs/archive/` entirely.
+
+If no brief exists, tell the user:
 
 > No feature brief found. Run `/joycraft-new-feature` first to interview and create one, or describe the feature now and I'll work from your description.
 
@@ -56,16 +60,31 @@ Iterate until the user approves.
 
 ## Step 5: Generate Atomic Specs
 
-For each approved row, create `docs/specs/<feature-name>/spec-name.md`. Derive the feature-name from the brief filename (strip the date prefix and `.md` — e.g., `2026-04-06-token-discipline.md` → `token-discipline`). If no brief exists, use a user-provided or inferred feature name (slugified to kebab-case). Create the `docs/specs/<feature-name>/` directory if it doesn't exist.
+For each approved row, create `docs/features/<slug>/specs/<spec-name>.md`. The slug is the feature folder name (e.g., `2026-04-06-token-discipline`). Lazy-create `docs/features/<slug>/specs/` if it doesn't exist.
+
+If no brief exists and the user described the feature inline, derive a kebab-case slug yourself: `YYYY-MM-DD-<short-name>`. Create the folder structure under `docs/features/<slug>/`.
 
 **Why:** Each spec must be self-contained — a fresh Claude session should be able to execute it without reading the Feature Brief. Copy relevant constraints and context into each spec.
 
-Use this structure:
+Each spec file MUST start with YAML frontmatter — the 4-field personal schema:
+
+```yaml
+---
+status: active
+owner: <resolved name>
+created: YYYY-MM-DD
+feature: <slug>
+---
+```
+
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
+
+Use this structure for the body:
 
 ```markdown
 # [Verb + Object] — Atomic Spec
 
-> **Parent Brief:** `docs/briefs/YYYY-MM-DD-feature-name.md` (or "standalone")
+> **Parent Brief:** `docs/features/<slug>/brief.md` (or "standalone")
 > **Status:** Ready
 > **Date:** YYYY-MM-DD
 > **Estimated scope:** [1 session / N files / ~N lines]
@@ -121,30 +140,60 @@ If `docs/templates/ATOMIC_SPEC_TEMPLATE.md` exists, reference it for the full te
 
 Fill in all sections — each spec must be self-contained (no "see the brief for context"). Copy relevant constraints from the Feature Brief into each spec. Write acceptance criteria specific to THIS spec, not the whole feature. Every acceptance criterion must have at least one corresponding test in the Test Plan. If the user provided test strategy info from the interview, use it to choose test types and frameworks. Include the test harness verification rules in every Test Plan.
 
-## Step 6: Recommend Execution Strategy
+## Step 6: Recommend Execution Strategy and Update Parent Brief
 
-Based on the dependency graph:
+Based on the dependency graph, group specs into execution waves:
 - **Independent specs** — "These can run in parallel worktrees"
 - **Sequential specs** — "Execute these in order: 1 -> 2 -> 4"
 - **Mixed** — "Start specs 1 and 3 in parallel. After 1 completes, start 2."
 
-Update the Feature Brief's Execution Strategy section with the plan (if a brief exists).
+**Update the parent brief's Execution Strategy section** at `docs/features/<slug>/brief.md` with this wave plan, so the brief stays a useful one-stop reference for feature reviewers.
 
-## Step 7: Hand Off
+## Step 7: Write the Feature-Folder README.md (Single Source of Truth for Implementers)
 
-Tell the user:
+After generating per-spec files, ALSO write a `README.md` at the spec folder root: `docs/features/<slug>/specs/README.md` (for feature work). For legacy area-level specs (bugfixes), the path is `docs/specs/<feature-or-area>/README.md`.
+
+The README is the single source of truth for *implementers*. It contains a **spec table** (one row per spec with dependencies) and the execution wave plan. Use this template:
+
+```markdown
+# <Feature Name> — Feature Specs
+
+> **Parent Brief:** `docs/features/<slug>/brief.md`
+> **Design:** `docs/features/<slug>/design.md` (when present)
+> **Research:** `docs/features/<slug>/research.md` (when present)
+> **Status:** Decomposed YYYY-MM-DD, ready for implementation
+
+## What this feature does
+
+<one paragraph summary, derived from the brief>
+
+## Specs
+
+| # | Spec | Depends On | Notes |
+|---|------|-----------|-------|
+| 1 | [spec-name.md](spec-name.md) | — | <one-line description> |
+| 2 | [other-spec.md](other-spec.md) | 1 | <one-line description> |
+
+## Execution waves
+
+- Wave 1 (parallel): specs ...
+- Wave 2 (after wave 1): specs ...
+
+## How to use this file
+
+If you're running `/joycraft-implement <spec-path>`, the implement skill reads this README first so it understands the spec's position in the wave plan. Each spec is self-contained for the actual implementation; this README provides ordering context only.
 ```
-Decomposition complete:
-- [N] atomic specs created in docs/specs/
-- [N] can run in parallel, [N] are sequential
-- Estimated total: [N] sessions
 
-To execute:
-- Sequential: Open a session, point Claude at each spec in order
-- Parallel: Use worktrees — one spec per worktree, merge when done
-- Each session should end with /joycraft-session-end to capture discoveries
+The brief and the README serve different audiences: the brief is for *feature reviewers* (vision, scope, decomposition decisions); the README is for *implementers* (what to run next, what depends on what).
 
-Ready to start execution?
+## Step 8: Hand Off
 
-Run /clear before your next step — your artifacts are saved to files.
+Tell the user a one-line summary, then emit the canonical Handoff block.
+
+## Recommended Next Steps
+
+Next:
+```bash
+/joycraft-implement docs/features/<slug>/specs/<first-spec>.md
 ```
+Run /clear first.
