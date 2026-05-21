@@ -91,7 +91,7 @@ Fix any failures before proceeding.
 
 ## 3. Update Spec Status
 
-If working from an atomic spec in `docs/features/<slug>/specs/` (or the legacy `docs/specs/<area>/` for bugfixes — scan recursively):
+If working from an atomic spec in `docs/features/<slug>/specs/` (or `docs/bugfixes/<area>/` for bugfixes — scan recursively):
 - All acceptance criteria met — update the spec's frontmatter `status:` to reflect completion (e.g., `shipped`) and the body's Status field to `Complete`
 - Partially done — leave `status: active` and update the body's Status field to `In Progress`, note what's left
 
