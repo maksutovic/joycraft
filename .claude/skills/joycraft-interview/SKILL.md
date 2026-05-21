@@ -37,15 +37,28 @@ Let them correct and refine. Iterate until they say "yes, that's it."
 
 ### 4. Write a Draft Brief
 
-Create a draft file at `docs/briefs/YYYY-MM-DD-topic-draft.md`. Create the `docs/briefs/` directory if it doesn't exist.
+Derive a slug `YYYY-MM-DD-<topic>` (today's date + kebab-case topic — no `-draft` suffix).
+Create a draft file at `docs/features/<slug>/brief.md`. Lazy-create `docs/features/<slug>/` if it doesn't exist.
 
-Use this format:
+The file MUST start with YAML frontmatter — the 4-field personal schema with `status: draft`:
+
+```yaml
+---
+status: draft
+owner: <resolved name>
+created: YYYY-MM-DD
+feature: <slug>
+---
+```
+
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist. If you can't get a name, leave the field as `<resolved name>` and note it for the user.
+
+Use this format for the body:
 
 ```markdown
 # [Topic] — Draft Brief
 
 > **Date:** YYYY-MM-DD
-> **Status:** DRAFT
 > **Origin:** /joycraft-interview session
 
 ---
@@ -68,36 +81,45 @@ Use this format:
 - [decisions that need more thought]
 
 ## Out of Scope (for now)
-- [things explicitly deferred]
+- [things explicitly deferred — see also: deferred work goes to `docs/backlog/`]
 
 ## Raw Notes
 [Any additional context, quotes, or tangents worth preserving]
 ```
 
-### 5. Hand Off
+### 5. Offer to Capture Deferred Items to Backlog
 
-After writing the draft, tell the user:
+If during the conversation deferred work surfaces (a tangent, a "later" item, a "out-of-scope but tempting" idea), ASK the user:
 
-```
-Draft brief saved to docs/briefs/YYYY-MM-DD-topic-draft.md
+> "This looks like deferred work — want me to capture it to `docs/backlog/`?"
 
-When you're ready to move forward, pick the path that fits the complexity:
+Only on user confirmation, write a backlog entry at `docs/backlog/YYYY-MM-DD-<short-name>.md` with backlog frontmatter:
 
-COMPLEX (5+ files, architectural decisions, unfamiliar area):
-  /joycraft-new-feature → /joycraft-research → /joycraft-design → /joycraft-decompose
-
-MEDIUM (clear scope but non-trivial):
-  /joycraft-new-feature → /joycraft-design → /joycraft-decompose
-
-SIMPLE (scope is clear, < 5 files, well-understood area):
-  /joycraft-new-feature → /joycraft-decompose
-
-Not sure yet? Just keep brainstorming — run /joycraft-interview again anytime.
-
-Run /clear before your next step — your artifacts are saved to files.
+```yaml
+---
+status: backlog
+owner: <resolved name>
+created: YYYY-MM-DD
+source: docs/features/<slug>/brief.md
+---
 ```
 
-If the idea sounds complex — touches many files, involves architectural decisions, or the user is working in an unfamiliar area — nudge them toward research and design. But present it as a recommendation, not a gate.
+**Never auto-write to `docs/backlog/`.** Every backlog entry is user-confirmed.
+
+### 6. Hand Off
+
+After writing the draft (and any backlog entries), present the canonical Handoff block.
+Include any backlog paths produced as a side effect.
+
+## Recommended Next Steps
+
+Next:
+```bash
+/joycraft-new-feature docs/features/<slug>/brief.md
+```
+Run /clear first.
+
+If the idea sounds complex — touches many files, involves architectural decisions, or the user is working in an unfamiliar area — nudge them toward research and design (e.g., `/joycraft-research` then `/joycraft-design`). But present it as a recommendation, not a gate.
 
 ## Guidelines
 
