@@ -9,7 +9,7 @@ You are evaluating and upgrading this project's AI development harness.
 
 ## Step 1: Detect Harness State
 
-Search the codebase for: CLAUDE.md (with meaningful content), `docs/specs/`, `docs/briefs/`, `docs/discoveries/`, `.agents/skills/`, and test configuration.
+Search the codebase for: CLAUDE.md (with meaningful content), `docs/specs/`, `docs/briefs/`, `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs, `.agents/skills/`, and test configuration.
 
 ## Step 2: Route
 
@@ -26,8 +26,8 @@ Read CLAUDE.md and explore the project. Score each with specific evidence:
 | Spec Granularity | Can each spec be done in one session? |
 | Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading) |
 | Skills & Hooks | `.agents/skills/` files, hooks config |
-| Documentation | `docs/` structure, templates, referenced from CLAUDE.md |
-| Knowledge Capture | `docs/discoveries/`, `docs/context/*.md` — existence AND real content |
+| Documentation | `docs/` structure, templates, referenced from CLAUDE.md. Reward a lean + pointered CLAUDE.md. **Flag a CLAUDE.md exceeding ~200 lines** — recommend extracting long sections into `docs/context/reference/` and replacing them with a `## Context Map` pointer table. This is advisory only; tune never auto-edits CLAUDE.md. |
+| Knowledge Capture | `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs — existence AND real content |
 | Testing & Validation | Test framework, CI pipeline, validation commands in CLAUDE.md |
 
 Score 1 = absent, 3 = partially there, 5 = comprehensive. Give credit for substance over format.
@@ -42,12 +42,11 @@ Apply using three tiers — do NOT ask per-item permission:
 
 **Tier 1 (silent):** Create missing dirs, install missing skills, copy missing templates, create AGENTS.md.
 
-**Before Tier 2, ask TWO things:**
+**Before Tier 2, ask about git autonomy:** Cautious (ask before push/PR) or Autonomous (push + PR without asking)?
 
-1. **Git autonomy:** Cautious (ask before push/PR) or Autonomous (push + PR without asking)?
-2. **Risk interview (3-5 questions, one at a time):** What could break? What services connect to prod? Unwritten rules? Off-limits files/commands? Skip if `docs/context/` already has content.
+**First-run context onboarding:** On a first run (the context layer is empty or absent), invoke `$joycraft-gather-context` for the read-then-offer onboarding pass — it owns reading existing docs, offering a gap-only interview, and populating `docs/context/` (fact-docs and `docs/context/reference/`). Do NOT run a separate risk interview here; gather is the onboarding path. On a recurring run of an already-populated project, skip this — gather is the first-run path, not forced every time.
 
-From answers, generate: CLAUDE.md boundary rules, deny patterns configuration, `docs/context/` documents. Also recommend a permission mode (`auto` for most; `dontAsk` + allowlist for high-risk).
+From git-autonomy and gather, generate: CLAUDE.md boundary rules, deny patterns configuration. Also recommend a permission mode (`auto` for most; `dontAsk` + allowlist for high-risk).
 
 **Tier 2 (show diff):** Add missing CLAUDE.md sections (Boundaries, Workflow, Key Files). Draft from real codebase content. Append only — never reformat existing content.
 
