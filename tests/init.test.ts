@@ -4,6 +4,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { init } from '../src/init';
+import { CODEX_SKILLS } from '../src/bundled-files';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -471,7 +472,9 @@ describe('init', () => {
 
       const version = JSON.parse(readFileSync(join(tmpDir, '.joycraft-version'), 'utf-8'));
       const agentsKeys = Object.keys(version.files).filter(k => k.startsWith('.agents'));
-      expect(agentsKeys.length).toBe(15);
+      // One .agents/skills/<name>/SKILL.md per bundled Codex skill — derive so the
+      // count tracks the skill set instead of going stale on each new skill.
+      expect(agentsKeys.length).toBe(Object.keys(CODEX_SKILLS).length);
       expect(agentsKeys.some(k => k.includes('joycraft-tune'))).toBe(true);
       expect(agentsKeys.some(k => k.includes('joycraft-decompose'))).toBe(true);
     });
