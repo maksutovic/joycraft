@@ -38,16 +38,10 @@ describe('regenerate bundled files (feature finalization)', () => {
     }
   });
 
-  it('reflects spec 1: bundled SKILLS/CODEX_SKILLS content carries no legacy docs/specs/', () => {
-    // Scope to the skill records (spec 1's surface). Pre-existing template content
-    // (CONTRIBUTING, spec-dispatch.yml) is out of this feature's scope and excluded.
-    const skillsBlock = content.slice(
-      content.indexOf('export const SKILLS'),
-      content.indexOf('export const TEMPLATES'),
-    );
-    const codexBlock = content.slice(content.indexOf('export const CODEX_SKILLS'));
-    expect(skillsBlock).not.toContain('docs/specs/');
-    expect(codexBlock).not.toContain('docs/specs/');
+  it('contains no legacy docs/specs/ anywhere in the bundle (skills or templates)', () => {
+    // docs/specs/ is fully retired: feature specs live under docs/features/<slug>/specs/,
+    // bugfixes under docs/bugfixes/<area>/. Nothing the bundler ships should reference it.
+    expect(content).not.toContain('docs/specs/');
   });
 
   it('is deterministic — a second regen yields identical output', () => {
