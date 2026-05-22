@@ -1,3 +1,8 @@
+---
+last_updated: 2026-05-21
+last_updated_by: Maximilian Maksutovic
+---
+
 # Decision Log
 
 > Why choices were made, not just what was chosen.
@@ -13,6 +18,8 @@
 | 2026-03-25 | GitHub App token for autofix CI | Shows as distinct identity in PRs, cleaner than PAT | PAT (shows as repo owner, confusing), GITHUB_TOKEN (can't trigger workflows) | If GitHub changes App token permissions model |
 | 2026-03-26 | Auto-publish on every merge to main | Eliminates manual version bumps and npm publish — every merge ships | Manual `npm publish` (easy to forget), separate release branch (overkill for solo/small team) | If we need release candidates or staging |
 | 2026-03-26 | Fine-grained PAT via checkout `token` param for publish push | Bypasses branch protection for version bump commits; checkout action handles auth via HTTP headers | Embedding PAT in remote URL (breaks with fine-grained PATs), GitHub App (more setup for same result) | If GitHub deprecates PATs or adds native bypass for Actions |
+| 2026-05-21 | Lean CLAUDE.md + `## Context Map` pointer table; long-form refs in `docs/context/reference/` | Keep the always-loaded harness file small; link out to on-demand reference docs instead of inlining. tune flags CLAUDE.md >~200 lines (advisory) | One mega CLAUDE.md (bloats every session), one mega reference template (harder to scaffold specifically) | If pointer indirection proves more friction than inlining for small projects |
+| 2026-05-21 | `/joycraft-setup` is a thin alias routing to `/joycraft-tune`, not a rename | Newcomer-facing door ("set up / get started") without breaking existing users' `tune` muscle memory or doc/memory references | Renaming tune→setup (breaks references), setup reimplementing detect+route (duplicates tune, drifts) | Never — alias is additive |
 
 ## Principles
 

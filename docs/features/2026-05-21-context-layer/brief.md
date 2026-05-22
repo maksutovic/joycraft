@@ -7,9 +7,10 @@ feature: context-layer
 
 # Feature Brief: Context Layer + Onboarding + Bugfix Rename
 
-> **Status:** Active — awaiting human review of open questions
+> **Status:** Shipped — all 9 specs implemented 2026-05-21 (branch `feat/bugfix-clarity`)
 > **Date:** 2026-05-21
 > **Owner:** Maximilian Maksutovic
+> **Design:** `docs/features/2026-05-21-context-layer/design.md` (all open questions resolved)
 
 ---
 
@@ -96,8 +97,9 @@ Rationale for a separate skill (not inlined into tune): keeps tune's instruction
 - `init.ts` already creates `docs/context/`; extend to (or let the skill lazy-create) `docs/context/reference/`.
 - Update `/joycraft-tune` to (a) recognize the context layer in its 7-dimension assessment and (b) invoke `/joycraft-gather-context` on first run instead of its current narrow Step-5 risk interview.
 - Discoverability surfaces: `init.ts` next-steps lead with `/joycraft-setup`; generated CLAUDE.md "Getting Started" table leads with setup.
-- **Upgrade migrator (now in scope, per Q4):** `upgrade.ts` physically moves `docs/specs/<area>/` → `docs/bugfixes/<area>/` via the existing `plan.orphans.specsDirs` path, with preview + confirmation gate, never clobbering an existing target. Update `printPlan`/banner output strings.
+- **Upgrade migrator (now in scope, per Q4):** `upgrade.ts` physically moves `docs/specs/<area>/` → `docs/bugfixes/<area>/` via the existing `plan.orphans.specsDirs` path. **Forced, no interactive gate** (design-resolved — see below): orphan spec dirs stop being "left in place" and become planned moves, printed under a "Migrating bugfix areas:" preview, applied like the existing feature migration. Keeps the skip-if-target-exists guard (never clobber an existing `docs/bugfixes/<area>/`) and the >50%-failure abort. Update `printMigrationSummary`/banner output strings.
 - Update the generic example paths in `verify`, `implement`, `tune`, `implement-level5`, `collaborative-setup` from `docs/specs/...` to `docs/features/<slug>/specs/...` (per Q1).
+- **Codex decompose path drift (parity fix).** `src/codex-skills/joycraft-decompose.md` is stale relative to its Claude twin — it still references the OLD flat layout (`docs/briefs/` for the input brief at line ~12, `docs/specs/<feature-name>/` for spec output at line ~58, and `docs/briefs/...` parent-brief references at lines ~67/~130). Bring it to parity with `src/claude-skills/joycraft-decompose.md`: input brief at `docs/features/<slug>/brief.md`, specs output to `docs/features/<slug>/specs/`, parent-brief references updated, `$` sigil. (Surfaced during design handoff review — the Claude decompose was migrated to per-feature layout but the Codex mirror was missed.)
 - Regenerate `src/bundled-files.ts` via `node scripts/generate-bundled-files.mjs` (it's `@generated` — never hand-edit) and rebuild.
 
 **Out of scope (flag separately):**
@@ -116,7 +118,8 @@ Rationale for a separate skill (not inlined into tune): keeps tune's instruction
 
 3. **Codex parity — REQUIRED for v1.** Every skill change (bugfix rename, `add-context`, `gather-context`, `setup`) gets a matching Codex mirror in `src/codex-skills/`.
 
-4. **Upgrade migrator — PHYSICALLY MOVE.** `npx joycraft upgrade` moves existing `docs/specs/<area>/` → `docs/bugfixes/<area>/` (not just relabel). This touches user files, so: dry-run/preview the moves, require the existing migration-confirmation gate, and never clobber an existing `docs/bugfixes/<area>/`. Wire into the existing `plan.orphans.specsDirs` path in `upgrade.ts` and update the `printPlan`/banner output. **This moves the migrator back IN SCOPE.**
+4. **Upgrade migrator — PHYSICALLY MOVE, FORCED.** `npx joycraft upgrade` moves existing `docs/specs/<area>/` → `docs/bugfixes/<area>/` (not just relabel). Wire into the existing `plan.orphans.specsDirs` path in `migration.ts`/`upgrade.ts`. **Design-resolved: forced like the existing feature migration — NO interactive confirmation gate** (owner has a small, known userbase and will communicate the change). Still preview the moves in `printMigrationSummary`, keep the skip-if-target-exists guard (never clobber an existing target), and keep the >50%-failure abort. Update the `printMigrationSummary`/banner output. **This moves the migrator IN SCOPE.**
+   - _Note: this supersedes the original "require the confirmation gate" wording — see design.md Decision (was Q2)._
 
 5. **CLAUDE.md ~200-line target — WARN at threshold, taught in BOTH places.** This is the harness-improver's job: keep top-level context lean, push detail into pointed-at docs. `/joycraft-tune` flags CLAUDE.md when it exceeds ~200 lines and recommends extracting sections into `docs/context/reference/` + Context Map pointers — advisory, never auto-edits. Surfaced in **both** (a) tune's "Documentation" scoring dimension (lean+pointered scores high; a monolith scores low with a specific recommendation) and (b) the generated `## Context Map` section header ("Keep this file lean — link out, don't inline").
 
@@ -130,16 +133,66 @@ Rationale for a separate skill (not inlined into tune): keeps tune's instruction
 
 8. **Existing-doc scan breadth — README + `docs/` + CLAUDE.md only in v1.** Give the user agency: summarize what exists, offer a gap-only interview. Do NOT auto-run an expensive full code-inference scan — that burns tokens. Offer a deeper "full review" ONLY if the user explicitly asks, with a clear note that it costs more. Code-inference is a future enhancement (out of scope above).
 
+## Design-Resolved Decisions (answered 2026-05-21, during /joycraft-design)
+
+These were open questions in the design discussion; resolved by owner. Full rationale in `design.md` Section 4.
+
+9. **`## Context Map` stub generated in BOTH `init` fresh-generation AND `improve-claude-md.ts` merge path** (was design Q1). Reuse a single `generateContextMapSection()` helper so the two stay in sync. Greets first-timers from minute one. Header carries the lean-CLAUDE.md teaching line (Decision 5). Stub = header + teaching line + empty table skeleton; no fake/dangling pointer rows.
+
+10. **Bugfix migrator is FORCED, no interactive gate** (was design Q2) — see Decision 4 above.
+
+11. **Codex parity = identical content, Codex-idiomatic invocation** (was design Q3). The mechanical differences: command sigil `/joycraft-…` (Claude) → `$joycraft-…` (Codex, confirmed in `src/codex-skills/*`), `.claude/`→`.agents/`, `.claude/settings.json`→"deny patterns configuration", and drop the `instructions:` frontmatter field. Body logic is otherwise identical. So `setup`'s Codex mirror routes to `$joycraft-tune`.
+
+12. **Write timing split by skill** (was design Q4): `add-context` writes immediately per-doc (single-doc primitive). `gather-context` collects all gap answers, then writes everything + the Context Map in ONE batch with a final confirm ("do it in one go" onboarding pass).
+
+13. **`docs/context/reference/` is lazy-created** by `add-context`/`gather-context` on first write (was design Q5). NO extra `ensureDir` in `init.ts` — honors init's "solo-first: no preemptive ceremony" philosophy.
+
 ---
 
-## Acceptance Criteria (draft — finalize after open questions)
+## Acceptance Criteria (finalized 2026-05-21 after design)
 
 - [ ] Bugfix specs are written to `docs/bugfixes/<area>/` by `/joycraft-bugfix`, with a maintained per-area `README.md`.
-- [ ] No bugfix-context references to `docs/specs/<area>/` remain in shipped skills (Claude + Codex).
-- [ ] `/joycraft-add-context` scaffolds a long-form doc into `docs/context/reference/` from a template and updates the `## Context Map` pointer in CLAUDE.md idempotently.
-- [ ] `/joycraft-gather-context` reads existing docs, summarizes coverage, offers a gap-only optional interview, and never re-interviews docs with real content.
-- [ ] `/joycraft-setup` exists, carries newcomer-vocabulary in its description, and routes to `/joycraft-tune` without duplicating its logic.
-- [ ] `/joycraft-tune` invokes `/joycraft-gather-context` on first run and recognizes the context layer in its 7-dimension assessment.
-- [ ] Generated CLAUDE.md includes a `## Context Map` section (stub when empty) and a "Getting Started" table leading with `/joycraft-setup`.
-- [ ] `init.ts` next-steps lead with `/joycraft-setup`; `docs/context/reference/` is produced (directly or via first skill use).
-- [ ] `src/bundled-files.ts` regenerated; `pnpm test --run && pnpm typecheck` pass.
+- [ ] No bugfix-context references to `docs/specs/<area>/` remain in shipped skills (Claude + Codex). Generic example paths in `verify`/`implement`/`tune`/`implement-level5`/`collaborative-setup` updated to `docs/features/<slug>/specs/...`.
+- [ ] `/joycraft-add-context` scaffolds a long-form doc into `docs/context/reference/` from a template (writing immediately per-doc) and updates the `## Context Map` pointer in CLAUDE.md idempotently. Lazy-creates `docs/context/reference/`.
+- [ ] `/joycraft-gather-context` reads existing docs (README + `docs/` + CLAUDE.md), summarizes coverage, offers a gap-only optional interview, never re-interviews docs with real content, and writes all created docs + Context Map rows in one batch with a final confirm.
+- [ ] `/joycraft-setup` exists, carries newcomer-vocabulary in its description, and routes to `/joycraft-tune` (Codex mirror routes to `$joycraft-tune`) without duplicating its logic.
+- [ ] `/joycraft-tune` invokes `/joycraft-gather-context` on first run (replacing the narrow Step-5 risk interview) and recognizes the context layer in its 7-dimension assessment; Documentation dimension flags CLAUDE.md monoliths >~200 lines with a Context-Map extraction recommendation.
+- [ ] Generated CLAUDE.md includes a `## Context Map` section (stub when empty, with lean-docs teaching line) in BOTH fresh `init` generation and the `improve-claude-md.ts` merge path, plus a "Getting Started" table leading with `/joycraft-setup`.
+- [ ] `init.ts` next-steps lead with `/joycraft-setup`.
+- [ ] `upgrade.ts`/`migration.ts` forcibly move orphan `docs/specs/<area>/` → `docs/bugfixes/<area>/` (no gate), with preview, skip-if-target-exists, and >50%-failure abort intact.
+- [ ] Every new/changed Claude skill has a matching Codex mirror in `src/codex-skills/` (`$` sigil, `.agents/`, no `instructions:` field).
+- [ ] `src/codex-skills/joycraft-decompose.md` matches its Claude twin's layout: input brief `docs/features/<slug>/brief.md`, specs output `docs/features/<slug>/specs/`, no stale `docs/briefs/` or `docs/specs/<feature>/` references.
+- [ ] New reference templates (`design-system`, `frontend-methodology`, `backend`, `testing`, `reference-doc`) bundled under `src/templates/context/reference/`.
+- [ ] `src/bundled-files.ts` regenerated via `node scripts/generate-bundled-files.mjs`; `pnpm test --run && pnpm typecheck` pass.
+
+---
+
+## Execution Strategy (decomposed 2026-05-21)
+
+Nine atomic specs in `docs/features/2026-05-21-context-layer/specs/` (see that folder's `README.md` for the implementer-facing spec table).
+
+| # | Spec | Depends On |
+|---|------|-----------|
+| 1 | `update-stale-skill-paths` | — |
+| 2 | `add-reference-templates` | — |
+| 3 | `add-context-map-section` | — |
+| 4 | `migrate-bugfix-dirs` | — |
+| 5 | `add-add-context-skill` | 2 |
+| 6 | `add-gather-context-skill` | 5 |
+| 7 | `add-setup-alias-skill` | — |
+| 8 | `wire-tune-context-layer` | 6 |
+| 9 | `regenerate-bundled-files` | 1,2,3,5,6,7,8 |
+
+**Waves:**
+- **Wave 1 (parallel, separate worktrees):** 1, 2, 3, 4, 7 — fully independent, disjoint files.
+- **Wave 2:** 5 (after 2 — scaffolds from the new templates).
+- **Wave 3:** 6 (after 5 — composes `add-context`'s conventions inline).
+- **Wave 4:** 8 (after 6 — tune invokes the gather skill; sequence after spec 1's `tune.md` path edits).
+- **Wave 5 (last):** 9 — regenerate `@generated` `src/bundled-files.ts`, feature-wide green build. Only spec that writes the generated artifact.
+
+**Critical path:** 2 → 5 → 6 → 8 → 9.
+
+**Decomposition notes:**
+- The `regenerate-bundled-files` step is its own final spec (not folded into each content spec) so the `@generated` file isn't churned across parallel waves.
+- The three discoverability surfaces (Context Map stub, Getting-Started table, init next-steps) are kept together in spec 3 — they touch the same two files (`improve-claude-md.ts`, `init.ts`) and serve one goal.
+- Spec 1 absorbs the Codex-mirror catch-up for `bugfix`/`new-feature` (still on the old layout), not just the `decompose` drift named in Scope — same "stale Codex path" class of work, satisfying Decision 3's "every skill change gets a matching Codex mirror."
