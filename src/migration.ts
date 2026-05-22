@@ -13,7 +13,7 @@ import {
 } from 'node:fs';
 import { join } from 'node:path';
 
-export type MoveKind = 'brief' | 'research' | 'design' | 'specs-dir';
+export type MoveKind = 'brief' | 'research' | 'design' | 'specs-dir' | 'bugfix-dir';
 
 export interface Move {
   from: string;
@@ -146,7 +146,16 @@ export function planMigration(projectDir: string): MigrationPlan {
       if (existsSync(move.to)) skipped.push(move);
       else moves.push(move);
     } else {
+      // No matching brief slug → this is an area-level (bugfix) spec dir.
+      // Reclassify it as a forced move into docs/bugfixes/<area>/.
       orphanSpecsDirs.push(subdir);
+      const move: Move = {
+        from: join(specsDir, subdir),
+        to: join(projectDir, 'docs', 'bugfixes', subdir),
+        kind: 'bugfix-dir',
+      };
+      if (existsSync(move.to)) skipped.push(move);
+      else moves.push(move);
     }
   }
 

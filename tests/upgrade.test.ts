@@ -352,7 +352,7 @@ describe('upgrade', () => {
       expect(all).toContain('docs/features/foo/brief.md');
     });
 
-    it('lists orphan spec dirs in the summary', async () => {
+    it('migrates orphan (bugfix-area) spec dirs into docs/bugfixes/', async () => {
       await init(tmpDir, { force: false });
       mkdirSync(join(tmpDir, 'docs', 'specs', 'random-bugfix'), { recursive: true });
       writeFileSync(join(tmpDir, 'docs', 'specs', 'random-bugfix', 'foo.md'), '# spec', 'utf-8');
@@ -368,7 +368,11 @@ describe('upgrade', () => {
 
       const all = logs.join('\n');
       expect(all).toContain('random-bugfix');
-      expect(all.toLowerCase()).toContain('left in place');
+      expect(all).toMatch(/Migrating bugfix areas/i);
+      expect(all.toLowerCase()).not.toContain('left in place');
+      // The area was physically moved, not left behind.
+      expect(existsSync(join(tmpDir, 'docs', 'bugfixes', 'random-bugfix', 'foo.md'))).toBe(true);
+      expect(existsSync(join(tmpDir, 'docs', 'specs', 'random-bugfix'))).toBe(false);
     });
 
     it('banner mentions README and git status after applying', async () => {

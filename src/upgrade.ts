@@ -112,11 +112,16 @@ function printMigrationSummary(plan: MigrationPlan, projectDir: string): void {
   console.log('Joycraft is migrating your docs/ to the new per-feature layout:');
   console.log('');
 
-  // Group moves by feature folder for readability
+  const relTo = (p: string) => (p.startsWith(projectDir) ? p.slice(projectDir.length + 1) : p);
+
+  // Group per-feature moves by feature folder for readability.
+  // Bugfix-area moves are listed separately below.
+  const featureMoves = plan.moves.filter(m => m.kind !== 'bugfix-dir');
+  const bugfixMoves = plan.moves.filter(m => m.kind === 'bugfix-dir');
+
   const bySlug = new Map<string, typeof plan.moves>();
-  for (const move of plan.moves) {
-    const rel = move.to.startsWith(projectDir) ? move.to.slice(projectDir.length + 1) : move.to;
-    const parts = rel.split(/[\\/]/);
+  for (const move of featureMoves) {
+    const parts = relTo(move.to).split(/[\\/]/);
     // docs/features/<slug>/...
     const slug = parts.length >= 3 ? parts[2] : '(root)';
     if (!bySlug.has(slug)) bySlug.set(slug, []);
@@ -125,17 +130,15 @@ function printMigrationSummary(plan: MigrationPlan, projectDir: string): void {
   for (const [slug, moves] of bySlug) {
     console.log(`  ${slug}/`);
     for (const move of moves) {
-      const fromRel = move.from.startsWith(projectDir) ? move.from.slice(projectDir.length + 1) : move.from;
-      const toRel = move.to.startsWith(projectDir) ? move.to.slice(projectDir.length + 1) : move.to;
-      console.log(`    ${fromRel} → ${toRel}`);
+      console.log(`    ${relTo(move.from)} → ${relTo(move.to)}`);
     }
   }
 
-  if (plan.orphans.specsDirs.length > 0) {
+  if (bugfixMoves.length > 0) {
     console.log('');
-    console.log('  Left in place — area-level specs (e.g., bugfix areas):');
-    for (const orphan of plan.orphans.specsDirs) {
-      console.log(`    docs/specs/${orphan}/`);
+    console.log('  Migrating bugfix areas:');
+    for (const move of bugfixMoves) {
+      console.log(`    ${relTo(move.from)} → ${relTo(move.to)}`);
     }
   }
   console.log('');
