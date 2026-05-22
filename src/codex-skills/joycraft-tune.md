@@ -9,7 +9,7 @@ You are evaluating and upgrading this project's AI development harness.
 
 ## Step 1: Detect Harness State
 
-Search the codebase for: CLAUDE.md (with meaningful content), `docs/specs/`, `docs/briefs/`, `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs, `.agents/skills/`, and test configuration.
+Search the codebase for: CLAUDE.md (with meaningful content), `docs/features/<slug>/` (briefs + specs), `docs/bugfixes/<area>/`, `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs, `.agents/skills/`, and test configuration.
 
 ## Step 2: Route
 
@@ -22,7 +22,7 @@ Read CLAUDE.md and explore the project. Score each with specific evidence:
 
 | Dimension | What to Check |
 |-----------|--------------|
-| Spec Quality | `docs/specs/` (scan recursively) — structured? acceptance criteria? self-contained? |
+| Spec Quality | `docs/features/<slug>/specs/` (scan recursively; also `docs/bugfixes/<area>/`) — structured? acceptance criteria? self-contained? |
 | Spec Granularity | Can each spec be done in one session? |
 | Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading) |
 | Skills & Hooks | `.agents/skills/` files, hooks config |

@@ -132,7 +132,7 @@ If the user wants to test the loop:
 
 > Want to do a quick test? Here's how:
 >
-> 1. Write a simple spec in `docs/specs/` and push to main — this triggers scenario generation
+> 1. Write a simple spec in `docs/features/<slug>/specs/` and push to main — this triggers scenario generation
 > 2. Create a PR with a small change — when CI passes, scenarios will run
 > 3. Watch for the scenario test results as a PR comment
 >
@@ -146,7 +146,7 @@ Print a summary of what was set up:
 >
 > | Trigger | What Happens |
 > |---------|-------------|
-> | Push specs to `docs/specs/` | Scenario agent writes holdout tests |
+> | Push specs to `docs/features/<slug>/specs/` | Scenario agent writes holdout tests |
 > | PR fails CI | Claude autofix attempts (up to 3x) |
 > | PR passes CI | Holdout scenarios run against PR |
 > | Scenarios update | Open PRs re-tested with latest scenarios |

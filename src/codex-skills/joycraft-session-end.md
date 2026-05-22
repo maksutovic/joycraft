@@ -64,11 +64,11 @@ Fix any failures before proceeding.
 
 ## 3. Update Spec Status
 
-If working from an atomic spec in `docs/specs/` (scan recursively — specs may be in subdirectories like `docs/specs/<feature-name>/`):
-- All acceptance criteria met — update status to `Complete`
-- Partially done — update status to `In Progress`, note what's left
+If working from an atomic spec in `docs/features/<slug>/specs/` (or `docs/bugfixes/<area>/` for bugfixes — scan recursively):
+- All acceptance criteria met — update the spec's frontmatter `status:` to reflect completion (e.g., `shipped`) and the body's Status field to `Complete`
+- Partially done — leave `status: active` and update the body's Status field to `In Progress`, note what's left
 
-If working from a Feature Brief in `docs/briefs/`, check off completed specs in the decomposition table.
+If working from a Feature Brief at `docs/features/<slug>/brief.md`, check off completed specs in the decomposition table.
 
 ## 4. Commit
 
