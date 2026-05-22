@@ -151,7 +151,7 @@ Based on the dependency graph, group specs into execution waves:
 
 ## Step 7: Write the Feature-Folder README.md (Single Source of Truth for Implementers)
 
-After generating per-spec files, ALSO write a `README.md` at the spec folder root: `docs/features/<slug>/specs/README.md` (for feature work). For legacy area-level specs (bugfixes), the path is `docs/specs/<feature-or-area>/README.md`.
+After generating per-spec files, ALSO write a `README.md` at the spec folder root: `docs/features/<slug>/specs/README.md` (for feature work). For area-level bugfixes, the path is `docs/bugfixes/<area>/README.md`.
 
 The README is the single source of truth for *implementers*. It contains a **spec table** (one row per spec with dependencies) and the execution wave plan. Use this template:
 

@@ -114,6 +114,7 @@ This project uses [Joycraft](https://github.com/maksutovic/joycraft) for AI deve
 
 | Skill | Purpose |
 |-------|---------|
+| \`/joycraft-setup\` | Start here — the first-run door; sets up and assesses your project |
 | \`/joycraft-tune\` | Assess your harness, apply upgrades, see path to Level 5 |
 | \`/joycraft-new-feature\` | Interview -> Feature Brief -> Atomic Specs |
 | \`/joycraft-interview\` | Lightweight brainstorm — yap about ideas, get a structured summary |
@@ -122,6 +123,15 @@ This project uses [Joycraft](https://github.com/maksutovic/joycraft) for AI deve
 | \`/joycraft-implement-level5\` | Set up Level 5 — autofix loop, holdout scenarios, scenario evolution |
 
 Run \`/joycraft-tune\` to see where your project stands and what to improve next.`;
+}
+
+export function generateContextMapSection(): string {
+  return `## Context Map
+
+Keep this file lean — link out, don't inline. Long-form reference docs live in \`docs/context/reference/\`; this table points to what to read on demand.
+
+| Document | Read it when… |
+|----------|---------------|`;
 }
 
 function generateExternalValidationSection(): string {
@@ -206,6 +216,10 @@ export function improveCLAUDEMd(
     additions.push(generateGettingStartedSection());
   }
 
+  if (!hasSection(sections, /context\s*map/i)) {
+    additions.push(generateContextMapSection());
+  }
+
   if (!hasSection(sections, /external\s*validation/i)) {
     additions.push(generateExternalValidationSection());
   }
@@ -251,6 +265,8 @@ export function generateCLAUDEMd(
     generateKeyFilesSection(),
     '',
     generateGotchasSection(),
+    '',
+    generateContextMapSection(),
     '',
     generateGettingStartedSection(),
     '',

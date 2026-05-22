@@ -30,7 +30,7 @@ Before scaffolding team structure, check the project's docs/ for flat-layout art
 - `docs/briefs/*.md`
 - `docs/research/*.md`
 - `docs/designs/*.md`
-- `docs/specs/<feature>/` subdirectories whose names look like brief slugs
+- Loose spec subdirectories that predate the per-feature layout (specs not under `docs/features/<slug>/specs/` or `docs/bugfixes/<area>/`)
 
 If any **flat layout** artifacts exist, tell the user:
 

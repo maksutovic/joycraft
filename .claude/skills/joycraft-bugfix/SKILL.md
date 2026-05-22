@@ -44,11 +44,26 @@ Ask: "Does this match? Comfortable with this approach?" If large/risky, suggest 
 
 ## Phase 4: Spec the Fix
 
-Write a bug fix spec to `docs/specs/<feature-or-area>/bugfix-name.md`. Use the relevant feature name or area as the subdirectory (e.g., `auth`, `cli`, `parser`). Create the `docs/specs/<feature-or-area>/` directory if it doesn't exist.
+Write a bug fix spec to `docs/specs/<feature-or-area>/bugfix-name.md`. Use the relevant feature name or area as the subdirectory (e.g., `auth`, `cli`, `parser`). Lazy-create the `docs/specs/<feature-or-area>/` directory if it doesn't exist.
+
+(Bugfixes intentionally stay at `docs/specs/<area>/...`, not `docs/features/<slug>/specs/`. Bugfixes are area-level, not feature-tied — multiple unrelated bugs can share the same area folder over time.)
 
 **Why:** Even bug fixes deserve a spec. It forces clarity on what "fixed" means, ensures test-first discipline, and creates a traceable record of the fix.
 
-Use this template:
+The spec file MUST start with YAML frontmatter — the 4-field personal schema (the `feature:` field carries the area name, used informally to indicate "what folder this lives under"):
+
+```yaml
+---
+status: active
+owner: <resolved name>
+created: YYYY-MM-DD
+feature: <feature-or-area>
+---
+```
+
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
+
+Use this template for the body:
 
 ```markdown
 # Fix [Bug Description] — Bug Fix Spec
@@ -125,28 +140,14 @@ What changes will fix this? Be specific — describe the code change, not just "
 
 ## Phase 5: Hand Off
 
-Tell the user:
+Tell the user a one-line summary, then emit the canonical Handoff block.
 
+## Recommended Next Steps
+
+Next:
+```bash
+/joycraft-implement docs/specs/<feature-or-area>/bugfix-name.md
 ```
-Bug fix spec is ready: docs/specs/<feature-or-area>/bugfix-name.md
-
-Summary:
-- Bug: [one sentence]
-- Root cause: [one sentence]
-- Fix: [one sentence]
-- Estimated: 1 session
-
-To execute: Start a fresh session and:
-1. Read the spec
-2. Write the reproduction test (must fail)
-3. Apply the fix (test must pass)
-4. Run full test suite
-5. Run /joycraft-session-end to capture discoveries
-6. Commit and PR
-
-Ready to start?
-
-Run /clear before your next step — your artifacts are saved to files.
-```
+Run /clear first.
 
 **Why:** A fresh session for implementation produces better results. This diagnostic session has context noise from exploration — a clean session with just the spec is more focused.

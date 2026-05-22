@@ -9,12 +9,12 @@ You have one or more atomic spec paths to execute. Your job is to implement each
 
 ## Step 1: Parse Arguments
 
-The user should provide one or more spec paths (e.g., `docs/specs/my-feature/add-widget.md`).
+The user should provide one or more spec paths (e.g., `docs/features/<slug>/specs/add-widget.md`).
 
 If no spec path was provided, tell the user:
 
-> No spec path provided. Check `docs/specs/` for available specs, or provide a path like:
-> `$joycraft-implement docs/specs/feature-name/spec-name.md`
+> No spec path provided. Check `docs/features/<slug>/specs/` for available specs, or provide a path like:
+> `$joycraft-implement docs/features/<slug>/specs/spec-name.md`
 
 ## Step 2: Read and Understand the Spec
 
@@ -31,7 +31,7 @@ For each spec path:
 Specs are designed to be self-contained, but if you need more context:
 
 - **Parent brief:** Linked in the spec's frontmatter (`> **Parent Brief:**` line). Read it for broader feature context.
-- **Related specs:** Live in the same directory. The spec directory convention is `docs/specs/<feature-name>/` where the feature name is derived from the brief filename (strip the date prefix and `.md` — e.g., `2026-04-06-token-discipline.md` → `token-discipline`).
+- **Related specs:** Live in the same directory. The spec directory convention is `docs/features/<slug>/specs/` where the slug is the feature folder name (e.g., `2026-04-06-token-discipline`). Bugfix specs live under `docs/bugfixes/<area>/`.
 - **Affected Files:** The spec's Affected Files table tells you which files to create or modify.
 
 ## Step 3: Execute the TDD Cycle

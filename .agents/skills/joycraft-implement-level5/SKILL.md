@@ -153,4 +153,8 @@ Print a summary of what was set up:
 > Your scenarios repo: `{name}`
 > Your coding agent cannot see those tests. The holdout wall is intact.
 
+**Important:** Tell the user:
+
+> **Before you can test the loop**, you need to merge this PR to main first. GitHub's `workflow_run` triggers only activate for workflows that exist on the default branch. Once merged, create a new PR with any small change -- that's when you'll see Autofix, Scenarios Dispatch, and Spec Dispatch fire for the first time.
+
 Update `docs/joycraft-assessment.md` if it exists -- set the Level 5 score to reflect the new setup.

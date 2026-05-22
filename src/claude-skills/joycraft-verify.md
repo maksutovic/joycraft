@@ -12,11 +12,11 @@ The user wants independent verification of an implementation. Your job is to fin
 
 ## Step 1: Find the Spec
 
-If the user provided a spec path (e.g., `/joycraft-verify docs/specs/my-feature/add-widget.md`), use that path directly.
+If the user provided a spec path (e.g., `/joycraft-verify docs/features/<slug>/specs/add-widget.md`), use that path directly.
 
-If no path was provided, scan `docs/specs/` recursively for spec files (they may be in subdirectories like `docs/specs/<feature-name>/`). Pick the most recently modified `.md` file. If `docs/specs/` doesn't exist or is empty, tell the user:
+If no path was provided, scan `docs/features/*/specs/` recursively for spec files (and `docs/bugfixes/<area>/` for bugfixes). Pick the most recently modified `.md` file. If no specs exist, tell the user:
 
-> No specs found in `docs/specs/`. Please provide a spec path: `/joycraft-verify path/to/spec.md`
+> No specs found under `docs/features/*/specs/` or `docs/bugfixes/`. Please provide a spec path: `/joycraft-verify path/to/spec.md`
 
 ## Step 2: Read and Parse the Spec
 

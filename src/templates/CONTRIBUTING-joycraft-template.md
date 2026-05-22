@@ -15,7 +15,7 @@ We use [Joycraft](https://www.npmjs.com/package/joycraft) for AI-assisted develo
 
 - Per-feature work goes under `docs/features/<slug>/{brief.md, research.md, design.md, specs/}`
 - Area-level work and ownership: see `docs/areas/`
-- Bug-fix specs stay under `docs/specs/<area-name>/`
+- Bug-fix specs stay under `docs/bugfixes/<area-name>/`
 - Deferred work goes to `docs/backlog/`
 - For "what is Joycraft?", see the package README
 

@@ -94,6 +94,6 @@ Session complete.
 - Pushed: [yes / no — and why not]
 - PR: [opened #N / not yet — N specs remaining]
 - Next: [what the next session should tackle]
-```
 
-**Tip:** Run `/new` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+Run /clear before your next step — your artifacts are saved to files.
+```

@@ -288,10 +288,11 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
   const hasExistingClaude = result.skipped.some(f => f.endsWith('CLAUDE.md'));
 
   console.log('\n  Next steps:');
+  console.log('    1. Run Claude Code and try /joycraft-setup — the first-run door that sets up and assesses your project');
   if (hasExistingClaude) {
-    console.log('    1. Run Claude Code and try /joycraft-tune to assess and improve your existing CLAUDE.md');
+    console.log('       (it routes to /joycraft-tune to assess and improve your existing CLAUDE.md)');
   } else {
-    console.log('    1. Review and customize the generated CLAUDE.md for your project');
+    console.log('       (then review and customize the generated CLAUDE.md for your project)');
   }
   console.log('    2. Try /joycraft-new-feature to start building with the spec-driven workflow');
   console.log('       (feature artifacts are written to docs/features/<slug>/ as you go)');
