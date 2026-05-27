@@ -1,11 +1,11 @@
-import { mkdirSync, existsSync, writeFileSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { mkdirSync, existsSync, writeFileSync, readFileSync, readdirSync, statSync, chmodSync } from 'node:fs';
 import { join, basename, resolve, dirname } from 'node:path';
 import { detectStack } from './detect.js';
 import { generateCLAUDEMd } from './improve-claude-md.js';
 import { generateAgentsMd } from './agents-md.js';
 import { generatePermissions } from './permissions.js';
 import { installSafeguardHooks } from './safeguard.js';
-import { SKILLS, TEMPLATES, CODEX_SKILLS } from './bundled-files.js';
+import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
 import { writeVersion, hashContent } from './version.js';
 import { getPackageVersion } from './package-version.js';
 
@@ -41,6 +41,9 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
 
   // Detect stack
   const stack = await detectStack(targetDir);
+
+  // Pi detection — check if project uses Pi coding agent
+  const isPi = existsSync(join(targetDir, '.pi'));
 
   // 1. Create the only Joycraft-managed docs/ subdirectory: context/.
   // All other folders (briefs/specs/discoveries/decisions/contracts/features/backlog/...) are
@@ -95,6 +98,40 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
   }
 
+  // 2c. Copy Pi skill files to .pi/skills/<name>/SKILL.md
+  const piSkillsDir = join(targetDir, '.pi', 'skills');
+  for (const [filename, content] of Object.entries(PI_SKILLS)) {
+    const skillName = filename.replace(/\.md$/, '');
+    const skillDir = join(piSkillsDir, skillName);
+    ensureDir(skillDir);
+    writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
+  }
+
+  // 2d. Install Pi pipeline runtime scripts to .pi/scripts/joycraft/
+  const piScriptsDir = join(targetDir, '.pi', 'scripts', 'joycraft');
+  ensureDir(piScriptsDir);
+  for (const [name, content] of Object.entries(PI_SCRIPTS)) {
+    const scriptPath = join(piScriptsDir, name);
+    writeFile(scriptPath, content, opts.force, result);
+    if (name !== 'README.md') {
+      try { chmodSync(scriptPath, 0o755); } catch { /* non-fatal */ }
+    }
+  }
+
+  // 2e. Install Pi extension to .pi/extensions/
+  const piExtDir = join(targetDir, '.pi', 'extensions');
+  ensureDir(piExtDir);
+  for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
+    writeFile(join(piExtDir, name), content, opts.force, result);
+  }
+
+  // 2f. Install Pi subagent definitions to .pi/agents/
+  const piAgentsDir = join(targetDir, '.pi', 'agents');
+  ensureDir(piAgentsDir);
+  for (const [name, content] of Object.entries(PI_AGENTS)) {
+    writeFile(join(piAgentsDir, name), content, opts.force, result);
+  }
+
   // 3. Copy template files to docs/templates/
   const templatesDir = join(targetDir, 'docs', 'templates');
   ensureDir(templatesDir);
@@ -137,6 +174,19 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   }
   for (const [filename, content] of Object.entries(TEMPLATES)) {
     fileHashes[join('docs', 'templates', filename)] = hashContent(content);
+  }
+  for (const [filename, content] of Object.entries(PI_SKILLS)) {
+    const skillName = filename.replace(/\.md$/, '');
+    fileHashes[join('.pi', 'skills', skillName, 'SKILL.md')] = hashContent(content);
+  }
+  for (const [name, content] of Object.entries(PI_SCRIPTS)) {
+    fileHashes[join('.pi', 'scripts', 'joycraft', name)] = hashContent(content);
+  }
+  for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
+    fileHashes[join('.pi', 'extensions', name)] = hashContent(content);
+  }
+  for (const [name, content] of Object.entries(PI_AGENTS)) {
+    fileHashes[join('.pi', 'agents', name)] = hashContent(content);
   }
   writeVersion(targetDir, getPackageVersion(), fileHashes);
 
@@ -240,10 +290,10 @@ try {
   }
 
   // 11. Print summary
-  printSummary(result, stack, existingSkills);
+  printSummary(result, stack, existingSkills, isPi);
 }
 
-function printSummary(result: InitResult, stack: import('./detect.js').StackInfo, existingSkills: string[] = []): void {
+function printSummary(result: InitResult, stack: import('./detect.js').StackInfo, existingSkills: string[] = [], isPi: boolean = false): void {
   console.log('\nJoycraft initialized!\n');
 
   if (stack.language !== 'unknown') {
@@ -251,6 +301,10 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
     console.log(`  Detected stack: ${stack.language}${fw} (${stack.packageManager})`);
   } else {
     console.log('  Detected stack: unknown (no recognized manifest found)');
+  }
+
+  if (isPi) {
+    console.log('  Detected agent: Pi');
   }
 
   if (result.created.length > 0) {
@@ -297,5 +351,8 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
   console.log('    2. Try /joycraft-new-feature to start building with the spec-driven workflow');
   console.log('       (feature artifacts are written to docs/features/<slug>/ as you go)');
   console.log('    3. Commit .claude/skills/ and docs/ so your team gets the same workflow');
+  if (!isPi) {
+    console.log('    Pi: Skills installed to .pi/skills/. Use /skill:joycraft-* to invoke.');
+  }
   console.log('');
 }

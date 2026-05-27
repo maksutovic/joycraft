@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# joycraft-spec-status — Read .joycraft-spec-queue.json and print a formatted status table.
+# Usage: joycraft-spec-status [specs-dir]
+
+set -euo pipefail
+
+SPECS_DIR="${1:-docs/features/*/specs}"
+MANIFEST=$(ls "$SPECS_DIR"/.joycraft-spec-queue.json 2>/dev/null | head -1)
+
+if [ -z "$MANIFEST" ]; then
+  echo "No .joycraft-spec-queue.json found in $SPECS_DIR"
+  exit 1
+fi
+
+# Parse JSON with grep+sed (no jq dependency)
+echo "Spec Queue Status"
+echo "─────────────────"
+echo ""
+
+# Extract spec entries
+while IFS= read -r line; do
+  # Each spec entry looks like: { "id": 1, "file": "...", "depends_on": [...], "status": "..." }
+  id=$(echo "$line" | sed -n 's/.*"id": *\([0-9]*\).*/\1/p')
+  file=$(echo "$line" | sed -n 's/.*"file": *"\([^"]*\)".*/\1/p')
+  status=$(echo "$line" | sed -n 's/.*"status": *"\([^"]*\)".*/\1/p')
+  
+  if [ -n "$id" ] && [ -n "$file" ] && [ -n "$status" ]; then
+    if [ "$status" = "complete" ]; then
+      marker="[✓]"
+    else
+      marker="[ ]"
+    fi
+    printf "%s  #%s  %s  (%s)\n" "$marker" "$id" "$file" "$status"
+  fi
+done < <(grep -o '{[^}]*}' "$MANIFEST" | grep '"id"')

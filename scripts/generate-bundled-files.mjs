@@ -9,6 +9,7 @@ const OUTPUT = join(ROOT, 'src', 'bundled-files.ts');
 
 const SKILLS_DIR = join(ROOT, 'src', 'claude-skills');
 const CODEX_SKILLS_DIR = join(ROOT, 'src', 'codex-skills');
+const PI_SKILLS_DIR = join(ROOT, 'src', 'pi-skills');
 const TEMPLATES_DIR = join(ROOT, 'src', 'templates');
 
 /** Recursively walk a directory and return all file paths */
@@ -54,9 +55,17 @@ function formatRecord(name, record) {
   return `export const ${name}: Record<string, string> = {\n${entries}\n};\n`;
 }
 
+const PI_SCRIPTS_DIR = join(ROOT, 'src', 'templates', 'pi-scripts');
+const PI_EXTENSIONS_DIR = join(ROOT, 'src', 'templates', 'pi-extensions');
+const PI_AGENTS_DIR = join(ROOT, 'src', 'templates', 'pi-agents');
+
 const skills = readFlatDir(SKILLS_DIR);
 const codexSkills = readFlatDir(CODEX_SKILLS_DIR);
+const piSkills = readFlatDir(PI_SKILLS_DIR);
 const templates = readTreeDir(TEMPLATES_DIR);
+const piScripts = readTreeDir(PI_SCRIPTS_DIR);
+const piExtensions = readTreeDir(PI_EXTENSIONS_DIR);
+const piAgents = readTreeDir(PI_AGENTS_DIR);
 
 const output = [
   '// @generated — do not edit. Run: node scripts/generate-bundled-files.mjs',
@@ -64,7 +73,11 @@ const output = [
   formatRecord('SKILLS', skills),
   formatRecord('TEMPLATES', templates),
   formatRecord('CODEX_SKILLS', codexSkills),
+  formatRecord('PI_SKILLS', piSkills),
+  formatRecord('PI_SCRIPTS', piScripts),
+  formatRecord('PI_EXTENSIONS', piExtensions),
+  formatRecord('PI_AGENTS', piAgents),
 ].join('\n');
 
 writeFileSync(OUTPUT, output);
-console.log(`Generated ${OUTPUT} (${Object.keys(skills).length} skills, ${Object.keys(templates).length} templates, ${Object.keys(codexSkills).length} codex skills)`);
+console.log(`Generated ${OUTPUT} (${Object.keys(skills).length} skills, ${Object.keys(templates).length} templates, ${Object.keys(codexSkills).length} codex skills, ${Object.keys(piSkills).length} pi skills)`);

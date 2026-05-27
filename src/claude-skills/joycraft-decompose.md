@@ -140,6 +140,28 @@ If `docs/templates/ATOMIC_SPEC_TEMPLATE.md` exists, reference it for the full te
 
 Fill in all sections — each spec must be self-contained (no "see the brief for context"). Copy relevant constraints from the Feature Brief into each spec. Write acceptance criteria specific to THIS spec, not the whole feature. Every acceptance criterion must have at least one corresponding test in the Test Plan. If the user provided test strategy info from the interview, use it to choose test types and frameworks. Include the test harness verification rules in every Test Plan.
 
+### Step 5a: Write the Spec Queue Manifest
+
+After all spec `.md` files are written, create `.joycraft-spec-queue.json` in the specs directory alongside the spec files and README. This manifest is the machine-readable, authoritative spec queue consumed by the Pi pipeline automation.
+
+```json
+{
+  "feature": "<slug>",
+  "specs": [
+    { "id": 1, "file": "<spec-name>.md", "depends_on": [], "status": "active" },
+    { "id": 2, "file": "<spec-name>.md", "depends_on": [1], "status": "active" }
+  ]
+}
+```
+
+Map each row in your decomposition table to a spec entry:
+- `id`: sequential integer starting from 1 (matches the decomposition table's # column)
+- `file`: the spec filename relative to the specs directory
+- `depends_on`: array of spec ids this spec depends on (empty array `[]` for no dependencies)
+- `status`: always `"active"` initially — the Pi pipeline marks specs `"complete"` as it executes them
+
+Validate: every id referenced in `depends_on` must exist as an `id` in the specs array.
+
 ## Step 6: Recommend Execution Strategy and Update Parent Brief
 
 Based on the dependency graph, group specs into execution waves:

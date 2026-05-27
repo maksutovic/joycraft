@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync
 import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
 import { readVersion, writeVersion, hashContent } from './version.js';
-import { SKILLS, TEMPLATES, CODEX_SKILLS } from './bundled-files.js';
+import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
 
@@ -29,6 +29,19 @@ function getManagedFiles(): Record<string, string> {
   for (const [name, content] of Object.entries(CODEX_SKILLS)) {
     const skillName = name.replace(/\.md$/, '');
     files[join('.agents', 'skills', skillName, 'SKILL.md')] = content;
+  }
+  for (const [name, content] of Object.entries(PI_SKILLS)) {
+    const skillName = name.replace(/\.md$/, '');
+    files[join('.pi', 'skills', skillName, 'SKILL.md')] = content;
+  }
+  for (const [name, content] of Object.entries(PI_SCRIPTS)) {
+    files[join('.pi', 'scripts', 'joycraft', name)] = content;
+  }
+  for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
+    files[join('.pi', 'extensions', name)] = content;
+  }
+  for (const [name, content] of Object.entries(PI_AGENTS)) {
+    files[join('.pi', 'agents', name)] = content;
   }
   return files;
 }

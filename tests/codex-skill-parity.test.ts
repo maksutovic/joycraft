@@ -4,6 +4,7 @@ import { join } from 'node:path';
 
 const SKILLS_DIR = join(__dirname, '..', 'src', 'claude-skills');
 const CODEX_SKILLS_DIR = join(__dirname, '..', 'src', 'codex-skills');
+const PI_SKILLS_DIR = join(__dirname, '..', 'src', 'pi-skills');
 
 function parseFrontmatter(content: string): Record<string, string> {
   const match = content.match(/^---\n([\s\S]*?)\n---/);
@@ -23,6 +24,7 @@ const claudeSkills = readdirSync(SKILLS_DIR).filter((f) => f.endsWith('.md'));
 const codexSkills = readdirSync(CODEX_SKILLS_DIR).filter((f) =>
   f.endsWith('.md'),
 );
+const piSkills = readdirSync(PI_SKILLS_DIR).filter((f) => f.endsWith('.md'));
 
 describe('Codex skill parity', () => {
   describe('every Claude skill has a corresponding Codex skill', () => {
@@ -87,5 +89,86 @@ describe('Codex skill parity', () => {
         ).toBeNull();
       });
     }
+  });
+});
+
+describe('Pi skill parity', () => {
+  describe('every Claude skill has a corresponding Pi skill', () => {
+    for (const file of claudeSkills) {
+      it(`${file} exists in pi-skills/`, () => {
+        expect(piSkills).toContain(file);
+      });
+    }
+  });
+
+  describe('no orphan Pi skills', () => {
+    for (const file of piSkills) {
+      it(`${file} exists in skills/`, () => {
+        expect(claudeSkills).toContain(file);
+      });
+    }
+  });
+
+  describe('name field matches between Claude and Pi skills', () => {
+    const shared = claudeSkills.filter((f) => piSkills.includes(f));
+    for (const file of shared) {
+      it(`${file} has matching name field`, () => {
+        const claudeContent = readFileSync(join(SKILLS_DIR, file), 'utf-8');
+        const piContent = readFileSync(join(PI_SKILLS_DIR, file), 'utf-8');
+        const claudeFm = parseFrontmatter(claudeContent);
+        const piFm = parseFrontmatter(piContent);
+        expect(piFm.name).toBe(claudeFm.name);
+      });
+    }
+  });
+
+  describe('no banned Claude-specific tool references in Pi skills', () => {
+    const banned = ['TodoWrite', 'EnterWorktree', 'LSP'];
+    for (const file of piSkills) {
+      it(`${file} does not reference banned tools`, () => {
+        const content = readFileSync(join(PI_SKILLS_DIR, file), 'utf-8');
+        for (const tool of banned) {
+          const regex = new RegExp(`\\b${tool}\\b`);
+          expect(
+            regex.test(content),
+            `Found banned tool reference "${tool}" in ${file}`,
+          ).toBe(false);
+        }
+      });
+    }
+  });
+
+  describe('no $joycraft- invocation syntax in Pi skills', () => {
+    for (const file of piSkills) {
+      it(`${file} does not use $joycraft- invocation syntax`, () => {
+        const content = readFileSync(join(PI_SKILLS_DIR, file), 'utf-8');
+        const regex = /\$joycraft-/g;
+        const matches = content.match(regex);
+        expect(
+          matches,
+          `Found $joycraft- invocation syntax in ${file} — use /skill:joycraft- instead`,
+        ).toBeNull();
+      });
+    }
+  });
+
+  describe('PI_SKILLS export has 18 entries', () => {
+    it('PI_SKILLS has exactly 18 skills', async () => {
+      const { PI_SKILLS } = await import('../src/bundled-files');
+      expect(Object.keys(PI_SKILLS).length).toBe(18);
+    });
+  });
+
+  describe('3-way skill name parity', () => {
+    it('Claude, Codex, and Pi have identical skill file names', async () => {
+      const { SKILLS, CODEX_SKILLS, PI_SKILLS } = await import(
+        '../src/bundled-files'
+      );
+      const claudeNames = Object.keys(SKILLS).sort();
+      const codexNames = Object.keys(CODEX_SKILLS).sort();
+      const piNames = Object.keys(PI_SKILLS).sort();
+      expect(codexNames).toEqual(claudeNames);
+      expect(piNames).toEqual(claudeNames);
+    });
   });
 });
