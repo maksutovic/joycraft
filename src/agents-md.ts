@@ -1,4 +1,5 @@
 import type { StackInfo } from './detect.js';
+import { generateBoundariesSection } from './improve-claude-md.js';
 
 interface Section {
   header: string;
@@ -43,24 +44,6 @@ function generateCommandsBlock(stack: StackInfo): string {
   if (stack.commands.deploy) lines.push(stack.commands.deploy);
   lines.push('```');
   return lines.join('\n');
-}
-
-function generateBoundariesSection(): string {
-  return `## Behavioral Boundaries
-
-### ALWAYS
-- Run tests and type-check before committing
-- Follow existing code patterns and style
-
-### ASK FIRST
-- Adding new dependencies
-- Changing auth or data models
-- Any destructive operation
-
-### NEVER
-- Push to main without approval
-- Skip tests or type-checking
-- Hardcode secrets or credentials`;
 }
 
 function generateDevelopmentSection(stack: StackInfo): string {
