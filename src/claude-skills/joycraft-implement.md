@@ -52,6 +52,11 @@ Specs are designed to be self-contained, but if you need more context:
 - **Related specs:** Live in the same directory (typically `docs/features/<slug>/specs/`). The sibling `README.md` (read in Step 2 above) is the index.
 - **Affected Files:** The spec's Affected Files table tells you which files to create or modify.
 
+
+### Before writing code against an external API:
+
+⚠️ If the spec references a third-party SDK or package, read its official documentation and type definitions FIRST. Never write a `declare module` stub for a package that actually exists — use the real package as a devDependency instead. The stub will make typecheck pass but the code will fail at runtime.
+
 ## Step 4: Execute the TDD Cycle
 
 **This is not optional. Write tests FIRST.**

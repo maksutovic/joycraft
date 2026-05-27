@@ -43,9 +43,26 @@ Ask: "Does this match? Comfortable with this approach?" If large/risky, suggest 
 
 ## Phase 4: Spec the Fix
 
-Write a bug fix spec to `docs/specs/<feature-or-area>/bugfix-name.md`. Use the relevant feature name or area as the subdirectory (e.g., `auth`, `cli`, `parser`). Create the `docs/specs/<feature-or-area>/` directory if it doesn't exist.
+Write a bug fix spec to `docs/bugfixes/<area>/bugfix-name.md`. Use the relevant area as the subdirectory (e.g., `auth`, `cli`, `parser`). Lazy-create the `docs/bugfixes/<area>/` directory if it doesn't exist.
+
+(Bugfixes live under `docs/bugfixes/<area>/`, separate from `docs/features/<slug>/specs/`. Bugfixes are area-level, not feature-tied — multiple unrelated bugs accumulate in the same area folder over time, which is a fundamentally different folder shape from features.)
+
+**Area README:** When creating (or adding to) a `docs/bugfixes/<area>/` folder, also lazy-create/update a `docs/bugfixes/<area>/README.md` index — a one-line-per-bug table (`| Bug | Spec | Status | Date |`) so areas that accumulate many bugs stay navigable. Append a row for the new bugfix.
 
 **Why:** Even bug fixes deserve a spec. It forces clarity on what "fixed" means, ensures test-first discipline, and creates a traceable record of the fix.
+
+The spec file MUST start with YAML frontmatter — the 4-field personal schema (the `area:` field carries the area name, used informally to indicate "what folder this lives under"):
+
+```yaml
+---
+status: active
+owner: <resolved name>
+created: YYYY-MM-DD
+area: <area>
+---
+```
+
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
 
 Use this structure:
 
@@ -98,7 +115,7 @@ What changes, where?
 ## Phase 5: Hand Off
 
 ```
-Bug fix spec is ready: docs/specs/<feature-or-area>/bugfix-name.md
+Bug fix spec is ready: docs/bugfixes/<area>/bugfix-name.md
 
 Summary:
 - Bug: [one sentence]

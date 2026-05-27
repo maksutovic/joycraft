@@ -1,0 +1,137 @@
+---
+name: joycraft-bugfix
+description: Structured bug fix workflow — triage, diagnose, discuss with user, write a focused spec, hand off for implementation
+---
+
+# Bug Fix Workflow
+
+You are fixing a bug. Follow this process in order. Do not skip steps.
+
+**Guard clause:** If this is clearly a new feature, redirect to `/skill:joycraft-new-feature` and stop.
+
+---
+
+## Phase 1: Triage
+
+Establish what's broken. Gather: symptom, steps to reproduce, expected vs actual behavior, when it started, relevant logs/errors. If an error message or stack trace is provided, read the referenced files immediately. Try to reproduce if steps are given.
+
+**Done when:** You can describe the symptom in one sentence.
+
+---
+
+## Phase 2: Diagnose
+
+Find the root cause. Start from the error site and trace backward. Search the codebase and read files — don't guess. Identify the specific line(s) and logic error. Check git blame if it's a recent regression.
+
+**Done when:** You can explain what's wrong, why, and where in 2-3 sentences.
+
+---
+
+## Phase 3: Discuss
+
+Present findings to the user BEFORE writing any code or spec:
+1. **Symptom** — confirm it matches what they see
+2. **Root cause** — specific file(s) and line(s)
+3. **Proposed fix** — what changes, where
+4. **Risk** — side effects? scope?
+
+Ask: "Does this match? Comfortable with this approach?" If large/risky, suggest decomposing into multiple specs.
+
+**Done when:** User agrees with the diagnosis and fix direction.
+
+---
+
+## Phase 4: Spec the Fix
+
+Write a bug fix spec to `docs/bugfixes/<area>/bugfix-name.md`. Use the relevant area as the subdirectory (e.g., `auth`, `cli`, `parser`). Lazy-create the `docs/bugfixes/<area>/` directory if it doesn't exist.
+
+(Bugfixes live under `docs/bugfixes/<area>/`, separate from `docs/features/<slug>/specs/`. Bugfixes are area-level, not feature-tied — multiple unrelated bugs accumulate in the same area folder over time, which is a fundamentally different folder shape from features.)
+
+**Area README:** When creating (or adding to) a `docs/bugfixes/<area>/` folder, also lazy-create/update a `docs/bugfixes/<area>/README.md` index — a one-line-per-bug table (`| Bug | Spec | Status | Date |`) so areas that accumulate many bugs stay navigable. Append a row for the new bugfix.
+
+**Why:** Even bug fixes deserve a spec. It forces clarity on what "fixed" means, ensures test-first discipline, and creates a traceable record of the fix.
+
+The spec file MUST start with YAML frontmatter — the 4-field personal schema (the `area:` field carries the area name, used informally to indicate "what folder this lives under"):
+
+```yaml
+---
+status: active
+owner: <resolved name>
+created: YYYY-MM-DD
+area: <area>
+---
+```
+
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
+
+Use this structure:
+
+```markdown
+# [Bug Name] — Bug Fix Spec
+
+> **Status:** Ready
+> **Date:** YYYY-MM-DD
+> **Estimated scope:** [1 session / N files / ~N lines]
+
+---
+
+## Bug
+One sentence — what's broken?
+
+## Root Cause
+What's actually wrong, in which file(s) and line(s)?
+
+## Fix
+What changes, where?
+
+## Acceptance Criteria
+- [ ] [Observable behavior that proves the fix works]
+- [ ] No regressions — existing tests still pass
+- [ ] Build passes
+
+## Test Plan
+1. Write a reproduction test that fails before the fix
+2. Apply the fix
+3. Reproduction test passes
+4. Full test suite passes
+
+## Constraints
+- MUST: [hard requirement]
+- MUST NOT: [hard prohibition]
+
+## Affected Files
+| Action | File | What Changes |
+|--------|------|-------------|
+
+## Edge Cases
+| Scenario | Expected Behavior |
+|----------|------------------|
+```
+
+**For large bugs that span multiple files/systems:** Consider whether this should be decomposed into multiple specs. If so, create a brief first using `/skill:joycraft-new-feature`, then decompose.
+
+---
+
+## Phase 5: Hand Off
+
+```
+Bug fix spec is ready: docs/bugfixes/<area>/bugfix-name.md
+
+Summary:
+- Bug: [one sentence]
+- Root cause: [one sentence]
+- Fix: [one sentence]
+- Estimated: 1 session
+
+To execute: Start a fresh session and:
+1. Read the spec
+2. Write the reproduction test (must fail)
+3. Apply the fix (test must pass)
+4. Run full test suite
+5. Run /skill:joycraft-session-end to capture discoveries
+6. Commit and PR
+
+Ready to start?
+
+Run /clear before your next step — your artifacts are saved to files.
+```

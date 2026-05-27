@@ -569,7 +569,7 @@ describe('init', () => {
       const extPath = join(tmpDir, '.pi', 'extensions', 'joycraft-pipeline.ts');
       expect(existsSync(extPath)).toBe(true);
       const content = readFileSync(extPath, 'utf-8');
-      expect(content).toContain('joycraft_next_spec');
+      expect(content).toContain('joycraft-next-spec');
     });
 
     it('installs subagent definitions to .pi/agents/', async () => {

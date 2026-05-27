@@ -36,7 +36,7 @@ Let them correct and refine. Iterate until they say "yes, that's it."
 
 ### 4. Write a Draft Brief
 
-Create a draft file at `docs/briefs/YYYY-MM-DD-topic-draft.md`. Create the `docs/briefs/` directory if it doesn't exist.
+Create a draft file at `docs/features/<slug>/brief.md`. Create the `docs/features/<slug>/` directory if it doesn't exist.
 
 Use this format:
 
@@ -78,7 +78,7 @@ Use this format:
 After writing the draft, tell the user:
 
 ```
-Draft brief saved to docs/briefs/YYYY-MM-DD-topic-draft.md
+Draft brief saved to docs/features/<slug>/brief.md
 
 When you're ready to move forward, pick the path that fits the complexity:
 

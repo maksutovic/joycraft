@@ -1,10 +1,11 @@
 # Pi Support — Draft Brief
 
 > **Date:** 2026-05-26
-> **Status:** DECOMPOSED
+> **Status:** POST-MORTEM — specs 0–6 complete, spec 7–8 ready
 > **Origin:** pi session / joycraft-interview
 > **Research:** `docs/research/2026-05-26-pi-support.md`
 > **Design:** `docs/features/2026-05-26-pi-support/design.md` — all open questions resolved
+> **Bug Brief:** `docs/features/2026-05-26-pi-support/pi-extension-invalid-factory-brief.md` — spec 3 shipped broken (fictional API)
 
 ---
 
@@ -52,18 +53,28 @@ A secondary goal is ensuring the skills and automation work reliably on open-wei
 
 ## Execution Strategy
 
-See `docs/specs/pi-support/README.md` for the full decomposition and dependency graph.
+See `docs/features/2026-05-26-pi-support/specs/README.md` for the full decomposition and dependency graph.
+
+### Original Wave Plan (specs 0–6: COMPLETE)
+
+| # | Spec | Dependencies | Wave | Status |
+|---|------|-------------|------|--------|
+| 0 | `sync-skills-to-per-feature-layout` | — | 0 (prereq) | ✅ Complete |
+| 1 | `add-pi-skills` | 0 | 1 (parallel) | ✅ Complete |
+| 2 | `add-spec-queue-manifest` | — | 1 (parallel) | ✅ Complete |
+| 3 | `add-pi-pipeline-runtime` | 2 | 1 (parallel) | ⚠️ Complete but BROKEN — see bug brief |
+| 4 | `wire-pi-init` | 1, 3 | 2 (after 1+3) | ✅ Complete (re-verify after #7) |
+| 5 | `wire-pi-upgrade` | 1, 4 | 3 (parallel) | ✅ Complete (re-verify after #7) |
+| 6 | `add-pi-tests` | 1, 4 | 3 (parallel) | ✅ Complete (may need updates after #7) |
+
+### Post-Mortem Fixes (specs 7–8: READY)
 
 | # | Spec | Dependencies | Wave |
 |---|------|-------------|------|
-| 1 | `add-pi-skills` | — | 1 (parallel) |
-| 2 | `add-spec-queue-manifest` | — | 1 (parallel) |
-| 3 | `add-pi-pipeline-runtime` | 2 | 1 (parallel) |
-| 4 | `wire-pi-init` | 1, 3 | 2 (after 1+3) |
-| 5 | `wire-pi-upgrade` | 1, 4 | 3 (parallel) |
-| 6 | `add-pi-tests` | 1, 4 | 3 (parallel) |
+| 7 | `fix-pi-extension-api` | — | 4 (parallel) |
+| 8 | `add-api-safety-guards` | — | 4 (parallel) |
 
-**Estimated:** 6 sessions (3 parallel slots → ~3 sequential execution slots).
+**Estimated:** 9 sessions total (7 original + 2 post-mortem). Specs 7 and 8 are independent and can run in parallel.
 
 ---
 
@@ -76,32 +87,42 @@ See `docs/specs/pi-support/README.md` for the full decomposition and dependency 
 
 ## Raw Notes
 
-### Architecture (from conversation)
+### Architecture (post-mortem — updated design)
 
 ```
 Bash scripts (tool belt)
-├── joycraft-spec-status    — reads spec queue, shows progress
-├── joycraft-mark-done      — marks spec ✅ in manifest
-├── joycraft-session-end    — captures discoveries, commits
-└── joycraft-next-spec      — prints path to next uncompleted spec
+├── joycraft-spec-status    — reads .joycraft-spec-queue.json, shows progress
+├── joycraft-mark-done      — marks spec complete in manifest
+├── joycraft-session-end    — validates (tests + build), stages changes
+└── joycraft-next-spec      — prints path to next uncompleted spec (respects deps)
 
 Skills (instructions) — drop into .pi/skills/
-├── All 12 joycraft skills  — standard Agent Skills format
-└── Adapted research/verify — use session API instead of sub-agents
+├── All 18 joycraft skills  — standard Agent Skills format
+└── research/verify adapted — use pi-subagents package (sub-agent spawning)
 
-Extension (minimal glue) — ~40 lines
-└── 1 tool: joycraft_next_spec
-    Calls bash scripts → session-end → newSession → sendUserMessage
+Extension (minimal glue) — ~60 lines
+├── /joycraft-next-spec command (Approach B)
+│   ctx.exec(scripts) → session-end → ctx.exec(next-spec) → ctx.newSession({ withSession })
+└── Startup check: recommends pi-subagents, pi-web-access, pi-agent-flow if missing
+
+Agent definitions — .pi/agents/
+├── joycraft-researcher.md  — sub-agent for objective codebase research
+└── joycraft-verifier.md    — sub-agent for read-only spec verification
+
+Recommended Pi packages (user installs separately)
+├── pi-subagents     — handles research/verify sub-agent spawning
+├── pi-web-access    — zero-config web search (Exa MCP, no API key)
+└── pi-agent-flow    — context isolation for spec handoff (optional)
 ```
 
 ### Key Pi features leveraged
 
 - **Skills auto-discovery:** `.pi/skills/` or `.agents/skills/` (both work)
-- **Extensions API:** `ctx.newSession()`, `pi.sendUserMessage()`, `pi.registerTool()`
+- **Extensions API:** `(pi: ExtensionAPI) => void` factory function, `pi.registerCommand()`, `ctx.newSession({ withSession })`
 - **Session management:** session files as JSONL trees, branch/fork/navigate
 - **Progressive disclosure:** bash scripts loaded via `read` on-demand (README pattern)
+- **Pi packages:** `pi-subagents` for sub-agent spawning, `pi-web-access` for web search
 - **Self-extending:** the agent can write and improve its own tooling
-- **Pi packages:** future distribution path (`pi install npm:joycraft`)
 
 ### Open-weight model context
 
