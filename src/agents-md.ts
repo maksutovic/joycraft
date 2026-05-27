@@ -46,24 +46,20 @@ function generateCommandsBlock(stack: StackInfo): string {
   return lines.join('\n');
 }
 
-function generateDevelopmentSection(stack: StackInfo): string {
-  return `## Development
+function generateExternalApiSafetySection(): string {
+  return '### External API Safety\n- Read official docs and type definitions before writing code against a third-party SDK\n- Add third-party SDKs as devDependencies so typecheck runs against real types, not stubs\n- Critical integration paths should have a smoke test that validates against the real runtime';
+}
 
-${generateCommandsBlock(stack)}`;
+function generateDevelopmentSection(stack: StackInfo): string {
+  return `## Development\n\n${generateCommandsBlock(stack)}`;
 }
 
 function generateArchitectureSection(): string {
-  return `## Architecture
-
-_TODO: Add a compact directory tree and one-paragraph summary._`;
+  return `## Architecture\n\n_TODO: Add a compact directory tree and one-paragraph summary._`;
 }
 
 function generateKeyFilesSection(): string {
-  return `## Key Files
-
-| File | Purpose |
-|------|---------|
-| _TODO_ | _Add key files_ |`;
+  return `## Key Files\n\n| File | Purpose |\n|------|---------|\n| _TODO_ | _Add key files_ |`;
 }
 
 export function generateAgentsMd(projectName: string, stack: StackInfo): string {
@@ -80,6 +76,7 @@ export function generateAgentsMd(projectName: string, stack: StackInfo): string 
     '---',
     '',
     generateBoundariesSection(),
+    generateExternalApiSafetySection(),
     '',
     generateArchitectureSection(),
     '',
@@ -98,6 +95,10 @@ export function improveAgentsMd(existing: string, stack: StackInfo): string {
 
   if (!hasSection(sections, /behavioral\s*boundar/i)) {
     additions.push(generateBoundariesSection());
+  }
+
+  if (!/external\s*api\s*safety/i.test(existing)) {
+    additions.push('### External API Safety\n- Read official docs and type definitions before writing code against a third-party SDK\n- Add third-party SDKs as devDependencies so typecheck runs against real types, not stubs\n- Critical integration paths should have a smoke test that validates against the real runtime');
   }
 
   if (!hasSection(sections, /architecture/i)) {

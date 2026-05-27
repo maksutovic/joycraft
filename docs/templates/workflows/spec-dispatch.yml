@@ -1,6 +1,8 @@
 # Spec Dispatch Workflow
 #
-# Triggered when specs are pushed to main. For each added or modified spec,
+# Triggered when specs are pushed to main (feature specs under
+# docs/features/<slug>/specs/, bugfix specs under docs/bugfixes/<area>/).
+# For each added or modified spec,
 # fires a `spec-pushed` repository_dispatch event to the scenarios repo so
 # that a scenario agent can triage the spec and write/update holdout tests.
 #
@@ -15,7 +17,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "docs/specs/**"
+      - "docs/features/**/specs/**"
+      - "docs/bugfixes/**"
 
 jobs:
   dispatch:
@@ -34,7 +37,7 @@ jobs:
       - name: Find changed specs
         id: changed
         run: |
-          FILES=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'docs/specs/**/*.md')
+          FILES=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'docs/features/**/specs/**/*.md' 'docs/bugfixes/**/*.md')
           echo "files<<EOF" >> "$GITHUB_OUTPUT"
           echo "$FILES" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"

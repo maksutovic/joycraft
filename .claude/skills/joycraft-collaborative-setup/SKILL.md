@@ -25,12 +25,12 @@ If the user says "actually solo," bail before any writes:
 
 ## Step 2: Check for Flat Layout — Bail if Present
 
-Before scaffolding team structure, check the project's docs/ for flat-layout artifacts. Look for any of:
+Before scaffolding team structure, check the project's docs/ for per-feature artifacts. Look for any of:
 
-- `docs/briefs/*.md`
-- `docs/research/*.md`
-- `docs/designs/*.md`
-- `docs/specs/<feature>/` subdirectories whose names look like brief slugs
+- `docs/features/<slug>/brief.md`
+- `docs/features/<slug>/research.md`
+- `docs/features/<slug>/design.md`
+- Loose spec subdirectories that predate the per-feature layout (specs not under `docs/features/<slug>/specs/` or `docs/bugfixes/<area>/`)
 
 If any **flat layout** artifacts exist, tell the user:
 

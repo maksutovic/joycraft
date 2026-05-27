@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# joycraft-mark-done — Update a spec's status from "active" to "complete" in .joycraft-spec-queue.json.
+# Usage: joycraft-mark-done <spec-id> [specs-dir]
+
+set -euo pipefail
+
+SPEC_ID="${1:-}"
+if [ -z "$SPEC_ID" ]; then
+  echo "Usage: joycraft-mark-done <spec-id>"
+  exit 1
+fi
+
+SPECS_DIR="${2:-docs/features/*/specs}"
+MANIFEST=$(ls "$SPECS_DIR"/.joycraft-spec-queue.json 2>/dev/null | head -1)
+
+if [ -z "$MANIFEST" ]; then
+  echo "No .joycraft-spec-queue.json found in $SPECS_DIR"
+  exit 1
+fi
+
+# Check spec exists
+if ! grep -q "\"id\": *$SPEC_ID" "$MANIFEST"; then
+  echo "Spec #$SPEC_ID not found in manifest"
+  exit 1
+fi
+
+# Check if already complete
+if grep -q "\"id\": *$SPEC_ID.*\"status\": *\"complete\"" "$MANIFEST"; then
+  echo "Spec #$SPEC_ID is already complete"
+  exit 0
+fi
+
+# Replace "active" with "complete" for the matching spec id
+# Match: "id": SPEC_ID ... "status": "active" → "status": "complete"
+sed -i '' -E "/\"id\": *$SPEC_ID[,}]/s/\"status\": *\"active\"/\"status\": \"complete\"/" "$MANIFEST"
+
+echo "Spec #$SPEC_ID marked complete"

@@ -14,23 +14,32 @@ Before starting the interview, check if the user has already drafted a brief.
 **Skip this phase if:** the user provided a brief path as an argument (they already know what to work from).
 
 **Steps:**
-1. Check if `docs/briefs/` exists. If not, skip to Phase 1.
-2. Look for files matching `*-draft.md` in `docs/briefs/`.
-3. For any other `.md` files in `docs/briefs/`, read the first 10 lines and check for `Status: DRAFT`.
-4. If draft(s) found, present them:
+1. Check if `docs/features/` exists. If not, skip to Phase 1.
+2. List subdirectories. For each `docs/features/<slug>/brief.md`, read the YAML frontmatter at the top.
+3. **Filter by status:** treat each brief as `status: active` unless its frontmatter says otherwise. **Skip** any brief whose `status:` is `shipped`, `deprecated`, or `superseded`. Also skip anything under `docs/archive/` — those are out-of-scope for new feature work.
+4. Group what you find:
+   - **Drafts** (frontmatter `status: draft`) — likely from `$joycraft-interview`.
+   - **Active in-flight** (frontmatter `status: active`) — work the user already started.
+
+5. Present them:
 
 ```
-I found draft brief(s) in docs/briefs/:
-- [path] (drafted YYYY-MM-DD)
-- [path] (drafted YYYY-MM-DD)
+I found existing artifacts in docs/features/:
+
+Drafts:
+- docs/features/<slug>/brief.md (drafted YYYY-MM-DD)
+
+Active features:
+- docs/features/<slug>/brief.md (started YYYY-MM-DD)
 
 Want me to:
-1. **Formalize** one of these into a full Feature Brief (skip interview, go to Phase 2)
-2. **Start a new interview** from scratch
+1. **Formalize** a draft into a full Feature Brief
+2. **Continue** an active feature
+3. **Start a new interview** from scratch
 ```
 
-5. If user chooses to formalize: read the full draft, extract the idea/problem/constraints, and jump to Phase 2 with that context pre-filled.
-6. If user chooses to start fresh, or no drafts found: proceed to Phase 1.
+6. If user picks formalize/continue: read the full brief, extract context, and jump to Phase 2 with that context pre-filled.
+7. If user picks start fresh, or nothing found: proceed to Phase 1.
 
 ## Phase 1: Interview
 
@@ -54,7 +63,10 @@ Keep asking until you can fill out a Feature Brief.
 
 ## Phase 2: Feature Brief
 
-Write a Feature Brief to `docs/briefs/YYYY-MM-DD-feature-name.md`. Create the `docs/briefs/` directory if it doesn't exist.
+Derive a slug `YYYY-MM-DD-<feature-name>` (today's date + kebab-case feature name).
+Write the Feature Brief to `docs/features/<slug>/brief.md`. Lazy-create the folder if needed.
+
+**Slug derivation:** today's date in `YYYY-MM-DD` format, then `-`, then the feature name lower-cased and hyphen-separated. Example: a feature about "Token Discipline" started on 2026-04-06 → slug `2026-04-06-token-discipline` → folder `docs/features/2026-04-06-token-discipline/`.
 
 **Why:** The brief is the single source of truth for what we're building. It prevents scope creep and gives every spec a shared reference point.
 
@@ -115,7 +127,7 @@ Iterate until approved.
 
 ## Phase 3: Generate Atomic Specs
 
-For each row in the decomposition table, create a self-contained spec file at `docs/specs/<feature-name>/spec-name.md`. Derive the feature-name from the brief filename (strip the date prefix and `.md` — e.g., `2026-04-06-token-discipline.md` → `token-discipline`). Create the `docs/specs/<feature-name>/` directory if it doesn't exist.
+For each row in the decomposition table, create a self-contained spec file at `docs/features/<slug>/specs/<spec-name>.md`. Lazy-create the `specs/` subfolder if it doesn't exist.
 
 **Why:** Each spec must be understandable WITHOUT reading the Feature Brief. This prevents the "Curse of Instructions" — no spec should require holding the entire feature in context. Copy relevant context into each spec.
 
@@ -124,7 +136,7 @@ Use this structure for each spec:
 ```markdown
 # [Verb + Object] — Atomic Spec
 
-> **Parent Brief:** `docs/briefs/YYYY-MM-DD-feature-name.md`
+> **Parent Brief:** `docs/features/<slug>/brief.md`
 > **Status:** Ready
 > **Date:** YYYY-MM-DD
 > **Estimated scope:** [1 session / N files / ~N lines]

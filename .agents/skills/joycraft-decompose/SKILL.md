@@ -9,7 +9,7 @@ You have a Feature Brief (or the user has described a feature). Your job is to d
 
 ## Step 1: Verify the Brief Exists
 
-Look for a Feature Brief in `docs/briefs/`. If one doesn't exist yet, tell the user:
+Look for a Feature Brief at `docs/features/<slug>/brief.md`. If the user provided a brief path as an argument, use that. Otherwise, scan `docs/features/*/brief.md`. If one doesn't exist yet, tell the user:
 
 > No feature brief found. Run `$joycraft-new-feature` first to interview and create one, or describe the feature now and I'll work from your description.
 
@@ -55,7 +55,7 @@ Iterate until the user approves.
 
 ## Step 5: Generate Atomic Specs
 
-For each approved row, create `docs/specs/<feature-name>/spec-name.md`. Derive the feature-name from the brief filename (strip the date prefix and `.md` — e.g., `2026-04-06-token-discipline.md` → `token-discipline`). If no brief exists, use a user-provided or inferred feature name (slugified to kebab-case). Create the `docs/specs/<feature-name>/` directory if it doesn't exist.
+For each approved row, create `docs/features/<slug>/specs/<spec-name>.md`. The slug is the feature folder name (e.g., `2026-04-06-token-discipline`). If no brief exists and the user described the feature inline, derive a kebab-case slug yourself: `YYYY-MM-DD-<short-name>`. Lazy-create `docs/features/<slug>/specs/` if it doesn't exist.
 
 **Why:** Each spec must be self-contained — a fresh session should be able to execute it without reading the Feature Brief. Copy relevant constraints and context into each spec.
 
@@ -64,7 +64,7 @@ Use this structure:
 ```markdown
 # [Verb + Object] — Atomic Spec
 
-> **Parent Brief:** `docs/briefs/YYYY-MM-DD-feature-name.md` (or "standalone")
+> **Parent Brief:** `docs/features/<slug>/brief.md` (or "standalone")
 > **Status:** Ready
 > **Date:** YYYY-MM-DD
 > **Estimated scope:** [1 session / N files / ~N lines]
@@ -120,6 +120,28 @@ If `docs/templates/ATOMIC_SPEC_TEMPLATE.md` exists, reference it for the full te
 
 Fill in all sections — each spec must be self-contained (no "see the brief for context"). Copy relevant constraints from the Feature Brief into each spec. Write acceptance criteria specific to THIS spec, not the whole feature. Every acceptance criterion must have at least one corresponding test in the Test Plan. If the user provided test strategy info from the interview, use it to choose test types and frameworks. Include the test harness verification rules in every Test Plan.
 
+### Step 5a: Write the Spec Queue Manifest
+
+After all spec `.md` files are written, create `.joycraft-spec-queue.json` in the specs directory alongside the spec files and README. This manifest is the machine-readable, authoritative spec queue consumed by the Pi pipeline automation.
+
+```json
+{
+  "feature": "<slug>",
+  "specs": [
+    { "id": 1, "file": "<spec-name>.md", "depends_on": [], "status": "active" },
+    { "id": 2, "file": "<spec-name>.md", "depends_on": [1], "status": "active" }
+  ]
+}
+```
+
+Map each row in your decomposition table to a spec entry:
+- `id`: sequential integer starting from 1 (matches the decomposition table's # column)
+- `file`: the spec filename relative to the specs directory
+- `depends_on`: array of spec ids this spec depends on (empty array `[]` for no dependencies)
+- `status`: always `"active"` initially — the Pi pipeline marks specs `"complete"` as it executes them
+
+Validate: every id referenced in `depends_on` must exist as an `id` in the specs array.
+
 ## Step 6: Recommend Execution Strategy
 
 Based on the dependency graph:
@@ -134,7 +156,7 @@ Update the Feature Brief's Execution Strategy section with the plan (if a brief 
 Tell the user:
 ```
 Decomposition complete:
-- [N] atomic specs created in docs/specs/
+- [N] atomic specs created in docs/features/<slug>/specs/
 - [N] can run in parallel, [N] are sequential
 - Estimated total: [N] sessions
 

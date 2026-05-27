@@ -77,6 +77,21 @@ One paragraph — what changes when this spec is done?
 ## Why
 One sentence — what breaks or is missing without this?
 
+## External API Contract
+
+_Include this section ONLY when the spec touches a third-party SDK, package, or service API. Omit it entirely otherwise._
+
+**Package:** `<npm-package-name>`
+
+**Canonical sources:**
+- <link to docs>
+- <link to types>
+
+**Key API facts (validated against vX.Y.Z):**
+- <fact 1>
+- <fact 2>
+
+
 ## Acceptance Criteria
 - [ ] [Observable behavior]
 - [ ] Build passes

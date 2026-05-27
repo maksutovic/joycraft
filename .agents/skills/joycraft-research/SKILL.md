@@ -19,7 +19,7 @@ Read the brief and identify which zones of the codebase are relevant. Generate 5
 - **Specific to the codebase**
 - **Answerable by reading code**
 
-Write the questions to `docs/research/.questions-tmp.md`. **Do NOT include any content from the brief.**
+Write the questions to `docs/features/<slug>/.questions-tmp.md`. **Do NOT include any content from the brief.**
 
 ---
 
@@ -60,11 +60,11 @@ OUTPUT FORMAT:
 
 ## Phase 3: Write the Research Document
 
-Write the subagent's response to `docs/research/YYYY-MM-DD-feature-name.md`. Delete the temporary questions file.
+Write the subagent's response to `docs/features/<slug>/research.md`. Delete the temporary questions file.
 
 Present:
 ```
-Research complete: docs/research/YYYY-MM-DD-feature-name.md
+Research complete: docs/features/<slug>/research.md
 
 This document contains objective facts — no opinions or recommendations.
 

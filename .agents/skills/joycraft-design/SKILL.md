@@ -7,7 +7,7 @@ description: Design discussion before decomposition — produce a ~200-line desi
 
 You are producing a design discussion document for a feature. This sits between research and decomposition — it captures your understanding so the human can catch wrong assumptions before specs are written.
 
-**Guard clause:** If no brief path is provided and no brief exists in `docs/briefs/`, say:
+**Guard clause:** If no brief path is provided and no brief exists at `docs/features/<slug>/brief.md`, say:
 "No feature brief found. Run `$joycraft-new-feature` first to create one, or provide the path to your brief."
 Then stop.
 
@@ -30,7 +30,7 @@ Each subagent should search the codebase and read files to gather file paths, fu
 
 ## Step 3: Write the Design Document
 
-Create `docs/designs/` directory if it doesn't exist. Write to `docs/designs/YYYY-MM-DD-feature-name.md`.
+Write to `docs/features/<slug>/design.md`. Lazy-create `docs/features/<slug>/` if it doesn't exist.
 
 The document has exactly five sections:
 
@@ -53,7 +53,7 @@ Things where multiple valid approaches exist. Each question MUST present 2-3 con
 
 Present the design document. Say:
 ```
-Design discussion written to docs/designs/YYYY-MM-DD-feature-name.md
+Design discussion written to docs/features/<slug>/design.md
 
 Please review. Specifically:
 1. Are the patterns in Section 3 right?

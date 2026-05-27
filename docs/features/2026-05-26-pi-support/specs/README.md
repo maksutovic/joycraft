@@ -10,10 +10,12 @@
 | 0 | [sync-skills-to-per-feature-layout](./sync-skills-to-per-feature-layout.md) | — | Complete |
 | 1 | [add-pi-skills](./add-pi-skills.md) | 0 | Complete |
 | 2 | [add-spec-queue-manifest](./add-spec-queue-manifest.md) | — | Complete |
-| 3 | [add-pi-pipeline-runtime](./add-pi-pipeline-runtime.md) | 2 | Complete |
-| 4 | [wire-pi-init](./wire-pi-init.md) | 1, 3 | Complete |
-| 5 | [wire-pi-upgrade](./wire-pi-upgrade.md) | 1, 4 | Complete |
-| 6 | [add-pi-tests](./add-pi-tests.md) | 1, 4 | Complete |
+| 3 | [add-pi-pipeline-runtime](./add-pi-pipeline-runtime.md) | 2 | Complete (BROKEN — see #7) |
+| 4 | [wire-pi-init](./wire-pi-init.md) | 1, 3 | Complete (re-verify after #7) |
+| 5 | [wire-pi-upgrade](./wire-pi-upgrade.md) | 1, 4 | Complete (re-verify after #7) |
+| 6 | [add-pi-tests](./add-pi-tests.md) | 1, 4 | Complete (may need updates after #7) |
+| 7 | [fix-pi-extension-api](./fix-pi-extension-api.md) | — | **READY** |
+| 8 | [add-api-safety-guards](./add-api-safety-guards.md) | — | **READY** |
 
 ## Execution Waves
 
@@ -32,6 +34,10 @@
 - **Spec 5** — `wire-pi-upgrade`: Pi in managed files
 - **Spec 6** — `add-pi-tests`: comprehensive test suite
 
+### Wave 4 (post-mortem fix — parallel, independent)
+- **Spec 7** — `fix-pi-extension-api`: Rewrite extension to real Pi SDK (fixes broken spec 3)
+- **Spec 8** — `add-api-safety-guards`: Encode 6 preventive layers into Joycraft templates
+
 ## Dependency Graph
 
 ```
@@ -40,11 +46,14 @@
                    3 (runtime) ────┘                │
                    ↑                                └──> 6 (tests)
                    2 (manifest) — independent
+
+7 (fix extension)   — independent fix for broken spec 3
+8 (safety guards)   — independent Joycraft infra improvement
 ```
 
 ## Estimated Total
 
-**7 sessions** (one per spec). 3 can run in parallel → ~4 sequential execution slots.
+**9 sessions total** (7 original + 2 post-mortem). Specs 7 and 8 can run in parallel.
 
 ## To Execute
 
