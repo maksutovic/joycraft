@@ -52,7 +52,7 @@ function generateCommandsBlock(stack: StackInfo): string {
   return lines.join('\n');
 }
 
-function generateBoundariesSection(): string {
+export function generateBoundariesSection(): string {
   return `## Behavioral Boundaries
 
 ### ALWAYS

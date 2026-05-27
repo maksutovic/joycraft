@@ -4,7 +4,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { init } from '../src/init';
-import { CODEX_SKILLS } from '../src/bundled-files';
+import { CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from '../src/bundled-files';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -507,6 +507,124 @@ describe('init', () => {
       expect(readFileSync(join(tmpDir, '.claude', 'skills', 'my-custom-skill.md'), 'utf-8')).toBe('my skill');
       // Joycraft skills are added
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
+    });
+  });
+
+  describe('Pi support', () => {
+    it('installs Pi skills to .pi/skills/', async () => {
+      await init(tmpDir, { force: false });
+
+      const piSkillsDir = join(tmpDir, '.pi', 'skills');
+      expect(existsSync(piSkillsDir)).toBe(true);
+      expect(existsSync(join(piSkillsDir, 'joycraft-tune', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(piSkillsDir, 'joycraft-implement', 'SKILL.md'))).toBe(true);
+      expect(existsSync(join(piSkillsDir, 'joycraft-decompose', 'SKILL.md'))).toBe(true);
+    });
+
+    it('installs 18 Pi skill directories', async () => {
+      await init(tmpDir, { force: false });
+
+      const piSkillsDir = join(tmpDir, '.pi', 'skills');
+      const dirs = require('node:fs').readdirSync(piSkillsDir, { withFileTypes: true })
+        .filter((d: { isDirectory: () => boolean }) => d.isDirectory())
+        .filter((d: { name: string }) => d.name.startsWith('joycraft-'));
+      expect(dirs.length).toBe(18);
+    });
+
+    it('installs pipeline bash scripts to .pi/scripts/joycraft/', async () => {
+      await init(tmpDir, { force: false });
+
+      const scriptsDir = join(tmpDir, '.pi', 'scripts', 'joycraft');
+      expect(existsSync(scriptsDir)).toBe(true);
+      expect(existsSync(join(scriptsDir, 'joycraft-spec-status'))).toBe(true);
+      expect(existsSync(join(scriptsDir, 'joycraft-mark-done'))).toBe(true);
+      expect(existsSync(join(scriptsDir, 'joycraft-next-spec'))).toBe(true);
+      expect(existsSync(join(scriptsDir, 'joycraft-session-end'))).toBe(true);
+      expect(existsSync(join(scriptsDir, 'README.md'))).toBe(true);
+    });
+
+    it('makes bash scripts executable', async () => {
+      await init(tmpDir, { force: false });
+
+      const { statSync: st } = require('node:fs');
+      const scriptsDir = join(tmpDir, '.pi', 'scripts', 'joycraft');
+      for (const name of ['joycraft-spec-status', 'joycraft-mark-done', 'joycraft-next-spec', 'joycraft-session-end']) {
+        const mode = st(join(scriptsDir, name)).mode;
+        expect(mode & 0o111).not.toBe(0);
+      }
+    });
+
+    it('does not make README.md executable', async () => {
+      await init(tmpDir, { force: false });
+
+      const { statSync: st } = require('node:fs');
+      const readmePath = join(tmpDir, '.pi', 'scripts', 'joycraft', 'README.md');
+      const mode = st(readmePath).mode;
+      expect(mode & 0o111).toBe(0);
+    });
+
+    it('installs extension to .pi/extensions/', async () => {
+      await init(tmpDir, { force: false });
+
+      const extPath = join(tmpDir, '.pi', 'extensions', 'joycraft-pipeline.ts');
+      expect(existsSync(extPath)).toBe(true);
+      const content = readFileSync(extPath, 'utf-8');
+      expect(content).toContain('joycraft_next_spec');
+    });
+
+    it('installs subagent definitions to .pi/agents/', async () => {
+      await init(tmpDir, { force: false });
+
+      const agentsDir = join(tmpDir, '.pi', 'agents');
+      expect(existsSync(join(agentsDir, 'joycraft-researcher.md'))).toBe(true);
+      expect(existsSync(join(agentsDir, 'joycraft-verifier.md'))).toBe(true);
+
+      const researcher = readFileSync(join(agentsDir, 'joycraft-researcher.md'), 'utf-8');
+      expect(researcher).toContain('name: joycraft-researcher');
+
+      const verifier = readFileSync(join(agentsDir, 'joycraft-verifier.md'), 'utf-8');
+      expect(verifier).toContain('name: joycraft-verifier');
+    });
+
+    it('is idempotent — second init skips Pi files', async () => {
+      await init(tmpDir, { force: false });
+      const content = readFileSync(join(tmpDir, '.pi', 'skills', 'joycraft-tune', 'SKILL.md'), 'utf-8');
+
+      // Second init
+      await init(tmpDir, { force: false });
+
+      // Content should be unchanged (skipped)
+      const content2 = readFileSync(join(tmpDir, '.pi', 'skills', 'joycraft-tune', 'SKILL.md'), 'utf-8');
+      expect(content2).toBe(content);
+    });
+
+    it('overwrites Pi files with --force', async () => {
+      await init(tmpDir, { force: false });
+
+      // Modify a skill
+      writeFileSync(join(tmpDir, '.pi', 'skills', 'joycraft-tune', 'SKILL.md'), 'modified');
+
+      // Force re-init
+      await init(tmpDir, { force: true });
+
+      const content = readFileSync(join(tmpDir, '.pi', 'skills', 'joycraft-tune', 'SKILL.md'), 'utf-8');
+      expect(content).not.toBe('modified');
+    });
+
+    it('includes Pi files in .joycraft-version hashes', async () => {
+      await init(tmpDir, { force: false });
+
+      const version = JSON.parse(readFileSync(join(tmpDir, '.joycraft-version'), 'utf-8'));
+      const piKeys = Object.keys(version.files).filter(k => k.startsWith('.pi'));
+
+      // Check Pi skills
+      expect(piKeys.some(k => k.includes('.pi/skills/joycraft-tune/SKILL.md'))).toBe(true);
+      // Check Pi scripts
+      expect(piKeys.some(k => k.includes('.pi/scripts/joycraft/joycraft-next-spec'))).toBe(true);
+      // Check Pi extension
+      expect(piKeys.some(k => k.includes('.pi/extensions/joycraft-pipeline.ts'))).toBe(true);
+      // Check Pi agents
+      expect(piKeys.some(k => k.includes('.pi/agents/joycraft-researcher.md'))).toBe(true);
     });
   });
 });

@@ -39,6 +39,7 @@
     "commander": "^13.1.0"
   },
   "devDependencies": {
+    "@sinclair/typebox": "^0.34.49",
     "@types/node": "^22.13.0",
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",

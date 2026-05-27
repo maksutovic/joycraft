@@ -8,7 +8,7 @@ description: Design discussion before decomposition — produce a ~200-line desi
 You are producing a design discussion document for a feature. This sits between research and decomposition — it captures your understanding so the human can catch wrong assumptions before specs are written.
 
 **Guard clause:** If no brief path is provided and no brief exists at `docs/features/<slug>/brief.md`, say:
-"No feature brief found. Run `$joycraft-new-feature` first to create one, or provide the path to your brief."
+"No feature brief found. Run `/skill:joycraft-new-feature` first to create one, or provide the path to your brief."
 Then stop.
 
 ---
@@ -63,11 +63,11 @@ Please review. Specifically:
 Reply with your feedback. I will NOT proceed to decomposition until you have reviewed and approved.
 ```
 
-**CRITICAL: Do NOT proceed to `$joycraft-decompose` or generate specs.** Wait for human review.
+**CRITICAL: Do NOT proceed to `/skill:joycraft-decompose` or generate specs.** Wait for human review.
 
 ## After Human Review
 
 - Update the design document with corrections
 - Move answered questions to Resolved Design Decisions
 - Present for final confirmation
-- Only after explicit approval: "Design approved. Run `$joycraft-decompose` with this brief to generate atomic specs."
+- Only after explicit approval: "Design approved. Run `/skill:joycraft-decompose` with this brief to generate atomic specs."

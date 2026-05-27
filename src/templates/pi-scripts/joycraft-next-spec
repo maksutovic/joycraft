@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+# joycraft-next-spec — Find the next uncompleted spec respecting dependency order.
+# Usage: joycraft-next-spec [specs-dir]
+# Outputs: file path of the next spec, or "Pipeline complete" if all done.
+
+set -euo pipefail
+
+SPECS_DIR="${1:-docs/features/*/specs}"
+
+# Find the manifest
+MANIFEST_PATH=$(ls "$SPECS_DIR"/.joycraft-spec-queue.json 2>/dev/null | head -1)
+
+if [ -z "$MANIFEST_PATH" ]; then
+  echo "No .joycraft-spec-queue.json found" >&2
+  exit 1
+fi
+
+SPECS_DIR_REAL=$(dirname "$MANIFEST_PATH")
+MANIFEST="$MANIFEST_PATH"
+
+# Parse JSON with grep+sed: extract active specs
+# Build an associative representation using temp files
+TMPDIR=$(mktemp -d)
+trap 'rm -rf $TMPDIR' EXIT
+
+# Extract all spec entries
+grep -o '{[^}]*}' "$MANIFEST" | while IFS= read -r entry; do
+  id=$(echo "$entry" | sed -n 's/.*"id": *\([0-9]*\).*/\1/p')
+  file=$(echo "$entry" | sed -n 's/.*"file": *"\([^"]*\)".*/\1/p')
+  status=$(echo "$entry" | sed -n 's/.*"status": *"\([^"]*\)".*/\1/p')
+  deps=$(echo "$entry" | sed -n 's/.*"depends_on": *\[\([^]]*\)\].*/\1/p')
+  
+  if [ -n "$id" ] && [ -n "$file" ] && [ -n "$status" ]; then
+    echo "$id|$file|$status|$deps" >> "$TMPDIR/specs.txt"
+  fi
+done
+
+if [ ! -f "$TMPDIR/specs.txt" ]; then
+  echo "Pipeline complete"
+  exit 0
+fi
+
+# Build complete set
+while IFS='|' read -r id file status deps; do
+  if [ "$status" = "complete" ]; then
+    echo "$id" >> "$TMPDIR/complete.txt"
+  fi
+done < "$TMPDIR/specs.txt"
+
+touch "$TMPDIR/complete.txt"
+
+# Find first active spec whose deps are all complete
+while IFS='|' read -r id file status deps; do
+  if [ "$status" != "active" ]; then
+    continue
+  fi
+  
+  # Check dependencies
+  all_deps_met=true
+  if [ -n "$(echo "$deps" | tr -d '[:space:]')" ]; then
+    for dep_id in $(echo "$deps" | tr ',' ' ' | tr -d '[:space:]'); do
+      if ! grep -q "^$dep_id$" "$TMPDIR/complete.txt"; then
+        all_deps_met=false
+        break
+      fi
+    done
+  fi
+  
+  if $all_deps_met; then
+    echo "$SPECS_DIR_REAL/$file"
+    exit 0
+  fi
+done < "$TMPDIR/specs.txt"
+
+# If we get here, no eligible spec found
+remaining=$(grep -c '"active"' "$TMPDIR/specs.txt" 2>/dev/null || echo 0)
+if [ "$remaining" -gt 0 ]; then
+  echo "All remaining specs blocked — unmet dependencies" >&2
+  exit 1
+fi
+
+echo "Pipeline complete"

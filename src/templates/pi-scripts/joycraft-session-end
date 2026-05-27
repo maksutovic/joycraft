@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# joycraft-session-end — Capture discoveries, validate, and stage changes for a Joycraft session.
+# Usage: joycraft-session-end [spec-name]
+
+set -euo pipefail
+
+SPEC_NAME="${1:-unknown}"
+
+echo "Joycraft Session End"
+echo "═══════════════════"
+echo ""
+
+# 1. Validate
+echo "► Running validation..."
+if pnpm test 2>/dev/null && pnpm build 2>/dev/null; then
+  echo "  ✓ Validation passed"
+else
+  echo "  ✗ Validation failed — fix before proceeding"
+  exit 1
+fi
+
+# 2. Capture discoveries (interactive prompt handled by agent, this just stages)
+DISCOVERIES_DIR="docs/discoveries"
+if [ -d "$DISCOVERIES_DIR" ]; then
+  # Check for uncommitted discoveries
+  if git diff --name-only -- "$DISCOVERIES_DIR" | grep -q .; then
+    echo "► Discoveries to review in $DISCOVERIES_DIR"
+  fi
+fi
+
+# 3. Stage all changes
+echo "► Staging changes..."
+git add -A
+
+echo ""
+echo "Session complete — $SPEC_NAME"
+echo "Ready for commit. Run: git commit -m 'spec: $SPEC_NAME'"

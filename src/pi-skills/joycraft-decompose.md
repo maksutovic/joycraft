@@ -11,7 +11,7 @@ You have a Feature Brief (or the user has described a feature). Your job is to d
 
 Look for a Feature Brief at `docs/features/<slug>/brief.md`. If the user provided a brief path as an argument, use that. Otherwise, scan `docs/features/*/brief.md`. If one doesn't exist yet, tell the user:
 
-> No feature brief found. Run `$joycraft-new-feature` first to interview and create one, or describe the feature now and I'll work from your description.
+> No feature brief found. Run `/skill:joycraft-new-feature` first to interview and create one, or describe the feature now and I'll work from your description.
 
 If the user describes the feature inline, work from that description directly. You don't need a formal brief to decompose — but recommend creating one for complex features.
 
@@ -163,7 +163,7 @@ Decomposition complete:
 To execute:
 - Sequential: Open a session, point at each spec in order
 - Parallel: One spec per branch, merge when done
-- Each session should end with $joycraft-session-end to capture discoveries
+- Each session should end with /skill:joycraft-session-end to capture discoveries
 
 Ready to start execution?
 

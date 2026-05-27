@@ -45,7 +45,7 @@ Use this format:
 
 > **Date:** YYYY-MM-DD
 > **Status:** DRAFT
-> **Origin:** $joycraft-interview session
+> **Origin:** /skill:joycraft-interview session
 
 ---
 
@@ -83,15 +83,15 @@ Draft brief saved to docs/features/<slug>/brief.md
 When you're ready to move forward, pick the path that fits the complexity:
 
 COMPLEX (5+ files, architectural decisions, unfamiliar area):
-  $joycraft-new-feature → $joycraft-research → $joycraft-design → $joycraft-decompose
+  /skill:joycraft-new-feature → /skill:joycraft-research → /skill:joycraft-design → /skill:joycraft-decompose
 
 MEDIUM (clear scope but non-trivial):
-  $joycraft-new-feature → $joycraft-design → $joycraft-decompose
+  /skill:joycraft-new-feature → /skill:joycraft-design → /skill:joycraft-decompose
 
 SIMPLE (scope is clear, < 5 files, well-understood area):
-  $joycraft-new-feature → $joycraft-decompose
+  /skill:joycraft-new-feature → /skill:joycraft-decompose
 
-Not sure yet? Just keep brainstorming — run $joycraft-interview again anytime.
+Not sure yet? Just keep brainstorming — run /skill:joycraft-interview again anytime.
 
 Run /clear before your next step — your artifacts are saved to files.
 ```
@@ -100,7 +100,7 @@ If the idea sounds complex — touches many files, involves architectural decisi
 
 ## Guidelines
 
-- **This is NOT $joycraft-new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
+- **This is NOT /skill:joycraft-new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
 - **Let the user lead.** Your job is to listen, clarify, and capture — not to structure or direct.
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.

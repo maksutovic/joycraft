@@ -21,7 +21,7 @@ Ask the user:
 
 If the user says "actually solo," bail before any writes:
 
-> "No problem. The solo workflow needs no extra setup. Run `/joycraft-new-feature` when you want to start a feature."
+> "No problem. The solo workflow needs no extra setup. Run `/skill:joycraft-new-feature` when you want to start a feature."
 
 ## Step 2: Check for Flat Layout — Bail if Present
 
@@ -118,7 +118,7 @@ We use [Joycraft](https://www.npmjs.com/package/joycraft) for AI-assisted develo
 
 ## How our team uses it
 
-(Filled in during /joycraft-collaborative-setup — fill this in with your team's specific conventions.)
+(Filled in during /skill:joycraft-collaborative-setup — fill this in with your team's specific conventions.)
 
 ## Conventions
 
@@ -153,7 +153,7 @@ Summarize what you wrote (paths to area READMEs, the CONTRIBUTING doc, any bound
 
 Next:
 ```bash
-/joycraft-new-feature
+/skill:joycraft-new-feature
 ```
 Run /clear first.
 

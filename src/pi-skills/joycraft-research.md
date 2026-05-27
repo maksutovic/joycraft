@@ -23,9 +23,9 @@ Write the questions to `docs/features/<slug>/.questions-tmp.md`. **Do NOT includ
 
 ---
 
-## Phase 2: Spawn Research Subagent
+## Phase 2: Deploy Research Subagent
 
-Spawn a subagent to perform the research. Pass ONLY the research questions — never the brief.
+Use the `subagent` tool with agent `joycraft-researcher` to perform the research. Pass ONLY the research questions — never the brief. Build the prompt from the questions file you just wrote.
 
 Subagent prompt:
 ```
@@ -69,12 +69,12 @@ Research complete: docs/features/<slug>/research.md
 This document contains objective facts — no opinions or recommendations.
 
 Recommended next step:
-- $joycraft-design — translate research findings into architectural decisions before building
+- /skill:joycraft-design — translate research findings into architectural decisions before building
 
 If the scope is simple (< 5 files, well-understood area, no architectural decisions):
-- $joycraft-decompose — skip design and break directly into atomic specs
+- /skill:joycraft-decompose — skip design and break directly into atomic specs
 
 Other options:
-- $joycraft-new-feature — formalize into a full Feature Brief first
+- /skill:joycraft-new-feature — formalize into a full Feature Brief first
 - Read the research and add corrections manually
 ```
