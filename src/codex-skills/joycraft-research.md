@@ -19,6 +19,10 @@ Read the brief and identify which zones of the codebase are relevant. Generate 5
 - **Specific to the codebase**
 - **Answerable by reading code**
 
+**Output path:**
+- If a brief exists at `docs/features/<slug>/brief.md`, write to `docs/features/<slug>/research.md` (per-feature layout).
+- If no brief exists (inline description only), write to `docs/research/YYYY-MM-DD-feature-name.md` (flat layout).
+
 Write the questions to `docs/features/<slug>/.questions-tmp.md`. **Do NOT include any content from the brief.**
 
 ---
@@ -61,6 +65,15 @@ OUTPUT FORMAT:
 ## Phase 3: Write the Research Document
 
 Write the subagent's response to `docs/features/<slug>/research.md`. Delete the temporary questions file.
+
+### Update the Feature Brief
+
+After writing the research document, update the parent brief with a back-reference:
+1. Read `docs/features/<slug>/brief.md`
+2. In the header blockquote (the `>` lines at the top), add or update:
+   `> **Research:** docs/features/<slug>/research.md`
+3. If a `> **Research:**` line already exists, replace it — do NOT add a duplicate
+4. Write the brief back
 
 Present:
 ```

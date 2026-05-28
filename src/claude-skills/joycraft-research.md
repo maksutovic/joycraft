@@ -45,6 +45,10 @@ Bad examples (do NOT generate these):
 - "What would a good architecture look like?" (design, not research)
 
 Derive a slug `YYYY-MM-DD-<feature-name>`. Lazy-create the folder `docs/features/<slug>/`.
+
+**Output path:**
+- If a brief exists at `docs/features/<slug>/brief.md`, write to `docs/features/<slug>/research.md` (per-feature layout).
+- If no brief exists (inline description only), write to `docs/research/YYYY-MM-DD-feature-name.md` (flat layout).
 Write the questions to a temporary file at `docs/features/<slug>/.questions-tmp.md`.
 
 **Do NOT include any content from the brief in this file — only the questions.**
@@ -107,6 +111,15 @@ feature: <slug>
 **Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
 
 Delete the temporary questions file (`docs/features/<slug>/.questions-tmp.md`).
+
+### Update the Feature Brief
+
+After writing the research document, update the parent brief with a back-reference:
+1. Read `docs/features/<slug>/brief.md`
+2. In the header blockquote (the `>` lines at the top), add or update:
+   `> **Research:** docs/features/<slug>/research.md`
+3. If a `> **Research:**` line already exists, replace it — do NOT add a duplicate
+4. Write the brief back
 
 End with the canonical Handoff block.
 
