@@ -67,6 +67,12 @@
       "file": "add-api-safety-guards.md",
       "depends_on": [],
       "status": "complete"
+    },
+    {
+      "id": 9,
+      "file": "fix-decompose-pi-handoff.md",
+      "depends_on": [],
+      "status": "active"
     }
   ]
 }
