@@ -34,6 +34,11 @@ Specs are designed to be self-contained, but if you need more context:
 - **Related specs:** Live in the same directory. The spec directory convention is `docs/features/<slug>/specs/` where the slug is the feature folder name (e.g., `2026-04-06-token-discipline`). Bugfix specs live under `docs/bugfixes/<area>/`.
 - **Affected Files:** The spec's Affected Files table tells you which files to create or modify.
 
+
+### Before writing code against an external API:
+
+⚠️ If the spec references a third-party SDK or package, read its official documentation and type definitions FIRST. Never write a `declare module` stub for a package that actually exists — use the real package as a devDependency instead. The stub will make typecheck pass but the code will fail at runtime.
+
 ## Step 3: Execute the TDD Cycle
 
 **This is not optional. Write tests FIRST.**

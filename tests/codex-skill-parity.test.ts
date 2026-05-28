@@ -171,4 +171,40 @@ describe('Pi skill parity', () => {
       expect(piNames).toEqual(claudeNames);
     });
   });
+
+  // --- Spec 2: Back-References parity ---
+  describe('Codex research and design skills include brief back-reference parity with Pi skills', () => {
+    it('codex joycraft-research.md contains **Research:** back-reference', () => {
+      const content = readFileSync(join(CODEX_SKILLS_DIR, 'joycraft-research.md'), 'utf-8');
+      expect(content).toContain('**Research:**');
+    });
+
+    it('codex joycraft-research.md references brief.md for back-reference', () => {
+      const content = readFileSync(join(CODEX_SKILLS_DIR, 'joycraft-research.md'), 'utf-8');
+      expect(content).toContain('brief.md');
+    });
+
+    it('codex joycraft-design.md contains **Design:** back-reference', () => {
+      const content = readFileSync(join(CODEX_SKILLS_DIR, 'joycraft-design.md'), 'utf-8');
+      expect(content).toContain('**Design:**');
+    });
+
+    it('codex joycraft-design.md references brief.md for back-reference', () => {
+      const content = readFileSync(join(CODEX_SKILLS_DIR, 'joycraft-design.md'), 'utf-8');
+      expect(content).toContain('brief.md');
+    });
+  });
+
+  // --- Spec 3: Fallback Paths parity ---
+  describe('Codex research skill has fallback output path parity with Pi skills', () => {
+    it('codex joycraft-research.md mentions docs/research/ as fallback path', () => {
+      const content = readFileSync(join(CODEX_SKILLS_DIR, 'joycraft-research.md'), 'utf-8');
+      expect(content).toContain('docs/research/');
+    });
+
+    it('codex joycraft-research.md retains docs/features/<slug>/research.md as primary path', () => {
+      const content = readFileSync(join(CODEX_SKILLS_DIR, 'joycraft-research.md'), 'utf-8');
+      expect(content).toMatch(/docs\/features\/.*research\.md/);
+    });
+  });
 });
