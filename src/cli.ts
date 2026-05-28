@@ -58,7 +58,7 @@ program
       if (res.ok) {
         const latest = ((await res.json()) as { version: string }).version;
         if (data.version !== latest) {
-          console.log(`Joycraft ${latest} available (you have ${data.version}). Run: npx joycraft upgrade`);
+          console.log(`Joycraft ${latest} available (you have ${data.version}). Run: npm install -g joycraft`);
         }
       }
     } catch {

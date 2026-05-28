@@ -16,6 +16,7 @@
 | 6 | [add-pi-tests](./add-pi-tests.md) | 1, 4 | Complete (may need updates after #7) |
 | 7 | [fix-pi-extension-api](./fix-pi-extension-api.md) | — | **READY** |
 | 8 | [add-api-safety-guards](./add-api-safety-guards.md) | — | **READY** |
+| 9 | [fix-decompose-pi-handoff](./fix-decompose-pi-handoff.md) | — | **READY** |
 
 ## Execution Waves
 
@@ -47,13 +48,14 @@
                    ↑                                └──> 6 (tests)
                    2 (manifest) — independent
 
-7 (fix extension)   — independent fix for broken spec 3
-8 (safety guards)   — independent Joycraft infra improvement
+7 (fix extension)        — independent fix for broken spec 3
+8 (safety guards)        — independent Joycraft infra improvement
+9 (decompose handoff)    — skill Step 7 bypasses Pi autonomy loop
 ```
 
 ## Estimated Total
 
-**9 sessions total** (7 original + 2 post-mortem). Specs 7 and 8 can run in parallel.
+**10 sessions total** (7 original + 3 post-mortem). Specs 7, 8, and 9 can run in parallel.
 
 ## To Execute
 
