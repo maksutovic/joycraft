@@ -201,7 +201,7 @@ try {
   const res = await fetch('https://registry.npmjs.org/joycraft/latest', { signal: AbortSignal.timeout(3000) });
   if (res.ok) {
     const latest = (await res.json()).version;
-    if (data.version !== latest) console.log('Joycraft ' + latest + ' available (you have ' + data.version + '). Run: npx joycraft upgrade');
+    if (data.version !== latest) console.log('Joycraft ' + latest + ' available (you have ' + data.version + '). Run: npm install -g joycraft');
   }
 } catch {}
 `;

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,6 +41,32 @@ describe('upgrade', () => {
 
     expect(logs.some(l => l.includes('not been initialized'))).toBe(true);
     expect(logs.some(l => l.includes('npx joycraft init'))).toBe(true);
+  });
+
+  it('warns and exits early when CLI is stale', async () => {
+    await init(tmpDir, { force: false });
+
+    // Mock fetch to return a newer version than the current CLI
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ version: '999.0.0' }),
+    }) as unknown as typeof fetch;
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: false });
+    } finally {
+      console.log = origLog;
+      globalThis.fetch = origFetch;
+    }
+
+    expect(logs.some(l => l.includes('Joycraft CLI is out of date'))).toBe(true);
+    expect(logs.some(l => l.includes('npm install -g joycraft'))).toBe(true);
+    expect(logs.some(l => l.includes('re-run: npx joycraft upgrade'))).toBe(true);
+    expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
   });
 
   it('reports already up to date when nothing changed', async () => {

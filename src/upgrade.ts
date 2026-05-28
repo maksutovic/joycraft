@@ -6,6 +6,36 @@ import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, 
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
 
+function isStaleVersion(current: string, latest: string): boolean {
+  const currentParts = current.split('.').map(Number);
+  const latestParts = latest.split('.').map(Number);
+  const len = Math.max(currentParts.length, latestParts.length);
+  for (let i = 0; i < len; i++) {
+    const c = currentParts[i] ?? 0;
+    const l = latestParts[i] ?? 0;
+    if (c < l) return true;
+    if (c > l) return false;
+  }
+  return false;
+}
+
+async function checkCliVersion(): Promise<{ stale: boolean; latest?: string }> {
+  try {
+    const pkgVersion = getPackageVersion();
+    const res = await fetch('https://registry.npmjs.org/joycraft/latest', {
+      signal: AbortSignal.timeout(3000)
+    });
+    if (!res.ok) return { stale: false };
+    const data = (await res.json()) as { version: string };
+    if (isStaleVersion(pkgVersion, data.version)) {
+      return { stale: true, latest: data.version };
+    }
+  } catch {
+    // Silent fallback on network errors or missing version
+  }
+  return { stale: false };
+}
+
 export interface UpgradeOptions {
   yes: boolean;
 }
@@ -196,6 +226,17 @@ function runForcedMigration(projectDir: string): void {
 
 export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> {
   const targetDir = resolve(dir);
+
+  // Guard: if the CLI itself is out of date, warn and bail before comparing
+  // project files against stale bundled content.
+  const cliCheck = await checkCliVersion();
+  if (cliCheck.stale) {
+    const pkgVersion = getPackageVersion();
+    console.log(`Joycraft CLI is out of date (you have ${pkgVersion}, latest is ${cliCheck.latest}).`);
+    console.log('Update with: npm install -g joycraft');
+    console.log('Then re-run: npx joycraft upgrade');
+    return;
+  }
 
   // Check if project was initialized
   const versionInfo = readVersion(targetDir);
