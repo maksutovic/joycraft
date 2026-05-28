@@ -1,0 +1,15 @@
+{
+  "feature": "2026-05-27-pi-automation-stress-test",
+  "specs": [
+    { "id": 1, "file": "roll-die.md", "depends_on": [], "status": "active" },
+    { "id": 2, "file": "coin-flip.md", "depends_on": [], "status": "active" },
+    { "id": 3, "file": "eight-ball.md", "depends_on": [], "status": "active" },
+    { "id": 4, "file": "haiku-validator.md", "depends_on": [], "status": "active" },
+    { "id": 5, "file": "rot13.md", "depends_on": [], "status": "active" },
+    { "id": 6, "file": "fizzbuzz.md", "depends_on": [], "status": "active" },
+    { "id": 7, "file": "palindrome-check.md", "depends_on": [], "status": "active" },
+    { "id": 8, "file": "luhn-validator.md", "depends_on": [], "status": "active" },
+    { "id": 9, "file": "roman-numerals.md", "depends_on": [], "status": "active" },
+    { "id": 10, "file": "phrase-generator.md", "depends_on": [], "status": "active" }
+  ]
+}
