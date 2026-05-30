@@ -3,22 +3,20 @@
 > **Parent Brief:** `docs/features/2026-05-27-pi-automation-stress-test/brief.md`
 > **Status:** Ready
 > **Date:** 2026-05-27
-> **Estimated scope:** 1 session / 2 files / ~30 lines
+> **Estimated scope:** 1 session / 1 file / ~25 lines
 
 ---
 
 ## What
-
-A `shakeEightBall(): string` function that returns one of 20 classic Magic 8-Ball responses.
+Implement a function `shakeEightBall(): string` that returns a random response from a set of 20 classic Magic 8-Ball answers.
 
 ## Why
-
-Tests the harness can handle specs with lookup tables / data arrays.
+Without this, no fortune-telling arcade module can exist.
 
 ## Acceptance Criteria
-
-- [ ] Returns a string from the canonical 20 responses
-- [ ] Over many calls, distribution includes multiple different responses
+- [ ] Returns one of exactly 20 predefined strings
+- [ ] Every response comes from the canonical Magic 8-Ball set
+- [ ] Over many calls, different responses appear
 - [ ] Build passes
 - [ ] Tests pass
 
@@ -26,31 +24,39 @@ Tests the harness can handle specs with lookup tables / data arrays.
 
 | Acceptance Criterion | Test | Type |
 |---------------------|------|------|
-| Valid response | returned string is in canonical list | unit |
-| Randomness | 50 calls produce at least 3 unique responses | unit |
+| Returns valid response | `shakeEightBall()`; assert result is in the 20-response set | unit |
+| All 20 responses are possible | Mock `Math.random()` to return every index; assert each unique response | unit |
+| Different responses over time | Run 100 times; assert at least 2 distinct responses | unit |
 
-**Execution order:** Write tests → fail → implement → green
+**Execution order:**
+1. Write all tests above — they should fail against current/stubbed code
+2. Run tests to confirm they fail (red)
+3. Implement until all tests pass (green)
 
-**Smoke test:** Single call returns valid response
+**Smoke test:** `shakeEightBall()` returns a string from the known set (runs in milliseconds)
+
+**Before implementing, verify your test harness:**
+1. Run all tests — they must FAIL (if they pass, you're testing the wrong thing)
+2. Each test calls your actual function/endpoint — not a reimplementation or the underlying library
+3. Identify your smoke test — it must run in seconds, not minutes, so you get fast feedback on each change
 
 ## Constraints
-
-- MUST: Use exactly these 20 responses (classic Magic 8-Ball):
-  "It is certain.", "It is decidedly so.", "Without a doubt.", "Yes definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Reply hazy, try again.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful."
+- MUST: Include all 20 canonical Magic 8-Ball responses
+- MUST: Function exported from `src/arcade/eight-ball.ts`
+- MUST NOT: Touch any production code outside `src/arcade/`
+- MUST NOT: Break existing tests
 
 ## Affected Files
-
 | Action | File | What Changes |
 |--------|------|-------------|
-| Create | `src/arcade/eight-ball.ts` | Function + response array |
-| Create | `src/arcade/eight-ball.test.ts` | Tests |
+| Create | `src/arcade/eight-ball.ts` | New implementation |
+| Create | `src/arcade/eight-ball.test.ts` | New tests |
 
 ## Approach
-
-Store responses in a readonly array. Pick with `Math.floor(Math.random() * 20)`.
+Store 20 responses in a const array. Use `Math.floor(Math.random() * responses.length)` to pick one. Rejected alternative: hardcode 20 as the multiplier instead of `responses.length` — brittle if the list changes.
 
 ## Edge Cases
-
 | Scenario | Expected Behavior |
 |----------|------------------|
-| Repeated calls | Independent random selection each time |
+| `Math.random()` returns exactly `0` | Returns the first response |
+| `Math.random()` returns exactly `0.999...` | Returns the last response |

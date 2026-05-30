@@ -7,8 +7,16 @@ set -euo pipefail
 
 SPECS_DIR="${1:-docs/features/*/specs}"
 
-# Find the manifest
-MANIFEST_PATH=$(ls "$SPECS_DIR"/.joycraft-spec-queue.json 2>/dev/null | head -1)
+# Find the manifest (allow glob to expand; pick most recent if multiple)
+MANIFEST_PATH=""
+for dir in $SPECS_DIR; do
+  candidate="$dir/.joycraft-spec-queue.json"
+  if [ -f "$candidate" ]; then
+    if [ -z "$MANIFEST_PATH" ] || [ "$candidate" -nt "$MANIFEST_PATH" ]; then
+      MANIFEST_PATH="$candidate"
+    fi
+  fi
+done
 
 if [ -z "$MANIFEST_PATH" ]; then
   echo "No .joycraft-spec-queue.json found" >&2
@@ -23,17 +31,17 @@ MANIFEST="$MANIFEST_PATH"
 TMPDIR=$(mktemp -d)
 trap 'rm -rf $TMPDIR' EXIT
 
-# Extract all spec entries
-grep -o '{[^}]*}' "$MANIFEST" | while IFS= read -r entry; do
+# Extract all spec entries (use process substitution to avoid pipefail+subshell issues)
+while IFS= read -r entry; do
   id=$(echo "$entry" | sed -n 's/.*"id": *\([0-9]*\).*/\1/p')
   file=$(echo "$entry" | sed -n 's/.*"file": *"\([^"]*\)".*/\1/p')
   status=$(echo "$entry" | sed -n 's/.*"status": *"\([^"]*\)".*/\1/p')
   deps=$(echo "$entry" | sed -n 's/.*"depends_on": *\[\([^]]*\)\].*/\1/p')
-  
+
   if [ -n "$id" ] && [ -n "$file" ] && [ -n "$status" ]; then
     echo "$id|$file|$status|$deps" >> "$TMPDIR/specs.txt"
   fi
-done
+done < <(grep -o '{[^}]*}' "$MANIFEST")
 
 if [ ! -f "$TMPDIR/specs.txt" ]; then
   echo "Pipeline complete"
@@ -54,7 +62,7 @@ while IFS='|' read -r id file status deps; do
   if [ "$status" != "active" ]; then
     continue
   fi
-  
+
   # Check dependencies
   all_deps_met=true
   if [ -n "$(echo "$deps" | tr -d '[:space:]')" ]; then
@@ -65,7 +73,7 @@ while IFS='|' read -r id file status deps; do
       fi
     done
   fi
-  
+
   if $all_deps_met; then
     echo "$SPECS_DIR_REAL/$file"
     exit 0

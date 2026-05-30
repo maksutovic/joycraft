@@ -3,22 +3,20 @@
 > **Parent Brief:** `docs/features/2026-05-27-pi-automation-stress-test/brief.md`
 > **Status:** Ready
 > **Date:** 2026-05-27
-> **Estimated scope:** 1 session / 2 files / ~10 lines
+> **Estimated scope:** 1 session / 1 file / ~5 lines
 
 ---
 
 ## What
-
-A `coinFlip(): "heads" | "tails"` function that returns one of two outcomes with roughly equal probability.
+Implement a function `flipCoin(): "heads" | "tails"` that returns one of two string outcomes with equal probability.
 
 ## Why
-
-Simplest possible randomness primitive — tests the harness can handle trivial specs.
+Without this, no simple chance-based arcade games can exist.
 
 ## Acceptance Criteria
-
-- [ ] Returns only `"heads"` or `"tails"`
-- [ ] Over many flips, distribution is roughly 50/50 (within statistical tolerance)
+- [ ] Returns either `"heads"` or `"tails"` on each call
+- [ ] Over many flips, both outcomes appear
+- [ ] No arguments are required
 - [ ] Build passes
 - [ ] Tests pass
 
@@ -26,34 +24,39 @@ Simplest possible randomness primitive — tests the harness can handle trivial 
 
 | Acceptance Criterion | Test | Type |
 |---------------------|------|------|
-| Valid output | result is "heads" or "tails" | unit |
-| Distribution | 1000 flips, each appears 400–600 times | unit |
+| Returns valid string | `flipCoin()` repeated; assert every result is `"heads"` or `"tails"` | unit |
+| Both outcomes appear | Run 100 times; assert at least one heads and one tails | unit |
+| No arguments needed | Call `flipCoin()` with no args; no error | unit |
 
 **Execution order:**
-1. Write tests — they fail
-2. Implement
-3. Green
+1. Write all tests above — they should fail against current/stubbed code
+2. Run tests to confirm they fail (red)
+3. Implement until all tests pass (green)
 
-**Smoke test:** Single flip output validation
+**Smoke test:** `flipCoin()` returns `"heads"` or `"tails"` (runs in milliseconds)
+
+**Before implementing, verify your test harness:**
+1. Run all tests — they must FAIL (if they pass, you're testing the wrong thing)
+2. Each test calls your actual function/endpoint — not a reimplementation or the underlying library
+3. Identify your smoke test — it must run in seconds, not minutes, so you get fast feedback on each change
 
 ## Constraints
-
-- MUST: Return literal union type `"heads" | "tails"`
-- MUST NOT: Accept parameters
+- MUST: Return type is the literal union `"heads" | "tails"`
+- MUST: Function exported from `src/arcade/coin-flip.ts`
+- MUST NOT: Touch any production code outside `src/arcade/`
+- MUST NOT: Break existing tests
 
 ## Affected Files
-
 | Action | File | What Changes |
 |--------|------|-------------|
-| Create | `src/arcade/coin-flip.ts` | Function |
-| Create | `src/arcade/coin-flip.test.ts` | Tests |
+| Create | `src/arcade/coin-flip.ts` | New implementation |
+| Create | `src/arcade/coin-flip.test.ts` | New tests |
 
 ## Approach
-
-`Math.random() < 0.5 ? "heads" : "tails"`
+Use `Math.random() < 0.5 ? "heads" : "tails"`. Rejected alternative: `Math.round(Math.random())` mapped to array index — more indirection, same result, less readable.
 
 ## Edge Cases
-
 | Scenario | Expected Behavior |
 |----------|------------------|
-| Determinism | Each call is independent |
+| `Math.random()` returns exactly `0` | Returns `"heads"` |
+| `Math.random()` returns exactly `0.5` | Returns `"tails"` |

@@ -9,8 +9,8 @@ const skillPath = join(__dirname, '..', '.pi', 'skills', 'joycraft-decompose', '
 describe('Pi decompose skill handoff', () => {
   const content = readFileSync(skillPath, 'utf-8');
 
-  it('mentions /joycraft-next-spec for Pi autonomy loop', () => {
-    expect(content).toContain('/joycraft-next-spec');
+  it('mentions joycraft_next_spec tool for Pi autonomy loop', () => {
+    expect(content).toContain('joycraft_next_spec');
   });
 
   it('still mentions /clear for non-Pi harnesses', () => {

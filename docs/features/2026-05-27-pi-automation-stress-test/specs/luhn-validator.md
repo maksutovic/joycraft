@@ -3,23 +3,21 @@
 > **Parent Brief:** `docs/features/2026-05-27-pi-automation-stress-test/brief.md`
 > **Status:** Ready
 > **Date:** 2026-05-27
-> **Estimated scope:** 1 session / 2 files / ~25 lines
+> **Estimated scope:** 1 session / 1 file / ~20 lines
 
 ---
 
 ## What
-
-A `isLuhnValid(digits: string): boolean` function that validates a number string using the Luhn algorithm (credit card checksum).
+Implement a function `isValidLuhn(number: string): boolean` that validates whether a string of digits passes the Luhn algorithm (used for credit card numbers).
 
 ## Why
-
-Tests algorithmic implementation with digit manipulation.
+Without this, no number-puzzle arcade modules can exist.
 
 ## Acceptance Criteria
-
-- [ ] Returns `true` for valid Luhn numbers
-- [ ] Returns `false` for invalid Luhn numbers
-- [ ] Returns `false` for empty or non-digit strings
+- [ ] Returns `true` for known valid Luhn numbers
+- [ ] Returns `false` for known invalid Luhn numbers
+- [ ] Returns `false` for strings containing non-digit characters
+- [ ] Returns `false` for empty strings
 - [ ] Build passes
 - [ ] Tests pass
 
@@ -27,38 +25,49 @@ Tests algorithmic implementation with digit manipulation.
 
 | Acceptance Criterion | Test | Type |
 |---------------------|------|------|
-| Valid number | `isLuhnValid("4532015112830366")` === true | unit |
-| Invalid number | `isLuhnValid("4532015112830367")` === false | unit |
-| Empty string | `isLuhnValid("")` === false | unit |
-| Non-digits | `isLuhnValid("abc")` === false | unit |
+| Valid Luhn number | `isValidLuhn("4532015112830366") === true` | unit |
+| Invalid Luhn number | `isValidLuhn("4532015112830367") === false` | unit |
+| Non-digit chars | `isValidLuhn("4532-0151-1283-0366") === false` | unit |
+| Empty string | `isValidLuhn("") === false` | unit |
+| Single digit | `isValidLuhn("0") === true` | unit |
 
-**Execution order:** Red → green
+**Execution order:**
+1. Write all tests above — they should fail against current/stubbed code
+2. Run tests to confirm they fail (red)
+3. Implement until all tests pass (green)
 
-**Smoke test:** Valid number check
+**Smoke test:** `isValidLuhn("4532015112830366") === true` (runs in milliseconds)
+
+**Before implementing, verify your test harness:**
+1. Run all tests — they must FAIL (if they pass, you're testing the wrong thing)
+2. Each test calls your actual function/endpoint — not a reimplementation or the underlying library
+3. Identify your smoke test — it must run in seconds, not minutes, so you get fast feedback on each change
 
 ## Constraints
-
-- MUST: Implement standard Luhn algorithm
-- MUST NOT: Use external validation libraries
+- MUST: Implement the full Luhn algorithm (double every second digit from right, subtract 9 if > 9, sum divisible by 10)
+- MUST: Reject strings with non-digit characters
+- MUST: Function exported from `src/arcade/luhn-validator.ts`
+- MUST NOT: Touch any production code outside `src/arcade/`
+- MUST NOT: Break existing tests
 
 ## Affected Files
-
 | Action | File | What Changes |
 |--------|------|-------------|
-| Create | `src/arcade/luhn-validator.ts` | Function |
-| Create | `src/arcade/luhn-validator.test.ts` | Tests |
+| Create | `src/arcade/luhn-validator.ts` | New implementation |
+| Create | `src/arcade/luhn-validator.test.ts` | New tests |
 
 ## Approach
-
-1. Reverse string
-2. Double every second digit
-3. Subtract 9 from digits > 9
-4. Sum all digits
-5. Valid if sum % 10 === 0
+1. Validate all chars are digits; if not, return `false`
+2. Iterate digits from right to left
+3. Double every second digit; if result > 9, subtract 9
+4. Sum all digits; valid if sum % 10 === 0
+Rejected alternative: reverse string first, then iterate left-to-right — equivalent but adds an allocation.
 
 ## Edge Cases
-
 | Scenario | Expected Behavior |
 |----------|------------------|
-| Single digit "0" | false (sum = 0, but Luhn requires at least 2 digits typically; return false for < 2) |
-| Valid with spaces | strip spaces first |
+| Empty string | Returns `false` |
+| String with spaces | Returns `false` |
+| All zeros | Returns `true` (0 is divisible by 10) |
+| Valid number with even length | Handled correctly |
+| Valid number with odd length | Handled correctly |

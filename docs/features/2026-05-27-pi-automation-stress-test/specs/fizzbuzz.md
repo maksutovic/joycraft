@@ -3,25 +3,22 @@
 > **Parent Brief:** `docs/features/2026-05-27-pi-automation-stress-test/brief.md`
 > **Status:** Ready
 > **Date:** 2026-05-27
-> **Estimated scope:** 1 session / 2 files / ~15 lines
+> **Estimated scope:** 1 session / 1 file / ~15 lines
 
 ---
 
 ## What
-
-A `fizzbuzz(n: number): (number | "fizz" | "buzz" | "fizzbuzz")[]` function that returns the classic FizzBuzz sequence from 1 to n.
+Implement a function `fizzBuzz(n: number): string[]` that returns an array of length `n`, where multiples of 3 are `"Fizz"`, multiples of 5 are `"Buzz"`, multiples of both are `"FizzBuzz"`, and all others are the number as a string.
 
 ## Why
-
-The canonical coding interview problem — perfect for a trivial harness validation.
+Without this, no classic programming puzzle arcade module can exist.
 
 ## Acceptance Criteria
-
-- [ ] Multiples of 3 → "fizz"
-- [ ] Multiples of 5 → "buzz"
-- [ ] Multiples of 15 → "fizzbuzz"
-- [ ] Others → the number
-- [ ] Returns array of length n
+- [ ] Returns array of length `n`
+- [ ] Index 1 (first element) is `"1"`
+- [ ] Multiples of 3 are `"Fizz"`
+- [ ] Multiples of 5 are `"Buzz"`
+- [ ] Multiples of 15 are `"FizzBuzz"`
 - [ ] Build passes
 - [ ] Tests pass
 
@@ -29,34 +26,45 @@ The canonical coding interview problem — perfect for a trivial harness validat
 
 | Acceptance Criterion | Test | Type |
 |---------------------|------|------|
-| First 15 correct | snapshot or exact array check | unit |
-| Length | `fizzbuzz(100).length === 100` | unit |
-| fizzbuzz value | `fizzbuzz(15)[14] === "fizzbuzz"` | unit |
-| Number preserved | `fizzbuzz(15)[0] === 1` | unit |
+| Correct length | `fizzBuzz(5).length === 5` | unit |
+| First element is "1" | `fizzBuzz(5)[0] === "1"` | unit |
+| Multiple of 3 | `fizzBuzz(3)[2] === "Fizz"` | unit |
+| Multiple of 5 | `fizzBuzz(5)[4] === "Buzz"` | unit |
+| Multiple of 15 | `fizzBuzz(15)[14] === "FizzBuzz"` | unit |
+| Non-multiple is string number | `fizzBuzz(2)[1] === "2"` | unit |
+| `n = 0` | Returns empty array | unit |
 
-**Execution order:** Red → green
+**Execution order:**
+1. Write all tests above — they should fail against current/stubbed code
+2. Run tests to confirm they fail (red)
+3. Implement until all tests pass (green)
 
-**Smoke test:** First 5 values
+**Smoke test:** `fizzBuzz(3)[2] === "Fizz"` (runs in milliseconds)
+
+**Before implementing, verify your test harness:**
+1. Run all tests — they must FAIL (if they pass, you're testing the wrong thing)
+2. Each test calls your actual function/endpoint — not a reimplementation or the underlying library
+3. Identify your smoke test — it must run in seconds, not minutes, so you get fast feedback on each change
 
 ## Constraints
-
-- MUST: Return union type array
-- MUST NOT: Print to console
+- MUST: 1-indexed logic (first element corresponds to 1)
+- MUST: Return strings, not numbers
+- MUST: Function exported from `src/arcade/fizzbuzz.ts`
+- MUST NOT: Touch any production code outside `src/arcade/`
+- MUST NOT: Break existing tests
 
 ## Affected Files
-
 | Action | File | What Changes |
 |--------|------|-------------|
-| Create | `src/arcade/fizzbuzz.ts` | Function |
-| Create | `src/arcade/fizzbuzz.test.ts` | Tests |
+| Create | `src/arcade/fizzbuzz.ts` | New implementation |
+| Create | `src/arcade/fizzbuzz.test.ts` | New tests |
 
 ## Approach
-
-Iterate 1..n. Push "fizzbuzz" if %15, "fizz" if %3, "buzz" if %5, else number.
+Loop `i` from 1 to `n`. Build result array. Use modulo checks: 15 first, then 5, then 3, else `String(i)`. Rejected alternative: ternary chain `(i % 3 ? "" : "Fizz") + (i % 5 ? "" : "Buzz") || String(i)` — clever but less readable.
 
 ## Edge Cases
-
 | Scenario | Expected Behavior |
 |----------|------------------|
-| `n = 0` | returns `[]` |
-| `n = 1` | returns `[1]` |
+| `n = 0` | Returns `[]` |
+| `n = 1` | Returns `["1"]` |
+| Negative `n` | Returns `[]` or throws (either is acceptable) |

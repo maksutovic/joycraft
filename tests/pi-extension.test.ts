@@ -68,4 +68,17 @@ describe('Pi extension template (spec #7)', () => {
     const content = readFileSync(templatePath, 'utf-8');
     expect(content).not.toContain('projectDir');
   });
+
+  it('spec_path is required (not Type.Optional)', () => {
+    const content = readFileSync(templatePath, 'utf-8');
+    expect(content).not.toMatch(/spec_path[\s\S]*?Type\.Optional/);
+  });
+
+  it('mark-done errors are surfaced, not silently swallowed', () => {
+    const content = readFileSync(templatePath, 'utf-8');
+    // The catch block around mark-done must return isError: true
+    expect(content).toMatch(/catch\s*\(\s*e:\s*any\s*\)[\s\S]*?isError:\s*true/);
+    // Must NOT have a bare catch or "Best-effort" comment swallowing errors
+    expect(content).not.toMatch(/catch\s*\{[\s\S]*?\/\/ Best-effort/);
+  });
 });

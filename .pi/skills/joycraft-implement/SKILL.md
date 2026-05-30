@@ -102,7 +102,7 @@ Implementation complete:
 - Build: passing
 
 Next steps:
-- Run /skill:joycraft-session-end to capture discoveries and wrap up
+- Call the `joycraft_next_spec` tool to validate, mark this spec complete, and advance to the next spec automatically.
 ```
 
-**Tip:** Run `/new` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+**Tip:** If you prefer manual control, run `/skill:joycraft-session-end` to capture discoveries, then `/joycraft-next-spec` to continue the pipeline. Your artifacts are saved to files — this conversation context is disposable.

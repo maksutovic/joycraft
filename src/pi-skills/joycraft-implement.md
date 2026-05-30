@@ -5,20 +5,33 @@ description: Execute atomic specs with TDD — read spec, write failing tests, i
 
 # Implement Atomic Spec
 
-You have one or more atomic spec paths to execute. Your job is to implement each spec using strict TDD — tests first, confirm they fail, then implement until green.
+You have exactly one atomic spec file to execute. Your job is to implement it using strict TDD — tests first, confirm they fail, then implement until green.
 
 ## Step 1: Parse Arguments
 
-The user should provide one or more spec paths (e.g., `docs/features/<slug>/specs/add-widget.md`).
+The user MUST provide a path. No path = stop immediately.
 
-If no spec path was provided, tell the user:
+**If no path was provided:**
 
-> No spec path provided. Check `docs/features/<slug>/specs/` for available specs, or provide a path like:
+> No spec path provided. Provide a spec file or a feature directory:
 > `/skill:joycraft-implement docs/features/<slug>/specs/spec-name.md`
+> or `/skill:joycraft-implement docs/features/<slug>/`
+
+**If the path is a directory** (ends with `/` or does not end with `.md`):
+
+Look for `specs/.joycraft-spec-queue.json` inside that directory. Read it. Find the **first active spec whose dependencies are complete**. That single spec file is your target. Do NOT read any other specs.
+
+> Using spec queue: found [spec-file-name] as the next active spec.
+
+If the directory has no queue or no active specs:
+
+> No active specs found in [directory].
+
+**If the path is a file** ending in `.md`:
+
+Use it directly as the spec to implement.
 
 ## Step 2: Read and Understand the Spec
-
-For each spec path:
 
 1. **Read the spec file.** The spec is your execution contract — the Acceptance Criteria and Test Plan define "done."
 2. **Check the spec's Status field.** If it says "Complete," warn the user and ask if they want to re-implement or skip.
@@ -77,21 +90,7 @@ Check the spec's Edge Cases table. For each scenario:
 - Verify the expected behavior is handled.
 - If the spec says "warn the user" or "prompt," make sure that path works.
 
-## Step 5: Multi-Spec Handling
-
-If the user provided multiple specs:
-
-1. Execute specs in dependency order (check each spec's frontmatter for dependencies).
-2. After completing each spec, run the full test suite to ensure no regressions.
-3. **Between specs:** Tell the user:
-
-```
-Spec [name] complete. [N] specs remaining.
-```
-
-**Tip:** Run `/new` before starting the next spec. Your artifacts are saved to files — this conversation context is disposable.
-
-## Step 6: Hand Off
+## Step 5: Hand Off
 
 When all specs are implemented and passing:
 
@@ -102,7 +101,7 @@ Implementation complete:
 - Build: passing
 
 Next steps:
-- Run /skill:joycraft-session-end to capture discoveries and wrap up
+- Call the `joycraft_next_spec` tool with the current spec's file path to validate, mark this spec complete, and advance to the next spec automatically.
 ```
 
-**Tip:** Run `/new` before starting the next step. Your artifacts are saved to files — this conversation context is disposable.
+**Tip:** If you prefer manual control, run `/skill:joycraft-session-end` to capture discoveries, then `/joycraft-next-spec` to continue the pipeline. Your artifacts are saved to files — this conversation context is disposable.

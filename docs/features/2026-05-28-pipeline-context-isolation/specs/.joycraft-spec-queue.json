@@ -1,0 +1,7 @@
+{
+  "feature": "2026-05-28-pipeline-context-isolation",
+  "specs": [
+    { "id": 1, "file": "strict-implement-input.md", "depends_on": [], "status": "complete" },
+    { "id": 2, "file": "stateful-next-spec.md", "depends_on": [], "status": "complete" }
+  ]
+}

@@ -3,23 +3,22 @@
 > **Parent Brief:** `docs/features/2026-05-27-pi-automation-stress-test/brief.md`
 > **Status:** Ready
 > **Date:** 2026-05-27
-> **Estimated scope:** 1 session / 2 files / ~25 lines
+> **Estimated scope:** 1 session / 1 file / ~20 lines
 
 ---
 
 ## What
-
-A `toRoman(num: number): string` function that converts integers 1–3999 to Roman numerals.
+Implement a function `toRoman(num: number): string` that converts a positive integer to its Roman numeral representation.
 
 ## Why
-
-Tests lookup-table-based conversion with subtractive notation.
+Without this, no number-conversion arcade modules can exist.
 
 ## Acceptance Criteria
-
-- [ ] Converts 1–3999 correctly
-- [ ] Uses subtractive notation (IV, IX, XL, XC, CD, CM)
-- [ ] Throws on out-of-range or invalid input
+- [ ] Converts 1 to `"I"`
+- [ ] Converts 4 to `"IV"`
+- [ ] Converts 9 to `"IX"`
+- [ ] Converts 2024 to `"MMXXIV"`
+- [ ] Returns empty string or throws for non-positive input
 - [ ] Build passes
 - [ ] Tests pass
 
@@ -27,35 +26,45 @@ Tests lookup-table-based conversion with subtractive notation.
 
 | Acceptance Criterion | Test | Type |
 |---------------------|------|------|
-| Basic values | 1→"I", 5→"V", 10→"X" | unit |
-| Subtractive | 4→"IV", 9→"IX", 40→"XL" | unit |
-| Large number | 1994→"MCMXCIV", 3999→"MMMCMXCIX" | unit |
-| Invalid: zero | throws on 0 | unit |
-| Invalid: 4000 | throws on 4000 | unit |
+| Basic conversion | `toRoman(1) === "I"` | unit |
+| Subtractive notation 4 | `toRoman(4) === "IV"` | unit |
+| Subtractive notation 9 | `toRoman(9) === "IX"` | unit |
+| Large number | `toRoman(2024) === "MMXXIV"` | unit |
+| Zero or negative | `toRoman(0)` returns `""` or throws | unit |
+| All standard symbols | Test 1000→"M", 500→"D", 100→"C", 50→"L", 10→"X", 5→"V" | unit |
 
-**Execution order:** Red → green
+**Execution order:**
+1. Write all tests above — they should fail against current/stubbed code
+2. Run tests to confirm they fail (red)
+3. Implement until all tests pass (green)
 
-**Smoke test:** Basic values
+**Smoke test:** `toRoman(4) === "IV"` (runs in milliseconds)
+
+**Before implementing, verify your test harness:**
+1. Run all tests — they must FAIL (if they pass, you're testing the wrong thing)
+2. Each test calls your actual function/endpoint — not a reimplementation or the underlying library
+3. Identify your smoke test — it must run in seconds, not minutes, so you get fast feedback on each change
 
 ## Constraints
-
-- MUST: Support 1–3999 only
-- MUST: Use standard subtractive notation
+- MUST: Support values 1–3999 (standard Roman numeral range)
+- MUST: Use subtractive notation (IV, IX, XL, XC, CD, CM)
+- MUST: Function exported from `src/arcade/roman-numerals.ts`
+- MUST NOT: Touch any production code outside `src/arcade/`
+- MUST NOT: Break existing tests
 
 ## Affected Files
-
 | Action | File | What Changes |
 |--------|------|-------------|
-| Create | `src/arcade/roman-numerals.ts` | Function |
-| Create | `src/arcade/roman-numerals.test.ts` | Tests |
+| Create | `src/arcade/roman-numerals.ts` | New implementation |
+| Create | `src/arcade/roman-numerals.test.ts` | New tests |
 
 ## Approach
-
-Use descending lookup table: `[{value:1000, numeral:"M"}, ...]`. Iterate and build string.
+Use a descending lookup table of value→symbol pairs: `[1000, "M"], [900, "CM"], ... [1, "I"]`. Iterate and subtract/build result. Rejected alternative: recursive decomposition — harder to read and no benefit at this scale.
 
 ## Edge Cases
-
 | Scenario | Expected Behavior |
 |----------|------------------|
-| 3 → "III" | repeated symbols |
-| 3888 → "MMMDCCCLXXXVIII" | longest valid numeral |
+| `num = 0` | Returns `""` or throws |
+| `num = 3999` | Returns `"MMMCMXCIX"` |
+| Negative number | Returns `""` or throws |
+| Non-integer | Returns `""` or throws |

@@ -182,5 +182,6 @@ To execute:
 
 Ready to start execution?
 
-Run /clear before your next step — your artifacts are saved to files.
+Pi (with Joycraft pipeline extension): Call the joycraft_next_spec tool to start autonomous execution.
+Claude Code / Codex: Run /clear before your next step — your artifacts are saved to files.
 ```

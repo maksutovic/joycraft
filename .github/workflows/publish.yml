@@ -65,6 +65,25 @@ jobs:
           fi
           echo "version=$LOCAL" >> "$GITHUB_OUTPUT"
 
+      - name: Sync .joycraft-version with package.json
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          node -e "
+            import fs from 'fs';
+            const path = './.joycraft-version';
+            if (fs.existsSync(path)) {
+              const data = JSON.parse(fs.readFileSync(path, 'utf-8'));
+              if (data.version !== process.env.VERSION) {
+                data.version = process.env.VERSION;
+                fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n', 'utf-8');
+                console.log('Synced .joycraft-version to', process.env.VERSION);
+              } else {
+                console.log('.joycraft-version already synced');
+              }
+            }
+          " --input-type=module
+
       - name: Commit and push version bump
         if: steps.version.outputs.bumped == 'true'
         env:
@@ -72,9 +91,20 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json
+          git add package.json .joycraft-version
           git commit -m "release: v$VERSION [skip ci]"
           git push origin main
+
+      - name: Commit .joycraft-version sync if changed
+        if: steps.version.outputs.bumped == 'false'
+        run: |
+          if ! git diff --quiet .joycraft-version; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add .joycraft-version
+            git commit -m "chore: sync .joycraft-version [skip ci]"
+            git push origin main
+          fi
 
       - name: Publish to npm
         run: npm publish --access public

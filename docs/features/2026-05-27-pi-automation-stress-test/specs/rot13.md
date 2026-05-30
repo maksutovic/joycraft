@@ -3,23 +3,21 @@
 > **Parent Brief:** `docs/features/2026-05-27-pi-automation-stress-test/brief.md`
 > **Status:** Ready
 > **Date:** 2026-05-27
-> **Estimated scope:** 1 session / 2 files / ~15 lines
+> **Estimated scope:** 1 session / 1 file / ~15 lines
 
 ---
 
 ## What
-
-A `rot13(text: string): string` function that applies the ROT13 cipher (Caesar shift of 13).
+Implement a function `rot13(text: string): string` that encodes/decodes a string using the ROT13 Caesar cipher (shift letters by 13 places).
 
 ## Why
-
-Tests character-by-character string transformation.
+Without this, no cipher-based arcade modules can exist.
 
 ## Acceptance Criteria
-
-- [ ] Correctly encodes/decodes alphabetic characters
-- [ ] Leaves non-alphabetic characters unchanged
-- [ ] Is self-inverse: `rot13(rot13(x)) === x`
+- [ ] Lowercase letters are rotated by 13
+- [ ] Uppercase letters are rotated by 13
+- [ ] Non-alphabetic characters are unchanged
+- [ ] Double-ROT13 returns the original string
 - [ ] Build passes
 - [ ] Tests pass
 
@@ -27,34 +25,45 @@ Tests character-by-character string transformation.
 
 | Acceptance Criterion | Test | Type |
 |---------------------|------|------|
-| Basic encoding | `rot13("hello")` === "uryyb" | unit |
-| Mixed case | `rot13("Hello")` === "Uryyb" | unit |
-| Non-alpha preserved | `rot13("123 !")` === "123 !" | unit |
-| Self-inverse | `rot13(rot13("abc"))` === "abc" | unit |
+| Lowercase rotation | `rot13("abc")` → `"nop"` | unit |
+| Uppercase rotation | `rot13("ABC")` → `"NOP"` | unit |
+| Non-alpha unchanged | `rot13("123 !")` → `"123 !"` | unit |
+| Double-ROT13 identity | `rot13(rot13("Hello"))` → `"Hello"` | unit |
+| Mixed string | `rot13("Hello, World!")` → expected result | unit |
+| Empty string | `rot13("")` → `""` | unit |
 
-**Execution order:** Red → green
+**Execution order:**
+1. Write all tests above — they should fail against current/stubbed code
+2. Run tests to confirm they fail (red)
+3. Implement until all tests pass (green)
 
-**Smoke test:** Basic encoding
+**Smoke test:** `rot13("abc") === "nop"` (runs in milliseconds)
+
+**Before implementing, verify your test harness:**
+1. Run all tests — they must FAIL (if they pass, you're testing the wrong thing)
+2. Each test calls your actual function/endpoint — not a reimplementation or the underlying library
+3. Identify your smoke test — it must run in seconds, not minutes, so you get fast feedback on each change
 
 ## Constraints
-
-- MUST: Handle both upper and lower case
-- MUST NOT: Use external crypto libraries
+- MUST: Handle both `a-z` and `A-Z`
+- MUST: Leave all other characters untouched
+- MUST: Function exported from `src/arcade/rot13.ts`
+- MUST NOT: Touch any production code outside `src/arcade/`
+- MUST NOT: Break existing tests
 
 ## Affected Files
-
 | Action | File | What Changes |
 |--------|------|-------------|
-| Create | `src/arcade/rot13.ts` | Function |
-| Create | `src/arcade/rot13.test.ts` | Tests |
+| Create | `src/arcade/rot13.ts` | New implementation |
+| Create | `src/arcade/rot13.test.ts` | New tests |
 
 ## Approach
-
-Map each char: if a–m or A–M, add 13; if n–z or N–Z, subtract 13; else unchanged.
+Iterate characters. For alphabetic chars, compute new char code: if in `a-m` or `A-M`, add 13; else subtract 13. Rejected alternative: `String.prototype.replace` with a regex and callback — concise but regex overhead is unnecessary for a simple shift.
 
 ## Edge Cases
-
 | Scenario | Expected Behavior |
 |----------|------------------|
-| Empty string | returns "" |
-| Unicode letters | leave unchanged (only A-Z, a-z) |
+| Empty string | Returns empty string |
+| String with no letters | Returns unchanged |
+| `n` / `N` (the pivot) | Maps to `a` / `A` |
+| Unicode beyond ASCII | Left unchanged |

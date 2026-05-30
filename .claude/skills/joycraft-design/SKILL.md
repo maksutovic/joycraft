@@ -82,6 +82,15 @@ Things you don't know or where multiple valid approaches exist. Each question MU
 
 Do NOT ask vague questions like "what do you think?" Every question must have actionable options the human can choose from.
 
+### Update the Feature Brief
+
+After writing the design document, update the parent brief with a back-reference:
+1. Read `docs/features/<slug>/brief.md`
+2. In the header blockquote (the `>` lines at the top), add or update:
+   `> **Design:** docs/features/<slug>/design.md`
+3. If a `> **Design:**` line already exists, replace it — do NOT add a duplicate
+4. Write the brief back
+
 ## Step 4: Present and STOP — Pre-Approval Hold
 
 Present the design document to the user. Say:

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, chmodSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
 import { readVersion, writeVersion, hashContent } from './version.js';
@@ -138,6 +138,18 @@ function cleanupDeprecatedSkills(targetDir: string): number {
 
 function countLines(content: string): number {
   return content.split('\n').length;
+}
+
+function ensureScriptExecutable(absolutePath: string): void {
+  // Joycraft shell scripts in .pi/scripts/joycraft/ must be executable.
+  // README.md is the only file in that directory that should stay 644.
+  if (absolutePath.includes('.pi/scripts/joycraft/') && !absolutePath.endsWith('README.md')) {
+    try {
+      chmodSync(absolutePath, 0o755);
+    } catch {
+      // non-fatal — permissions may be restricted
+    }
+  }
 }
 
 async function askUser(question: string): Promise<boolean> {
@@ -318,11 +330,13 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
       // New Joycraft files are always auto-added — no prompt needed
       mkdirSync(dirname(change.absolutePath), { recursive: true });
       writeFileSync(change.absolutePath, change.newContent, 'utf-8');
+      ensureScriptExecutable(change.absolutePath);
       added++;
       console.log(`  + ${change.relativePath}`);
     } else if (change.kind === 'updated') {
       // Safe to auto-update — user hasn't touched the file
       writeFileSync(change.absolutePath, change.newContent, 'utf-8');
+      ensureScriptExecutable(change.absolutePath);
       updated++;
     } else if (change.kind === 'customized') {
       const currentContent = readFileSync(change.absolutePath, 'utf-8');
@@ -339,6 +353,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
         const accept = await askUser(`${label} — overwrite with latest?`);
         if (accept) {
           writeFileSync(change.absolutePath, change.newContent, 'utf-8');
+          ensureScriptExecutable(change.absolutePath);
           updated++;
         } else {
           skipped++;

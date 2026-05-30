@@ -182,6 +182,6 @@ To execute:
 
 Ready to start execution?
 
-Pi (with Joycraft pipeline extension): Run /joycraft-next-spec to start autonomous execution.
+Pi (with Joycraft pipeline extension): Call the joycraft_next_spec tool to start autonomous execution.
 Claude Code / Codex: Run /clear before your next step — your artifacts are saved to files.
 ```
