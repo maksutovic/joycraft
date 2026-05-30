@@ -2,6 +2,11 @@
 # joycraft-next-spec — Find the next uncompleted spec respecting dependency order.
 # Usage: joycraft-next-spec [specs-dir]
 # Outputs: file path of the next spec, or "Pipeline complete" if all done.
+#
+# Status vocabulary (see docs/reference/spec-status-lifecycle.md):
+#   todo → eligible to serve; in-review / done → not served.
+#   A dependency is "met" once it reaches in-review OR done (so checkpoint
+#   chains progress without waiting for session-end to graduate to done).
 
 set -euo pipefail
 
@@ -26,8 +31,6 @@ fi
 SPECS_DIR_REAL=$(dirname "$MANIFEST_PATH")
 MANIFEST="$MANIFEST_PATH"
 
-# Parse JSON with grep+sed: extract active specs
-# Build an associative representation using temp files
 TMPDIR=$(mktemp -d)
 trap 'rm -rf $TMPDIR' EXIT
 
@@ -48,18 +51,18 @@ if [ ! -f "$TMPDIR/specs.txt" ]; then
   exit 0
 fi
 
-# Build complete set
+# Build the "satisfied" set: a dependency counts as met once it is in-review OR done.
 while IFS='|' read -r id file status deps; do
-  if [ "$status" = "complete" ]; then
-    echo "$id" >> "$TMPDIR/complete.txt"
+  if [ "$status" = "in-review" ] || [ "$status" = "done" ]; then
+    echo "$id" >> "$TMPDIR/satisfied.txt"
   fi
 done < "$TMPDIR/specs.txt"
 
-touch "$TMPDIR/complete.txt"
+touch "$TMPDIR/satisfied.txt"
 
-# Find first active spec whose deps are all complete
+# Find first todo spec whose deps are all satisfied
 while IFS='|' read -r id file status deps; do
-  if [ "$status" != "active" ]; then
+  if [ "$status" != "todo" ]; then
     continue
   fi
 
@@ -67,7 +70,7 @@ while IFS='|' read -r id file status deps; do
   all_deps_met=true
   if [ -n "$(echo "$deps" | tr -d '[:space:]')" ]; then
     for dep_id in $(echo "$deps" | tr ',' ' ' | tr -d '[:space:]'); do
-      if ! grep -q "^$dep_id$" "$TMPDIR/complete.txt"; then
+      if ! grep -q "^$dep_id$" "$TMPDIR/satisfied.txt"; then
         all_deps_met=false
         break
       fi
@@ -81,7 +84,7 @@ while IFS='|' read -r id file status deps; do
 done < "$TMPDIR/specs.txt"
 
 # If we get here, no eligible spec found
-remaining=$(grep -c '"active"' "$TMPDIR/specs.txt" 2>/dev/null || echo 0)
+remaining=$(grep -c '|todo|' "$TMPDIR/specs.txt" 2>/dev/null || echo 0)
 if [ "$remaining" -gt 0 ]; then
   echo "All remaining specs blocked — unmet dependencies" >&2
   exit 1

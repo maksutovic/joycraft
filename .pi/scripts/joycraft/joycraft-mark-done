@@ -1,37 +1,69 @@
 #!/usr/bin/env bash
-# joycraft-mark-done — Update a spec's status from "active" to "complete" in .joycraft-spec-queue.json.
-# Usage: joycraft-mark-done <spec-id> [specs-dir]
+# joycraft-mark-done — Transition a spec's status in .joycraft-spec-queue.json.
+# Usage: joycraft-mark-done <spec-id> [--to <state>] [specs-dir]
+#
+# --to <state> is one of: todo, in-review, done (see
+# docs/reference/spec-status-lifecycle.md). Omitting --to defaults to
+# in-review (the common spec-done case). session-end passes --to done.
 
 set -euo pipefail
 
-SPEC_ID="${1:-}"
+SPEC_ID=""
+TO_STATE=""
+SPECS_DIR=""
+
+# Parse args: first positional = spec id, --to <state> anywhere, optional
+# trailing positional = specs dir.
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --to)
+      TO_STATE="${2:-}"
+      shift 2
+      ;;
+    *)
+      if [ -z "$SPEC_ID" ]; then
+        SPEC_ID="$1"
+      else
+        SPECS_DIR="$1"
+      fi
+      shift
+      ;;
+  esac
+done
+
 if [ -z "$SPEC_ID" ]; then
-  echo "Usage: joycraft-mark-done <spec-id>"
+  echo "Usage: joycraft-mark-done <spec-id> [--to <state>] [specs-dir]" >&2
   exit 1
 fi
 
-SPECS_DIR="${2:-docs/features/*/specs}"
+# Default transition is to in-review.
+TO_STATE="${TO_STATE:-in-review}"
+
+# Validate the target state against the exact lowercase set.
+case "$TO_STATE" in
+  todo|in-review|done) ;;
+  *)
+    echo "Invalid --to value: '$TO_STATE' (expected one of: todo, in-review, done)" >&2
+    exit 1
+    ;;
+esac
+
+SPECS_DIR="${SPECS_DIR:-docs/features/*/specs}"
 MANIFEST=$(ls "$SPECS_DIR"/.joycraft-spec-queue.json 2>/dev/null | head -1)
 
 if [ -z "$MANIFEST" ]; then
-  echo "No .joycraft-spec-queue.json found in $SPECS_DIR"
+  echo "No .joycraft-spec-queue.json found in $SPECS_DIR" >&2
   exit 1
 fi
 
-# Check spec exists
-if ! grep -q "\"id\": *$SPEC_ID" "$MANIFEST"; then
-  echo "Spec #$SPEC_ID not found in manifest"
+# Check spec exists — hard error, never a silent no-op.
+if ! grep -q "\"id\": *$SPEC_ID[,}]" "$MANIFEST"; then
+  echo "Spec #$SPEC_ID not found in manifest" >&2
   exit 1
 fi
 
-# Check if already complete
-if grep -q "\"id\": *$SPEC_ID.*\"status\": *\"complete\"" "$MANIFEST"; then
-  echo "Spec #$SPEC_ID is already complete"
-  exit 0
-fi
+# Replace the matching spec id's status — from ANY current value — to the
+# requested state, so re-running transitions (e.g. in-review → done) works.
+sed -i '' -E "/\"id\": *$SPEC_ID[,}]/s/\"status\": *\"[^\"]*\"/\"status\": \"$TO_STATE\"/" "$MANIFEST"
 
-# Replace "active" with "complete" for the matching spec id
-# Match: "id": SPEC_ID ... "status": "active" → "status": "complete"
-sed -i '' -E "/\"id\": *$SPEC_ID[,}]/s/\"status\": *\"active\"/\"status\": \"complete\"/" "$MANIFEST"
-
-echo "Spec #$SPEC_ID marked complete"
+echo "Spec #$SPEC_ID marked $TO_STATE"
