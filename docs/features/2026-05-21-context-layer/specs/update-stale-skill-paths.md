@@ -1,5 +1,5 @@
 ---
-status: shipped
+status: done
 owner: Maximilian Maksutovic
 created: 2026-05-21
 feature: context-layer

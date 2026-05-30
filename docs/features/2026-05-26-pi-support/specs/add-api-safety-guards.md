@@ -1,5 +1,5 @@
 ---
-status: complete
+status: done
 owner: unknown
 created: 2026-05-27
 feature: 2026-05-26-pi-support

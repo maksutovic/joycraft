@@ -1,7 +1,7 @@
 {
   "feature": "2026-05-27-context-isolation-test",
   "specs": [
-    { "id": 1, "file": "secret-embed.md", "depends_on": [], "status": "active" },
-    { "id": 2, "file": "secret-recall.md", "depends_on": [1], "status": "active" }
+    { "id": 1, "file": "secret-embed.md", "depends_on": [], "status": "done" },
+    { "id": 2, "file": "secret-recall.md", "depends_on": [1], "status": "done" }
   ]
 }
