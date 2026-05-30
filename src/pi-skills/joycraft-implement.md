@@ -19,7 +19,7 @@ The user MUST provide a path. No path = stop immediately.
 
 **If the path is a directory** (ends with `/` or does not end with `.md`):
 
-Look for `specs/.joycraft-spec-queue.json` inside that directory. Read it. Find the **first active spec whose dependencies are complete**. That single spec file is your target. Do NOT read any other specs.
+Look for `specs/.joycraft-spec-queue.json` inside that directory. Read it. Find the **first `todo` spec whose dependencies are satisfied** (a dependency is satisfied once it is `in-review` or `done`; see `docs/reference/spec-status-lifecycle.md`). This matches what `joycraft-next-spec` serves. That single spec file is your target. Do NOT read any other specs.
 
 > Using spec queue: found [spec-file-name] as the next active spec.
 
@@ -90,18 +90,33 @@ Check the spec's Edge Cases table. For each scenario:
 - Verify the expected behavior is handled.
 - If the spec says "warn the user" or "prompt," make sure that path works.
 
-## Step 5: Hand Off
+## Step 5: Hand Off (mode-aware)
 
-When all specs are implemented and passing:
+When the spec is implemented and all its tests pass, the hand-off depends on the spec's **execution mode**. Read the `mode:` field from the spec's frontmatter (written by `/skill:joycraft-decompose`). If the spec has **no `mode:` field**, default to **`batch`** (back-compat with pre-mode specs). If the value is unrecognized, treat it as `batch` and note the unrecognized value.
+
+| Spec `mode:` | What to do now |
+|--------------|----------------|
+| **batch** | Do **not** wrap per spec. Move to the **next spec in this same conversation** (shared context). Only when you finish the feature's **last** spec, hand off to `/skill:joycraft-session-end`. |
+| **checkpoint** | Hand off to `/skill:joycraft-spec-done` (it bumps status `todo → in-review` + commits), then **continue to the next spec**. |
+| **isolated** | Hand off to `/skill:joycraft-spec-done`, then start the next spec in a **fresh context** (see the harness sub-cases below). |
+
+**`isolated` — fresh context per harness:**
+- **Pi:** the `joycraft-implement-loop` driver automates it — a fresh `pi -p` process per spec (the process boundary IS the context isolation). The loop runs `joycraft-next-spec` → implement → spec-done → repeat, then `joycraft-session-end` once. Nothing for you to do beyond spec-done; the loop advances.
+- **Claude Code / Codex, interactive:** tell the human to run `/clear`, then re-invoke `/skill:joycraft-implement <next-spec>`. (Guided-manual — always fine, no ToS/cost surprise.)
+- **Claude Code / Codex, headless:** the opt-in `claude -p` / `codex exec` loop. **Surface the caveat, don't bury it:** unattended headless loops draw metered, full-rate API usage and carry a ToS posture the user must **knowingly opt into** (Anthropic meters `claude -p` from a separate full-rate pool; routing subscription OAuth through third-party harnesses is prohibited). The responsible default is Pi (BYO API key / open weights). Do not silently auto-run a subscription-backed headless loop.
+
+Report, then emit the next step that matches the mode:
 
 ```
 Implementation complete:
-- Spec(s): [list spec names] — all Acceptance Criteria met
+- Spec: [spec name] — all Acceptance Criteria met · mode: [batch|checkpoint|isolated]
 - Tests: [N] written, all passing
 - Build: passing
 
 Next steps:
-- Call the `joycraft_next_spec` tool with the current spec's file path to validate, mark this spec complete, and advance to the next spec automatically.
+- batch (more specs remain): continue to the next spec in this conversation
+- checkpoint / isolated: run /skill:joycraft-spec-done, then continue (isolated interactive: /clear first)
+- feature's last spec: run /skill:joycraft-session-end (the once-per-feature finisher)
 ```
 
-**Tip:** If you prefer manual control, run `/skill:joycraft-session-end` to capture discoveries, then `/joycraft-next-spec` to continue the pipeline. Your artifacts are saved to files — this conversation context is disposable.
+**Tip:** On Pi, isolated mode is driven by the `joycraft-implement-loop` script (fresh process per spec). For interactive control, run `/skill:joycraft-spec-done`, then `/clear` before the next spec. Your artifacts are saved to files — this conversation context is disposable.

@@ -16,10 +16,12 @@ describe('joycraft-implement skill input validation', () => {
     expect(content).toMatch(/No path = stop|MUST provide a path/i);
   });
 
-  it.each(variants)('%s: accepts directories and resolves to first active spec via queue', (variant) => {
+  it.each(variants)('%s: accepts directories and resolves to the first todo spec via queue', (variant) => {
     const content = readSkill(variant);
     expect(content).toMatch(/directory[\s\S]*?specs\/\.joycraft-spec-queue/i);
-    expect(content).toMatch(/first active spec|dependencies are complete/i);
+    // Unified vocabulary: serve the first `todo` spec whose deps are satisfied
+    // (in-review/done), matching joycraft-next-spec.
+    expect(content).toMatch(/first `?todo`? spec|dependencies are satisfied/i);
   });
 
   it.each(variants)('%s: does not have a Multi-Spec Handling section', (variant) => {
