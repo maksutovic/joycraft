@@ -521,14 +521,14 @@ describe('init', () => {
       expect(existsSync(join(piSkillsDir, 'joycraft-decompose', 'SKILL.md'))).toBe(true);
     });
 
-    it('installs 18 Pi skill directories', async () => {
+    it('installs 19 Pi skill directories', async () => {
       await init(tmpDir, { force: false });
 
       const piSkillsDir = join(tmpDir, '.pi', 'skills');
       const dirs = require('node:fs').readdirSync(piSkillsDir, { withFileTypes: true })
         .filter((d: { isDirectory: () => boolean }) => d.isDirectory())
         .filter((d: { name: string }) => d.name.startsWith('joycraft-'));
-      expect(dirs.length).toBe(18);
+      expect(dirs.length).toBe(19);
     });
 
     it('installs pipeline bash scripts to .pi/scripts/joycraft/', async () => {
