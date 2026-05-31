@@ -67,13 +67,25 @@ The only missing ingredient is **knowing which version was last installed** — 
 
 ---
 
-## Recommendation
+## Recommendation (REVISED after clarifying the real constraints)
 
-**Primary: Option B.** Reduce `.joycraft-version` to a minimal state file (`version` + `answers`/config; drop the 99 hashes) and reconstruct the baseline from versioned bundled content. Same 3-way safety, idiomatic shape, ~11KB → a few lines. Also **gitignore it** regardless (it's a generated artifact). Caveat to resolve in design: how to obtain the *old* version's bundled files at upgrade time (fetch the old npm tarball, or keep a small N-version content cache, or fall back to option C behavior when the old bundle is unavailable).
+The maintainer clarified two HARD requirements that reframe the whole decision:
+1. **Turnkey updates** — users must get improved prompts automatically; almost nobody edits the installed files. (This *kills* Option C/shadcn: per-file diff prompts on every skill change is the opposite of turnkey.)
+2. **Zero repo-root pollution** — a client objected to `.joycraft-version` sitting at the project root and in commits. "No npm package out of 50 would drop a file like this at the top level."
 
-**Acceptable simpler fallback: Option C** (shadcn copy-once + `--diff`), if we decide silent-auto-update isn't worth any persisted state. This is the least code and the most conventional, at the cost of more prompts on upgrade.
+The key realization: the client is right, but the fix is **placement, not removal**. **npm itself keeps a hidden, hashed state file at `node_modules/.package-lock.json`** (the "hidden lockfile," npm ≥v7) — *inside the tool's own gitignored directory, never at the repo root* (verified: https://docs.npmjs.com/cli/v10/configuring-npm/package-lock-json). State is normal and idiomatic; **state at the repo root, committed, is the anti-pattern.** So the precise diagnosis is: joycraft put the right mechanism in the wrong *place*.
 
-**Avoid: Option D as the sole mechanism** — it abandons joycraft's git-less users, who are plausibly a real segment (the tool targets any project).
+Also note the offline wrinkle that rules out the "version-only" form of Option B: the installed CLI bundles only the *current* version's content, so reconstructing the recorded-original from just a version string would require fetching the old npm tarball at upgrade time — a network dependency for a command that must work offline. So the per-file baseline genuinely needs to be persisted; it just needs to be hidden.
+
+**DECIDED — "Option B′" (hashes kept, but hidden like npm's lockfile):**
+- **Keep the per-file hash baseline** — it is what makes "auto-update untouched files silently, prompt only on customized ones" work offline (the turnkey property). Optionally truncate hashes to 16 chars (~4× smaller).
+- **Relocate** the state from repo-root `.joycraft-version` → **`.claude/.joycraft/state.json`** (hidden, inside a dir `init` always creates — verified universal regardless of harness). Direct analog to `node_modules/.package-lock.json`. **Zero new files at the repo root** → fully resolves the client's objection.
+- **Gitignore it** — `init`/`upgrade` append the path to `.gitignore` (init currently writes none). Never in the user's commits.
+- Net: *more* turnkey than today (untouched skills still auto-update) and *cleaner* than today (nothing at root, nothing committed).
+
+This beats pure Option C (which sacrifices turnkey) and pure Option D/git-only (which abandons git-less users). It keeps today's capability while removing the only thing that was actually wrong: a committed file at the repo root.
+
+**Migration:** `upgrade` should detect a legacy root `.joycraft-version`, move it to the new hidden location (and add the gitignore entry), so existing projects self-heal on next upgrade.
 
 ---
 
