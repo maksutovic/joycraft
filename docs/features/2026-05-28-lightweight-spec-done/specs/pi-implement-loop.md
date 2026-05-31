@@ -40,7 +40,7 @@ This is the headless autonomous loop — Phase 1's payoff. The in-process Pi ext
 - `pi -p "<prompt>"` (`--print`) runs non-interactive and exits. Verified: `pi -p "say hi in one word"` → `Hi.`
 - Each `pi -p` invocation is a NEW OS process with its own context. Two sequential `pi -p` calls cannot share memory unless you pass `--continue`/`--resume`/`--session`. This is the isolation guarantee.
 - `--no-session` skips session persistence; `--no-context-files` skips AGENTS.md/CLAUDE.md loading; `--mode json` emits a parseable event stream (useful for capturing per-spec transcripts).
-- **OPEN (verify at implement time):** whether `pi -p "/skill:joycraft-implement <spec>"` reliably triggers the slash-skill from the prompt string vs. needing description-based auto-invocation. Research flagged this as unconfirmed (research.md "Open items" #2). If `/skill:` in `-p` does NOT trigger, fall back to a prompt that names the skill + spec path so the description-match invokes it. The test MUST cover whichever path is used.
+- **RESOLVED (verified live 2026-05-30):** `pi -p "/skill:<name> ..."` DOES trigger the slash-skill from the prompt string. Confirmed with `pi -p '/skill:joycraft-spec-done — do NOT take action; describe this skill'` → the reply accurately summarized all four steps of the skill body, proving the skill was resolved and loaded into context. The loop's prompt form (`/skill:joycraft-implement <spec>` / `/skill:joycraft-spec-done <spec>`) is therefore correct; no description-match fallback needed. (Was research.md "Open items" #2.)
 
 ## Acceptance Criteria
 - [ ] A loop script exists at `src/templates/pi-scripts/joycraft-implement-loop` (source-of-truth) and `.pi/scripts/joycraft/joycraft-implement-loop` (installed copy), executable, identical
