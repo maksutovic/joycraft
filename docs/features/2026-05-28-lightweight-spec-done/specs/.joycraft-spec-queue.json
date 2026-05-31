@@ -1,9 +1,9 @@
 {
   "feature": "2026-05-28-lightweight-spec-done",
   "specs": [
-    { "id": 1, "file": "define-status-vocabulary.md", "depends_on": [], "status": "todo", "mode": "batch" },
-    { "id": 2, "file": "migrate-existing-statuses.md", "depends_on": [1], "status": "todo", "mode": "batch" },
-    { "id": 3, "file": "update-status-scripts.md", "depends_on": [1], "status": "todo", "mode": "checkpoint" },
+    { "id": 1, "file": "define-status-vocabulary.md", "depends_on": [], "status": "in-review", "mode": "batch" },
+    { "id": 2, "file": "migrate-existing-statuses.md", "depends_on": [1], "status": "in-review", "mode": "batch" },
+    { "id": 3, "file": "update-status-scripts.md", "depends_on": [1], "status": "in-review", "mode": "checkpoint" },
     { "id": 4, "file": "execution-modes-in-decompose.md", "depends_on": [1], "status": "in-review", "mode": "checkpoint" },
     { "id": 5, "file": "joycraft-spec-done-skill.md", "depends_on": [1, 3], "status": "in-review", "mode": "checkpoint" },
     { "id": 6, "file": "rescope-session-end.md", "depends_on": [1, 3], "status": "in-review", "mode": "checkpoint" },
