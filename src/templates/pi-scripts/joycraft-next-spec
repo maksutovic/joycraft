@@ -83,9 +83,12 @@ while IFS='|' read -r id file status deps; do
   fi
 done < "$TMPDIR/specs.txt"
 
-# If we get here, no eligible spec found
-remaining=$(grep -c '|todo|' "$TMPDIR/specs.txt" 2>/dev/null || echo 0)
-if [ "$remaining" -gt 0 ]; then
+# If we get here, no eligible spec found.
+# `grep -c` prints 0 but exits non-zero when there are no matches; `|| true`
+# swallows that exit WITHOUT appending a second "0" (which would make
+# $remaining a two-line value and break the integer test below).
+remaining=$(grep -c '|todo|' "$TMPDIR/specs.txt" 2>/dev/null || true)
+if [ "${remaining:-0}" -gt 0 ]; then
   echo "All remaining specs blocked — unmet dependencies" >&2
   exit 1
 fi
