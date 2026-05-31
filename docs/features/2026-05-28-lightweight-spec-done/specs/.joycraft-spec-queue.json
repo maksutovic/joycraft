@@ -9,6 +9,6 @@
     { "id": 6, "file": "rescope-session-end.md", "depends_on": [1, 3], "status": "in-review", "mode": "checkpoint" },
     { "id": 7, "file": "implement-mode-aware-handoff.md", "depends_on": [4, 5], "status": "in-review", "mode": "checkpoint" },
     { "id": 8, "file": "pi-implement-loop.md", "depends_on": [3, 5, 6], "status": "in-review", "mode": "isolated" },
-    { "id": 9, "file": "wire-and-bundle.md", "depends_on": [5, 6, 8], "status": "todo", "mode": "checkpoint" }
+    { "id": 9, "file": "wire-and-bundle.md", "depends_on": [5, 6, 8], "status": "in-review", "mode": "checkpoint" }
   ]
 }
