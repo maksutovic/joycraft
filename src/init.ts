@@ -6,7 +6,8 @@ import { generateAgentsMd } from './agents-md.js';
 import { generatePermissions } from './permissions.js';
 import { installSafeguardHooks } from './safeguard.js';
 import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
-import { writeVersion, hashContent } from './version.js';
+import { writeVersion, hashContent, STATE_PATH } from './version.js';
+import { ensureGitignoreEntry } from './gitignore.js';
 import { getPackageVersion } from './package-version.js';
 
 export interface InitOptions {
@@ -162,7 +163,7 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     result.created.push(agentsMdPath);
   }
 
-  // 6. Write .joycraft-version with hashes of all managed files
+  // 6. Write the hidden state (.claude/.joycraft/state.json) with hashes of all managed files
   const fileHashes: Record<string, string> = {};
   for (const [filename, content] of Object.entries(SKILLS)) {
     const skillName = filename.replace(/\.md$/, '');
@@ -190,6 +191,11 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   }
   writeVersion(targetDir, getPackageVersion(), fileHashes);
 
+  // 6b. Gitignore the hidden state file. Like npm's node_modules/.package-lock.json,
+  // it is tool-managed state that should never land in the user's commits.
+  // Append-only + create-if-absent + idempotent (never clobbers existing entries).
+  ensureGitignoreEntry(targetDir, STATE_PATH);
+
   // 7. Install version check hook
   const hooksDir = join(targetDir, '.claude', 'hooks');
   ensureDir(hooksDir);
@@ -197,7 +203,7 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 try {
-  const data = JSON.parse(readFileSync(join(process.cwd(), '.joycraft-version'), 'utf-8'));
+  const data = JSON.parse(readFileSync(join(process.cwd(), '${STATE_PATH.split(/[\\/]/).join("', '")}'), 'utf-8'));
   const res = await fetch('https://registry.npmjs.org/joycraft/latest', { signal: AbortSignal.timeout(3000) });
   if (res.ok) {
     const latest = (await res.json()).version;

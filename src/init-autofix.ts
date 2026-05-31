@@ -1,6 +1,7 @@
 import { mkdirSync, existsSync, writeFileSync } from 'node:fs';
 import { join, resolve, basename, dirname } from 'node:path';
 import { TEMPLATES } from './bundled-files.js';
+import { STATE_PATH, LEGACY_VERSION_FILE } from './version.js';
 
 export interface InitAutofixOptions {
   scenariosRepo?: string;
@@ -38,8 +39,11 @@ function replacePlaceholders(content: string, vars: Record<string, string>): str
 export async function initAutofix(dir: string, opts: InitAutofixOptions): Promise<void> {
   const targetDir = resolve(dir);
 
-  // Check project is initialized
-  if (!existsSync(join(targetDir, '.joycraft-version'))) {
+  // Check project is initialized. State now lives at the hidden path; also accept
+  // a legacy root file so un-upgraded projects still pass.
+  const initialized =
+    existsSync(join(targetDir, STATE_PATH)) || existsSync(join(targetDir, LEGACY_VERSION_FILE));
+  if (!initialized) {
     throw new Error('Project is not initialized. Run `npx joycraft init` first.');
   }
 

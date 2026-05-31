@@ -8,3 +8,4 @@ dist/
 *.tsbuildinfo
 .build/
 src/bundled-files.ts
+.claude/.joycraft/state.json
