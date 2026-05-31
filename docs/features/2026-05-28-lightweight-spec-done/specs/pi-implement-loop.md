@@ -1,5 +1,5 @@
 ---
-status: in-review
+status: done
 owner: Maximilian Maksutovic
 created: 2026-05-28
 feature: 2026-05-28-lightweight-spec-done
