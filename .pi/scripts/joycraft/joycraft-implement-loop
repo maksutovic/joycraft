@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# joycraft-implement-loop — Isolated-mode driver for Pi.
+#
+# Runs a whole feature's spec queue headlessly, ONE FRESH OS PROCESS PER SPEC.
+# The process boundary is the context isolation (verified) — this is what
+# "isolated mode" means on Pi.
+#
+# Usage: joycraft-implement-loop <specs-dir>
+#   <specs-dir>  REQUIRED. The folder holding .joycraft-spec-queue.json
+#                (e.g. docs/features/<slug>/specs). Passed through to
+#                joycraft-next-spec verbatim — no glob-guessing.
+#
+# Loop body, per iteration:
+#   1. joycraft-next-spec <specs-dir>  → next `todo` spec path, or
+#      "Pipeline complete" → run session-end once and exit 0.
+#   2. pi -p "/skill:joycraft-implement <spec>"   (fresh process)
+#   3. pi -p "/skill:joycraft-spec-done <spec>"   (fresh process)
+#   4. repeat.
+# Any per-spec failure is fail-fast: the loop stops with a non-zero exit and
+# names the failing spec (dependency-aware-continue is intentionally out of
+# scope). When the queue is exhausted, joycraft-session-end runs exactly once.
+#
+# ToS/cost note: this driver is for Pi with a BYO API key or open-weight model
+# (Commercial/API terms — no automation restriction). Do NOT point it at a
+# Claude/ChatGPT *subscription* OAuth — that re-introduces the consumer-ToS
+# problem the Pi-first path exists to avoid.
+
+set -euo pipefail
+
+# The pi binary is overridable so tests inject a deterministic stub instead of
+# burning real API tokens. Production default is the real `pi` on PATH.
+PI_BIN="${PI_BIN:-pi}"
+
+# Require an explicit specs-dir — never glob-guess (that was pipeline-hardening
+# Bug 1: alphabetical manifest mis-pick).
+SPECS_DIR="${1:-}"
+if [ -z "$SPECS_DIR" ]; then
+  echo "Usage: joycraft-implement-loop <specs-dir>" >&2
+  echo "  e.g. joycraft-implement-loop docs/features/<slug>/specs" >&2
+  exit 1
+fi
+if [ ! -d "$SPECS_DIR" ]; then
+  echo "Specs dir not found: $SPECS_DIR" >&2
+  exit 1
+fi
+
+# Resolve the helper scripts. Prefer one already on PATH (lets an operator —
+# or a test harness — shadow them); otherwise fall back to the sibling next to
+# this script, so the loop works from the installed location
+# (.pi/scripts/joycraft/) regardless of cwd.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+resolve_helper() {
+  # $1 = helper name; echo the resolved path.
+  if command -v "$1" >/dev/null 2>&1; then
+    command -v "$1"
+  else
+    echo "$SCRIPT_DIR/$1"
+  fi
+}
+NEXT_SPEC="$(resolve_helper joycraft-next-spec)"
+SESSION_END="$(resolve_helper joycraft-session-end)"
+
+while true; do
+  # 1. Ask for the next servable spec.
+  NEXT="$("$NEXT_SPEC" "$SPECS_DIR")"
+
+  if [ -z "$NEXT" ] || [ "$NEXT" = "Pipeline complete" ]; then
+    # Queue exhausted → the once-per-feature finisher, then done.
+    echo "► Queue complete — running session-end."
+    "$SESSION_END"
+    exit 0
+  fi
+
+  echo "► Implementing: $NEXT"
+
+  # 2. Fresh process implements exactly this one spec. Naming both the
+  #    slash-skill and the spec path makes it trigger whether pi -p honors the
+  #    /skill: prefix directly or routes via description-match.
+  if ! "$PI_BIN" -p "/skill:joycraft-implement $NEXT"; then
+    echo "✗ implement failed for: $NEXT — stopping (fail-fast)." >&2
+    exit 1
+  fi
+
+  # 3. Fresh process wraps it up (status bump todo→in-review + commit).
+  if ! "$PI_BIN" -p "/skill:joycraft-spec-done $NEXT"; then
+    echo "✗ spec-done failed for: $NEXT — stopping (fail-fast)." >&2
+    exit 1
+  fi
+done

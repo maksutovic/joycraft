@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { existsSync, readFileSync, unlinkSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 describe('Pi extension template (spec #7)', () => {
@@ -69,16 +69,16 @@ describe('Pi extension template (spec #7)', () => {
     expect(content).not.toContain('projectDir');
   });
 
-  it('spec_path is required (not Type.Optional)', () => {
+  // The LLM-callable joycraft_next_spec TOOL was retired by the
+  // pi-implement-loop spec (the autonomous loop is now the
+  // `joycraft-implement-loop` script — process-boundary isolation — so the
+  // in-process tool is dead). Only the human-typable COMMAND remains. Assert
+  // the tool is gone; the former tool-internals tests (spec_path required,
+  // mark-done catch block) no longer apply.
+  it('no longer registers the LLM-callable joycraft_next_spec tool', () => {
     const content = readFileSync(templatePath, 'utf-8');
-    expect(content).not.toMatch(/spec_path[\s\S]*?Type\.Optional/);
-  });
-
-  it('mark-done errors are surfaced, not silently swallowed', () => {
-    const content = readFileSync(templatePath, 'utf-8');
-    // The catch block around mark-done must return isError: true
-    expect(content).toMatch(/catch\s*\(\s*e:\s*any\s*\)[\s\S]*?isError:\s*true/);
-    // Must NOT have a bare catch or "Best-effort" comment swallowing errors
-    expect(content).not.toMatch(/catch\s*\{[\s\S]*?\/\/ Best-effort/);
+    expect(content).not.toMatch(/registerTool\s*\(/);
+    expect(content).not.toContain('"joycraft_next_spec"');
+    expect(content).not.toContain('spec_path');
   });
 });
