@@ -1,7 +1,7 @@
 # Secret Embed — Atomic Spec
 
 > **Parent Brief:** `docs/features/2026-05-27-context-isolation-test/brief.md`
-> **Status:** Ready
+> **Status:** Complete
 > **Date:** 2026-05-27
 > **Estimated scope:** 1 session / 1 file / ~3 lines
 

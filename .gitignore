@@ -4,6 +4,7 @@
 node_modules/
 .claude/worktrees/
 .claude/projects/
+.claude/scheduled_tasks.lock
 dist/
 *.tsbuildinfo
 .build/

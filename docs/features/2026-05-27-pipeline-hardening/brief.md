@@ -75,7 +75,65 @@ The current scripts use `"complete"` but that may be too final. We need a state 
 
 ## Success Criteria
 
-- [ ] Context isolation experiment yields a clear yes/no answer
-- [ ] Queue status updates are reliable and observable
+- [x] Context isolation experiment yields a clear yes/no answer — **CONTEXT LEAKS** (see 2026-05-28 run below)
+- [x] Queue status updates are reliable and observable — **FIXED** (see 2026-05-28 run below)
 - [ ] End-of-queue produces a clean, actionable report
 - [ ] Pipeline can run 10+ specs without manual intervention
+
+---
+
+## 2026-05-28 — Context-Isolation Retest & Root-Cause Analysis
+
+### What We Ran
+Re-ran the `2026-05-27-context-isolation-test` feature with the full pipeline:
+- `secret-embed.md` → agent implemented, called `joycraft_next_spec`
+- `secret-recall.md` → agent received it in the **same conversation**, remembered `KIWI`
+
+### Results
+| Test | Result |
+|------|--------|
+| Context isolation | **FAILED** — same session, memory persisted |
+| Queue status update | **FAILED initially, then FIXED** — see root cause |
+| Spec markdown status | **FIXED** — manually updated to "Complete" |
+| Tests & build | **PASSING** — 681/681 tests green |
+
+### Root Causes Found
+
+#### Bug 1: `findManifest` picked the wrong manifest
+`findManifest` used `ls ... | head -1`, which alphabetically returned `2026-05-26-pi-support` instead of `2026-05-27-context-isolation-test`. The spec file (`secret-embed.md`) wasn't in that manifest, so the lookup returned `undefined`.
+
+**Fix:** `findManifest` now:
+1. Accepts an optional `specPath` parameter
+2. Searches all manifests for the one containing the target spec
+3. Falls back to most-recently-modified manifest
+
+#### Bug 2: Silent skip on missing entry
+```typescript
+// BEFORE — silently did nothing
+if (entry?.id) { execSync(`mark-done ${entry.id}`); }
+```
+When `entry` was `undefined`, the `if` block was skipped. The tool returned "Validation passed. Advancing..." with zero file changes.
+
+**Fix:** Now returns hard errors:
+- `Spec "X" not found in manifest Y` — when entry is missing
+- `Spec "X" has no id in manifest` — when id is missing
+
+#### Bug 3: No new session created
+`pi.sendUserMessage("/joycraft-next-spec", { deliverAs: "followUp" })` at the end of the tool didn't trigger `ctx.newSession()`. In this harness, the extension command handlers don't run from tool follow-ups the way they would in a real Pi TUI session.
+
+**Fix applied to code:** The extension now passes the correct specs-dir to `joycraft-mark-done` so it updates the right manifest. The session-start behavior still depends on Pi's extension runtime being active.
+
+### Files Changed
+| File | Action |
+|------|--------|
+| `.pi/extensions/joycraft-pipeline.ts` | Fixed `findManifest`, added error handling, pass specs-dir to mark-done |
+| `docs/templates/pi-extensions/joycraft-pipeline.ts` | Synced template to fixed version |
+| `docs/features/2026-05-27-context-isolation-test/specs/.joycraft-spec-queue.json` | Both specs marked `complete` |
+| `docs/features/2026-05-27-context-isolation-test/specs/secret-embed.md` | Status → Complete |
+| `docs/features/2026-05-27-context-isolation-test/specs/secret-recall.md` | Status → Complete |
+
+### Remaining Open Questions
+1. **Session switching in Pi harness:** Does `pi.sendUserMessage("/joycraft-next-spec", { deliverAs: "followUp" })` actually trigger the command handler? It works in the Pi TUI but may not in the coding-agent harness.
+2. **Context clearing:** We need to verify `ctx.newSession()` is called. The command handler already has it; the question is whether the tool's follow-up message reaches it.
+3. **Status vocabulary:** Still undecided between `active` → `implemented` → `verified` → `complete` or simpler variants.
+4. **Auto-commit per spec:** Still not implemented. Should `joycraft_next_spec` also commit?
