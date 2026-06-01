@@ -9,11 +9,18 @@ const skillPath = join(__dirname, '..', '.pi', 'skills', 'joycraft-decompose', '
 describe('Pi decompose skill handoff', () => {
   const content = readFileSync(skillPath, 'utf-8');
 
-  it('mentions joycraft_next_spec tool for Pi autonomy loop', () => {
-    expect(content).toContain('joycraft_next_spec');
+  // The interactive-only `joycraft_next_spec` TOOL was retired by the
+  // pi-implement-loop spec; the loop script supersedes it as the Pi autonomy
+  // path. The handoff must point at that script, not the dead tool.
+  it('points Pi autonomy at the joycraft-implement-loop driver', () => {
+    expect(content).toContain('joycraft-implement-loop');
   });
 
-  it('still mentions /clear for non-Pi harnesses', () => {
+  it('does not reference the retired joycraft_next_spec tool', () => {
+    expect(content).not.toContain('joycraft_next_spec');
+  });
+
+  it('still mentions /clear for non-Pi (Claude Code / Codex) harnesses', () => {
     expect(content).toContain('/clear');
   });
 

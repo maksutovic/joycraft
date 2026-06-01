@@ -229,6 +229,15 @@ To execute:
 
 Ready to start execution?
 
-Pi (with Joycraft pipeline extension): Call the joycraft_next_spec tool to start autonomous execution.
+Pi — autonomous (isolated specs): one command runs the whole queue headless —
+  joycraft-implement-loop docs/features/<slug>/specs
+It loops next-spec → implement → spec-done in a fresh `pi -p` process per spec
+(the process boundary IS the context isolation), then runs session-end once. You
+don't hand-choreograph sessions — the loop advances itself. If the user wants
+this run for them, invoke that command via the shell rather than implementing
+inline or spawning a subagent (neither gives the verified process-boundary
+isolation). ToS/cost note: the loop is for Pi with a BYO API key or open weights.
+Pi — interactive (step-by-step): run /skill:joycraft-implement docs/features/<slug>/specs,
+then /new between specs — your artifacts are saved to files.
 Claude Code / Codex: Run /clear before your next step — your artifacts are saved to files.
 ```

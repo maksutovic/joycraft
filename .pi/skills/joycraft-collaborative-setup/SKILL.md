@@ -155,7 +155,7 @@ Next:
 ```bash
 /skill:joycraft-new-feature
 ```
-Run /clear first.
+Run /new first.
 
 Include the path to `docs/CONTRIBUTING-joycraft.md` and any newly-created area READMEs in the summary above the Handoff block.
 

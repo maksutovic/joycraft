@@ -101,7 +101,15 @@ When the spec is implemented and all its tests pass, the hand-off depends on the
 | **isolated** | Hand off to `/skill:joycraft-spec-done`, then start the next spec in a **fresh context** (see the harness sub-cases below). |
 
 **`isolated` — fresh context per harness:**
-- **Pi:** the `joycraft-implement-loop` driver automates it — a fresh `pi -p` process per spec (the process boundary IS the context isolation). The loop runs `joycraft-next-spec` → implement → spec-done → repeat, then `joycraft-session-end` once. Nothing for you to do beyond spec-done; the loop advances.
+- **Pi:** the `joycraft-implement-loop` driver automates it — a fresh `pi -p` process per spec (the process boundary IS the context isolation). The loop runs `joycraft-next-spec` → implement → spec-done → repeat, then `joycraft-session-end` once.
+  - **If THIS process is one iteration of that loop** (you were launched by `pi -p` with a single spec): you have nothing to do beyond spec-done — the loop advances on its own.
+  - **If you are an interactive Pi session and the user asks you to run the remaining specs autonomously** ("automate this", "run the queue", "you're the harness — do it"): do **not** implement the specs inline in this conversation, and do **not** spawn a subagent — neither gives the verified process-boundary isolation. Instead **invoke the loop driver via the shell**, pointing it at the feature's specs dir:
+
+    ```
+    joycraft-implement-loop docs/features/<slug>/specs
+    ```
+
+    That one command runs the whole queue headless (fresh `pi -p` per spec) and finishes with session-end. (Note: the driver spawns `pi -p` subprocesses; nesting it under an already-running Pi session is sound by design but not yet smoke-tested end-to-end — if the nested `pi -p` misbehaves, fall back to telling the human to run the command in a separate terminal.) ToS/cost note: this path is for Pi with a BYO API key or open weights — do not route a subscription OAuth through it.
 - **Claude Code / Codex, interactive:** tell the human to run `/clear`, then re-invoke `/skill:joycraft-implement <next-spec>`. (Guided-manual — always fine, no ToS/cost surprise.)
 - **Claude Code / Codex, headless:** the opt-in `claude -p` / `codex exec` loop. **Surface the caveat, don't bury it:** unattended headless loops draw metered, full-rate API usage and carry a ToS posture the user must **knowingly opt into** (Anthropic meters `claude -p` from a separate full-rate pool; routing subscription OAuth through third-party harnesses is prohibited). The responsible default is Pi (BYO API key / open weights). Do not silently auto-run a subscription-backed headless loop.
 
@@ -115,8 +123,9 @@ Implementation complete:
 
 Next steps:
 - batch (more specs remain): continue to the next spec in this conversation
-- checkpoint / isolated: run /skill:joycraft-spec-done, then continue (isolated interactive: /clear first)
+- checkpoint / isolated: run /skill:joycraft-spec-done, then continue (isolated interactive: /new first)
+- isolated, autonomous: run the loop — `joycraft-implement-loop docs/features/<slug>/specs`
 - feature's last spec: run /skill:joycraft-session-end (the once-per-feature finisher)
 ```
 
-**Tip:** On Pi, isolated mode is driven by the `joycraft-implement-loop` script (fresh process per spec). For interactive control, run `/skill:joycraft-spec-done`, then `/clear` before the next spec. Your artifacts are saved to files — this conversation context is disposable.
+**Tip:** On Pi, isolated mode is driven by the `joycraft-implement-loop` script (fresh process per spec) — that's the autonomous path; you Bash-invoke it. For step-by-step interactive control instead, run `/skill:joycraft-spec-done`, then `/new` before the next spec. Your artifacts are saved to files — this conversation context is disposable.
