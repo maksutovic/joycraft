@@ -70,7 +70,7 @@ src/
   agents-md.ts        # AGENTS.md generation
   permissions.ts      # .claude/settings.json permission rules
   safeguard.ts        # PreToolUse deny-pattern hooks
-  version.ts          # .joycraft-version tracking
+  version.ts          # .claude/.joycraft/state.json version tracking
   bundled-files.ts    # All skills + templates as embedded strings
   claude-skills/      # Skill markdown files (source of truth)
   templates/          # Template files (source of truth)
