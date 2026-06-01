@@ -13,6 +13,9 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # Hard wall so a hung test fails in minutes, not the ~6h GitHub default.
+    # A healthy run is ~30s; 10m is generous headroom.
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
