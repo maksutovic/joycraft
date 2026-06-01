@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-05-30
+last_updated: 2026-06-01
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -24,6 +24,7 @@ last_updated_by: Maximilian Maksutovic
 | 2026-05-30 | Per-spec **execution modes** (`batch`/`checkpoint`/`isolated`), hybrid-selected (project default + decompose recommendation, human-approved) | Specs aren't uniform — tiny ones want to batch, heavy ones need fresh context; one fixed wrap-up behavior is wrong. Human approves because risk isn't always visible from size | Auto-assign mode from size alone (a tiny spec in a risky feature may still need isolation — only a human knows) | If the size→mode heuristic proves reliable enough to drop the human gate |
 | 2026-05-30 | Isolated-mode autonomous loop = single-shot `pi -p` process per spec; retired the in-process `joycraft_next_spec` Pi tool | The process boundary gives free, verified context isolation; the in-process TypeScript extension provably could NOT isolate context (context-isolation experiment) | Driving the loop from the in-process extension via `newSession`/`sendUserMessage` (tombstoned — leaks context) | If Pi adds a first-class in-process isolation primitive |
 | 2026-05-30 | Unified spec status to `todo → in-review → done` across queue JSON + frontmatter | Two systems with different words (`active`/`complete` vs `shipped`/`backlog`) desynced on every change; researched canonical idiom (GitHub/Jira/Linear), not invented | Keeping two vocabularies (perpetual drift), a 4th `implemented`/`verified` state (no major tool tracks it; one more thing to drift) | Never — single vocabulary is the invariant |
+| 2026-05-31 | Upgrade-state hidden at `.claude/.joycraft/state.json` (gitignored, 16-char hashes), migrated-on-upgrade — keep per-file hashes, only relocate | Client complained about a committed `.joycraft-version` at the repo root; npm itself hides hashed state at `node_modules/.package-lock.json`. The hashes are what make "auto-update untouched files silently, prompt only on customized" work **offline** | Version-string-only baseline (would need old npm tarballs at upgrade time — breaks offline); shadcn copy-once+diff (prompts on every changed file — kills turnkey updates) | If a Codex-only/Pi-only install mode ever skips creating `.claude/` (the state location assumes it's universal) |
 
 ## Principles
 
