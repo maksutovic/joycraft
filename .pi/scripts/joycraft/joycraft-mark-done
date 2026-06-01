@@ -64,6 +64,11 @@ fi
 
 # Replace the matching spec id's status — from ANY current value — to the
 # requested state, so re-running transitions (e.g. in-review → done) works.
-sed -i '' -E "/\"id\": *$SPEC_ID[,}]/s/\"status\": *\"[^\"]*\"/\"status\": \"$TO_STATE\"/" "$MANIFEST"
+# Edit via a temp file rather than `sed -i`: in-place editing is non-portable
+# (BSD/macOS needs `-i ''`, GNU/Linux rejects it), so we write to a temp file
+# and move it back — identical behavior on both platforms.
+TMP_MANIFEST="$(mktemp)"
+sed -E "/\"id\": *$SPEC_ID[,}]/s/\"status\": *\"[^\"]*\"/\"status\": \"$TO_STATE\"/" "$MANIFEST" > "$TMP_MANIFEST"
+mv "$TMP_MANIFEST" "$MANIFEST"
 
 echo "Spec #$SPEC_ID marked $TO_STATE"
