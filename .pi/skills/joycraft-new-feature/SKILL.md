@@ -228,7 +228,7 @@ To execute: Start a fresh session per spec. Each session should:
 
 Ready to start?
 
-Run /clear before your next step — your artifacts are saved to files.
+Run /new before your next step — your artifacts are saved to files.
 ```
 
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused. Research and design catch wrong assumptions before they propagate into specs — but skip them if the scope is clear and well-understood.

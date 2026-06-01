@@ -133,5 +133,5 @@ To execute: Start a fresh session and:
 
 Ready to start?
 
-Run /clear before your next step — your artifacts are saved to files.
+Run /new before your next step — your artifacts are saved to files.
 ```

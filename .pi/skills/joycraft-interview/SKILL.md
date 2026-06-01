@@ -93,7 +93,7 @@ SIMPLE (scope is clear, < 5 files, well-understood area):
 
 Not sure yet? Just keep brainstorming — run /skill:joycraft-interview again anytime.
 
-Run /clear before your next step — your artifacts are saved to files.
+Run /new before your next step — your artifacts are saved to files.
 ```
 
 If the idea sounds complex — touches many files, involves architectural decisions, or the user is working in an unfamiliar area — nudge them toward research and design. But present it as a recommendation, not a gate.

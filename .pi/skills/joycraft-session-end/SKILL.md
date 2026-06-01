@@ -110,5 +110,5 @@ Feature complete.
 - PR: [opened #N / not yet — N specs remaining]
 - Next: [what comes after this feature]
 
-Run /clear before your next step — your artifacts are saved to files.
+Run /new before your next step — your artifacts are saved to files.
 ```
