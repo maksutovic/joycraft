@@ -4,15 +4,19 @@ description: Wrap up a session — capture discoveries, verify, prepare for PR o
 instructions: 22
 ---
 
-# Session Wrap-Up
+# Session Wrap-Up — Feature Finisher
 
-Before ending this session, complete these steps in order.
+This is the **once-per-feature finisher** — the heavy bookend that runs **once**, when the feature's specs are done, not after every spec. It is the **only validation gate** in the loop and the single place that pushes and opens the PR.
 
-## 1. Capture Discoveries
+> **Two-tier wrap-up.** The light per-spec step is `joycraft-spec-done` (status bump `todo → in-review` + commit, no validation/push/PR — it runs after each spec). This skill is the heavy counterpart: full validation, consolidate the discovery stubs spec-done left behind, graduate every `in-review` spec to `done`, push, and open the PR. See `docs/reference/spec-status-lifecycle.md` for the `todo → in-review → done` lifecycle.
+
+Complete these steps in order.
+
+## 1. Consolidate Discoveries
 
 **Why:** Discoveries are the surprises — things that weren't in the spec or that contradicted expectations. They prevent future sessions from hitting the same walls.
 
-Check: did anything surprising happen during this session? If yes, create or update a discovery file at `docs/discoveries/YYYY-MM-DD-topic.md`. Lazy-create the `docs/discoveries/` directory if it doesn't exist.
+This is the **consolidation** pass: `joycraft-spec-done` may have left terse 2-line discovery **stubs** during the feature (one per surprising spec). Curate and expand those stubs into proper discovery docs now, and capture anything else surprising from the feature as a whole. If any stubs exist at `docs/discoveries/`, consolidate them (merge related ones, expand each into the full format below); then create or update a discovery file at `docs/discoveries/YYYY-MM-DD-topic.md`. Lazy-create the `docs/discoveries/` directory if it doesn't exist.
 
 (Discoveries stay flat at `docs/discoveries/` rather than per-feature, since they often span features and are read serendipitously rather than via a known path.)
 
@@ -20,7 +24,7 @@ The discovery file MUST start with YAML frontmatter — the 4-field personal sch
 
 ```yaml
 ---
-status: active
+status: todo
 owner: <resolved name>
 created: YYYY-MM-DD
 feature: <slug-of-related-feature>   # omit if not feature-tied
@@ -79,7 +83,9 @@ If the file already has the frontmatter, update the `last_updated` and `last_upd
 
 Skip this if nothing applies. Don't force it — only update when there's genuine new context.
 
-## 2. Run Validation
+## 2. Run Validation — the ONLY validation gate
+
+This is **mandatory** and it is the **only** validation gate in the loop: `joycraft-spec-done` deliberately skips validation (it trusts implement's per-spec TDD), so this feature-level run is the single cross-spec safety net. Never skip it.
 
 Run the project's validation commands. Check CLAUDE.md for project-specific commands. Common checks:
 
@@ -87,15 +93,23 @@ Run the project's validation commands. Check CLAUDE.md for project-specific comm
 - Tests (e.g., `npm test`, `pytest`, `cargo test`)
 - Lint (e.g., `eslint`, `ruff`, `clippy`)
 
-Fix any failures before proceeding.
+Fix any failures before proceeding. **If validation fails, stop — do NOT graduate specs to `done` and do NOT push.**
 
-## 3. Update Spec Status
+## 3. Graduate Specs `in-review → done`
 
-If working from an atomic spec in `docs/features/<slug>/specs/` (or `docs/bugfixes/<area>/` for bugfixes — scan recursively):
-- All acceptance criteria met — update the spec's frontmatter `status:` to reflect completion (e.g., `shipped`) and the body's Status field to `Complete`
-- Partially done — leave `status: active` and update the body's Status field to `In Progress`, note what's left
+This step graduates the feature's finished specs to their terminal state. Because session-end runs once at the end, **multiple specs may be waiting** in `in-review` (one per spec the loop completed via `joycraft-spec-done`). Graduate **all** of them, in **both** systems (the queue JSON and the frontmatter must never disagree):
 
-If working from a Feature Brief at `docs/features/<slug>/brief.md`, check off completed specs in the decomposition table.
+For each spec in `docs/features/<slug>/specs/` (or `docs/bugfixes/<area>/` for bugfixes — scan recursively) whose status is `in-review`:
+
+1. **Queue JSON** — `joycraft-mark-done <spec-id> --to done <specs-dir>` (the `--to done` graduation; find `<spec-id>` by matching the entry's `file`).
+2. **Frontmatter** — edit the spec file's YAML `status:` to `done`.
+
+Rules:
+- Only graduate specs that are `in-review`. A spec still at `todo` was never started — **leave it `todo` and report it as remaining** (the feature isn't fully done; see the PR gate in step 5).
+- Never write `done` for work nothing has validated — this validation run (step 2) is what licenses the graduation. (Once `verify-in-loop` ships, an independent verify performs the `in-review → done` transition; until then, this step does.)
+- `done` means **verified**, not **merged**. A merged PR is a git fact, never a spec status — do not invent a `merged` status or any fourth state beyond `todo`/`in-review`/`done`.
+
+If working from a Feature Brief at `docs/features/<slug>/brief.md`, also check off completed specs in the decomposition table.
 
 ## 4. Commit
 
@@ -106,21 +120,22 @@ Commit all changes including the discovery file (if created) and spec status upd
 **Check CLAUDE.md for "Git Autonomy" in the Behavioral Boundaries section.** If it says "STRICTLY ENFORCED" or the ALWAYS section includes "Push to feature branches immediately after every commit":
 
 1. **Push immediately.** Run `git push origin <branch>` — do not ask, do not hesitate.
-2. **Open a PR if the feature is complete.** Check the parent Feature Brief's decomposition table — if all specs are done, run `gh pr create` with a summary of all completed specs. Do not ask first.
-3. **If not all specs are done,** still push. The PR comes when the last spec is complete.
+2. **Open a PR if the feature is complete.** The feature is complete when every spec is `done` (none left at `todo`/`in-review`). Check the queue JSON / decomposition table — if all specs are `done`, run `gh pr create` with a summary of all completed specs. Do not ask first.
+3. **If specs remain (`todo`),** still push. The PR comes when the feature's last spec is graduated.
 
 If CLAUDE.md does NOT have autonomous git rules (or has "ASK FIRST" for pushing), ask the user before pushing.
 
 ## 6. Report and Hand Off
 
 ```
-Session complete.
-- Spec: [spec name] — [Complete / In Progress]
+Feature complete.
+- Feature: [slug]
+- Specs graduated to done: [N] (remaining at todo: [N])
 - Build: [passing / failing]
-- Discoveries: [N items / none]
+- Discoveries: [N consolidated / none]
 - Pushed: [yes / no — and why not]
 - PR: [opened #N / not yet — N specs remaining]
-- Next: [what the next session should tackle]
+- Next: [what comes after this feature]
 ```
 
 End with the canonical Handoff block. Include any discovery and updated-context paths produced.

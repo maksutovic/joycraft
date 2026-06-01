@@ -1,245 +1,159 @@
-# Codebase Research — Pi Support
+---
+status: active
+owner: Maximilian Maksutovic
+created: 2026-05-28
+feature: 2026-05-26-pi-support
+---
 
-**Date:** 2026-05-26
-**Questions answered:** 10/10
+# Codebase Research — Pi Support (Programmatic Context Control & Custom Tools)
+
+**Date:** 2026-05-28
+**Questions answered:** 4/4 (verified against the installed package `@earendil-works/pi-coding-agent@0.75.5` and official docs on `github.com/earendil-works/pi`)
+
+> **Supersedes the 2026-05-26 version of this file.** The earlier research answered a different set of integration questions and never established the run modes. This rewrite was prompted by a wrong premise in a prior pass (that the package "404s on npm"). It does not — see Q1. The CLI is installed locally at `~/.nvm/.../bin/pi` (v0.76.0 on PATH; v0.75.5 pinned as a devDependency in this repo). The original 10-question research is preserved in git history (commit before this change).
 
 ---
 
-## Q1: How does `npx joycraft init` currently detect which coding agent is in use, and where does it install skills for each agent?
+## TL;DR (the four facts that change the architecture)
 
-**No detection exists.** `init.ts` unconditionally installs skills to both agent directories:
-- `.claude/skills/<name>/SKILL.md` — for Claude Code
-- `.agents/skills/<name>/SKILL.md` — for Codex (OpenAI Codex CLI)
+1. **Pi is real and installed.** `@earendil-works/pi-coding-agent`, `bin: pi`. The repo pins `0.75.5`; `pi` on PATH is `0.76.0`.
+2. **Pi has a first-class non-interactive mode: `pi -p "<prompt>"` (`--print`).** Verified live: `pi -p "say hi in one word"` → `Hi.` then exits. There is also `--mode json` (structured event stream) and `--mode rpc` (JSONL over stdin/stdout). **This is the lever the whole Joycraft pipeline has been missing.**
+3. **`newSession` / `fork` / `switchSession` exist but are command-context-only** and "can deadlock if called from event handlers." Inside a single `pi` process, true fresh-context-per-spec requires the two-hop pattern the bug brief already identified. But across processes, `-p` gives isolation for free.
+4. **`ctx.compact()` exists in all contexts** (shrinks context in place, ≠ clears it). It is not the same as a fresh session.
 
-It installs 12 skills to Claude Code (`SKILLS`) and 12 to Codex (`CODEX_SKILLS`). There is no agent detection in `detect.ts` — that module only detects the language stack (Node, Python, Rust, Go, etc.), not the coding agent.
-
-The `init()` function at `src/init.ts:72-109` iterates over `SKILLS` and `CODEX_SKILLS` entries in two separate loops, creating skill directories and writing `SKILL.md` files. It also generates `CLAUDE.md` (line 111-120) and `AGENTS.md` (line 123-131) as separate outputs using `generateCLAUDEMd()` from `src/improve-claude-md.ts` and `generateAgentsMd()` from `src/agents-md.ts`.
-
-Key: Pi auto-discovers skills from `.pi/skills/` and `.agents/skills/`. The existing `.agents/skills/` output from init already aligns with Pi's discovery (Pi reads `.agents/skills/` recursively for directories containing `SKILL.md`).
+The strategic consequence: **the autonomous pipeline does not need the in-process TypeScript extension at all.** A shell `for` loop calling `pi -p "/skill:joycraft-implement <spec>"` once per spec gives perfect per-spec context isolation via the OS process boundary — exactly the property the context-isolation experiment proved the extension does *not* currently deliver. See Q2/Q4.
 
 ---
 
-## Q2: What are the exact skill file lists for `SKILLS` and `CODEX_SKILLS`, and how do they differ?
+## Q1: Is there a real, installable npm package/CLI for Pi, and what is its exact name and entry point?
 
-Both sets contain 18 `.md` files in `src/claude-skills/` and `src/codex-skills/`:
+**VERIFIED TRUE.** The prior "404" was a false alarm (likely a transient/dist-tag fluke).
 
+- Package: **`@earendil-works/pi-coding-agent`**. `npm view` → `@earendil-works/pi-coding-agent@0.76.0 | MIT | deps: 17 | versions: 10`, `bin: pi`, published by `mitsuhiko` (Armin Ronacher); maintainers include `badlogic` (Mario Zechner, the original author). Repo `github.com/earendil-works/pi-mono`, website `pi.dev`.
+- **Entry point:** `package.json` `bin` = `{ "pi": "dist/cli.js" }` (read from the installed package). The SDK entry is `@earendil-works/pi-coding-agent` → `dist/index.js`.
+- **Installed here:** `node_modules/@earendil-works/pi-coding-agent` → pnpm symlink to `@earendil-works+pi-coding-agent@0.75.5`. `package.json:42` lists it as a **devDependency** at `0.75.5`. The global `pi` on PATH is `0.76.0`.
+- The `@earendil-works` scope is registered and publishes a family: `pi-coding-agent`, `pi-agent-core`, `pi-ai`, `pi-tui`, `pi-web-ui`, plus `gondolin` (sandbox) and others.
+
+**Install (from official docs):** `npm i -g --ignore-scripts @earendil-works/pi-coding-agent` (or `pnpm`/`bun`), or `curl -fsSL https://pi.dev/install.sh | sh`.
+
+**Note (version drift):** repo pins `0.75.5`, latest is `0.76.0`+. Minor, but worth aligning so typecheck runs against the version users actually run.
+
+---
+
+## Q2: Can Pi clear/reset conversation context programmatically from inside an extension/tool, or does it require a new session/process?
+
+Three distinct mechanisms, verified from the installed `dist/core/extensions/types.d.ts`:
+
+### (a) `ctx.compact(options?)` — shrink, don't clear. **All contexts.**
+`types.d.ts:232-233`: `/** Trigger compaction without awaiting completion. */ compact(options?: CompactOptions): void;`
+Summarizes the conversation in place. This is *reduction*, not *isolation* — prior content survives as a summary. Not sufficient for the secret-recall isolation test.
+
+### (b) `ctx.newSession(...)` / `fork(...)` / `switchSession(...)` — true fresh context. **Command context ONLY.**
+`types.d.ts:241-276`, on `ExtensionCommandContext` (which `extends ExtensionContext`):
+```ts
+/** Includes session control methods only safe in user-initiated commands. */
+export interface ExtensionCommandContext extends ExtensionContext {
+  newSession(options?: {
+    parentSession?: string;
+    setup?: (sessionManager: SessionManager) => Promise<void>;
+    withSession?: (ctx: ReplacedSessionContext) => Promise<void>;
+  }): Promise<{ cancelled: boolean }>;
+  fork(entryId, options?): Promise<{ cancelled: boolean }>;
+  switchSession(sessionPath, options?): Promise<{ cancelled: boolean }>;
+  ...
+}
 ```
-joycraft-add-context.md    joycraft-design.md      joycraft-new-feature.md
-joycraft-add-fact.md       joycraft-gather-context.md joycraft-optimize.md
-joycraft-bugfix.md         joycraft-implement-level5.md joycraft-research.md
-joycraft-collaborative-setup.md joycraft-implement.md  joycraft-session-end.md
-joycraft-decompose.md      joycraft-interview.md    joycraft-setup.md
-joycraft-lockdown.md       joycraft-tune.md         joycraft-verify.md
+The docs state plainly: these "are only available in commands because they can deadlock if called from event handlers." A **tool's `execute()`** receives the narrower `ExtensionContext` — **no `newSession`**. This is exactly the API mismatch the v0.6.3 extension tripped on.
+
+A new session starts **empty** unless you populate it: the `setup` callback "mutate[s] the new session's `SessionManager` before `withSession` runs." `withSession` receives a `ReplacedSessionContext` bound to the *new* session (its `sendUserMessage`/`sendMessage` target the replacement). So `newSession({ withSession: s => s.sendUserMessage("/skill:joycraft-implement <next>") })` = fresh context seeded with the next spec. This is the in-process route to isolation.
+
+### (c) The process boundary — the simplest reset of all.
+Every `pi -p "<prompt>"` invocation is a new OS process with its own context. Two sequential `pi -p` calls cannot share conversation memory unless you explicitly `--continue`/`--resume`/`--session`. **This is the cleanest "clear context" available and needs no extension code.** (Empirical 2-process secret test: drafted but not finished this session — a 30-second confirm is in "Open items," though the per-process model makes the outcome a near-certainty.)
+
+**Answer:** Yes, programmatically — but **not from a tool's `execute()`**. From a *command handler* via `newSession` (in-process), or trivially via separate `pi -p` processes (cross-process). `compact()` shrinks but does not isolate.
+
+---
+
+## Q3: What is the correct, verified shape of a Pi extension (tools, hooks, commands), and how are extensions registered/loaded?
+
+Verified from installed types + official `extensions.md`.
+
+### Factory (default export is a FUNCTION, not an object)
+```ts
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+export default function (pi: ExtensionAPI) { /* register here */ }   // may be async
 ```
+The loader requires `typeof default === "function"`; an object literal → "Extension does not export a valid factory function" (the exact v0.6.3 crash). The current repo extension (`.pi/extensions/joycraft-pipeline.ts`) is now correct on this.
 
-**Differences between Claude and Codex skills** (from `tests/codex-skill-parity.test.ts`):
-1. Codex skills use `$joycraft-` invocation syntax instead of `/joycraft-`
-2. Codex skills do NOT reference Claude-specific tools: `TodoWrite`, `EnterWorktree`, `LSP`
-3. Frontmatter `name` fields match between both sets
-4. All Claude skills have a corresponding Codex skill (enforced by test)
-
-Both sets are compiled into `src/bundled-files.ts` (auto-generated by `scripts/generate-bundled-files.mjs`) as `SKILLS` and `CODEX_SKILLS` exports.
-
-**For Pi:** Skills are already in standard Agent Skills format. Pi discovers from `.agents/skills/` — the Codex install path is already compatible. The skills themselves would need `/joycraft-` → `/skill:joycraft-` adaptation since Pi uses `/skill:name` command format.
-
----
-
-## Q3: What are the exact sub-agent spawning mechanisms used in `joycraft-research` and `joycraft-verify`?
-
-**Both skills use the agent's native sub-agent primitives without specifying exact API calls.**
-
-**joycraft-research** (`.agents/skills/joycraft-research/SKILL.md`):
-- Phase 2: "Spawn a subagent to perform the research. Pass ONLY the research questions — never the brief."
-- Provides a complete subagent prompt template with RULES and OUTPUT FORMAT
-- The subagent sees only the questions; the main agent reads the brief and generates questions
-- Result: "Write the subagent's response to `docs/research/YYYY-MM-DD-feature-name.md`"
-
-**joycraft-verify** (`.agents/skills/joycraft-verify/SKILL.md`):
-- Step 4: "Spawn a concurrent subagent thread with the following prompt"
-- Subagent gets: spec name, acceptance criteria, test plan, constraints, test commands
-- Subagent rules: read-only (no edits, no installs, no network)
-- Result: structured verification report with pass/fail/manual check
-
-**For Pi:** Pi has no built-in sub-agent spawning mechanism. The brief proposes using Pi's session API as a substitute:
-- `ctx.newSession()` creates a new session
-- `pi.sendUserMessage()` sends a prompt to the new session
-- This is architecturally different from sub-agents — it creates a new session context rather than a concurrent thread
-
----
-
-## Q4: How does `joycraft-session-end` determine which spec is currently active and update its status?
-
-**No automatic determination.** Session-end is explicit:
-
-1. **Discovery of specs** (Step 3): "scan `docs/specs/` recursively — specs may be in subdirectories like `docs/specs/<feature-name>/`"
-   - Reads each spec file's frontmatter for `status:` field
-   - Status filter logic: "If working from an atomic spec in `docs/specs/`... All acceptance criteria met — update status to `Complete`. Partially done — update status to `In Progress`, note what's left."
-   - For Feature Briefs in `docs/briefs/`: "check off completed specs in the decomposition table"
-
-2. **Status update is manual editing** — the agent edits the spec markdown file's YAML frontmatter. There is no programmatic status tracking.
-
-3. **Discovery validation** (Step 2): reads CLAUDE.md or AGENTS.md for test commands, then runs build/test/lint
-
-**For Pi:** The pipeline needs to know which spec was just implemented. Currently the human passing `/joycraft-implement docs/specs/.../spec.md` provides the path. For autonomous pipeline, a script needs to read the spec queue and pass the next spec path.
-
----
-
-## Q5: What is the decomposition output structure?
-
-After `joycraft-decompose` runs (from `.agents/skills/joycraft-decompose/SKILL.md`):
-
-**Spec files:** `docs/features/<slug>/specs/<spec-name>.md`
-- YAML frontmatter: `status`, `owner`, `created`, `feature`
-- Body: What, Why, Acceptance Criteria, Test Plan, Constraints, Affected Files, Approach, Edge Cases
-- Each spec is self-contained
-
-**Spec README:** `docs/features/<slug>/specs/README.md`
-- Spec table: `| # | Spec | Depends On | Notes |`
-- Execution waves: "Wave 1 (parallel): specs ... / Wave 2 (after wave 1): specs ..."
-- Dependencies reference spec numbers (not paths)
-
-**Parent brief:** `docs/features/<slug>/brief.md`
-- Decomposition table added during decompose
-- Execution Strategy section with wave plan
-
-**For bugfixes:** `docs/bugfixes/<area>/bugfix-name.md` with area-level `README.md`
-
-**For Pi pipeline:** The README's spec table gives a natural spec queue format. Dependencies are tracked by number. The "Depends On" field can drive execution order.
-
----
-
-## Q6: What does `joycraft init` generate for CLAUDE.md vs AGENTS.md, and what agent-specific logic differentiates them?
-
-**CLAUDE.md** (`src/improve-claude-md.ts`, `generateCLAUDEMd()`):
-- Sections: Behavioral Boundaries (ALWAYS/ASK FIRST/NEVER), Development Workflow, Architecture, Key Files, Common Gotchas, Context Map, Getting Started with Joycraft
-- Includes Project Tools section if non-Joycraft `.claude/skills/` exist
-- Areas section if `docs/areas/` exists
-- External Validation section
-- Uses `StackInfo` from `detectStack()` for language-specific commands
-
-**AGENTS.md** (`src/agents-md.ts`, `generateAgentsMd()`):
-- Same core sections as CLAUDE.md
-- Does NOT include: Project Tools section (init.ts passes no `existingSkills` to `generateAgentsMd()`)
-
-**Agent-specific logic in init.ts:**
-- `claudeMdPath = join(targetDir, 'CLAUDE.md')` — generated via `generateCLAUDEMd(projectName, stack, existingSkills)`
-- `agentsMdPath = join(targetDir, 'AGENTS.md')` — generated via `generateAgentsMd(projectName, stack)` (no existingSkills)
-- `.claude/settings.json` — permissions, hooks (SessionStart), safeguard hooks — Claude Code specific
-- `.claude/hooks/joycraft-version-check.mjs` — version check hook for Claude Code
-- No equivalent settings/hooks for Codex or Pi
-
-**For Pi:** Pi uses `AGENTS.md` (auto-discovered from project). The existing `AGENTS.md` generation is already compatible. Pi doesn't use `.claude/settings.json` — it uses `.pi/settings.json` instead.
-
----
-
-## Q7: How does Pi auto-discover skills from project directories?
-
-From `docs/skills.md` in Pi's documentation:
-
-**Project-level discovery (in order):**
-1. `.pi/skills/` — direct root `.md` files AND directories containing `SKILL.md` (recursive)
-2. `.agents/skills/` in cwd and ancestor directories (up to git root or filesystem root) — directories containing `SKILL.md` (recursive; root `.md` files ignored)
-
-**Global discovery:**
-3. `~/.pi/agent/skills/` — same rules as `.pi/skills/`
-4. `~/.agents/skills/` — same rules as project `.agents/skills/`
-
-**Other sources:**
-5. Settings.json `skills` array (file paths or directories)
-6. Pi packages with `skills/` directories or `pi.skills` entries in `package.json`
-7. CLI `--skill <path>` flag (repeatable)
-8. Can also cross-load from `.claude/skills` via settings: `{ "skills": ["../.claude/skills"] }`
-
-**Key insight:** The existing `.agents/skills/` output path from `joycraft init` is ALREADY discovered by Pi. The 12 Codex skills already go to exactly the right place for Pi.
-
----
-
-## Q8: What session lifecycle APIs does Pi's extension system expose that are relevant to automating the pipeline?
-
-From Pi's `extensions.md`:
-
-**`ctx.newSession(options?)`** (available in command handlers):
-```typescript
-const result = await ctx.newSession({
-  parentSession,
-  setup: async (sm) => {
-    sm.appendMessage({ role: "user", content: [...], timestamp: Date.now() });
-  },
-  withSession: async (ctx) => {
-    await ctx.sendUserMessage(kickoff);
+### Tools — `pi.registerTool({...})`
+```ts
+pi.registerTool({
+  name: "my_tool",
+  label: "My Tool",                                  // present in all examples
+  description: "...",
+  parameters: Type.Object({ ... }),                  // typebox
+  async execute(toolCallId, params, signal, onUpdate, ctx) {
+    return { content: [{ type: "text", text: "..." }], details: {} };  // AgentToolResult
   },
 });
 ```
-- `parentSession`: recorded in new session header
-- `setup`: mutate SessionManager before `withSession` runs
-- `withSession`: receives ReplacedSessionContext with `sendUserMessage()` / `sendMessage()` bound to new session
+Signature is `(toolCallId, params, signal, onUpdate, ctx)` — **not** `(args, ctx)`. Return must be `{ content, details, terminate? }`. `ctx` here is `ExtensionContext` (has `ui`, `cwd`, `sessionManager`, `compact`, `getContextUsage`, `shutdown`; **no** `newSession`, **no** `projectDir` — use `ctx.cwd`).
 
-**`pi.sendUserMessage(content, options?)`** — sends user message, triggers turn:
-- Options: `deliverAs` = "steer" | "followUp" | "nextTurn"
-
-**`pi.sendMessage(message, options?)`** — injects custom (non-user) message:
-- Options: `deliverAs`, `triggerTurn`
-
-**`pi.registerTool(definition)`** — registers LLM-callable tool with name, description, parameters (TypeBox schema), execute function
-
-**`pi.appendEntry(customType, data?)`** — persist extension state in session entries
-
-**Extension auto-discovery:** `.pi/extensions/*.ts` or `.pi/extensions/*/index.ts` (project), `~/.pi/agent/extensions/` (global)
-
-**Session replacement lifecycle:** When `newSession()` is called, Pi emits `session_before_switch` (can be cancelled), `session_shutdown` for old extension, reloads extensions for new session, emits `session_start` with `reason: "new"` and `previousSessionFile`.
-
-**For the pipeline:** The extension registers a tool (e.g., `joycraft_next_spec`). When called, it:
-1. Runs bash script to find next uncompleted spec
-2. If found: runs session-end bash script, calls `ctx.newSession()` with `withSession: async (ctx) => { await ctx.sendUserMessage("/skill:joycraft-implement " + nextSpecPath); }`
-3. If none: reports pipeline complete
-
----
-
-## Q9: What is the existing test infrastructure?
-
-**Framework:** Vitest (`devDependencies.vitest: ^3.0.0`)
-
-**Test files:** 31 test files in `tests/` directory (e.g., `init.test.ts`, `detect.test.ts`, `bundled-files.test.ts`, `codex-skill-parity.test.ts`, `skill-frontmatter.test.ts`, etc.)
-
-**Test patterns:**
-- `describe`/`it` blocks with `expect()` assertions
-- Snapshot-adjacent pattern: comparing generated output to expected strings
-- Temporary directories via `tmpdir()` for init tests
-- Console output capture for summary message testing
-- Fixture directories at `tests/fixtures/` for stack detection (e.g., `node-npm/`, `node-pnpm/`, `python-poetry/`, `go/`, `rust/`, etc.)
-
-**Key test suites relevant to Pi support:**
-- `tests/init.test.ts` — covers skill creation, CLAUDE.md/AGENTS.md generation, Codex skills, settings, permissions, force flag, idempotency
-- `tests/detect.test.ts` — covers all stack detections (Node, Python, Rust, Go, Swift, Flutter, Xcode, Makefile, Dockerfile, unknown)
-- `tests/codex-skill-parity.test.ts` — ensures Claude/Codex skills stay in sync
-- `tests/bundled-files.test.ts` — verifies generated bundled-files.ts
-- `tests/skill-frontmatter.test.ts` — validates skill YAML frontmatter
-
-**Running tests:** `pnpm test` (vitest)
-
----
-
-## Q10: How does `bundled-files.ts` get generated?
-
-**Script:** `scripts/generate-bundled-files.mjs` (plain Node.js, no TS compilation needed)
-
-**Build pipeline:** `package.json` scripts: `"build": "node scripts/generate-bundled-files.mjs && tsup"`
-
-**What it does:**
-1. Reads `.md` files flat from `src/claude-skills/` → `SKILLS` record
-2. Reads `.md` files flat from `src/codex-skills/` → `CODEX_SKILLS` record
-3. Walks tree from `src/templates/` → `TEMPLATES` record (relative paths as keys)
-4. Formats all three as TypeScript `Record<string, string>` exports
-5. Writes to `src/bundled-files.ts` with `// @generated` header
-
-**Output format:**
-```typescript
-export const SKILLS: Record<string, string> = {
-  "joycraft-add-fact.md": "---\nname: joycraft-add-fact\n...",
-  ...
-};
-export const TEMPLATES: Record<string, string> = { ... };
-export const CODEX_SKILLS: Record<string, string> = { ... };
+### Commands — `pi.registerCommand(name, { description, handler })`
+```ts
+pi.registerCommand("hello", {
+  description: "Say hello",
+  handler: async (args, ctx /* ExtensionCommandContext */) => { ctx.ui.notify(`Hi ${args}`, "info"); },
+});
 ```
+Command handlers get `ExtensionCommandContext` → the session-control methods live here.
 
-**Idempotent:** Running `generate-bundled-files.mjs` multiple times produces the same output (file content is deterministic, sorted).
+### Lifecycle hooks — `pi.on(event, handler)`
+Verified event names: `agent_end` ("Fired once per user prompt"), `before_agent_start`, `turn_start`/`turn_end`, `tool_call`, `tool_result`, `session_start`, `session_shutdown`, `session_before_compact` (cancellable), `session_before_switch`, `session_before_fork`. `pi.sendUserMessage(...)` / `pi.sendMessage(..., { triggerTurn: true })` are on `ExtensionAPI` and can fire a turn from a handler.
+
+### Discovery / loading
+- Auto: `.pi/extensions/*.ts` (project) and `~/.pi/agent/extensions/` (global). Hot-reload with `/reload`.
+- Explicit: `pi -e <path>` (repeatable); `--no-extensions` disables discovery.
+- Packages: installable via `pi install <source>`; resources enabled via `pi config`.
+
+---
+
+## Q4: Can a Pi extension spawn child sessions with isolated context to run specs back-to-back without human typing?
+
+**Two viable routes; one is far simpler than what the repo is attempting.**
+
+### Route A — in-process, two-hop (the current design, "Approach B")
+`agent_end` handler → `pi.sendUserMessage("/joycraft-next-spec", { deliverAs: "followUp" })` → the registered `joycraft-next-spec` **command** (command context) calls `ctx.newSession({ withSession: s => s.sendUserMessage("/skill:joycraft-implement <next>") })`. Fresh context per spec, zero human input. **Constraints:** the trigger must be *gated* (don't advance after every turn or after a failed spec), and `newSession`/`sendUserMessage` interplay only behaves in the interactive runtime — which is precisely why the experiment failed in the harness it was tested in (see below).
+
+### Route B — cross-process shell loop (recommended; not yet tried)
+```bash
+while spec=$(.pi/scripts/joycraft/joycraft-next-spec docs/features/<slug>/specs); \
+      [ -n "$spec" ] && [ "$spec" != "Pipeline complete" ]; do
+  pi -p "/skill:joycraft-implement $spec"          # fresh process = fresh context
+  .pi/scripts/joycraft/joycraft-session-end pipeline   # validate + stage (+ commit)
+  # mark-done is driven by the queue; loop re-queries next-spec
+done
+```
+Each `pi -p` is its own process → **isolation is guaranteed by the OS**, not by extension cleverness. No `newSession` deadlock surface, no event-gating puzzle, runs headless in CI, and `--mode json` gives a parseable transcript for the autofix/Level-5 loop. The bash tool belt (`joycraft-next-spec`, `joycraft-mark-done`, `joycraft-session-end`) already exists and works standalone — Route B is mostly *wiring what's already built*, plus making the queue the source of truth (mark-done must run, which `stateful-next-spec.md` addresses).
+
+### Why the in-process experiment failed (root cause, verified)
+`docs/features/2026-05-27-context-isolation-test/experiment-report.md`: specs A→B ran in **one** session; the agent recalled `KIWI`. Three causes, all real:
+1. **Directory input** → the implement skill read *all* specs at once (no boundary). Fix: `strict-implement-input.md`.
+2. **`joycraft_next_spec` didn't mutate the queue** (optional `spec_path`, silent mark-done catch). Fix: `stateful-next-spec.md`.
+3. **The follow-up message never reached the command handler** in the runtime it was driven from → `newSession` never fired. This is the load-bearing one: `pi.sendUserMessage(..., {deliverAs:"followUp"})` triggering a registered command is an **interactive-mode** behavior. In `-p`/SDK contexts, extension *commands* are "only needed for interactive mode where extension commands are invokable" (`types.d.ts:1107`). So the two-hop design is inherently coupled to the interactive TUI.
+
+**Conclusion:** Route A *can* work, but only inside `pi` interactive and only with careful gating — fragile. Route B sidesteps every failure mode by using processes for isolation. The honest recommendation is to make Route B the autonomous path and keep the extension only as an interactive-TUI convenience (a human typing inside `pi` who wants one-key advance).
+
+---
+
+## Cross-cutting verified facts
+
+- **`pi --help` (installed) confirms** all run modes and flags quoted above: `--mode <text|json|rpc>`, `--print, -p`, `--continue/-c`, `--resume/-r`, `--session`, `--fork`, `--no-session`, `--tools/-t`, `--no-tools`, `--extension/-e`, `--skill`, `--no-context-files` (skip AGENTS.md/CLAUDE.md), `--export`. Example from help: `pi --tools read,grep,find,ls -p "Review the code in src/"`.
+- **SDK route exists** (`dist/index.d.ts:15`): `createAgentSession(...)` → `{ session }`, `await session.prompt("...")` resolves when the run finishes; stream via `session.subscribe`; custom tools via `customTools: [...]` / `defineTool(...)`; extensions/skills via `DefaultResourceLoader`. This is a third option if a TS driver is ever preferred over bash.
+- **No test/CI exercises the extension at runtime.** `tests/pi-extension.test.ts` does *string* assertions on the template (imports the real package name, default export is a function, `spec_path` not optional, etc.). Nothing loads it through Pi's loader or runs `pi`. The guard catches "fictional SDK" regressions but **cannot** catch "works as a real extension."
+- **Print mode + extensions:** print mode runs through the same `createAgentSession`/`ResourceLoader` path, so skills and registered *tools* load under `-p`. What does **not** apply under `-p` is interactive *command* invocation (and thus the `followUp`→command→`newSession` hop) — consistent with the `types.d.ts:1107` comment. (Worth a 5-min empirical confirm; see Open items.)
+
+## Open items (quick confirms, non-blocking)
+1. **2-process secret test:** `pi -p --no-session "remember PINEAPPLE"` then a *second* `pi -p --no-session "what was the secret?"` → expect `UNKNOWN`. (Drafted this session; finish to close the isolation question empirically.)
+2. **Does `pi -p` honor a `/skill:` slash command in the prompt** (vs. needing the skill auto-invoked by description)? Confirm `pi -p "/skill:joycraft-implement <spec>"` actually triggers the skill.
+3. **Align the pinned devDep** `0.75.5` with the installed `0.76.0`.

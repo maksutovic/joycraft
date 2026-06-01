@@ -84,7 +84,11 @@ export function generateBoundariesSection(): string {
 function generateWorkflowSection(stack: StackInfo): string {
   return `## Development Workflow
 
-${generateCommandsBlock(stack)}`;
+${generateCommandsBlock(stack)}
+
+**Default execution mode:** batch
+
+_How \`/joycraft-implement\` wraps up after each spec. \`joycraft-decompose\` reads this line (absent ⇒ \`batch\`) and recommends a per-spec mode you approve. Modes: \`batch\` (implement a cluster, wrap once at the end), \`checkpoint\` (commit + status bump after each spec), \`isolated\` (fresh context per spec — on Pi, the \`joycraft-implement-loop\` driver). Change the value above to set your project default._`;
 }
 
 function generateArchitectureSection(): string {

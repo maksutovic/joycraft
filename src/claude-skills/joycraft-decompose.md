@@ -12,7 +12,7 @@ You have a Feature Brief (or the user has described a feature). Your job is to d
 
 Look for a Feature Brief at `docs/features/<slug>/brief.md`. If the user provided a brief path as an argument, use that. Otherwise, scan `docs/features/*/brief.md`.
 
-**Status filter when scanning neighbor briefs and specs:** read the YAML frontmatter at the top of each file. Treat each as `status: active` unless the frontmatter says otherwise. **Skip / ignore** any file whose `status:` is `shipped`, `deprecated`, or `superseded`. Also ignore anything under `docs/archive/` entirely.
+**Status filter when scanning neighbor briefs and specs:** read the YAML frontmatter at the top of each file. Treat each as **live** unless its `status:` is `done`, `deprecated`, or `superseded` — those three are the only states you **skip / ignore**. Every other state is live and must be considered. The status vocabulary is `todo → in-review → done` (see `docs/reference/spec-status-lifecycle.md`); both `todo` and `in-review` are live. An `in-review` spec is finished-but-unverified work that still constrains neighboring decomposition, so it stays in scope. Also ignore anything under `docs/archive/` entirely.
 
 If no brief exists, tell the user:
 
@@ -58,6 +58,34 @@ Show the decomposition table to the user. Ask:
 
 Iterate until the user approves.
 
+## Execution Modes (assign a mode per spec)
+
+Every spec carries an **execution mode** that controls how `joycraft-implement` wraps up after building it. Assign one to each spec — recommended by you, **approved by the human** (never silent).
+
+| Mode | Per-spec wrap-up | Context between specs | Best for |
+|------|------------------|-----------------------|----------|
+| `batch` | implement all, wrap once at the end (one `joycraft-session-end`) | shared (one conversation) | clusters of tiny specs |
+| `checkpoint` | `joycraft-spec-done` after each (commit + status bump), keep going | shared | medium specs wanting atomic commits without fresh context |
+| `isolated` | `joycraft-spec-done`, then a **fresh context**, then the next spec | fresh per spec | heavy specs that would pollute one context |
+
+**Project default.** Read the default mode from the project's `CLAUDE.md`: look for a line `**Default execution mode:** <mode>`. If that line is **absent, default to `batch`** (the safest: shared context, wrap once). Do not hard-fail when it's missing — just use `batch` and say so in your recommendation.
+
+**Size → mode heuristic** (a starting recommendation, not a rule):
+
+| Spec size | Recommended mode |
+|-----------|------------------|
+| XS / S | `batch`-eligible (fold into the batch) |
+| M | `checkpoint` |
+| L / XL | `isolated` |
+
+Size is your estimate from the spec's scope (files touched, surface area, risk). The heuristic is only a starting point: a tiny spec inside a risky feature may still warrant `isolated`, and only the human knows that — which is why the recommendation is **approved, not auto-applied**.
+
+**Surface the recommendation and get approval.** Before writing any spec files, present your per-spec mode recommendation and wait for the human's OK. Worked example:
+
+> Your project defaults to `batch` (no `**Default execution mode:**` line in CLAUDE.md, so I'm using the safe default). Based on size, I recommend: specs 1, 2 → `batch`; spec 5 → `checkpoint`; specs 7, 8 → `isolated` (large/risky). OK, or adjust?
+
+If the human overrides any recommendation, **honor their choice verbatim** in both the frontmatter and the queue. Record the approved mode in each spec's `mode:` frontmatter field (Step 5) and in each queue entry's `"mode"` field (Step 5a). A feature may mix modes across its specs — that's expected; note the mix in the README/wave plan. This applies even when there's no brief and the feature was described inline: still assign a mode to every spec, and the CLAUDE.md default applies the same way.
+
 ## Step 5: Generate Atomic Specs
 
 For each approved row, create `docs/features/<slug>/specs/<spec-name>.md`. The slug is the feature folder name (e.g., `2026-04-06-token-discipline`). Lazy-create `docs/features/<slug>/specs/` if it doesn't exist.
@@ -66,16 +94,19 @@ If no brief exists and the user described the feature inline, derive a kebab-cas
 
 **Why:** Each spec must be self-contained — a fresh Claude session should be able to execute it without reading the Feature Brief. Copy relevant constraints and context into each spec.
 
-Each spec file MUST start with YAML frontmatter — the 4-field personal schema:
+Each spec file MUST start with YAML frontmatter — the personal schema:
 
 ```yaml
 ---
-status: active
+status: todo
 owner: <resolved name>
 created: YYYY-MM-DD
 feature: <slug>
+mode: <approved mode — batch | checkpoint | isolated>
 ---
 ```
+
+New specs always start at `status: todo` (the canonical first state — see `docs/reference/spec-status-lifecycle.md`). The `mode:` value is the human-approved execution mode from the Execution Modes step above.
 
 **Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
 
@@ -163,8 +194,8 @@ After all spec `.md` files are written, create `.joycraft-spec-queue.json` in th
 {
   "feature": "<slug>",
   "specs": [
-    { "id": 1, "file": "<spec-name>.md", "depends_on": [], "status": "active" },
-    { "id": 2, "file": "<spec-name>.md", "depends_on": [1], "status": "active" }
+    { "id": 1, "file": "<spec-name>.md", "depends_on": [], "status": "todo", "mode": "batch" },
+    { "id": 2, "file": "<spec-name>.md", "depends_on": [1], "status": "todo", "mode": "checkpoint" }
   ]
 }
 ```
@@ -173,9 +204,10 @@ Map each row in your decomposition table to a spec entry:
 - `id`: sequential integer starting from 1 (matches the decomposition table's # column)
 - `file`: the spec filename relative to the specs directory
 - `depends_on`: array of spec ids this spec depends on (empty array `[]` for no dependencies)
-- `status`: always `"active"` initially — the Pi pipeline marks specs `"complete"` as it executes them
+- `status`: always `"todo"` initially — the agent advances each spec to `"in-review"` via `joycraft-spec-done`, and `joycraft-session-end` graduates it to `"done"` (see `docs/reference/spec-status-lifecycle.md`)
+- `mode`: the human-approved execution mode for this spec (`batch` | `checkpoint` | `isolated`) — must match the spec file's `mode:` frontmatter
 
-Validate: every id referenced in `depends_on` must exist as an `id` in the specs array.
+Validate: every id referenced in `depends_on` must exist as an `id` in the specs array; the queue `status`/`mode` for each spec must match that spec file's frontmatter.
 
 ## Step 6: Recommend Execution Strategy and Update Parent Brief
 
@@ -206,10 +238,10 @@ The README is the single source of truth for *implementers*. It contains a **spe
 
 ## Specs
 
-| # | Spec | Depends On | Notes |
-|---|------|-----------|-------|
-| 1 | [spec-name.md](spec-name.md) | — | <one-line description> |
-| 2 | [other-spec.md](other-spec.md) | 1 | <one-line description> |
+| # | Spec | Depends On | Mode | Notes |
+|---|------|-----------|------|-------|
+| 1 | [spec-name.md](spec-name.md) | — | batch | <one-line description> |
+| 2 | [other-spec.md](other-spec.md) | 1 | checkpoint | <one-line description> |
 
 ## Execution waves
 

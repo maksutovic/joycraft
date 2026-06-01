@@ -5,8 +5,10 @@ import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { init } from '../src/init';
 import { CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from '../src/bundled-files';
+import { STATE_PATH } from '../src/version';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const LEGACY_VERSION_FILE = '.joycraft-version';
 
 function createTmpDir(): string {
   const dir = join(tmpdir(), `joycraft-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -77,15 +79,54 @@ describe('init', () => {
       expect(joined).toContain('docs/features/');
     });
 
-    it('writes the real CLI version to .joycraft-version', async () => {
+    it('writes the real CLI version to the hidden state file', async () => {
       await init(tmpDir, { force: false });
-      const versionFile = JSON.parse(readFileSync(join(tmpDir, '.joycraft-version'), 'utf-8'));
+      const versionFile = JSON.parse(readFileSync(join(tmpDir, STATE_PATH), 'utf-8'));
       const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
       expect(versionFile.version).toBe(pkg.version);
       // Sanity: it's not the deprecated hardcoded value (unless package.json actually has 0.1.0)
       if (pkg.version !== '0.1.0') {
         expect(versionFile.version).not.toBe('0.1.0');
       }
+    });
+
+    it('writes NO version-state file at the repo root', async () => {
+      await init(tmpDir, { force: false });
+      expect(existsSync(join(tmpDir, LEGACY_VERSION_FILE))).toBe(false);
+      expect(existsSync(join(tmpDir, STATE_PATH))).toBe(true);
+    });
+
+    it('gitignores the hidden state file (creating .gitignore if absent)', async () => {
+      // No .gitignore exists yet.
+      expect(existsSync(join(tmpDir, '.gitignore'))).toBe(false);
+      await init(tmpDir, { force: false });
+
+      expect(existsSync(join(tmpDir, '.gitignore'))).toBe(true);
+      const gitignore = readFileSync(join(tmpDir, '.gitignore'), 'utf-8');
+      expect(gitignore).toContain(STATE_PATH);
+    });
+
+    it('gitignore entry is idempotent across repeated inits (no duplicate line)', async () => {
+      await init(tmpDir, { force: false });
+      await init(tmpDir, { force: true });
+
+      const gitignore = readFileSync(join(tmpDir, '.gitignore'), 'utf-8');
+      const occurrences = gitignore.split('\n').filter(l => l.trim() === STATE_PATH).length;
+      expect(occurrences).toBe(1);
+    });
+
+    it('preserves an existing .gitignore and appends the state entry', async () => {
+      writeFileSync(join(tmpDir, '.gitignore'), 'node_modules\ndist\n');
+      await init(tmpDir, { force: false });
+
+      const gitignore = readFileSync(join(tmpDir, '.gitignore'), 'utf-8');
+      // Existing lines untouched.
+      expect(gitignore).toContain('node_modules');
+      expect(gitignore).toContain('dist');
+      // State entry appended.
+      expect(gitignore).toContain(STATE_PATH);
+      // node_modules still appears exactly once (nothing reordered or duplicated).
+      expect(gitignore.split('\n').filter(l => l.trim() === 'node_modules').length).toBe(1);
     });
   });
 
@@ -467,10 +508,10 @@ describe('init', () => {
       expect(skill).toBe('custom content');
     });
 
-    it('includes .agents/skills/ hashes in .joycraft-version', async () => {
+    it('includes .agents/skills/ hashes in the hidden state', async () => {
       await init(tmpDir, { force: false });
 
-      const version = JSON.parse(readFileSync(join(tmpDir, '.joycraft-version'), 'utf-8'));
+      const version = JSON.parse(readFileSync(join(tmpDir, STATE_PATH), 'utf-8'));
       const agentsKeys = Object.keys(version.files).filter(k => k.startsWith('.agents'));
       // One .agents/skills/<name>/SKILL.md per bundled Codex skill — derive so the
       // count tracks the skill set instead of going stale on each new skill.
@@ -521,14 +562,14 @@ describe('init', () => {
       expect(existsSync(join(piSkillsDir, 'joycraft-decompose', 'SKILL.md'))).toBe(true);
     });
 
-    it('installs 18 Pi skill directories', async () => {
+    it('installs 19 Pi skill directories', async () => {
       await init(tmpDir, { force: false });
 
       const piSkillsDir = join(tmpDir, '.pi', 'skills');
       const dirs = require('node:fs').readdirSync(piSkillsDir, { withFileTypes: true })
         .filter((d: { isDirectory: () => boolean }) => d.isDirectory())
         .filter((d: { name: string }) => d.name.startsWith('joycraft-'));
-      expect(dirs.length).toBe(18);
+      expect(dirs.length).toBe(19);
     });
 
     it('installs pipeline bash scripts to .pi/scripts/joycraft/', async () => {
@@ -611,10 +652,10 @@ describe('init', () => {
       expect(content).not.toBe('modified');
     });
 
-    it('includes Pi files in .joycraft-version hashes', async () => {
+    it('includes Pi files in the hidden state hashes', async () => {
       await init(tmpDir, { force: false });
 
-      const version = JSON.parse(readFileSync(join(tmpDir, '.joycraft-version'), 'utf-8'));
+      const version = JSON.parse(readFileSync(join(tmpDir, STATE_PATH), 'utf-8'));
       const piKeys = Object.keys(version.files).filter(k => k.startsWith('.pi'));
 
       // Check Pi skills

@@ -51,9 +51,15 @@ program
   .description('Check if a newer version of Joycraft is available')
   .action(async () => {
     try {
-      const { readFileSync } = await import('node:fs');
+      const { readFileSync, existsSync } = await import('node:fs');
       const { join } = await import('node:path');
-      const data = JSON.parse(readFileSync(join(process.cwd(), '.joycraft-version'), 'utf-8'));
+      const { STATE_PATH, LEGACY_VERSION_FILE } = await import('./version.js');
+      // Prefer the hidden state; fall back to the legacy root file for projects
+      // that have not been upgraded (which relocates it) yet.
+      const statePath = existsSync(join(process.cwd(), STATE_PATH))
+        ? join(process.cwd(), STATE_PATH)
+        : join(process.cwd(), LEGACY_VERSION_FILE);
+      const data = JSON.parse(readFileSync(statePath, 'utf-8'));
       const res = await fetch('https://registry.npmjs.org/joycraft/latest', { signal: AbortSignal.timeout(3000) });
       if (res.ok) {
         const latest = ((await res.json()) as { version: string }).version;

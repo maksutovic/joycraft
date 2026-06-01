@@ -1,34 +1,32 @@
 // joycraft-pipeline.ts — Pi extension for Joycraft pipeline advancement.
-// Registers a /joycraft-next-spec command that validates the current session,
-// finds the next spec, and starts a fresh session seeded with it.
+//
+// Provides a single registration point:
+//   - A /joycraft-next-spec COMMAND (human-typable) that finds the next spec
+//     and starts a fresh session seeded with it.
+//
+// The former joycraft_next_spec TOOL (LLM-callable, in-process advance) was
+// retired: the autonomous loop is the `joycraft-implement-loop` script, which
+// gets context isolation from the OS process boundary (one fresh `pi -p` per
+// spec) — the in-process path could not isolate context. Interactive Pi still
+// uses the COMMAND below.
 
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { execSync } from "node:child_process";
+import { join } from "node:path";
+
+function getScriptsDir(cwd: string) {
+  return join(cwd, ".pi", "scripts", "joycraft");
+}
 
 export default function (pi: ExtensionAPI) {
+  // ── COMMAND: full pipeline, human-typable ──────────────────────────────
   pi.registerCommand("joycraft-next-spec", {
     description:
-      "Advance the Joycraft pipeline: validate current session, find next spec, " +
-      "and start a fresh session with it.",
+      "Advance the Joycraft pipeline: find next spec and start a fresh session with it.",
     handler: async (_args, ctx) => {
-      const { execSync } = await import("node:child_process");
-      const { join } = await import("node:path");
-      const scriptsDir = join(ctx.cwd, ".pi", "scripts", "joycraft");
+      const scriptsDir = getScriptsDir(ctx.cwd);
 
-      // 1. Session-end: validate and stage
-      try {
-        execSync(`"${join(scriptsDir, "joycraft-session-end")}" pipeline`, {
-          cwd: ctx.cwd,
-          stdio: "pipe",
-        });
-      } catch (e: any) {
-        ctx.ui.notify(
-          `Validation failed — fix before advancing.\n${e.stderr?.toString() || e.stdout?.toString() || e.message}`,
-          "error"
-        );
-        return;
-      }
-
-      // 2. Find next spec
+      // Find next spec
       let next: string;
       try {
         next = execSync(`"${join(scriptsDir, "joycraft-next-spec")}"`, {
@@ -44,7 +42,6 @@ export default function (pi: ExtensionAPI) {
         return;
       }
 
-      // 3. If no next spec, pipeline complete
       if (!next || next === "Pipeline complete") {
         ctx.ui.notify(
           next === "Pipeline complete"
@@ -55,10 +52,10 @@ export default function (pi: ExtensionAPI) {
         return;
       }
 
-      // 4. Start fresh session with next spec
+      // Start fresh session with next spec
       await ctx.newSession({
         withSession: async (session) => {
-          session.sendUserMessage(`/joycraft-implement ${next}`);
+          session.sendUserMessage(`/skill:joycraft-implement ${next}`);
         },
       });
     },

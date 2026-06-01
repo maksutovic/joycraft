@@ -1,7 +1,8 @@
-import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, chmodSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
-import { readVersion, writeVersion, hashContent } from './version.js';
+import { readVersion, writeVersion, hashContent, truncateHash, STATE_PATH, LEGACY_VERSION_FILE } from './version.js';
+import { ensureGitignoreEntry } from './gitignore.js';
 import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
@@ -136,8 +137,60 @@ function cleanupDeprecatedSkills(targetDir: string): number {
   return removed;
 }
 
+/**
+ * Self-heal projects inited by an older Joycraft that wrote state to the repo
+ * root (`.joycraft-version`). Reads the legacy file, re-writes it to the hidden
+ * `.claude/.joycraft/state.json` location, deletes the root file, and ensures
+ * the gitignore entry. No-op when no legacy root file exists.
+ *
+ * Runs BEFORE the managed-file diff so the recorded-original hashes are
+ * available at the new location for the same run's 3-way comparison. The hidden
+ * state's own write truncates the (possibly full-length legacy) hashes, so the
+ * comparison stays consistent — see the truncateHash() call in the diff loop.
+ */
+function migrateLegacyVersionFile(targetDir: string): boolean {
+  const legacyPath = join(targetDir, LEGACY_VERSION_FILE);
+  if (!existsSync(legacyPath)) return false;
+
+  let parsed: { version?: unknown; files?: unknown };
+  try {
+    parsed = JSON.parse(readFileSync(legacyPath, 'utf-8'));
+  } catch {
+    // Corrupt legacy file: treat as no usable baseline. Remove it so the root
+    // stops being polluted; upgrade then proceeds with no recorded-original
+    // (every changed file becomes "customized" — safe, never silently wrong).
+    rmSync(legacyPath, { force: true });
+    ensureGitignoreEntry(targetDir, STATE_PATH);
+    return true;
+  }
+
+  const version = typeof parsed.version === 'string' ? parsed.version : getPackageVersion();
+  const files =
+    parsed.files && typeof parsed.files === 'object'
+      ? (parsed.files as Record<string, string>)
+      : {};
+
+  // writeVersion targets the new hidden path and truncates the hashes.
+  writeVersion(targetDir, version, files);
+  rmSync(legacyPath, { force: true });
+  ensureGitignoreEntry(targetDir, STATE_PATH);
+  return true;
+}
+
 function countLines(content: string): number {
   return content.split('\n').length;
+}
+
+function ensureScriptExecutable(absolutePath: string): void {
+  // Joycraft shell scripts in .pi/scripts/joycraft/ must be executable.
+  // README.md is the only file in that directory that should stay 644.
+  if (absolutePath.includes('.pi/scripts/joycraft/') && !absolutePath.endsWith('README.md')) {
+    try {
+      chmodSync(absolutePath, 0o755);
+    } catch {
+      // non-fatal — permissions may be restricted
+    }
+  }
 }
 
 async function askUser(question: string): Promise<boolean> {
@@ -238,18 +291,24 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
     return;
   }
 
-  // Check if project was initialized
-  const versionInfo = readVersion(targetDir);
+  // Check if project was initialized. A project is "initialized" if it has the
+  // hidden state, OR a known skill, OR a legacy root state file (pre-relocation).
+  const hasLegacyState = existsSync(join(targetDir, LEGACY_VERSION_FILE));
   const hasSkill = existsSync(join(targetDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))
     || existsSync(join(targetDir, '.claude', 'skills', 'tune', 'SKILL.md'))
     || existsSync(join(targetDir, '.claude', 'skills', 'joy', 'SKILL.md'))
     || existsSync(join(targetDir, '.claude', 'skills', 'joysmith', 'SKILL.md'));
 
-  if (!versionInfo && !hasSkill) {
+  if (!readVersion(targetDir) && !hasLegacyState && !hasSkill) {
     console.log('This project has not been initialized with Joycraft.');
     console.log('Run `npx joycraft init` first.');
     return;
   }
+
+  // Relocate any legacy repo-root .joycraft-version → hidden state, BEFORE the
+  // diff loop so the migrated recorded-original is used on this same run. No-op
+  // when no legacy root file exists.
+  migrateLegacyVersionFile(targetDir);
 
   // Clean up deprecated skill directories/files from older versions
   const deprecatedRemoved = cleanupDeprecatedSkills(targetDir);
@@ -266,9 +325,11 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   // Get current package version
   const pkgVersion = getPackageVersion();
 
-  // If version matches exactly, check if any file content actually changed
+  // If version matches exactly, check if any file content actually changed.
+  // Re-read state AFTER migration so a just-migrated project's recorded-original
+  // hashes (now at the hidden path) feed the comparison below.
   const managedFiles = getManagedFiles();
-  const installedHashes = versionInfo?.files ?? {};
+  const installedHashes = readVersion(targetDir)?.files ?? {};
 
   const changes: FileChange[] = [];
   let upToDate = 0;
@@ -292,9 +353,10 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
       continue;
     }
 
+    // installedHashes are stored truncated; truncate the fresh hash to match.
     const originalHash = installedHashes[relPath];
 
-    if (originalHash && currentHash === originalHash) {
+    if (originalHash && truncateHash(currentHash) === originalHash) {
       // User hasn't modified the file — safe to auto-update
       changes.push({ relativePath: relPath, absolutePath: absPath, newContent, kind: 'updated' });
     } else {
@@ -318,11 +380,13 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
       // New Joycraft files are always auto-added — no prompt needed
       mkdirSync(dirname(change.absolutePath), { recursive: true });
       writeFileSync(change.absolutePath, change.newContent, 'utf-8');
+      ensureScriptExecutable(change.absolutePath);
       added++;
       console.log(`  + ${change.relativePath}`);
     } else if (change.kind === 'updated') {
       // Safe to auto-update — user hasn't touched the file
       writeFileSync(change.absolutePath, change.newContent, 'utf-8');
+      ensureScriptExecutable(change.absolutePath);
       updated++;
     } else if (change.kind === 'customized') {
       const currentContent = readFileSync(change.absolutePath, 'utf-8');
@@ -339,6 +403,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
         const accept = await askUser(`${label} — overwrite with latest?`);
         if (accept) {
           writeFileSync(change.absolutePath, change.newContent, 'utf-8');
+          ensureScriptExecutable(change.absolutePath);
           updated++;
         } else {
           skipped++;

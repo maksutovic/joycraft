@@ -1,8 +1,9 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { initAutofix } from '../src/init-autofix';
+import { STATE_PATH } from '../src/version';
 
 function createTmpDir(): string {
   const dir = join(tmpdir(), `joycraft-autofix-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -14,9 +15,11 @@ function cleanup(dir: string): void {
   rmSync(dir, { recursive: true, force: true });
 }
 
-/** Write a .joycraft-version file so the project appears initialized */
+/** Write the hidden state file so the project appears initialized */
 function markInitialized(dir: string): void {
-  writeFileSync(join(dir, '.joycraft-version'), JSON.stringify({ version: '0.1.0', files: {} }));
+  const statePath = join(dir, STATE_PATH);
+  mkdirSync(dirname(statePath), { recursive: true });
+  writeFileSync(statePath, JSON.stringify({ version: '0.1.0', files: {} }));
 }
 
 describe('init-autofix', () => {
@@ -28,7 +31,7 @@ describe('init-autofix', () => {
   });
 
   describe('pre-condition check', () => {
-    it('throws if project is not initialized (no .joycraft-version)', async () => {
+    it('throws if project is not initialized (no hidden state)', async () => {
       await expect(initAutofix(tmpDir, {})).rejects.toThrow('joycraft init');
     });
   });

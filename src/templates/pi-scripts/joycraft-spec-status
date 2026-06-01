@@ -25,11 +25,12 @@ while IFS= read -r line; do
   status=$(echo "$line" | sed -n 's/.*"status": *"\([^"]*\)".*/\1/p')
   
   if [ -n "$id" ] && [ -n "$file" ] && [ -n "$status" ]; then
-    if [ "$status" = "complete" ]; then
-      marker="[✓]"
-    else
-      marker="[ ]"
-    fi
+    # Glyphs per docs/reference/spec-status-lifecycle.md
+    case "$status" in
+      done)      marker="[✓]" ;;
+      in-review) marker="[~]" ;;
+      *)         marker="[ ]" ;;  # todo (and any unknown) render as not-started
+    esac
     printf "%s  #%s  %s  (%s)\n" "$marker" "$id" "$file" "$status"
   fi
 done < <(grep -o '{[^}]*}' "$MANIFEST" | grep '"id"')
