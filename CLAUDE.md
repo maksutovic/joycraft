@@ -58,7 +58,7 @@ Joycraft/
 │   ├── detect.ts           # Stack detection from manifest files
 │   ├── improve-claude-md.ts # Merge Joycraft sections into existing CLAUDE.md
 │   ├── agents-md.ts        # Generate AGENTS.md for Codex
-│   ├── version.ts          # Version tracking (.joycraft-version)
+│   ├── version.ts          # Version tracking (.claude/.joycraft/state.json)
 │   ├── claude-skills/      # Installable skill files (copied to .claude/skills/)
 │   │   ├── tune.md         # Main entry — assess + route
 │   │   ├── tune-assess.md

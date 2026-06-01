@@ -8,7 +8,7 @@
 
 ## What is Joycraft?
 
-Joycraft is a CLI tool that installs structured development skills into [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and [OpenAI Codex](https://openai.com/codex), along with behavioral boundaries, templates, and documentation structure. It takes any project from unstructured prompting to autonomous spec-driven development.
+Joycraft is a CLI tool that installs structured development skills into [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [OpenAI Codex](https://openai.com/codex), and [Pi](https://github.com/earendil-works/pi-coding-agent), along with behavioral boundaries, templates, and documentation structure. It takes any project from unstructured prompting to autonomous spec-driven development — and on Pi, to fully headless spec execution.
 
 ### The core idea
 
@@ -31,7 +31,27 @@ Most developers plateau at Level 2. Joycraft's job is to move you up.
 
 ### Platform support
 
-Joycraft supports both **Claude Code** and **OpenAI Codex** out of the box. Running `npx joycraft init` installs skills to both `.claude/skills/` and `.agents/skills/` — no flags, no configuration. Both platforms get the same structured workflows, adapted for each tool's invocation model (`/joycraft-*` for Claude Code, `$joycraft-*` for Codex).
+Joycraft supports **Claude Code**, **OpenAI Codex**, and **Pi** out of the box. Running `npx joycraft init` auto-detects which harnesses your project uses and installs the matching skills — no flags, no configuration:
+
+| Harness | Skills installed to | Invocation |
+|---------|---------------------|------------|
+| Claude Code | `.claude/skills/` | `/joycraft-*` |
+| Codex | `.agents/skills/` (+ `AGENTS.md`) | `$joycraft-*` |
+| Pi | `.pi/skills/` (+ pipeline runtime, see below) | `/skill:joycraft-*` |
+
+All three get the same structured workflows, adapted for each tool's invocation model. Codex and Pi surfaces install when their directory (`.agents/` or `.pi/`) is present in the project.
+
+### Headless spec execution (Pi)
+
+Pi is the one harness where the workflow can run **fully autonomously** — no human keystrokes between specs. Beyond the skills, `init` installs a pipeline runtime to `.pi/scripts/joycraft/` whose driver, `joycraft-implement-loop`, runs an entire feature's spec queue end to end:
+
+```
+next-spec → pi -p "/skill:joycraft-implement <spec>" → pi -p "/skill:joycraft-spec-done <spec>" → repeat
+```
+
+Each spec runs in **one fresh OS process** (`pi -p`), so the context isolation is the process boundary itself — verified, not in-conversation trickery. The loop is fail-fast (stops and names the failing spec) and runs `session-end` exactly once when the queue is exhausted.
+
+This is what Claude Code and Codex can't do out of the box: an unattended `interview → PR` line where the machine does everything convergent in between. It is Pi-specific by design — the driver targets Pi with a BYO API key or open-weight model (Commercial/API terms, no automation restriction); pointing a consumer Claude/ChatGPT *subscription* at an automated loop would violate those tools' terms.
 
 ## Quick Start
 
@@ -52,7 +72,8 @@ Joycraft auto-detects your tech stack and creates:
 
 - **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
 - **AGENTS.md** for Codex compatibility
-- **15 skills** installed to `.claude/skills/` (Claude Code) and `.agents/skills/` (Codex) — see [Which skill do I need?](#which-skill-do-i-need) below
+- **19 skills** installed to `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), and `.pi/skills/` (Pi) — see [Which skill do I need?](#which-skill-do-i-need) below
+- **Pi pipeline runtime** in `.pi/scripts/joycraft/` (when `.pi/` is present) — the headless spec-execution driver and its helpers
 - **docs/** structure: `docs/context/` is created up front; feature work lands in `docs/features/<slug>/{brief.md, research.md, design.md, specs/}` and deferred work in `docs/backlog/` — these are created lazily by the skills that write to them
 - **Context documents** in `docs/context/`: production map, dangerous assumptions, decision log, institutional knowledge, and troubleshooting guide
 - **Templates** including atomic spec, feature brief, implementation plan, boundary framework, and workflow templates for scenario generation and autofix loops
