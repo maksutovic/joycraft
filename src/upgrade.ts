@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, chmodSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
-import { readVersion, writeVersion, hashContent, truncateHash, STATE_PATH, LEGACY_VERSION_FILE } from './version.js';
-import { ensureGitignoreEntry } from './gitignore.js';
+import { readVersion, writeVersion, hashContent, truncateHash, STATE_PATH, LEGACY_VERSION_FILE, DEFAULT_GITIGNORE_PROFILE } from './version.js';
+import { ensureGitignoreEntry, applyGitignoreProfile } from './gitignore.js';
 import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
@@ -329,7 +329,14 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   // Re-read state AFTER migration so a just-migrated project's recorded-original
   // hashes (now at the hidden path) feed the comparison below.
   const managedFiles = getManagedFiles();
-  const installedHashes = readVersion(targetDir)?.files ?? {};
+  const installed = readVersion(targetDir);
+  const installedHashes = installed?.files ?? {};
+
+  // Carry the project's gitignore profile forward across upgrades. Projects
+  // inited before this field existed have no recorded profile → default shared,
+  // which re-applies the long-standing state-file-only ignore (idempotent).
+  const gitignoreProfile = installed?.gitignoreProfile ?? DEFAULT_GITIGNORE_PROFILE;
+  applyGitignoreProfile(targetDir, gitignoreProfile);
 
   const changes: FileChange[] = [];
   let upToDate = 0;
@@ -421,7 +428,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
       newHashes[relPath] = hashContent(current);
     }
   }
-  writeVersion(targetDir, pkgVersion, newHashes);
+  writeVersion(targetDir, pkgVersion, newHashes, gitignoreProfile);
 
   // Print summary
   const parts: string[] = [];

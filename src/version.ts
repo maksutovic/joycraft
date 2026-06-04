@@ -23,9 +23,29 @@ export const LEGACY_VERSION_FILE = '.joycraft-version';
  */
 const HASH_LENGTH = 16;
 
+/**
+ * How much of the Joycraft harness is tracked in git.
+ * - `shared`  — commit skills/agents/pi so teammates get the workflow (default).
+ * - `private` — gitignore .claude/, .agents/, .pi/; track only CLAUDE.md,
+ *   AGENTS.md, and docs/.
+ */
+export type GitignoreProfile = 'shared' | 'private';
+
+export const DEFAULT_GITIGNORE_PROFILE: GitignoreProfile = 'shared';
+
+/** Narrow an arbitrary value to a GitignoreProfile, or null if unrecognized. */
+export function parseGitignoreProfile(value: unknown): GitignoreProfile | null {
+  return value === 'shared' || value === 'private' ? value : null;
+}
+
 export interface VersionInfo {
   version: string;
   files: Record<string, string>;
+  /**
+   * The gitignore profile chosen at init/upgrade. Absent on state written by
+   * Joycraft versions before this field existed — treat absent as `shared`.
+   */
+  gitignoreProfile?: GitignoreProfile;
 }
 
 export function hashContent(content: string): string {
@@ -44,7 +64,14 @@ export function readVersion(dir: string): VersionInfo | null {
     const raw = readFileSync(filePath, 'utf-8');
     const parsed = JSON.parse(raw);
     if (typeof parsed.version === 'string' && typeof parsed.files === 'object') {
-      return parsed as VersionInfo;
+      // Sanitize the profile: ignore unknown/legacy values rather than
+      // returning them (absent or bogus → undefined, callers default to shared).
+      const profile = parseGitignoreProfile(parsed.gitignoreProfile);
+      return {
+        version: parsed.version,
+        files: parsed.files,
+        ...(profile ? { gitignoreProfile: profile } : {}),
+      };
     }
     return null;
   } catch {
@@ -52,14 +79,23 @@ export function readVersion(dir: string): VersionInfo | null {
   }
 }
 
-export function writeVersion(dir: string, version: string, files: Record<string, string>): void {
+export function writeVersion(
+  dir: string,
+  version: string,
+  files: Record<string, string>,
+  gitignoreProfile?: GitignoreProfile
+): void {
   const filePath = join(dir, STATE_PATH);
   // Store truncated hashes — single source of truth for the on-disk shape.
   const truncated: Record<string, string> = {};
   for (const [path, hash] of Object.entries(files)) {
     truncated[path] = truncateHash(hash);
   }
-  const data: VersionInfo = { version, files: truncated };
+  const data: VersionInfo = {
+    version,
+    files: truncated,
+    ...(gitignoreProfile ? { gitignoreProfile } : {}),
+  };
   mkdirSync(dirname(filePath), { recursive: true });
   writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
 }
