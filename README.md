@@ -78,6 +78,31 @@ Joycraft auto-detects your tech stack and creates:
 - **Context documents** in `docs/context/`: production map, dangerous assumptions, decision log, institutional knowledge, and troubleshooting guide
 - **Templates** including atomic spec, feature brief, implementation plan, boundary framework, and workflow templates for scenario generation and autofix loops
 
+### Git tracking: shared vs private
+
+By default Joycraft assumes you want to **commit** the harness so your whole team
+gets the same skills and workflow. Some teams prefer to keep the harness local
+and track only the docs. Choose a profile at init time:
+
+```bash
+npx joycraft init --gitignore=shared    # default — commit .claude/, .agents/, .pi/
+npx joycraft init --gitignore=private   # gitignore them; track only CLAUDE.md, AGENTS.md, docs/
+```
+
+Run interactively without the flag and `init` will ask. The choice is saved, so
+`npx joycraft upgrade` re-applies it automatically. `.gitignore` edits are
+append-only — Joycraft never rewrites or removes your existing lines.
+
+| Profile | Tracked in git | Gitignored |
+|---------|----------------|------------|
+| `shared` (default) | `CLAUDE.md`, `AGENTS.md`, `docs/`, `.claude/skills/`, `.agents/`, `.pi/` | hidden upgrade state only |
+| `private` | `CLAUDE.md`, `AGENTS.md`, `docs/` | `.claude/`, `.agents/`, `.pi/` |
+
+> Switching an existing project to `private` only updates `.gitignore`. If
+> harness files were already committed, untrack them with
+> `git rm -r --cached .claude .agents .pi` (Joycraft prints this reminder and
+> never runs git for you).
+
 ### Supported Stacks
 
 Node.js (npm/pnpm/yarn/bun), Python (poetry/pip/uv), Rust, Go, Swift, and generic (Makefile/Dockerfile).

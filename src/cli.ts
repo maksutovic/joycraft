@@ -18,9 +18,15 @@ program
   .description('Scaffold the Joycraft harness into the current project')
   .argument('[dir]', 'Target directory', '.')
   .option('--force', 'Overwrite existing files')
-  .action(async (dir: string, opts: { force?: boolean }) => {
+  .option('--gitignore <profile>', "Gitignore profile: 'shared' (commit skills) or 'private' (gitignore .claude/.agents/.pi)")
+  .action(async (dir: string, opts: { force?: boolean; gitignore?: string }) => {
     const { init } = await import('./init.js');
-    await init(dir, { force: opts.force ?? false });
+    try {
+      await init(dir, { force: opts.force ?? false, gitignore: opts.gitignore });
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : String(err));
+      process.exit(1);
+    }
   });
 
 program
