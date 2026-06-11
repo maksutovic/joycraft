@@ -2,7 +2,7 @@
 
 > **Date:** 2026-06-11
 > **Project:** joycraft
-> **Status:** Decomposed — specs at `specs/`
+> **Status:** Done 2026-06-11 — all 4 specs implemented, awaiting PR review
 > **North star:** `docs/vision/headless-joycraft.md`
 > **Builds on:** `docs/features/2026-05-28-lightweight-spec-done/brief.md` (execution modes, spec-done, status lifecycle)
 

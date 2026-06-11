@@ -5,7 +5,7 @@
       "id": 1,
       "file": "implement-auto-wrapup.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch"
     },
     {
@@ -14,7 +14,7 @@
       "depends_on": [
         1
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch"
     },
     {
@@ -23,7 +23,7 @@
       "depends_on": [
         2
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch"
     },
     {
@@ -34,7 +34,7 @@
         2,
         3
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch"
     }
   ]
