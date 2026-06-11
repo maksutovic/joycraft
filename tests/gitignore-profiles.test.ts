@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -6,6 +6,9 @@ import { init } from '../src/init';
 import { upgrade } from '../src/upgrade';
 import { readVersion, STATE_PATH } from '../src/version';
 import { applyGitignoreProfile, PRIVATE_PROFILE_IGNORES } from '../src/gitignore';
+import { Readable } from 'node:stream';
+
+const LEGACY_VERSION_FILE = '.joycraft-version';
 
 function createTmpDir(): string {
   const dir = join(tmpdir(), `joycraft-gitignore-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -26,12 +29,66 @@ function lines(content: string): string[] {
   return content.split('\n').map((l) => l.trim()).filter(Boolean);
 }
 
+/**
+ * Make `dir` look like a project inited before the gitignore-profile feature:
+ * strip the gitignoreProfile field from state.json directly. (writeVersion
+ * deliberately preserves an existing profile when the arg is omitted, so the
+ * strip must edit the file, not go through the API.)
+ */
+function stripSavedProfile(dir: string): void {
+  const statePath = join(dir, STATE_PATH);
+  const state = JSON.parse(readFileSync(statePath, 'utf-8'));
+  delete state.gitignoreProfile;
+  writeFileSync(statePath, JSON.stringify(state, null, 2) + '\n', 'utf-8');
+  if (readVersion(dir)?.gitignoreProfile !== undefined) {
+    throw new Error('test setup: expected no saved profile after strip');
+  }
+}
+
+/**
+ * Run upgrade with the interactive prompt simulated: isTTY true + a fake stdin
+ * that supplies `answers` line by line (more than one exercises the re-ask on
+ * invalid input). Mirrors the stdin/stdout-boundary pattern in
+ * tests/upgrade.test.ts. Returns captured console.log output.
+ *
+ * yes is false here on purpose: --yes promises a fully unattended run, so it
+ * suppresses the profile prompt these tests exist to exercise.
+ */
+async function upgradeWithAnswer(dir: string, ...answers: string[]): Promise<string> {
+  const fakeStdin = Readable.from(answers.map((a) => `${a}\n`)) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
+  fakeStdin.isTTY = true;
+  const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+  Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
+
+  const logs: string[] = [];
+  const origLog = console.log;
+  console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
+  try {
+    await upgrade(dir, { yes: false });
+  } finally {
+    console.log = origLog;
+    Object.defineProperty(process, 'stdin', stdinDesc);
+  }
+  return logs.join('\n');
+}
+
 describe('gitignore profiles', () => {
   let tmpDir: string;
 
   beforeEach(() => {
     tmpDir = createTmpDir();
-    return () => cleanup(tmpDir);
+    // Stub the npm-registry staleness check: a published version newer than the
+    // local package would make upgrade() bail before the code under test runs,
+    // and test results must not depend on registry state or network.
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ version: '0.0.0' }),
+    }) as unknown as typeof fetch;
+    return () => {
+      globalThis.fetch = origFetch;
+      cleanup(tmpDir);
+    };
   });
 
   describe('shared profile (default)', () => {
@@ -125,6 +182,196 @@ describe('gitignore profiles', () => {
         expect(gi).toContain(entry);
       }
       expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
+    });
+  });
+
+  describe('upgrade prompt when undecided', () => {
+    it('asks on upgrade when no profile was ever saved (TTY), then persists the answer', async () => {
+      await init(tmpDir, { force: false, gitignore: 'shared' });
+      stripSavedProfile(tmpDir); // simulate a pre-feature project
+
+      const output = await upgradeWithAnswer(tmpDir, 'private');
+
+      // It prompted...
+      expect(output).toContain('how much of the harness is tracked in git');
+      // ...applied the chosen profile...
+      expect(lines(readGitignore(tmpDir))).toContain('.claude/');
+      // ...and persisted it so it never asks again.
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
+    });
+
+    it('empty answer defaults to shared and persists', async () => {
+      await init(tmpDir, { force: false, gitignore: 'shared' });
+      stripSavedProfile(tmpDir);
+
+      await upgradeWithAnswer(tmpDir, '');
+
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('shared');
+      expect(lines(readGitignore(tmpDir))).not.toContain('.claude/');
+    });
+
+    it('does NOT prompt when a profile is already saved', async () => {
+      await init(tmpDir, { force: false, gitignore: 'private' });
+      // Saved profile present → upgrade must stay silent even with a fake TTY stdin.
+      const output = await upgradeWithAnswer(tmpDir, 'shared');
+
+      expect(output).not.toContain('how much of the harness is tracked in git');
+      // The saved 'private' is honored, NOT overridden by the unread "shared" answer.
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
+    });
+
+    it('non-interactive (no TTY) undecided upgrade defaults to shared without prompting', async () => {
+      await init(tmpDir, { force: false, gitignore: 'shared' });
+      stripSavedProfile(tmpDir);
+
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
+      try {
+        // vitest's process.stdin.isTTY is undefined → non-interactive path
+        await upgrade(tmpDir, { yes: true });
+      } finally {
+        console.log = origLog;
+      }
+
+      expect(logs.join('\n')).not.toContain('how much of the harness is tracked in git');
+      expect(lines(readGitignore(tmpDir))).not.toContain('.claude/');
+      // Stays undecided so a later interactive upgrade can still ask.
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBeUndefined();
+    });
+
+    it('persists a freshly-chosen profile even when no files changed', async () => {
+      // Up-to-date project (init just ran) with the profile stripped → the
+      // "Already up to date" early return must still save the prompted choice.
+      await init(tmpDir, { force: false, gitignore: 'shared' });
+      stripSavedProfile(tmpDir);
+
+      const output = await upgradeWithAnswer(tmpDir, 'private');
+
+      expect(output).toContain('Already up to date');
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
+      // Re-run upgrade: now decided, so it must NOT ask again.
+      const second = await upgradeWithAnswer(tmpDir, 'shared');
+      expect(second).not.toContain('how much of the harness is tracked in git');
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
+    });
+
+    it('--yes suppresses the prompt even on a TTY and leaves the project undecided', async () => {
+      await init(tmpDir, { force: false, gitignore: 'shared' });
+      stripSavedProfile(tmpDir);
+
+      // TTY present, but --yes promises an unattended run: no prompt may fire.
+      // Empty stdin means a prompt would hang — finishing at all proves no read.
+      const fakeStdin = Readable.from([]) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
+      fakeStdin.isTTY = true;
+      const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+      Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
+
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
+      try {
+        await upgrade(tmpDir, { yes: true });
+      } finally {
+        console.log = origLog;
+        Object.defineProperty(process, 'stdin', stdinDesc);
+      }
+
+      expect(logs.join('\n')).not.toContain('how much of the harness is tracked in git');
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBeUndefined();
+    });
+
+    it('re-asks on an unrecognized answer instead of silently defaulting to shared', async () => {
+      await init(tmpDir, { force: false, gitignore: 'shared' });
+      stripSavedProfile(tmpDir);
+
+      // First answer is a typo; the prompt must reject it and accept the retry.
+      const output = await upgradeWithAnswer(tmpDir, 'priv', 'private');
+
+      expect(output).toContain("Unrecognized answer 'priv'");
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
+      expect(lines(readGitignore(tmpDir))).toContain('.claude/');
+    });
+  });
+
+  describe('upgrade --gitignore flag', () => {
+    it('switches a decided project to private non-interactively', async () => {
+      await init(tmpDir, { force: false, gitignore: 'shared' });
+
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
+      try {
+        // No TTY, no prompt — the flag alone must decide and persist.
+        await upgrade(tmpDir, { yes: true, gitignore: 'private' });
+      } finally {
+        console.log = origLog;
+      }
+
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
+      const gi = lines(readGitignore(tmpDir));
+      for (const entry of PRIVATE_PROFILE_IGNORES) {
+        expect(gi).toContain(entry);
+      }
+      // Switching to private prints the untrack reminder (never runs git itself).
+      expect(logs.join('\n')).toContain('git rm -r --cached');
+    });
+
+    it('decides an undecided project from the flag without a TTY', async () => {
+      await init(tmpDir, { force: false, gitignore: 'shared' });
+      stripSavedProfile(tmpDir);
+
+      await upgrade(tmpDir, { yes: true, gitignore: 'shared' });
+
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('shared');
+    });
+
+    it('rejects an unknown flag value before touching anything', async () => {
+      await init(tmpDir, { force: false, gitignore: 'shared' });
+      const before = readFileSync(join(tmpDir, STATE_PATH), 'utf-8');
+
+      await expect(upgrade(tmpDir, { yes: true, gitignore: 'bogus' }))
+        .rejects.toThrow(/Unknown gitignore profile 'bogus'/);
+
+      expect(readFileSync(join(tmpDir, STATE_PATH), 'utf-8')).toBe(before);
+    });
+  });
+
+  describe('legacy state migration interplay', () => {
+    it('migrating a legacy root .joycraft-version preserves a saved private profile', async () => {
+      await init(tmpDir, { force: false, gitignore: 'private' });
+      // Simulate a stray legacy root file coexisting with profile-bearing state
+      // (e.g. restored from an old commit). Migration must not clobber the profile.
+      const state = readVersion(tmpDir)!;
+      writeFileSync(
+        join(tmpDir, LEGACY_VERSION_FILE),
+        JSON.stringify({ version: state.version, files: state.files }, null, 2) + '\n',
+        'utf-8'
+      );
+
+      await upgrade(tmpDir, { yes: true });
+
+      expect(existsSync(join(tmpDir, LEGACY_VERSION_FILE))).toBe(false);
+      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
+    });
+
+    it('legacy migration under private does not add the redundant state-file line', async () => {
+      await init(tmpDir, { force: false, gitignore: 'private' });
+      const state = readVersion(tmpDir)!;
+      writeFileSync(
+        join(tmpDir, LEGACY_VERSION_FILE),
+        JSON.stringify({ version: state.version, files: state.files }, null, 2) + '\n',
+        'utf-8'
+      );
+      // Wipe .gitignore so only this upgrade run's writes are observed.
+      writeFileSync(join(tmpDir, '.gitignore'), '', 'utf-8');
+
+      await upgrade(tmpDir, { yes: true });
+
+      const gi = lines(readGitignore(tmpDir));
+      expect(gi).toContain('.claude/');
+      // .claude/ already covers the state file — the dead line must not appear.
+      expect(gi).not.toContain(STATE_PATH);
     });
   });
 

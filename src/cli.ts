@@ -2,9 +2,12 @@ import { Command } from 'commander';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { PRIVATE_DIRS_DISPLAY } from './gitignore.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
+
+const GITIGNORE_OPTION_DESC = `Gitignore profile: 'shared' (commit skills) or 'private' (gitignore ${PRIVATE_DIRS_DISPLAY})`;
 
 const program = new Command();
 
@@ -18,7 +21,7 @@ program
   .description('Scaffold the Joycraft harness into the current project')
   .argument('[dir]', 'Target directory', '.')
   .option('--force', 'Overwrite existing files')
-  .option('--gitignore <profile>', "Gitignore profile: 'shared' (commit skills) or 'private' (gitignore .claude/.agents/.pi)")
+  .option('--gitignore <profile>', GITIGNORE_OPTION_DESC)
   .action(async (dir: string, opts: { force?: boolean; gitignore?: string }) => {
     const { init } = await import('./init.js');
     try {
@@ -34,9 +37,15 @@ program
   .description('Upgrade installed Joycraft templates and skills to latest')
   .argument('[dir]', 'Target directory', '.')
   .option('--yes', 'Auto-accept all updates')
-  .action(async (dir: string, opts: { yes?: boolean }) => {
+  .option('--gitignore <profile>', GITIGNORE_OPTION_DESC)
+  .action(async (dir: string, opts: { yes?: boolean; gitignore?: string }) => {
     const { upgrade } = await import('./upgrade.js');
-    await upgrade(dir, { yes: opts.yes ?? false });
+    try {
+      await upgrade(dir, { yes: opts.yes ?? false, gitignore: opts.gitignore });
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : String(err));
+      process.exit(1);
+    }
   });
 
 program

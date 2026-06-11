@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, chmodSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
-import { readVersion, writeVersion, hashContent, truncateHash, STATE_PATH, LEGACY_VERSION_FILE, DEFAULT_GITIGNORE_PROFILE } from './version.js';
-import { ensureGitignoreEntry, applyGitignoreProfile } from './gitignore.js';
+import { readVersion, writeVersion, hashContent, truncateHash, LEGACY_VERSION_FILE } from './version.js';
+import { applyGitignoreProfile, resolveGitignoreProfile, validateGitignoreFlag, PRIVATE_UNTRACK_COMMAND } from './gitignore.js';
 import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
@@ -39,6 +39,8 @@ async function checkCliVersion(): Promise<{ stale: boolean; latest?: string }> {
 
 export interface UpgradeOptions {
   yes: boolean;
+  /** Raw --gitignore value from the CLI, if provided. Validated in upgrade(). */
+  gitignore?: string;
 }
 
 interface FileChange {
@@ -140,8 +142,13 @@ function cleanupDeprecatedSkills(targetDir: string): number {
 /**
  * Self-heal projects inited by an older Joycraft that wrote state to the repo
  * root (`.joycraft-version`). Reads the legacy file, re-writes it to the hidden
- * `.claude/.joycraft/state.json` location, deletes the root file, and ensures
- * the gitignore entry. No-op when no legacy root file exists.
+ * `.claude/.joycraft/state.json` location, and deletes the root file. No-op
+ * when no legacy root file exists.
+ *
+ * Gitignore handling is deliberately NOT done here: the profile isn't resolved
+ * yet at this point in upgrade(), and applyGitignoreProfile later in the same
+ * run covers the state entry (shared) or the whole .claude/ tree (private) —
+ * writing the state entry here would leave a dead line under `private`.
  *
  * Runs BEFORE the managed-file diff so the recorded-original hashes are
  * available at the new location for the same run's 3-way comparison. The hidden
@@ -160,7 +167,6 @@ function migrateLegacyVersionFile(targetDir: string): boolean {
     // stops being polluted; upgrade then proceeds with no recorded-original
     // (every changed file becomes "customized" — safe, never silently wrong).
     rmSync(legacyPath, { force: true });
-    ensureGitignoreEntry(targetDir, STATE_PATH);
     return true;
   }
 
@@ -170,10 +176,11 @@ function migrateLegacyVersionFile(targetDir: string): boolean {
       ? (parsed.files as Record<string, string>)
       : {};
 
-  // writeVersion targets the new hidden path and truncates the hashes.
+  // writeVersion targets the new hidden path and truncates the hashes. A
+  // gitignoreProfile already persisted in the hidden state is preserved
+  // (writeVersion keeps it when the argument is omitted).
   writeVersion(targetDir, version, files);
   rmSync(legacyPath, { force: true });
-  ensureGitignoreEntry(targetDir, STATE_PATH);
   return true;
 }
 
@@ -280,6 +287,10 @@ function runForcedMigration(projectDir: string): void {
 export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> {
   const targetDir = resolve(dir);
 
+  // Validate the --gitignore flag before any side effects (network check,
+  // legacy migration, docs migration) so a typo'd value changes nothing.
+  if (opts.gitignore !== undefined) validateGitignoreFlag(opts.gitignore);
+
   // Guard: if the CLI itself is out of date, warn and bail before comparing
   // project files against stale bundled content.
   const cliCheck = await checkCliVersion();
@@ -332,11 +343,28 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   const installed = readVersion(targetDir);
   const installedHashes = installed?.files ?? {};
 
-  // Carry the project's gitignore profile forward across upgrades. Projects
-  // inited before this field existed have no recorded profile → default shared,
-  // which re-applies the long-standing state-file-only ignore (idempotent).
-  const gitignoreProfile = installed?.gitignoreProfile ?? DEFAULT_GITIGNORE_PROFILE;
+  // Resolve the project's gitignore profile.
+  //   - --gitignore flag: explicit choice — the non-interactive way to set or
+  //     switch the profile on an existing project.
+  //   - Already chosen (init, or a prior upgrade): honor it silently.
+  //   - Never chosen (pre-feature project) + interactive: ask once, then persist
+  //     so this prompt never recurs. --yes suppresses the prompt — it promises
+  //     a fully unattended run.
+  //   - Never chosen + non-interactive: fall back to shared for this run only;
+  //     decided=false means it is never persisted, so the project stays
+  //     undecided and will be asked next time someone runs upgrade in a TTY.
+  const resolvedProfile = await resolveGitignoreProfile({
+    flag: opts.gitignore,
+    persisted: installed?.gitignoreProfile,
+    interactive: process.stdin.isTTY === true && !opts.yes,
+    promptIntro: '\nJoycraft can now control how much of the harness is tracked in git.',
+  });
+  const gitignoreProfile = resolvedProfile.profile;
   applyGitignoreProfile(targetDir, gitignoreProfile);
+  if (gitignoreProfile === 'private' && installed?.gitignoreProfile !== 'private') {
+    console.log('Gitignore profile: private. If harness files were already committed, untrack them with:');
+    console.log(`  ${PRIVATE_UNTRACK_COMMAND}`);
+  }
 
   const changes: FileChange[] = [];
   let upToDate = 0;
@@ -373,6 +401,12 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   }
 
   if (changes.length === 0) {
+    // Persist a freshly-decided profile (prompt answer or --gitignore switch)
+    // even when no files changed, so the decision sticks. Never persist the
+    // non-interactive fallback — an undecided project must stay undecided.
+    if (resolvedProfile.decided && installed && installed.gitignoreProfile !== gitignoreProfile) {
+      writeVersion(targetDir, installed.version, installedHashes, gitignoreProfile);
+    }
     console.log('Already up to date.');
     return;
   }
@@ -428,7 +462,10 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
       newHashes[relPath] = hashContent(current);
     }
   }
-  writeVersion(targetDir, pkgVersion, newHashes, gitignoreProfile);
+  // Record the profile only when this run actually decided it; writeVersion
+  // preserves an already-persisted profile when the argument is omitted, and an
+  // undecided project stays undecided (so the one-time prompt can still fire).
+  writeVersion(targetDir, pkgVersion, newHashes, resolvedProfile.decided ? gitignoreProfile : undefined);
 
   // Print summary
   const parts: string[] = [];

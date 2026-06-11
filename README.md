@@ -90,7 +90,9 @@ npx joycraft init --gitignore=private   # gitignore them; track only CLAUDE.md, 
 ```
 
 Run interactively without the flag and `init` will ask. The choice is saved, so
-`npx joycraft upgrade` re-applies it automatically. `.gitignore` edits are
+`npx joycraft upgrade` re-applies it automatically. To switch an existing
+project later (or decide from CI), pass the same flag to upgrade:
+`npx joycraft upgrade --gitignore=private`. `.gitignore` edits are
 append-only — Joycraft never rewrites or removes your existing lines.
 
 | Profile | Tracked in git | Gitignored |
