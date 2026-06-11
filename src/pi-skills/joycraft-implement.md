@@ -90,42 +90,55 @@ Check the spec's Edge Cases table. For each scenario:
 - Verify the expected behavior is handled.
 - If the spec says "warn the user" or "prompt," make sure that path works.
 
-## Step 5: Hand Off (mode-aware)
+## Step 5: Wrap Up and Continue (mode-aware — do the wrap-up yourself)
 
-When the spec is implemented and all its tests pass, the hand-off depends on the spec's **execution mode**. Read the `mode:` field from the spec's frontmatter (written by `/skill:joycraft-decompose`). If the spec has **no `mode:` field**, default to **`batch`** (back-compat with pre-mode specs). If the value is unrecognized, treat it as `batch` and note the unrecognized value.
+**Loop-iteration check FIRST.** If this process is one iteration of the `joycraft-implement-loop` driver (you were launched by `pi -p` with a single spec path), STOP after the implementation report — do **not** wrap up and do **not** continue. The loop runs `/skill:joycraft-spec-done` as its own fresh `pi -p` step and advances the queue itself; wrapping up here would double-run it.
 
-| Spec `mode:` | What to do now |
-|--------------|----------------|
-| **batch** | Do **not** wrap per spec. Move to the **next spec in this same conversation** (shared context). Only when you finish the feature's **last** spec, hand off to `/skill:joycraft-session-end`. |
-| **checkpoint** | Hand off to `/skill:joycraft-spec-done` (it bumps status `todo → in-review` + commits), then **continue to the next spec**. |
-| **isolated** | Hand off to `/skill:joycraft-spec-done`, then start the next spec in a **fresh context** (see the harness sub-cases below). |
+Otherwise (interactive session), wrap up and advance according to the spec's **execution mode**. Read the `mode:` field from the spec's frontmatter (written by `/skill:joycraft-decompose`). If the spec has **no `mode:` field**, default to **`batch`** (back-compat with pre-mode specs). If the value is unrecognized, treat it as `batch` and note the unrecognized value.
 
-**`isolated` — fresh context per harness:**
-- **Pi:** the `joycraft-implement-loop` driver automates it — a fresh `pi -p` process per spec (the process boundary IS the context isolation). The loop runs `joycraft-next-spec` → implement → spec-done → repeat, then `joycraft-session-end` once.
-  - **If THIS process is one iteration of that loop** (you were launched by `pi -p` with a single spec): you have nothing to do beyond spec-done — the loop advances on its own.
-  - **If you are an interactive Pi session and the user asks you to run the remaining specs autonomously** ("automate this", "run the queue", "you're the harness — do it"): do **not** implement the specs inline in this conversation, and do **not** spawn a subagent — neither gives the verified process-boundary isolation. Instead **invoke the loop driver via the shell**, pointing it at the feature's specs dir:
+**You perform the wrap-up. You find the next spec. Do not stop to tell the human to run `/skill:joycraft-spec-done` or to paste the next file path — those hand-backs carry zero information and break the feature's momentum.**
 
-    ```
-    joycraft-implement-loop docs/features/<slug>/specs
-    ```
+### 5a. Per-spec wrap-up
 
-    That one command runs the whole queue headless (fresh `pi -p` per spec) and finishes with session-end. (Note: the driver spawns `pi -p` subprocesses; nesting it under an already-running Pi session is sound by design but not yet smoke-tested end-to-end — if the nested `pi -p` misbehaves, fall back to telling the human to run the command in a separate terminal.) ToS/cost note: this path is for Pi with a BYO API key or open weights — do not route a subscription OAuth through it.
-- **Claude Code / Codex, interactive:** tell the human to run `/clear`, then re-invoke `/skill:joycraft-implement <next-spec>`. (Guided-manual — always fine, no ToS/cost surprise.)
-- **Claude Code / Codex, headless:** the opt-in `claude -p` / `codex exec` loop. **Surface the caveat, don't bury it:** unattended headless loops draw metered, full-rate API usage and carry a ToS posture the user must **knowingly opt into** (Anthropic meters `claude -p` from a separate full-rate pool; routing subscription OAuth through third-party harnesses is prohibited). The responsible default is Pi (BYO API key / open weights). Do not silently auto-run a subscription-backed headless loop.
+| Spec `mode:` | Wrap-up you perform now |
+|--------------|------------------------|
+| **batch** | **Status bump only**: set the spec to `in-review` in both systems (see below). No commit, no discovery stub — batch wraps once at feature end. (The bump is required: the queue treats a dependency as satisfied at `in-review`, so without it dependent specs would look blocked.) |
+| **checkpoint** / **isolated** | The full `joycraft-spec-done` wrap-up, performed by you (canonical definition: `.pi/skills/joycraft-spec-done/SKILL.md`): **(1)** bump status to `in-review` in both systems, **(2)** terse 2-line discovery stub at `docs/discoveries/YYYY-MM-DD-topic.md` ONLY if something contradicted the spec — usually skip, **(3)** commit `spec: <spec-name>` (implementation + status edits + stub, nothing unrelated), **(4)** no validation re-run, no push, no PR — those belong to `joycraft-session-end`. |
 
-Report, then emit the next step that matches the mode:
+**Both systems** means: the queue JSON (`joycraft-mark-done <spec-id> --to in-review <specs-dir>`) AND the spec file's `status:` frontmatter. Never `done` — the agent doesn't self-certify (`docs/reference/spec-status-lifecycle.md`).
+
+### 5b. Continue the queue (batch and checkpoint)
+
+Re-read `.joycraft-spec-queue.json` in the spec's directory (or run `joycraft-next-spec <specs-dir>`) and find the next `todo` spec whose dependencies are all `in-review`/`done`. Then:
+
+- **Next ready spec exists** → announce one line — `Continuing: <next-spec> (spec N of M)` — and go back to Step 2 with it, in this same conversation.
+- **Remaining `todo` specs are all blocked** → stop and report which specs are blocked and on what.
+- **No `todo` specs remain** → this was the feature's last spec; go to 5d.
+- **No queue** (you were invoked with a bare spec file outside a queue) → report the spec complete and stop; there is nothing to continue from.
+
+### 5c. isolated — fresh context per spec
+
+A conversation cannot clear its own context. On Pi the autonomous path is the loop driver — after this spec's wrap-up, **invoke it via the shell**, pointing at the feature's specs dir:
 
 ```
-Implementation complete:
-- Spec: [spec name] — all Acceptance Criteria met · mode: [batch|checkpoint|isolated]
-- Tests: [N] written, all passing
-- Build: passing
-
-Next steps:
-- batch (more specs remain): continue to the next spec in this conversation
-- checkpoint / isolated: run /skill:joycraft-spec-done, then continue (isolated interactive: /new first)
-- isolated, autonomous: run the loop — `joycraft-implement-loop docs/features/<slug>/specs`
-- feature's last spec: run /skill:joycraft-session-end (the once-per-feature finisher)
+joycraft-implement-loop docs/features/<slug>/specs
 ```
 
-**Tip:** On Pi, isolated mode is driven by the `joycraft-implement-loop` script (fresh process per spec) — that's the autonomous path; you Bash-invoke it. For step-by-step interactive control instead, run `/skill:joycraft-spec-done`, then `/new` before the next spec. Your artifacts are saved to files — this conversation context is disposable.
+That one command runs the remaining queue headless (fresh `pi -p` process per spec — the process boundary IS the context isolation) and finishes with session-end. Do **not** implement isolated specs inline in this conversation and do **not** spawn a subagent — neither gives the verified process-boundary isolation. (Note: the driver spawns `pi -p` subprocesses; nesting it under an already-running Pi session is sound by design but not yet smoke-tested end-to-end — if the nested `pi -p` misbehaves, fall back to telling the human to run the command in a separate terminal.) ToS/cost note: this path is for Pi with a BYO API key or open weights — do not route a subscription OAuth through it.
+
+For step-by-step control instead, tell the human to run `/new`, then re-invoke `/skill:joycraft-implement <next-spec>` — the guided-manual path.
+
+### 5d. Feature's last spec (any mode)
+
+Run the once-per-feature finisher yourself: read and follow `.pi/skills/joycraft-session-end/SKILL.md`. It carries its own gates — validation is mandatory and must pass before specs graduate `in-review → done`, and push/PR honor the project's CLAUDE.md git autonomy rules — so running it automatically is safe. (When the loop driver ran the queue, it already runs session-end once — the loop-iteration check above keeps you from doubling it.)
+
+### Report
+
+After each spec's wrap-up, report tersely before continuing:
+
+```
+Spec complete: [spec name] · mode: [mode] · tests: [N] passing · [wrapped up + committed | status bumped (batch)]
+[Continuing: <next-spec> (spec N of M) | Feature complete — running session-end | Blocked: <specs + reasons>]
+```
+
+**Tip:** Your artifacts are saved to files — this conversation context is disposable.

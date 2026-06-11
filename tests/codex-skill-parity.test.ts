@@ -152,10 +152,10 @@ describe('Pi skill parity', () => {
     }
   });
 
-  describe('PI_SKILLS export has 19 entries', () => {
-    it('PI_SKILLS has exactly 19 skills', async () => {
+  describe('PI_SKILLS export has 20 entries', () => {
+    it('PI_SKILLS has exactly 20 skills', async () => {
       const { PI_SKILLS } = await import('../src/bundled-files');
-      expect(Object.keys(PI_SKILLS).length).toBe(19);
+      expect(Object.keys(PI_SKILLS).length).toBe(20);
     });
   });
 

@@ -10,6 +10,8 @@ You just finished implementing **one** atomic spec. This is the fast handshake t
 > **This is NOT session-end.** It does **not** run validation, push, or open a PR. It trusts the TDD you just did in `/skill:joycraft-implement`. The heavy once-per-feature wrap-up (full validation + consolidate discoveries + push + PR) is `/skill:joycraft-session-end`, which runs once at the end of the feature.
 >
 > **On the Pi isolated-mode loop** (`joycraft-implement-loop`), this same four-step logic runs as a fresh-process step after each implement — the loop calls spec-done between specs and session-end once at the end.
+>
+> **In interactive sessions you usually don't run this by hand:** `/skill:joycraft-implement` performs these four steps itself at the end of every checkpoint/isolated spec. This skill remains the canonical definition of the wrap-up (and the loop's own per-spec step) — run it manually after ad-hoc work done outside the implement skill, or when an implement run was interrupted before wrapping up.
 
 ## Step 1: Bump status to `in-review` — in BOTH systems
 
