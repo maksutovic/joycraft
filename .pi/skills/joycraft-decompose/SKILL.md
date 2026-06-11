@@ -211,6 +211,8 @@ Based on the dependency graph:
 - **Sequential specs** — "Execute these in order: 1 -> 2 -> 4"
 - **Mixed** — "Start specs 1 and 3 in parallel. After 1 completes, start 2."
 
+**Mark each multi-spec wave's parallel-safety**: a wave is parallel-safe only when its specs' Affected Files tables are disjoint; overlapping files → NOT parallel-safe, name the overlap. Record the markers in the wave plan.
+
 Update the Feature Brief's Execution Strategy section with the plan (if a brief exists).
 
 ## Step 7: Hand Off
@@ -223,9 +225,10 @@ Decomposition complete:
 - Estimated total: [N] sessions
 
 To execute:
-- Sequential: Open a session, point at each spec in order
-- Parallel: One spec per branch, merge when done
-- Each session should end with /skill:joycraft-session-end to capture discoveries
+- Whole queue: /skill:joycraft-implement-feature docs/features/<slug>/ — checks the
+  queue and runs the joycraft-implement-loop driver (fresh pi -p process per spec)
+- One at a time: /skill:joycraft-implement docs/features/<slug>/specs/<first-spec>.md —
+  it wraps up and continues through the queue itself
 
 Ready to start execution?
 
