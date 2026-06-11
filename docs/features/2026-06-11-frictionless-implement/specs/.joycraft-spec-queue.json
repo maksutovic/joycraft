@@ -1,0 +1,9 @@
+{
+  "feature": "2026-06-11-frictionless-implement",
+  "specs": [
+    { "id": 1, "file": "implement-auto-wrapup.md", "depends_on": [], "status": "todo", "mode": "batch" },
+    { "id": 2, "file": "implement-feature-driver.md", "depends_on": [1], "status": "todo", "mode": "batch" },
+    { "id": 3, "file": "decompose-driver-handoff.md", "depends_on": [2], "status": "todo", "mode": "batch" },
+    { "id": 4, "file": "wire-and-bundle.md", "depends_on": [1, 2, 3], "status": "todo", "mode": "batch" }
+  ]
+}
