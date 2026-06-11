@@ -53,6 +53,8 @@ Each spec runs in **one fresh OS process** (`pi -p`), so the context isolation i
 
 This is what Claude Code and Codex can't do out of the box: an unattended `interview → PR` line where the machine does everything convergent in between. It is Pi-specific by design — the driver targets Pi with a BYO API key or open-weight model (Commercial/API terms, no automation restriction); pointing a consumer Claude/ChatGPT *subscription* at an automated loop would violate those tools' terms.
 
+On Claude Code, `/joycraft-implement-feature` gets you the in-session equivalent: one interactive invocation runs the whole queue with a fresh-context **subagent** per spec — the subagent boundary plays the role of Pi's process boundary. You're at the keyboard and it's one command, so none of the headless ToS/cost caveats apply.
+
 ## Quick Start
 
 First, install the CLI:
@@ -72,7 +74,7 @@ Joycraft auto-detects your tech stack and creates:
 
 - **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
 - **AGENTS.md** for Codex compatibility
-- **19 skills** installed to `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), and `.pi/skills/` (Pi) — see [Which skill do I need?](#which-skill-do-i-need) below
+- **20 skills** installed to `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), and `.pi/skills/` (Pi) — see [Which skill do I need?](#which-skill-do-i-need) below
 - **Pi pipeline runtime** in `.pi/scripts/joycraft/` (when `.pi/` is present) — the headless spec-execution driver and its helpers
 - **docs/** structure: `docs/context/` is created up front; feature work lands in `docs/features/<slug>/{brief.md, research.md, design.md, specs/}` and deferred work in `docs/backlog/` — these are created lazily by the skills that write to them
 - **Context documents** in `docs/context/`: production map, dangerous assumptions, decision log, institutional knowledge, and troubleshooting guide
@@ -121,7 +123,8 @@ Frameworks auto-detected: Next.js, FastAPI, Django, Flask, Actix, Axum, Express,
 | Align on approach before writing code | `/joycraft-design` | Design discussion → ~200-line artifact for human review |
 | Break a feature into small, independent tasks | `/joycraft-decompose` | Feature Brief → testable Atomic Specs |
 | Fix a bug with a structured workflow | `/joycraft-bugfix` | Reproduce → isolate → fix → verify loop |
-| Implement a spec with TDD | `/joycraft-implement` | Read spec → write failing tests → implement until green |
+| Implement a spec with TDD | `/joycraft-implement` | Read spec → failing tests → implement until green → wrap up → continue the queue |
+| Run a feature's whole spec queue from one command | `/joycraft-implement-feature` | Fresh-context subagent per spec → fail-fast → session-end once |
 | Run specs autonomously without hand-holding | `/joycraft-implement-level5` | Autofix loop + holdout scenario testing |
 | Verify an implementation independently | `/joycraft-verify` | Read-only subagent checks work against the spec |
 | Set up Joycraft for a team | `/joycraft-collaborative-setup` | Scaffold `docs/areas/`, owner conventions, a team CONTRIBUTING doc |
