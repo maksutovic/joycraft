@@ -33,9 +33,14 @@ export type GitignoreProfile = 'shared' | 'private';
 
 export const DEFAULT_GITIGNORE_PROFILE: GitignoreProfile = 'shared';
 
-/** Narrow an arbitrary value to a GitignoreProfile, or null if unrecognized. */
+/**
+ * Narrow an arbitrary value to a GitignoreProfile, or null if unrecognized.
+ * Strings are normalized (trim + lowercase) here so every call site — flag,
+ * prompt, persisted state — gets the same case-insensitivity for free.
+ */
 export function parseGitignoreProfile(value: unknown): GitignoreProfile | null {
-  return value === 'shared' || value === 'private' ? value : null;
+  const v = typeof value === 'string' ? value.trim().toLowerCase() : value;
+  return v === 'shared' || v === 'private' ? v : null;
 }
 
 export interface VersionInfo {
@@ -86,6 +91,10 @@ export function writeVersion(
   gitignoreProfile?: GitignoreProfile
 ): void {
   const filePath = join(dir, STATE_PATH);
+  // An omitted profile means "no new decision", not "clear it": preserve
+  // whatever is already persisted so call sites that only refresh
+  // version/hashes can never silently strip a saved choice.
+  const profile = gitignoreProfile ?? readVersion(dir)?.gitignoreProfile;
   // Store truncated hashes — single source of truth for the on-disk shape.
   const truncated: Record<string, string> = {};
   for (const [path, hash] of Object.entries(files)) {
@@ -94,7 +103,7 @@ export function writeVersion(
   const data: VersionInfo = {
     version,
     files: truncated,
-    ...(gitignoreProfile ? { gitignoreProfile } : {}),
+    ...(profile ? { gitignoreProfile: profile } : {}),
   };
   mkdirSync(dirname(filePath), { recursive: true });
   writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
