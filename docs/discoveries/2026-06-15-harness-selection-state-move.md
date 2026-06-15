@@ -24,3 +24,8 @@ feature: harness-selection
 **Expected:** Gating `init`'s install blocks would be sufficient.
 **Actual:** `upgrade` installs the full managed-file set unconditionally — a codex-only project that ran `upgrade` got a complete `.claude/` tree back. Gating init without gating upgrade leaves the footprint leak half-fixed.
 **Impact:** Required persisting the harness selection in state.json so `upgrade` (which can't prompt) can honor it. The pattern: any per-harness gating in `init` needs a mirror in `upgrade`, fed by persisted state, with an all-three fallback for pre-field installs.
+
+## Moving the state file silently broke the private-profile gitignore
+**Expected:** Relocating `STATE_PATH` from `.claude/.joycraft/` to `docs/.joycraft/state.json` was a self-contained path change; the gitignore profiles would keep working.
+**Actual:** The `private` profile ignored the whole `.claude/` tree, which *transitively* covered the nested state file — that was load-bearing. Once state moved into the always-tracked `docs/`, no harness-dir ignore covered it, so under `private` the state file would be **committed**, violating the "tool-managed state, never committed" invariant that `shared` still upheld. Caught only because a human asked "did the gitignore note get updated?" — a real `init --gitignore private` + `git check-ignore` then exposed it.
+**Impact:** `applyGitignoreProfile('private')` must list `STATE_PATH` explicitly now (gitignored under both profiles). Broader lesson: when a file's gitignore coverage is *implicit* (a parent dir happens to be ignored), moving the file out of that parent silently drops the coverage. Any path constant relocation should re-audit what was covering it transitively — gitignore, but also tooling that globbed the old parent.
