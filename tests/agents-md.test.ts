@@ -44,6 +44,25 @@ describe('generateAgentsMd', () => {
     expect(result).toContain('pnpm typecheck');
   });
 
+  it('points at docs/backlog/ for deferred work', () => {
+    const result = generateAgentsMd('my-project', nodeStack);
+    expect(result).toContain('docs/backlog/');
+  });
+
+  it('private setup note states init is non-destructive', () => {
+    const result = generateAgentsMd('my-project', nodeStack, true);
+    // The hedge Max had to hand-write is now folded into the tool.
+    expect(result).toContain('After cloning, run');
+    expect(result).toContain('only creates missing files');
+    expect(result).toContain('--force');
+    expect(result).toContain('untouched');
+  });
+
+  it('omits the private setup note under the shared profile', () => {
+    const result = generateAgentsMd('my-project', nodeStack, false);
+    expect(result).not.toContain('After cloning, run');
+  });
+
   it('includes framework in header', () => {
     const result = generateAgentsMd('my-project', nodeStack);
     expect(result).toContain('Next.js');

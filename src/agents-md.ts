@@ -55,7 +55,7 @@ function generateExternalApiSafetySection(): string {
 }
 
 function generateDevelopmentSection(stack: StackInfo): string {
-  return `## Development\n\n${generateCommandsBlock(stack)}`;
+  return `## Development\n\n${generateCommandsBlock(stack)}\n\n**Deferred work → \`docs/backlog/\`.** Ideas and follow-ups surfaced mid-sprint that can't be taken on now go to \`docs/backlog/\` (one file per item) so the current spec stays focused. Promote an entry to a Feature Brief under \`docs/features/<slug>/\` when ready to build it.`;
 }
 
 function generateArchitectureSection(): string {
