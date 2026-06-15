@@ -9,16 +9,16 @@ You are evaluating and upgrading this project's AI development harness.
 
 ## Step 1: Detect Harness State
 
-Search the codebase for: CLAUDE.md (with meaningful content), `docs/features/<slug>/` (briefs + specs), `docs/bugfixes/<area>/`, `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs, `.agents/skills/`, and test configuration.
+Search the codebase for: AGENTS.md (with meaningful content), `docs/features/<slug>/` (briefs + specs), `docs/bugfixes/<area>/`, `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs, `.agents/skills/`, and test configuration.
 
 ## Step 2: Route
 
-- **No harness** (no CLAUDE.md or just a README): Recommend `npx joycraft init` and stop.
+- **No harness** (no AGENTS.md or just a README): Recommend `npx joycraft init` and stop.
 - **Harness exists**: Continue to assessment.
 
 ## Step 3: Assess — Score 7 Dimensions (1-5 scale)
 
-Read CLAUDE.md and explore the project. Score each with specific evidence:
+Read AGENTS.md and explore the project. Score each with specific evidence:
 
 | Dimension | What to Check |
 |-----------|--------------|
@@ -26,9 +26,9 @@ Read CLAUDE.md and explore the project. Score each with specific evidence:
 | Spec Granularity | Can each spec be done in one session? |
 | Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading) |
 | Skills & Hooks | `.agents/skills/` files, hooks config |
-| Documentation | `docs/` structure, templates, referenced from CLAUDE.md. Reward a lean + pointered CLAUDE.md. **Flag a CLAUDE.md exceeding ~200 lines** — recommend extracting long sections into `docs/context/reference/` and replacing them with a `## Context Map` pointer table. This is advisory only; tune never auto-edits CLAUDE.md. |
+| Documentation | `docs/` structure, templates, referenced from AGENTS.md. Reward a lean + pointered AGENTS.md. **Flag an AGENTS.md exceeding ~200 lines** — recommend extracting long sections into `docs/context/reference/` and replacing them with a `## Context Map` pointer table. This is advisory only; tune never auto-edits AGENTS.md. |
 | Knowledge Capture | `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs — existence AND real content |
-| Testing & Validation | Test framework, CI pipeline, validation commands in CLAUDE.md |
+| Testing & Validation | Test framework, CI pipeline, validation commands in AGENTS.md |
 
 Score 1 = absent, 3 = partially there, 5 = comprehensive. Give credit for substance over format.
 
@@ -46,9 +46,9 @@ Apply using three tiers — do NOT ask per-item permission:
 
 **First-run context onboarding:** On a first run (the context layer is empty or absent), invoke `/skill:joycraft-gather-context` for the read-then-offer onboarding pass — it owns reading existing docs, offering a gap-only interview, and populating `docs/context/` (fact-docs and `docs/context/reference/`). Do NOT run a separate risk interview here; gather is the onboarding path. On a recurring run of an already-populated project, skip this — gather is the first-run path, not forced every time.
 
-From git-autonomy and gather, generate: CLAUDE.md boundary rules, deny patterns configuration. Also recommend a permission mode (`auto` for most; `dontAsk` + allowlist for high-risk).
+From git-autonomy and gather, generate: AGENTS.md boundary rules, deny patterns configuration. Also recommend a permission mode (`auto` for most; `dontAsk` + allowlist for high-risk).
 
-**Tier 2 (show diff):** Add missing CLAUDE.md sections (Boundaries, Workflow, Key Files). Draft from real codebase content. Append only — never reformat existing content.
+**Tier 2 (show diff):** Add missing AGENTS.md sections (Boundaries, Workflow, Key Files). Draft from real codebase content. Append only — never reformat existing content.
 
 **Tier 3 (confirm first):** Rewriting existing sections, overwriting customized files, suggesting test framework installs.
 
@@ -62,8 +62,8 @@ Show a tailored roadmap: Level 2-5 table, specific next steps based on actual ga
 
 ## Edge Cases
 
-- **CLAUDE.md is just a README:** Treat as no harness.
+- **AGENTS.md is just a README:** Treat as no harness.
 - **Non-Joycraft skills:** Acknowledge, don't replace.
 - **Rules under non-standard headings:** Give credit for substance.
 - **Previous assessment exists:** Read it first. If nothing to upgrade, say so.
-- **Non-Joycraft content in CLAUDE.md:** Preserve as-is. Only append.
+- **Non-Joycraft content in AGENTS.md:** Preserve as-is. Only append.

@@ -55,12 +55,17 @@ describe('execution modes in joycraft-decompose', () => {
     }
   });
 
-  // AC: read a project default from CLAUDE.md, defaulting to batch when absent.
-  describe('reads a project default mode from CLAUDE.md', () => {
+  // AC: read a project default from the harness boundary file, defaulting to batch when absent.
+  // Per the canonical Cat D form (spec: canonicalize-boundary-forms), each harness uses its
+  // own boundary file literal: CLAUDE.md for claude, AGENTS.md for codex/pi.
+  describe('reads a project default mode from the boundary file', () => {
     for (const variant of SOURCE_VARIANTS) {
-      it(`${label(variant)} references CLAUDE.md default and defaults to batch`, () => {
+      it(`${label(variant)} references the boundary file default and defaults to batch`, () => {
         const content = read(variant);
-        expect(content).toContain('CLAUDE.md');
+        const expectedBoundary = variant.includes('claude-skills')
+          ? 'CLAUDE.md'
+          : 'AGENTS.md';
+        expect(content).toContain(expectedBoundary);
         expect(content).toContain('Default execution mode');
         // Absent ⇒ batch is the documented fallback.
         expect(content.toLowerCase()).toMatch(/default.*batch|batch.*default|absent.*batch|no.*default.*batch/);

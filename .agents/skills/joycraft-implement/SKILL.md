@@ -125,7 +125,7 @@ A conversation cannot clear its own context, so after the wrap-up the fresh cont
 
 ### 5d. Feature's last spec (any mode)
 
-Run the once-per-feature finisher yourself: read and follow `.agents/skills/joycraft-session-end/SKILL.md`. It carries its own gates — validation is mandatory and must pass before specs graduate `in-review → done`, and push/PR honor the project's AGENTS.md/CLAUDE.md git autonomy rules — so running it automatically is safe.
+Run the once-per-feature finisher yourself: read and follow `.agents/skills/joycraft-session-end/SKILL.md`. It carries its own gates — validation is mandatory and must pass before specs graduate `in-review → done`, and push/PR honor the project's AGENTS.md git autonomy rules — so running it automatically is safe.
 
 ### Report
 

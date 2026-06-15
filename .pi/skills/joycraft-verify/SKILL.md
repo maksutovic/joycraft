@@ -37,7 +37,7 @@ If the spec has no Test Plan section, note this but proceed -- the verifier can 
 Look for test commands in these locations (in priority order):
 
 1. The spec's Test Plan section (look for commands in backticks or "Type" column entries like "unit", "integration", "e2e", "build")
-2. The project's CLAUDE.md or AGENTS.md (look for test/build commands in the Development Workflow section)
+2. The project's AGENTS.md (look for test/build commands in the Development Workflow section)
 3. Common defaults based on the project type:
    - Node.js: `npm test` or `pnpm test --run`
    - Python: `pytest`

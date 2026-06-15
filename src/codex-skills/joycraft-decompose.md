@@ -67,7 +67,7 @@ Every spec carries an **execution mode** that controls how `$joycraft-implement`
 | `checkpoint` | `$joycraft-spec-done` after each (commit + status bump), keep going | shared | medium specs wanting atomic commits without fresh context |
 | `isolated` | `$joycraft-spec-done`, then a **fresh context**, then the next spec | fresh per spec | heavy specs that would pollute one context |
 
-**Project default.** Read the default mode from the project's `CLAUDE.md`: look for a line `**Default execution mode:** <mode>`. If that line is **absent, default to `batch`** (the safest: shared context, wrap once). Do not hard-fail when it's missing — just use `batch` and say so in your recommendation.
+**Project default.** Read the default mode from the project's `AGENTS.md`: look for a line `**Default execution mode:** <mode>`. If that line is **absent, default to `batch`** (the safest: shared context, wrap once). Do not hard-fail when it's missing — just use `batch` and say so in your recommendation.
 
 **Size → mode heuristic** (a starting recommendation, not a rule):
 
@@ -81,9 +81,9 @@ Size is your estimate from the spec's scope (files touched, surface area, risk).
 
 **Surface the recommendation and get approval.** Before writing any spec files, present your per-spec mode recommendation and wait for the human's OK. Worked example:
 
-> Your project defaults to `batch` (no `**Default execution mode:**` line in CLAUDE.md, so I'm using the safe default). Based on size, I recommend: specs 1, 2 → `batch`; spec 5 → `checkpoint`; specs 7, 8 → `isolated` (large/risky). OK, or adjust?
+> Your project defaults to `batch` (no `**Default execution mode:**` line in AGENTS.md, so I'm using the safe default). Based on size, I recommend: specs 1, 2 → `batch`; spec 5 → `checkpoint`; specs 7, 8 → `isolated` (large/risky). OK, or adjust?
 
-If the human overrides any recommendation, **honor their choice verbatim** in both the frontmatter and the queue. Record the approved mode in each spec's `mode:` frontmatter field (Step 5) and in each queue entry's `"mode"` field (Step 5a). A feature may mix modes across its specs — that's expected. This applies even when there's no brief and the feature was described inline: still assign a mode to every spec, and the CLAUDE.md default applies the same way.
+If the human overrides any recommendation, **honor their choice verbatim** in both the frontmatter and the queue. Record the approved mode in each spec's `mode:` frontmatter field (Step 5) and in each queue entry's `"mode"` field (Step 5a). A feature may mix modes across its specs — that's expected. This applies even when there's no brief and the feature was described inline: still assign a mode to every spec, and the AGENTS.md default applies the same way.
 
 ## Step 5: Generate Atomic Specs
 

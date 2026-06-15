@@ -1,6 +1,6 @@
 ---
 name: joycraft-add-context
-description: Author one long-form reference doc -- a design system, frontend/backend methodology, testing conventions, or any other long-form reference doc -- scaffolding it from a template and wiring a pointer into the project boundary file's Context Map
+description: Author one long-form reference doc -- a design system, frontend/backend methodology, testing conventions, or any other long-form reference doc -- scaffolding it from a template and wiring a pointer into AGENTS.md's Context Map
 ---
 
 # Add Context
@@ -42,7 +42,7 @@ If `docs/context/reference/<slug>.md` already exists (the user is re-running for
 
 ## Step 4: Add or Update the Context Map Pointer Row (Idempotent)
 
-Read the project's boundary file — CLAUDE.md and/or AGENTS.md, whichever the project uses — and maintain a pointer row for this doc in the `## Context Map` section. The row format is:
+Read the project's AGENTS.md and maintain a pointer row for this doc in the `## Context Map` section. The row format is:
 
 ```
 | docs/context/reference/<slug>.md | <when to read it> |

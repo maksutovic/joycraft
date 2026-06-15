@@ -5,7 +5,7 @@ description: Capture a project fact and route it to the correct context document
 
 # Add Fact
 
-The user has a fact to capture. Your job is to classify it, route it to the correct context document, append it in the right format, and optionally add a boundary rule to CLAUDE.md or AGENTS.md.
+The user has a fact to capture. Your job is to classify it, route it to the correct context document, append it in the right format, and optionally add a boundary rule to AGENTS.md.
 
 ## Step 1: Get the Fact
 
@@ -132,7 +132,7 @@ Remove any italic example rows (rows where all cells start with `_`) before appe
 
 ## Step 6: Evaluate Boundary Rule
 
-Decide whether the fact also warrants a rule in the project's boundary configuration (CLAUDE.md and/or AGENTS.md -- check which files the project uses and update accordingly):
+Decide whether the fact also warrants a rule in the project's boundary configuration (AGENTS.md):
 
 **Add a boundary rule if the fact:**
 - Describes something that should ALWAYS or NEVER be done
@@ -144,7 +144,7 @@ Decide whether the fact also warrants a rule in the project's boundary configura
 - A one-time decision that's already captured
 - A diagnostic tip rather than a prohibition
 
-If a rule is warranted, read the project's boundary file(s) -- CLAUDE.md and/or AGENTS.md -- find the appropriate section (ALWAYS, ASK FIRST, or NEVER under Behavioral Boundaries), and append the rule. If no Behavioral Boundaries section exists, append one. Update whichever boundary files the project uses (some projects have CLAUDE.md, some have AGENTS.md, some have both).
+If a rule is warranted, read the project's AGENTS.md, find the appropriate section (ALWAYS, ASK FIRST, or NEVER under Behavioral Boundaries), and append the rule. If no Behavioral Boundaries section exists, append one.
 
 ## Step 7: Confirm
 
@@ -154,8 +154,8 @@ Report what you did in this format:
 Added to [document name]:
   [summary of what was added]
 
-[If boundary file(s) were also updated:]
-Added boundary rule to [CLAUDE.md / AGENTS.md / both]:
+[If AGENTS.md was also updated:]
+Added boundary rule to AGENTS.md:
   [ALWAYS/ASK FIRST/NEVER]: [rule text]
 
 [If the fact was ambiguous:]

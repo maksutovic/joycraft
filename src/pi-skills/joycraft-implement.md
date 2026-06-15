@@ -130,7 +130,7 @@ For step-by-step control instead, tell the human to run `/new`, then re-invoke `
 
 ### 5d. Feature's last spec (any mode)
 
-Run the once-per-feature finisher yourself: read and follow `.pi/skills/joycraft-session-end/SKILL.md`. It carries its own gates — validation is mandatory and must pass before specs graduate `in-review → done`, and push/PR honor the project's CLAUDE.md git autonomy rules — so running it automatically is safe. (When the loop driver ran the queue, it already runs session-end once — the loop-iteration check above keeps you from doubling it.)
+Run the once-per-feature finisher yourself: read and follow `.pi/skills/joycraft-session-end/SKILL.md`. It carries its own gates — validation is mandatory and must pass before specs graduate `in-review → done`, and push/PR honor the project's AGENTS.md git autonomy rules — so running it automatically is safe. (When the loop driver ran the queue, it already runs session-end once — the loop-iteration check above keeps you from doubling it.)
 
 ### Report
 

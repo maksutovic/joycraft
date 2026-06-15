@@ -60,7 +60,7 @@ Skip this if nothing applies. Don't force it — only update when there's genuin
 
 This is **mandatory** and it is the **only** validation gate in the loop: `$joycraft-spec-done` deliberately skips validation (it trusts implement's per-spec TDD), so this feature-level run is the single cross-spec safety net. Never skip it.
 
-Run the project's validation commands. Check CLAUDE.md or AGENTS.md for project-specific commands. Common checks:
+Run the project's validation commands. Check AGENTS.md for project-specific commands. Common checks:
 
 - Type-check (e.g., `tsc --noEmit`, `mypy`, `cargo check`)
 - Tests (e.g., `npm test`, `pytest`, `cargo test`)
@@ -90,13 +90,13 @@ Commit all changes including the discovery file (if created) and spec status upd
 
 ## 5. Push and PR (if autonomous git is enabled)
 
-**Check CLAUDE.md or AGENTS.md for "Git Autonomy" in the Behavioral Boundaries section.** If it says "STRICTLY ENFORCED" or the ALWAYS section includes "Push to feature branches immediately after every commit":
+**Check AGENTS.md for "Git Autonomy" in the Behavioral Boundaries section.** If it says "STRICTLY ENFORCED" or the ALWAYS section includes "Push to feature branches immediately after every commit":
 
 1. **Push immediately.** Run `git push origin <branch>` — do not ask, do not hesitate.
 2. **Open a PR if the feature is complete.** The feature is complete when every spec is `done` (none left at `todo`/`in-review`). Check the queue JSON / decomposition table — if all specs are `done`, run `gh pr create` with a summary of all completed specs. Do not ask first.
 3. **If specs remain (`todo`),** still push. The PR comes when the feature's last spec is graduated.
 
-If CLAUDE.md or AGENTS.md does NOT have autonomous git rules (or has "ASK FIRST" for pushing), ask the user before pushing.
+If AGENTS.md does NOT have autonomous git rules (or has "ASK FIRST" for pushing), ask the user before pushing.
 
 ## 6. Report
 

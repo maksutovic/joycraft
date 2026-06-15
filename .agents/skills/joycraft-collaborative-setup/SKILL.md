@@ -90,7 +90,7 @@ When a new dev joins this area, they should:
 3. Read the codebase under <area-relevant paths>
 ```
 
-If the user provided NEVER / ASK FIRST rules for the area, also write `docs/areas/<area-name>/boundaries.md` with the shared frontmatter and those rules. If they didn't, skip the boundaries file — the root CLAUDE.md boundaries already cover the project-wide cases.
+If the user provided NEVER / ASK FIRST rules for the area, also write `docs/areas/<area-name>/boundaries.md` with the shared frontmatter and those rules. If they didn't, skip the boundaries file — the root AGENTS.md boundaries already cover the project-wide cases.
 
 **Idempotency:** if `docs/areas/<area-name>/README.md` already exists, ASK before overwriting (default: skip + inform).
 
@@ -135,13 +135,13 @@ When a new dev joins:
 
 If `docs/CONTRIBUTING-joycraft.md` already exists, ASK before overwriting — offer overwrite / append / skip; default to skip.
 
-## Step 6: Trigger CLAUDE.md Update
+## Step 6: Trigger AGENTS.md Update
 
-Now that `docs/areas/` exists, the next `npx joycraft upgrade` (or any future `npx joycraft init`) will pick it up and add the **Areas pointer** to CLAUDE.md automatically — that pointer tells Claude "when working on the X area, read docs/areas/X/README.md first."
+Now that `docs/areas/` exists, the next `npx joycraft upgrade` (or any future `npx joycraft init`) will pick it up and add the **Areas pointer** to AGENTS.md automatically — that pointer tells the agent "when working on the X area, read docs/areas/X/README.md first."
 
 Tell the user:
 
-> "Run `npx joycraft upgrade` to refresh CLAUDE.md with the Areas pointer (or `npx joycraft init` if you haven't initialized yet)."
+> "Run `npx joycraft upgrade` to refresh AGENTS.md with the Areas pointer (or `npx joycraft init` if you haven't initialized yet)."
 
 Don't try to shell out from inside the skill — let the user run the CLI deliberately.
 
