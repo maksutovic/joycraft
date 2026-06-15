@@ -25,7 +25,7 @@ const LOOKUP = {
     skill_prefix: '/skill:joycraft-',
     clear: '/new',
     skills_dir: '.pi/skills',
-    boundary_file: 'CLAUDE.md and/or AGENTS.md',
+    boundary_file: 'AGENTS.md',
   },
 };
 

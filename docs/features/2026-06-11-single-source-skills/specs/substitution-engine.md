@@ -45,7 +45,7 @@ Without a pure, testable transform function, the generator can't single-source t
 | `{{clear}}` (codex multi-surface) | same input, harness=`codex` → output contains both `/clear in the CLI` AND `Cmd+N` (multi-surface sentence — see design.md) | unit |
 | `{{clear}}` (pi) | same input, harness=`pi` → contains `/new`, not `/clear` (substring check: no standalone `/clear` outside of `/clear in the CLI` substring) | unit |
 | `{{skills_dir}}` per harness | `.claude/skills`, `.agents/skills`, `.pi/skills` | unit |
-| `{{boundary_file}}` per harness | `CLAUDE.md`, `AGENTS.md`, `CLAUDE.md and/or AGENTS.md` | unit |
+| `{{boundary_file}}` per harness | `CLAUDE.md`, `AGENTS.md`, `AGENTS.md` | unit |
 | Unknown variable throws | `applyTemplate('hi {{nope}}', 'claude', 'x.md')` throws `unknown template variable: {{nope}} in x.md` | unit |
 | Single-harness block kept | source has `<!-- harness:claude -->X<!-- /harness -->`, harness=claude → output contains `X`, no delimiters | unit |
 | Single-harness block stripped | same source, harness=pi → output has neither `X` nor the delimiters | unit |
@@ -103,7 +103,7 @@ const LOOKUP = {
             clear: 'run `/clear` in the CLI, or press Cmd+N (Ctrl+N on Windows/Linux) for a new thread in the desktop/IDE app',
             skills_dir: '.agents/skills', boundary_file: 'AGENTS.md' },
   pi:     { skill_prefix: '/skill:joycraft-', clear: '/new',
-            skills_dir: '.pi/skills', boundary_file: 'CLAUDE.md and/or AGENTS.md' },
+            skills_dir: '.pi/skills', boundary_file: 'AGENTS.md' },
 };
 ```
 

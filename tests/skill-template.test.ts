@@ -48,7 +48,7 @@ describe('applyTemplate — variable substitution', () => {
   it('{{boundary_file}} per harness', () => {
     expect(applyTemplate('{{boundary_file}}', 'claude')).toBe('CLAUDE.md');
     expect(applyTemplate('{{boundary_file}}', 'codex')).toBe('AGENTS.md');
-    expect(applyTemplate('{{boundary_file}}', 'pi')).toBe('CLAUDE.md and/or AGENTS.md');
+    expect(applyTemplate('{{boundary_file}}', 'pi')).toBe('AGENTS.md');
   });
 
   it('substitutes two {{var}} on the same line', () => {
