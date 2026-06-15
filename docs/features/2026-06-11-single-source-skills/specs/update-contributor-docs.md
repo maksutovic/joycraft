@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-06-14
 feature: 2026-06-11-single-source-skills
@@ -11,141 +11,146 @@ mode: batch
 > **Parent Brief:** `docs/features/2026-06-11-single-source-skills/brief.md`
 > **Status:** Ready
 > **Date:** 2026-06-14
-> **Estimated scope:** 1 session / 2 files / ~80 lines
+> **Estimated scope:** <1 session / 2 docs files / ~100 lines added, ~40 removed
 
 ---
 
 ## What
 
-Update `docs/guides/agent-compatibility.md` so it documents the **canonical format** (`src/skills/`), the three template primitives (variable substitution, `<!-- harness:NAME -->` conditional blocks, frontmatter strip), the fixed 4-variable lookup, and the "edit canonical, not the per-harness dirs" workflow. Fix the outdated manual-regeneration snippet at `CONTRIBUTING.md:91-128` — replace it with a one-line pointer to `pnpm build`.
+Update `docs/guides/agent-compatibility.md` and `CONTRIBUTING.md` to reflect the single-source skills pipeline so contributors edit canonical sources, not per-harness dirs.
+
+Specifically:
+
+1. **`docs/guides/agent-compatibility.md`** — add a "Canonical skills format" section explaining:
+   - All skills live in `src/skills/joycraft-<name>.md` as single-source canonical files.
+   - Build-time transform in `scripts/generate-bundled-files.mjs` (orchestrator) + `scripts/lib/skill-template.mjs` (`applyTemplate` engine) generates the three per-harness variants in `src/{claude,codex,pi}-skills/` on `pnpm build`.
+   - The three primitives: 4-variable substitution, `<!-- harness:NAME -->` conditional blocks (pipe-list NAMEs allowed), per-harness frontmatter field stripping.
+   - The 4 variable expansions table (from design.md Section 4 verbatim, including the multi-surface codex `{{clear}}` expansion).
+   - The canonical Cat D form policy (claude: `CLAUDE.md`; codex/pi: `AGENTS.md`; substitute via `{{boundary_file}}`).
+   - **"Edit canonical, not per-harness dirs"** — explicit instruction with rationale.
+2. **`CONTRIBUTING.md:91-128`** — replace the outdated `node -e "..."` manual-regen snippet with the simple instruction "run `pnpm build`". The current snippet uses backtick escaping that doesn't match the actual generator (per research.md Q2).
 
 ## Why
 
-After spec 4, all 20 skills are single-sourced and contributors editing `src/<harness>-skills/` files will have their work overwritten on next `pnpm build`. The contributor docs must steer them to `src/skills/` and explain the template syntax, or this whole feature creates a new footgun.
+Contributors currently follow the CONTRIBUTING snippet (which fails — it predates the JSON.stringify rewrite of the generator) and edit per-harness dirs (which won't survive the next `pnpm build` after spec 4–6 land — the generator overwrites them from `src/skills/`). Without this doc update, the first external contributor PR after the migration will edit the wrong file and ship a regression.
 
 ## Acceptance Criteria
 
-- [ ] `docs/guides/agent-compatibility.md` contains a section titled (e.g.) "Canonical skill format" describing the `src/skills/` source layout.
-- [ ] The guide lists the four template variables (`{{skill_prefix}}`, `{{clear}}`, `{{skills_dir}}`, `{{boundary_file}}`) and their per-harness expansions in a table.
-- [ ] The guide explains `<!-- harness:NAME -->...<!-- /harness -->` syntax, including pipe-list support (`claude|codex`), and notes that unknown variables fail the build (per spec 1).
-- [ ] The guide explains frontmatter-stripping behavior (`instructions:` field dropped for codex/pi).
-- [ ] The guide tells contributors: "edit canonical files in `src/skills/`; run `pnpm build` to regenerate; commit canonical + all per-harness + `bundled-files.ts` together (per the same-commit invariant)."
-- [ ] `CONTRIBUTING.md:91-128` no longer contains the outdated inline `node -e "..."` regeneration command; it points contributors to run `pnpm build` and edit `src/skills/`.
-- [ ] `pnpm test --run && pnpm typecheck` pass (no test should regress; this is docs-only).
+- [ ] `docs/guides/agent-compatibility.md` has a "Canonical skills format" section with: the file layout (`src/skills/` → `src/{claude,codex,pi}-skills/`), the 3 primitives, the 4-variable expansion table, the Cat D canonical form, and the "edit canonical, not per-harness" guidance.
+- [ ] `docs/guides/agent-compatibility.md` references `scripts/generate-bundled-files.mjs` and `scripts/lib/skill-template.mjs` by path.
+- [ ] `CONTRIBUTING.md:91-128` (or whatever the current line range is) no longer contains the `node -e "..."` snippet; instead, instructs contributors to run `pnpm build`.
+- [ ] `CONTRIBUTING.md` references `src/skills/` (canonical) as the edit target, not `src/claude-skills/` / `src/codex-skills/` / `src/pi-skills/`.
+- [ ] `pnpm test --run && pnpm typecheck` pass (doc changes shouldn't break any tests, but verify nothing references the removed snippet).
+- [ ] Existing markdown link checks (if any in CI) pass.
+- [ ] Generated table content matches the canonical 4-variable lookup in `scripts/lib/skill-template.mjs` — if the lookup changes later, the doc must be regenerated. Document this dependency inline.
 
 ## Test Plan
 
 | Acceptance Criterion | Test | Type |
 |---|---|---|
-| Agent-compatibility guide describes canonical format | Grep `docs/guides/agent-compatibility.md` for `src/skills/`, `{{skill_prefix}}`, `<!-- harness:` — all present | manual |
-| Variable table present | Guide has a table with rows for all 4 variables and columns for claude/codex/pi expansions | manual |
-| CONTRIBUTING.md snippet replaced | `grep "node -e" CONTRIBUTING.md` returns no match in the regen section; `grep "pnpm build" CONTRIBUTING.md` shows the replacement | manual |
-| No test regression | `pnpm test --run && pnpm typecheck` pass | integration |
+| Canonical-format section present | `git grep -n 'Canonical skills format' docs/guides/agent-compatibility.md` matches | scripted grep |
+| 4 variable expansions documented | `git grep -nE '(skill_prefix\|clear\|skills_dir\|boundary_file)' docs/guides/agent-compatibility.md` returns 4+ matches | scripted grep |
+| Conditional block syntax documented | `git grep -n '<!-- harness:' docs/guides/agent-compatibility.md` matches | scripted grep |
+| Cat D canonical form documented | `git grep -nE '(CLAUDE\.md.*claude\|AGENTS\.md.*codex)' docs/guides/agent-compatibility.md` matches | scripted grep |
+| Old `node -e` snippet removed | `git grep -n 'node -e' CONTRIBUTING.md` returns 0 matches (or only matches unrelated to skill regen) | scripted grep |
+| `pnpm build` instruction present | `git grep -n 'pnpm build' CONTRIBUTING.md` matches in the relevant section | scripted grep |
+| `src/skills/` referenced as edit target | `git grep -n 'src/skills/' CONTRIBUTING.md` matches | scripted grep |
+| No reference to per-harness dirs as edit target in CONTRIBUTING | Read the surrounding prose around any `src/claude-skills/` mention; if any says "edit this", that's a regression | manual |
+| Test suite still green | `pnpm test --run && pnpm typecheck` | integration |
 
 **Execution order:**
-1. Read current `docs/guides/agent-compatibility.md` (likely needs a partial rewrite, not append-only).
-2. Read current `CONTRIBUTING.md:91-128`.
-3. Draft replacement text for both. Keep guide ≤ ~150 lines total.
-4. Confirm test suite still passes.
+1. Read current `docs/guides/agent-compatibility.md` to find the right place for the new section (probably after any "skills" overview or near the end as a contributor-facing reference).
+2. Read `CONTRIBUTING.md` to locate the outdated snippet (lines 91-128 per research.md, may have shifted).
+3. Draft the "Canonical skills format" section using design.md Section 4 as authoritative content.
+4. Replace the CONTRIBUTING snippet with the simple `pnpm build` instruction.
+5. Run greps to confirm acceptance criteria.
+6. Run test suite; commit.
 
-**Smoke test:** `pnpm test --run` (single full run) — docs-only spec, no granular smoke needed.
+**Smoke test:** the grep checks above run in <1s — use them as you draft.
 
 **Before implementing, verify your test harness:**
-1. Read both target files first; don't draft blind.
-2. If `docs/guides/agent-compatibility.md` doesn't exist, create it (lazy-create).
-3. Variable table values must match design.md Section 4 verbatim — copy, don't paraphrase.
+1. Confirm spec 6 has landed (`ls src/skills/ | wc -l` = 20). Doc references to the canonical setup are only correct if the setup exists.
+2. Confirm `scripts/lib/skill-template.mjs` exists and exports `applyTemplate`. Doc references to that path will mislead if not.
+3. Confirm the current CONTRIBUTING snippet is actually broken (matches research.md Q2) — re-read lines 91-128 to confirm. If it's already been fixed, the spec scope shrinks.
 
 ## Constraints
 
-- MUST: variable expansions in the table match `scripts/lib/skill-template.mjs` lookup exactly.
-- MUST: tell contributors to commit `src/skills/`, per-harness dirs, and `src/bundled-files.ts` together (frictionless-implement discovery applies).
-- MUST: keep the guide focused — this is about how to edit skills, not joycraft's harness compatibility story in general.
-- MUST NOT: invent template features that don't exist (no `else` blocks, no negation, no nested blocks).
-- MUST NOT: re-document drift-resolution policy in the guide — that's a PR-description-only audit trail per design.md.
+- MUST: pull the 4-variable expansion table content from design.md Section 4 verbatim (single source of truth — don't paraphrase).
+- MUST: reference both `scripts/generate-bundled-files.mjs` (orchestrator) and `scripts/lib/skill-template.mjs` (engine) by path so contributors know where to look.
+- MUST: document the Cat D canonical form (`CLAUDE.md` for claude, `AGENTS.md` for codex/pi, `{{boundary_file}}` for substitution).
+- MUST: explicitly tell contributors to edit `src/skills/`, not the three per-harness dirs.
+- MUST NOT: introduce new variable names or syntax not already in design.md Section 4.
+- MUST NOT: replicate skill content into the doc (e.g. no "here's an example of the full `joycraft-add-context.md` canonical"). Link to the canonical file or use a tiny illustrative snippet only.
+- MUST NOT: leave the outdated `node -e` snippet in CONTRIBUTING. Replace it entirely.
 
 ## Affected Files
 
 | Action | File | What Changes |
 |---|---|---|
-| Modify (or Create) | `docs/guides/agent-compatibility.md` | Add "Canonical skill format" section with template syntax docs and variable table. |
-| Modify | `CONTRIBUTING.md` (lines ~91-128) | Replace outdated `node -e "..."` regen snippet with one-liner pointing at `pnpm build`. |
+| Modify | `docs/guides/agent-compatibility.md` | Add "Canonical skills format" section (~80 lines): file layout, 3 primitives, 4-variable table, Cat D form, edit guidance. References to `scripts/generate-bundled-files.mjs` and `scripts/lib/skill-template.mjs`. |
+| Modify | `CONTRIBUTING.md` | Replace lines ~91-128 (the `node -e "..."` snippet) with a short "run `pnpm build` after editing `src/skills/`" instruction. Update any other references to per-harness dirs as edit targets. |
 
 ## Approach
 
-**Guide structure (new section):**
+**Section structure for `docs/guides/agent-compatibility.md`:**
+
 ```markdown
-## Canonical skill format
+## Canonical skills format
 
-All 20 skills live in `src/skills/` as canonical `.md` files. The build pipeline
-(`pnpm build`) transforms each canonical into three per-harness variants written
-to `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/`, then bundles
-them into `src/bundled-files.ts`.
+All skills live in `src/skills/joycraft-<name>.md`. At build time, `scripts/generate-bundled-files.mjs` reads canonical files and emits per-harness variants into `src/claude-skills/`, `src/codex-skills/`, and `src/pi-skills/`. The transform itself lives in `scripts/lib/skill-template.mjs` as the pure function `applyTemplate(source, harness)`.
 
-**Edit `src/skills/`. Never edit the per-harness dirs by hand — your changes
-will be overwritten on next `pnpm build`.**
+### Three primitives
 
-### Three template primitives
-
-1. **Variable substitution:** `{{var}}` replaced from a fixed lookup.
+1. **Variable substitution** — `{{var}}` is replaced from a per-harness lookup. The fixed 4-variable set (extend only via design discussion):
 
    | Variable | claude | codex | pi |
    |---|---|---|---|
    | `{{skill_prefix}}` | `/joycraft-` | `$joycraft-` | `/skill:joycraft-` |
-   | `{{clear}}` | `/clear` | `run /clear in the CLI, or press Cmd+N (Ctrl+N on Windows/Linux) for a new thread in the desktop/IDE app` | `/new` |
+   | `{{clear}}` | `/clear` | `run \`/clear\` in the CLI, or press Cmd+N (Ctrl+N on Windows/Linux) for a new thread in the desktop/IDE app` | `/new` |
    | `{{skills_dir}}` | `.claude/skills` | `.agents/skills` | `.pi/skills` |
-   | `{{boundary_file}}` | `CLAUDE.md` | `AGENTS.md` | `CLAUDE.md and/or AGENTS.md` |
+   | `{{boundary_file}}` | `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` |
 
-   The Codex `{{clear}}` expansion is a **multi-surface sentence** because the Codex
-   desktop app does not support `/clear` — only `Cmd+N` works there (per Codex docs:
-   [CLI](https://developers.openai.com/codex/cli/slash-commands),
-   [desktop](https://developers.openai.com/codex/app/commands)). Write canonical
-   sentences that read fluently with the longer expansion substituted in (e.g.
-   `When you're done, {{clear}} before the next spec.`). Avoid `{{clear}}` in
-   tight clauses where the long form would break readability — split into a
-   separate sentence instead.
+   The generator throws `Error("unknown template variable: {{x}} in <file>")` on any unrecognized variable — catches typos at build time.
 
-   Unknown variables fail the build immediately
-   (`Error("unknown template variable: {{x}} in <file>")`).
+2. **Conditional blocks** — `<!-- harness:NAME -->...<!-- /harness -->` where NAME is `claude`, `codex`, `pi`, or a pipe-list like `claude|codex`. Block is kept iff the current harness is in NAME; otherwise the block is removed (delimiters included). Currently used in 4 skills: `joycraft-research`, `joycraft-verify`, `joycraft-lockdown`, `joycraft-implement-feature`. Don't add new blocks without a design decision.
 
-2. **Conditional blocks:**
-   `<!-- harness:NAME -->...<!-- /harness -->` where `NAME` is `claude`,
-   `codex`, `pi`, or a pipe-list (e.g. `claude|codex`). The block content is
-   kept iff the current harness ∈ `NAME`; otherwise the entire block including
-   delimiters is stripped. Use sparingly — only for content that's genuinely
-   harness-specific (different machinery, not just different prose).
+3. **Per-harness frontmatter stripping** — the generator drops `instructions:` from codex and pi frontmatter (claude keeps it). Other fields preserved as-is.
 
-3. **Frontmatter stripping:** The generator parses YAML frontmatter and drops
-   the `instructions:` field for `codex` and `pi`. All other fields preserved.
+### Edit canonical, not the per-harness dirs
 
-### Workflow
+The three `src/{claude,codex,pi}-skills/` dirs are **generated artifacts**. Editing them directly is a dead-end — the next `pnpm build` will overwrite your changes from `src/skills/`. The generated dirs stay committed so PR diffs show canonical + all three outputs (reviewers see per-harness deltas at merge time), but the source of truth is always `src/skills/`.
 
-1. Edit a file in `src/skills/`.
-2. Run `pnpm build` — this regenerates the three per-harness dirs and
-   `src/bundled-files.ts` in one step.
-3. Commit canonical, all three per-harness files, AND `src/bundled-files.ts`
-   together (same commit). The sync tests
-   (`tests/bundled-files-sync.test.ts`) enforce this invariant.
-4. Run `pnpm test --run && pnpm typecheck` to verify.
+After editing any file in `src/skills/`, run `pnpm build` — it regenerates the per-harness dirs *and* `src/bundled-files.ts`. Commit all three together (per the bundle-regen-per-commit discipline in `docs/discoveries/2026-06-11-bundle-regen-per-commit.md`).
 ```
 
-**CONTRIBUTING.md fix** — replace the ~30-line `node -e "..."` snippet with:
+**CONTRIBUTING.md replacement** (replaces lines 91-128 or current equivalent):
+
 ```markdown
-After changing any file in `src/skills/` or `src/templates/`, run:
+After editing any file in `src/skills/`, run:
 
-    pnpm build
+\`\`\`
+pnpm build
+\`\`\`
 
-This regenerates the three `src/*-skills/` dirs and `src/bundled-files.ts`.
-Commit all changes together. See `docs/guides/agent-compatibility.md` for the
-canonical skill format and template syntax.
+This regenerates `src/{claude,codex,pi}-skills/` and `src/bundled-files.ts`. Commit the canonical file, all three regenerated per-harness files, and `src/bundled-files.ts` together — sync tests in CI enforce this lockstep.
+
+Then verify:
+
+\`\`\`
+pnpm test --run && pnpm typecheck
+\`\`\`
 ```
 
-**Rejected alternative:** put the variable table inline in CONTRIBUTING.md too. Duplication; the guide is the home for syntax details.
+**Rejected alternative:** put the canonical-format section in CONTRIBUTING.md instead of agent-compatibility.md. Agent-compatibility is the contributor's reference for "how does this harness stuff work" — keeping the canonical-format details there matches what contributors will look for. CONTRIBUTING is for "how do I make a contribution" mechanics.
+
+**Rejected alternative:** auto-generate the 4-variable table from `scripts/lib/skill-template.mjs`. Adds a doc-build step for one table; manually keeping the doc in sync is fine for a 4-row table that changes rarely.
 
 ## Edge Cases
 
 | Scenario | Expected Behavior |
 |---|---|
-| `docs/guides/agent-compatibility.md` already has content unrelated to skill format | Append the new section; don't overwrite existing content. |
-| `docs/guides/agent-compatibility.md` doesn't exist | Create it with just the canonical-format section (plus a brief intro paragraph). |
-| `CONTRIBUTING.md:91-128` line numbers shift between brief authorship and now | Locate the snippet by content (`node -e "..."` + the surrounding "After changing" text), not by absolute line. |
-| Guide ends up duplicating something in a future spec-6 design doc | Out of scope here; spec 6 is about a different concern (brief reconciliation). |
+| `docs/guides/agent-compatibility.md` already has a "skills format" section that contradicts the new content | Replace it entirely — the canonical-format pipeline is the new reality. Note in PR what was removed. |
+| `CONTRIBUTING.md` line numbers have shifted (research.md said 91-128 but maybe it's now 95-130) | Find the `node -e` snippet by text search, replace whatever lines it occupies. Don't trust line numbers. |
+| The 4-variable expansion table in design.md has been updated post-decomposition | Pull from current design.md, not from this spec's transcription. If the spec's transcription disagrees, design.md wins. Note in PR. |
+| A reader of the doc clicks the `scripts/lib/skill-template.mjs` reference and the file doesn't exist | Spec 1 hasn't landed. Block this spec until spec 1 is in. |
+| The codex `{{clear}}` expansion in the doc is the long multi-surface sentence; reader thinks it's a docs typo | The sentence is correct (web research 2026-06-14 — `/clear` does not exist in Codex desktop). Inline a one-line footnote pointing at the brief's Hard Constraints section. |
