@@ -4,8 +4,8 @@
     { "id": 1, "file": "substitution-engine.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
     { "id": 2, "file": "wire-generator-pipeline.md", "depends_on": [1], "status": "in-review", "mode": "checkpoint" },
     { "id": 3, "file": "canonicalize-boundary-forms.md", "depends_on": [2], "status": "in-review", "mode": "checkpoint" },
-    { "id": 4, "file": "migrate-clean-skills.md", "depends_on": [3], "status": "todo", "mode": "checkpoint" },
-    { "id": 5, "file": "migrate-dirty-unify.md", "depends_on": [4], "status": "todo", "mode": "isolated" },
+    { "id": 4, "file": "migrate-clean-skills.md", "depends_on": [3], "status": "retired", "mode": "checkpoint" },
+    { "id": 5, "file": "migrate-dirty-unify.md", "depends_on": [3], "status": "todo", "mode": "isolated" },
     { "id": 6, "file": "migrate-dirty-conditional.md", "depends_on": [5], "status": "todo", "mode": "isolated" },
     { "id": 7, "file": "update-contributor-docs.md", "depends_on": [6], "status": "todo", "mode": "batch" },
     { "id": 8, "file": "brief-reconciliation-step.md", "depends_on": [6], "status": "todo", "mode": "batch" }
