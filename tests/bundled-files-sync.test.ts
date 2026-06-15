@@ -23,6 +23,7 @@ function walkDir(dir: string): string[] {
 function buildExpectedRecord(
   dir: string,
   mode: 'flat' | 'tree',
+  excludeTopDirs: string[] = [],
 ): Record<string, string> {
   if (mode === 'flat') {
     const files = readdirSync(dir)
@@ -37,7 +38,9 @@ function buildExpectedRecord(
   const allFiles = walkDir(dir).sort();
   const record: Record<string, string> = {};
   for (const file of allFiles) {
-    record[relative(dir, file)] = readFileSync(file, 'utf-8');
+    const rel = relative(dir, file);
+    if (excludeTopDirs.includes(rel.split(/[\\/]/)[0])) continue;
+    record[rel] = readFileSync(file, 'utf-8');
   }
   return record;
 }
@@ -61,9 +64,15 @@ describe('bundled-files.ts sync check', () => {
     }
   });
 
-  it('TEMPLATES matches src/templates/', async () => {
+  it('TEMPLATES matches src/templates/ (excluding the pi-* runtime trees)', async () => {
     actual = actual ?? (await import('../src/bundled-files.js'));
-    const expected = buildExpectedRecord(TEMPLATES_DIR, 'tree');
+    // pi-* ship to .pi/ via PI_* records, not docs/templates/ — the generator
+    // excludes them from TEMPLATES, so the sync expectation must too.
+    const expected = buildExpectedRecord(TEMPLATES_DIR, 'tree', [
+      'pi-extensions',
+      'pi-scripts',
+      'pi-agents',
+    ]);
     expect(Object.keys(actual.TEMPLATES).sort()).toEqual(
       Object.keys(expected).sort(),
     );

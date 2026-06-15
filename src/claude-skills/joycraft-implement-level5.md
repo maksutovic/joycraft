@@ -89,10 +89,14 @@ Guide the user step by step:
 > gh repo create {scenarios-repo-name} --private
 > ```
 >
-> Then copy the scenario templates into it:
+> Then copy the scenario templates into it. The starter ships as
+> `example-scenario.test.ts.template` (the `.template` suffix keeps it out of
+> the *main* project's test/lint/build globs); rename it to `.test.ts` once it's
+> in the holdout repo so Vitest discovers it:
 > ```bash
 > cp -r docs/templates/scenarios/* ../{scenarios-repo-name}/
 > cd ../{scenarios-repo-name}
+> mv example-scenario.test.ts.template example-scenario.test.ts
 > git add -A && git commit -m "init: scaffold scenarios repo from Joycraft"
 > git push
 > ```
@@ -108,7 +112,7 @@ Guide the user step by step:
 Help the user verify everything is wired correctly:
 
 1. **Check workflow files exist:** `ls .github/workflows/autofix.yml .github/workflows/scenarios-dispatch.yml .github/workflows/spec-dispatch.yml .github/workflows/scenarios-rerun.yml`
-2. **Check scenario templates were copied:** Verify the scenarios repo has `example-scenario.test.ts`, `workflows/run.yml`, `workflows/generate.yml`, `prompts/scenario-agent.md`
+2. **Check scenario templates were copied:** Verify the scenarios repo has `example-scenario.test.ts` (renamed from the `.template` starter), `workflows/run.yml`, `workflows/generate.yml`, `prompts/scenario-agent.md`
 3. **Check the App ID is correct** in the workflow files (not still a placeholder)
 
 ## Step 6: Update CLAUDE.md

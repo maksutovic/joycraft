@@ -50,10 +50,17 @@ describe('generate-bundled-files script', () => {
     expect(Object.keys(mod.CODEX_SKILLS).sort()).toEqual(expected);
   });
 
-  it('TEMPLATES keys match src/templates/ relative paths', async () => {
+  it('TEMPLATES keys match src/templates/ relative paths, minus the pi-* runtime trees', async () => {
     const mod = await import(OUTPUT);
+    // The pi-* trees ship to .pi/ via PI_SCRIPTS/PI_EXTENSIONS/PI_AGENTS, not to
+    // docs/templates/ — so the generator excludes them from TEMPLATES (keeps a
+    // stray pi-extensions/joycraft-pipeline.ts out of users' TS programs).
+    const PI_TREES = ['pi-extensions', 'pi-scripts', 'pi-agents'];
     const allFiles = walkDir(TEMPLATES_DIR);
-    const expected = allFiles.map((f) => relative(TEMPLATES_DIR, f)).sort();
+    const expected = allFiles
+      .map((f) => relative(TEMPLATES_DIR, f))
+      .filter((rel) => !PI_TREES.includes(rel.split(/[\\/]/)[0]))
+      .sort();
     expect(Object.keys(mod.TEMPLATES).sort()).toEqual(expected);
   });
 
