@@ -251,3 +251,51 @@ describe('upgrade respects persisted harness selection', () => {
     }
   });
 });
+
+describe('init leaves project toolchain gates clean', () => {
+  // Recursively collect files under a dir matching a predicate.
+  function walk(dir: string): string[] {
+    const { readdirSync, statSync } = require('node:fs') as typeof import('node:fs');
+    const out: string[] = [];
+    for (const name of readdirSync(dir)) {
+      const full = join(dir, name);
+      if (statSync(full).isDirectory()) out.push(...walk(full));
+      else out.push(full);
+    }
+    return out;
+  }
+
+  it('ships no toolchain-globbable .ts/.test.ts under docs/ (the create-next-app regression)', async () => {
+    const dir = createTmpDir();
+    try {
+      await init(dir, { force: false }); // non-interactive → all three harnesses
+      const offenders = walk(join(dir, 'docs')).filter(
+        (f) => f.endsWith('.ts') || f.endsWith('.tsx'),
+      );
+      // A default `**​/*.ts` glob (create-next-app, plain tsc lib) must find
+      // nothing compilable/testable under docs/ — the original red-build bug.
+      expect(offenders).toEqual([]);
+    } finally {
+      cleanup(dir);
+    }
+  });
+
+  it('excludes .pi from tsconfig when Pi is installed (real Next-style include glob)', async () => {
+    const dir = createTmpDir();
+    try {
+      writeFileSync(
+        join(dir, 'tsconfig.json'),
+        `{\n  "compilerOptions": { "strict": true },\n  "include": ["**/*.ts", "**/*.tsx"],\n  "exclude": ["node_modules"]\n}`,
+      );
+      await init(dir, { force: false }); // all three → Pi included
+      // The live .pi/extensions/*.ts must exist (Pi runtime) but be excluded
+      // from the user's TS program.
+      expect(existsSync(join(dir, '.pi', 'extensions', 'joycraft-pipeline.ts'))).toBe(true);
+      const tsconfig = JSON.parse(readFileSync(join(dir, 'tsconfig.json'), 'utf-8'));
+      expect(tsconfig.exclude).toContain('.pi');
+      expect(tsconfig.exclude).toContain('node_modules');
+    } finally {
+      cleanup(dir);
+    }
+  });
+});

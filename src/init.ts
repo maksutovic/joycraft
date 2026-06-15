@@ -22,6 +22,7 @@ import {
 } from './gitignore.js';
 import { getPackageVersion } from './package-version.js';
 import { resolveHarnesses, type Harness } from './harness.js';
+import { ensurePiExcludedFromTsconfig } from './tsconfig.js';
 
 export interface InitOptions {
   force: boolean;
@@ -239,6 +240,23 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   //              AGENTS.md, docs/.
   // Append-only + create-if-absent + idempotent (never clobbers existing entries).
   applyGitignoreProfile(targetDir, gitignoreProfile);
+
+  // 6c. Pi only: keep the installed `.pi/extensions/*.ts` runtime out of the
+  // user's TypeScript program. It imports a Pi-only package the project doesn't
+  // depend on, so a default `**​/*.ts` toolchain (e.g. create-next-app) would
+  // fail `tsc`/build on it. Surgically add `.pi` to tsconfig exclude, idempotent,
+  // and report transparently (never silently rewrites — see tsconfig.ts).
+  if (wants('pi')) {
+    const outcome = ensurePiExcludedFromTsconfig(targetDir);
+    if (outcome.status === 'added') {
+      result.modified.push(outcome.path);
+      result.warnings.push(
+        'Added ".pi" to tsconfig.json "exclude" so the Pi extension stays out of your TypeScript build.'
+      );
+    } else if (outcome.status === 'skipped') {
+      result.warnings.push(outcome.reason);
+    }
+  }
 
   // Steps 7–9 configure the Claude Code harness (.claude/hooks + settings.json).
   // Skip entirely when claude isn't a selected harness — a codex/pi-only install

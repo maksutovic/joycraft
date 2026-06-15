@@ -118,10 +118,19 @@ describe('gitignore profiles', () => {
       for (const entry of PRIVATE_PROFILE_IGNORES) {
         expect(gi).toContain(entry);
       }
-      // CLAUDE.md, AGENTS.md, docs/ must never be ignored
+      // CLAUDE.md, AGENTS.md, the docs/ tree must never be ignored wholesale
       expect(gi).not.toContain('CLAUDE.md');
       expect(gi).not.toContain('AGENTS.md');
       expect(gi).not.toContain('docs/');
+    });
+
+    it('also gitignores the hidden state file (it now lives in tracked docs/)', async () => {
+      // STATE_PATH moved from .claude/.joycraft/ to docs/.joycraft/. Under
+      // private the harness-dir ignores no longer cover it transitively, so it
+      // must be listed explicitly — the state file is never committed, either
+      // profile.
+      await init(tmpDir, { force: false, gitignore: 'private' });
+      expect(lines(readGitignore(tmpDir))).toContain(STATE_PATH);
     });
 
     it('does not warn about .claude/ being gitignored (it is the intent)', async () => {
@@ -355,7 +364,7 @@ describe('gitignore profiles', () => {
       expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
     });
 
-    it('legacy migration under private does not add the redundant state-file line', async () => {
+    it('legacy migration under private gitignores both the harness dirs and the state file', async () => {
       await init(tmpDir, { force: false, gitignore: 'private' });
       const state = readVersion(tmpDir)!;
       writeFileSync(
@@ -370,8 +379,9 @@ describe('gitignore profiles', () => {
 
       const gi = lines(readGitignore(tmpDir));
       expect(gi).toContain('.claude/');
-      // .claude/ already covers the state file — the dead line must not appear.
-      expect(gi).not.toContain(STATE_PATH);
+      // The state file now lives in tracked docs/, so the harness-dir ignores no
+      // longer cover it — it must be listed explicitly under private too.
+      expect(gi).toContain(STATE_PATH);
     });
   });
 
@@ -397,7 +407,8 @@ describe('gitignore profiles', () => {
   describe('idempotency', () => {
     it('applyGitignoreProfile adds nothing on a second call', () => {
       const first = applyGitignoreProfile(tmpDir, 'private');
-      expect(first.sort()).toEqual([...PRIVATE_PROFILE_IGNORES].sort());
+      // private now writes the harness dirs AND the hidden state file.
+      expect(first.sort()).toEqual([...PRIVATE_PROFILE_IGNORES, STATE_PATH].sort());
       const second = applyGitignoreProfile(tmpDir, 'private');
       expect(second).toEqual([]);
     });

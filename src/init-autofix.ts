@@ -145,7 +145,9 @@ function printSummary(result: AutofixResult, dryRun: boolean, scenariosRepo: str
   console.log('  2. Create the scenarios repo (private):');
   console.log(`       gh repo create ${scenariosRepo} --private`);
   console.log(`       cp -r docs/templates/scenarios/* ../${scenariosRepo}/`);
-  console.log(`       cd ../${scenariosRepo} && git add -A && git commit -m "init: scaffold" && git push`);
+  console.log(`       cd ../${scenariosRepo}`);
+  console.log('       mv example-scenario.test.ts.template example-scenario.test.ts  # rename starter so Vitest finds it');
+  console.log(`       git add -A && git commit -m "init: scaffold" && git push`);
   console.log('');
   console.log('  3. Add the same two secrets to the scenarios repo.');
   console.log('');

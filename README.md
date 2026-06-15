@@ -31,7 +31,15 @@ Most developers plateau at Level 2. Joycraft's job is to move you up.
 
 ### Platform support
 
-Joycraft supports **Claude Code**, **OpenAI Codex**, and **Pi** out of the box. Running `npx joycraft init` auto-detects which harnesses your project uses and installs the matching skills — no flags, no configuration:
+Joycraft supports **Claude Code**, **OpenAI Codex**, and **Pi** out of the box. When you run `npx joycraft init`, it opens with a quick picker — choose any combination of the three, and only the harnesses you select get installed:
+
+```
+Which AI harnesses should Joycraft install?
+  claude  — Claude Code (.claude/)
+  codex   — OpenAI Codex (.agents/)
+  pi      — Pi (.pi/)
+Harnesses [comma-separated, or "all"] (none): claude,pi
+```
 
 | Harness | Skills installed to | Invocation |
 |---------|---------------------|------------|
@@ -39,7 +47,7 @@ Joycraft supports **Claude Code**, **OpenAI Codex**, and **Pi** out of the box. 
 | Codex | `.agents/skills/` (+ `AGENTS.md`) | `$joycraft-*` |
 | Pi | `.pi/skills/` (+ pipeline runtime, see below) | `/skill:joycraft-*` |
 
-All three get the same structured workflows, adapted for each tool's invocation model. Codex and Pi surfaces install when their directory (`.agents/` or `.pi/`) is present in the project.
+All three get the same structured workflows, adapted for each tool's invocation model. A single-harness install carries **no footprint from the others** — pick `codex` only and you get `.agents/` with no `.claude/` or `.pi/` in sight. In a non-interactive run (CI, piped, no TTY) `init` installs all three so existing scripts keep working. The shared docs (`CLAUDE.md`, `AGENTS.md`, `docs/`) are written regardless of which harnesses you pick.
 
 ### Headless spec execution (Pi)
 
@@ -70,15 +78,18 @@ cd /path/to/your/project
 npx joycraft init
 ```
 
-Joycraft auto-detects your tech stack and creates:
+`init` first asks which harnesses to install (see [Platform support](#platform-support) above), then auto-detects your tech stack and creates:
 
 - **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
-- **AGENTS.md** for Codex compatibility
-- **20 skills** installed to `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), and `.pi/skills/` (Pi) — see [Which skill do I need?](#which-skill-do-i-need) below
-- **Pi pipeline runtime** in `.pi/scripts/joycraft/` (when `.pi/` is present) — the headless spec-execution driver and its helpers
-- **docs/** structure: `docs/context/` is created up front; feature work lands in `docs/features/<slug>/{brief.md, research.md, design.md, specs/}` and deferred work in `docs/backlog/` — these are created lazily by the skills that write to them
+- **AGENTS.md** for Codex/Pi compatibility
+- **20 skills** installed to the selected harnesses — `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), and/or `.pi/skills/` (Pi) — see [Which skill do I need?](#which-skill-do-i-need) below
+- **Pi pipeline runtime** in `.pi/scripts/joycraft/` (when Pi is selected) — the headless spec-execution driver and its helpers
+- **Agent teams enabled** — when Claude Code is selected, `init` sets `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` so subagent-driven skills like `/joycraft-research` work out of the box (idempotent — it never clobbers a value you already set)
+- **docs/** structure: `docs/context/` is created up front; feature work lands in `docs/features/<slug>/{brief.md, research.md, design.md, specs/}` and deferred work in `docs/backlog/` — these are created lazily by the skills that write to them. Joycraft's own upgrade state lives hidden at `docs/.joycraft/state.json` (harness-neutral, gitignored — never committed)
 - **Context documents** in `docs/context/`: production map, dangerous assumptions, decision log, institutional knowledge, and troubleshooting guide
 - **Templates** including atomic spec, feature brief, implementation plan, boundary framework, and workflow templates for scenario generation and autofix loops
+
+> Pick nothing at the harness prompt and `init` installs nothing — it tells you to re-run and choose at least one harness.
 
 ### Git tracking: shared vs private
 
@@ -91,21 +102,26 @@ npx joycraft init --gitignore=shared    # default — commit .claude/, .agents/,
 npx joycraft init --gitignore=private   # gitignore them; track only CLAUDE.md, AGENTS.md, docs/
 ```
 
-Run interactively without the flag and `init` will ask. The choice is saved, so
-`npx joycraft upgrade` re-applies it automatically. To switch an existing
-project later (or decide from CI), pass the same flag to upgrade:
-`npx joycraft upgrade --gitignore=private`. `.gitignore` edits are
-append-only — Joycraft never rewrites or removes your existing lines.
+Run interactively without the flag and `init` asks (right after the harness
+picker). The choice is saved, so `npx joycraft upgrade` re-applies it
+automatically. To switch an existing project later (or decide from CI), pass the
+same flag to upgrade: `npx joycraft upgrade --gitignore=private`. `.gitignore`
+edits are append-only — Joycraft never rewrites or removes your existing lines.
 
 | Profile | Tracked in git | Gitignored |
 |---------|----------------|------------|
-| `shared` (default) | `CLAUDE.md`, `AGENTS.md`, `docs/`, `.claude/skills/`, `.agents/`, `.pi/` | hidden upgrade state only |
+| `shared` (default) | `CLAUDE.md`, `AGENTS.md`, `docs/`, `.claude/skills/`, `.agents/`, `.pi/` | hidden upgrade state only (`docs/.joycraft/state.json`) |
 | `private` | `CLAUDE.md`, `AGENTS.md`, `docs/` | `.claude/`, `.agents/`, `.pi/` |
 
 > Switching an existing project to `private` only updates `.gitignore`. If
 > harness files were already committed, untrack them with
 > `git rm -r --cached .claude .agents .pi` (Joycraft prints this reminder and
 > never runs git for you).
+>
+> Under `private`, the harness dirs aren't committed — so a teammate who clones
+> the repo gets `CLAUDE.md`/`AGENTS.md` but no skills until they run
+> `npx joycraft init` to regenerate them locally. Joycraft adds a one-line
+> reminder to your generated `CLAUDE.md` and `AGENTS.md` for exactly this reason.
 
 ### Supported Stacks
 
@@ -197,6 +213,8 @@ npx joycraft upgrade
 ```
 
 Joycraft tracks what it installed vs. what you've customized. Unmodified files update automatically. Customized files show a diff and ask before overwriting. Use `--yes` for CI.
+
+`upgrade` only refreshes the harnesses you installed at init — a Codex-only project stays Codex-only and never grows a `.claude/` tree. (Projects from before harness selection existed have no recorded choice, so `upgrade` refreshes all three, preserving the old behavior.)
 
 > **Note:** If you're upgrading from an early version, deprecated skill directories (e.g., `/joy`, `/joysmith`, `/tune`) are automatically removed during upgrade.
 

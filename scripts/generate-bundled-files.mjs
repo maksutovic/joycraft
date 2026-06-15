@@ -50,12 +50,24 @@ function readFlatDir(dir) {
   return record;
 }
 
-/** Read all files from a directory tree into a Record<relativePath, content> */
-function readTreeDir(dir) {
+/**
+ * Read all files from a directory tree into a Record<relativePath, content>.
+ *
+ * `excludeTopDirs` skips entire top-level subdirectories by name. This keeps the
+ * `pi-*` runtime trees out of the TEMPLATES record: they already ship to `.pi/`
+ * via the dedicated PI_SCRIPTS/PI_EXTENSIONS/PI_AGENTS records, so copying them
+ * into `docs/templates/` too is redundant — and one of them
+ * (`pi-extensions/joycraft-pipeline.ts`) is a `.ts` file that a user's default
+ * `**​/*.ts` toolchain glob would compile, breaking their build on a fresh
+ * install. The real copy under `.pi/` is the one that runs.
+ */
+function readTreeDir(dir, excludeTopDirs = []) {
   const allFiles = walkDir(dir);
   const record = {};
   for (const file of allFiles.sort()) {
     const key = relative(dir, file);
+    const topDir = key.split(/[\\/]/)[0];
+    if (excludeTopDirs.includes(topDir)) continue;
     record[key] = readFileSync(file, 'utf-8');
   }
   return record;
@@ -91,7 +103,10 @@ for (const [harness, dir] of HARNESS_TARGETS) {
 const skills = readFlatDir(SKILLS_DIR);
 const codexSkills = readFlatDir(CODEX_SKILLS_DIR);
 const piSkills = readFlatDir(PI_SKILLS_DIR);
-const templates = readTreeDir(TEMPLATES_DIR);
+// Exclude the pi-* runtime trees — they ship to .pi/ via the PI_* records, not
+// to docs/templates/ (see readTreeDir doc). This is what keeps a stray
+// docs/templates/pi-extensions/joycraft-pipeline.ts out of users' TS programs.
+const templates = readTreeDir(TEMPLATES_DIR, ['pi-extensions', 'pi-scripts', 'pi-agents']);
 const piScripts = readTreeDir(PI_SCRIPTS_DIR);
 const piExtensions = readTreeDir(PI_EXTENSIONS_DIR);
 const piAgents = readTreeDir(PI_AGENTS_DIR);

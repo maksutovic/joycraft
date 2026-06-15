@@ -101,7 +101,10 @@ describe('init-autofix', () => {
       markInitialized(tmpDir);
       await initAutofix(tmpDir, {});
 
-      expect(existsSync(join(tmpDir, 'docs', 'templates', 'scenarios', 'example-scenario.test.ts'))).toBe(true);
+      // Ships with a .template suffix so it stays out of the main project's
+      // test/lint/build globs; the user renames it on copy into the holdout repo.
+      expect(existsSync(join(tmpDir, 'docs', 'templates', 'scenarios', 'example-scenario.test.ts.template'))).toBe(true);
+      expect(existsSync(join(tmpDir, 'docs', 'templates', 'scenarios', 'example-scenario.test.ts'))).toBe(false);
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'scenarios', 'workflows', 'run.yml'))).toBe(true);
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'scenarios', 'package.json'))).toBe(true);
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'scenarios', 'README.md'))).toBe(true);
