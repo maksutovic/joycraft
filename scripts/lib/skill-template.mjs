@@ -46,12 +46,15 @@ export function applyTemplate(source, harness, filename) {
   // 1. Split frontmatter from body.
   const { frontmatter, body } = splitFrontmatter(source);
 
-  // 2. Apply frontmatter strip per harness, then substitute vars in the
-  //    frontmatter values (e.g. {{boundary_file}} in description).
+  // 2. Apply frontmatter strip per harness, process any harness blocks
+  //    inside frontmatter (needed for skills whose description: differs
+  //    per-harness, like joycraft-implement-feature), then substitute vars
+  //    in the frontmatter values (e.g. {{boundary_file}} in description).
   let transformedFm = frontmatter
     ? stripFrontmatterFields(frontmatter, harness)
     : null;
   if (transformedFm !== null) {
+    transformedFm = processHarnessBlocks(transformedFm, harness, filename);
     transformedFm = substituteVars(transformedFm, vars, filename);
   }
 
