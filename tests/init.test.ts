@@ -569,7 +569,7 @@ describe('init', () => {
       const dirs = require('node:fs').readdirSync(piSkillsDir, { withFileTypes: true })
         .filter((d: { isDirectory: () => boolean }) => d.isDirectory())
         .filter((d: { name: string }) => d.name.startsWith('joycraft-'));
-      expect(dirs.length).toBe(19);
+      expect(dirs.length).toBe(20);
     });
 
     it('installs pipeline bash scripts to .pi/scripts/joycraft/', async () => {

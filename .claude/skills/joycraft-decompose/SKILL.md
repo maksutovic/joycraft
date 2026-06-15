@@ -216,6 +216,8 @@ Based on the dependency graph, group specs into execution waves:
 - **Sequential specs** — "Execute these in order: 1 -> 2 -> 4"
 - **Mixed** — "Start specs 1 and 3 in parallel. After 1 completes, start 2."
 
+**Mark each multi-spec wave's parallel-safety.** A wave is **parallel-safe** only when its specs' Affected Files tables are disjoint — no file appears in two of the wave's specs. Overlapping files → mark the wave NOT parallel-safe and name the overlapping files. Dependency order says what *may* run together; parallel-safety says what *won't conflict* when it does — `joycraft-implement-feature` only parallelizes waves you mark safe.
+
 **Update the parent brief's Execution Strategy section** at `docs/features/<slug>/brief.md` with this wave plan, so the brief stays a useful one-stop reference for feature reviewers.
 
 ## Step 7: Write the Feature-Folder README.md (Single Source of Truth for Implementers)
@@ -245,12 +247,15 @@ The README is the single source of truth for *implementers*. It contains a **spe
 
 ## Execution waves
 
-- Wave 1 (parallel): specs ...
-- Wave 2 (after wave 1): specs ...
+- Wave 1: specs ... — parallel-safe (Affected Files disjoint) | NOT parallel-safe (overlap: <files>)
+- Wave 2 (after wave 1): specs ... — sequential
+
+Parallel-safe = the wave's specs touch disjoint Affected Files, so they may run as
+concurrent subagents/worktrees. Waves without the marker run sequentially.
 
 ## How to use this file
 
-If you're running `/joycraft-implement <spec-path>`, the implement skill reads this README first so it understands the spec's position in the wave plan. Each spec is self-contained for the actual implementation; this README provides ordering context only.
+Run the whole queue with `/joycraft-implement-feature docs/features/<slug>/` — it executes the specs in wave order (fresh-context subagent per spec) and finishes with session-end. Or run one spec at a time with `/joycraft-implement <spec-path>`; the implement skill reads this README first so it understands the spec's position in the wave plan, and continues through the queue itself. Each spec is self-contained for the actual implementation; this README provides ordering context only.
 ```
 
 The brief and the README serve different audiences: the brief is for *feature reviewers* (vision, scope, decomposition decisions); the README is for *implementers* (what to run next, what depends on what).
@@ -263,6 +268,8 @@ Tell the user a one-line summary, then emit the canonical Handoff block.
 
 Next:
 ```bash
-/joycraft-implement docs/features/<slug>/specs/<first-spec>.md
+/joycraft-implement-feature docs/features/<slug>/
 ```
 Run /clear first.
+
+That one command runs the whole queue — fresh-context subagent per spec, wrap-up and commit after each, session-end once at the end. To drive one spec at a time instead: `/joycraft-implement docs/features/<slug>/specs/<first-spec>.md` (it wraps up and continues through the queue itself).

@@ -15,7 +15,9 @@ const SKILLS_WITH_HANDOFF = [
   'joycraft-bugfix.md',
   'joycraft-session-end.md',
   'joycraft-add-fact.md',
-  'joycraft-implement.md',
+  // joycraft-implement is deliberately absent: since frictionless-implement it
+  // performs the per-spec wrap-up itself and self-continues through the queue —
+  // it no longer ends by handing a command back to the human.
 ];
 
 describe('skill handoff blocks', () => {

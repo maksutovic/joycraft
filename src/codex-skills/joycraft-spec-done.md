@@ -8,6 +8,8 @@ description: Lightweight per-spec wrap-up — bump status to in-review, terse di
 You just finished implementing **one** atomic spec. This is the fast handshake that runs **once per spec**, before context clears — the `todo → in-review` transition in the lifecycle (`docs/reference/spec-status-lifecycle.md`). It is deliberately tiny: it does exactly four things and nothing more.
 
 > **This is NOT session-end.** It does **not** run validation, push, or open a PR. It trusts the TDD you just did in `$joycraft-implement`. The heavy once-per-feature wrap-up (full validation + consolidate discoveries + push + PR) is `$joycraft-session-end`, which runs once at the end of the feature.
+>
+> **Usually you don't run this by hand:** `$joycraft-implement` performs these four steps itself at the end of every checkpoint/isolated spec (and `$joycraft-implement-feature` drives whole queues). This skill remains the canonical definition of the wrap-up — run it manually after ad-hoc work done outside the implement skill, or when an implement run was interrupted before wrapping up.
 
 ## Step 1: Bump status to `in-review` — in BOTH systems
 
