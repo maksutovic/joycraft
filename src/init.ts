@@ -6,72 +6,26 @@ import { generateAgentsMd } from './agents-md.js';
 import { generatePermissions } from './permissions.js';
 import { installSafeguardHooks } from './safeguard.js';
 import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
-import { createInterface } from 'node:readline';
 import {
   writeVersion,
   readVersion,
   hashContent,
   STATE_PATH,
-  parseGitignoreProfile,
   DEFAULT_GITIGNORE_PROFILE,
   type GitignoreProfile,
 } from './version.js';
-import { applyGitignoreProfile } from './gitignore.js';
+import {
+  applyGitignoreProfile,
+  resolveGitignoreProfile,
+  PRIVATE_DIRS_DISPLAY,
+  PRIVATE_UNTRACK_COMMAND,
+} from './gitignore.js';
 import { getPackageVersion } from './package-version.js';
 
 export interface InitOptions {
   force: boolean;
   /** Raw --gitignore value from the CLI, if provided. Validated in init(). */
   gitignore?: string;
-}
-
-/**
- * Prompt the user to choose a gitignore profile. Only called interactively
- * (TTY, no flag, no persisted choice). Mirrors upgrade.ts's askUser readline use.
- */
-async function promptGitignoreProfile(): Promise<GitignoreProfile> {
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  console.log('\nHow should Joycraft files be tracked in git?');
-  console.log('  shared  — commit skills so your team gets the same workflow (default)');
-  console.log('  private — gitignore .claude/, .agents/, .pi/; track only CLAUDE.md, AGENTS.md, docs/');
-  return new Promise((resolve) => {
-    rl.question('Profile [shared/private] (shared): ', (answer) => {
-      rl.close();
-      const parsed = parseGitignoreProfile(answer.trim().toLowerCase());
-      resolve(parsed ?? DEFAULT_GITIGNORE_PROFILE);
-    });
-  });
-}
-
-/**
- * Resolve the gitignore profile by precedence:
- *   1. --gitignore flag (validated; throws on unknown value)
- *   2. profile persisted in state.json (re-init keeps prior choice)
- *   3. interactive prompt (TTY only)
- *   4. default `shared`
- */
-async function resolveGitignoreProfile(
-  targetDir: string,
-  opts: InitOptions
-): Promise<GitignoreProfile> {
-  if (opts.gitignore !== undefined) {
-    const parsed = parseGitignoreProfile(opts.gitignore.trim().toLowerCase());
-    if (!parsed) {
-      throw new Error(
-        `Unknown gitignore profile '${opts.gitignore}'. Use 'shared' or 'private'.`
-      );
-    }
-    return parsed;
-  }
-
-  const persisted = readVersion(targetDir)?.gitignoreProfile;
-  if (persisted) return persisted;
-
-  if (process.stdin.isTTY) {
-    return promptGitignoreProfile();
-  }
-
-  return DEFAULT_GITIGNORE_PROFILE;
 }
 
 interface InitResult {
@@ -108,8 +62,15 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
 
   // Resolve the gitignore profile up front (flag → persisted → prompt → default)
   // so it governs both the .gitignore writes and the "teammates won't get skills"
-  // warning below.
-  const gitignoreProfile = await resolveGitignoreProfile(targetDir, opts);
+  // warning below. Unlike upgrade, init persists even the non-interactive
+  // default: init creates the state fresh, and `shared` is the documented
+  // default for a first run.
+  const { profile: gitignoreProfile } = await resolveGitignoreProfile({
+    flag: opts.gitignore,
+    persisted: readVersion(targetDir)?.gitignoreProfile,
+    interactive: process.stdin.isTTY === true,
+    promptIntro: '\nHow should Joycraft files be tracked in git?',
+  });
 
   // 1. Create the only Joycraft-managed docs/ subdirectory: context/.
   // All other folders (briefs/specs/discoveries/decisions/contracts/features/backlog/...) are
@@ -387,7 +348,7 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
   }
 
   if (gitignoreProfile === 'private') {
-    console.log('  Gitignore profile: private (.claude/, .agents/, .pi/ are gitignored — only CLAUDE.md, AGENTS.md, docs/ are tracked)');
+    console.log(`  Gitignore profile: private (${PRIVATE_DIRS_DISPLAY} are gitignored — only CLAUDE.md, AGENTS.md, docs/ are tracked)`);
   } else {
     console.log('  Gitignore profile: shared (skills and docs are tracked for your team)');
   }
@@ -436,8 +397,8 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
   console.log('    2. Try /joycraft-new-feature to start building with the spec-driven workflow');
   console.log('       (feature artifacts are written to docs/features/<slug>/ as you go)');
   if (gitignoreProfile === 'private') {
-    console.log('    3. Commit CLAUDE.md, AGENTS.md, and docs/ — .claude/, .agents/, .pi/ stay local (gitignored)');
-    console.log('       (if any harness files were already committed, run: git rm -r --cached .claude .agents .pi)');
+    console.log(`    3. Commit CLAUDE.md, AGENTS.md, and docs/ — ${PRIVATE_DIRS_DISPLAY} stay local (gitignored)`);
+    console.log(`       (if any harness files were already committed, run: ${PRIVATE_UNTRACK_COMMAND})`);
   } else {
     console.log('    3. Commit .claude/skills/ and docs/ so your team gets the same workflow');
   }
