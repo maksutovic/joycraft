@@ -1,0 +1,11 @@
+{
+  "feature": "2026-06-11-single-source-skills",
+  "specs": [
+    { "id": 1, "file": "substitution-engine.md", "depends_on": [], "status": "todo", "mode": "checkpoint" },
+    { "id": 2, "file": "wire-generator-pipeline.md", "depends_on": [1], "status": "todo", "mode": "checkpoint" },
+    { "id": 3, "file": "migrate-clean-skills.md", "depends_on": [2], "status": "todo", "mode": "isolated" },
+    { "id": 4, "file": "migrate-dirty-skills.md", "depends_on": [3], "status": "todo", "mode": "isolated" },
+    { "id": 5, "file": "update-contributor-docs.md", "depends_on": [4], "status": "todo", "mode": "batch" },
+    { "id": 6, "file": "brief-reconciliation-step.md", "depends_on": [4], "status": "todo", "mode": "batch" }
+  ]
+}
