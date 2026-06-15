@@ -140,12 +140,28 @@ function scanUnclosed(dir: string): string[] {
 }
 
 describe('generator pipeline: src/skills/ -> per-harness dirs', () => {
+  // Snapshot src/skills/ before mutating so we can restore — the canonical
+  // dir is now populated (spec 5+ migration) and wiping it would desync the
+  // per-harness dirs from the bundled-files.ts that sibling sync tests check.
+  const canonicalBackup: Record<string, string> = {};
+
   beforeAll(() => {
-    // Ensure clean state: src/skills/ should not contain leftovers from prior runs.
     if (existsSync(CANONICAL_SKILLS_DIR)) {
       for (const f of readdirSync(CANONICAL_SKILLS_DIR)) {
-        if (f.endsWith('.md')) rmSync(join(CANONICAL_SKILLS_DIR, f));
+        if (f.endsWith('.md')) {
+          canonicalBackup[f] = readFileSync(join(CANONICAL_SKILLS_DIR, f), 'utf-8');
+          rmSync(join(CANONICAL_SKILLS_DIR, f));
+        }
       }
+    }
+    execSync(`node ${SCRIPT}`, { cwd: ROOT });
+  });
+
+  afterAll(() => {
+    // Restore canonical files and regenerate so sibling tests see consistent state.
+    mkdirSync(CANONICAL_SKILLS_DIR, { recursive: true });
+    for (const [f, content] of Object.entries(canonicalBackup)) {
+      writeFileSync(join(CANONICAL_SKILLS_DIR, f), content);
     }
     execSync(`node ${SCRIPT}`, { cwd: ROOT });
   });

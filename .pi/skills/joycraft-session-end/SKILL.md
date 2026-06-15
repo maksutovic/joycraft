@@ -7,7 +7,7 @@ description: Wrap up a session — capture discoveries, verify, prepare for PR o
 
 This is the **once-per-feature finisher** — the heavy bookend that runs **once**, when the feature's specs are done, not after every spec. It is the **only validation gate** in the loop and the single place that pushes and opens the PR.
 
-> **Two-tier wrap-up.** The light per-spec step is `/skill:joycraft-spec-done` (status bump `todo → in-review` + commit, no validation/push/PR — it runs after each spec). This skill is the heavy counterpart: full validation, consolidate the discovery stubs spec-done left behind, graduate every `in-review` spec to `done`, push, and open the PR. See `docs/reference/spec-status-lifecycle.md` for the `todo → in-review → done` lifecycle.
+> **Two-tier wrap-up.** The light per-spec step is `joycraft-spec-done` (status bump `todo → in-review` + commit, no validation/push/PR — it runs after each spec). This skill is the heavy counterpart: full validation, consolidate the discovery stubs spec-done left behind, graduate every `in-review` spec to `done`, push, and open the PR. See `docs/reference/spec-status-lifecycle.md` for the `todo → in-review → done` lifecycle.
 
 Complete these steps in order.
 
@@ -15,7 +15,22 @@ Complete these steps in order.
 
 **Why:** Discoveries are the surprises — things that weren't in the spec or that contradicted expectations. They prevent future sessions from hitting the same walls.
 
-This is the **consolidation** pass: `/skill:joycraft-spec-done` may have left terse 2-line discovery **stubs** during the feature (one per surprising spec). Curate and expand those stubs into proper discovery docs now, and capture anything else surprising from the feature as a whole. If any stubs exist at `docs/discoveries/`, consolidate them (merge related ones, expand each into the full format below); then create or update a discovery file at `docs/discoveries/YYYY-MM-DD-topic.md`. Create the `docs/discoveries/` directory if it doesn't exist.
+This is the **consolidation** pass: `joycraft-spec-done` may have left terse 2-line discovery **stubs** during the feature (one per surprising spec). Curate and expand those stubs into proper discovery docs now, and capture anything else surprising from the feature as a whole. If any stubs exist at `docs/discoveries/`, consolidate them (merge related ones, expand each into the full format below); then create or update a discovery file at `docs/discoveries/YYYY-MM-DD-topic.md`. Lazy-create the `docs/discoveries/` directory if it doesn't exist.
+
+(Discoveries stay flat at `docs/discoveries/` rather than per-feature, since they often span features and are read serendipitously rather than via a known path.)
+
+The discovery file MUST start with YAML frontmatter — the 4-field personal schema:
+
+```yaml
+---
+status: todo
+owner: <resolved name>
+created: YYYY-MM-DD
+feature: <slug-of-related-feature>   # omit if not feature-tied
+---
+```
+
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
 
 Only capture what's NOT obvious from the code or git diff:
 - "We thought X but found Y" — assumptions that were wrong
@@ -43,22 +58,33 @@ Use this format:
 **Impact:** [what this means for future work]
 ```
 
-If nothing surprising happened (no stubs, no surprises), skip the discovery file entirely. No discovery is a good sign — the spec was accurate.
+If nothing surprising happened, skip the discovery file entirely. No discovery is a good sign — the spec was accurate.
 
 ## 1b. Update Context Documents
 
 If `docs/context/` exists, quickly check whether this session revealed anything about:
 
-- **Production risks** — did you interact with or learn about production vs staging systems? Update `docs/context/production-map.md`
-- **Wrong assumptions** — did you assume something that turned out to be false? Update `docs/context/dangerous-assumptions.md`
-- **Key decisions** — did you make an architectural or tooling choice? Add a row to `docs/context/decision-log.md`
-- **Unwritten rules** — did you discover a convention or constraint not documented anywhere? Update `docs/context/institutional-knowledge.md`
+- **Production risks** — did you interact with or learn about production vs staging systems? → Update `docs/context/production-map.md`
+- **Wrong assumptions** — did the agent (or you) assume something that turned out to be false? → Update `docs/context/dangerous-assumptions.md`
+- **Key decisions** — did you make an architectural or tooling choice? → Add a row to `docs/context/decision-log.md`
+- **Unwritten rules** — did you discover a convention or constraint not documented anywhere? → Update `docs/context/institutional-knowledge.md`
+
+When you UPDATE a context doc, also bump (or add) its YAML frontmatter — the 2-field shared schema:
+
+```yaml
+---
+last_updated: YYYY-MM-DD
+last_updated_by: <resolved name>
+---
+```
+
+If the file already has the frontmatter, update the `last_updated` and `last_updated_by` fields in place. If it doesn't, prepend a fresh block. Context docs are *shared* artifacts (no single owner) — the shared schema reflects that.
 
 Skip this if nothing applies. Don't force it — only update when there's genuine new context.
 
 ## 2. Run Validation — the ONLY validation gate
 
-This is **mandatory** and it is the **only** validation gate in the loop: `/skill:joycraft-spec-done` deliberately skips validation (it trusts implement's per-spec TDD), so this feature-level run is the single cross-spec safety net. Never skip it.
+This is **mandatory** and it is the **only** validation gate in the loop: `joycraft-spec-done` deliberately skips validation (it trusts implement's per-spec TDD), so this feature-level run is the single cross-spec safety net. Never skip it.
 
 Run the project's validation commands. Check AGENTS.md for project-specific commands. Common checks:
 
@@ -70,7 +96,7 @@ Fix any failures before proceeding. **If validation fails, stop — do NOT gradu
 
 ## 3. Graduate Specs `in-review → done`
 
-This step graduates the feature's finished specs to their terminal state. Because session-end runs once at the end, **multiple specs may be waiting** in `in-review` (one per spec the loop completed via `/skill:joycraft-spec-done`). Graduate **all** of them, in **both** systems (the queue JSON and the frontmatter must never disagree):
+This step graduates the feature's finished specs to their terminal state. Because session-end runs once at the end, **multiple specs may be waiting** in `in-review` (one per spec the loop completed via `joycraft-spec-done`). Graduate **all** of them, in **both** systems (the queue JSON and the frontmatter must never disagree):
 
 For each spec in `docs/features/<slug>/specs/` (or `docs/bugfixes/<area>/` for bugfixes — scan recursively) whose status is `in-review`:
 
@@ -98,7 +124,7 @@ Commit all changes including the discovery file (if created) and spec status upd
 
 If AGENTS.md does NOT have autonomous git rules (or has "ASK FIRST" for pushing), ask the user before pushing.
 
-## 6. Report
+## 6. Report and Hand Off
 
 ```
 Feature complete.
@@ -109,6 +135,16 @@ Feature complete.
 - Pushed: [yes / no — and why not]
 - PR: [opened #N / not yet — N specs remaining]
 - Next: [what comes after this feature]
-
-Run /new before your next step — your artifacts are saved to files.
 ```
+
+End with the canonical Handoff block. Include any discovery and updated-context paths produced.
+
+## Recommended Next Steps
+
+Next:
+```bash
+/skill:joycraft-implement docs/features/<slug>/specs/<next-spec>.md
+```
+Run /new first.
+
+If all specs in the feature are complete, hand off to a feature-level wrap-up instead (PR review, etc.) — the Handoff block is just the slash command for whatever the next move is.

@@ -10,7 +10,7 @@ You are auditing the user's AI development session for token overhead. Produce a
 ## Step 1: Detect Platform
 
 Check which platform is active:
-- **Claude Code:** Look for `.claude/` directory, `CLAUDE.md`
+- **Claude Code:** Look for `.claude/` directory, `AGENTS.md`
 - **Codex:** Look for `.agents/` directory, `AGENTS.md`
 
 If both exist, run both checks. If neither, default to Claude Code checks and note the uncertainty.
@@ -19,8 +19,8 @@ If both exist, run both checks. If neither, default to Claude Code checks and no
 
 ### Claude Code Path
 
-1. **CLAUDE.md** — count lines. Threshold: ≤200 lines.
-2. **Skill files** — glob `.claude/skills/**/*.md`. Count lines per file. Threshold: ≤200 lines each.
+1. **AGENTS.md** — count lines. Threshold: ≤200 lines.
+2. **Skill files** — glob `.agents/skills/**/*.md`. Count lines per file. Threshold: ≤200 lines each.
 
 ### Codex Path
 
@@ -72,7 +72,7 @@ Organize findings by category. Use pass/warn indicators:
 ### Recommendations
 - [Specific, actionable items for anything over threshold]
 - [e.g., "AGENTS.md is 312 lines — consider splitting reference sections into docs/"]
-- [e.g., "3 MCP servers load at boot — disable unused ones in config"]
+- [e.g., "3 MCP servers load at boot — disable unused ones in settings.json"]
 ```
 
 ## Step 6: Further Resources

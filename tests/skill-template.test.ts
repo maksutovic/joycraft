@@ -170,6 +170,25 @@ describe('applyTemplate — frontmatter', () => {
     const yaml = out.split('---')[1];
     expect(yaml).not.toMatch(/\n\n/);
   });
+
+  it('substitutes {{boundary_file}} in frontmatter description per harness', () => {
+    const src = '---\nname: a\ndescription: see {{boundary_file}} Context Map\n---\nbody refers to {{boundary_file}} too\n';
+    expect(applyTemplate(src, 'claude')).toContain('description: see CLAUDE.md Context Map');
+    expect(applyTemplate(src, 'codex')).toContain('description: see AGENTS.md Context Map');
+    expect(applyTemplate(src, 'pi')).toContain('description: see AGENTS.md Context Map');
+  });
+
+  it('substitutes {{skill_prefix}} in frontmatter per harness', () => {
+    const src = '---\nname: a\ndescription: try {{skill_prefix}}tune\n---\nbody\n';
+    expect(applyTemplate(src, 'claude')).toContain('description: try /joycraft-tune');
+    expect(applyTemplate(src, 'codex')).toContain('description: try $joycraft-tune');
+    expect(applyTemplate(src, 'pi')).toContain('description: try /skill:joycraft-tune');
+  });
+
+  it('throws on unknown variable in frontmatter', () => {
+    const src = '---\nname: a\ndescription: {{not_real}}\n---\nbody\n';
+    expect(() => applyTemplate(src, 'claude', 'test.md')).toThrow(/unknown template variable/);
+  });
 });
 
 describe('applyTemplate — purity', () => {

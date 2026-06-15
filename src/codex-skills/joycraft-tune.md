@@ -9,7 +9,7 @@ You are evaluating and upgrading this project's AI development harness.
 
 ## Step 1: Detect Harness State
 
-Search the codebase for: AGENTS.md (with meaningful content), `docs/features/<slug>/` (briefs + specs), `docs/bugfixes/<area>/`, `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs, `.agents/skills/`, and test configuration.
+Check for: AGENTS.md (with meaningful content), `docs/features/<slug>/` (briefs + specs), `docs/bugfixes/<area>/`, `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs, `.agents/skills/`, and test configuration.
 
 ## Step 2: Route
 
@@ -26,7 +26,7 @@ Read AGENTS.md and explore the project. Score each with specific evidence:
 | Spec Granularity | Can each spec be done in one session? |
 | Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading) |
 | Skills & Hooks | `.agents/skills/` files, hooks config |
-| Documentation | `docs/` structure, templates, referenced from AGENTS.md. Reward a lean + pointered AGENTS.md. **Flag an AGENTS.md exceeding ~200 lines** — recommend extracting long sections into `docs/context/reference/` and replacing them with a `## Context Map` pointer table. This is advisory only; tune never auto-edits AGENTS.md. |
+| Documentation | `docs/` structure, templates, referenced from AGENTS.md. Reward a lean + pointered AGENTS.md. **Flag a AGENTS.md exceeding ~200 lines** — recommend extracting long sections into `docs/context/reference/` and replacing them with a `## Context Map` pointer table. This is advisory only; tune never auto-edits AGENTS.md. |
 | Knowledge Capture | `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs — existence AND real content |
 | Testing & Validation | Test framework, CI pipeline, validation commands in AGENTS.md |
 
@@ -34,7 +34,7 @@ Score 1 = absent, 3 = partially there, 5 = comprehensive. Give credit for substa
 
 ## Step 4: Write Assessment
 
-Write to `docs/joycraft-assessment.md` AND display it. Include: scores table, detailed findings (evidence + gap + recommendation per dimension), and an upgrade plan (up to 5 actions ordered by impact).
+Write to `docs$joycraft-assessment.md` AND display it. Include: scores table, detailed findings (evidence + gap + recommendation per dimension), and an upgrade plan (up to 5 actions ordered by impact).
 
 ## Step 5: Apply Upgrades
 
@@ -46,13 +46,13 @@ Apply using three tiers — do NOT ask per-item permission:
 
 **First-run context onboarding:** On a first run (the context layer is empty or absent), invoke `$joycraft-gather-context` for the read-then-offer onboarding pass — it owns reading existing docs, offering a gap-only interview, and populating `docs/context/` (fact-docs and `docs/context/reference/`). Do NOT run a separate risk interview here; gather is the onboarding path. On a recurring run of an already-populated project, skip this — gather is the first-run path, not forced every time.
 
-From git-autonomy and gather, generate: AGENTS.md boundary rules, deny patterns configuration. Also recommend a permission mode (`auto` for most; `dontAsk` + allowlist for high-risk).
+From git-autonomy and gather, generate: AGENTS.md boundary rules, `.claude/settings.json` deny patterns. Also recommend a permission mode (`auto` for most; `dontAsk` + allowlist for high-risk).
 
 **Tier 2 (show diff):** Add missing AGENTS.md sections (Boundaries, Workflow, Key Files). Draft from real codebase content. Append only — never reformat existing content.
 
 **Tier 3 (confirm first):** Rewriting existing sections, overwriting customized files, suggesting test framework installs.
 
-After applying, append to `docs/joycraft-history.md` and show a consolidated upgrade results table.
+After applying, append to `docs$joycraft-history.md` and show a consolidated upgrade results table.
 
 ## Step 6: Show Path to Level 5
 

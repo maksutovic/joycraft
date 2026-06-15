@@ -11,8 +11,8 @@ You are guiding the user through setting up Level 5: the autonomous feedback loo
 
 Check prerequisites:
 
-1. **Project must be initialized.** Search for `.claude/.joycraft/state.json` (older installs may still have a legacy `.joycraft-version` at the repo root). If neither exists, tell the user to run `npx joycraft init` first.
-2. **Project should be at Level 4.** Read `docs/joycraft-assessment.md` if it exists. If the project hasn't been assessed yet, suggest running `/skill:joycraft-tune` first. But don't block -- the user may know they're ready.
+1. **Project must be initialized.** Look for `.claude/.joycraft/state.json` (older installs may still have a legacy `.joycraft-version` at the repo root). If neither exists, tell the user to run `npx joycraft init` first.
+2. **Project should be at Level 4.** Check `docs/skill:joycraft-assessment.md` if it exists. If the project hasn't been assessed yet, suggest running `/skill:joycraft-tune` first. But don't block — the user may know they're ready.
 3. **Git repo with GitHub remote.** This setup requires GitHub Actions. Check for `.git/` and a GitHub remote.
 
 If prerequisites aren't met, explain what's needed and stop.
@@ -23,11 +23,11 @@ Tell the user:
 
 > Level 5 is the autonomous loop. When you push specs, three things happen automatically:
 >
-> 1. **Scenario evolution** -- An AI agent reads your specs and writes holdout tests in a private scenarios repo. These tests are invisible to your coding agent.
-> 2. **Autofix** -- When CI fails on a PR, the agent automatically attempts a fix (up to 3 times).
-> 3. **Holdout validation** -- When CI passes, your scenarios repo runs behavioral tests against the PR. Results post as PR comments.
+> 1. **Scenario evolution** — A separate AI agent reads your specs and writes holdout tests in a private scenarios repo. These tests are invisible to your coding agent.
+> 2. **Autofix** — When CI fails on a PR, Claude Code automatically attempts a fix (up to 3 times).
+> 3. **Holdout validation** — When CI passes, your scenarios repo runs behavioral tests against the PR. Results post as PR comments.
 >
-> The key insight: your coding agent never sees the scenario tests. This prevents it from gaming the test suite -- like a validation set in machine learning.
+> The key insight: your coding agent never sees the scenario tests. This prevents it from gaming the test suite — like a validation set in machine learning.
 
 ## Step 2: Gather Configuration
 
@@ -78,8 +78,8 @@ Guide the user step by step:
 > You should already have the `.pem` file from when you created the app in Step 2.
 
 > Go to your repo's Settings > Secrets and variables > Actions, and add:
-> - `JOYCRAFT_APP_PRIVATE_KEY` -- paste the contents of your `.pem` file
-> - `ANTHROPIC_API_KEY` -- your Anthropic API key (or the appropriate AI provider key for your setup)
+> - `JOYCRAFT_APP_PRIVATE_KEY` — paste the contents of your `.pem` file
+> - `ANTHROPIC_API_KEY` — your Anthropic API key
 
 ### 4b: Create the Scenarios Repo
 
@@ -99,8 +99,8 @@ Guide the user step by step:
 ### 4c: Add Secrets to Scenarios Repo
 
 > The scenarios repo also needs the App private key:
-> - `JOYCRAFT_APP_PRIVATE_KEY` -- same `.pem` file as the main repo
-> - `ANTHROPIC_API_KEY` -- same key (needed for scenario generation)
+> - `JOYCRAFT_APP_PRIVATE_KEY` — same `.pem` file as the main repo
+> - `ANTHROPIC_API_KEY` — same key (needed for scenario generation)
 
 ## Step 5: Verify Setup
 
@@ -131,8 +131,8 @@ If the user wants to test the loop:
 
 > Want to do a quick test? Here's how:
 >
-> 1. Write a simple spec in `docs/features/<slug>/specs/` and push to main -- this triggers scenario generation
-> 2. Create a PR with a small change -- when CI passes, scenarios will run
+> 1. Write a simple spec in `docs/features/<slug>/specs/` and push to main — this triggers scenario generation
+> 2. Create a PR with a small change — when CI passes, scenarios will run
 > 3. Watch for the scenario test results as a PR comment
 >
 > Or deliberately break something in a PR to test the autofix loop.
@@ -146,7 +146,7 @@ Print a summary of what was set up:
 > | Trigger | What Happens |
 > |---------|-------------|
 > | Push specs to `docs/features/<slug>/specs/` | Scenario agent writes holdout tests |
-> | PR fails CI | Autofix agent attempts a fix (up to 3x) |
+> | PR fails CI | Claude autofix attempts (up to 3x) |
 > | PR passes CI | Holdout scenarios run against PR |
 > | Scenarios update | Open PRs re-tested with latest scenarios |
 >
@@ -155,6 +155,6 @@ Print a summary of what was set up:
 
 **Important:** Tell the user:
 
-> **Before you can test the loop**, you need to merge this PR to main first. GitHub's `workflow_run` triggers only activate for workflows that exist on the default branch. Once merged, create a new PR with any small change -- that's when you'll see Autofix, Scenarios Dispatch, and Spec Dispatch fire for the first time.
+> **Before you can test the loop**, you need to merge this PR to main first. GitHub's `workflow_run` triggers only activate for workflows that exist on the default branch. Once merged, create a new PR with any small change — that's when you'll see Autofix, Scenarios Dispatch, and Spec Dispatch fire for the first time.
 
-Update `docs/joycraft-assessment.md` if it exists -- set the Level 5 score to reflect the new setup.
+Update `docs/skill:joycraft-assessment.md` if it exists — set the Level 5 score to reflect the new setup.

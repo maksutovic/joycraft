@@ -46,10 +46,14 @@ export function applyTemplate(source, harness, filename) {
   // 1. Split frontmatter from body.
   const { frontmatter, body } = splitFrontmatter(source);
 
-  // 2. Apply frontmatter strip per harness.
-  const transformedFm = frontmatter
+  // 2. Apply frontmatter strip per harness, then substitute vars in the
+  //    frontmatter values (e.g. {{boundary_file}} in description).
+  let transformedFm = frontmatter
     ? stripFrontmatterFields(frontmatter, harness)
     : null;
+  if (transformedFm !== null) {
+    transformedFm = substituteVars(transformedFm, vars, filename);
+  }
 
   // 3. Process harness blocks (before variable substitution so vars inside
   //    a stripped block don't trigger unknown-variable errors).
@@ -136,17 +140,41 @@ function processHarnessBlocks(body, harness, filename) {
       );
     }
     const closeStart = closeM.index;
-    const closeEnd = closeRe.lastIndex;
-    // Append everything before the open tag.
-    result += body.slice(cursor, openStart);
+    let closeEnd = closeRe.lastIndex;
     // Decide keep vs strip.
     const names = nameRaw.split('|').map((s) => s.trim());
     const keep = names.includes(harness);
-    if (keep) {
-      result += body.slice(openEnd, closeStart);
+    // Block-line behavior: when the open/close tags occupy their own line,
+    // consume the surrounding newlines so a stripped block leaves no blank-
+    // line residue and a kept block doesn't gain extra blanks.
+    let effectiveOpenStart = openStart;
+    let effectiveOpenEnd = openEnd;
+    let effectiveCloseStart = closeStart;
+    let effectiveCloseEnd = closeEnd;
+    const openOnOwnLine =
+      (openStart === 0 || body[openStart - 1] === '\n') &&
+      (openEnd >= body.length || body[openEnd] === '\n');
+    const closeOnOwnLine =
+      (closeStart === 0 || body[closeStart - 1] === '\n') &&
+      (closeEnd >= body.length || body[closeEnd] === '\n');
+    if (openOnOwnLine) {
+      // Eat trailing newline after open tag (inside the block).
+      if (body[openEnd] === '\n') effectiveOpenEnd = openEnd + 1;
     }
-    // else: strip entirely, including delimiters.
-    cursor = closeEnd;
+    if (closeOnOwnLine) {
+      // Eat trailing newline after close tag.
+      if (body[closeEnd] === '\n') {
+        effectiveCloseEnd = closeEnd + 1;
+        closeEnd = effectiveCloseEnd;
+      }
+    }
+    // Append everything before the open tag.
+    result += body.slice(cursor, effectiveOpenStart);
+    if (keep) {
+      result += body.slice(effectiveOpenEnd, effectiveCloseStart);
+    }
+    // else: strip entirely, including delimiters and surrounding newlines.
+    cursor = effectiveCloseEnd;
     // Reset openRe to scan from new cursor.
     openRe.lastIndex = cursor;
   }
