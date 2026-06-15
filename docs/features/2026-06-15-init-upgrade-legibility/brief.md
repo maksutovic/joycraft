@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-06-15
 source: FoodTrails 0.6.16 field report (private-profile upgrade)

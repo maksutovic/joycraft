@@ -91,6 +91,8 @@ npx joycraft init
 
 > Pick nothing at the harness prompt and `init` installs nothing — it tells you to re-run and choose at least one harness.
 
+**`init` only creates *missing* files.** It is safe to run on a project that already has Joycraft (or a hand-tuned `CLAUDE.md`): an existing `CLAUDE.md`, `AGENTS.md`, template, or skill file is **skipped, never regenerated** — your customizations are left untouched. Only `--force` overwrites existing files. The run summary lists what it skipped (`Skipped N file(s) (already exist, use --force to overwrite)`) so you can see exactly what was preserved. This makes `init` the right command to **fill in a private-profile clone**: a teammate who clones a `private` repo gets the committed `CLAUDE.md`/`AGENTS.md`/`docs/` but not the gitignored harness dirs — running `npx joycraft init` regenerates the missing skill files locally and leaves the committed files alone.
+
 ### Git tracking: shared vs private
 
 By default Joycraft assumes you want to **commit** the harness so your whole team

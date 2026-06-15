@@ -1,12 +1,34 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, rmdirSync, readdirSync, chmodSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
+import { execFileSync } from 'node:child_process';
 import { readVersion, writeVersion, hashContent, truncateHash, LEGACY_VERSION_FILE, LEGACY_CLAUDE_STATE_PATH, parseGitignoreProfile } from './version.js';
-import { applyGitignoreProfile, resolveGitignoreProfile, validateGitignoreFlag, PRIVATE_UNTRACK_COMMAND } from './gitignore.js';
+import { applyGitignoreProfile, resolveGitignoreProfile, validateGitignoreFlag, PRIVATE_PROFILE_IGNORES, PRIVATE_UNTRACK_COMMAND } from './gitignore.js';
 import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
 import { HARNESSES, sanitizeHarnesses, type Harness } from './harness.js';
+
+/**
+ * Read-only check for harness files git is still tracking. Used to decide
+ * whether to surface the `git rm --cached` untrack hint on a re-run already on
+ * the `private` profile (the easy-to-miss case): only show it when files are
+ * actually tracked, so it isn't noise. Never runs a mutating git command, and
+ * fails closed to `[]` outside a git repo or when git is unavailable.
+ */
+function listTrackedHarnessFiles(targetDir: string): string[] {
+  const dirs = PRIVATE_PROFILE_IGNORES.map((d) => d.replace(/\/$/, ''));
+  try {
+    const out = execFileSync('git', ['ls-files', '-z', '--', ...dirs], {
+      cwd: targetDir,
+      encoding: 'utf-8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return out.split('\0').filter((line) => line.length > 0);
+  } catch {
+    return [];
+  }
+}
 
 function isStaleVersion(current: string, latest: string): boolean {
   const currentParts = current.split('.').map(Number);
@@ -423,9 +445,23 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   });
   const gitignoreProfile = resolvedProfile.profile;
   applyGitignoreProfile(targetDir, gitignoreProfile);
-  if (gitignoreProfile === 'private' && installed?.gitignoreProfile !== 'private') {
-    console.log('Gitignore profile: private. If harness files were already committed, untrack them with:');
-    console.log(`  ${PRIVATE_UNTRACK_COMMAND}`);
+  if (gitignoreProfile === 'private') {
+    // On a fresh switch to private, always surface the untrack hint. On a
+    // re-run where private is already persisted (the easy-to-miss case), only
+    // surface it when harness files are actually still tracked — otherwise it's
+    // noise. `git ls-files` is read-only; we never run git for the user.
+    const switchingToPrivate = installed?.gitignoreProfile !== 'private';
+    const trackedHarnessFiles = switchingToPrivate ? [] : listTrackedHarnessFiles(targetDir);
+    if (switchingToPrivate || trackedHarnessFiles.length > 0) {
+      console.log('');
+      console.log('  ⚠ Private profile: harness dirs are gitignored, but git only stops');
+      console.log('    tracking files you untrack. If any harness files were already');
+      console.log(`    committed${trackedHarnessFiles.length > 0 ? ` (${trackedHarnessFiles.length} still tracked)` : ''}, untrack them with:`);
+      console.log('');
+      console.log(`      ${PRIVATE_UNTRACK_COMMAND}`);
+      console.log('');
+      console.log('    (advisory — Joycraft never runs git for you)');
+    }
   }
 
   const changes: FileChange[] = [];

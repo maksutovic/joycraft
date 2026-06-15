@@ -38,12 +38,19 @@ describe('init', () => {
       const contents = existsSync(docsDir)
         ? require('node:fs').readdirSync(docsDir).filter((n: string) => !n.startsWith('.')).sort()
         : [];
-      expect(contents).toEqual(['context', 'templates']);
+      // context/, templates/, and backlog/ are created up front: the generated
+      // CLAUDE.md/AGENTS.md point at backlog/, so it must exist (no dangling
+      // pointer). Everything else stays lazy-created by skills.
+      expect(contents).toEqual(['backlog', 'context', 'templates']);
       // State lives in the harness-neutral docs/.joycraft/ home.
       expect(existsSync(join(docsDir, '.joycraft', 'state.json'))).toBe(true);
 
-      // Dropped directories must NOT exist
-      for (const sub of ['briefs', 'specs', 'discoveries', 'contracts', 'decisions', 'pipit-examples', 'features', 'backlog', 'areas', 'archive']) {
+      // backlog/ ships a README stub explaining the convention.
+      expect(existsSync(join(docsDir, 'backlog', 'README.md'))).toBe(true);
+      expect(readFileSync(join(docsDir, 'backlog', 'README.md'), 'utf-8')).toContain('Deferred work');
+
+      // Dropped directories must NOT exist (backlog is now created — see above)
+      for (const sub of ['briefs', 'specs', 'discoveries', 'contracts', 'decisions', 'pipit-examples', 'features', 'areas', 'archive']) {
         expect(existsSync(join(tmpDir, 'docs', sub))).toBe(false);
       }
 
@@ -55,6 +62,9 @@ describe('init', () => {
       expect(claude).toContain('### ALWAYS');
       expect(claude).toContain('### ASK FIRST');
       expect(claude).toContain('### NEVER');
+      // Generated CLAUDE.md points at docs/backlog/ for deferred work — the
+      // pointer the scaffolded dir backs.
+      expect(claude).toContain('docs/backlog/');
 
       // Skills
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);

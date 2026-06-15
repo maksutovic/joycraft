@@ -37,6 +37,26 @@ interface InitResult {
   warnings: string[];
 }
 
+/**
+ * Stub README for docs/backlog/. It documents the convention (deferred work
+ * captured mid-sprint, one file per item) and keeps the otherwise-empty
+ * directory present in git so the CLAUDE.md / AGENTS.md backlog pointer never
+ * dangles. Skills append real entries beside it on user confirmation.
+ */
+const BACKLOG_README = `# Backlog
+
+Deferred work lives here — ideas and follow-ups you surface mid-sprint but
+can't take on in the current feature. Capturing them keeps the current spec
+focused without losing the thread.
+
+- One file per item: \`docs/backlog/YYYY-MM-DD-<short-name>.md\`.
+- Joycraft skills (\`/joycraft-interview\`, \`/joycraft-new-feature\`,
+  \`/joycraft-design\`) offer to write entries here — always with your
+  confirmation, never automatically.
+- Promote an item by turning it into a Feature Brief under
+  \`docs/features/<slug>/\` when you're ready to build it.
+`;
+
 function ensureDir(dir: string): void {
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });
@@ -88,10 +108,19 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     promptIntro: '\nHow should Joycraft files be tracked in git?',
   });
 
-  // 1. Create the only Joycraft-managed docs/ subdirectory: context/.
-  // All other folders (briefs/specs/discoveries/decisions/contracts/features/backlog/...) are
-  // lazy-created by the skills that write to them. Solo-first: no preemptive ceremony.
+  // 1. Create the Joycraft-managed docs/ subdirectories that the generated
+  // CLAUDE.md / AGENTS.md point at up front, so no generated pointer dangles:
+  //   - context/ — the project context layer (gather-context populates it)
+  //   - backlog/ — where deferred work is captured mid-sprint; CLAUDE.md and
+  //                AGENTS.md both reference it, so it must exist after init even
+  //                before a skill writes its first entry. A README stub explains
+  //                the convention and keeps the otherwise-empty dir in git.
+  // Everything else (briefs/specs/discoveries/decisions/contracts/features/...)
+  // stays lazy-created by the skills that write to them. Solo-first: minimal
+  // preemptive ceremony, but never a dangling pointer.
   ensureDir(join(targetDir, 'docs', 'context'));
+  ensureDir(join(targetDir, 'docs', 'backlog'));
+  writeFile(join(targetDir, 'docs', 'backlog', 'README.md'), BACKLOG_README, opts.force, result);
 
   // 1b. Scan for existing non-Joycraft skills before copying ours (claude only).
   const skillsDir = join(targetDir, '.claude', 'skills');
