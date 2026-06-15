@@ -91,3 +91,25 @@ Other options:
 - $joycraft-new-feature — formalize into a full Feature Brief first
 - Read the research and add corrections manually
 ```
+
+## Phase 4: Reconcile Brief with Findings
+
+You've just written `docs/features/<slug>/research.md`. Before hand-off, the parent brief at `docs/features/<slug>/brief.md` may now disagree with what you discovered. Re-read it and check each of these sections:
+
+| Brief section | What to look for |
+|---|---|
+| Vision | Did your findings refine or contradict the framing? |
+| Hard Constraints | Are any constraints now obsolete, missing, or refined? |
+| Out of Scope | Did your findings push something in or out of scope? |
+| Decomposition | Are spec counts, names, or dependencies still accurate? |
+| Test Strategy | Do your findings change what or how to test? |
+| Success Criteria | Are the criteria still observable and still match the goal? |
+
+**For each section, choose one:**
+
+- **Edit in place** — small, mechanical updates: line-number corrections, clarifications, additions consistent with brief intent. No user approval needed.
+- **Diff + stop** — non-trivial changes: counts flipping, decomposition restructure, scope changes, contradiction with original brief intent. Present a diff of the proposed change, STOP, and wait for user approval before continuing.
+
+If you make changes, note them at the bottom of `research.md` under a "Brief updates" subsection. If the brief is already in sync, note: "Reconciliation checked, no changes required." If no parent brief exists (feature was described inline), note that and skip this step.
+
+**Why this step exists:** the silent-drift gap. Without reconciliation, the brief and downstream artifacts diverge — and later decomposition is sized against the stale brief. This feature ("single-source-skills") hit exactly this: brief said "11 clean / 9 dirty" until the research re-audit forced a re-decomposition. Don't let it happen again.
