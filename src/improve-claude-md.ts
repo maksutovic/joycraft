@@ -4,6 +4,23 @@ import type { StackInfo } from './detect.js';
 
 export interface ImproveOptions {
   projectDir?: string;
+  /**
+   * When true, the project gitignores the harness dirs (`private` profile), so
+   * teammates who clone won't get the skill files. A discreet setup note is
+   * emitted telling them to run `npx joycraft init` to regenerate them locally.
+   */
+  privateProfile?: boolean;
+}
+
+/**
+ * Stable phrase used to detect (and avoid duplicating) the private-mode setup
+ * note across re-runs. Kept terse so it lives quietly in the Getting Started
+ * footer rather than spending a heading.
+ */
+export const PRIVATE_SETUP_NOTE_MARKER = 'After cloning, run';
+
+export function generatePrivateSetupNote(): string {
+  return `> **Private setup:** The harness dirs (\`.claude/\`, \`.agents/\`, \`.pi/\`) are gitignored in this repo, so they aren't committed. ${PRIVATE_SETUP_NOTE_MARKER} \`npx joycraft init\` to regenerate the skill files locally.`;
 }
 
 interface Section {
@@ -228,6 +245,13 @@ export function improveCLAUDEMd(
     additions.push(generateExternalValidationSection());
   }
 
+  // Private-mode setup note: independent of the Getting Started check above so
+  // it gets added on a re-run even when Getting Started already exists. Matched
+  // on its stable phrase, not a heading, so it's idempotent across upgrades.
+  if (opts?.privateProfile && !existing.includes(PRIVATE_SETUP_NOTE_MARKER)) {
+    additions.push(generatePrivateSetupNote());
+  }
+
   if (existingSkills.length > 0 && !hasSection(sections, /project\s*tools/i)) {
     additions.push(generateProjectToolsSection(existingSkills));
   }
@@ -275,6 +299,10 @@ export function generateCLAUDEMd(
     generateGettingStartedSection(),
     '',
   ];
+
+  if (opts?.privateProfile) {
+    lines.push(generatePrivateSetupNote(), '');
+  }
 
   if (existingSkills.length > 0) {
     lines.push(generateProjectToolsSection(existingSkills), '');

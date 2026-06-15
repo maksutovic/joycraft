@@ -68,12 +68,14 @@ program
     try {
       const { readFileSync, existsSync } = await import('node:fs');
       const { join } = await import('node:path');
-      const { STATE_PATH, LEGACY_VERSION_FILE } = await import('./version.js');
-      // Prefer the hidden state; fall back to the legacy root file for projects
-      // that have not been upgraded (which relocates it) yet.
-      const statePath = existsSync(join(process.cwd(), STATE_PATH))
-        ? join(process.cwd(), STATE_PATH)
-        : join(process.cwd(), LEGACY_VERSION_FILE);
+      const { STATE_PATH, LEGACY_VERSION_FILE, LEGACY_CLAUDE_STATE_PATH } = await import('./version.js');
+      // Prefer the current state; fall back through the legacy locations for
+      // projects not yet upgraded (upgrade relocates them): the interim
+      // .claude/.joycraft/state.json, then the original repo-root file.
+      const candidates = [STATE_PATH, LEGACY_CLAUDE_STATE_PATH, LEGACY_VERSION_FILE];
+      const statePath =
+        candidates.map((p) => join(process.cwd(), p)).find((p) => existsSync(p)) ??
+        join(process.cwd(), STATE_PATH);
       const data = JSON.parse(readFileSync(statePath, 'utf-8'));
       const res = await fetch('https://registry.npmjs.org/joycraft/latest', { signal: AbortSignal.timeout(3000) });
       if (res.ok) {

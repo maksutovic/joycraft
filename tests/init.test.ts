@@ -32,12 +32,15 @@ describe('init', () => {
     it('creates lazy-only directory layout, CLAUDE.md, skills, and templates', async () => {
       await init(tmpDir, { force: false });
 
-      // Only context/ and templates/ should be present under docs/
+      // Only context/ and templates/ should be present under docs/ (ignoring
+      // the hidden .joycraft/ state dir, which is infra, not a feature dir).
       const docsDir = join(tmpDir, 'docs');
       const contents = existsSync(docsDir)
-        ? require('node:fs').readdirSync(docsDir).sort()
+        ? require('node:fs').readdirSync(docsDir).filter((n: string) => !n.startsWith('.')).sort()
         : [];
       expect(contents).toEqual(['context', 'templates']);
+      // State lives in the harness-neutral docs/.joycraft/ home.
+      expect(existsSync(join(docsDir, '.joycraft', 'state.json'))).toBe(true);
 
       // Dropped directories must NOT exist
       for (const sub of ['briefs', 'specs', 'discoveries', 'contracts', 'decisions', 'pipit-examples', 'features', 'backlog', 'areas', 'archive']) {

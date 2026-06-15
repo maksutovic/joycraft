@@ -21,6 +21,7 @@ import {
   PRIVATE_UNTRACK_COMMAND,
 } from './gitignore.js';
 import { getPackageVersion } from './package-version.js';
+import { resolveHarnesses, type Harness } from './harness.js';
 
 export interface InitOptions {
   force: boolean;
@@ -60,6 +61,20 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   // Pi detection — check if project uses Pi coding agent
   const isPi = existsSync(join(targetDir, '.pi'));
 
+  // Resolve which harnesses to install (interactive multi-select; non-interactive
+  // installs all three). Done before any scaffolding so a "none" selection is a
+  // clean no-op — and before the gitignore prompt so we don't ask a second
+  // question when there's nothing to track.
+  const harnesses = await resolveHarnesses(process.stdin.isTTY === true);
+  const wants = (h: Harness): boolean => harnesses.includes(h);
+  if (harnesses.length === 0) {
+    console.log(
+      '\nNo harness selected — Joycraft will not install any skills.\n' +
+      'Please run init again and select at least one harness (claude, codex, pi).'
+    );
+    return;
+  }
+
   // Resolve the gitignore profile up front (flag → persisted → prompt → default)
   // so it governs both the .gitignore writes and the "teammates won't get skills"
   // warning below. Unlike upgrade, init persists even the non-interactive
@@ -77,10 +92,10 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   // lazy-created by the skills that write to them. Solo-first: no preemptive ceremony.
   ensureDir(join(targetDir, 'docs', 'context'));
 
-  // 1b. Scan for existing non-Joycraft skills before copying ours
+  // 1b. Scan for existing non-Joycraft skills before copying ours (claude only).
   const skillsDir = join(targetDir, '.claude', 'skills');
   let existingSkills: string[] = [];
-  if (existsSync(skillsDir)) {
+  if (wants('claude') && existsSync(skillsDir)) {
     existingSkills = readdirSync(skillsDir)
       .filter(name => {
         if (name.startsWith('joycraft-')) return false;
@@ -95,68 +110,57 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   }
 
   // 2. Copy skill files to .claude/skills/<name>/SKILL.md
-  for (const [filename, content] of Object.entries(SKILLS)) {
-    const skillName = filename.replace(/\.md$/, '');
-    const skillDir = join(skillsDir, skillName);
-    ensureDir(skillDir);
-    writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
-  }
-
-  // 2b. Copy Codex skill files to .agents/skills/<name>/SKILL.md
-  const codexSkillsDir = join(targetDir, '.agents', 'skills');
-  let existingCodexSkills: string[] = [];
-  if (existsSync(codexSkillsDir)) {
-    existingCodexSkills = readdirSync(codexSkillsDir)
-      .filter(name => {
-        if (name.startsWith('joycraft-')) return false;
-        if (name.startsWith('.')) return false;
-        const fullPath = join(codexSkillsDir, name);
-        try {
-          return statSync(fullPath).isDirectory();
-        } catch {
-          return false;
-        }
-      });
-  }
-  for (const [filename, content] of Object.entries(CODEX_SKILLS)) {
-    const skillName = filename.replace(/\.md$/, '');
-    const skillDir = join(codexSkillsDir, skillName);
-    ensureDir(skillDir);
-    writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
-  }
-
-  // 2c. Copy Pi skill files to .pi/skills/<name>/SKILL.md
-  const piSkillsDir = join(targetDir, '.pi', 'skills');
-  for (const [filename, content] of Object.entries(PI_SKILLS)) {
-    const skillName = filename.replace(/\.md$/, '');
-    const skillDir = join(piSkillsDir, skillName);
-    ensureDir(skillDir);
-    writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
-  }
-
-  // 2d. Install Pi pipeline runtime scripts to .pi/scripts/joycraft/
-  const piScriptsDir = join(targetDir, '.pi', 'scripts', 'joycraft');
-  ensureDir(piScriptsDir);
-  for (const [name, content] of Object.entries(PI_SCRIPTS)) {
-    const scriptPath = join(piScriptsDir, name);
-    writeFile(scriptPath, content, opts.force, result);
-    if (name !== 'README.md') {
-      try { chmodSync(scriptPath, 0o755); } catch { /* non-fatal */ }
+  if (wants('claude')) {
+    for (const [filename, content] of Object.entries(SKILLS)) {
+      const skillName = filename.replace(/\.md$/, '');
+      const skillDir = join(skillsDir, skillName);
+      ensureDir(skillDir);
+      writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
     }
   }
 
-  // 2e. Install Pi extension to .pi/extensions/
-  const piExtDir = join(targetDir, '.pi', 'extensions');
-  ensureDir(piExtDir);
-  for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
-    writeFile(join(piExtDir, name), content, opts.force, result);
+  // 2b. Copy Codex skill files to .agents/skills/<name>/SKILL.md
+  if (wants('codex')) {
+    const codexSkillsDir = join(targetDir, '.agents', 'skills');
+    for (const [filename, content] of Object.entries(CODEX_SKILLS)) {
+      const skillName = filename.replace(/\.md$/, '');
+      const skillDir = join(codexSkillsDir, skillName);
+      ensureDir(skillDir);
+      writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
+    }
   }
 
-  // 2f. Install Pi subagent definitions to .pi/agents/
-  const piAgentsDir = join(targetDir, '.pi', 'agents');
-  ensureDir(piAgentsDir);
-  for (const [name, content] of Object.entries(PI_AGENTS)) {
-    writeFile(join(piAgentsDir, name), content, opts.force, result);
+  // 2c–2f. Install the Pi harness: skills, runtime scripts, extension, subagents.
+  if (wants('pi')) {
+    const piSkillsDir = join(targetDir, '.pi', 'skills');
+    for (const [filename, content] of Object.entries(PI_SKILLS)) {
+      const skillName = filename.replace(/\.md$/, '');
+      const skillDir = join(piSkillsDir, skillName);
+      ensureDir(skillDir);
+      writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
+    }
+
+    const piScriptsDir = join(targetDir, '.pi', 'scripts', 'joycraft');
+    ensureDir(piScriptsDir);
+    for (const [name, content] of Object.entries(PI_SCRIPTS)) {
+      const scriptPath = join(piScriptsDir, name);
+      writeFile(scriptPath, content, opts.force, result);
+      if (name !== 'README.md') {
+        try { chmodSync(scriptPath, 0o755); } catch { /* non-fatal */ }
+      }
+    }
+
+    const piExtDir = join(targetDir, '.pi', 'extensions');
+    ensureDir(piExtDir);
+    for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
+      writeFile(join(piExtDir, name), content, opts.force, result);
+    }
+
+    const piAgentsDir = join(targetDir, '.pi', 'agents');
+    ensureDir(piAgentsDir);
+    for (const [name, content] of Object.entries(PI_AGENTS)) {
+      writeFile(join(piAgentsDir, name), content, opts.force, result);
+    }
   }
 
   // 3. Copy template files to docs/templates/
@@ -173,7 +177,9 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     result.skipped.push(claudeMdPath);
   } else {
     const projectName = basename(targetDir);
-    const content = generateCLAUDEMd(projectName, stack, existingSkills);
+    const content = generateCLAUDEMd(projectName, stack, existingSkills, {
+      privateProfile: gitignoreProfile === 'private',
+    });
     writeFileSync(claudeMdPath, content, 'utf-8');
     result.created.push(claudeMdPath);
   }
@@ -184,38 +190,47 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     result.skipped.push(agentsMdPath);
   } else {
     const projectName = basename(targetDir);
-    const content = generateAgentsMd(projectName, stack);
+    const content = generateAgentsMd(projectName, stack, gitignoreProfile === 'private');
     writeFileSync(agentsMdPath, content, 'utf-8');
     result.created.push(agentsMdPath);
   }
 
-  // 6. Write the hidden state (.claude/.joycraft/state.json) with hashes of all managed files
+  // 6. Write the hidden state (docs/.joycraft/state.json) with hashes of the
+  // files we actually installed. Only hash a harness's files when that harness
+  // was selected — otherwise upgrade would later see the unwritten files as
+  // missing/drifted. Templates are harness-agnostic and always installed.
   const fileHashes: Record<string, string> = {};
-  for (const [filename, content] of Object.entries(SKILLS)) {
-    const skillName = filename.replace(/\.md$/, '');
-    fileHashes[join('.claude', 'skills', skillName, 'SKILL.md')] = hashContent(content);
+  if (wants('claude')) {
+    for (const [filename, content] of Object.entries(SKILLS)) {
+      const skillName = filename.replace(/\.md$/, '');
+      fileHashes[join('.claude', 'skills', skillName, 'SKILL.md')] = hashContent(content);
+    }
   }
-  for (const [filename, content] of Object.entries(CODEX_SKILLS)) {
-    const skillName = filename.replace(/\.md$/, '');
-    fileHashes[join('.agents', 'skills', skillName, 'SKILL.md')] = hashContent(content);
+  if (wants('codex')) {
+    for (const [filename, content] of Object.entries(CODEX_SKILLS)) {
+      const skillName = filename.replace(/\.md$/, '');
+      fileHashes[join('.agents', 'skills', skillName, 'SKILL.md')] = hashContent(content);
+    }
   }
   for (const [filename, content] of Object.entries(TEMPLATES)) {
     fileHashes[join('docs', 'templates', filename)] = hashContent(content);
   }
-  for (const [filename, content] of Object.entries(PI_SKILLS)) {
-    const skillName = filename.replace(/\.md$/, '');
-    fileHashes[join('.pi', 'skills', skillName, 'SKILL.md')] = hashContent(content);
+  if (wants('pi')) {
+    for (const [filename, content] of Object.entries(PI_SKILLS)) {
+      const skillName = filename.replace(/\.md$/, '');
+      fileHashes[join('.pi', 'skills', skillName, 'SKILL.md')] = hashContent(content);
+    }
+    for (const [name, content] of Object.entries(PI_SCRIPTS)) {
+      fileHashes[join('.pi', 'scripts', 'joycraft', name)] = hashContent(content);
+    }
+    for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
+      fileHashes[join('.pi', 'extensions', name)] = hashContent(content);
+    }
+    for (const [name, content] of Object.entries(PI_AGENTS)) {
+      fileHashes[join('.pi', 'agents', name)] = hashContent(content);
+    }
   }
-  for (const [name, content] of Object.entries(PI_SCRIPTS)) {
-    fileHashes[join('.pi', 'scripts', 'joycraft', name)] = hashContent(content);
-  }
-  for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
-    fileHashes[join('.pi', 'extensions', name)] = hashContent(content);
-  }
-  for (const [name, content] of Object.entries(PI_AGENTS)) {
-    fileHashes[join('.pi', 'agents', name)] = hashContent(content);
-  }
-  writeVersion(targetDir, getPackageVersion(), fileHashes, gitignoreProfile);
+  writeVersion(targetDir, getPackageVersion(), fileHashes, gitignoreProfile, harnesses);
 
   // 6b. Apply the chosen gitignore profile.
   //   - shared:  ignore only the hidden upgrade-state file (npm-lockfile-style;
@@ -225,6 +240,10 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   // Append-only + create-if-absent + idempotent (never clobbers existing entries).
   applyGitignoreProfile(targetDir, gitignoreProfile);
 
+  // Steps 7–9 configure the Claude Code harness (.claude/hooks + settings.json).
+  // Skip entirely when claude isn't a selected harness — a codex/pi-only install
+  // must not create a .claude/ tree.
+  if (wants('claude')) {
   // 7. Install version check hook
   const hooksDir = join(targetDir, '.claude', 'hooks');
   ensureDir(hooksDir);
@@ -266,6 +285,18 @@ try {
       const innerHooks = h.hooks as Array<Record<string, unknown>> | undefined;
       return innerHooks?.some(ih => typeof ih.command === 'string' && ih.command.includes('joycraft'));
     });
+
+    // Enable Claude Code agent teams (experimental) so skills like
+    // /joycraft-research can fan out to subagents without the user having to
+    // hand-edit settings.json. Idempotent: only set when absent — never clobber
+    // an explicit user value.
+    if (!settings.env) settings.env = {};
+    const env = settings.env as Record<string, unknown>;
+    const envMissing = !('CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS' in env);
+    if (envMissing) {
+      env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = '1';
+    }
+
     if (!hasJoycraftHook) {
       sessionStartHooks.push({
         matcher: '',
@@ -274,8 +305,10 @@ try {
           command: 'node .claude/hooks/joycraft-version-check.mjs',
         }],
       });
+    }
+    if (!hasJoycraftHook || envMissing) {
       writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
-      result.created.push(settingsPath);
+      if (!result.created.includes(settingsPath)) result.created.push(settingsPath);
     }
 
     // 8. Generate and merge permission rules into settings.json
@@ -311,12 +344,13 @@ try {
   const hookResult = installSafeguardHooks(targetDir, [], opts.force, settingsMalformed);
   result.created.push(...hookResult.created);
   result.skipped.push(...hookResult.skipped);
+  } // end if (wants('claude'))
 
   // 10. Check .gitignore for .claude/ exclusion.
   // Only a concern under the `shared` profile, where the intent is to commit
   // skills so teammates get them. Under `private`, ignoring .claude/ is the
   // user's deliberate choice — surfacing a warning there would be wrong.
-  if (gitignoreProfile === 'shared') {
+  if (gitignoreProfile === 'shared' && wants('claude')) {
     const gitignorePath = join(targetDir, '.gitignore');
     if (existsSync(gitignorePath)) {
       const gitignore = readFileSync(gitignorePath, 'utf-8');
@@ -330,11 +364,15 @@ try {
   }
 
   // 11. Print summary
-  printSummary(result, stack, existingSkills, isPi, gitignoreProfile);
+  printSummary(result, stack, existingSkills, isPi, gitignoreProfile, harnesses);
 }
 
-function printSummary(result: InitResult, stack: import('./detect.js').StackInfo, existingSkills: string[] = [], isPi: boolean = false, gitignoreProfile: GitignoreProfile = DEFAULT_GITIGNORE_PROFILE): void {
+function printSummary(result: InitResult, stack: import('./detect.js').StackInfo, existingSkills: string[] = [], isPi: boolean = false, gitignoreProfile: GitignoreProfile = DEFAULT_GITIGNORE_PROFILE, harnesses: Harness[] = []): void {
   console.log('\nJoycraft initialized!\n');
+
+  if (harnesses.length > 0) {
+    console.log(`  Installed harnesses: ${harnesses.join(', ')}`);
+  }
 
   if (stack.language !== 'unknown') {
     const fw = stack.framework ? ` + ${stack.framework}` : '';

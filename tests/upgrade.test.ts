@@ -365,6 +365,35 @@ describe('upgrade', () => {
       expect(gitignore).toContain(STATE_PATH);
     });
 
+    it('migrates the interim .claude/.joycraft state to docs/ and clears the stray .claude/', async () => {
+      // Simulate a Codex-only project from the interim version: skills live in
+      // .agents/, state at the now-legacy .claude/.joycraft/state.json, and the
+      // only thing in .claude/ is that state. After upgrade, state must be at
+      // docs/.joycraft/ and .claude/ must be gone entirely (zero Claude footprint).
+      const codexSkillRel = join('.agents', 'skills', 'joycraft-tune', 'SKILL.md');
+      mkdirSync(dirname(join(tmpDir, codexSkillRel)), { recursive: true });
+      writeFileSync(join(tmpDir, codexSkillRel), 'tune', 'utf-8');
+
+      const legacyClaudeState = join(tmpDir, '.claude', '.joycraft', 'state.json');
+      mkdirSync(dirname(legacyClaudeState), { recursive: true });
+      writeFileSync(
+        legacyClaudeState,
+        JSON.stringify({ version: '0.1.0', files: {}, gitignoreProfile: 'shared', harnesses: ['codex'] }) + '\n',
+        'utf-8'
+      );
+
+      await upgrade(tmpDir, { yes: true });
+
+      // Relocated to docs/, legacy claude-nested state gone, .claude/ removed.
+      expect(existsSync(join(tmpDir, STATE_PATH))).toBe(true);
+      expect(existsSync(legacyClaudeState)).toBe(false);
+      expect(existsSync(join(tmpDir, '.claude'))).toBe(false);
+      // The persisted profile and harness selection survive the relocation.
+      const migrated = readVersion(tmpDir)!;
+      expect(migrated.gitignoreProfile).toBe('shared');
+      expect(migrated.harnesses).toEqual(['codex']);
+    });
+
     it('legacy migration is a silent no-op when no root file exists', async () => {
       await init(tmpDir, { force: false });
       // Fresh install: no legacy root file. Upgrade should not create one.

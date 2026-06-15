@@ -60,25 +60,27 @@ describe('version state location', () => {
     if (dir) rmSync(dir, { recursive: true, force: true });
   }
 
-  it('STATE_PATH is the hidden nested location, not the repo root', () => {
-    expect(STATE_PATH).toBe(join('.claude', '.joycraft', 'state.json'));
+  it('STATE_PATH is the harness-neutral docs/ location, not the repo root', () => {
+    expect(STATE_PATH).toBe(join('docs', '.joycraft', 'state.json'));
   });
 
-  it('writeVersion writes to .claude/.joycraft/state.json and never the root', () => {
+  it('writeVersion writes to docs/.joycraft/state.json and never the root', () => {
     fresh();
     writeVersion(dir, '1.0.0', { 'a.md': hashContent('hello') });
 
-    expect(existsSync(join(dir, '.claude', '.joycraft', 'state.json'))).toBe(true);
+    expect(existsSync(join(dir, 'docs', '.joycraft', 'state.json'))).toBe(true);
     expect(existsSync(join(dir, '.joycraft-version'))).toBe(false);
+    // No foreign-harness footprint — state must not resurrect a .claude/ tree.
+    expect(existsSync(join(dir, '.claude'))).toBe(false);
     cleanup();
   });
 
   it('writeVersion lazy-creates the nested directory', () => {
     fresh();
-    // No .claude/ exists yet — write must create the whole chain.
-    expect(existsSync(join(dir, '.claude'))).toBe(false);
+    // No docs/ exists yet — write must create the whole chain.
+    expect(existsSync(join(dir, 'docs'))).toBe(false);
     writeVersion(dir, '1.0.0', { 'a.md': hashContent('hello') });
-    expect(existsSync(join(dir, '.claude', '.joycraft', 'state.json'))).toBe(true);
+    expect(existsSync(join(dir, 'docs', '.joycraft', 'state.json'))).toBe(true);
     cleanup();
   });
 

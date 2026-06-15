@@ -1,5 +1,9 @@
 import type { StackInfo } from './detect.js';
-import { generateBoundariesSection } from './improve-claude-md.js';
+import {
+  generateBoundariesSection,
+  generatePrivateSetupNote,
+  PRIVATE_SETUP_NOTE_MARKER,
+} from './improve-claude-md.js';
 
 interface Section {
   header: string;
@@ -62,7 +66,7 @@ function generateKeyFilesSection(): string {
   return `## Key Files\n\n| File | Purpose |\n|------|---------|\n| _TODO_ | _Add key files_ |`;
 }
 
-export function generateAgentsMd(projectName: string, stack: StackInfo): string {
+export function generateAgentsMd(projectName: string, stack: StackInfo, privateProfile = false): string {
   const frameworkNote = stack.framework ? ` (${stack.framework})` : '';
   const langLabel = stack.language === 'unknown' ? '' : ` | **Stack:** ${stack.language}${frameworkNote}`;
 
@@ -86,10 +90,14 @@ export function generateAgentsMd(projectName: string, stack: StackInfo): string 
     '',
   ];
 
+  if (privateProfile) {
+    lines.push(generatePrivateSetupNote(), '');
+  }
+
   return lines.join('\n');
 }
 
-export function improveAgentsMd(existing: string, stack: StackInfo): string {
+export function improveAgentsMd(existing: string, stack: StackInfo, privateProfile = false): string {
   const sections = parseSections(existing);
   const additions: string[] = [];
 
@@ -111,6 +119,10 @@ export function improveAgentsMd(existing: string, stack: StackInfo): string {
 
   if (!hasSection(sections, /development/i)) {
     additions.push(generateDevelopmentSection(stack));
+  }
+
+  if (privateProfile && !existing.includes(PRIVATE_SETUP_NOTE_MARKER)) {
+    additions.push(generatePrivateSetupNote());
   }
 
   if (additions.length === 0) {
