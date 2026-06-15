@@ -12,7 +12,7 @@ You are guiding the user through setting up Level 5: the autonomous feedback loo
 
 Check prerequisites:
 
-1. **Project must be initialized.** Look for `.claude/.joycraft/state.json` (older installs may still have a legacy `.joycraft-version` at the repo root). If neither exists, tell the user to run `npx joycraft init` first.
+1. **Project must be initialized.** Look for `docs/.joycraft/state.json` (older installs may still have it at the legacy `.claude/.joycraft/state.json` or a `.joycraft-version` at the repo root). If none exist, tell the user to run `npx joycraft init` first.
 2. **Project should be at Level 4.** Check `docs/joycraft-assessment.md` if it exists. If the project hasn't been assessed yet, suggest running `/joycraft-tune` first. But don't block — the user may know they're ready.
 3. **Git repo with GitHub remote.** This setup requires GitHub Actions. Check for `.git/` and a GitHub remote.
 

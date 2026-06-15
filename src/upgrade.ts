@@ -1,11 +1,12 @@
-import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, readdirSync, chmodSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, rmdirSync, readdirSync, chmodSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
-import { readVersion, writeVersion, hashContent, truncateHash, LEGACY_VERSION_FILE } from './version.js';
+import { readVersion, writeVersion, hashContent, truncateHash, LEGACY_VERSION_FILE, LEGACY_CLAUDE_STATE_PATH, parseGitignoreProfile } from './version.js';
 import { applyGitignoreProfile, resolveGitignoreProfile, validateGitignoreFlag, PRIVATE_UNTRACK_COMMAND } from './gitignore.js';
 import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
+import { HARNESSES, sanitizeHarnesses, type Harness } from './harness.js';
 
 function isStaleVersion(current: string, latest: string): boolean {
   const currentParts = current.split('.').map(Number);
@@ -50,31 +51,46 @@ interface FileChange {
   kind: 'new' | 'updated' | 'customized';
 }
 
-function getManagedFiles(): Record<string, string> {
+/**
+ * Build the managed-file map for the diff/apply loop, scoped to the installed
+ * harnesses. A Codex-only project must not have Claude/Pi files added back on
+ * upgrade. `harnesses` comes from persisted state; callers pass all three for
+ * back-compat when the project predates harness selection. Templates are
+ * harness-agnostic and always included.
+ */
+function getManagedFiles(harnesses: readonly Harness[]): Record<string, string> {
   const files: Record<string, string> = {};
-  for (const [name, content] of Object.entries(SKILLS)) {
-    const skillName = name.replace(/\.md$/, '');
-    files[join('.claude', 'skills', skillName, 'SKILL.md')] = content;
+  const wants = (h: Harness): boolean => harnesses.includes(h);
+
+  if (wants('claude')) {
+    for (const [name, content] of Object.entries(SKILLS)) {
+      const skillName = name.replace(/\.md$/, '');
+      files[join('.claude', 'skills', skillName, 'SKILL.md')] = content;
+    }
   }
   for (const [name, content] of Object.entries(TEMPLATES)) {
     files[join('docs', 'templates', name)] = content;
   }
-  for (const [name, content] of Object.entries(CODEX_SKILLS)) {
-    const skillName = name.replace(/\.md$/, '');
-    files[join('.agents', 'skills', skillName, 'SKILL.md')] = content;
+  if (wants('codex')) {
+    for (const [name, content] of Object.entries(CODEX_SKILLS)) {
+      const skillName = name.replace(/\.md$/, '');
+      files[join('.agents', 'skills', skillName, 'SKILL.md')] = content;
+    }
   }
-  for (const [name, content] of Object.entries(PI_SKILLS)) {
-    const skillName = name.replace(/\.md$/, '');
-    files[join('.pi', 'skills', skillName, 'SKILL.md')] = content;
-  }
-  for (const [name, content] of Object.entries(PI_SCRIPTS)) {
-    files[join('.pi', 'scripts', 'joycraft', name)] = content;
-  }
-  for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
-    files[join('.pi', 'extensions', name)] = content;
-  }
-  for (const [name, content] of Object.entries(PI_AGENTS)) {
-    files[join('.pi', 'agents', name)] = content;
+  if (wants('pi')) {
+    for (const [name, content] of Object.entries(PI_SKILLS)) {
+      const skillName = name.replace(/\.md$/, '');
+      files[join('.pi', 'skills', skillName, 'SKILL.md')] = content;
+    }
+    for (const [name, content] of Object.entries(PI_SCRIPTS)) {
+      files[join('.pi', 'scripts', 'joycraft', name)] = content;
+    }
+    for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
+      files[join('.pi', 'extensions', name)] = content;
+    }
+    for (const [name, content] of Object.entries(PI_AGENTS)) {
+      files[join('.pi', 'agents', name)] = content;
+    }
   }
   return files;
 }
@@ -140,14 +156,22 @@ function cleanupDeprecatedSkills(targetDir: string): number {
 }
 
 /**
- * Self-heal projects inited by an older Joycraft that wrote state to the repo
- * root (`.joycraft-version`). Reads the legacy file, re-writes it to the hidden
- * `.claude/.joycraft/state.json` location, and deletes the root file. No-op
- * when no legacy root file exists.
+ * Self-heal projects inited by an older Joycraft that wrote state to a now-legacy
+ * location, relocating it to the current harness-neutral `docs/.joycraft/state.json`.
+ * Two legacy homes are handled, in precedence order:
+ *   1. `.claude/.joycraft/state.json` — the interim Claude-nested location.
+ *   2. `.joycraft-version` — the original repo-root file.
+ * The newer (Claude-nested) source wins when both somehow exist. Returns true
+ * if any legacy file was found (and removed), false when there's nothing to do.
+ *
+ * Beyond moving the data, this also clears the foreign-harness footprint: after
+ * migrating away from `.claude/.joycraft/`, the emptied `.joycraft/` (and an
+ * emptied `.claude/`) are removed so a Codex/Pi-only project stops carrying a
+ * stray `.claude/` it never asked for.
  *
  * Gitignore handling is deliberately NOT done here: the profile isn't resolved
  * yet at this point in upgrade(), and applyGitignoreProfile later in the same
- * run covers the state entry (shared) or the whole .claude/ tree (private) —
+ * run covers the state entry (shared) or the whole harness trees (private) —
  * writing the state entry here would leave a dead line under `private`.
  *
  * Runs BEFORE the managed-file diff so the recorded-original hashes are
@@ -156,17 +180,26 @@ function cleanupDeprecatedSkills(targetDir: string): number {
  * comparison stays consistent — see the truncateHash() call in the diff loop.
  */
 function migrateLegacyVersionFile(targetDir: string): boolean {
-  const legacyPath = join(targetDir, LEGACY_VERSION_FILE);
-  if (!existsSync(legacyPath)) return false;
+  // Prefer the newer Claude-nested state, then the original root file.
+  const claudeStatePath = join(targetDir, LEGACY_CLAUDE_STATE_PATH);
+  const rootStatePath = join(targetDir, LEGACY_VERSION_FILE);
+  const legacyPath = existsSync(claudeStatePath)
+    ? claudeStatePath
+    : existsSync(rootStatePath)
+      ? rootStatePath
+      : null;
+  if (legacyPath === null) return false;
 
-  let parsed: { version?: unknown; files?: unknown };
+  let parsed: { version?: unknown; files?: unknown; gitignoreProfile?: unknown; harnesses?: unknown };
   try {
     parsed = JSON.parse(readFileSync(legacyPath, 'utf-8'));
   } catch {
-    // Corrupt legacy file: treat as no usable baseline. Remove it so the root
-    // stops being polluted; upgrade then proceeds with no recorded-original
-    // (every changed file becomes "customized" — safe, never silently wrong).
+    // Corrupt legacy file: treat as no usable baseline. Remove it so the old
+    // location stops being polluted; upgrade then proceeds with no
+    // recorded-original (every changed file becomes "customized" — safe, never
+    // silently wrong).
     rmSync(legacyPath, { force: true });
+    cleanupEmptyClaudeState(targetDir);
     return true;
   }
 
@@ -175,13 +208,34 @@ function migrateLegacyVersionFile(targetDir: string): boolean {
     parsed.files && typeof parsed.files === 'object'
       ? (parsed.files as Record<string, string>)
       : {};
+  // Carry forward the profile and harness selection recorded in the legacy
+  // state. (The root-file format predates both fields, so they're typically
+  // absent there — harmless.) Passing them explicitly matters here: the new
+  // docs/ state doesn't exist yet, so writeVersion has nothing to preserve them
+  // from. Dropping harnesses would make the later getManagedFiles() fall back to
+  // all three and resurrect a .claude/ on a Codex/Pi-only project.
+  const profile = parseGitignoreProfile(parsed.gitignoreProfile) ?? undefined;
+  const harnesses = sanitizeHarnesses(parsed.harnesses) ?? undefined;
 
-  // writeVersion targets the new hidden path and truncates the hashes. A
-  // gitignoreProfile already persisted in the hidden state is preserved
-  // (writeVersion keeps it when the argument is omitted).
-  writeVersion(targetDir, version, files);
+  // writeVersion targets the new docs/ path and truncates the hashes.
+  writeVersion(targetDir, version, files, profile, harnesses);
   rmSync(legacyPath, { force: true });
+  cleanupEmptyClaudeState(targetDir);
   return true;
+}
+
+/**
+ * After migrating away from `.claude/.joycraft/state.json`, remove the now-empty
+ * `.claude/.joycraft/` directory — and `.claude/` itself if Joycraft's state was
+ * the only thing in it (a Codex/Pi-only install that should never have had a
+ * `.claude/`). Best-effort: a `.claude/` holding skills, hooks, or settings is
+ * left untouched. rmdir on a non-empty dir throws, which we swallow.
+ */
+function cleanupEmptyClaudeState(targetDir: string): void {
+  const joycraftDir = join(targetDir, '.claude', '.joycraft');
+  const claudeDir = join(targetDir, '.claude');
+  try { rmdirSync(joycraftDir); } catch { /* non-empty or absent — leave it */ }
+  try { rmdirSync(claudeDir); } catch { /* non-empty or absent — leave it */ }
 }
 
 function countLines(content: string): number {
@@ -304,7 +358,9 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
 
   // Check if project was initialized. A project is "initialized" if it has the
   // hidden state, OR a known skill, OR a legacy root state file (pre-relocation).
-  const hasLegacyState = existsSync(join(targetDir, LEGACY_VERSION_FILE));
+  const hasLegacyState =
+    existsSync(join(targetDir, LEGACY_VERSION_FILE)) ||
+    existsSync(join(targetDir, LEGACY_CLAUDE_STATE_PATH));
   const hasSkill = existsSync(join(targetDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))
     || existsSync(join(targetDir, '.claude', 'skills', 'tune', 'SKILL.md'))
     || existsSync(join(targetDir, '.claude', 'skills', 'joy', 'SKILL.md'))
@@ -316,9 +372,10 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
     return;
   }
 
-  // Relocate any legacy repo-root .joycraft-version → hidden state, BEFORE the
-  // diff loop so the migrated recorded-original is used on this same run. No-op
-  // when no legacy root file exists.
+  // Relocate any legacy state (root .joycraft-version or the interim
+  // .claude/.joycraft/state.json) → docs/.joycraft/state.json, BEFORE the diff
+  // loop so the migrated recorded-original is used on this same run. No-op when
+  // no legacy file exists.
   migrateLegacyVersionFile(targetDir);
 
   // Clean up deprecated skill directories/files from older versions
@@ -338,10 +395,15 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
 
   // If version matches exactly, check if any file content actually changed.
   // Re-read state AFTER migration so a just-migrated project's recorded-original
-  // hashes (now at the hidden path) feed the comparison below.
-  const managedFiles = getManagedFiles();
+  // hashes (now at the new path) feed the comparison below.
   const installed = readVersion(targetDir);
   const installedHashes = installed?.files ?? {};
+
+  // Scope the upgrade to the harnesses this project installed. State written
+  // before harness selection has no `harnesses` field → fall back to all three
+  // so existing projects keep getting every harness refreshed (back-compat).
+  const harnesses: readonly Harness[] = installed?.harnesses ?? HARNESSES;
+  const managedFiles = getManagedFiles(harnesses);
 
   // Resolve the project's gitignore profile.
   //   - --gitignore flag: explicit choice — the non-interactive way to set or
