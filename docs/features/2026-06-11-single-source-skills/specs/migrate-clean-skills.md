@@ -1,5 +1,5 @@
 ---
-status: retired
+status: done
 owner: Maximilian Maksutovic
 created: 2026-06-14
 feature: 2026-06-11-single-source-skills

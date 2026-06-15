@@ -324,3 +324,76 @@ Then verify: `pnpm build && pnpm test --run`
 
 **Skills with NO out-of-category differences (11 of 20):**
 joycraft-add-context, joycraft-bugfix, joycraft-collaborative-setup, joycraft-gather-context, joycraft-interview, joycraft-optimize, joycraft-session-end, joycraft-setup, joycraft-spec-done, joycraft-tune, joycraft-implement-level5
+
+---
+
+## Q3 RE-AUDIT (strict, 2026-06-14)
+
+The original Q3 was performed with an overly broad "Category 5" that included "harness-specific paragraphs" like Recommended Next Steps blocks, backlog sections, YAML frontmatter blocks, and shared-frontmatter logic. Treating those structural differences as allowlisted led to a count of 11 clean skills. Implementing spec 3 (migrate-clean-skills) revealed those skills are NOT byte-equivalent under just the 4-variable substitution + `instructions:` strip — the POC on `joycraft-add-context` failed.
+
+**Strict allowlist (only these are NOT drift):**
+- **Cat A** — `skill_prefix`: `/joycraft-` / `$joycraft-` / `/skill:joycraft-`
+- **Cat B** — `clear` verb: `/clear` / `run \`/clear\` in the CLI, or press Cmd+N (Ctrl+N on Windows/Linux) for a new thread in the desktop/IDE app` / `/new`
+- **Cat C** — `skills_dir`: `.claude/skills` / `.agents/skills` / `.pi/skills`
+- **Cat D** — `boundary_file`: `CLAUDE.md` / `AGENTS.md` / `CLAUDE.md and/or AGENTS.md`
+- **Cat E** — frontmatter `instructions:` line present in claude only
+
+Anything else (abstracted phrasings, section drift, content rewrites, em-dash vs `--`, missing sections, non-allowlisted boundary forms like `CLAUDE.md or AGENTS.md` or `AGENTS.md` alone) makes the skill DIRTY.
+
+### Strict verdicts
+
+**CLEAN (2 of 20):** `joycraft-collaborative-setup`, `joycraft-setup`
+
+**DIRTY (18 of 20):**
+| Skill | One-line drift |
+|---|---|
+| joycraft-add-context | abstracted boundary phrasing in Step 4; "Recommended Next Steps" + Handoff block absent in codex/pi |
+| joycraft-add-fact | Step 5b "Update Shared Frontmatter" block + Recommended Next Steps absent in codex/pi; boundary abstraction |
+| joycraft-bugfix | "Read source files" → "Search the codebase and read files"; spec-template body fully rewritten; section drift |
+| joycraft-decompose | "worktrees" → "branches"; YAML frontmatter block in claude only; Step 7 README-write replaced by Hand-Off; pi adds Pi-loop content |
+| joycraft-design | YAML frontmatter + owner-resolution + backlog section + Recommended Next Steps in claude only; "Spawn subagents" → "Spawn concurrent subagent threads" |
+| joycraft-gather-context | boundary abstraction; "Confirm and Hand Off" → "Confirm"; Recommended Next Steps absent in codex/pi |
+| joycraft-implement | Step 2 "Read the Sibling README.md FIRST" block absent in codex/pi; isolated-mode bullet list rewritten differently per harness; pi-only loop-iteration check |
+| joycraft-implement-feature | 3 different descriptions; 3 different Step 2 mechanics (subagent loop vs in-conversation chain vs `joycraft-implement-loop`); pi collapses Step 3/4 |
+| joycraft-implement-level5 | em-dash → ASCII `--` on ~10 lines; "Look for" → "Search for"; "Step 6: Update CLAUDE.md" → "Update AGENTS.md" (not allowlisted Cat D form); "Claude autofix" → "Autofix agent" |
+| joycraft-interview | slug-derivation + YAML frontmatter + backlog-capture sections in claude only; Handoff replaced by tiered "SIMPLE/MEDIUM/COMPLEX" listing |
+| joycraft-lockdown | `CLAUDE.md` → `AGENTS.md` (not allowlisted Cat D form); `.claude/settings.json` → "Codex configuration"; permission-mode table rewritten as sandbox table |
+| joycraft-new-feature | YAML frontmatter blocks + per-spec backlog content in claude only; "Parallel worktrees" → "Parallel"; Phase 3.5 absent in codex/pi |
+| joycraft-optimize | `CLAUDE.md/AGENTS.md` (not allowlisted Cat D form); "settings.json" → "config" |
+| joycraft-research | "Scanning Prior Research" + "Good/Bad examples" + Edge Cases sections in claude only; pi adds `subagent` tool with `joycraft-researcher` agent |
+| joycraft-session-end | YAML frontmatter + shared-frontmatter block in claude only; `CLAUDE.md` → `CLAUDE.md or AGENTS.md` (not allowlisted Cat D form); Recommended Next Steps absent in codex/pi |
+| joycraft-spec-done | pi-only "On the Pi isolated-mode loop" paragraph; codex/pi add `Run /clear before your next step` line absent in claude; code-fence wrapping differs |
+| joycraft-tune | "Check for:" → "Search the codebase for:"; `.claude/settings.json` deny patterns → "deny patterns configuration" |
+| joycraft-verify | `CLAUDE.md` → `CLAUDE.md or AGENTS.md` (not allowlisted Cat D form); 3 different subagent-invocation rewrites; pi adds `subagent` + `joycraft-verifier` agent |
+
+### Drift-type buckets (skills can fall in multiple)
+
+| Bucket | Count | Notes |
+|---|---|---|
+| Abstracted/non-allowlisted boundary forms | 10 | 5 different shapes appear in the codebase; only `CLAUDE.md and/or AGENTS.md` is allowlisted |
+| Section drift | 14 | Mostly: YAML frontmatter blocks (7), Recommended Next Steps/Handoff (9), backlog-capture sections (4) |
+| Content rewrites | 17 | Dominant pattern: "Read X" → "Search the codebase for X" |
+| Formatting drift | 3 | implement-level5 (em-dash → `--`); implement, spec-done (code-fence wrapping) |
+
+### Inter-variant divergence (not just claude vs the rest)
+
+4 skills have codex and pi diverging from each other, not just both from claude:
+- `joycraft-implement-feature` — codex "chain" vs pi `joycraft-implement-loop` shell command
+- `joycraft-implement` — codex 4-bullet vs pi single fenced command
+- `joycraft-research` — pi-only `subagent` + `joycraft-researcher` agent
+- `joycraft-verify` — codex "concurrent subagent thread" + read-only paragraph vs pi `subagent` + `joycraft-verifier`
+
+Also: `joycraft-decompose` and `joycraft-spec-done` carry pi-specific content (Pi-loop language, `pi -p` process-loop) not in codex.
+
+### Substitution-category inconsistencies inside the codebase
+
+The strict definition's allowlist assumes the codebase already uses one canonical form per category. It doesn't:
+
+- **Cat B** — codex variants in 3+ skills (`collaborative-setup`, `spec-done`, `implement`) keep the literal `/clear` rather than the multi-surface long form. (Same text in claude and codex → no delta → not marked dirty for that reason alone, but it signals incomplete authoring.)
+- **Cat D** — the codebase uses 5 different boundary forms (only one allowlisted): `the project boundary file`, `CLAUDE.md and/or AGENTS.md` (allowlisted), `CLAUDE.md or AGENTS.md`, `CLAUDE.md/AGENTS.md`, and bare `AGENTS.md`.
+
+### Implications for spec 3 / spec 4 decomposition
+
+- **Spec 3 (migrate-clean-skills)** was scoped for 11 skills, only 2 of which are clean by the strict definition. The spec needs to either (a) be re-scoped to those 2 skills, or (b) be merged into spec 4 since the work is uniformly "author canonical + resolve drift".
+- **Spec 4 (migrate-dirty-skills)** was scoped for 9 skills. The strict re-audit puts it at 18 skills, with several requiring `<!-- harness:NAME -->` blocks (e.g. `joycraft-implement-feature`'s 3-way Step 2 mechanic split) or per-harness content unification calls (e.g. consistency on the Cat D boundary form across all 20 skills).
+- The Cat D inconsistency (5 forms, only 1 allowlisted) is the most pervasive drift and should be addressed before per-skill migration — pick one canonical form, sweep all 20 skills, then migrate. Doing the sweep first reduces drift surface and lets more skills be authored as truly clean canonicals.

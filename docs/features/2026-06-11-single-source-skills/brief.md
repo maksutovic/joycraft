@@ -19,7 +19,7 @@ feature: 2026-06-11-single-source-skills
 
 Today, joycraft maintains 20 skills × 3 harness variants (`src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/`) = 60 hand-synced markdown files (~450KB). Every skill edit costs three files; this week's frictionless-implement feature touched 12 files for 4 logical skills. Drift between variants has already accumulated and is invisible until someone reads side-by-side.
 
-We replace the three source dirs with **one canonical skill per file** in `src/skills/` (filenames keep the `joycraft-` prefix), plus a **build-time transform** extracted to `scripts/lib/skill-template.mjs` and orchestrated from `scripts/generate-bundled-files.mjs`. The transform uses three primitives: `{{var}}` substitution from a fixed 4-variable lookup (`skill_prefix`, `clear`, `skills_dir`, `boundary_file`), `<!-- harness:NAME -->` conditional blocks (pipe-lists like `claude|codex` allowed), and per-harness frontmatter field stripping. Research surfaced 9 of 20 skills with out-of-category structural deltas; design resolved 4 of them (`research`, `verify`, `lockdown`, `implement-feature`) as needing real conditional blocks and the other 5 as drift to unify on claude-fullness. Making it data eliminates the N×3 edit cost and gives us a single place to land changes.
+We replace the three source dirs with **one canonical skill per file** in `src/skills/` (filenames keep the `joycraft-` prefix), plus a **build-time transform** extracted to `scripts/lib/skill-template.mjs` and orchestrated from `scripts/generate-bundled-files.mjs`. The transform uses three primitives: `{{var}}` substitution from a fixed 4-variable lookup (`skill_prefix`, `clear`, `skills_dir`, `boundary_file`), `<!-- harness:NAME -->` conditional blocks (pipe-lists like `claude|codex` allowed), and per-harness frontmatter field stripping. Initial research surfaced 9 of 20 skills with out-of-category deltas; a strict re-audit (after spec 3's POC failed) revised that to **2 strictly-clean / 18 dirty** and surfaced a pervasive Cat D boundary-form drift (5 different in-the-wild forms across the codebase). Of the 18 dirty skills, 4 (`research`, `verify`, `lockdown`, `implement-feature`) need real conditional blocks; the remaining 14 are drift to unify on claude-fullness. Sweeping Cat D first across all 20 skills × 3 harnesses reduces drift surface before any per-skill migration. Making it data eliminates the N×3 edit cost and gives us a single place to land changes.
 
 The generator continues to emit the three `src/*-skills/` dirs and they stay committed — PR diffs show canonical + all three generated outputs so deltas are reviewable at merge time. This is invisible to users: `npx joycraft init` still installs three dirs into user repos; only joycraft's own build pipeline changes. A 4th harness (or future plugin variant) becomes a generator change, not 20 new files.
 
@@ -67,30 +67,36 @@ The generator continues to emit the three `src/*-skills/` dirs and they stay com
 
 ## Decomposition
 
-| # | Spec Name | Description | Dependencies | Est. Size |
-|---|-----------|-------------|--------------|-----------|
-| 1 | substitution-engine | Implement `applyTemplate(source, harness)` in `scripts/lib/skill-template.mjs` as a pure function. Three primitives: `{{var}}` from fixed lookup, `<!-- harness:NAME -->` conditional blocks (pipe-list NAME), per-harness frontmatter field strip. Throws on unknown variable. Unit tests for each transform in `tests/skill-template.test.ts`. | None | M |
-| 2 | wire-generator-pipeline | Update `scripts/generate-bundled-files.mjs` to read `src/skills/` → apply transforms per harness → write `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/` → re-read those dirs → emit `src/bundled-files.ts` exactly as today. Add residue assertions (no `{{`, no unclosed `<!-- harness:` block) to `tests/generate-bundled-files.test.ts`. | 1 | M |
-| 3 | migrate-clean-skills | Move the 11 skills with NO out-of-category deltas (per research.md Q3) to `src/skills/` as canonical sources. Start with `joycraft-add-context` as proof-of-concept; verify generated variants `diff` cleanly against existing committed variants; then the other 10 alphabetically. Bundle regen + count assertions in same commit. | 2 | L |
-| 4 | migrate-dirty-skills | Move the 9 out-of-category skills to `src/skills/`. For 4 (`research`, `verify`, `lockdown`, `implement-feature`) use `<!-- harness:NAME -->` conditional blocks; for the other 5 (`add-fact`, `decompose`, `design`, `implement`, `new-feature`) unify on claude-fullness. Per-skill PR review with rationale in PR description (no separate discovery doc). | 3 | L |
-| 5 | update-contributor-docs | Update `docs/guides/agent-compatibility.md` with the canonical format, variable reference, harness-block syntax, and "edit canonical, not the per-harness dirs" guidance. Fix the outdated manual-regen snippet in `CONTRIBUTING.md:91-128` (just point at `pnpm build`). | 4 | S |
-| 6 | brief-reconciliation-step | Add a "Reconcile brief with findings" step to both `/joycraft-design` and `/joycraft-research` skills. The step instructs: after writing design.md/research.md, re-read the parent brief; for each of {Vision, Hard Constraints, Out of Scope, Decomposition, Test Strategy, Success Criteria}, check whether findings invalidate or refine it; either edit the brief in place or present a diff and stop for user approval if changes are non-trivial. Closes the silent-drift gap we hit on this very feature. Lives in canonical `src/skills/joycraft-design.md` and `src/skills/joycraft-research.md` (post-migration). | 4 | S |
+> **Re-decomposed 2026-06-14** after spec 3's POC on `joycraft-add-context` failed against the original "11 clean / 9 dirty" split. The strict Q3 re-audit in research.md re-bucketed skills as 2 clean / 18 dirty and surfaced pervasive Cat D boundary-form drift (5 in-the-wild forms across the codebase). Specs 1 & 2 were left untouched (engine + pipeline are correct and `in-review`); specs 3–8 below replace the old specs 3–6.
+
+| # | Spec Name | Description | Dependencies | Est. Size | Status |
+|---|-----------|-------------|--------------|-----------|--------|
+| 1 | substitution-engine | Implement `applyTemplate(source, harness)` in `scripts/lib/skill-template.mjs` as a pure function. Three primitives: `{{var}}` from fixed lookup, `<!-- harness:NAME -->` conditional blocks (pipe-list NAME), per-harness frontmatter field strip. Throws on unknown variable. Unit tests for each transform in `tests/skill-template.test.ts`. | None | M | in-review |
+| 2 | wire-generator-pipeline | Update `scripts/generate-bundled-files.mjs` to read `src/skills/` → apply transforms per harness → write `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/` → re-read those dirs → emit `src/bundled-files.ts` exactly as today. Add residue assertions (no `{{`, no unclosed `<!-- harness:` block) to `tests/generate-bundled-files.test.ts`. | 1 | M | in-review |
+| 3 | canonicalize-boundary-forms | Sweep all 20 skills × 3 harnesses to one canonical Cat D form. Per research.md "Substitution-category inconsistencies": 5 in-the-wild boundary forms exist (`the project boundary file`, `CLAUDE.md and/or AGENTS.md`, `CLAUDE.md or AGENTS.md`, `CLAUDE.md/AGENTS.md`, bare `AGENTS.md`); pick the allowlisted form and unify. No `src/skills/` work yet — just clean up per-harness dirs so downstream migrations have less drift to fight. Bundle regen in same commit. | 2 | M | todo |
+| 4 | migrate-clean-skills (strict) | Migrate the 2 strictly-clean skills (`joycraft-collaborative-setup`, `joycraft-setup`) to `src/skills/`. POC + small batch, proves the engine against real content with zero policy decisions. Generated variants must diff cleanly against `main`. | 3 | S | todo |
+| 5 | migrate-dirty-unify | Migrate the ~14 dirty skills whose deltas are "claude has X, codex/pi don't" — unify on claude-fullness, no conditional blocks. May land in batches by drift bucket (Recommended Next Steps + Handoff, YAML frontmatter, backlog sections). PR description is the audit trail; no discovery doc per design.md Section 4. | 4 | L | todo |
+| 6 | migrate-dirty-conditional | Migrate the 4 skills with genuinely harness-specific machinery using `<!-- harness:NAME -->` blocks: `joycraft-research`, `joycraft-verify`, `joycraft-lockdown`, `joycraft-implement-feature`. Also handles the inter-variant divergences (research.md "Inter-variant divergence" — pi-specific `subagent` invocation, codex/pi-divergent `implement-feature` mechanics, etc.). | 5 | L | todo |
+| 7 | update-contributor-docs | Update `docs/guides/agent-compatibility.md` with the canonical format, variable reference, harness-block syntax, canonical Cat D form, and "edit canonical, not the per-harness dirs" guidance. Fix the outdated manual-regen snippet in `CONTRIBUTING.md:91-128` (point at `pnpm build`). | 6 | S | todo |
+| 8 | brief-reconciliation-step | Add a "Reconcile brief with findings" step to canonical `joycraft-design` and `joycraft-research`. The step instructs: after writing design.md/research.md, re-read the parent brief; for each of {Vision, Hard Constraints, Out of Scope, Decomposition, Test Strategy, Success Criteria}, check whether findings invalidate or refine it; either edit the brief in place or present a diff and stop for user approval. Closes the silent-drift gap that caused this very re-decomposition. Lives in canonical `src/skills/joycraft-design.md` and `src/skills/joycraft-research.md` (post-migration). | 6 | S | todo |
 
 ## Execution Strategy
 
 - [ ] Sequential (specs have chain dependencies)
 - [ ] Parallel worktrees
-- [x] **Mixed** (linear chain through wave 4, then parallel-safe wave 5)
+- [x] **Mixed** (linear chain through wave 6, then parallel-safe wave 7)
 
 **Waves** (see `specs/README.md` for the detailed table):
 
-- **Wave 1:** spec 1 (substitution-engine) — sequential.
-- **Wave 2:** spec 2 (wire-generator-pipeline) — sequential, depends on 1.
-- **Wave 3:** spec 3 (migrate-clean-skills) — sequential, depends on 2; `joycraft-add-context` is the POC, the other 10 follow alphabetically.
-- **Wave 4:** spec 4 (migrate-dirty-skills) — sequential, depends on 3; may land in multiple PRs (4-conditional-block PR + 5-unify PR is a reasonable split).
-- **Wave 5:** specs 5 (update-contributor-docs) + 6 (brief-reconciliation-step) — **parallel-safe** (Affected Files disjoint). Merge order: spec 5 first (docs-only, no regen), then spec 6 (regenerates bundle) to avoid bundle merge conflict.
+- **Wave 1:** spec 1 (substitution-engine) — sequential. ✓ in-review.
+- **Wave 2:** spec 2 (wire-generator-pipeline) — sequential, depends on 1. ✓ in-review.
+- **Wave 3:** spec 3 (canonicalize-boundary-forms) — sequential, depends on 2. Sweep precedes per-skill migration to reduce drift.
+- **Wave 4:** spec 4 (migrate-clean-skills strict) — sequential, depends on 3. 2-skill POC validates the engine end-to-end against real content.
+- **Wave 5:** spec 5 (migrate-dirty-unify) — sequential, depends on 4. May land in 2–3 PRs by drift bucket.
+- **Wave 6:** spec 6 (migrate-dirty-conditional) — sequential, depends on 5. Highest-judgment work last, on a clean foundation.
+- **Wave 7:** specs 7 (update-contributor-docs) + 8 (brief-reconciliation-step) — **parallel-safe** (Affected Files disjoint). Merge order: spec 7 first (docs-only, no regen), then spec 8 (regenerates bundle) to avoid bundle merge conflict.
 
-**Mode assignments:** specs 1, 2 = `checkpoint`; specs 3, 4 = `isolated`; specs 5, 6 = `batch`. Project default is `batch` (no `**Default execution mode:**` in CLAUDE.md); larger specs were upgraded to checkpoint/isolated per the size→mode heuristic in `joycraft-decompose`.
+**Mode assignments:** specs 1, 2, 3 = `checkpoint`; spec 4 = `checkpoint` (small batch, low risk); specs 5, 6 = `isolated`; specs 7, 8 = `batch`. Project default is `batch` (no `**Default execution mode:**` in CLAUDE.md); larger/judgment-heavier specs were upgraded per the size→mode heuristic.
 
 ## Success Criteria
 
@@ -101,4 +107,5 @@ The generator continues to emit the three `src/*-skills/` dirs and they stay com
 - [ ] `docs/guides/agent-compatibility.md` describes the canonical format and points contributors to `src/skills/`; `CONTRIBUTING.md` regen snippet fixed.
 - [ ] No regression in existing skills' behavior — `joycraft-implement`, `joycraft-decompose`, `joycraft-session-end`, etc. all still work in their respective harnesses.
 - [ ] Generator throws fast on unknown `{{x}}` variables.
-- [ ] `/joycraft-design` and `/joycraft-research` skills include a reconciliation step that updates the parent brief when findings invalidate Vision / Hard Constraints / Out of Scope / Decomposition / Test Strategy / Success Criteria. The very gap we hit on this feature (brief drifted from design until the user asked "is brief in lockstep with design?") cannot silently recur.
+- [ ] `/joycraft-design` and `/joycraft-research` skills include a reconciliation step that updates the parent brief when findings invalidate Vision / Hard Constraints / Out of Scope / Decomposition / Test Strategy / Success Criteria. The very gap we hit on this feature (brief said 11 clean / 9 dirty; spec 3's POC revealed only 2 are strictly clean; brief stayed out of sync until manual re-decomposition) cannot silently recur.
+- [ ] After spec 3 lands, all 20 × 3 = 60 per-harness skill files use a single canonical Cat D boundary form. After specs 4–6 land, `src/skills/` contains all 20 canonical files and the per-harness dirs are fully derived.
