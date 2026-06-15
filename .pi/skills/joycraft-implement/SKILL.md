@@ -1,6 +1,6 @@
 ---
 name: joycraft-implement
-description: Execute atomic specs with TDD — read spec, write failing tests, implement until green, hand off to session-end
+description: Execute atomic specs with TDD — read spec, write failing tests, implement until green, wrap up and continue the queue
 ---
 
 # Implement Atomic Spec
@@ -19,19 +19,36 @@ The user MUST provide a path. No path = stop immediately.
 
 **If the path is a directory** (ends with `/` or does not end with `.md`):
 
-Look for `specs/.joycraft-spec-queue.json` inside that directory. Read it. Find the **first `todo` spec whose dependencies are satisfied** (a dependency is satisfied once it is `in-review` or `done`; see `docs/reference/spec-status-lifecycle.md`). This matches what `joycraft-next-spec` serves. That single spec file is your target. Do NOT read any other specs.
+Look for `specs/.joycraft-spec-queue.json` inside that directory. Read it. Find the **first `todo` spec whose dependencies are satisfied** (a dependency is satisfied once it is `in-review` or `done`). This matches what `joycraft-next-spec` serves. That single spec file is your target. Do NOT read any other specs.
 
-> Using spec queue: found [spec-file-name] as the next active spec.
+> Using spec queue: found [spec-file-name] as the next spec.
 
-If the directory has no queue or no active specs:
+If the directory has no queue or no `todo` specs:
 
-> No active specs found in [directory].
+> No remaining specs found in [directory].
 
 **If the path is a file** ending in `.md`:
 
 Use it directly as the spec to implement.
 
-## Step 2: Read and Understand the Spec
+## Step 2: Read the Sibling README.md FIRST (if present)
+
+Before reading the spec itself, check for a sibling `README.md` in the same folder as the spec — i.e., `<spec-path>/../README.md`. This file is the wave-plan + spec-table that `/skill:joycraft-decompose` writes per feature.
+
+- **If present:** Read the README first. It tells you the spec's position in the wave plan, its dependencies, and which sibling specs (in the same folder) need to be done before this one.
+- **If absent:** That's fine — proceed normally. The convention is forward-only and many legacy spec folders pre-date it.
+
+### Warn on Unmet Dependencies
+
+If the README shows that this spec depends on other specs in the same folder, check whether those dependencies are satisfied. A dependency is satisfied once its frontmatter `status:` is `in-review` or `done` (see `docs/reference/spec-status-lifecycle.md`) — a checkpoint chain progresses on `in-review` without waiting for session-end to graduate it to `done`. A dependency still at `todo` is unmet.
+
+If any dependency is **not** complete, tell the user:
+
+> "This spec lists unmet dependencies in the sibling README.md: [list]. Proceed anyway, or stop?"
+
+Wait for confirmation before continuing. The user might be deliberately running out of order (a hotfix, an exploration, etc.) — your job is to surface the warning, not to gate.
+
+## Step 3: Read and Understand the Spec
 
 1. **Read the spec file.** The spec is your execution contract — the Acceptance Criteria and Test Plan define "done."
 2. **Check the spec's Status field.** If it says "Complete," warn the user and ask if they want to re-implement or skip.
@@ -43,8 +60,8 @@ Use it directly as the spec to implement.
 
 Specs are designed to be self-contained, but if you need more context:
 
-- **Parent brief:** Linked in the spec's frontmatter (`> **Parent Brief:**` line). Read it for broader feature context.
-- **Related specs:** Live in the same directory. The spec directory convention is `docs/features/<slug>/specs/` where the slug is the feature folder name (e.g., `2026-04-06-token-discipline`). Bugfix specs live under `docs/bugfixes/<area>/`.
+- **Parent brief:** Linked in the spec's body (`> **Parent Brief:**` line). The new convention is `docs/features/<slug>/brief.md`. Read it for broader feature context.
+- **Related specs:** Live in the same directory (typically `docs/features/<slug>/specs/`). The sibling `README.md` (read in Step 2 above) is the index.
 - **Affected Files:** The spec's Affected Files table tells you which files to create or modify.
 
 
@@ -52,7 +69,7 @@ Specs are designed to be self-contained, but if you need more context:
 
 ⚠️ If the spec references a third-party SDK or package, read its official documentation and type definitions FIRST. Never write a `declare module` stub for a package that actually exists — use the real package as a devDependency instead. The stub will make typecheck pass but the code will fail at runtime.
 
-## Step 3: Execute the TDD Cycle
+## Step 4: Execute the TDD Cycle
 
 **This is not optional. Write tests FIRST.**
 
@@ -83,54 +100,51 @@ Walk through every Acceptance Criterion in the spec:
 
 If any criterion is not met, keep implementing. Do not move on until all criteria are green.
 
-## Step 4: Handle Edge Cases
+## Step 5: Handle Edge Cases
 
 Check the spec's Edge Cases table. For each scenario:
 
 - Verify the expected behavior is handled.
 - If the spec says "warn the user" or "prompt," make sure that path works.
 
-## Step 5: Wrap Up and Continue (mode-aware — do the wrap-up yourself)
+## Step 6: Wrap Up and Continue (mode-aware — do the wrap-up yourself)
 
 **Loop-iteration check FIRST.** If this process is one iteration of the `joycraft-implement-loop` driver (you were launched by `pi -p` with a single spec path), STOP after the implementation report — do **not** wrap up and do **not** continue. The loop runs `/skill:joycraft-spec-done` as its own fresh `pi -p` step and advances the queue itself; wrapping up here would double-run it.
 
-Otherwise (interactive session), wrap up and advance according to the spec's **execution mode**. Read the `mode:` field from the spec's frontmatter (written by `/skill:joycraft-decompose`). If the spec has **no `mode:` field**, default to **`batch`** (back-compat with pre-mode specs). If the value is unrecognized, treat it as `batch` and note the unrecognized value.
+Otherwise (interactive session), when the spec is implemented and all its tests pass, wrap up and advance according to the spec's **execution mode**. Read the `mode:` field from the spec's frontmatter (written by `joycraft-decompose`). If the spec has **no `mode:` field**, default to **`batch`** (back-compat with pre-mode specs). If the value is unrecognized, treat it as `batch` and note the unrecognized value.
 
 **You perform the wrap-up. You find the next spec. Do not stop to tell the human to run `/skill:joycraft-spec-done` or to paste the next file path — those hand-backs carry zero information and break the feature's momentum.**
 
-### 5a. Per-spec wrap-up
+### 6a. Per-spec wrap-up
 
 | Spec `mode:` | Wrap-up you perform now |
 |--------------|------------------------|
 | **batch** | **Status bump only**: set the spec to `in-review` in both systems (see below). No commit, no discovery stub — batch wraps once at feature end. (The bump is required: the queue treats a dependency as satisfied at `in-review`, so without it dependent specs would look blocked.) |
 | **checkpoint** / **isolated** | The full `joycraft-spec-done` wrap-up, performed by you (canonical definition: `.pi/skills/joycraft-spec-done/SKILL.md`): **(1)** bump status to `in-review` in both systems, **(2)** terse 2-line discovery stub at `docs/discoveries/YYYY-MM-DD-topic.md` ONLY if something contradicted the spec — usually skip, **(3)** commit `spec: <spec-name>` (implementation + status edits + stub, nothing unrelated), **(4)** no validation re-run, no push, no PR — those belong to `joycraft-session-end`. |
 
-**Both systems** means: the queue JSON (`joycraft-mark-done <spec-id> --to in-review <specs-dir>`) AND the spec file's `status:` frontmatter. Never `done` — the agent doesn't self-certify (`docs/reference/spec-status-lifecycle.md`).
+**Both systems** means: the queue JSON (`joycraft-mark-done <spec-id> --to in-review <specs-dir>` if `.pi/scripts/joycraft/` is installed, else edit `.joycraft-spec-queue.json` directly) AND the spec file's `status:` frontmatter. Never `done` — the agent doesn't self-certify (`docs/reference/spec-status-lifecycle.md`).
 
-### 5b. Continue the queue (batch and checkpoint)
+### 6b. Continue the queue (batch and checkpoint)
 
-Re-read `.joycraft-spec-queue.json` in the spec's directory (or run `joycraft-next-spec <specs-dir>`) and find the next `todo` spec whose dependencies are all `in-review`/`done`. Then:
+Re-read `.joycraft-spec-queue.json` in the spec's directory and find the next `todo` spec whose dependencies are all `in-review`/`done` (same rule as Step 1). Then:
 
 - **Next ready spec exists** → announce one line — `Continuing: <next-spec> (spec N of M)` — and go back to Step 2 with it, in this same conversation.
 - **Remaining `todo` specs are all blocked** → stop and report which specs are blocked and on what.
-- **No `todo` specs remain** → this was the feature's last spec; go to 5d.
+- **No `todo` specs remain** → this was the feature's last spec; go to 6d.
 - **No queue** (you were invoked with a bare spec file outside a queue) → report the spec complete and stop; there is nothing to continue from.
 
-### 5c. isolated — fresh context per spec
+### 6c. isolated — fresh context per spec
 
-A conversation cannot clear its own context. On Pi the autonomous path is the loop driver — after this spec's wrap-up, **invoke it via the shell**, pointing at the feature's specs dir:
+A conversation cannot clear its own context, so after the wrap-up the fresh context comes from outside:
 
-```
-joycraft-implement-loop docs/features/<slug>/specs
-```
+- **Driver (recommended):** `/skill:joycraft-implement-feature docs/features/<slug>/` runs the remaining queue with a fresh-context subagent per spec — in-session, interactive, no headless loop.
+- **Guided-manual:** tell the human to run `/new`, then re-invoke `/skill:joycraft-implement <next-spec>`. (Always fine, no ToS/cost surprise.)
+- **Pi:** the `joycraft-implement-loop` driver automates it — a fresh `pi -p` process per spec. Nothing for you to do beyond the wrap-up; the loop advances.
+- **Headless (`claude -p` / `codex exec` loop):** opt-in only. **Surface the caveat, don't bury it:** unattended headless loops draw metered, full-rate API usage and carry a ToS posture the user must **knowingly opt into** (Anthropic meters `claude -p` from a separate full-rate pool; routing subscription OAuth through third-party harnesses is prohibited). The responsible default is Pi (BYO API key / open weights). Do not silently auto-run a subscription-backed headless loop.
 
-That one command runs the remaining queue headless (fresh `pi -p` process per spec — the process boundary IS the context isolation) and finishes with session-end. Do **not** implement isolated specs inline in this conversation and do **not** spawn a subagent — neither gives the verified process-boundary isolation. (Note: the driver spawns `pi -p` subprocesses; nesting it under an already-running Pi session is sound by design but not yet smoke-tested end-to-end — if the nested `pi -p` misbehaves, fall back to telling the human to run the command in a separate terminal.) ToS/cost note: this path is for Pi with a BYO API key or open weights — do not route a subscription OAuth through it.
+### 6d. Feature's last spec (any mode)
 
-For step-by-step control instead, tell the human to run `/new`, then re-invoke `/skill:joycraft-implement <next-spec>` — the guided-manual path.
-
-### 5d. Feature's last spec (any mode)
-
-Run the once-per-feature finisher yourself: read and follow `.pi/skills/joycraft-session-end/SKILL.md`. It carries its own gates — validation is mandatory and must pass before specs graduate `in-review → done`, and push/PR honor the project's CLAUDE.md git autonomy rules — so running it automatically is safe. (When the loop driver ran the queue, it already runs session-end once — the loop-iteration check above keeps you from doubling it.)
+Run the once-per-feature finisher yourself: invoke `/skill:joycraft-session-end` (or read and follow `.pi/skills/joycraft-session-end/SKILL.md`). It carries its own gates — validation is mandatory and must pass before specs graduate `in-review → done`, and push/PR honor the project's AGENTS.md git autonomy rules — so running it automatically is safe.
 
 ### Report
 
@@ -140,5 +154,3 @@ After each spec's wrap-up, report tersely before continuing:
 Spec complete: [spec name] · mode: [mode] · tests: [N] passing · [wrapped up + committed | status bumped (batch)]
 [Continuing: <next-spec> (spec N of M) | Feature complete — running session-end | Blocked: <specs + reasons>]
 ```
-
-**Tip:** Your artifacts are saved to files — this conversation context is disposable.

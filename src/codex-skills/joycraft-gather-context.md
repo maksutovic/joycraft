@@ -11,12 +11,12 @@ This skill is self-contained. It composes the same conventions the single-doc sk
 
 ## Step 1: Read What Already Exists First
 
-The user has invoked the first-run onboarding pass (e.g., `$joycraft-gather-context`). Before asking the user anything, scan the project's existing context. Default scan breadth is **README + `docs/` + the project boundary file only**:
+The user has invoked the first-run onboarding pass (e.g., `$joycraft-gather-context`). Before asking the user anything, scan the project's existing context. Default scan breadth is **README + `docs/` + AGENTS.md only**:
 
 - The README(s) at the repo root and any obvious sub-package READMEs.
 - `docs/**` — existing design, architecture, or style docs.
 - `docs/context/*` — the flat operational fact-docs (production-map, dangerous-assumptions, decision-log, institutional-knowledge, troubleshooting) and `docs/context/reference/*` long-form docs.
-- The current boundary-file content — CLAUDE.md and/or AGENTS.md, whichever the project uses — including any `## Context Map` section.
+- The current AGENTS.md content, including any `## Context Map` section.
 
 Then summarize for the user what context already exists and what's covered.
 
@@ -50,10 +50,18 @@ Do NOT write per-answer. Collect ALL of the user's gap answers across the whole 
 
 1. Write all the fact rows into their fact-docs.
 2. Scaffold and write all the reference docs into `docs/context/reference/`.
-3. Add or update the `## Context Map` pointer rows in the project boundary file (CLAUDE.md and/or AGENTS.md) — one row per reference doc, in the form `| docs/context/reference/<slug>.md | <when to read it> |`. Create the `## Context Map` section (header + two-column table) if it doesn't exist; update an existing row in place rather than duplicating it.
+3. Add or update the `## Context Map` pointer rows in AGENTS.md — one row per reference doc, in the form `| docs/context/reference/<slug>.md | <when to read it> |`. Create the `## Context Map` section (header + two-column table) if it doesn't exist; update an existing row in place rather than duplicating it.
 
 Present the full set of intended changes and get ONE final confirm ("do it in one go") before writing. If the user aborts at the final confirm, write nothing — there are no partial writes in this batch model. The result is one clean, reviewable diff.
 
-## Step 5: Confirm
+## Step 5: Confirm and Hand Off
 
-Report the batch: which fact rows were added, which reference docs were scaffolded, and which Context Map rows were created or updated.
+Report the batch: which fact rows were added, which reference docs were scaffolded, and which Context Map rows were created or updated. Then end with the canonical Handoff block.
+
+## Recommended Next Steps
+
+Next:
+```bash
+$joycraft-session-end
+```
+Run run `/clear` in the CLI, or press Cmd+N (Ctrl+N on Windows/Linux) for a new thread in the desktop/IDE app first.

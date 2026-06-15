@@ -45,7 +45,7 @@ Look for issues labeled [`good first issue`](https://github.com/maksutovic/joycr
 ### Areas we'd love help with
 
 - **Stack detection** (`src/detect.ts`) — Adding support for new languages, frameworks, and package managers
-- **Skills** (`src/claude-skills/`) — Improving the prompts, adding new workflow skills
+- **Skills** (`src/skills/`) — Improving the prompts, adding new workflow skills (canonical single-source files; per-harness variants are generated)
 - **Templates** — Better atomic spec templates, new context document templates
 - **Documentation** — Guides, tutorials, examples of Joycraft in real projects
 - **Testing** — More edge cases, integration tests, real-world fixture projects
@@ -71,8 +71,11 @@ src/
   permissions.ts      # .claude/settings.json permission rules
   safeguard.ts        # PreToolUse deny-pattern hooks
   version.ts          # .claude/.joycraft/state.json version tracking
-  bundled-files.ts    # All skills + templates as embedded strings
-  claude-skills/      # Skill markdown files (source of truth)
+  bundled-files.ts    # All skills + templates as embedded strings (generated)
+  skills/             # Canonical skill markdown files (source of truth)
+  claude-skills/      # Per-harness variant for Claude Code (generated from src/skills/)
+  codex-skills/       # Per-harness variant for Codex (generated from src/skills/)
+  pi-skills/          # Per-harness variant for Pi (generated from src/skills/)
   templates/          # Template files (source of truth)
 
 tests/                # Vitest tests — one file per module
@@ -80,7 +83,7 @@ tests/                # Vitest tests — one file per module
 
 ### Key things to know
 
-1. **`src/bundled-files.ts` is generated.** Don't edit it by hand. After changing files in `src/claude-skills/` or `src/templates/`, run the regeneration script (see below).
+1. **`src/bundled-files.ts` and the three `src/{claude,codex,pi}-skills/` dirs are generated.** Don't edit them by hand. Edit `src/skills/` (canonical) and run `pnpm build` to regenerate everything. See "Regenerating bundled-files.ts" below.
 
 2. **Skills must be self-contained.** A skill file in `.claude/skills/` can't import from other files. All context must be inline.
 
@@ -90,42 +93,25 @@ tests/                # Vitest tests — one file per module
 
 ### Regenerating bundled-files.ts
 
-After changing any file in `src/claude-skills/` or `src/templates/`:
+After editing any file in `src/skills/` (canonical) or `src/templates/`, run:
 
 ```bash
-node -e "
-const fs = require('fs');
-const path = require('path');
-const skillsDir = 'src/claude-skills';
-const skills = {};
-for (const f of fs.readdirSync(skillsDir).filter(f => f.endsWith('.md'))) {
-  skills[f] = fs.readFileSync(path.join(skillsDir, f), 'utf-8');
-}
-function readRecursive(dir, prefix) {
-  const result = {};
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    const relPath = prefix ? prefix + '/' + entry.name : entry.name;
-    if (entry.isDirectory()) {
-      Object.assign(result, readRecursive(path.join(dir, entry.name), relPath));
-    } else {
-      result[relPath] = fs.readFileSync(path.join(dir, entry.name), 'utf-8');
-    }
-  }
-  return result;
-}
-const templates = readRecursive('src/templates', '');
-function esc(s) { return s.replace(/\\\\/g, '\\\\\\\\').replace(/\`/g, '\\\\\`').replace(/\\$/g, '\\\\$'); }
-let out = '// Bundled file contents — embedded at build time\n\nexport const SKILLS: Record<string, string> = {\n';
-for (const [n, c] of Object.entries(skills)) { out += '  ' + JSON.stringify(n) + ': \`' + esc(c) + '\`,\n\n'; }
-out += '};\n\nexport const TEMPLATES: Record<string, string> = {\n';
-for (const [n, c] of Object.entries(templates)) { out += '  ' + JSON.stringify(n) + ': \`' + esc(c) + '\`,\n\n'; }
-out += '};\n';
-fs.writeFileSync('src/bundled-files.ts', out);
-console.log('Done:', Object.keys(skills).length, 'skills,', Object.keys(templates).length, 'templates');
-"
+pnpm build
 ```
 
-Then verify: `pnpm build && pnpm test --run`
+This runs `scripts/generate-bundled-files.mjs`, which:
+
+1. Reads each canonical skill in `src/skills/`.
+2. Applies `applyTemplate(source, harness)` from `scripts/lib/skill-template.mjs` to produce per-harness variants in `src/claude-skills/`, `src/codex-skills/`, and `src/pi-skills/`.
+3. Re-reads from disk and writes `src/bundled-files.ts`.
+
+Commit the canonical file, all three regenerated per-harness files, and `src/bundled-files.ts` together — CI sync tests enforce this lockstep. See `docs/discoveries/2026-06-11-bundle-regen-per-commit.md` for the bundle-regen-per-commit discipline, and `docs/guides/agent-compatibility.md` for the canonical-format reference (variable lookup, conditional blocks, frontmatter stripping).
+
+Then verify:
+
+```bash
+pnpm test --run && pnpm typecheck
+```
 
 ## Pull Request Process
 

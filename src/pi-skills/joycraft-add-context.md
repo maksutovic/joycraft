@@ -1,11 +1,11 @@
 ---
 name: joycraft-add-context
-description: Author one long-form reference doc -- a design system, frontend/backend methodology, testing conventions, or any other long-form reference doc -- scaffolding it from a template and wiring a pointer into the project boundary file's Context Map
+description: Author one long-form reference doc -- a design system, frontend/backend methodology, testing conventions, or any other long-form reference doc -- scaffolding it from a template and wiring a pointer into AGENTS.md's Context Map
 ---
 
 # Add Context
 
-The user wants to author ONE long-form reference doc — a design system, a frontend or backend methodology, testing conventions, or any other long-form reference for this project. Your job is to scaffold that doc from the matching template, fill in what the user has told you, write it immediately, and wire a pointer row into the project's `## Context Map`.
+The user wants to author ONE long-form reference doc — a design system, a frontend or backend methodology, testing conventions, or any other long-form reference for this project. Your job is to scaffold that doc from the matching template, fill in what the user has told you, write it immediately, and wire a pointer row into AGENTS.md's `## Context Map`.
 
 This is the single-doc primitive. Write-as-you-go is correct here: you scaffold and write ONE doc per invocation, immediately — not a batch.
 
@@ -42,7 +42,7 @@ If `docs/context/reference/<slug>.md` already exists (the user is re-running for
 
 ## Step 4: Add or Update the Context Map Pointer Row (Idempotent)
 
-Read the project's boundary file — CLAUDE.md and/or AGENTS.md, whichever the project uses — and maintain a pointer row for this doc in the `## Context Map` section. The row format is:
+Read AGENTS.md and maintain a pointer row for this doc in the `## Context Map` section. The row format is:
 
 ```
 | docs/context/reference/<slug>.md | <when to read it> |
@@ -76,3 +76,13 @@ Context Map row [added | updated]:
 
 Fill in the doc's sections — the italic examples are placeholders to replace or delete.
 ```
+
+Then end with the canonical Handoff block. After authoring a context doc, the next move is usually back to the work at hand; for a first-run onboarding sweep of several docs, point the user at the gather pass.
+
+## Recommended Next Steps
+
+Next:
+```bash
+/skill:joycraft-session-end
+```
+Run /new first.

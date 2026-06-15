@@ -35,5 +35,5 @@ Notes:
 
 Relay the loop's outcome:
 
-- **Success** → which specs ran, and session-end's own report (validation, graduation `in-review → done`, push/PR per CLAUDE.md autonomy).
+- **Success** → which specs ran, and session-end's own report (validation, graduation `in-review → done`, push/PR per AGENTS.md autonomy).
 - **Failure** → which spec failed (the loop names it), what reached `in-review`, what remains `todo`. Suggest fixing in a fresh session (`/skill:joycraft-implement <failed-spec>`), then re-running the loop for the remainder — it picks up where it stopped.

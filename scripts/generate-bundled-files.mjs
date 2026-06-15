@@ -1,16 +1,30 @@
 // @ts-check
-import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
+import {
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+  statSync,
+} from 'node:fs';
 import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { applyTemplate } from './lib/skill-template.mjs';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const ROOT = join(__dirname, '..');
 const OUTPUT = join(ROOT, 'src', 'bundled-files.ts');
 
+const CANONICAL_SKILLS_DIR = join(ROOT, 'src', 'skills');
 const SKILLS_DIR = join(ROOT, 'src', 'claude-skills');
 const CODEX_SKILLS_DIR = join(ROOT, 'src', 'codex-skills');
 const PI_SKILLS_DIR = join(ROOT, 'src', 'pi-skills');
 const TEMPLATES_DIR = join(ROOT, 'src', 'templates');
+
+const HARNESS_TARGETS = /** @type {const} */ ([
+  ['claude', SKILLS_DIR],
+  ['codex', CODEX_SKILLS_DIR],
+  ['pi', PI_SKILLS_DIR],
+]);
 
 /** Recursively walk a directory and return all file paths */
 function walkDir(dir) {
@@ -58,6 +72,21 @@ function formatRecord(name, record) {
 const PI_SCRIPTS_DIR = join(ROOT, 'src', 'templates', 'pi-scripts');
 const PI_EXTENSIONS_DIR = join(ROOT, 'src', 'templates', 'pi-extensions');
 const PI_AGENTS_DIR = join(ROOT, 'src', 'templates', 'pi-agents');
+
+// 1. Canonical-skills pipeline: read src/skills/, render each canonical file
+//    into the three per-harness dirs. Tolerate an empty (or absent) src/skills/
+//    — the rest of the pipeline then re-reads the per-harness dirs from disk,
+//    which keeps the existing "disk is source of truth for bundled-files"
+//    invariant intact (design.md Section 4).
+mkdirSync(CANONICAL_SKILLS_DIR, { recursive: true });
+const canonicalSkills = readFlatDir(CANONICAL_SKILLS_DIR);
+for (const [harness, dir] of HARNESS_TARGETS) {
+  mkdirSync(dir, { recursive: true });
+  for (const [file, source] of Object.entries(canonicalSkills)) {
+    const transformed = applyTemplate(source, harness, file);
+    writeFileSync(join(dir, file), transformed);
+  }
+}
 
 const skills = readFlatDir(SKILLS_DIR);
 const codexSkills = readFlatDir(CODEX_SKILLS_DIR);

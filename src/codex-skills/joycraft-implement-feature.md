@@ -40,7 +40,7 @@ When a spec fails (tests not green, or all remaining specs are blocked):
 
 ## Step 4: Finish — Session-End Once
 
-When no `todo` specs remain, run the once-per-feature finisher yourself: read and follow `.agents/skills/joycraft-session-end/SKILL.md`. It owns the gates the chain deliberately skipped: full validation (must pass before anything graduates `in-review → done`), discovery consolidation, and push/PR per the project's AGENTS.md/CLAUDE.md git autonomy rules.
+When no `todo` specs remain, run the once-per-feature finisher yourself: read and follow `.agents/skills/joycraft-session-end/SKILL.md`. It owns the gates the chain deliberately skipped: full validation (must pass before anything graduates `in-review → done`), discovery consolidation, and push/PR per the project's AGENTS.md git autonomy rules.
 
 ## Final Report
 

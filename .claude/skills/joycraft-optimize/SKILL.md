@@ -91,6 +91,6 @@ End with:
 |----------|----------|
 | Config files don't exist | Report "not found" for that check, don't error |
 | No plugins installed | Report 0 plugins — this is good, say so |
-| CLAUDE.md/AGENTS.md exactly 200 lines | PASS — threshold is ≤200 |
+| CLAUDE.md exactly 200 lines | PASS — threshold is ≤200 |
 | `~/.claude/` or `~/.codex/` not accessible | Skip user-level checks, note limitation |
 | Both platforms detected | Run both audits, report separately |

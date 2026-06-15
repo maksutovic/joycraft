@@ -5,7 +5,7 @@ description: Capture a project fact and route it to the correct context document
 
 # Add Fact
 
-The user has a fact to capture. Your job is to classify it, route it to the correct context document, append it in the right format, and optionally add a boundary rule to CLAUDE.md or AGENTS.md.
+The user has a fact to capture. Your job is to classify it, route it to the correct context document, append it in the right format, and optionally add a AGENTS.md boundary rule.
 
 ## Step 1: Get the Fact
 
@@ -130,23 +130,38 @@ Remove any italic example rows (rows where all cells start with `_`) before appe
 
 **Append only. Never modify or remove existing real content.**
 
-## Step 6: Evaluate Boundary Rule
+## Step 5b: Update Shared Frontmatter
 
-Decide whether the fact also warrants a rule in the project's boundary configuration (CLAUDE.md and/or AGENTS.md -- check which files the project uses and update accordingly):
+Context docs are *shared* artifacts (no single owner). After appending, update (or add) YAML frontmatter — the 2-field shared schema:
 
-**Add a boundary rule if the fact:**
+```yaml
+---
+last_updated: YYYY-MM-DD
+last_updated_by: <resolved name>
+---
+```
+
+If the file already has a frontmatter block, update the `last_updated` and `last_updated_by` fields in place. If it doesn't, prepend a fresh block ABOVE the existing `# Heading`.
+
+**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
+
+## Step 6: Evaluate AGENTS.md Boundary Rule
+
+Decide whether the fact also warrants a rule in AGENTS.md's behavioral boundaries:
+
+**Add a AGENTS.md rule if the fact:**
 - Describes something that should ALWAYS or NEVER be done
 - Could cause real damage if violated (data loss, broken deployments, security issues)
 - Is a hard constraint that applies across all work, not just a one-time note
 
-**Do NOT add a boundary rule if the fact is:**
+**Do NOT add a AGENTS.md rule if the fact is:**
 - Purely informational (e.g., "staging DB is at this URL")
 - A one-time decision that's already captured
 - A diagnostic tip rather than a prohibition
 
-If a rule is warranted, read the project's boundary file(s) -- CLAUDE.md and/or AGENTS.md -- find the appropriate section (ALWAYS, ASK FIRST, or NEVER under Behavioral Boundaries), and append the rule. If no Behavioral Boundaries section exists, append one. Update whichever boundary files the project uses (some projects have CLAUDE.md, some have AGENTS.md, some have both).
+If a rule is warranted, read AGENTS.md, find the appropriate section (ALWAYS, ASK FIRST, or NEVER under Behavioral Boundaries), and append the rule. If no Behavioral Boundaries section exists, append one.
 
-## Step 7: Confirm
+## Step 7: Confirm and Hand Off
 
 Report what you did in this format:
 
@@ -154,10 +169,20 @@ Report what you did in this format:
 Added to [document name]:
   [summary of what was added]
 
-[If boundary file(s) were also updated:]
-Added boundary rule to [CLAUDE.md / AGENTS.md / both]:
+[If AGENTS.md was also updated:]
+Added AGENTS.md rule:
   [ALWAYS/ASK FIRST/NEVER]: [rule text]
 
 [If the fact was ambiguous:]
 Routed to [chosen doc] -- move to [alternative doc] if this is more about [alternative category description].
 ```
+
+End with the canonical Handoff block. For most facts, the next move is back to whatever the user was doing — the Handoff block degrades to just a slash command pointing them home.
+
+## Recommended Next Steps
+
+Next:
+```bash
+$joycraft-session-end
+```
+Run run `/clear` in the CLI, or press Cmd+N (Ctrl+N on Windows/Linux) for a new thread in the desktop/IDE app first.
