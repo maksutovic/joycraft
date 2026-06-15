@@ -110,7 +110,7 @@ edits are append-only — Joycraft never rewrites or removes your existing lines
 
 | Profile | Tracked in git | Gitignored |
 |---------|----------------|------------|
-| `shared` (default) | `CLAUDE.md`, `AGENTS.md`, `docs/`, `.claude/skills/`, `.agents/`, `.pi/` | hidden upgrade state only |
+| `shared` (default) | `CLAUDE.md`, `AGENTS.md`, `docs/`, `.claude/skills/`, `.agents/`, `.pi/` | hidden upgrade state only (`docs/.joycraft/state.json`) |
 | `private` | `CLAUDE.md`, `AGENTS.md`, `docs/` | `.claude/`, `.agents/`, `.pi/` |
 
 > Switching an existing project to `private` only updates `.gitignore`. If

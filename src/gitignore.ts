@@ -55,10 +55,14 @@ export function ensureGitignoreEntry(targetDir: string, line: string): boolean {
 /**
  * Apply a gitignore profile's entries to the project's .gitignore.
  *
- * - `shared`  — ignore only the hidden upgrade-state file (current default).
- * - `private` — ignore the whole .claude/, .agents/, .pi/ trees. Since
- *   .claude/ already covers the state file, the writer skips the redundant
- *   state entry to avoid a dead line.
+ * The hidden upgrade-state file (`STATE_PATH`) is tool-managed, regenerated on
+ * every init/upgrade, and must never be committed — under BOTH profiles. It now
+ * lives at `docs/.joycraft/state.json`; since `docs/` is always tracked, the
+ * state entry is no longer covered transitively by any harness-dir ignore, so
+ * both profiles list it explicitly.
+ *
+ * - `shared`  — ignore only the hidden state file (commit the harness dirs).
+ * - `private` — ignore the .claude/, .agents/, .pi/ trees AND the state file.
  *
  * Append-only and idempotent (via ensureGitignoreEntries), so re-running
  * init/upgrade never duplicates entries. Returns the list of lines actually
@@ -66,7 +70,7 @@ export function ensureGitignoreEntry(targetDir: string, line: string): boolean {
  */
 export function applyGitignoreProfile(targetDir: string, profile: GitignoreProfile): string[] {
   if (profile === 'private') {
-    return ensureGitignoreEntries(targetDir, PRIVATE_PROFILE_IGNORES);
+    return ensureGitignoreEntries(targetDir, [...PRIVATE_PROFILE_IGNORES, STATE_PATH]);
   }
   // `shared`: only the hidden state file, matching long-standing behavior.
   return ensureGitignoreEntries(targetDir, [STATE_PATH]);
