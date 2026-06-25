@@ -20,7 +20,7 @@ export interface ImproveOptions {
 export const PRIVATE_SETUP_NOTE_MARKER = 'After cloning, run';
 
 export function generatePrivateSetupNote(): string {
-  return `> **Private setup:** The harness dirs (\`.claude/\`, \`.agents/\`, \`.pi/\`) are gitignored in this repo, so they aren't committed. ${PRIVATE_SETUP_NOTE_MARKER} \`npx joycraft init\` to regenerate the skill files locally.`;
+  return `> **Private setup:** The harness dirs (\`.claude/\`, \`.agents/\`, \`.pi/\`) are gitignored in this repo, so they aren't committed. ${PRIVATE_SETUP_NOTE_MARKER} \`npx joycraft init\` to regenerate the skill files locally — it only creates missing files and leaves your committed \`CLAUDE.md\`, \`AGENTS.md\`, and \`docs/\` untouched (use \`--force\` only if you deliberately want to regenerate them).`;
 }
 
 interface Section {
@@ -105,7 +105,9 @@ ${generateCommandsBlock(stack)}
 
 **Default execution mode:** batch
 
-_How \`/joycraft-implement\` wraps up after each spec. \`joycraft-decompose\` reads this line (absent ⇒ \`batch\`) and recommends a per-spec mode you approve. Modes: \`batch\` (implement a cluster, wrap once at the end), \`checkpoint\` (commit + status bump after each spec), \`isolated\` (fresh context per spec — on Pi, the \`joycraft-implement-loop\` driver). Change the value above to set your project default._`;
+_How \`/joycraft-implement\` wraps up after each spec. \`joycraft-decompose\` reads this line (absent ⇒ \`batch\`) and recommends a per-spec mode you approve. Modes: \`batch\` (implement a cluster, wrap once at the end), \`checkpoint\` (commit + status bump after each spec), \`isolated\` (fresh context per spec — on Pi, the \`joycraft-implement-loop\` driver). Change the value above to set your project default._
+
+**Deferred work → \`docs/backlog/\`.** Ideas and follow-ups you surface mid-sprint but can't take on now go to \`docs/backlog/\` (one file per item) so the current spec stays focused without losing the thread. Promote an entry to a Feature Brief under \`docs/features/<slug>/\` when you're ready to build it.`;
 }
 
 function generateArchitectureSection(): string {

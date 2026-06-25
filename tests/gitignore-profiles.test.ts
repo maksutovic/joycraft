@@ -7,6 +7,7 @@ import { upgrade } from '../src/upgrade';
 import { readVersion, STATE_PATH } from '../src/version';
 import { applyGitignoreProfile, PRIVATE_PROFILE_IGNORES } from '../src/gitignore';
 import { Readable } from 'node:stream';
+import { execFileSync } from 'node:child_process';
 
 const LEGACY_VERSION_FILE = '.joycraft-version';
 
@@ -343,6 +344,58 @@ describe('gitignore profiles', () => {
         .rejects.toThrow(/Unknown gitignore profile 'bogus'/);
 
       expect(readFileSync(join(tmpDir, STATE_PATH), 'utf-8')).toBe(before);
+    });
+  });
+
+  describe('untrack hint on a re-run already on private (Task #16)', () => {
+    // Pin git's repo discovery to `dir` so a tmp-dir ancestor that happens to be
+    // a git repo can't leak into ls-files — keeps the test deterministic.
+    function git(dir: string, ...args: string[]): void {
+      execFileSync('git', args, {
+        cwd: dir,
+        stdio: 'ignore',
+        env: { ...process.env, GIT_CEILING_DIRECTORIES: dir },
+      });
+    }
+
+    async function captureUpgrade(dir: string): Promise<string> {
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...a: unknown[]) => { logs.push(a.join(' ')); };
+      try {
+        await upgrade(dir, { yes: true });
+      } finally {
+        console.log = origLog;
+      }
+      return logs.join('\n');
+    }
+
+    it('surfaces the untrack hint when harness files are still tracked', async () => {
+      await init(tmpDir, { force: false, gitignore: 'private' });
+      git(tmpDir, 'init', '-q');
+      git(tmpDir, 'config', 'user.email', 'test@test.dev');
+      git(tmpDir, 'config', 'user.name', 'Test');
+      // Force-add a harness file despite .gitignore, then commit — simulates a
+      // file committed before the switch to private.
+      git(tmpDir, 'add', '-f', '.claude/skills/joycraft-tune/SKILL.md');
+      git(tmpDir, 'commit', '-q', '-m', 'committed harness file before switch');
+
+      const output = await captureUpgrade(tmpDir);
+      expect(output).toContain('git rm -r --cached');
+      expect(output).toContain('still tracked');
+    });
+
+    it('stays quiet on a re-run when no harness files are tracked', async () => {
+      await init(tmpDir, { force: false, gitignore: 'private' });
+      git(tmpDir, 'init', '-q');
+      git(tmpDir, 'config', 'user.email', 'test@test.dev');
+      git(tmpDir, 'config', 'user.name', 'Test');
+      // Commit only a tracked doc — gitignore keeps harness dirs out.
+      git(tmpDir, 'add', 'CLAUDE.md');
+      git(tmpDir, 'commit', '-q', '-m', 'docs only');
+
+      const output = await captureUpgrade(tmpDir);
+      expect(output).not.toContain('git rm -r --cached');
     });
   });
 

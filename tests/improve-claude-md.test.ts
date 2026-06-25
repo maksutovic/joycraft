@@ -17,6 +17,35 @@ const stack: StackInfo = {
   commands: {},
 };
 
+describe('backlog pointer in CLAUDE.md', () => {
+  it('generated CLAUDE.md points at docs/backlog/ for deferred work', () => {
+    const content = generateCLAUDEMd('test-project', stack);
+    expect(content).toContain('docs/backlog/');
+  });
+});
+
+describe('private setup note in CLAUDE.md', () => {
+  it('states init is non-destructive and only creates missing files', () => {
+    const content = generateCLAUDEMd('test-project', stack, [], { privateProfile: true });
+    expect(content).toContain('After cloning, run');
+    expect(content).toContain('only creates missing files');
+    expect(content).toContain('--force');
+    expect(content).toContain('untouched');
+  });
+
+  it('is omitted under the shared profile', () => {
+    const content = generateCLAUDEMd('test-project', stack, [], { privateProfile: false });
+    expect(content).not.toContain('After cloning, run');
+  });
+
+  it('is appended idempotently on improve (one note, marker preserved)', () => {
+    const initial = generateCLAUDEMd('test', stack, [], { privateProfile: true });
+    const improved = improveCLAUDEMd(initial, stack, [], { privateProfile: true });
+    const matches = improved.match(/After cloning, run/g) ?? [];
+    expect(matches.length).toBe(1);
+  });
+});
+
 describe('areas pointer in CLAUDE.md', () => {
   let dir: string;
 

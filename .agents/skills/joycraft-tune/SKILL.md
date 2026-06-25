@@ -42,6 +42,10 @@ Apply using three tiers — do NOT ask per-item permission:
 
 **Tier 1 (silent):** Create missing dirs, install missing skills, copy missing templates, create AGENTS.md.
 
+**Private-profile note:** If `.gitignore` ignores the harness dirs (`.claude/`, `.agents/`, `.pi/` — the `private` profile), teammates who clone won't get the skill files. Ensure CLAUDE.md and AGENTS.md each carry a one-line note — append if absent, idempotent (match on the phrase "After cloning, run"): `> **Private setup:** The harness dirs (.claude/, .agents/, .pi/) are gitignored in this repo, so they aren't committed. After cloning, run \`npx joycraft init\` to regenerate the skill files locally — it only creates missing files and leaves your committed \`CLAUDE.md\`, \`AGENTS.md\`, and \`docs/\` untouched (use \`--force\` only if you deliberately want to regenerate them).` Skip entirely under the `shared` profile.
+
+**Already-tracked harness files (private profile):** If the project is on the `private` profile but `git ls-files` shows tracked files under `.claude/`, `.agents/`, or `.pi/`, those files were committed before the switch and the gitignore won't untrack them. Surface the copy-pasteable fix once, prominently, in your upgrade results — `git rm -r --cached .claude .agents .pi` — and note it's advisory (never run git yourself). Skip when no harness files are tracked, and skip entirely under `shared`.
+
 **Before Tier 2, ask about git autonomy:** Cautious (ask before push/PR) or Autonomous (push + PR without asking)?
 
 **First-run context onboarding:** On a first run (the context layer is empty or absent), invoke `$joycraft-gather-context` for the read-then-offer onboarding pass — it owns reading existing docs, offering a gap-only interview, and populating `docs/context/` (fact-docs and `docs/context/reference/`). Do NOT run a separate risk interview here; gather is the onboarding path. On a recurring run of an already-populated project, skip this — gather is the first-run path, not forced every time.
