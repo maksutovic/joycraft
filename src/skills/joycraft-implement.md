@@ -143,7 +143,7 @@ Re-read `.joycraft-spec-queue.json` in the spec's directory and find the next `t
 
 A conversation cannot clear its own context, so after the wrap-up the fresh context comes from outside:
 
-- **Driver (recommended):** `{{skill_prefix}}implement-feature docs/features/<slug>/` runs the remaining queue with a fresh-context subagent per spec — in-session, interactive, no headless loop.
+- **Driver (recommended):** `{{skill_prefix}}implement-feature docs/features/<slug>/` runs the remaining queue in-session, interactive, no headless loop — and gives each `isolated`-mode spec the fresh-context subagent this mode calls for.
 - **Guided-manual:** tell the human to run `{{clear}}`, then re-invoke `{{skill_prefix}}implement <next-spec>`. (Always fine, no ToS/cost surprise.)
 - **Pi:** the `joycraft-implement-loop` driver automates it — a fresh `pi -p` process per spec. Nothing for you to do beyond the wrap-up; the loop advances.
 - **Headless (`claude -p` / `codex exec` loop):** opt-in only. **Surface the caveat, don't bury it:** unattended headless loops draw metered, full-rate API usage and carry a ToS posture the user must **knowingly opt into** (Anthropic meters `claude -p` from a separate full-rate pool; routing subscription OAuth through third-party harnesses is prohibited). The responsible default is Pi (BYO API key / open weights). Do not silently auto-run a subscription-backed headless loop.
