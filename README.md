@@ -84,8 +84,8 @@ npx joycraft init
 
 `init` first asks which harnesses to install (see [Platform support](#platform-support) above), then auto-detects your tech stack and creates:
 
-- **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
-- **AGENTS.md** for Codex/Pi compatibility
+- **AGENTS.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands — the single shared instruction file when more than one tool is selected
+- **CLAUDE.md** — on a multi-tool install this is [Anthropic's documented import pattern](https://code.claude.com/docs/en/memory): `@AGENTS.md` plus a `## Claude Code` section for Claude-specific additions, so every tool reads one source and nothing drifts. A Claude-only install gets the classic full CLAUDE.md instead
 - **20 skills** installed to the selected harnesses — `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), and/or `.pi/skills/` (Pi) — see [Which skill do I need?](#which-skill-do-i-need) below
 - **Pi pipeline runtime** in `.pi/scripts/joycraft/` (when Pi is selected) — the headless spec-execution driver and its helpers
 - **Agent teams enabled** — when Claude Code is selected, `init` sets `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` so subagent-driven skills like `/joycraft-research` work out of the box (idempotent — it never clobbers a value you already set)
@@ -230,7 +230,7 @@ You do **not** need `--dangerously-skip-permissions` for autonomous development.
 
 ### How It Works with AI Agents
 
-Claude Code reads CLAUDE.md, Codex reads AGENTS.md — both get the same guardrails and workflow. [Read the full guide →](docs/guides/agent-compatibility.md)
+Claude Code reads CLAUDE.md, Codex and Pi read AGENTS.md — and Claude Code does **not** read AGENTS.md natively. On a multi-tool install Joycraft therefore keeps one shared AGENTS.md and writes CLAUDE.md as an `@AGENTS.md` import (Anthropic's documented pattern), so every tool reads the same instructions without duplication. [Read the full guide →](docs/guides/agent-compatibility.md)
 
 ## Upgrade
 

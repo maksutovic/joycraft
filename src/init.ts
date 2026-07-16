@@ -1,7 +1,7 @@
 import { mkdirSync, existsSync, writeFileSync, readFileSync, readdirSync, statSync, chmodSync } from 'node:fs';
 import { join, basename, resolve, dirname } from 'node:path';
 import { detectStack } from './detect.js';
-import { generateCLAUDEMd } from './improve-claude-md.js';
+import { generateCLAUDEMd, generateClaudeMdPointer } from './improve-claude-md.js';
 import { generateAgentsMd } from './agents-md.js';
 import { generatePermissions } from './permissions.js';
 import { installSafeguardHooks } from './safeguard.js';
@@ -202,26 +202,40 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     writeFile(join(templatesDir, filename), content, opts.force, result);
   }
 
-  // 4. Handle CLAUDE.md — only create if missing, never modify existing (unless --force)
+  // 4/5. Handle CLAUDE.md + AGENTS.md — only create if missing, never modify
+  // existing (unless --force).
+  //
+  // Multi-tool install (Codex and/or Pi selected): AGENTS.md is the single
+  // shared instruction file and CLAUDE.md is Anthropic's documented import
+  // pointer (`@AGENTS.md`) — Claude Code doesn't read AGENTS.md natively, and
+  // two full sibling files drift. Claude-only install: classic full CLAUDE.md
+  // plus the slim AGENTS.md, unchanged.
+  const multiTool = wants('codex') || wants('pi');
   const claudeMdPath = join(targetDir, 'CLAUDE.md');
   if (existsSync(claudeMdPath) && !opts.force) {
     result.skipped.push(claudeMdPath);
   } else {
     const projectName = basename(targetDir);
-    const content = generateCLAUDEMd(projectName, stack, existingSkills, {
-      privateProfile: gitignoreProfile === 'private',
-    });
+    const content = multiTool
+      ? generateClaudeMdPointer()
+      : generateCLAUDEMd(projectName, stack, existingSkills, {
+          privateProfile: gitignoreProfile === 'private',
+        });
     writeFileSync(claudeMdPath, content, 'utf-8');
     result.created.push(claudeMdPath);
   }
 
-  // 5. Handle AGENTS.md — only create if missing, never modify existing (unless --force)
   const agentsMdPath = join(targetDir, 'AGENTS.md');
   if (existsSync(agentsMdPath) && !opts.force) {
     result.skipped.push(agentsMdPath);
   } else {
     const projectName = basename(targetDir);
-    const content = generateAgentsMd(projectName, stack, gitignoreProfile === 'private');
+    const content = multiTool
+      ? generateCLAUDEMd(projectName, stack, existingSkills, {
+          privateProfile: gitignoreProfile === 'private',
+          multiTool: true,
+        })
+      : generateAgentsMd(projectName, stack, gitignoreProfile === 'private');
     writeFileSync(agentsMdPath, content, 'utf-8');
     result.created.push(agentsMdPath);
   }

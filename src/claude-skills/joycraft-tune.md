@@ -1,7 +1,7 @@
 ---
 name: joycraft-tune
 description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show a harness maturity roadmap
-instructions: 16
+instructions: 17
 ---
 
 # Tune — Project Harness Assessment & Upgrade
@@ -13,6 +13,8 @@ You are evaluating and upgrading this project's AI development harness.
 ## Step 1: Detect Harness State
 
 Check for: CLAUDE.md (with meaningful content), `docs/features/<slug>/` (briefs + specs), `docs/bugfixes/<area>/`, `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs, `.claude/skills/`, and test configuration.
+
+**Import pointer:** if CLAUDE.md is essentially just an import line (e.g. CLAUDE.md containing `@AGENTS.md` — Joycraft's multi-tool layout), follow it: assess and upgrade the imported file as the boundary file, and leave the pointer file alone apart from Claude-specific additions under its `## Claude Code` section.
 
 ## Step 2: Route
 

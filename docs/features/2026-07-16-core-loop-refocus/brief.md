@@ -78,6 +78,28 @@ Two independent, small changes. Decisions are locked — implement, validate, PR
   check whether the same rule lives in multiple homes; recommend one canonical
   home with pointers, not deletion. Long-but-unique content can PASS.
 
+### 4. Multi-tool installs: CLAUDE.md becomes `@AGENTS.md` (added in review)
+
+Verified against https://code.claude.com/docs/en/memory: Claude Code does NOT
+read AGENTS.md natively; the documented multi-tool pattern is a CLAUDE.md that
+imports it (`@AGENTS.md` + optional Claude-specific section). Imports resolve
+fully (4-hop max, skipped inside code fences).
+
+- Trigger: harness selection includes codex or pi (AGENTS.md has a native
+  consumer). Claude-only installs keep the classic full CLAUDE.md + slim
+  AGENTS.md, unchanged.
+- Multi-tool AGENTS.md = full shared doc: `generateCLAUDEMd(..., {multiTool})`
+  — boundaries + External API Safety + workflow + context map + getting
+  started with a per-tool invocation note (`/joycraft-*` / `$joycraft-*` /
+  `/skill:joycraft-*`).
+- CLAUDE.md = `generateClaudeMdPointer()`: `@AGENTS.md` + `## Claude Code`
+  section for Claude-specific additions.
+- Existing files still never touched (skip-unless---force preserved).
+- External API Safety text de-duplicated: one home in improve-claude-md.ts,
+  agents-md.ts imports it (it previously had two inline copies).
+- tune Step 1 gains pointer-awareness: assess/upgrade the imported file as the
+  boundary file; put Claude-specific additions under `## Claude Code`.
+
 ## Explicitly out of scope (compound-engineering branch)
 
 Project-skill namespace + upgrade-preservation, session-end "promote to

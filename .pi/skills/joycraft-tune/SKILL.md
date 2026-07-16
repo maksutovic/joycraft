@@ -13,6 +13,8 @@ You are evaluating and upgrading this project's AI development harness.
 
 Check for: AGENTS.md (with meaningful content), `docs/features/<slug>/` (briefs + specs), `docs/bugfixes/<area>/`, `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs, `.pi/skills/`, and test configuration.
 
+**Import pointer:** if AGENTS.md is essentially just an import line (e.g. CLAUDE.md containing `@AGENTS.md` — Joycraft's multi-tool layout), follow it: assess and upgrade the imported file as the boundary file, and leave the pointer file alone apart from Claude-specific additions under its `## Claude Code` section.
+
 ## Step 2: Route
 
 - **No harness** (no AGENTS.md or just a README): Recommend `npx joycraft init` and stop.

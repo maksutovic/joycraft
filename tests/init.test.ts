@@ -54,17 +54,22 @@ describe('init', () => {
         expect(existsSync(join(tmpDir, 'docs', sub))).toBe(false);
       }
 
-      // CLAUDE.md
+      // Multi-tool install (non-interactive = all three harnesses): AGENTS.md
+      // is the single shared instruction file; CLAUDE.md imports it per
+      // Anthropic's documented multi-tool pattern.
       expect(existsSync(join(tmpDir, 'CLAUDE.md'))).toBe(true);
       const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
-      expect(claude).toContain('## Behavioral Boundaries');
-      expect(claude).toContain('## Development Workflow');
-      expect(claude).toContain('### ALWAYS');
-      expect(claude).toContain('### ASK FIRST');
-      expect(claude).toContain('### NEVER');
-      // Generated CLAUDE.md points at docs/backlog/ for deferred work — the
+      expect(claude).toContain('@AGENTS.md');
+      expect(claude).toContain('## Claude Code');
+      const agents = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
+      expect(agents).toContain('## Behavioral Boundaries');
+      expect(agents).toContain('## Development Workflow');
+      expect(agents).toContain('### ALWAYS');
+      expect(agents).toContain('### ASK FIRST');
+      expect(agents).toContain('### NEVER');
+      // Generated AGENTS.md points at docs/backlog/ for deferred work — the
       // pointer the scaffolded dir backs.
-      expect(claude).toContain('docs/backlog/');
+      expect(agents).toContain('docs/backlog/');
 
       // Skills
       expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
@@ -208,13 +213,14 @@ describe('init', () => {
 
       await init(tmpDir, { force: true });
 
+      // Multi-tool install: force regenerates the @AGENTS.md pointer form.
       const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
-      expect(claude).toContain('## Behavioral Boundaries');
+      expect(claude).toContain('@AGENTS.md');
       expect(claude).not.toBe('totally replaced content');
     });
   });
 
-  describe('stack detection in generated CLAUDE.md', () => {
+  describe('stack detection in the generated shared doc (AGENTS.md)', () => {
     it('includes Node.js commands for a Node project', async () => {
       // Create a package.json to trigger Node detection
       writeFileSync(join(tmpDir, 'package.json'), JSON.stringify({
@@ -225,7 +231,7 @@ describe('init', () => {
 
       await init(tmpDir, { force: false });
 
-      const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
+      const claude = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
       expect(claude).toContain('npm run build');
       expect(claude).toContain('npm run test');
       expect(claude).toContain('npm run lint');
@@ -237,7 +243,7 @@ describe('init', () => {
 
       await init(tmpDir, { force: false });
 
-      const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
+      const claude = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
       expect(claude).toContain('go build');
       expect(claude).toContain('go test');
     });
@@ -247,7 +253,7 @@ describe('init', () => {
 
       await init(tmpDir, { force: false });
 
-      const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
+      const claude = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
       expect(claude).toContain('cargo build');
       expect(claude).toContain('cargo test');
     });
@@ -257,7 +263,7 @@ describe('init', () => {
 
       await init(tmpDir, { force: false });
 
-      const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
+      const claude = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
       expect(claude).toContain('poetry');
     });
   });
@@ -418,7 +424,7 @@ describe('init', () => {
 
       await init(tmpDir, { force: false });
 
-      const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
+      const claude = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
       expect(claude).toContain('## Project Tools');
       expect(claude).toContain('flash-deploy');
       expect(claude).toContain('log-watcher');
@@ -428,7 +434,7 @@ describe('init', () => {
     it('does not include Project Tools section when no non-Joycraft skills exist', async () => {
       await init(tmpDir, { force: false });
 
-      const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
+      const claude = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
       expect(claude).not.toContain('## Project Tools');
     });
 
@@ -456,7 +462,7 @@ describe('init', () => {
 
       await init(tmpDir, { force: false });
 
-      const claude = readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8');
+      const claude = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
       expect(claude).not.toContain('## Project Tools');
     });
   });
