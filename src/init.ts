@@ -20,6 +20,7 @@ import {
   PRIVATE_DIRS_DISPLAY,
   PRIVATE_UNTRACK_COMMAND,
 } from './gitignore.js';
+import { applyGitattributes } from './gitattributes.js';
 import { getPackageVersion } from './package-version.js';
 import { resolveHarnesses, type Harness } from './harness.js';
 import { ensurePiExcludedFromTsconfig } from './tsconfig.js';
@@ -269,6 +270,12 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   //              AGENTS.md, docs/.
   // Append-only + create-if-absent + idempotent (never clobbers existing entries).
   applyGitignoreProfile(targetDir, gitignoreProfile);
+
+  // 6b'. Mark workflow-exhaust docs (features, bugfixes, discoveries,
+  // templates) linguist-generated so GitHub collapses them in PR review.
+  // Same append-only/idempotent contract as the .gitignore writes; durable
+  // knowledge (CLAUDE.md, docs/context/) stays visible.
+  applyGitattributes(targetDir);
 
   // 6c. Pi only: keep the installed `.pi/extensions/*.ts` runtime out of the
   // user's TypeScript program. It imports a Pi-only package the project doesn't

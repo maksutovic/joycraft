@@ -1,6 +1,6 @@
 ---
 name: joycraft-tune
-description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show path to Level 5
+description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show a harness maturity roadmap
 instructions: 15
 ---
 
@@ -59,9 +59,16 @@ From git-autonomy and gather, generate: {{boundary_file}} boundary rules, `.clau
 
 After applying, append to `docs{{skill_prefix}}history.md` and show a consolidated upgrade results table.
 
-## Step 6: Show Path to Level 5
+## Step 6: Show the Harness Maturity Roadmap
 
-Show a tailored roadmap: Level 2-5 table, specific next steps based on actual gaps, and the Level 5 north star (spec queue, autofix, holdout scenarios, self-improving harness).
+Show a tailored roadmap focused on harness maturity, not autonomy. Order the next steps by the project's actual gaps from Step 3:
+
+- **Boundaries with teeth** — ALWAYS/ASK FIRST/NEVER rules present, and the machine-checkable ones backed by deny patterns or hooks rather than prose alone
+- **Lean {{boundary_file}}** — under ~200 lines, with long reference content extracted to `docs/context/reference/` behind a Context Map pointer table
+- **Context docs with real content** — production map, dangerous assumptions, decision log actually populated, not scaffolding
+- **Healthy spec-driven loop** — features flow interview → brief → specs → implement → session-end, with discoveries captured along the way
+
+Frame it with the levels: most projects should aim to run excellently at Levels 3-4 (spec-driven development with a well-maintained harness). Mention Level 5 (spec queue, autofix, holdout scenarios) once, as an experimental north star for teams with the budget and infrastructure to maintain it — not the expected next step.
 
 **Tip:** Run `{{skill_prefix}}optimize` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.
 
