@@ -3,6 +3,19 @@ status: todo
 owner: Maximilian Maksutovic
 created: 2026-07-20
 source: reading-fatigue panel (docs/research/2026-07-20-reading-fatigue-panel.md) + interview 2026-07-20
+decisions:
+  - id: D1
+    question: skill shape
+    status: clarified
+    choice: new shared joycraft-decide skill, invoked by design and new-feature
+  - id: D2
+    question: dossier persistence
+    status: clarified
+    choice: committed to docs/features/<f>/dossier.html, marked linguist-generated
+  - id: D3
+    question: gate encoding
+    status: clarified
+    choice: this decisions block — brief frontmatter is the single source
 ---
 
 # Feature Brief — decision dossier: deliberate decisions in the core loop
@@ -78,14 +91,20 @@ the questions into free chat by the second feature** — keep only
 decision-stamping into the brief. Only after the pilot survives does this
 propagate to user-facing skills/templates (ASK FIRST at that point).
 
-## Open decisions — resolve via the dossier before decompose
+## D1–D3 (resolved 2026-07-20 via the first live dossier)
 
-- **D1 — Skill shape:** extend `joycraft-design`, extend `joycraft-new-feature`,
-  or new shared `joycraft-decide` skill both call?
-- **D2 — Dossier persistence:** committed to the feature folder, gitignored
-  local file, or ephemeral artifact-only?
-- **D3 — Headless/gate encoding:** how decompose detects unresolved decisions
-  (frontmatter block in the brief vs decisions.json next to the queue).
+| # | Decision | Choice | Rationale |
+|---|----------|--------|-----------|
+| D1 | Skill shape | New shared `joycraft-decide`, routed to by design and new-feature | One canonical home (duplication-over-length rule); future checkpoints reuse it |
+| D2 | Dossier persistence | Committed `docs/features/<f>/dossier.html`, linguist-generated | Later readers see what the decider saw; PR-collapsed by existing machinery; Reaper-compatible |
+| D3 | Gate encoding | `decisions:` block in brief frontmatter (see above — self-demonstrating) | One file, one source; avoids a third status-bearing system |
+
+Dossier for these: https://claude.ai/code/artifact/759b0984-07d8-430a-a023-985c059192df
+
+**Pre-implementation discovery (from the demo itself):** the native question UI
+does not enforce the typed rationale — the demo's answers arrived without one.
+Spec 1 must make the skill capture rationale explicitly (follow-up prompt or
+Other/notes field) or the concreteness bar (locked decision #3) is decorative.
 
 ## Out of scope
 
