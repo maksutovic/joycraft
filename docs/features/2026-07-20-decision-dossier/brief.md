@@ -109,5 +109,13 @@ Other/notes field) or the concreteness bar (locked decision #3) is decorative.
 ## Out of scope
 
 Codex/pi skill variants (Claude variant must survive real use first), the
-Cockpit, `joycraft decide` local-server capture (revisit only if the hybrid's
-terminal capture proves too weak), session-end anything.
+Cockpit, `joycraft decide` local-server capture, session-end anything.
+
+**Local-server clarification (2026-07-20):** browser-sandboxed HTML can never
+write files — interactivity requires the CLI serving localhost and writing
+`decisions.json`. That is the designated cross-harness capture path (codex/pi
+have no native question UI), and the committed dossier.html still auto-opens
+everywhere via `open`. Build the server only after the pilot survives its kill
+criterion — never build a runtime surface for a format that might die in
+week 4. Artifact publishing stays an optional extra render of the same file
+for the shareable hosted link.
