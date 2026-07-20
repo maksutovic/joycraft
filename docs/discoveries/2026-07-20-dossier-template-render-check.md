@@ -1,0 +1,3 @@
+# Dossier template render check must use a real browser, not a lenient parser
+
+A literal `<!-- ... -->` example inside the template's contract comment closed that HTML comment early (browsers terminate a comment at any inner `-->`, and `--` inside a comment is invalid), dumping guidance text onto the page and breaking `<head>`/`<style>` parsing; a missing `<meta charset="utf-8">` also caused UTF-8 mojibake over `file://`. Python's `html.parser` accepted all of it — only a headless-Chrome render (`--dump-dom` + computed-style probe) caught the broken CSS, leak, and mojibake. See `docs/templates/DECISION_DOSSIER_TEMPLATE.html` and spec `docs/features/2026-07-20-decision-dossier/specs/add-dossier-template.md`.
