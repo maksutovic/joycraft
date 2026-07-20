@@ -1,5 +1,5 @@
 ---
-status: in-review
+status: done
 owner: Maximilian Maksutovic
 created: 2026-07-16
 source: Nate B Jones "Clean My AI Harness" discussion + docs-bloat-in-PRs pain
