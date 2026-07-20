@@ -115,6 +115,18 @@ couldn't be encoded in any offered option — and it validates the escape as
 load-bearing, not decorative. The three-way terminal lifecycle recorded its
 first real "backlogged" (docs/backlog/2026-07-20-model-tiering.md).
 
+## Execution Strategy (decomposed 2026-07-20)
+
+Four specs in `specs/` (see `specs/README.md`, queue in
+`.joycraft-spec-queue.json`). Wave 1: `verify-question-capture` +
+`add-dossier-template` — parallel-safe, disjoint files. Wave 2:
+`add-decide-skill` (depends on both; spec 1 is the fail-fast gate — a RED
+EXCEPTION there means re-architecting capture before proceeding). Wave 3:
+`wire-routing-and-gate`. Modes: 1–2 `batch`, 3–4 `checkpoint`. All work is
+repo-local for the pilot (decision #7): `.claude/skills/` + `docs/templates/`
+only, `src/` untouched, divergence markers mandatory. No `.gitattributes`
+work needed — `docs/features/**` is already linguist-generated.
+
 ## Out of scope
 
 Codex/pi skill variants (Claude variant must survive real use first), the
