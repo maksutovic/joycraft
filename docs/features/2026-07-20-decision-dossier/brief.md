@@ -106,6 +106,15 @@ does not enforce the typed rationale — the demo's answers arrived without one.
 Spec 1 must make the skill capture rationale explicitly (follow-up prompt or
 Other/notes field) or the concreteness bar (locked decision #3) is decorative.
 
+**Pilot evidence (dogfood run 2, 2026-07-20, pre-implementation):** the
+model-tiering feature ran the full flow by hand (brief → dossier → questions).
+The reject-framing escape was used on all three questions to rescope the
+feature entirely (backlogged to the living-harness sprint with a tuneability
+requirement). This is RF-KILL-6's exact prediction — the highest-value answer
+couldn't be encoded in any offered option — and it validates the escape as
+load-bearing, not decorative. The three-way terminal lifecycle recorded its
+first real "backlogged" (docs/backlog/2026-07-20-model-tiering.md).
+
 ## Out of scope
 
 Codex/pi skill variants (Claude variant must survive real use first), the
