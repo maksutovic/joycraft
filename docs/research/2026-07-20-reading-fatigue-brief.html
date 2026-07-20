@@ -1,0 +1,544 @@
+<title>The Reading Fatigue Brief — Joycraft Research</title>
+<style>
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --bar: #5B7EC4; --bar-em: #2F4E8C;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --defer-ink: #5A6474; --defer-wash: #ECEEF2;
+    --kill-ink: #8C3A32; --kill-wash: #F7E7E4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --bar: #5578C6; --bar-em: #7190D8;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --defer-ink: #A3ADC0; --defer-wash: #262C38;
+      --kill-ink: #E39C92; --kill-wash: #34201D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --bar: #5578C6; --bar-em: #7190D8;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --defer-ink: #A3ADC0; --defer-wash: #262C38;
+    --kill-ink: #E39C92; --kill-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --bar: #5B7EC4; --bar-em: #2F4E8C;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --defer-ink: #5A6474; --defer-wash: #ECEEF2;
+    --kill-ink: #8C3A32; --kill-wash: #F7E7E4;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 17px; line-height: 1.55;
+  }
+  .display, h1, h2, h3, summary.sum, .chip, .eyebrow, .stat-n, .rank {
+    font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif;
+  }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px 96px; }
+  section { margin-top: 72px; }
+  p { max-width: 68ch; }
+
+  .eyebrow {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent-ink);
+  }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 26px; }
+  .sec-head .eyebrow { color: var(--ink-3); }
+  h2 { font-size: 26px; font-weight: 700; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+  h3 { font-size: 17px; font-weight: 600; margin: 0 0 6px; }
+
+  /* ---- header ---- */
+  header { padding-top: 64px; }
+  h1 {
+    font-size: clamp(38px, 6vw, 56px); font-weight: 700; line-height: 1.04;
+    letter-spacing: -0.02em; margin: 14px 0 18px; text-wrap: balance;
+  }
+  .dek { font-size: 20px; line-height: 1.5; color: var(--ink-2); max-width: 60ch; margin: 0; }
+  .stat-strip {
+    display: flex; flex-wrap: wrap; gap: 0 36px; row-gap: 14px;
+    margin-top: 34px; padding: 18px 0; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong);
+  }
+  .stat { display: flex; flex-direction: column; }
+  .stat-n { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat-l { font-size: 12.5px; color: var(--ink-3); letter-spacing: 0.04em; text-transform: uppercase; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+
+  /* ---- BLUF ---- */
+  .bluf {
+    margin-top: 44px; background: var(--surface); border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent); padding: 24px 28px; border-radius: 0 6px 6px 0;
+  }
+  .bluf p { margin: 10px 0 0; font-size: 18px; }
+  .bluf p strong { color: var(--ink); }
+
+  /* ---- mechanism cards ---- */
+  .mech-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 720px) { .mech-grid { grid-template-columns: 1fr; } }
+  .mech {
+    background: var(--surface); border: 1px solid var(--rule); border-radius: 6px;
+    padding: 18px 20px 16px;
+  }
+  .mech .rank { color: var(--accent-ink); font-weight: 700; font-size: 13px; letter-spacing: 0.08em; }
+  .mech p { font-size: 15px; color: var(--ink-2); margin: 6px 0 0; line-height: 1.5; }
+  .mech .src { display: block; margin-top: 8px; font-size: 12.5px; color: var(--ink-3); }
+
+  /* ---- chart ---- */
+  .chart { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 22px 24px 18px; overflow-x: auto; }
+  .chart-title { font-size: 15px; font-weight: 600; margin: 0 0 2px; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .chart-sub { font-size: 13px; color: var(--ink-3); margin: 0 0 16px; }
+  .bar-row { display: grid; grid-template-columns: 120px 1fr 74px; align-items: center; gap: 10px; padding: 3px 4px; border-radius: 4px; min-width: 420px; }
+  .bar-row:hover { background: var(--surface-2); }
+  .bar-lab { font-size: 13px; color: var(--ink-2); text-align: right; }
+  .bar-track { position: relative; height: 22px; }
+  .bar-fill { position: absolute; inset: 0 auto 0 0; background: var(--bar); border-radius: 0 4px 4px 0; min-width: 3px; }
+  .bar-fill.em { background: var(--bar-em); }
+  .bar-val { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .chart-notes { margin-top: 14px; border-top: 1px solid var(--rule); padding-top: 12px; display: grid; gap: 6px; }
+  .chart-note { font-size: 13.5px; color: var(--ink-2); display: flex; gap: 8px; align-items: baseline; }
+  .swatch { flex: none; width: 10px; height: 10px; border-radius: 2px; background: var(--bar); position: relative; top: 0px; }
+  .swatch.em { background: var(--bar-em); }
+
+  /* ---- scenarios ---- */
+  .scen { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 20px 24px; margin-bottom: 14px; }
+  .scen p { font-size: 15.5px; color: var(--ink-2); margin: 8px 0 12px; max-width: none; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+    padding: 3px 10px; border-radius: 100px; background: var(--accent-wash); color: var(--accent-ink);
+  }
+
+  /* ---- portfolio ---- */
+  .prop { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; margin-bottom: 12px; }
+  .prop-head { display: flex; align-items: baseline; gap: 12px; padding: 18px 22px 0; flex-wrap: wrap; }
+  .prop .rank { font-size: 13px; font-weight: 700; color: var(--ink-3); letter-spacing: 0.06em; }
+  .prop h3 { font-size: 18px; flex: 1 1 auto; margin: 0; min-width: 200px; }
+  .verdict { font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; white-space: nowrap; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .v-ship { background: var(--good-wash); color: var(--good-ink); }
+  .v-quarter { background: var(--accent-wash); color: var(--accent-ink); }
+  .v-pilot { background: var(--warn-wash); color: var(--warn-ink); }
+  .v-defer { background: var(--defer-wash); color: var(--defer-ink); }
+  .prop .oneliner { padding: 6px 22px 16px; margin: 0; font-size: 15.5px; color: var(--ink-2); max-width: none; }
+  .prop details { border-top: 1px solid var(--rule); }
+  .prop summary.sum {
+    cursor: pointer; list-style: none; padding: 12px 22px; font-size: 13px; font-weight: 600;
+    color: var(--accent-ink); letter-spacing: 0.03em;
+  }
+  .prop summary.sum::-webkit-details-marker { display: none; }
+  .prop summary.sum::before { content: "▸ "; }
+  .prop details[open] summary.sum::before { content: "▾ "; }
+  .prop summary.sum:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  .prop-body { padding: 0 22px 20px; display: grid; gap: 14px; }
+  .field .flab { font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; margin-bottom: 3px; }
+  .field p { font-size: 15px; color: var(--ink-2); margin: 0; max-width: none; line-height: 1.55; }
+  .field.exp { background: var(--accent-wash); border-radius: 6px; padding: 12px 14px; }
+  .field.exp .flab { color: var(--accent-ink); }
+  .field.exp p { color: var(--ink); }
+
+  /* ---- graveyard ---- */
+  .grave { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 720px) { .grave { grid-template-columns: 1fr; } }
+  .dead { border: 1px solid var(--rule); border-radius: 6px; padding: 13px 16px; background: var(--surface); }
+  .dead .dname { font-size: 14px; font-weight: 600; color: var(--kill-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .dead p { font-size: 13.5px; color: var(--ink-2); margin: 4px 0 0; max-width: none; line-height: 1.45; }
+
+  /* ---- roadmap ---- */
+  .tranche { display: grid; grid-template-columns: 148px 1fr; gap: 18px; padding: 18px 0; border-top: 1px solid var(--rule); }
+  .tranche:first-of-type { border-top: none; }
+  @media (max-width: 640px) { .tranche { grid-template-columns: 1fr; gap: 6px; } }
+  .tranche .when { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; color: var(--accent-ink); padding-top: 2px; }
+  .tranche ul { margin: 0; padding-left: 18px; }
+  .tranche li { font-size: 15.5px; color: var(--ink-2); margin-bottom: 6px; }
+  .tranche li strong { color: var(--ink); }
+
+  .diet { counter-reset: diet; display: grid; gap: 10px; margin-top: 8px; }
+  .diet-item { display: grid; grid-template-columns: 34px 1fr; gap: 12px; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 14px 18px; }
+  .diet-item::before {
+    counter-increment: diet; content: counter(diet);
+    font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-weight: 700; font-size: 18px; color: var(--accent-ink);
+  }
+  .diet-item p { font-size: 15px; color: var(--ink-2); margin: 2px 0 0; max-width: none; }
+  .diet-item p strong { color: var(--ink); }
+
+  .caveat { border: 1px solid var(--rule-strong); border-radius: 6px; padding: 16px 20px; margin-top: 22px; background: var(--surface-2); }
+  .caveat p { font-size: 15px; margin: 0; color: var(--ink-2); max-width: none; }
+
+  /* ---- pull quote ---- */
+  .pull {
+    border-left: 4px solid var(--accent); padding: 6px 0 6px 26px; margin: 0;
+  }
+  .pull p { font-size: 21px; line-height: 1.45; margin: 0; color: var(--ink); font-style: italic; max-width: 60ch; }
+  .pull .att { display: block; margin-top: 14px; font-style: normal; font-size: 14px; color: var(--ink-3); }
+
+  /* ---- sources ---- */
+  .sources { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 20px; }
+  @media (max-width: 720px) { .sources { grid-template-columns: 1fr; } }
+  .srcitem { font-size: 14px; padding: 8px 0; border-bottom: 1px solid var(--rule); }
+  .srcitem a { color: var(--accent-ink); text-decoration: none; font-weight: 600; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 13.5px; }
+  .srcitem a:hover, .srcitem a:focus-visible { text-decoration: underline; }
+  .srcitem .why { display: block; color: var(--ink-3); font-size: 13px; margin-top: 2px; }
+
+  footer { margin-top: 88px; border-top: 1px solid var(--rule-strong); padding-top: 20px; font-size: 13.5px; color: var(--ink-3); }
+  footer p { max-width: none; margin: 4px 0; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .prop, .mech, .scen, .dead { transition: border-color 120ms ease; }
+    .prop:hover, .scen:hover { border-color: var(--rule-strong); }
+  }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Research · Adversarial Panel · July 20, 2026</div>
+  <h1>The Reading Fatigue Brief</h1>
+  <p class="dek">Why agentic engineering drowns its humans in text, what the evidence says actually works, and a ranked portfolio of solutions for the living-harness update — every one of them attacked by an adversarial panel before it reached this page.</p>
+  <div class="stat-strip">
+    <div class="stat"><span class="stat-n">52</span><span class="stat-l">agents</span></div>
+    <div class="stat"><span class="stat-n">6</span><span class="stat-l">research lenses</span></div>
+    <div class="stat"><span class="stat-n">60</span><span class="stat-l">findings</span></div>
+    <div class="stat"><span class="stat-n">10</span><span class="stat-l">proposals attacked</span></div>
+    <div class="stat"><span class="stat-n">12</span><span class="stat-l">components killed</span></div>
+    <div class="stat"><span class="stat-n">7</span><span class="stat-l">survived, revised</span></div>
+  </div>
+
+  <div class="bluf">
+    <div class="eyebrow">Bottom line up front</div>
+    <p><strong>The answer to too much text is not shorter text — it is less text existing in the human channel at all.</strong> Every mature field that solved human overload from automated systems (aviation, medicine, nuclear, SRE, intelligence briefing) solved it structurally: delete nominal output, tier the channels, retrieve just-in-time, and demand <em>decisions</em> instead of reading. Compression — the caveman strategy — is conspicuously absent from every field that actually solved this. Your instinct was right: caveman is a step, not a destination.</p>
+    <p>The portfolio below starts with pure deletion (roughly 3× fewer human-facing words per feature, zero grokking cost), then rebuilds trust structurally: a 600-word human-owned theory of the system, an external verifier for documents, and one decision-forcing checkpoint at design time.</p>
+  </div>
+</header>
+
+<section>
+  <div class="sec-head"><span class="eyebrow">01</span><h2>Why reading fatigue happens — six mechanisms</h2></div>
+  <div class="mech-grid">
+    <div class="mech">
+      <span class="rank">Mechanism 1</span>
+      <h3>A throughput mismatch no discipline can close</h3>
+      <p>Careful reading caps at ~250–300 wpm; your 186k-word corpus is ~12 hours of continuous reading before any comprehension effort. Review effectiveness collapses past ~400 lines per sitting — and artifact <em>size</em>, not reviewer ability, is the lever. "Read more carefully" is not an available move.</p>
+      <span class="src">Rayner et al. 2016 · SmartBear/Cisco · Baum et al., EMSE 2019</span>
+    </div>
+    <div class="mech">
+      <span class="rank">Mechanism 2</span>
+      <h3>Complacency gets worse as the harness improves</h3>
+      <p>Highly reliable automation induces reduced monitoring in experts as much as novices, and practice does not fix it. The cruelest finding for Joycraft: a maturing harness <em>mechanically increases</em> rubber-stamping. Any solution built on passive consumption — however short — decays.</p>
+      <span class="src">Parasuraman &amp; Manzey 2010 · Mackworth vigilance studies</span>
+    </div>
+    <div class="mech">
+      <span class="rank">Mechanism 3</span>
+      <h3>The code/docs asymmetry is trust calibration, not laziness</h3>
+      <p>You stopped reading code in harnessed projects because code has an external verifier (tests, CI) — that's <em>calibrated reliance</em>, and it's legitimate. Docs have no verifier at all; human reading is the only check. That's exactly why the fatigue concentrated in documents. (And why firmware still gets read: no adequate verifier there either.)</p>
+      <span class="src">Parasuraman &amp; Riley 1997</span>
+    </div>
+    <div class="mech">
+      <span class="rank">Mechanism 4</span>
+      <h3>The firehose is prescribed — and mostly never on a read path</h3>
+      <p>The same spec table is mandated in 4 places; 81 files carry identical 66-word boilerplate; 43 of 61 legacy specs were never touched after creation; 29 of 43 feature folders are briefs that were never built. Reading value is inversely proportional to volume in your own repo.</p>
+      <span class="src">Internal audit, this study</span>
+    </div>
+    <div class="mech">
+      <span class="rank">Mechanism 5</span>
+      <h3>LLM prose is a persuasive artifact</h3>
+      <p>HumanLayer's Dexter Horthy publicly recanted the read-plans-not-code workflow after it failed at scale three times: "plans are persuasive artifacts by nature." Polished agent prose invites acknowledgment, not scrutiny. "Comprehension debt" is the result — and it lives in the human, not the corpus.</p>
+      <span class="src">Horthy/HumanLayer RPI→QRSPI · Osmani, Comprehension Debt</span>
+    </div>
+    <div class="mech">
+      <span class="rank">Mechanism 6</span>
+      <h3>Reading is for theory-building — and chronicles don't build theory</h3>
+      <p>The deliverable is your mental model of the system (Naur). Skimming preserves gist and discards detail; narrative session summaries deliver <em>activity</em>-proportional text when what you need is <em>model-delta</em>-proportional text. Caveman compresses the narration; it cannot change what the narration is for — which is why it feels insufficient.</p>
+      <span class="src">Naur/Goedecke · NNGroup F-pattern · Fregnan et al. 2022</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="eyebrow">02</span><h2>Your own corpus is the evidence</h2></div>
+  <div class="chart" role="img" aria-label="Bar chart of Joycraft docs directories by word count. docs/features holds 132,016 words and is write-once exhaust; docs/context holds 2,580 words and contains the most re-read file in the repo.">
+    <p class="chart-title">docs/ by word count — volume vs. what actually gets re-read</p>
+    <p class="chart-sub">~186,000 words total ≈ 12 hours at the biological reading cap</p>
+    <div class="bar-row" title="132,016 words — 65% of corpus, write-once exhaust">
+      <span class="bar-lab mono">features/</span>
+      <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+      <span class="bar-val">132,016</span>
+    </div>
+    <div class="bar-row" title="39,164 words — 43 of 61 legacy specs never touched after creation">
+      <span class="bar-lab mono">specs/</span>
+      <div class="bar-track"><div class="bar-fill" style="width:29.7%"></div></div>
+      <span class="bar-val">39,164</span>
+    </div>
+    <div class="bar-row" title="5,320 words">
+      <span class="bar-lab mono">discoveries/</span>
+      <div class="bar-track"><div class="bar-fill" style="width:4.0%"></div></div>
+      <span class="bar-val">5,320</span>
+    </div>
+    <div class="bar-row" title="3,391 words">
+      <span class="bar-lab mono">research/</span>
+      <div class="bar-track"><div class="bar-fill" style="width:2.6%"></div></div>
+      <span class="bar-val">3,391</span>
+    </div>
+    <div class="bar-row" title="2,580 words — holds decision-log.md, the most re-read file in the repo">
+      <span class="bar-lab mono">context/</span>
+      <div class="bar-track"><div class="bar-fill em" style="width:2.0%"></div></div>
+      <span class="bar-val">2,580</span>
+    </div>
+    <div class="bar-row" title="2,282 words">
+      <span class="bar-lab mono">plans/</span>
+      <div class="bar-track"><div class="bar-fill" style="width:1.7%"></div></div>
+      <span class="bar-val">2,282</span>
+    </div>
+    <div class="bar-row" title="1,024 words">
+      <span class="bar-lab mono">vision/</span>
+      <div class="bar-track"><div class="bar-fill" style="width:0.8%"></div></div>
+      <span class="bar-val">1,024</span>
+    </div>
+    <div class="chart-notes">
+      <div class="chart-note"><span class="swatch"></span><span><strong>features/</strong> is 65% of the corpus — write-once exhaust; 29 of its 43 folders are briefs that were never decomposed, 11 literally named <span class="mono">-draft</span>.</span></div>
+      <div class="chart-note"><span class="swatch em"></span><span><strong>context/</strong> is 1.3% of the corpus — yet it holds <span class="mono">decision-log.md</span>, the most re-read document in the repo (9 commits, a dense table). Reading value is inversely proportional to volume.</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="eyebrow">03</span><h2>Four scenarios where the fatigue bites</h2></div>
+
+  <div class="scen">
+    <h3>Sprint 4, 61 specs deep — the batch-return</h3>
+    <p>You kick off <span class="mono">/joycraft-implement-feature</span> on an 8-spec queue and go to lunch. You return to a scrolled-off transcript, ~7,600 words of fresh specs you'll never open, a session-end narrative, and a queue JSON that may or may not agree with the frontmatter. Twelve hours of backlog reading isn't a task — it's a guilt object. You skim nothing carefully, approve everything, and your mental model quietly diverges another increment.</p>
+    <div class="chips"><span class="chip">#1 Exhaust deletion</span><span class="chip">#2 Theory Ledger</span><span class="chip">#5 Report-by-exception</span><span class="chip">#3 Intent Tripwire</span></div>
+  </div>
+
+  <div class="scen">
+    <h3>The rubber-stamped design review — the HumanLayer failure</h3>
+    <p>A gnarly upgrade-path feature. <span class="mono">joycraft-design</span> hands you a fluent 200-line design doc. Buried in paragraph six is a confidently wrong assumption about where state lives. The prose reads well; you read fifteen lines, think "looks right," and approve. The assumption propagates into 8 internally consistent specs, agent-written tests encode it, verify passes (its oracle is the spec itself), and the bug ships as a coherent, fully-verified misreading of your intent.</p>
+    <div class="chips"><span class="chip">#4 Deposition Checkpoint</span><span class="chip">#3 Intent Tripwire</span></div>
+  </div>
+
+  <div class="scen">
+    <h3>The undead backlog — ambient guilt</h3>
+    <p>Friday afternoon. <span class="mono">docs/features/</span> holds 43 folders; 29 are briefs that were never decomposed. Only 5 of 35 briefs have status frontmatter, so no skill — and no human — can tell live from dead. Every directory glance, every agent context-gather, every "where were we on X" pays a tax on 100k+ words of abandoned intake. The corpus isn't just unread; most of it was never meant to be read, and nothing distinguishes it from the parts that were.</p>
+    <div class="chips"><span class="chip">#1 The Reaper</span><span class="chip">#6 Cockpit</span></div>
+  </div>
+
+  <div class="scen">
+    <h3>Two weeks away — cold re-entry</h3>
+    <p>You return from a break or context-switch back from another project. Your options today: archaeologically skim 43 feature folders, re-read a decision log that's grown 14× past its template, or ask the agent and hope. What you actually need is one page: what the system is now, what changed while you were gone, what assumptions are live. No artifact in the current harness is that page.</p>
+    <div class="chips"><span class="chip">#2 Theory Ledger</span><span class="chip">#5 /recall</span><span class="chip">#6 Cockpit</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="eyebrow">04</span><h2>The portfolio — ranked, panel-tested</h2></div>
+  <p style="color:var(--ink-2); font-size:15.5px; margin-top:-8px;">All 10 original proposals were revised under attack; none advanced untouched, none was killed outright — but 12 individual components died (see the graveyard). Detail sits behind each disclosure, deliberately.</p>
+
+  <div class="prop">
+    <div class="prop-head"><span class="rank">#1</span><h3>Exhaust Deletion &amp; Dedup — spec cards + the Reaper</h3><span class="verdict v-ship">Ship now</span></div>
+    <p class="oneliner">Delete prescribed redundancy at the template level (the 4-way spec table, the Test Plan that restates ACs 1:1, 81 copies of TDD boilerplate) and sweep the 29 undead feature folders into a greppable archive. Roughly 3× fewer human-facing words per feature — the only intervention every attacker conceded has zero grokking cost.</p>
+    <details>
+      <summary class="sum">Mechanism, risks, and the one-week experiment</summary>
+      <div class="prop-body">
+        <div class="field"><div class="flab">Mechanism</div><p>Collapse the 4-way spec-table bookkeeping to the queue JSON. Kill the Test Plan table. Move the boilerplate once into <span class="mono">joycraft-implement.md</span> (agent-read, not human-read). Replace brief-content-copied-into-every-spec with one per-feature <span class="mono">context.md</span>. Restructure specs as ~300-word fact-box cards with mandatory Constraints/Approach/rejected-alternative fields and a visible "cut under budget" residue line. The Reaper: backfill status frontmatter, sweep undead folders to <span class="mono">docs/archive/</span> — excluded from agent context and PR review via the existing .gitattributes machinery, never git-history-only deletion.</p></div>
+        <div class="field"><div class="flab">Residual risks</div><p>Caps are gameable. The panel killed hard enforcement ("cut, do not ask" makes omissions invisible) — cutting must always leave visible residue, MUST/MUST-NOT constraints are never cut, and high-risk specs get an uncapped body. Skill edits fan out to ~24 synced files across three harness variants; same-commit bundle-regen discipline required.</p></div>
+        <div class="field exp"><div class="flab">One-week experiment</div><p>Two days: edit the decompose template (delete Test Plan, add card format + residue line), run it on one real feature, compare word counts and your honest review time against the last comparable feature. One afternoon: hand-run the Reaper on <span class="mono">docs/features/</span> and see if anyone misses anything within the week.</p></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="prop">
+    <div class="prop-head"><span class="rank">#2</span><h3>Theory Ledger</h3><span class="verdict v-quarter">Build this quarter</span></div>
+    <p class="oneliner">A ≤600-word, human-owned theory of the system (<span class="mono">docs/context/theory.md</span>) plus at most 7 delta lines per session, confirmed at the PR bookend by restating them in your own words. The panel's judges called it "arguably the strongest single idea" — it targets where comprehension debt actually lives: your mental model, not the corpus.</p>
+    <details>
+      <summary class="sum">Mechanism, risks, and the one-week experiment</summary>
+      <div class="prop-body">
+        <div class="field"><div class="flab">Mechanism</div><p>Four sections — Components / Data flows / Invariants / Live assumptions — cap enforced mechanically (your decision-log grew 14× past its template; soft budgets fail here). Session-end emits NEW/REVISED/EVICT delta lines, each with a deterministic anchor (file:line, test name, grep command) and a decay date. REVISED/EVICT lines require you to restate them — generation, not recognition. After N silent sessions, an independent verify-pattern subagent re-derives the theory from code and diffs it against the ledger. Dual-use payoff: 600 human-vetted words beat 132k words of unverified exhaust as agent context.</p></div>
+        <div class="field"><div class="flab">Residual risks</div><p>It's a re-entry index and reading-by-exception mechanism, not a theory transplant — working with the system remains the source of theory. "Theory unchanged" is a claim, not a report; the periodic verifier audit is what distinguishes silence from a missed delta, and it is not optional. A rubber-stamped wrong line contaminates every future agent session from a single point of truth.</p></div>
+        <div class="field exp"><div class="flab">One-week experiment</div><p>Hand-write <span class="mono">theory.md</span> for Joycraft itself in one sitting — this tests whether 600 words can carry the system at all. Add a 10-line delta step to session-end. Run two real sessions and see whether the deltas are the things you actually wanted to know.</p></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="prop">
+    <div class="prop-head"><span class="rank">#3</span><h3>Intent Tripwire + doc hygiene</h3><span class="verdict v-quarter">Build this quarter</span></div>
+    <p class="oneliner">Give documents what code already has: an external verifier. Deterministic <span class="mono">npx joycraft check-docs</span> for consistency drift, plus the core rule — every acceptance criterion must trace to a line in a human-read design doc; an untraceable AC is a red "NEW CLAIM" exception that pages you exactly where requirement drift enters.</p>
+    <details>
+      <summary class="sum">Mechanism, risks, and the one-week experiment</summary>
+      <div class="prop-body">
+        <div class="field"><div class="flab">Mechanism</div><p>Layer 1 (shippable now): queue-JSON vs frontmatter vs brief-checkbox consistency, Affected-Files path existence, undead-brief flagging — advisory first. Layer 2: AC-to-design traceability, and <span class="mono">joycraft-verify</span>'s oracle repointed from the spec to the human-approved brief + the project's ALWAYS/NEVER boundaries, so at least one sensor is independent of the artifact chain it grades. Three separate proposals independently converged on "repoint the verifier to the brief" — the strongest convergence signal in the whole panel. Every red arrives as a 3–5 sentence model-diff, never a bare refutation.</p></div>
+        <div class="field"><div class="flab">Residual risks</div><p>AC-to-test mapping is prospective-only (existing Test Plans are free prose). Semantic checks remain LLM-judging-LLM: verdicts must say "unrefuted," never "verified." The reading license is precise: this excuses spec bodies post-approval and bookkeeping — it does NOT excuse the design doc or ACs, which remain the intent contract.</p></div>
+        <div class="field exp"><div class="flab">One-week experiment</div><p>Day one: write the three deterministic checks as a standalone script and run it on the current corpus — the drift counts it finds are the business case. Day two: hand-trace the ACs of one shipped feature back to its design doc and count untraceable ones. If &gt;0 on the first try, the tripwire has already justified itself.</p></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="prop">
+    <div class="prop-head"><span class="rank">#4</span><h3>Deposition Checkpoint</h3><span class="verdict v-pilot">Pilot · 4 weeks · kill criterion</span></div>
+    <p class="oneliner">Replace the doc-reading checkpoint with a forced-choice interrogation: ≤5 risk-ordered questions derived from the design doc's decisions, plus a one-screen "assumptions asserted as fact" manifest. Reading becomes deciding — the one mitigation the complacency literature says survives.</p>
+    <details>
+      <summary class="sum">Mechanism, risks, and the one-week experiment</summary>
+      <div class="prop-body">
+        <div class="field"><div class="flab">Mechanism</div><p>The design doc still gets written (git-native, team-legible). From its Resolved Decisions and Open Questions it derives ≤5 forced-choice questions via the native question UI, each with a "reject this framing" escape. Integrity: anything touching an ASK FIRST/NEVER boundary becomes a mandatory question regardless of agent confidence; the assumptions manifest gets one human glance; session-end randomly spot-reads one generated spec per feature. Each answer requires a one-sentence typed rationale (actual generation). Answers land as decision-log rows injected into Hard Constraints.</p></div>
+        <div class="field"><div class="flab">Residual risks</div><p>The deepest unfixed hole in the portfolio: the reviewee still filters the review channel — a premise the agent is confidently wrong about scores zero uncertainty and may not surface even in the manifest. The boundary bypass and spot-read narrow this, not close it. Question quality will drift without a minimal Tolan-style eval (seeded designs with known-dangerous buried decisions).</p></div>
+        <div class="field exp"><div class="flab">One-week experiment</div><p>No code: on the next real feature, after design produces its doc, prompt the agent by hand to extract the 5 highest-stakes decisions as forced-choice questions plus an assumptions manifest. Answer them, time it, and check whether anything the questions missed bit during implementation. If you bypass to free chat by the second feature, kill the format and keep only decision-stamping into specs.</p></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="prop">
+    <div class="prop-head"><span class="rank">#5</span><h3>Report-by-Exception + attention policy + /recall</h3><span class="verdict v-pilot">Ship as prompt-level guidance</span></div>
+    <p class="oneliner">Nominal spec = one line emitted by the independent verifier, never the implementer. A hand-owned DARK/SAMPLE/FULL attention-policy table makes "permission to not read" an explicit contract instead of guilt — with the firmware instinct preserved as a written carve-out. <span class="mono">joycraft-recall</span> answers known questions in ≤150 cited words.</p>
+    <details>
+      <summary class="sum">Mechanism, risks, and the one-week experiment</summary>
+      <div class="prop-body">
+        <div class="field"><div class="flab">Mechanism</div><p>Deviations are BLUF, risk-ordered, one screen, with approve/reject/show-me. ~1-in-5 nominal specs randomly surface a full report so the false-negative rate stays observable. The policy table has hard rules: intent prose is never DARK; NEVER-boundary paths are always FULL. No adaptive calibration — tier changes are manual, driven by escaped defects. Every mature overload field converged on exception-only channels and tiering; the panel endorsed the direction unanimously once silence had to be earned by an independent sensor.</p></div>
+        <div class="field"><div class="flab">Residual risks</div><p>This is prompt-level aspiration, not an ISA-18.2 guarantee — verbosity discipline decays with model updates, and the TUI streams scrollback Joycraft doesn't control. The first hidden regression costs trust in the dark tier; the 1-in-5 sample is the only early-warning system and is load-bearing. Unknown-unknown drift is the Theory Ledger's job, not this one's.</p></div>
+        <div class="field exp"><div class="flab">One-week experiment</div><p>Edit the output sections of session-end/spec-done with the exception philosophy, hand-write a 10-row attention-policy table in 15 minutes, run one sprint. Measure nothing; just ask at week's end whether you trusted the one-liners and whether anything hidden bit you.</p></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="prop">
+    <div class="prop-head"><span class="rank">#6</span><h3>The Cockpit — HTML triage surface</h3><span class="verdict v-defer">Defer until status unification</span></div>
+    <p class="oneliner">One self-contained HTML board rendered by tested deterministic TypeScript from structured records — never LLM prose-to-HTML, so the view cannot hallucinate. Your HTML-artifact instinct, extended from "nicer rendering" to a consumption architecture. Blocked on the queue/status unification you already scoped: the structured layer is triple-bookkept and 88% status-less today.</p>
+    <details>
+      <summary class="sum">Mechanism, risks, and the one-week experiment</summary>
+      <div class="prop-body">
+        <div class="field"><div class="flab">Mechanism</div><p>Fail-visible sensors: the CLI derives facts itself (queue JSON, git diff vs Affected Files, captured exit codes); absence of telemetry renders amber, never green. Specs earn dark-green rows only after a one-time human sign-off at decomposition. Risk-ordered layout per the position-effect data; a Reaper column for undead folders; a ~500-word recurrent briefing covers what nominal work changed architecturally.</p></div>
+        <div class="field"><div class="flab">Residual risks</div><p>Garbage-in on day one without the unification migration. It solves monitoring/triage, not the 132k words of pre-implementation reading. Real maintenance surface for a solo dev: v1 must be state board + amber-on-missing + Reaper only, and survive three sprints without a caught lie before growing.</p></div>
+        <div class="field exp"><div class="flab">One-week experiment</div><p>Skip the CLI: have the agent generate the cockpit as a one-off HTML artifact from the current queue JSON + git log at the next session-end, with fake-nothing rules. If you open it more than twice unprompted that week, the surface has earned the deterministic-renderer investment.</p></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="prop">
+    <div class="prop-head"><span class="rank">#7</span><h3>Strata — records are source, documents are views</h3><span class="verdict v-defer">Experimental · may never need to ship</span></div>
+    <p class="oneliner">The architectural endgame: typed, sharded record files with mandatory layered disclosure (headline ≤15 words / summary ≤80 / detail unbounded), markdown views generated and checksum-verified. The stance survived every attack — but if #1–#3 relieve the fatigue, this never needs to exist.</p>
+    <details>
+      <summary class="sum">Mechanism, risks, and the one-week experiment</summary>
+      <div class="prop-body">
+        <div class="field"><div class="flab">Mechanism</div><p>Sharded records (<span class="mono">records/spec-NN.json</span>, <span class="mono">decision-NN.json</span> — never one feature.yaml, preserving parallel-wave isolation). Assembly-at-execution feeds agents fully inlined context persisted as auditable build artifacts; a semantic tier of <span class="mono">joycraft check</span> spot-checks headline fidelity; a mandatory ~200-word human narrative field carries the causal layer labeled fields can't.</p></div>
+        <div class="field"><div class="flab">Residual risks</div><p>The big unknown no fix removes: whether LLMs maintain structured records faithfully under pressure, and whether an LLM fidelity-checker earns the not-reading license it grants. Highest migration cost and version-skew surface of anything in the portfolio.</p></div>
+        <div class="field exp"><div class="flab">One-week experiment</div><p>Run one feature with sharded JSON records written alongside (not instead of) the normal docs, generate the 350-word view, review only the view. If it was sufficient and the records didn't degrade by spec 5, the bet is live; if the agent fought the format, that's the answer too.</p></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="eyebrow">05</span><h2>The graveyard — what not to build</h2></div>
+  <div class="grave">
+    <div class="dead"><div class="dname">Compression as the strategy (caveman as endgame)</div><p>No field that solved automated-output overload used compression — all used deletion, tiering, or just-in-time retrieval. Shorter prose still leaves you sole verifier of 100% of it.</p></div>
+    <div class="dead"><div class="dname">Hard word-cap gates with "cut, do not ask"</div><p>Makes errors of omission invisible by construction — a cut safety constraint looks identical to one that never existed.</p></div>
+    <div class="dead"><div class="dname">Self-reported "nominal" one-liners</div><p>The implementing agent certifying "nothing surprising" about its own work certifies self-consistency, not correctness. Silence must come from an independent verifier.</p></div>
+    <div class="dead"><div class="dname">The adaptive audit lottery (quiz-graded calibration)</div><p>Quiz accuracy measures your knowledge, not the agent's defect density — it demotes to DARK exactly the areas you know well.</p></div>
+    <div class="dead"><div class="dname">The attention ledger / word-metering</div><p>Unimplementable — skills are prompts with no interception point on emitted text, so "logging every human-facing word" is the model self-reporting.</p></div>
+    <div class="dead"><div class="dname">JOYDEC round-trip / paste-back protocols</div><p>The highest-value review outcome — "reject both options, do X instead" — can't be encoded in a pick string; the protocol becomes decoration by week two.</p></div>
+    <div class="dead"><div class="dname">Recall via git-history-only deletion</div><p>Silently returns nothing under squash merge, and agents can't grep what isn't in the tree. Archive-move achieves the same collapse safely.</p></div>
+    <div class="dead"><div class="dname">The audience:agent never-read contract</div><p>Converts docs from unread-but-reviewable into explicitly-unreviewed-by-contract, deleting your only fallback when stakes spike.</p></div>
+    <div class="dead"><div class="dname">Single feature.yaml store</div><p>Breaks the just-shipped parallel-safe-wave mechanism whose safety argument is disjoint files per subagent; agents reflow YAML wholesale, destroying diff locality.</p></div>
+    <div class="dead"><div class="dname">AC-to-test mapping on the existing corpus</div><p>Verified impossible — real Test Plans are free-prose table cells, not named runnable tests. Prospective-only via template convention.</p></div>
+    <div class="dead"><div class="dname">Session-end interactive HTML instruments</div><p>Incoherent in exactly the headless/isolated mode Joycraft is building toward — nobody is at a browser, so a markdown path ships anyway and skill logic doubles.</p></div>
+    <div class="dead"><div class="dname">Audio status, 3D code cities, standalone viz products</div><p>Listeners retain complex material worse than readers; code cities won lab studies but never survived field adoption; CodeSee died commercially.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="eyebrow">06</span><h2>How this shapes the living-harness update</h2></div>
+
+  <div class="tranche">
+    <div class="when">Weeks 1–3</div>
+    <ul>
+      <li><strong>Stage-1 template deletions</strong> — dedup the 4-way spec table, kill the Test Plan restatement, move TDD boilerplate into the implement skill, spec cards with visible cut-residue. Highest-certainty win in the panel; no new CLI.</li>
+      <li><strong>The Reaper as archive-move</strong> — backfill status frontmatter, sweep the 29 undead folders into <span class="mono">docs/archive/</span>, excluded from agent context and PR review. Completes the lifecycle half of the .gitattributes decision you already made.</li>
+      <li><strong>Queue-JSON / status unification</strong> — already scoped, and the prerequisite for everything downstream (check-docs, the Cockpit, generated views).</li>
+    </ul>
+  </div>
+  <div class="tranche">
+    <div class="when">This quarter</div>
+    <ul>
+      <li><strong>Theory Ledger</strong> — <span class="mono">theory.md</span> + PR-bookend deltas: maintains your mental model.</li>
+      <li><strong>Intent Tripwire</strong> — deterministic check-docs + AC-to-design traceability + verify's oracle repointed to the brief: gives docs the external verifier whose absence is why they must currently be read at all. These two are complementary halves of the trust fix.</li>
+    </ul>
+  </div>
+  <div class="tranche">
+    <div class="when">Pilot w/ kill criteria</div>
+    <ul>
+      <li><strong>Deposition Checkpoint</strong> — four weeks on Joycraft itself; kill if you bypass to chat.</li>
+      <li><strong>Hand-generated Cockpit artifact</strong> — build the CLI only if you open it unprompted.</li>
+    </ul>
+  </div>
+  <div class="tranche">
+    <div class="when">Defer</div>
+    <ul>
+      <li><strong>Strata</strong> (records-as-source) until the cheaper interventions have run a quarter — it may prove unnecessary. Also: the tune "reading load" dimension until there's something deterministic to measure; adaptive calibration until deterministic verifiers exist; codex/pi variants until the Claude variant survives real use.</li>
+    </ul>
+  </div>
+
+  <h3 style="margin-top: 34px; font-size: 19px;">The document diet — five principles the findings force</h3>
+  <div class="diet">
+    <div class="diet-item"><p><strong>Two-tier contract, labeled but never sealed.</strong> Human-facing docs are capped, structured, front-loaded, risk-ordered; agent-facing docs are uncapped but single-copy. Detail is human-optional, never human-excluded.</p></div>
+    <div class="diet-item"><p><strong>A doc enters the human channel only if it requires a human response</strong> — and "response" means a decision, not an acknowledgment, because acknowledgment-only summaries are where rubber-stamping lives. Everything else is dashboard, archive, or retrieval.</p></div>
+    <div class="diet-item"><p><strong>Human judgment moves to the bookends:</strong> one decision-forcing checkpoint at design, one delta-confirmation at the PR. The middle is machine-verified, exception-reported, and sampled.</p></div>
+    <div class="diet-item"><p><strong>Silence must be earned, never self-reported.</strong> Any "nothing to read" signal comes from an independent verifier oracled on the human-approved brief and the project boundaries, plus a standing random sample. The high-stakes carve-out (the firmware instinct) stays a written policy, not a vibe.</p></div>
+    <div class="diet-item"><p><strong>Archive, don't delete; delta, don't chronicle.</strong> Exhaust moves out of sight but stays greppable; session-end emits what the system <em>became</em>, at model-delta-proportional length. Reading load becomes a tracked harness property — the one dimension no tool in the ecosystem measures.</p></div>
+  </div>
+
+  <div class="caveat">
+    <p><strong>The honest caveat:</strong> none of this makes not-reading free. The panel's most consistent counter-finding is that comprehension debt is real — these mechanisms manage it rather than abolish it. The Theory Ledger and the recurrent briefing are the maintenance payments, and they are not optional line items.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="eyebrow">07</span><h2>The most surprising finding</h2></div>
+  <blockquote class="pull">
+    <p>Every mature field that solved human overload from automated systems — aviation's dark cockpit, medicine's alarm rationalization, nuclear control rooms, SRE, the President's Daily Brief — solved it structurally. Compression is the one approach conspicuously absent from every field that actually solved this problem.</p>
+    <span class="att">Your repo confirms the inversion at miniature scale: the most re-read document lives in the smallest directory (1.3% of the corpus), while the largest directory (65%) is write-once exhaust. And the strongest precedent for Joycraft's exact architecture — HumanLayer's read-plans-not-code workflow — was publicly recanted by its own author, with the fix being a small early human checkpoint, not better documents.</span>
+  </blockquote>
+</section>
+
+<section>
+  <div class="sec-head"><span class="eyebrow">08</span><h2>Key sources</h2></div>
+  <div class="sources">
+    <div class="srcitem"><a href="https://addyosmani.com/blog/comprehension-debt/" target="_blank" rel="noopener">Osmani — Comprehension Debt</a><span class="why">Names the exact problem: the gap between text that exists and text any human groks lives in people, not the corpus.</span></div>
+    <div class="srcitem"><a href="https://alexlavaee.me/blog/from-rpi-to-qrspi/" target="_blank" rel="noopener">From RPI to QRSPI (HumanLayer reversal)</a><span class="why">The closest precedent to Joycraft recanted read-plans-not-code; the fix was an early human checkpoint.</span></div>
+    <div class="srcitem"><a href="https://journals.sagepub.com/doi/10.1177/0018720810376055" target="_blank" rel="noopener">Parasuraman &amp; Manzey 2010 — Complacency</a><span class="why">Complacency worsens as reliability rises, hits experts, immune to practice.</span></div>
+    <div class="srcitem"><a href="https://journals.sagepub.com/doi/10.1518/001872097778543886" target="_blank" rel="noopener">Parasuraman &amp; Riley 1997 — Use, Misuse, Disuse</a><span class="why">Explains the code/docs asymmetry: not-reading is calibrated reliance only where an external verifier exists.</span></div>
+    <div class="srcitem"><a href="https://smartbear.com/learn/code-review/best-practices-for-peer-code-review/" target="_blank" rel="noopener">SmartBear/Cisco — Peer Code Review</a><span class="why">The empirical attention block: 200–400 LOC over 60–90 min — the sizing basis for every cap in the portfolio.</span></div>
+    <div class="srcitem"><a href="https://journals.sagepub.com/doi/10.1177/1529100615623267" target="_blank" rel="noopener">Rayner et al. 2016 — So Much to Read</a><span class="why">Comprehension caps at ~250–300 wpm; 186k words is ~12 hours by biology, not discipline.</span></div>
+    <div class="srcitem"><a href="https://arxiv.org/abs/2208.04259" target="_blank" rel="noopener">Fregnan et al. 2022 — Position effects</a><span class="why">64% lower odds of finding a defect in last-shown content — the evidence for risk-ordered layouts.</span></div>
+    <div class="srcitem"><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7137953/" target="_blank" rel="noopener">Fact-box RCT (n=2,300)</a><span class="why">Labeled fields beat prose for comprehension AND 6-week recall — the format evidence for spec cards and the ledger.</span></div>
+    <div class="srcitem"><a href="https://link.springer.com/article/10.1007/s10664-018-9676-8" target="_blank" rel="noopener">Baum et al., EMSE 2019 — Working memory &amp; review</a><span class="why">Artifact size, not reviewer ability, dominates review effectiveness.</span></div>
+    <div class="srcitem"><a href="https://www.isa.org/standards-and-publications/isa-standards/isa-18-series-of-standards" target="_blank" rel="noopener">ISA-18.2 alarm management</a><span class="why">A signal may occupy the human channel only if it requires a response; rationalization deletes 30–60% of signals.</span></div>
+    <div class="srcitem"><a href="https://sre.google/sre-book/monitoring-distributed-systems/" target="_blank" rel="noopener">Google SRE — Monitoring</a><span class="why">The four-tier channel architecture (page/ticket/dashboard/log) the exception designs mirror.</span></div>
+    <div class="srcitem"><a href="https://www.infoq.com/news/2026/06/anthropic-html-markdown-agent/" target="_blank" rel="noopener">InfoQ — HTML artifacts over markdown</a><span class="why">Direct validation of the HTML instinct: markdown past ~100 lines gets rubber-stamped.</span></div>
+    <div class="srcitem"><a href="https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html" target="_blank" rel="noopener">Böckeler/Fowler — SDD tools</a><span class="why">"I'd rather review code than all these markdown files" — the market's verdict on spec-heavy tooling.</span></div>
+    <div class="srcitem"><a href="https://github.com/Fission-AI/OpenSpec/blob/main/docs/concepts.md" target="_blank" rel="noopener">OpenSpec — delta specs</a><span class="why">The ecosystem's answer to spec bloat: read only the change, archive aggressively.</span></div>
+    <div class="srcitem"><a href="https://www.seangoedecke.com/programming-with-ai-agents-as-theory-building/" target="_blank" rel="noopener">Goedecke — Agents as theory building</a><span class="why">The Naur frame the synthesis rests on: the deliverable is your mental model, so outputs should be model-deltas.</span></div>
+  </div>
+</section>
+
+<footer>
+  <p>This brief practices its own findings: bottom line first, fact-boxes over prose, detail behind disclosure, risk-ordered throughout.</p>
+  <p>Produced by a 52-agent research swarm — 6 research lenses → 5 solution stances → 30 adversarial attacks → 10 judgments → synthesis. Joycraft, July 20, 2026.</p>
+</footer>
+</div>

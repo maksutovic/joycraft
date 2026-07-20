@@ -3,3 +3,4 @@ docs/features/** linguist-generated=true
 docs/bugfixes/** linguist-generated=true
 docs/discoveries/** linguist-generated=true
 docs/templates/** linguist-generated=true
+docs/research/*.html linguist-generated=true
