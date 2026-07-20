@@ -1,0 +1,5 @@
+# Joycraft: collapse generated workflow docs in PR review (expand with one click)
+docs/features/** linguist-generated=true
+docs/bugfixes/** linguist-generated=true
+docs/discoveries/** linguist-generated=true
+docs/templates/** linguist-generated=true
