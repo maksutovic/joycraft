@@ -1,5 +1,5 @@
 ---
-status: in-review
+status: done
 owner: Maximilian Maksutovic
 created: 2026-07-20
 feature: 2026-07-20-decision-dossier

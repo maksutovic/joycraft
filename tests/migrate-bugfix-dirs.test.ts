@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mkdirSync, writeFileSync, existsSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -12,11 +12,19 @@ function write(file: string, content: string): void {
 }
 
 let dir: string;
+let origFetch: typeof fetch;
 beforeEach(() => {
   dir = join(tmpdir(), `joycraft-bugfixmig-${Date.now()}-${Math.random().toString(36).slice(2)}`);
   mkdirSync(dir, { recursive: true });
+  // Hermetic: never hit the live npm registry (see tests/upgrade.test.ts).
+  origFetch = globalThis.fetch;
+  globalThis.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({ version: '0.0.0' }),
+  }) as unknown as typeof fetch;
 });
 afterEach(() => {
+  globalThis.fetch = origFetch;
   rmSync(dir, { recursive: true, force: true });
 });
 

@@ -1,3 +1,10 @@
+---
+status: todo
+owner: Maximilian Maksutovic
+created: 2026-07-20
+feature: 2026-07-20-decision-dossier
+---
+
 # Question capture: the native picker fires from an installed skill; rationale needs a single-question, free-text pattern
 
 **Spec:** `docs/features/2026-07-20-decision-dossier/specs/verify-question-capture.md`
