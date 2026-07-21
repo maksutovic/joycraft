@@ -133,6 +133,10 @@ Once the human approves the design:
 - Update the design document with their corrections and chosen options
 - Move answered questions from "Open Questions" to "Resolved Design Decisions"
 - Present the updated document for final confirmation
+<!-- PILOT: diverges from src/ — see 2026-07-20-decision-dossier brief decision #7 -->
+- Run the deposition checkpoint: invoke `/joycraft-decide <design path>` so every
+  remaining open question terminates (clarified / backlogged / discarded) — the
+  decompose gate stays closed while any decision is `open`.
 - Once the user gives explicit approval, AND ONLY THEN, emit the canonical Handoff block:
 
 ## Recommended Next Steps

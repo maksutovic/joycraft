@@ -20,6 +20,20 @@ If no brief exists, tell the user:
 
 If the user describes the feature inline, work from that description directly. You don't need a formal brief to decompose — but recommend creating one for complex features.
 
+<!-- PILOT: diverges from src/ — see 2026-07-20-decision-dossier brief decision #7 -->
+## Step 1.5: Decision Gate
+
+Before decomposing a brief file, parse its YAML frontmatter `decisions:` list. Frontmatter is the gate's **single source** — do not scan the body for open questions.
+
+- **No `decisions:` block** → pass; legacy briefs keep working.
+- **Frontmatter fails to parse** → fail **closed**: report the parse error, point at the brief file, and stop. Never decompose over a brief whose decision state is unreadable.
+- **Any entry with `status: open`** → refuse to decompose. Name only the open decisions (id + question) and stop:
+
+  > [N] open decision(s) gate this brief: [D2 — <question>, …]. Run `/joycraft-decide <brief path>` to terminate them (clarified / backlogged / discarded), or explicitly defer specific ones ("backlog D2 — <reason>").
+
+- **Explicit defer** — the user says backlog it / skip for now / don't worry: set each named decision to `status: backlogged` with their one-line reason in the brief's frontmatter, add it to the feature's `docs/backlog/` entry (create one if needed), then re-evaluate the gate. Proceed only when zero decisions remain `open`, confirming in one line what was backlogged and where it was recorded (visible residue, never a silent edit).
+- `backlogged` and `discarded` never block — only `open` blocks.
+
 ## Step 2: Identify Natural Boundaries
 
 **Why:** Good boundaries make specs independently testable and committable. Bad boundaries create specs that can't be verified without other specs also being done.

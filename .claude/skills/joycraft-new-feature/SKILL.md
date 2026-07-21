@@ -278,6 +278,11 @@ To execute: Start a fresh session per spec. Each session should:
 Ready to start?
 ```
 
+<!-- PILOT: diverges from src/ — see 2026-07-20-decision-dossier brief decision #7 -->
+Before the Handoff block, run the deposition checkpoint: invoke `/joycraft-decide <brief path>`
+so every open question in the brief terminates (clarified / backlogged / discarded) —
+the decompose gate stays closed while any decision is `open`.
+
 End with the canonical Handoff block. Include any backlog paths produced as a side effect.
 
 ## Recommended Next Steps

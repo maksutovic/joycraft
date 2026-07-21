@@ -167,7 +167,26 @@ describe('execution modes in joycraft-decompose', () => {
       const src = SOURCE_VARIANTS[i];
       const installed = INSTALLED_COPIES[i];
       it(`${label(installed)} matches its source variant`, () => {
-        expect(read(installed)).toBe(read(src));
+        const installedText = read(installed);
+        const srcText = read(src);
+        if (installedText.includes('<!-- PILOT: diverges from src/')) {
+          // Deliberate repo-local pilot divergence (marked, see the referenced
+          // feature brief): the installed copy may ADD lines, but every source
+          // line must survive unchanged and in order. Strict equality resumes
+          // automatically once the pilot marker is removed.
+          const instLines = installedText.split('\n');
+          let j = 0;
+          for (const line of srcText.split('\n')) {
+            while (j < instLines.length && instLines[j] !== line) j++;
+            expect(
+              j < instLines.length,
+              `pilot copy dropped or modified source line: ${JSON.stringify(line)}`,
+            ).toBe(true);
+            j++;
+          }
+        } else {
+          expect(installedText).toBe(srcText);
+        }
       });
     }
   });

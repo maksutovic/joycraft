@@ -1,0 +1,38 @@
+{
+  "feature": "2026-07-20-decision-dossier",
+  "specs": [
+    {
+      "id": 1,
+      "file": "verify-question-capture.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 2,
+      "file": "add-dossier-template.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 3,
+      "file": "add-decide-skill.md",
+      "depends_on": [
+        1,
+        2
+      ],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 4,
+      "file": "wire-routing-and-gate.md",
+      "depends_on": [
+        3
+      ],
+      "status": "done",
+      "mode": "checkpoint"
+    }
+  ]
+}
