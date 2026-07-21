@@ -4,6 +4,6 @@
     { "id": 1, "file": "verify-question-capture.md", "depends_on": [], "status": "in-review", "mode": "batch" },
     { "id": 2, "file": "add-dossier-template.md", "depends_on": [], "status": "in-review", "mode": "batch" },
     { "id": 3, "file": "add-decide-skill.md", "depends_on": [1, 2], "status": "in-review", "mode": "checkpoint" },
-    { "id": 4, "file": "wire-routing-and-gate.md", "depends_on": [3], "status": "todo", "mode": "checkpoint" }
+    { "id": 4, "file": "wire-routing-and-gate.md", "depends_on": [3], "status": "in-review", "mode": "checkpoint" }
   ]
 }
