@@ -10,6 +10,6 @@
     { "id": 7, "file": "create-harden-skill.md", "depends_on": [], "status": "in-review", "mode": "isolated" },
     { "id": 8, "file": "upgrade-optimize-v2.md", "depends_on": [4, 5, 6, 7], "status": "in-review", "mode": "isolated" },
     { "id": 9, "file": "add-reaper-pass.md", "depends_on": [6, 8], "status": "in-review", "mode": "checkpoint" },
-    { "id": 10, "file": "run-gate-evals.md", "depends_on": [4, 6, 9], "status": "todo", "mode": "checkpoint" }
+    { "id": 10, "file": "run-gate-evals.md", "depends_on": [4, 6, 9], "status": "in-review", "mode": "checkpoint" }
   ]
 }

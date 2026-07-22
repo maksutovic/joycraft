@@ -43,6 +43,8 @@ For each control, determine:
 | `PROBATION` | Rule was hardened into a machine check under a model that has since changed, or is otherwise time-boxed for re-verification — see `{{skill_prefix}}tune`'s declared/verified labels |
 | `RETIRE` | Control is dead: superseded, references a deleted file/feature, or its guarded behavior no longer occurs — candidate for the Reaper |
 
+**The Disposition cell is the bare word only** — never a hedged or qualified variant (`RETIRE-candidate`, `KEEP (note)`, `RETIRE (unconfirmed)`). Confidence and caveats belong in the Evidence label (`INFERRED` for an unconfirmed read) and the Reason column, never appended to the Disposition value. Do not reuse an Evidence-label word (`NOT_APPLICABLE`, `INACCESSIBLE`, etc.) as a Disposition — the two vocabularies are disjoint; a not-applicable/inaccessible row still needs one of the six Disposition words (usually `KEEP` with the inapplicability explained in Reason) plus the matching Evidence label.
+
 ### Evidence label vocabulary (exactly five, no synonyms)
 
 | Label | When to use it |
