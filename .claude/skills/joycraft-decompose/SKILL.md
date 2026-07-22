@@ -92,6 +92,27 @@ Show the decomposition table to the user. Ask:
 
 Iterate until the user approves.
 
+<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-provenance-gate.md (S1) -->
+### Step 4.5: INVENTED Review Gate (PROTOCOL)
+
+Every Constraint and Acceptance Criterion you are about to write into a spec (Step 5) needs a traceable source. Before generating any spec file, walk the constraints/ACs you intend to write for each row and classify each one's cite:
+
+- `[src: D<n>]` — traces to a stamped decision in the brief's `decisions:` frontmatter
+- `[src: design §<n>]` — traces to a numbered section of `docs/features/<slug>/design.md`
+- `[src: brief "<section>"]` — traces to a named section of the brief (or the inline description)
+- `[src: INVENTED]` — you could not trace it to any of the above; it's a premise you introduced
+
+List every `INVENTED` item in the table presentation, grouped by which spec row it belongs to. This review happens here, in the table, **before any spec file is written** — reviewing 10 generated files instead of one table is exactly the unreviewed-premise failure this gate exists to kill.
+
+For each `INVENTED` item, ask the human to pick one:
+1. **Approve** — the premise is correct and should be locked in. Append it to the brief's `decisions:` frontmatter block as a new entry (`id: D<next>`, `status: clarified`, the constraint's own text as `choice`, and a one-line `rationale`). Re-cite the constraint `[src: D<new-id>]`.
+2. **Reword to a traceable source** — the human points you at where it actually comes from (a brief section, a design section, an existing decision). Re-cite accordingly.
+3. **Drop** — remove the constraint/AC entirely from the spec you're about to generate.
+
+Do not proceed to Step 5 for a row that still has an unresolved `INVENTED` item. Decompose never self-approves an invented premise — this is a human-gated checkpoint on every pass, not a suggestion.
+
+If every constraint/AC in the decomposition traced cleanly with no `INVENTED` items, say so explicitly in the table presentation: **"All constraints traced — zero INVENTED."** Earned silence, not the absence of the check.
+
 ## Execution Modes (assign a mode per spec)
 
 Every spec carries an **execution mode** that controls how `joycraft-implement` wraps up after building it. Assign one to each spec — recommended by you, **approved by the human** (never silent).
@@ -219,6 +240,9 @@ Strategy, data flow, key decisions. Name one rejected alternative.
 If `docs/templates/ATOMIC_SPEC_TEMPLATE.md` exists, reference it for the full template with additional guidance.
 
 Fill in all sections — each spec must be self-contained (no "see the brief for context"). Copy relevant constraints from the Feature Brief into each spec. Write acceptance criteria specific to THIS spec, not the whole feature. Every acceptance criterion must have at least one corresponding test in the Test Plan. If the user provided test strategy info from the interview, use it to choose test types and frameworks. Include the test harness verification rules in every Test Plan.
+
+<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-provenance-gate.md (S1) -->
+**Cite every Constraints and Acceptance Criteria line (PROTOCOL).** Each line you write under `## Constraints` and `## Acceptance Criteria` carries a trailing `[src: …]` cite, resolved during Step 4.5's INVENTED review — one of exactly four forms: `[src: D<n>]`, `[src: design §<n>]`, `[src: brief "<section>"]`, `[src: INVENTED]` (only for items the human explicitly chose to leave as INVENTED, which should not happen given Step 4.5 resolves them first — this vocabulary extends the existing `decisions:` frontmatter gate, it is not a parallel provenance scheme). If a constraint traces to multiple sources, cite the most specific: `D<n>` over `design §<n>` over `brief "<section>"`. This cite requirement is scoped to Constraints and Acceptance Criteria only — the `## Approach` and `## Edge Cases` sections stay judgment prose, uncited; the cite load lands exactly where variance is born.
 
 ### Step 5a: Write the Spec Queue Manifest
 
