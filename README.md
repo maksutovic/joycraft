@@ -127,19 +127,21 @@ What this does to an existing setup:
 Pi inside your project and it will run the upgrade, show you what changed, and
 leave a reviewable commit:
 
-> Upgrade Joycraft in this project to 0.7. Steps: (1) Create a branch
-> `chore/joycraft-0.7`. (2) Run `npx joycraft@latest upgrade` interactively —
-> when it shows a diff for a file I customized, summarize the diff for me in
-> one or two sentences and ask before accepting; never blanket-accept.
-> (3) After the upgrade, list every file it changed, added, or migrated
-> (including the `docs/.joycraft/state.json` move), and read
-> `CHANGELOG.md`'s 0.7.0 entry from the joycraft package to explain in plain
-> terms what changed about how my harness behaves — before vs. now, plus side
-> effects I should expect. (4) Confirm my harness selection and gitignore
-> profile were preserved, and that my CLAUDE.md/AGENTS.md customizations are
-> intact. (5) Run my project's test and typecheck commands to confirm nothing
-> broke. (6) Commit the result with message `chore: upgrade joycraft to 0.7`
-> and show me the diff stat — do not push or open a PR without asking.
+```text
+Upgrade Joycraft in this project to 0.7. Steps: (1) Create a branch
+chore/joycraft-0.7. (2) Run `npx joycraft@latest upgrade` interactively —
+when it shows a diff for a file I customized, summarize the diff for me in
+one or two sentences and ask before accepting; never blanket-accept.
+(3) After the upgrade, list every file it changed, added, or migrated
+(including the docs/.joycraft/state.json move), and read CHANGELOG.md's
+0.7.0 entry from the joycraft package to explain in plain terms what
+changed about how my harness behaves — before vs. now, plus side effects
+I should expect. (4) Confirm my harness selection and gitignore profile
+were preserved, and that my CLAUDE.md/AGENTS.md customizations are intact.
+(5) Run my project's test and typecheck commands to confirm nothing broke.
+(6) Commit the result with message "chore: upgrade joycraft to 0.7" and
+show me the diff stat — do not push or open a PR without asking.
+```
 
 ## Quick Start
 
