@@ -31,7 +31,7 @@
 - Add runtime dependencies that aren't strictly necessary
 - Reference absolute paths — all templates and skills must use project-relative paths
 - Include methodology research, project assessments, or personal notes in the tool
-- Push directly to main/master (always use feature branches + PR)
+- Push directly to main/master (always use feature branches + PR) <!-- origin: source AGENTS.md 2026-07-21, probation: claude-sonnet-5 -->
 - Amend commits that have been pushed to remote
 - Access, read, or reference the scenarios repo (`joycraft-scenarios`)
 - Mention scenario test names or contents

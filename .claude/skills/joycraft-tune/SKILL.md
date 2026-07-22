@@ -4,6 +4,8 @@ description: Assess and upgrade your project's AI development harness — score 
 instructions: 17
 ---
 
+<!-- PILOT: declared/verified boundary labels + probation surfacing diverge from src/ — see 2026-07-21-living-harness create-harden-skill spec -->
+
 # Tune — Project Harness Assessment & Upgrade
 
 You are evaluating and upgrading this project's AI development harness.
@@ -29,7 +31,7 @@ Read CLAUDE.md and explore the project. Score each with specific evidence:
 |-----------|--------------|
 | Spec Quality | `docs/features/<slug>/specs/` (scan recursively; also `docs/bugfixes/<area>/`) — structured? acceptance criteria? self-contained? |
 | Spec Granularity | Can each spec be done in one session? |
-| Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading) |
+| Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading). Label each rule **declared** or **verified**: verified means a matching `permissions.deny` string or `deny-patterns.txt` regex actually exists — the comment's presence alone doesn't earn it. Everything else is declared (prose only). Rules carrying a provenance comment (`<!-- origin: … probation: <model> -->`) whose `probation:` model no longer matches the current model are **probation-due** — surface them as a list; the human decides keep/retest/retire, tune never auto-retires. |
 | Skills & Hooks | `.claude/skills/` files, hooks config |
 | Documentation | `docs/` structure, templates, referenced from CLAUDE.md. Reward a lean + pointered CLAUDE.md. **Flag a CLAUDE.md exceeding ~200 lines** — recommend extracting long sections into `docs/context/reference/` and replacing them with a `## Context Map` pointer table. This is advisory only; tune never auto-edits CLAUDE.md. |
 | Knowledge Capture | `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs — existence AND real content |
@@ -67,7 +69,7 @@ After applying, append to `docs/joycraft-history.md` and show a consolidated upg
 
 Show a tailored roadmap focused on harness maturity, not autonomy. Order the next steps by the project's actual gaps from Step 3:
 
-- **Boundaries with teeth** — ALWAYS/ASK FIRST/NEVER rules present, and the machine-checkable ones backed by deny patterns or hooks rather than prose alone
+- **Boundaries with teeth** — ALWAYS/ASK FIRST/NEVER rules present, and the machine-checkable ones backed by deny patterns or hooks rather than prose alone. Run `/joycraft-harden` to convert eligible declared rules to verified and stamp provenance; it never auto-applies, and it also surfaces probation-due rules for review.
 - **Lean CLAUDE.md** — under ~200 lines, with long reference content extracted to `docs/context/reference/` behind a Context Map pointer table
 - **Context docs with real content** — production map, dangerous assumptions, decision log actually populated, not scaffolding
 - **Healthy spec-driven loop** — features flow interview → brief → specs → implement → session-end, with discoveries captured along the way

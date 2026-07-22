@@ -11,6 +11,7 @@ rm\s+-rf\s+\.
 git\s+push\s+--force
 git\s+push\s+-f\b
 git\s+reset\s+--hard
+git\s+push\s+([a-zA-Z0-9._/-]+\s+)?(main|master)($|\s)
 
 # SQL destruction
 DROP\s+TABLE
