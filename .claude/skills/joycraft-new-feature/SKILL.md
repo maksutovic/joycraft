@@ -1,5 +1,6 @@
 ---
 name: joycraft-new-feature
+entry: human
 description: Guided feature development — interview the user, produce a Feature Brief, then decompose into atomic specs
 instructions: 35
 ---

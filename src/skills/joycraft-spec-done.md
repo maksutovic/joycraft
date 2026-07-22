@@ -1,5 +1,8 @@
 ---
 name: joycraft-spec-done
+<!-- harness:claude -->
+entry: agent
+<!-- /harness -->
 description: Lightweight per-spec wrap-up — bump status to in-review, terse discovery if surprised, commit. Run after each spec in checkpoint/isolated mode; no validation, no push, no PR.
 ---
 

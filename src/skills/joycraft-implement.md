@@ -1,5 +1,8 @@
 ---
 name: joycraft-implement
+<!-- harness:claude -->
+entry: agent
+<!-- /harness -->
 description: Execute atomic specs with TDD — read spec, write failing tests, implement until green, wrap up and continue the queue
 instructions: 32
 ---

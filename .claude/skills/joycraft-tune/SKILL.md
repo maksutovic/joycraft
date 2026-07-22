@@ -1,5 +1,6 @@
 ---
 name: joycraft-tune
+entry: human
 description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show a harness maturity roadmap
 instructions: 17
 ---

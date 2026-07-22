@@ -1,6 +1,7 @@
 ---
 name: joycraft-research
-description: Produce objective codebase research by isolating question generation from fact-gathering — subagent sees only questions, never the brief
+entry: agent
+description: Invoked by design/decompose or the human directly — produce objective codebase research by isolating question generation from fact-gathering
 ---
 
 # Research Codebase for a Feature

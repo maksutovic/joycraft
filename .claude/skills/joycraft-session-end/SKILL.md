@@ -1,5 +1,6 @@
 ---
 name: joycraft-session-end
+entry: human
 description: Wrap up a session — capture discoveries, verify, prepare for PR or next session
 instructions: 22
 ---

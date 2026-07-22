@@ -1,5 +1,6 @@
 ---
 name: joycraft-design
+entry: human
 description: Design discussion before decomposition — produce a ~200-line design artifact for human review, catching wrong assumptions before they propagate into specs
 ---
 

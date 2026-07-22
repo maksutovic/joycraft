@@ -1,5 +1,8 @@
 ---
 name: joycraft-session-end
+<!-- harness:claude -->
+entry: human
+<!-- /harness -->
 description: Wrap up a session — capture discoveries, verify, prepare for PR or next session
 instructions: 22
 ---

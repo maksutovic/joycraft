@@ -1,6 +1,7 @@
 ---
 name: joycraft-add-fact
-description: Capture a project fact and route it to the correct context document -- production map, dangerous assumptions, decision log, institutional knowledge, or troubleshooting
+entry: agent
+description: Invoked by session-end or the human after a fact surfaces — route it to the correct context document (production map, dangerous assumptions, decision log, institutional knowledge, troubleshooting)
 instructions: 38
 ---
 

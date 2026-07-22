@@ -1,6 +1,7 @@
 ---
 name: joycraft-decide
-description: Deposition checkpoint — turn a brief/design's open questions into an HTML decision dossier + native forced-choice questions with typed rationales; every decision terminates clarified, backlogged, or discarded
+entry: agent
+description: Invoked at the design bookend by decompose's decision gate or the human directly — turn open questions into a decision dossier; every decision terminates clarified, backlogged, or discarded
 ---
 
 <!-- PILOT: repo-local, not in src/ — see brief decision #7 -->

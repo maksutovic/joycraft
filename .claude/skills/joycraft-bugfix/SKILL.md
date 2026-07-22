@@ -1,5 +1,6 @@
 ---
 name: joycraft-bugfix
+entry: human
 description: Structured bug fix workflow — triage, diagnose, discuss with user, write a focused spec, hand off for implementation
 instructions: 32
 ---
