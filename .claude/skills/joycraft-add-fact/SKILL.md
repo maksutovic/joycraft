@@ -49,6 +49,20 @@ The fact is about **diagnostic knowledge -- when X happens, do Y (or don't do Z)
 
 If the fact fits multiple categories, pick the **best fit** based on the primary intent. You will mention the alternative in your confirmation message so the user can correct you.
 
+## Step 2b: Overlap Check (PROTOCOL)
+
+<!-- PILOT: diverges from src/ — see 2026-07-21-living-harness brief -->
+
+Before creating any new discovery/context file or row, grep the knowledge layer for an existing home for this fact:
+
+```bash
+grep -ril '<topic keywords>' docs/context/ docs/discoveries/ docs/reference/
+```
+
+- **No match** — proceed to Step 3 and create/append as normal.
+- **Match found** — that's an overlap. Update the existing doc in place (per `docs/reference/knowledge-lifecycle.md`'s Update/Consolidate verbs) instead of minting a near-duplicate row or file, and say so in your confirmation message (Step 7).
+- **Multiple conflicting matches** — surface the contradiction to the human; don't pick a winner silently (`docs/reference/knowledge-lifecycle.md`).
+
 ## Step 3: Ensure the Target Document Exists
 
 1. If `docs/context/` does not exist, create the directory.
@@ -131,6 +145,8 @@ Add the fact to the appropriate section of the target document. Match the existi
 Remove any italic example rows (rows where all cells start with `_`) before appending, so the document transitions from template to real content. Only remove examples from the specific table you are appending to.
 
 **Prepend new rows for time-ordered table docs (newest-first); append for other tables and lists. Never modify or remove existing rows.**
+
+**Rotation:** if prepending pushes a time-ordered live-head doc (e.g. `decision-log.md`) over its 200-line budget, follow the rotation procedure in `docs/reference/knowledge-lifecycle.md` (numbered shards + pointer-only manifest, created only at first rotation) rather than truncating or leaving it unbounded.
 
 ## Step 5b: Update Shared Frontmatter
 
