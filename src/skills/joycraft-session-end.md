@@ -95,6 +95,35 @@ Run the project's validation commands. Check {{boundary_file}} for project-speci
 
 Fix any failures before proceeding. **If validation fails, stop — do NOT graduate specs to `done` and do NOT push.**
 
+<!-- harness:claude -->
+## 2b. Extraction: `done`-Graduation Ledger + Reap Marker
+
+<!-- PILOT: diverges from src/ — see 2026-07-21-living-harness brief -->
+
+This step runs **only when the feature as a whole reaches `done`** (every spec graduated in step 3 below, none left `todo`). It is the extraction half of the shipped-ledger design (D1/D2): the branch's own history is about to be squashed away by the merge, so the ledger row is what survives. This step never deletes the feature folder — that's the Reaper's job alone, and only after a verified merge (`joycraft-optimize`'s Reaper pass).
+
+**PROTOCOL — do these three in order:**
+
+1. **Prepend a ledger row to `docs/context/shipped.md`.** Before writing, run the overlap check (below) against `docs/context/shipped.md` itself — the ledger only ever gets one row per feature, so if a row for this feature slug already exists, update it in place instead of prepending a second one. Otherwise prepend one row directly under the header/separator (newest-first, matching the doc's existing convention):
+
+   ```
+   | Date | Feature | What shipped | Where (paths) | PR | Owner |
+   ```
+
+   Keep the row **factual and thin** — when/what/who/where/PR only. Narrative belongs in the decision log or discoveries, not the ledger. If prepending pushes `docs/context/shipped.md` over the 200-line budget, follow the rotation procedure in `docs/reference/knowledge-lifecycle.md` (numbered shards + pointer-only manifest, created only at first rotation).
+
+2. **Confirm the feature's decisions landed in the decision log.** Grep `docs/context/decision-log.md` for the feature's D-ids (from the brief's frontmatter `decisions:` list, if present). Report which D-ids landed and which are missing. If any are missing, write them (prepend, per the decision-log's own newest-first rule) before proceeding to step 3 — don't mark reap-eligible with an incomplete extraction. A feature with no dossier/decisions at all is not an error: report "no stamped decisions" and continue.
+
+3. **Set `reap: eligible` in the brief's frontmatter.** Edit `docs/features/<slug>/brief.md`'s YAML frontmatter to add (or set) `reap: eligible`. This is a **mark, not a delete** — it makes the folder a candidate for the Reaper's verified-merge sweep. Session-end **never deletes the folder itself**; deletion is exclusively the Reaper's, and only fires after `gh` confirms the PR actually merged. If this feature has no PR yet (specs remain, or the PR hasn't been opened), skip this step — extraction only applies to a feature that has reached `done`.
+
+**Overlap check (PROTOCOL, applies to any context/discovery write in this skill, not just the ledger):** before creating any new discovery file, context doc, or table row, grep the knowledge layer for an existing home:
+
+```bash
+grep -ril '<topic keywords>' docs/context/ docs/discoveries/ docs/reference/
+```
+
+No match → create the new file/row as normal. A match → that's an overlap; update the existing doc in place instead of minting a near-duplicate, and say so in your report. Multiple conflicting matches → surface the contradiction to the human rather than picking silently (see `docs/reference/knowledge-lifecycle.md`).
+<!-- /harness -->
 ## 3. Graduate Specs `in-review → done`
 
 This step graduates the feature's finished specs to their terminal state. Because session-end runs once at the end, **multiple specs may be waiting** in `in-review` (one per spec the loop completed via `joycraft-spec-done`). Graduate **all** of them, in **both** systems (the queue JSON and the frontmatter must never disagree):

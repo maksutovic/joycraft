@@ -39,8 +39,10 @@ describe('session-end rescoped to feature finisher', () => {
     for (const variant of SOURCE_VARIANTS) {
       it(`${label(variant)} does not instruct status: shipped for completion`, () => {
         const content = read(variant);
+        // The banned pattern is the retired spec-status word (`status: shipped`),
+        // not the substring — the living-harness ledger legitimately references
+        // docs/context/shipped.md and "the shipped ledger" (2026-07-21).
         expect(content).not.toMatch(/status:\s*shipped/);
-        expect(content).not.toContain('shipped');
       });
     }
   });

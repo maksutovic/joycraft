@@ -122,7 +122,6 @@ grep -ril '<topic keywords>' docs/context/ docs/discoveries/ docs/reference/
 ```
 
 No match → create the new file/row as normal. A match → that's an overlap; update the existing doc in place instead of minting a near-duplicate, and say so in your report. Multiple conflicting matches → surface the contradiction to the human rather than picking silently (see `docs/reference/knowledge-lifecycle.md`).
-
 ## 3. Graduate Specs `in-review → done`
 
 This step graduates the feature's finished specs to their terminal state. Because session-end runs once at the end, **multiple specs may be waiting** in `in-review` (one per spec the loop completed via `joycraft-spec-done`). Graduate **all** of them, in **both** systems (the queue JSON and the frontmatter must never disagree):
