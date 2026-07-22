@@ -124,12 +124,13 @@ Read the target document to understand its current structure. Note:
 
 Add the fact to the appropriate section of the target document. Match the existing format exactly:
 
-- **Table-based documents** (production-map, dangerous-assumptions, decision-log, troubleshooting): Add a new table row in the correct columns. Use today's date where a date column exists.
+- **Time-ordered table documents** (decision-log): <!-- PILOT: diverges from src/ — see 2026-07-21-living-harness brief --> Prepend the new row directly under the header/separator, newest-first. Never modify or remove existing rows.
+- **Other table-based documents** (production-map, dangerous-assumptions, troubleshooting): Add a new table row in the correct columns. Use today's date where a date column exists.
 - **List-based documents** (institutional-knowledge): Add a new list item (`- `) to the most appropriate section.
 
 Remove any italic example rows (rows where all cells start with `_`) before appending, so the document transitions from template to real content. Only remove examples from the specific table you are appending to.
 
-**Append only. Never modify or remove existing real content.**
+**Prepend new rows for time-ordered table docs (newest-first); append for other tables and lists. Never modify or remove existing rows.**
 
 ## Step 5b: Update Shared Frontmatter
 

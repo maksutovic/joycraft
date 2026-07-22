@@ -1,7 +1,7 @@
 {
   "feature": "2026-07-21-living-harness",
   "specs": [
-    { "id": 1, "file": "scaffold-knowledge-substrate.md", "depends_on": [], "status": "todo", "mode": "checkpoint" },
+    { "id": 1, "file": "scaffold-knowledge-substrate.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
     { "id": 2, "file": "create-harness-config.md", "depends_on": [], "status": "todo", "mode": "checkpoint" },
     { "id": 3, "file": "add-retrieval-pass.md", "depends_on": [1], "status": "todo", "mode": "checkpoint" },
     { "id": 4, "file": "add-provenance-gate.md", "depends_on": [3], "status": "todo", "mode": "checkpoint" },

@@ -153,7 +153,9 @@ Step-5 explicit stop may leave `open` behind). Stamp each decision into:
    existing table format (`| Date | Decision | Why | Alternatives Rejected |
    Revisit When |`) — Why = the typed rationale; Alternatives Rejected = the
    options not chosen; backlogged/discarded decisions note that in Revisit
-   When. Update the file's `last_updated` frontmatter.
+   When. <!-- PILOT: diverges from src/ — see 2026-07-21-living-harness brief -->
+   Prepend the row directly under the header/separator (newest-first, never
+   append at the bottom). Update the file's `last_updated` frontmatter.
 
 **Backlogged decisions additionally** get a `docs/backlog/YYYY-MM-DD-<topic>.md`
 entry (create it, or update the feature's existing one): the question, the
