@@ -1,0 +1,6 @@
+{
+  "feature": "eval-fixture-b-done-widget-export",
+  "specs": [
+    { "id": 1, "file": "add-csv-export.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" }
+  ]
+}

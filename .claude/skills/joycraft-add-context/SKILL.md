@@ -1,6 +1,7 @@
 ---
 name: joycraft-add-context
-description: Author one long-form reference doc -- a design system, frontend/backend methodology, testing conventions, or any other long-form reference doc -- scaffolding it from a template and wiring a pointer into CLAUDE.md's Context Map
+entry: agent
+description: Invoked by gather-context or the human after a knowledge gap surfaces — author one long-form reference doc and wire a Context Map pointer
 instructions: 34
 ---
 

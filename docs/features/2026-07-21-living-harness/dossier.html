@@ -1,0 +1,668 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT DECISION DOSSIER · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. The joycraft-decide skill fills the content slots;
+  it MUST NOT alter the structure, the class names, or the CSS below. Keeping
+  the skeleton fixed is the whole point: freeform per-feature HTML would make
+  every dossier a fresh persuasive artifact. A fixed shell narrows the
+  persuasion surface to content, where the assumptions manifest polices it.
+
+  Slots are the HTML comments below whose text starts with "SLOT:". Each names a
+  region and gives filling guidance. Replace the slot comment (and any
+  placeholder) with real markup that uses ONLY the classes already defined in
+  the style block. (This contract comment intentionally does not nest a literal
+  example of the slot delimiters, because a nested comment terminator would end
+  this comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the SLOT regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · LABEL EVERY UNVERIFIED CLAIM (RF-5). Any load-bearing claim the dossier or
+      its brief rests on that was NOT posed to the human as a question goes in
+      the assumptions manifest. Claims you have checked use the Verified chip
+      (span class "vchip v-ok"); claims you have NOT checked MUST use the
+      Unverified chip (span class "vchip v-un"). Under-labeling (calling an
+      unchecked claim Verified) is the failure this manifest exists to prevent;
+      when in doubt, mark Unverified.
+    · Repeat the decision section (section class "decision") once per open
+      decision (copy-per-decision). Delete option cards you don't need; a binary
+      decision renders two cards, no stretching. The recommended option gets
+      class "opt rec" and a Recommended tag (span class "tag").
+    · Keep the header's context strip even when empty; the layout copes with an
+      empty strip, so do not remove the container.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject BOTH options and say what's right instead).
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more decision sections, then assumptions manifest, then how-to-answer box,
+  then footer. Do not reorder.
+  ============================================================================
+-->
+<title>Decision Dossier — Living Harness</title>
+<style>
+  /* Design tokens: light theme is the default set on :root */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Locked / context strip. Use .locked with .lock-chip for a decisions-locked
+     strip (add .open for still-open items), OR .tiers with .tier-col for a
+     structured context grid. Either fills the same slot; both are optional but
+     the container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  .tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px 0 20px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  @media (max-width: 680px) { .tiers { grid-template-columns: 1fr; } }
+  .tier-col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .tier-col .tlab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+  .tier-model { font-size: 13px; font-weight: 700; padding: 4px 11px; border-radius: 6px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-role { font-size: 13.5px; color: var(--ink-2); }
+
+  section.decision { margin-top: 54px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 26px 30px 28px; }
+  .d-id { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  h2 { font-size: 23px; font-weight: 700; margin: 6px 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  .d-why { font-size: 15px; color: var(--ink-2); margin: 0 0 20px; max-width: 72ch; }
+
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .opt { border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; background: var(--ground); display: flex; flex-direction: column; gap: 8px; }
+  .opt.rec { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .opt-head { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  h3 { font-size: 15.5px; font-weight: 700; margin: 0; }
+  .tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; }
+  .pros, .cons { margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
+  .pros li::before { content: "+ "; color: var(--good-ink); font-weight: 700; }
+  .cons li::before { content: "− "; color: var(--bad-ink); font-weight: 700; }
+  .pros li, .cons li { color: var(--ink-2); margin-bottom: 3px; line-height: 1.4; }
+  .blast { margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--rule-strong); }
+  .blast .blab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; display: block; margin-bottom: 5px; }
+  .bchips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .bchip { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .bchip.warn { background: var(--warn-wash); color: var(--warn-ink); font-weight: 600; }
+
+  /* Optional per-decision flow diagram. Scrolls inside its own box on narrow
+     screens (min-width on .flow-line + overflow-x on .flow) so the body never
+     scrolls horizontally. */
+  .flow { margin-top: 18px; background: var(--ground); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; overflow-x: auto; }
+  .flow .flab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .flow-line { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-width: 560px; }
+  .fnode { font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 6px; background: var(--surface); border: 1px solid var(--rule-strong); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .fnode.hi { border-color: var(--accent); color: var(--accent-ink); }
+  .fnode.gate { border-color: var(--warn-ink); color: var(--warn-ink); }
+  .farrow { color: var(--ink-3); flex: none; }
+  .unv { font-size: 11px; color: var(--warn-ink); font-weight: 600; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+
+  .manifest { margin-top: 54px; }
+  .man-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .man-head h2 { margin: 0; }
+  .man-sub { font-size: 14.5px; color: var(--ink-2); margin: 8px 0 16px; max-width: 74ch; }
+  .man-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .vchip { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; text-align: center; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .v-ok { background: var(--good-wash); color: var(--good-ink); }
+  .v-un { background: var(--warn-wash); color: var(--warn-ink); }
+  .man-row p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .man-row p strong { color: var(--ink); }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decision Dossier · feature: 2026-07-21-living-harness · July 21, 2026</div>
+  <h1>Living Harness — seven decisions before decomposition</h1>
+  <p class="dek">The ten-statement scope and the repo-local pilot mode are locked by the brief. Open: where knowledge lives and dies (ledger, exhaust deletion, undead folders, log ordering), where enforcement and config live (harden pass, config surface), and who scores confidence. The decompose gate stays closed until each terminates.</p>
+  <div class="locked">
+    <span class="lock-chip">✓ Ten-statement scope (S1–S10)</span>
+    <span class="lock-chip">✓ Repo-local pilot, PILOT markers, src/ untouched</span>
+    <span class="lock-chip">✓ Model-tiering carry-forward is a hard constraint</span>
+    <span class="lock-chip">✓ RF-KILL 2/3/6/11 + RF-DIET-2 hold</span>
+    <span class="lock-chip">✓ 200-line budget · year shards (design §4)</span>
+    <span class="lock-chip open">D1 exhaust deletion</span>
+    <span class="lock-chip open">D6 undead disposal</span>
+    <span class="lock-chip open">D7 decision-log flip</span>
+    <span class="lock-chip open">D4 config surface</span>
+    <span class="lock-chip open">D2 ledger shape</span>
+    <span class="lock-chip open">D3 harden home</span>
+    <span class="lock-chip open">D5 confidence scoring</span>
+  </div>
+</header>
+
+<section class="decision">
+  <span class="d-id">D1 · EXHAUST DELETION</span>
+  <h2>When does a shipped feature folder die — and does dossier.html survive it?</h2>
+  <p class="d-why">Session-end runs <em>before</em> the merge (it is the step that opens the PR), but the brief allows deletion only for <span class="mono">done</span> + merged features. So the writer of the ledger row and the deleter of the folder cannot naively be the same pass. Deletion is destructive and unsupervised — this is a mandatory boundary question.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>A · Mark at graduation, Reaper deletes post-merge</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Ledger row written at session-end while context is hot; deletion waits for verified merge (via <span class="mono">gh</span>)</li>
+        <li>Deletion never outruns PR review; reviewer keeps specs/design</li>
+        <li>One deletion authority (the Reaper) for both shipped and undead paths</li>
+        <li>Dossier dies with the folder — PR link and decision-log rows are the survivors</li>
+      </ul>
+      <ul class="cons">
+        <li>Second touchpoint: folders linger until the next optimize/session-start audit</li>
+        <li>Reap-eligible marker is one more state bit to keep honest</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-session-end</span>
+          <span class="bchip">joycraft-optimize (Reaper)</span>
+          <span class="bchip warn">docs/features/** deleted post-merge</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>B · Session-end deletes when it can verify the merge</h3>
+      </div>
+      <ul class="pros">
+        <li>Single touchpoint, no lingering folders</li>
+      </ul>
+      <ul class="cons">
+        <li>Session-end precedes merge in the normal flow, so this mostly no-ops</li>
+        <li>The Reaper is still needed for the leftovers — two code paths for one behavior</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-session-end</span>
+          <span class="bchip warn">delete depends on gh state at run time</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>C · Delete at graduation, pre-merge; dossier moves to docs/context/dossiers/</h3>
+      </div>
+      <ul class="pros">
+        <li>Fastest exhaust removal; dossier explicitly preserved</li>
+      </ul>
+      <ul class="cons">
+        <li>Violates the brief's own "only done + merged" constraint</li>
+        <li>Reviewer loses spec context mid-PR</li>
+        <li>Preserved dossiers become a new unbounded pile</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip warn">docs/features/** deleted pre-merge</span>
+          <span class="bchip">docs/context/dossiers/ (new)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flow">
+    <span class="flab">Option A lifecycle</span>
+    <div class="flow-line">
+      <span class="fnode">session-end: specs → done</span>
+      <span class="farrow">→</span>
+      <span class="fnode hi">ledger row + decision rows confirmed</span>
+      <span class="farrow">→</span>
+      <span class="fnode">mark reap-eligible</span>
+      <span class="farrow">→</span>
+      <span class="fnode gate">Reaper: PR merged?</span>
+      <span class="farrow">→</span>
+      <span class="fnode">delete folder</span>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D6 · UNDEAD DISPOSAL</span>
+  <h2>What does the Reaper do with never-built feature folders — archive or delete?</h2>
+  <p class="d-why">11 <span class="mono">-draft</span> folders exist today; RF-4 counted 29/43 never built. Unlike shipped features, undead folders have had <em>no extraction</em> — no ledger row, no decision stamps. Destructive either way, so mandatory.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>A · Archive-move to <span class="mono">docs/archive/features/</span></h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>RF-KILL-7: squash merges break git-history recovery — the move keeps the only copy</li>
+        <li>Consistent principle: delete only after extraction; undead had none</li>
+        <li>Out of the agent context path (archive is excluded from scans already)</li>
+      </ul>
+      <ul class="cons">
+        <li>Archive itself can accrete crud (bounded: it is never loaded as context)</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-optimize (Reaper)</span>
+          <span class="bchip">docs/archive/features/ (new)</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>B · Delete undead folders too, symmetrical with S5</h3>
+      </div>
+      <ul class="pros">
+        <li>One disposal behavior, no archive directory</li>
+      </ul>
+      <ul class="cons">
+        <li>Loses the only copy of never-extracted ideas</li>
+        <li>Contradicts the brief's resolution of CE-delete vs RF-archive: both sides reasoned about deletion <em>without extraction</em></li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip warn">11+ draft folders unrecoverable after squash merges</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D7 · DECISION-LOG FLIP</span>
+  <h2>Flip decision-log.md to newest-first now, amending add-fact's append-only rule?</h2>
+  <p class="d-why">The design resolved this from the brief's newest-first constraint — but it rewrites the ordering of 22 existing rows in the most re-read context doc and amends a harness write-rule ("append only, never modify"). A resolved-but-assumed decision that touches existing content gets asked, not assumed.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>A · Flip now: one-time reversal, prepend rule everywhere</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>The most re-read doc becomes partial-read-safe (newest rows where top-sampled reads land)</li>
+        <li>One ordering convention for ledger + decision-log + any future time-ordered doc</li>
+        <li>Row content untouched — only order changes; git preserves history</li>
+      </ul>
+      <ul class="cons">
+        <li>One churny diff; add-fact and decide stamping rules both need the amendment same-commit</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip warn">docs/context/decision-log.md reordered</span>
+          <span class="bchip">joycraft-add-fact</span>
+          <span class="bchip">joycraft-decide (stamp step)</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>B · Keep decision-log append-only; only the new ledger is newest-first</h3>
+      </div>
+      <ul class="pros">
+        <li>Zero churn to existing content or add-fact</li>
+      </ul>
+      <ul class="cons">
+        <li>Two time-ordered context docs with opposite orderings — the several-versions-of-truth failure S4 exists to kill</li>
+        <li>Decision-log keeps its worst-ordered-for-agents layout as it grows</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">docs/context/shipped.md only</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>C · Flip only when the log crosses the 200-line budget</h3>
+      </div>
+      <ul class="pros">
+        <li>Defers the churn until it provably matters</li>
+      </ul>
+      <ul class="cons">
+        <li>A conditional convention is harder to enforce than either consistent one</li>
+        <li>The trigger point is exactly when the reordering diff is largest</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">optimize v2 check carries the condition</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D4 · CONFIG SURFACE</span>
+  <h2>Where does harness config — including model tiers — live?</h2>
+  <p class="d-why">S6–S9 need a config home, and the model-tiering carry-forward is a hard constraint: per-stage tiers, per-harness maps, tier-intent names, degradation ladder. The existing state.json is gitignored and machine-owned — a fact that decides more than it appears to.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>A · Committed <span class="mono">docs/.joycraft/config.json</span> beside gitignored state.json</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Human-owned + shared + reviewable, while state stays machine-owned + gitignored — different owners, different git lifecycles</li>
+        <li>JSON parses identically for skills today and src/ code after pilot graduation</li>
+        <li>Expresses all four tiering requirements as plain keys (stage → {intent, model}, harness maps, ladder array)</li>
+      </ul>
+      <ul class="cons">
+        <li>Second file in docs/.joycraft/; this repo must first migrate off legacy .claude/.joycraft/</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">docs/.joycraft/config.json (new)</span>
+          <span class="bchip">skills that read tiers</span>
+          <span class="bchip warn">requires state migration first</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>B · Extend state.json</h3>
+      </div>
+      <ul class="pros">
+        <li>One file, no new surface</li>
+      </ul>
+      <ul class="cons">
+        <li>Gitignored — tier config invisible to teammates and to review</li>
+        <li>Upgrade rewrites the file; user tuning would fight the machine</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip warn">config lost on clone</span>
+          <span class="bchip">src/version.ts shape change</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>C · Markdown <span class="mono">docs/context/harness.md</span></h3>
+      </div>
+      <ul class="pros">
+        <li>Human-friendly; lives in the context layer agents already read</li>
+      </ul>
+      <ul class="cons">
+        <li>Prose config needs parsing by every consumer — skills now, src/ later</li>
+        <li>Prose that hopes to be followed is what S6 exists to retire</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">docs/context/harness.md (new)</span>
+          <span class="bchip warn">bespoke parser per consumer</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D2 · LEDGER SHAPE</span>
+  <h2>Single shipped.md file, or per-feature ledger files behind an index?</h2>
+  <p class="d-why">The ledger row is what survives the squash merge (RF-KILL-7) — everything in S5 builds on this shape. Rows are factual one-liners by constraint: when / what / who / where / PR.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>A · Single <span class="mono">docs/context/shipped.md</span>, newest-first table</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Mirrors the decision-log pattern — RF-4's smallest, most re-read doc</li>
+        <li>One grep target for S3 retrieval; one file for the 200-line budget + year-shard check</li>
+      </ul>
+      <ul class="cons">
+        <li>Depends on the shard check staying honest as rows accumulate</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">docs/context/shipped.md (new)</span>
+          <span class="bchip">joycraft-session-end</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>B · <span class="mono">docs/ledger/</span> per-feature files + thin index</h3>
+      </div>
+      <ul class="pros">
+        <li>Grep-addressable per feature; no shared-file contention</li>
+      </ul>
+      <ul class="cons">
+        <li>47 features → 47 files of ~5 lines; recreates the folder sprawl S5 deletes</li>
+        <li>The index becomes a second copy of every row (one-home violation)</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">docs/ledger/ (new dir)</span>
+          <span class="bchip warn">index duplicates rows</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D3 · HARDEN HOME</span>
+  <h2>Where does the harden pass live — new skill, lockdown, or tune?</h2>
+  <p class="d-why">S6 converts eligible ALWAYS/NEVER prose into permissions.deny strings and deny-patterns.txt regexes via the existing safeguard machinery. Whichever home wins, apply stays show-diff + explicit approval (lockdown's "never auto-apply" pattern).</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>A · New skill <span class="mono">joycraft-harden</span></h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Single-purpose: scan → classify eligible/ineligible → propose exact diffs → stamp provenance</li>
+        <li>Composable: tune can route to it; S9 promote-to-harness can end in it</li>
+        <li>Lockdown and tune stay unchanged during the pilot</li>
+      </ul>
+      <ul class="cons">
+        <li>22nd skill; one more description against optimize's budget check</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">.claude/skills/joycraft-harden/ (new)</span>
+          <span class="bchip">.claude/settings.json deny</span>
+          <span class="bchip">deny-patterns.txt</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>B · Extend joycraft-lockdown</h3>
+      </div>
+      <ul class="pros">
+        <li>No new skill; deny-pattern vocabulary already lives there</li>
+      </ul>
+      <ul class="cons">
+        <li>Lockdown interviews the human about what to deny (greenfield-shaped); harden converts what already exists — merged flows muddle both</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-lockdown rewrite</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>C · Tune Tier 3 upgrade</h3>
+      </div>
+      <ul class="pros">
+        <li>Harden becomes part of the assess → upgrade loop automatically</li>
+      </ul>
+      <ul class="cons">
+        <li>Tune is already the longest multi-gate skill; buries a settings edit inside a broad pass</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-tune Tier 3</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D5 · CONFIDENCE SCORING</span>
+  <h2>Who scores confidence on load-bearing claims — the authoring skills, or decide?</h2>
+  <p class="d-why">S2 makes {0,25,50,75,100} anchors a scored gate: load-bearing + ≤50 blocks propagation. The question is where scores originate, because decide scoring the claims it also selected as questions is self-certification (RF-KILL-3).</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>A · Authoring skills self-score; decide audits</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Scores exist before decide runs, so S1 provenance can cite them</li>
+        <li>Decide stays an auditor of someone else's framing, not author + judge</li>
+      </ul>
+      <ul class="cons">
+        <li>Two skills must learn anchors.md; self-scores skew optimistic until audited</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-design</span>
+          <span class="bchip">joycraft-new-feature</span>
+          <span class="bchip">joycraft-decide (audit step)</span>
+          <span class="bchip">docs/context/anchors.md (new)</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>B · Decide derives all scores at dossier time</h3>
+      </div>
+      <ul class="pros">
+        <li>One scorer, consistent calibration across a feature</li>
+      </ul>
+      <ul class="cons">
+        <li>Decide certifies its own question selection — the exact RF-KILL-3 failure</li>
+        <li>Claims in docs decide never reads stay unscored</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-decide only</span>
+          <span class="bchip warn">unscored claims outside dossier scope</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="manifest">
+  <div class="man-head">
+    <span class="eyebrow">Integrity</span>
+    <h2>Assumptions asserted as fact</h2>
+  </div>
+  <p class="man-sub">These are load-bearing claims the seven questions above rest on that you are NOT being asked about. Unverified means nobody checked — including this dossier, which is itself a persuasive artifact, including this sentence.</p>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>The safeguard enforcement machinery is live and matches its generator.</strong> The installed PreToolUse hook and deny-patterns.txt were read and match src/safeguard.ts output; the hook is wired in .claude/settings.json.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>state.json is gitignored.</strong> Checked the .gitignore entry — this is what rules D4 Option B out for shared config.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>No shipped ledger exists anywhere in docs/.</strong> Grepped; "shipped" appears only in two decision-log prose cells and as a proposed concept in research.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>The decompose gate reads only brief frontmatter and fails closed.</strong> Read joycraft-decompose Step 1.5 directly.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>convergence.md is lossy where this sprint lives.</strong> Premise-dependency linking and confidence-gap deepening were found only in the Claude research pass (ce-vs-joycraft-claude.md), confirming the brief's warning.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>200 lines is the right layer-2 budget.</strong> Chosen for vocabulary coherence with optimize's existing threshold; nobody has measured what budget keeps partial reads reliable. Would verify via the S10 eval harness.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>Newest-first ordering actually improves agent retrieval.</strong> Asserted by the reading-fatigue constraint from first principles (top-sampled partial reads); no eval has demonstrated it on these docs.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>A grep-based inbound-link check is a sufficient deletion gate.</strong> Grep misses paraphrased or renamed references; a deleted doc could still be silently load-bearing. Would verify by checking links on real deletions during the pilot.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>Static JSON can express the degradation ladder.</strong> The model-tiering brief deferred its own encoding question; ladder semantics (when to degrade, per-stage fallbacks) may need logic no flat file carries.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>Ledger row + decision-log + discoveries capture everything worth keeping from a deleted feature folder.</strong> RF-6 (Naur) says the theory lives outside the code; design prose may hold theory that no thin row extracts. The D1 answer sets the trigger, not this claim's truth.</p></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>You'll be asked seven forced-choice questions in chat, one at a time, riskiest first (D1, D6, D7, then D4, D2, D3, D5). For each, answer in the free-text field as "&lt;choice&gt; because &lt;one-sentence reason&gt;". If every option on a card is wrong, reject the framing — type what's right instead; "backlog because …" and "discard because …" are always valid. Answers stamp into the brief's decisions: frontmatter, its Hard Constraints, and docs/context/decision-log.md. You can stop at any point; unanswered questions stay open and the decompose gate stays closed.</p>
+</div>
+
+<footer>
+  <p>Joycraft decision dossier · pilot run 2 (dossier format) · feature: 2026-07-21-living-harness · generated 2026-07-21 by joycraft-decide from brief.md + design.md</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

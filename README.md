@@ -67,6 +67,82 @@ This is what Claude Code and Codex can't do out of the box: an unattended `inter
 
 On Claude Code, `/joycraft-implement-feature` gets you the in-session equivalent: one interactive invocation runs the whole queue with a fresh-context **subagent** per spec — the subagent boundary plays the role of Pi's process boundary. You're at the keyboard and it's one command, so none of the headless ToS/cost caveats apply.
 
+## What's new in 0.7 — the living harness
+
+Through 0.6, Joycraft was excellent at *writing things down*: interviews became
+briefs, briefs became specs, sessions ended with discoveries and decision-log
+rows. What nothing enforced was whether any of it stayed **true** — specs could
+quietly invent constraints, agents re-derived decisions the project had already
+made, and the harness only ever grew. 0.7 closes that loop; the harness now
+audits itself:
+
+| | Before (≤0.6) | Now (0.7) |
+|---|---|---|
+| **Spec constraints** | Decompose could invent numbers/conventions that looked authoritative downstream | Every constraint carries a cite — `[src: D3]`, `[src: brief "Scope"]` — or is flagged `[src: INVENTED]` and stopped at a human gate; open decisions block decomposition entirely |
+| **Design claims** | All claims read equally confident | Load-bearing claims are self-scored against fixed anchors (0/25/50/75/100); anything ≤50 is blocked from propagating until deepened or decided |
+| **Prior knowledge** | Agents reasoned from scratch each phase | Research/design/decompose open with a bounded retrieval pass over `docs/context/` + `docs/discoveries/` and must cite what they reused |
+| **Boundaries** | Prose rules an agent could drift past | `joycraft-harden` converts eligible rules into machine-checked deny patterns, stamped with provenance + a probation marker |
+| **Harness growth** | Only ever grew | `joycraft-optimize` v2 assigns every control one of six dispositions (KEEP/ONE_HOME/LOAD_LATER/MAKE_A_CHECK/PROBATION/RETIRE); its Reaper deletes shipped feature folders only after the PR verifiably merged, and archive-moves abandoned ones |
+| **Shipped features** | Folders sat forever; deleting lost the story | Session-end extracts a one-line ledger row to `docs/context/shipped.md` + marks the folder reap-eligible before the Reaper may touch it |
+| **Skill surface** | All skills looked alike to discovery | Skills declare `entry: human \| agent \| situational` — human doors stay discoverable, internals get terse anti-discovery descriptions |
+| **Trust** | The gates were assumed to work | Each gate was evaluated with N=3 fresh-context agent runs graded from tool-call timelines — one gate failed 2/3, got fixed, and re-passed 3/3 |
+
+**Side effects to expect:** new files in your knowledge layer
+(`docs/context/shipped.md`, `docs/context/anchors.md`,
+`docs/reference/knowledge-lifecycle.md`), `(anchor: N)` annotations in design
+artifacts, decompose refusing to run while a brief has an open decision, and
+hardened rules being genuinely blocked at the hook layer — including for you.
+
+Parts of this ship in the npm package today; the rest runs as a marked pilot in
+Joycraft's own repo and graduates once it survives real use — the same
+discipline Joycraft asks of your projects. The full before/now/side-effects
+record is in [CHANGELOG.md](CHANGELOG.md).
+
+### Upgrading to 0.7
+
+From your project root:
+
+```bash
+npx joycraft@latest upgrade
+```
+
+What this does to an existing setup:
+
+- **Your customizations survive.** Upgrade diffs every file it installed against
+  what's on disk: unmodified files update silently, customized files show you
+  the diff and ask. Nothing is overwritten without a yes (or `--yes` in CI).
+- **State file moves.** `.claude/.joycraft/state.json` migrates to
+  `docs/.joycraft/state.json` (gitignored, harness-neutral) automatically.
+- **Session-end gains the extraction step.** The next time a feature finishes,
+  it writes a `docs/context/shipped.md` ledger row and marks the brief
+  `reap: eligible` — it never deletes anything.
+- **Four skills gain `entry:` frontmatter** (decompose, implement, spec-done,
+  session-end). Purely additive; invocation is unchanged.
+- **Harness selection is honored.** A Codex-only project stays Codex-only.
+- **Nothing pilots into your repo.** The 0.7 pilot ring (provenance gates,
+  confidence anchors, harden, optimize v2) runs in Joycraft's own repo first;
+  your project gets those pieces in a later release once they graduate.
+
+**Or let your agent drive it.** Paste this prompt into Claude Code, Codex, or
+Pi inside your project and it will run the upgrade, show you what changed, and
+leave a reviewable commit:
+
+```text
+Upgrade Joycraft in this project to 0.7. Steps: (1) Create a branch
+chore/joycraft-0.7. (2) Run `npx joycraft@latest upgrade` interactively —
+when it shows a diff for a file I customized, summarize the diff for me in
+one or two sentences and ask before accepting; never blanket-accept.
+(3) After the upgrade, list every file it changed, added, or migrated
+(including the docs/.joycraft/state.json move), and read CHANGELOG.md's
+0.7.0 entry from the joycraft package to explain in plain terms what
+changed about how my harness behaves — before vs. now, plus side effects
+I should expect. (4) Confirm my harness selection and gitignore profile
+were preserved, and that my CLAUDE.md/AGENTS.md customizations are intact.
+(5) Run my project's test and typecheck commands to confirm nothing broke.
+(6) Commit the result with message "chore: upgrade joycraft to 0.7" and
+show me the diff stat — do not push or open a PR without asking.
+```
+
 ## Quick Start
 
 First, install the CLI:
@@ -173,6 +249,9 @@ Frameworks auto-detected: Next.js, FastAPI, Django, Flask, Actix, Axum, Express,
 | Run a feature's whole spec queue from one command | `/joycraft-implement-feature` | Fresh-context subagent per spec → fail-fast → session-end once |
 | Run specs autonomously without hand-holding | `/joycraft-implement-level5` | Experimental — autofix loop + holdout scenario testing |
 | Verify an implementation independently | `/joycraft-verify` | Read-only subagent checks work against the spec |
+| Wrap up when a feature's specs are done | `/joycraft-session-end` | Consolidate discoveries → validate → graduate specs → ledger row → push/PR |
+| Assess and mature your harness | `/joycraft-tune` | Score 7 dimensions → apply fixes → maturity roadmap |
+| Audit harness overhead and prune | `/joycraft-optimize` | Six-disposition self-audit; its Reaper pass retires shipped/abandoned feature folders |
 | Set up Joycraft for a team | `/joycraft-collaborative-setup` | Scaffold `docs/areas/`, owner conventions, a team CONTRIBUTING doc |
 
 The core loop:

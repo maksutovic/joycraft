@@ -1,5 +1,6 @@
 ---
 name: joycraft-setup
+entry: human
 description: Set up Joycraft and get started on this project -- the first-time entry point. Run this when you're configuring your project, onboarding, or asking "where do I begin?" / "how do I set this up?"
 instructions: 6
 ---

@@ -1,5 +1,6 @@
 ---
 name: joycraft-decompose
+entry: human
 description: Break a feature brief into atomic specs — small, testable, independently executable units
 instructions: 32
 ---

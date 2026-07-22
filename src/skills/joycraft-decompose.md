@@ -1,5 +1,8 @@
 ---
 name: joycraft-decompose
+<!-- harness:claude -->
+entry: human
+<!-- /harness -->
 description: Break a feature brief into atomic specs — small, testable, independently executable units
 instructions: 32
 ---

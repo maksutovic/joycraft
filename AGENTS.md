@@ -2,7 +2,7 @@
 
 **What:** A CLI + Claude Code plugin that scaffolds and upgrades AI development harnesses. `npx joycraft init` installs skills, templates, boundaries, and documentation structure into any project, taking it from Level 1 to Level 4 on Dan Shapiro's 5 Levels of Vibe Coding.
 
-**Component:** npm package (CLI) + Claude Code skills | **Updated:** 2026-07-16
+**Component:** npm package (CLI) + Claude Code skills | **Updated:** 2026-07-21
 
 ---
 
@@ -11,7 +11,7 @@
 ### ALWAYS
 - Run `pnpm test --run && pnpm typecheck` before committing
 - Commit style: `verb: concise message`
-- Reference atomic specs when implementing features — each spec is in `docs/specs/`
+- Reference atomic specs when implementing features — each spec is in `docs/features/<slug>/specs/`
 - Test against multiple stack types (Node.js, Python, Rust, Go at minimum)
 - Push to feature branches after each commit
 - Open a PR when all specs in a feature are complete
@@ -31,7 +31,7 @@
 - Add runtime dependencies that aren't strictly necessary
 - Reference absolute paths — all templates and skills must use project-relative paths
 - Include methodology research, project assessments, or personal notes in the tool
-- Push directly to main/master (always use feature branches + PR)
+- Push directly to main/master (always use feature branches + PR) <!-- origin: source AGENTS.md 2026-07-21, probation: claude-sonnet-5 -->
 - Amend commits that have been pushed to remote
 - Access, read, or reference the scenarios repo (`joycraft-scenarios`)
 - Mention scenario test names or contents
@@ -58,15 +58,14 @@ Joycraft/
 │   ├── detect.ts           # Stack detection from manifest files
 │   ├── improve-claude-md.ts # Merge Joycraft sections into existing CLAUDE.md
 │   ├── agents-md.ts        # Generate AGENTS.md for Codex
-│   ├── version.ts          # Version tracking (.claude/.joycraft/state.json)
-│   ├── claude-skills/      # Installable skill files (copied to .claude/skills/)
-│   │   ├── tune.md         # Main entry — assess + route
-│   │   ├── tune-assess.md
-│   │   ├── tune-upgrade.md
-│   │   ├── new-feature.md
-│   │   ├── decompose.md
-│   │   └── session-end.md
+│   ├── version.ts          # Version tracking (docs/.joycraft/state.json)
+│   ├── skills/             # CANONICAL skill sources — 20 joycraft-*.md files, edit here
+│   ├── claude-skills/      # GENERATED from src/skills/ by scripts/generate-bundled-files.mjs — never edit
+│   ├── codex-skills/       # GENERATED — Codex variants
+│   ├── pi-skills/          # GENERATED — Pi variants
 │   └── templates/          # Bundled templates (copied to docs/templates/)
+├── scripts/
+│   └── generate-bundled-files.mjs  # Regenerates src/*-skills/ from src/skills/
 ├── templates/              # Source-of-truth templates (development reference)
 ├── tests/
 │   ├── detect.test.ts
@@ -75,8 +74,9 @@ Joycraft/
 │   ├── agents-md.test.ts
 │   └── fixtures/           # Minimal manifest files for each stack
 ├── docs/
-│   ├── briefs/             # Feature briefs for Joycraft itself
-│   └── specs/              # Atomic specs for Joycraft itself
+│   ├── features/<slug>/    # Per-feature: brief.md, design.md, specs/ (+ .joycraft-spec-queue.json)
+│   ├── context/            # Knowledge layer: decision-log, shipped ledger, anchors, etc.
+│   └── discoveries/        # Session surprises worth remembering
 ├── package.json
 ├── tsconfig.json
 ├── AGENTS.md               # You are here — shared agent instructions (CLAUDE.md imports this)
@@ -89,7 +89,7 @@ Joycraft/
 ```
 npx joycraft init
   → detectStack() reads manifest files → StackInfo
-  → scaffold dirs (docs/briefs, docs/specs, docs/discoveries, etc.)
+  → scaffold dirs (docs/context, docs/features, docs/discoveries, etc.)
   → copy skills → .claude/skills/
   → copy templates → docs/templates/
   → generate/improve CLAUDE.md with StackInfo commands
@@ -112,8 +112,8 @@ npx joycraft init
 | `src/init.ts` | Main scaffolding logic — the core of `npx joycraft init` |
 | `src/improve-claude-md.ts` | Merge logic for existing CLAUDE.md files — most complex logic |
 | `templates/` | Source-of-truth for all templates — changes here propagate to users via upgrade |
-| `templates/claude-kit/skills/` | Source-of-truth for all skills |
-| `docs/specs/` | Atomic specs for building Joycraft itself |
+| `src/skills/` | Source-of-truth for all skills — `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/` are generated from it (never edit those directly) |
+| `docs/features/<slug>/specs/` | Atomic specs for building Joycraft itself (per-feature queues) |
 | `docs/briefs/2026-03-23-joysmith-cli-plugin.md` | Feature Brief — the full vision |
 
 ---
@@ -147,7 +147,7 @@ pnpm build && node dist/cli.js init /tmp/test-project
 
 ### Feature Development Flow
 ```
-Read the relevant atomic spec in docs/specs/
+Read the relevant atomic spec in docs/features/<slug>/specs/
 → Implement → Test → Capture discoveries → Commit
 ```
 
