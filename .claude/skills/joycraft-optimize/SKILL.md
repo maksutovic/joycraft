@@ -2,7 +2,7 @@
 name: joycraft-optimize
 entry: agent
 description: Invoked by tune's roadmap or the human directly — semantic self-audit of harness overhead; per control it assigns a disposition (KEEP/ONE_HOME/LOAD_LATER/MAKE_A_CHECK/PROBATION/RETIRE) and an evidence label, advisory only
-instructions: 24
+instructions: 25
 ---
 
 <!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/upgrade-optimize-v2.md (S8) -->
@@ -164,7 +164,33 @@ Lead with the **disposition table** — one row per material control, columns: C
 
 **Dispositions are advisory only.** This skill proposes; it applies nothing without the human. `RETIRE` candidates go to the Reaper (`{{skill_prefix}}reaper`), not to a direct delete here.
 
-## Step 10: Further Resources
+## Step 10: The Reaper — Feature Exhaust Disposal
+
+The Reaper is the single deletion authority for feature-folder exhaust (`docs/features/<slug>/`). It runs as a distinct pass after the disposition table above — the audit's `RETIRE` rows and the undead candidates it surfaces feed this pass, but the Reaper only ever acts on **feature folders**, never on the boundary/skill/hook controls audited in Steps 1–9. There are exactly two paths. Never mix them: a folder is either shipped-and-extracted (delete) or undead-and-unextracted (archive-move only).
+
+**Live-work exclusion (checked first, applies to both paths):** a feature folder is **never a candidate** for either path if it has any spec `in-review`, or its brief's `status:` is not terminal. Skip it silently — this is active work, not exhaust. Also skip the feature folder the current session is working in.
+
+### Shipped Path — Delete (PROTOCOL)
+
+Eligibility requires **all three** legs to pass. Any leg failing → the folder is skipped this run, with the specific reason shown in the proposal list — never fall back to a partial or inferred check.
+
+1. **Brief marker** — `docs/features/<slug>/brief.md` frontmatter has `reap: eligible` (set by `joycraft-session-end`'s `done`-graduation path).
+2. **Ledger row exists** — `docs/context/shipped.md` (or its rotated shards) has a row for this feature slug. Missing → skip + flag "extraction incomplete — re-run session-end's graduation path first."
+3. **Merge verified via `gh`** — read the PR link from the ledger row and run `gh pr view <PR> --json state` (or equivalent). Only a `MERGED` state clears this leg.
+   - `gh` unauthenticated or offline → the whole shipped path reports `INACCESSIBLE` and skips all deletions this run. **Never fall back to git-log inference** — squash merges make git-log guessing unreliable.
+   - PR closed without merging → skip with reason "PR closed, not merged"; suggest the undead path instead.
+
+Folders that clear all three legs are batched into a **proposal list**, not applied automatically. Present the list and require **human approval per run** (a reject-framing escape must be available — "skip this run" is always a valid answer, not just per-folder accept/reject). Only on approval, remove each approved folder with `git rm -r docs/features/<slug>/` — `dossier.html` dies with its folder since nothing else references it once shipped. Deletion commits ride the **current feature branch only**; never a direct push, never on main (mains are protected). The ledger row and decision-log rows are the surviving record — the extraction already happened before eligibility, so the delete loses nothing.
+
+### Undead Path — Archive-Move (PROTOCOL)
+
+A candidate is a feature folder with **no** `.joycraft-spec-queue.json`, or a queue that is **all-`todo`** with no commits referencing the feature. These folders were never built — RF-4 found 29+ of the 47 existing feature folders in this state.
+
+Propose **per folder**, with a **one-line reason**, human-approved individually (not batched sight-unseen like the shipped path — each undead folder needs its own justification recorded). On approval, `git mv docs/features/<slug>/ docs/archive/features/<slug>/`. If the archive destination already has that slug, suffix with `-2` (never overwrite).
+
+**The Reaper never deletes undead folders — archive-move only.** They were never extracted, so deletion would lose the only copy of whatever work exists in them. Deletion is reserved exclusively for the shipped path, where the ledger + decision-log already hold the durable record.
+
+## Step 11: Further Resources
 
 End with:
 
@@ -185,3 +211,8 @@ End with:
 | `docs/context/shipped.md` doesn't exist yet | Layer-2 budget row: `NOT_APPLICABLE`, not a failure |
 | Non-Joycraft project (no skills dir) | Taxonomy checks: `INACCESSIBLE`, skip — v1 behavior preserved |
 | Human-door count lands at 10 | Report the overage with a demotion candidate named; never silently reclassify to pass the check |
+| Reaper: `gh` unauthenticated or offline | Shipped path reports `INACCESSIBLE` and skips all deletions this run — never falls back to git-log guessing |
+| Reaper: ledger row missing but brief says `reap: eligible` | Skip + flag: extraction incomplete — re-run session-end's graduation path first |
+| Reaper: PR closed without merge | Skip with reason "PR closed, not merged"; suggest undead review instead |
+| Reaper: archive destination already has the slug | Suffix with `-2`; never overwrite |
+| Reaper: folder is the feature the current session is working in | Never a candidate (live work) |
