@@ -8,6 +8,24 @@ instructions: 32
 
 You have a Feature Brief (or the user has described a feature). Your job is to decompose it into atomic specs that can be executed independently — one spec per session.
 
+<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-retrieval-pass.md (S3) -->
+## Step 0: Retrieve Before You Reason (PROTOCOL)
+
+Before identifying spec boundaries or writing any spec file, run a bounded grep-first retrieval pass over the durable knowledge layer. This is not optional and it is not open-ended — it is a capped lookup, not a reading assignment.
+
+1. Derive **3-6 search terms** from the brief's (or inline description's) nouns and verbs — the feature's key concepts, not generic words.
+2. Grep the knowledge layer for those terms, in priority order:
+   - `docs/context/decision-log.md` (why past choices were made)
+   - `docs/context/shipped.md` (what/where already exists)
+   - `docs/discoveries/` (negative knowledge — things that didn't work)
+   - remaining `docs/context/*.md` files
+3. Read **at most 5 files/rows** total — the matches, not the surrounding context. If a grep term returns dozens of hits, read only the newest matches within the cap and say the result was truncated.
+4. If the knowledge layer is empty or missing (fresh project), report "nothing to retrieve" in one line and proceed — never block.
+
+**Output contract:** when presenting the decomposition table (Step 4), include a **"Prior knowledge reused"** list — each entry citing doc + row date/heading — or the explicit line "retrieval ran (terms: …), nothing relevant found." Silently skipping this is not compliant.
+
+**Contradictions:** if a retrieved decision contradicts the direction implied by the brief, surface it explicitly to the human before building the decomposition table — do not silently pick a side or omit the conflict.
+
 ## Step 1: Verify the Brief Exists
 
 Look for a Feature Brief at `docs/features/<slug>/brief.md`. If the user provided a brief path as an argument, use that. Otherwise, scan `docs/features/*/brief.md`.
@@ -64,6 +82,8 @@ For each atomic spec, define:
 - Aim for 3-7 specs per feature. Fewer than 3 = probably not decomposed enough. More than 10 = the feature brief is too big
 
 ## Step 4: Present and Iterate
+
+Before the decomposition table, show the **"Prior knowledge reused"** list from Step 0's retrieval pass (or the explicit nothing-found line).
 
 Show the decomposition table to the user. Ask:
 1. "Does this breakdown match how you think about this feature?"

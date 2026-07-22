@@ -10,6 +10,24 @@ You are producing objective codebase research to inform a future spec or impleme
 **Guard clause:** If the user doesn't provide a brief path or inline description, ask:
 "What feature or change are you researching? Provide a brief path (e.g., `docs/features/2026-03-30-my-feature/brief.md`) or describe it in a few sentences."
 
+<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-retrieval-pass.md (S3) -->
+## Step 0: Retrieve Before You Reason (PROTOCOL)
+
+Before generating a single research question, run a bounded grep-first retrieval pass over the durable knowledge layer. This is not optional and it is not open-ended — it is a capped lookup, not a reading assignment.
+
+1. Derive **3-6 search terms** from the brief's (or inline description's) nouns and verbs — the feature's key concepts, not generic words.
+2. Grep the knowledge layer for those terms, in priority order:
+   - `docs/context/decision-log.md` (why past choices were made)
+   - `docs/context/shipped.md` (what/where already exists)
+   - `docs/discoveries/` (negative knowledge — things that didn't work)
+   - remaining `docs/context/*.md` files
+3. Read **at most 5 files/rows** total — the matches, not the surrounding context. If a grep term returns dozens of hits, read only the newest matches within the cap and say the result was truncated.
+4. If the knowledge layer is empty or missing (fresh project), report "nothing to retrieve" in one line and proceed — never block.
+
+**Output contract:** the research document (Phase 3) MUST include a **"Prior knowledge reused"** section — either a list citing each reused doc + row date/heading, or the explicit line "retrieval ran (terms: …), nothing relevant found." Silently skipping this section is not compliant.
+
+**Contradictions:** if a retrieved decision or discovery contradicts the direction implied by the brief, surface it explicitly to the human in your handoff — do not silently pick a side or omit the conflict.
+
 ## Scanning Prior Research (Status Filter)
 
 Before generating fresh questions, scan `docs/features/*/research.md` for prior research on similar topics. Read the YAML frontmatter at the top of each file:
@@ -109,6 +127,8 @@ feature: <slug>
 ```
 
 **Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
+
+Immediately below the frontmatter, add a **"Prior knowledge reused"** section from Step 0's retrieval pass: a list citing each reused doc + row date/heading, or the line "retrieval ran (terms: …), nothing relevant found." Never omit this section.
 
 Delete the temporary questions file (`docs/features/<slug>/.questions-tmp.md`).
 
