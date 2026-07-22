@@ -1,5 +1,5 @@
 ---
-status: draft
+status: done
 owner: Maximilian Maksutovic
 created: 2026-07-21
 feature: 2026-07-21-living-harness
@@ -39,6 +39,7 @@ decisions:
     status: clarified
     choice: flip now — one-time reversal, prepend-only rule, add-fact + decide amended same-commit
     rationale: because one-time churn is a fair price for making the most-read harness doc partial-read-safe
+reap: eligible
 ---
 
 # Living Harness — Draft Brief
