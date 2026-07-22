@@ -77,6 +77,9 @@ Open this section with the **"Prior knowledge reused"** list from Step 0's retri
 
 What the codebase should look like when this feature is complete. Describe the change at a high level — new files, modified interfaces, new data flows. Do NOT include implementation steps. This is the "what," not the "how."
 
+<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-confidence-scoring.md (S2, D5) -->
+**Self-score load-bearing claims.** Every **load-bearing** claim in this section — one where downstream work would need to change if the claim turned out false, per `docs/context/anchors.md`'s definition — gets a discrete confidence anchor written inline as `(anchor: N)`, where `N` is one of `{0, 25, 50, 75, 100}` from `docs/context/anchors.md`. Self-score against that file's anchor meanings; never write a free-form numeric estimate outside that set, and never restate the anchor definitions here — `docs/context/anchors.md` is the one home for them. Descriptive color (background, motivation, "why this matters") is not load-bearing and does not get scored. If `docs/context/anchors.md` is missing (the knowledge-substrate spec hasn't run yet), say so loudly and skip scoring — never invent anchor definitions inline.
+
 ### Section 3: Patterns to Follow
 
 Existing patterns in the codebase that this feature should match. Include short code snippets and `file:line` references. Show the pattern, don't just name it.
@@ -110,6 +113,29 @@ After writing the design document, update the parent brief with a back-reference
    `> **Design:** docs/features/<slug>/design.md`
 3. If a `> **Design:**` line already exists, replace it — do NOT add a duplicate
 4. Write the brief back
+
+<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-confidence-scoring.md (§4) -->
+## Step 3.5: Reconcile Brief with Findings
+
+You've just written `docs/features/<slug>/design.md`. Before hand-off, the parent brief at `docs/features/<slug>/brief.md` may now disagree with what you discovered. Re-read it and check each of these sections:
+
+| Brief section | What to look for |
+|---|---|
+| Vision | Did your findings refine or contradict the framing? |
+| Hard Constraints | Are any constraints now obsolete, missing, or refined? |
+| Out of Scope | Did your findings push something in or out of scope? |
+| Decomposition | Are spec counts, names, or dependencies still accurate? |
+| Test Strategy | Do your findings change what or how to test? |
+| Success Criteria | Are the criteria still observable and still match the goal? |
+
+**For each section, choose one:**
+
+- **Edit in place** — small, mechanical updates: line-number corrections, clarifications, additions consistent with brief intent. No user approval needed.
+- **Diff + stop** — non-trivial changes: counts flipping, decomposition restructure, scope changes, contradiction with original brief intent. Present a diff of the proposed change, STOP, and wait for user approval before continuing.
+
+If you make changes, note them at the bottom of `design.md` under a "Brief updates" subsection. If the brief is already in sync, note: "Reconciliation checked, no changes required." If no parent brief exists (feature was described inline), note that and skip this step.
+
+**Why this step exists:** the silent-drift gap. Without reconciliation, the brief and downstream artifacts diverge — and later decomposition is sized against the stale brief. This feature ("single-source-skills") hit exactly this: brief said "11 clean / 9 dirty" until the research re-audit forced a re-decomposition. Don't let it happen again.
 
 ## Step 4: Present and STOP — Pre-Approval Hold
 

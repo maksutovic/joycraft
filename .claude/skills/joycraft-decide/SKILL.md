@@ -72,6 +72,44 @@ questions. For each: **Verified** only if you actually checked it (say how);
 otherwise **Unverified** with what would verify it. An empty manifest is
 almost certainly under-labeling, not cleanliness.
 
+<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-confidence-scoring.md (S2, D5) -->
+## Step 3.5: Audit Confidence Anchors (PROTOCOL)
+
+The brief and design may already carry self-scored anchors on load-bearing
+claims (`(anchor: N)`, written by `joycraft-design` / `joycraft-new-feature`
+against the discrete set `{0, 25, 50, 75, 100}` — see
+`docs/context/anchors.md` for the anchor meanings, the load-bearing
+definition, and the block rule; this skill does not restate those numbers,
+only enforces them). You are the **auditor**, not the author:
+
+1. **Review, don't originate.** For every self-scored load-bearing claim you
+   encounter while building the dossier, sanity-check the score against the
+   evidence cited. Do not invent scores for claims you have not read.
+2. **Re-anchoring is allowed and must be visible.** If your audit disagrees
+   with the author's score, change it and leave a note inline in the exact
+   form `(anchor: N→M — <reason>)` — never silently overwrite a score.
+3. **Auditor never self-certifies a claim it also turned into a question**
+   (RF-KILL-3): if a load-bearing claim became one of this skill's own
+   dossier questions, do not also assign it a first-pass score — it is
+   inherently unresolved, not scored.
+4. **Legacy/unscored claims**: if a load-bearing claim reaches this audit
+   with no self-score (an older brief, or a claim the authoring skill missed),
+   score it now and mark it `(anchor: N — audit-scored, no self-score)` so
+   the gap is visible rather than silently backfilled.
+5. **The block rule (PROTOCOL):** a load-bearing claim scored **≤50** cannot
+   propagate past this deposition as-is. It must either be deepened (do the
+   verification that would raise the score) before the dossier renders, or
+   it becomes one of this step's dossier questions so the human resolves it
+   explicitly. A claim scored 75+ propagates normally; non-load-bearing
+   claims propagate regardless of score — the block only fires on the
+   intersection of both conditions (see `docs/context/anchors.md`).
+6. **Reject-framing escape preserved.** The human may reject a block verdict
+   in Step 5 and force propagation anyway — if they do, stamp the claim
+   visibly as `(anchor: ≤50, propagated by human override)` rather than
+   silently dropping the block note.
+7. If `docs/context/anchors.md` is missing, say so loudly in your summary and
+   skip the audit — never invent anchor definitions or thresholds inline.
+
 ## Step 4: Render and open the dossier
 
 1. Read `docs/templates/DECISION_DOSSIER_TEMPLATE.html`. Fill ONLY the
