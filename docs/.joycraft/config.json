@@ -1,0 +1,35 @@
+{
+  "$schema": "provisional — no consuming skill yet; upgrade-optimize-v2 (spec 8) is the first reader",
+  "tiers": {
+    "plan": { "intent": "frontier-reasoning", "model": "claude-fable-5" },
+    "orchestrate": { "intent": "balanced-orchestrator", "model": "claude-opus-4-8" },
+    "implement": { "intent": "balanced-worker", "model": "claude-sonnet-5" },
+    "verify": { "intent": "frontier-reasoning", "model": "claude-fable-5" }
+  },
+  "harness_maps": {
+    "claude": {
+      "frontier-reasoning": "claude-fable-5",
+      "balanced-orchestrator": "claude-opus-4-8",
+      "balanced-worker": "claude-sonnet-5",
+      "cheap-mechanical": "claude-haiku-4-5"
+    },
+    "codex": {
+      "frontier-reasoning": "gpt-5.6-sol",
+      "balanced-orchestrator": "gpt-5.6-terra",
+      "balanced-worker": "gpt-5.6-terra",
+      "cheap-mechanical": "gpt-5.6-terra"
+    },
+    "pi": {
+      "frontier-reasoning": "inherit-session-model",
+      "balanced-orchestrator": "inherit-session-model",
+      "balanced-worker": "inherit-session-model",
+      "cheap-mechanical": "inherit-session-model"
+    }
+  },
+  "degradation": [
+    "claude-fable-5",
+    "claude-opus-4-8",
+    "claude-sonnet-5",
+    "claude-haiku-4-5"
+  ]
+}
