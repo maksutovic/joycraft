@@ -1,0 +1,252 @@
+<title>Decision Dossier — model tiering</title>
+<style>
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  .tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px 0 20px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  @media (max-width: 680px) { .tiers { grid-template-columns: 1fr; } }
+  .tier-col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .tier-col .tlab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+  .tier-model { font-size: 13px; font-weight: 700; padding: 4px 11px; border-radius: 6px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-role { font-size: 13.5px; color: var(--ink-2); }
+
+  section.decision { margin-top: 54px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 26px 30px 28px; }
+  .d-id { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  h2 { font-size: 23px; font-weight: 700; margin: 6px 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  .d-why { font-size: 15px; color: var(--ink-2); margin: 0 0 20px; max-width: 72ch; }
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .opt { border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; background: var(--ground); display: flex; flex-direction: column; gap: 8px; }
+  .opt.rec { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .opt-head { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  h3 { font-size: 15.5px; font-weight: 700; margin: 0; }
+  .tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; }
+  .pros, .cons { margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
+  .pros li::before { content: "+ "; color: var(--good-ink); font-weight: 700; }
+  .cons li::before { content: "− "; color: var(--bad-ink); font-weight: 700; }
+  .pros li, .cons li { color: var(--ink-2); margin-bottom: 3px; line-height: 1.4; }
+  .blast { margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--rule-strong); }
+  .blast .blab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; display: block; margin-bottom: 5px; }
+  .bchips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .bchip { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .bchip.warn { background: var(--warn-wash); color: var(--warn-ink); font-weight: 600; }
+
+  .manifest { margin-top: 54px; }
+  .man-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .man-head h2 { margin: 0; }
+  .man-sub { font-size: 14.5px; color: var(--ink-2); margin: 8px 0 16px; max-width: 74ch; }
+  .man-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .vchip { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; text-align: center; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .v-ok { background: var(--good-wash); color: var(--good-ink); }
+  .v-un { background: var(--warn-wash); color: var(--warn-ink); }
+  .man-row p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .man-row p strong { color: var(--ink); }
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decision Dossier · feature: model-tiering · July 20, 2026</div>
+  <h1>Three decisions on model routing</h1>
+  <p class="dek">The tiering itself is locked (verified against Anthropic and OpenAI guidance). What's open: how routing is encoded, which tier verifies, and what happens for users without frontier access.</p>
+  <div class="tiers">
+    <div class="tier-col">
+      <span class="tlab">Claude Code · locked</span>
+      <div class="tier-row"><span class="tier-model">Fable 5</span><span class="tier-role">planning · dialogue · research · decide</span></div>
+      <div class="tier-row"><span class="tier-model">Opus 4.8</span><span class="tier-role">implement-feature orchestration</span></div>
+      <div class="tier-row"><span class="tier-model">Sonnet 5</span><span class="tier-role">spec implementation subagents</span></div>
+    </div>
+    <div class="tier-col">
+      <span class="tlab">Codex · locked</span>
+      <div class="tier-row"><span class="tier-model">GPT-5.6 Sol</span><span class="tier-role">planning · dialogue · research</span></div>
+      <div class="tier-row"><span class="tier-model">GPT-5.6 Terra</span><span class="tier-role">orchestration + implementation</span></div>
+    </div>
+  </div>
+</header>
+
+<section class="decision">
+  <span class="d-id">D1 · ROUTING ENCODING</span>
+  <h2>How do skills carry the routing?</h2>
+  <p class="d-why">Skills are prompts — they can't force the main-loop model, only recommend it. What they CAN enforce is the model on every subagent they spawn. The question is where the routing lives.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head"><h3>Inline: preamble + subagent params</h3><span class="tag">Recommended</span></div>
+      <ul class="pros">
+        <li>Skills stay self-contained (gotcha #3) — nothing new to install or upgrade</li>
+        <li>≤3-line preamble per skill; model params on spawns are already supported</li>
+        <li>Tier intent named alongside model ID — one-line swap when models change</li>
+      </ul>
+      <ul class="cons">
+        <li>Routing not user-configurable without editing skills</li>
+        <li>Recommendation text duplicated across skills (mitigate: identical snippet, one canonical form)</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">~9 skill files x 2 harnesses</span><span class="bchip">bundle regen + sync</span></div></div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><h3>Shipped .claude/agents/ definitions</h3></div>
+      <ul class="pros">
+        <li>Model set in agent frontmatter — visible, user-editable config</li>
+        <li>Named agents (joycraft-implementer) reusable outside joycraft flows</li>
+      </ul>
+      <ul class="cons">
+        <li>A whole new install/upgrade surface (init, upgrade, state tracking)</li>
+        <li>Claude-only concept — codex path diverges structurally</li>
+        <li>Agent-frontmatter model behavior across CC versions unverified</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">src/init.ts</span><span class="bchip">src/upgrade.ts</span><span class="bchip">new agents/ dir</span><span class="bchip warn">new upgrade surface</span></div></div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><h3>Both from day one</h3></div>
+      <ul class="pros">
+        <li>Config flexibility + inline defaults</li>
+      </ul>
+      <ul class="cons">
+        <li>Two routing sources that can disagree — a new two-systems drift, freshly warned against (RF-4)</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip warn">dual source of truth</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D2 · VERIFIER TIER</span>
+  <h2>What model runs joycraft-verify?</h2>
+  <p class="d-why">The reading-fatigue panel made the verifier the independent sensor that earns not-reading (RF-KILL-3): silence is only trustworthy if the thing emitting it is strong. This is a trust decision wearing a cost decision's clothes.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head"><h3>Inherit (orchestrator tier, Opus)</h3><span class="tag">Recommended</span></div>
+      <ul class="pros">
+        <li>Verifier ≥ implementer in capability — Sonnet's work checked by a stronger model</li>
+        <li>No extra config; runs at whatever tier the driver runs</li>
+        <li>Matches Anthropic guidance: frontier for verification, workers for execution</li>
+      </ul>
+      <ul class="cons">
+        <li>Verification costs orchestrator-tier tokens on every spec</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">verify spawn: no model param</span></div></div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><h3>Sonnet (same as implementer)</h3></div>
+      <ul class="pros">
+        <li>Cheapest; verification scales freely</li>
+      </ul>
+      <ul class="cons">
+        <li>Peer-grading: same-tier model checking same-tier work weakens the independence the panel demanded</li>
+        <li>The dark-tier trust story ("silence is earned") rests on this sensor</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">verify spawn: model sonnet</span><span class="bchip warn">weaker sensor</span></div></div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><h3>Explicit Fable</h3></div>
+      <ul class="pros">
+        <li>Strongest possible sensor</li>
+      </ul>
+      <ul class="cons">
+        <li>Frontier tokens on every spec of every feature — the cost profile Anthropic's pattern exists to avoid</li>
+        <li>Unavailable on plans without Fable (couples to D3)</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">verify spawn: model fable</span><span class="bchip warn">plan-gated</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D3 · DEGRADATION POLICY</span>
+  <h2>What happens without Fable access?</h2>
+  <p class="d-why">Not every Joycraft user's plan includes Fable (or Sol). The skills ship to strangers' machines — routing has to fail gracefully or the skills break on day one for a chunk of users.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head"><h3>Recommend-and-degrade, one ladder</h3><span class="tag">Recommended</span></div>
+      <ul class="pros">
+        <li>Preamble names the tier ladder (Fable → Opus → session model); skill proceeds on the best available</li>
+        <li>Zero hard failures; works on every plan</li>
+        <li>Tier intent language makes the degradation self-documenting</li>
+      </ul>
+      <ul class="cons">
+        <li>Users on lower tiers silently get weaker planning (mitigate: preamble says so once, out loud)</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">preamble snippet only</span></div></div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><h3>Hard require, fail with message</h3></div>
+      <ul class="pros">
+        <li>No silent quality degradation ever</li>
+      </ul>
+      <ul class="cons">
+        <li>Skills refuse to run for a chunk of users — hostile for a scaffolding tool</li>
+        <li>Unenforceable anyway: a prompt can't actually block a session</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip warn">breaks lower plans</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="manifest">
+  <div class="man-head"><span class="eyebrow">Integrity</span><h2>Assumptions asserted as fact</h2></div>
+  <p class="man-sub">Load-bearing claims not posed as questions, labeled per RF-5.</p>
+  <div class="man-row"><span class="vchip v-ok">Verified</span><p><strong>Anthropic's pattern: Fable advises/plans, Sonnet executes</strong> — published benchmark 96% of all-Fable performance at 46% cost; Opus positioned for everyday complex load. (Web-verified today, secondary sources citing Anthropic.)</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span><p><strong>OpenAI's guidance: Sol for ambiguous/high-value planning, Terra 2x-cheaper scoped implementation</strong> — openai.com model pages + handoff guidance, web-verified today.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span><p><strong>Subagent model overrides are enforceable</strong> — the Agent tool accepts a model parameter per spawn; used in this session's own workflow (52 agents).</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span><p><strong>The Opus middle tier is Max's adaptation, not Anthropic's benchmarked config.</strong> Anthropic's 96%/46% number is Fable-orchestrator + Sonnet-workers, two-tier. No benchmark exists for Fable-plan/Opus-orchestrate/Sonnet-implement. Reasonable, but unmeasured.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span><p><strong>A skill preamble can reliably detect the running model and prompt a switch.</strong> The model self-identifies in its system prompt, but this behavior from an installed skill in a fresh project is untested — same verification spike as the decision-dossier feature's spec 1.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span><p><strong>.claude/agents/ frontmatter model behavior is consistent across Claude Code versions</strong> — matters only if D1 chooses agent definitions.</p></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>Your agent will ask D1–D3 as forced-choice questions. This round, add your one-sentence rationale in the notes/Other field when you pick — the demo run exposed that the UI doesn't force it, so the discipline is on us until spec 1 builds the capture.</p>
+</div>
+
+<footer>
+  <p>Second live decision dossier — dogfood run 2 of the decision-dossier pilot. Feature: 2026-07-20-model-tiering · Joycraft.</p>
+</footer>
+</div>

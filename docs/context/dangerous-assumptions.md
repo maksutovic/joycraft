@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-06-01
+last_updated: 2026-07-20
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -17,6 +17,8 @@ last_updated_by: Maximilian Maksutovic
 | CLAUDE.md merge is append-only | `improve-claude-md.ts` does section-level parsing and merging | Overwriting user's existing CLAUDE.md content |
 | Test fixtures are stubs | Fixtures should mirror real-world manifest files (real package.json structures) | False confidence — tests pass but detection fails on real projects |
 | Absolute paths are fine in templates | All templates and skills must use project-relative paths | Templates break when copied into user projects |
+| CLAUDE.md and AGENTS.md carry equivalent instructions | They drift — this repo's own AGENTS.md was a stale TODO stub while CLAUDE.md held the real rules. Multi-tool layout now makes AGENTS.md the single source with CLAUDE.md as an `@AGENTS.md` import; only that structure prevents drift | Codex/Pi sessions run without the real boundaries (no scenarios rules, no branch flow) and nobody notices |
+| Text in a shared `harness:claude\|codex` block is true for both harnesses | Shared blocks can encode one harness's behavior (decompose's handoff claimed subagent-per-spec — never true for Codex) | A harness ships instructions describing another harness's mechanics |
 
 ## Historical Incidents
 

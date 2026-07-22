@@ -8,12 +8,12 @@
 
 ## What is Joycraft?
 
-Joycraft is a CLI tool that installs structured development skills into [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [OpenAI Codex](https://openai.com/codex), and [Pi](https://github.com/earendil-works/pi-coding-agent), along with behavioral boundaries, templates, and documentation structure. It takes any project from unstructured prompting to autonomous spec-driven development — and on Pi, to fully headless spec execution.
+Joycraft is a CLI tool that installs structured development skills into [Claude Code](https://docs.anthropic.com/en/docs/claude-code), [OpenAI Codex](https://openai.com/codex), and [Pi](https://github.com/earendil-works/pi-coding-agent), along with behavioral boundaries, templates, and documentation structure. It takes any project from unstructured prompting to an excellent spec-driven development system with a harness that matures alongside your project.
 
 ### The core idea
 
-- **Levels 1-4:** Skills like `/joycraft-tune`, `/joycraft-new-feature`, and `/joycraft-interview` replace unstructured prompting with spec-driven development. You interview, you write specs, the agent executes.
-- **Level 5:** The `/joycraft-implement-level5` skill sets up the autonomous loop where specs go in and validated software comes out, with holdout scenario testing that prevents the agent from gaming its own tests.
+- **The product:** Skills like `/joycraft-tune`, `/joycraft-new-feature`, and `/joycraft-interview` replace unstructured prompting with spec-driven development — you interview, you write specs, the agent executes — plus a harness (boundaries, context docs, skills) that gets better as you work.
+- **The experimental frontier:** For teams with the budget and infrastructure to maintain it, the `/joycraft-implement-level5` skill sets up an autonomous loop with holdout scenario testing, and on Pi the workflow can run fully headless. Powerful, but genuinely expensive to run and maintain with current models — treat it as a north star, not the next step.
 
 ### What are the levels?
 
@@ -25,9 +25,13 @@ Joycraft is a CLI tool that installs structured development skills into [Claude 
 | 2 | Junior Developer | Prompt → iterate → fix → repeat | `/joycraft-tune` assesses where you are |
 | 3 | Developer as Manager | Your life is reviewing diffs | Behavioral boundaries in CLAUDE.md |
 | 4 | Developer as PM | You write specs, agent writes code | `/joycraft-new-feature` + `/joycraft-decompose` |
-| 5 | Software Factory | Specs in, validated software out | `/joycraft-implement-level5` sets up the autonomous loop |
+| 5 | Software Factory | Specs in, validated software out | `/joycraft-implement-level5` (experimental) |
 
-Most developers plateau at Level 2. Joycraft's job is to move you up.
+Most developers plateau at Level 2. Joycraft's job is to make you excellent at
+Levels 3-4: spec-driven development with a well-maintained harness. Level 5 is
+real — StrongDM proved it — but with current models it takes serious budget and
+a team to maintain, so Joycraft treats it as an experimental north star rather
+than the destination.
 
 ### Platform support
 
@@ -80,8 +84,8 @@ npx joycraft init
 
 `init` first asks which harnesses to install (see [Platform support](#platform-support) above), then auto-detects your tech stack and creates:
 
-- **CLAUDE.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands
-- **AGENTS.md** for Codex/Pi compatibility
+- **AGENTS.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands — the single shared instruction file when more than one tool is selected
+- **CLAUDE.md** — on a multi-tool install this is [Anthropic's documented import pattern](https://code.claude.com/docs/en/memory): `@AGENTS.md` plus a `## Claude Code` section for Claude-specific additions, so every tool reads one source and nothing drifts. A Claude-only install gets the classic full CLAUDE.md instead
 - **20 skills** installed to the selected harnesses — `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), and/or `.pi/skills/` (Pi) — see [Which skill do I need?](#which-skill-do-i-need) below
 - **Pi pipeline runtime** in `.pi/scripts/joycraft/` (when Pi is selected) — the headless spec-execution driver and its helpers
 - **Agent teams enabled** — when Claude Code is selected, `init` sets `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` so subagent-driven skills like `/joycraft-research` work out of the box (idempotent — it never clobbers a value you already set)
@@ -125,6 +129,28 @@ edits are append-only — Joycraft never rewrites or removes your existing lines
 > `npx joycraft init` to regenerate them locally. Joycraft adds a one-line
 > reminder to your generated `CLAUDE.md` and `AGENTS.md` for exactly this reason.
 
+### Reviewable PRs: workflow docs are collapsed
+
+Joycraft's docs are two kinds of content. Durable knowledge — `CLAUDE.md`,
+`AGENTS.md`, `docs/context/` — steers every future agent run and deserves review
+eyes. Workflow exhaust — feature briefs and specs, discoveries, installed
+templates — is historical by the time a PR is opened (the spec was reviewed in
+conversation when it was written). To keep PRs reviewable, `init` and `upgrade`
+write a `.gitattributes` marking the exhaust paths `linguist-generated=true`:
+
+```gitattributes
+docs/features/** linguist-generated=true
+docs/bugfixes/** linguist-generated=true
+docs/discoveries/** linguist-generated=true
+docs/templates/** linguist-generated=true
+```
+
+GitHub collapses these files in the Files Changed view and excludes them from
+diff stats — reviewers see your code and your durable knowledge, and any
+collapsed doc is one click from expanding. The write is append-only and
+idempotent (your existing `.gitattributes` lines are never touched); delete any
+line to opt that path back into full review.
+
 ### Supported Stacks
 
 Node.js (npm/pnpm/yarn/bun), Python (poetry/pip/uv), Rust, Go, Swift, and generic (Makefile/Dockerfile).
@@ -145,7 +171,7 @@ Frameworks auto-detected: Next.js, FastAPI, Django, Flask, Actix, Axum, Express,
 | Fix a bug with a structured workflow | `/joycraft-bugfix` | Reproduce → isolate → fix → verify loop |
 | Implement a spec with TDD | `/joycraft-implement` | Read spec → failing tests → implement until green → wrap up → continue the queue |
 | Run a feature's whole spec queue from one command | `/joycraft-implement-feature` | Fresh-context subagent per spec → fail-fast → session-end once |
-| Run specs autonomously without hand-holding | `/joycraft-implement-level5` | Autofix loop + holdout scenario testing |
+| Run specs autonomously without hand-holding | `/joycraft-implement-level5` | Experimental — autofix loop + holdout scenario testing |
 | Verify an implementation independently | `/joycraft-verify` | Read-only subagent checks work against the spec |
 | Set up Joycraft for a team | `/joycraft-collaborative-setup` | Scaffold `docs/areas/`, owner conventions, a team CONTRIBUTING doc |
 
@@ -194,9 +220,9 @@ A 2-3 minute risk interview generates safety boundaries, and you choose your git
 
 Joycraft produces file artifacts at every step, so your conversation context is disposable. Clear it between phases to reduce cost and improve output quality. [Read the full guide →](docs/guides/token-discipline.md)
 
-### Level 5: The Autonomous Loop
+### Level 5: The Autonomous Loop (experimental)
 
-Level 5 is where specs go in and validated software comes out — four GitHub Actions workflows, a separate scenarios repo, and two AI agents that can never see each other's work. [Read the full guide →](docs/guides/level-5-autonomy.md)
+Level 5 is where specs go in and validated software comes out — four GitHub Actions workflows, a separate scenarios repo, and two AI agents that can never see each other's work. It works, but budget for real token costs and ongoing scenario maintenance before committing to it. [Read the full guide →](docs/guides/level-5-autonomy.md)
 
 ### Permission Modes
 
@@ -204,7 +230,7 @@ You do **not** need `--dangerously-skip-permissions` for autonomous development.
 
 ### How It Works with AI Agents
 
-Claude Code reads CLAUDE.md, Codex reads AGENTS.md — both get the same guardrails and workflow. [Read the full guide →](docs/guides/agent-compatibility.md)
+Claude Code reads CLAUDE.md, Codex and Pi read AGENTS.md — and Claude Code does **not** read AGENTS.md natively. On a multi-tool install Joycraft therefore keeps one shared AGENTS.md and writes CLAUDE.md as an `@AGENTS.md` import (Anthropic's documented pattern), so every tool reads the same instructions without duplication. [Read the full guide →](docs/guides/agent-compatibility.md)
 
 ## Upgrade
 

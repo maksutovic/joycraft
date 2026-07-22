@@ -1,6 +1,7 @@
 import type { StackInfo } from './detect.js';
 import {
   generateBoundariesSection,
+  generateExternalApiSafetySection,
   generatePrivateSetupNote,
   PRIVATE_SETUP_NOTE_MARKER,
 } from './improve-claude-md.js';
@@ -48,10 +49,6 @@ function generateCommandsBlock(stack: StackInfo): string {
   if (stack.commands.deploy) lines.push(stack.commands.deploy);
   lines.push('```');
   return lines.join('\n');
-}
-
-function generateExternalApiSafetySection(): string {
-  return '### External API Safety\n- Read official docs and type definitions before writing code against a third-party SDK\n- Add third-party SDKs as devDependencies so typecheck runs against real types, not stubs\n- Critical integration paths should have a smoke test that validates against the real runtime';
 }
 
 function generateDevelopmentSection(stack: StackInfo): string {
@@ -106,7 +103,7 @@ export function improveAgentsMd(existing: string, stack: StackInfo, privateProfi
   }
 
   if (!/external\s*api\s*safety/i.test(existing)) {
-    additions.push('### External API Safety\n- Read official docs and type definitions before writing code against a third-party SDK\n- Add third-party SDKs as devDependencies so typecheck runs against real types, not stubs\n- Critical integration paths should have a smoke test that validates against the real runtime');
+    additions.push(generateExternalApiSafetySection());
   }
 
   if (!hasSection(sections, /architecture/i)) {

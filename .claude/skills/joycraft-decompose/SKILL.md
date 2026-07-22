@@ -20,6 +20,20 @@ If no brief exists, tell the user:
 
 If the user describes the feature inline, work from that description directly. You don't need a formal brief to decompose — but recommend creating one for complex features.
 
+<!-- PILOT: diverges from src/ — see 2026-07-20-decision-dossier brief decision #7 -->
+## Step 1.5: Decision Gate
+
+Before decomposing a brief file, parse its YAML frontmatter `decisions:` list. Frontmatter is the gate's **single source** — do not scan the body for open questions.
+
+- **No `decisions:` block** → pass; legacy briefs keep working.
+- **Frontmatter fails to parse** → fail **closed**: report the parse error, point at the brief file, and stop. Never decompose over a brief whose decision state is unreadable.
+- **Any entry with `status: open`** → refuse to decompose. Name only the open decisions (id + question) and stop:
+
+  > [N] open decision(s) gate this brief: [D2 — <question>, …]. Run `/joycraft-decide <brief path>` to terminate them (clarified / backlogged / discarded), or explicitly defer specific ones ("backlog D2 — <reason>").
+
+- **Explicit defer** — the user says backlog it / skip for now / don't worry: set each named decision to `status: backlogged` with their one-line reason in the brief's frontmatter, add it to the feature's `docs/backlog/` entry (create one if needed), then re-evaluate the gate. Proceed only when zero decisions remain `open`, confirming in one line what was backlogged and where it was recorded (visible residue, never a silent edit).
+- `backlogged` and `discarded` never block — only `open` blocks.
+
 ## Step 2: Identify Natural Boundaries
 
 **Why:** Good boundaries make specs independently testable and committable. Bad boundaries create specs that can't be verified without other specs also being done.
@@ -255,7 +269,7 @@ concurrent subagents/worktrees. Waves without the marker run sequentially.
 
 ## How to use this file
 
-Run the whole queue with `/joycraft-implement-feature docs/features/<slug>/` — it executes the specs in wave order (fresh-context subagent per spec) and finishes with session-end. Or run one spec at a time with `/joycraft-implement <spec-path>`; the implement skill reads this README first so it understands the spec's position in the wave plan, and continues through the queue itself. Each spec is self-contained for the actual implementation; this README provides ordering context only.
+Run the whole queue with `/joycraft-implement-feature docs/features/<slug>/` — it executes the specs in wave order (parallel-safe waves may run as concurrent subagents; everything else runs sequentially in the driving conversation) and finishes with session-end. Or run one spec at a time with `/joycraft-implement <spec-path>`; the implement skill reads this README first so it understands the spec's position in the wave plan, and continues through the queue itself. Each spec is self-contained for the actual implementation; this README provides ordering context only.
 ```
 
 The brief and the README serve different audiences: the brief is for *feature reviewers* (vision, scope, decomposition decisions); the README is for *implementers* (what to run next, what depends on what).
@@ -272,4 +286,4 @@ Next:
 ```
 Run /clear first.
 
-That one command runs the whole queue — fresh-context subagent per spec, wrap-up and commit after each, session-end once at the end. To drive one spec at a time instead: `/joycraft-implement docs/features/<slug>/specs/<first-spec>.md` (it wraps up and continues through the queue itself).
+That one command runs the whole queue — wrap-up and commit after each spec, parallel subagents only for waves marked parallel-safe, session-end once at the end. To drive one spec at a time instead: `/joycraft-implement docs/features/<slug>/specs/<first-spec>.md` (it wraps up and continues through the queue itself).

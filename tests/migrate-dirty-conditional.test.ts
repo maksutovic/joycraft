@@ -113,7 +113,11 @@ describe('migrate-dirty-conditional: joycraft-implement-feature step structure',
   it('claude variant has 4 ## Step sections (Loop)', () => {
     const c = readFileSync(join(CLAUDE_DIR, 'joycraft-implement-feature.md'), 'utf-8');
     expect(countSteps(c)).toBe(4);
-    expect(c).toMatch(/The Loop — One Subagent per Spec/);
+    expect(c).toMatch(/The Loop — Inline by Default, Subagents Only Where They Earn It/);
+    // The claude driver must run sequential specs inline and reserve subagents
+    // for parallel-safe waves and isolated-mode specs.
+    expect(c).toMatch(/implement the spec \*\*inline, in this conversation\*\*/);
+    expect(c).toMatch(/Never parallelize an unmarked wave/);
   });
 
   it('codex variant has 4 ## Step sections (Chain)', () => {

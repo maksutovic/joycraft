@@ -1,0 +1,268 @@
+<title>Decision Dossier — decision-dossier feature</title>
+<style>
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  section.decision { margin-top: 58px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 26px 30px 28px; }
+  .d-id { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  h2 { font-size: 23px; font-weight: 700; margin: 6px 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  .d-why { font-size: 15px; color: var(--ink-2); margin: 0 0 20px; max-width: 72ch; }
+
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .opt { border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; background: var(--ground); display: flex; flex-direction: column; gap: 8px; }
+  .opt.rec { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .opt-head { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  h3 { font-size: 15.5px; font-weight: 700; margin: 0; }
+  .tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; }
+  .pros, .cons { margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
+  .pros li::before { content: "+ "; color: var(--good-ink); font-weight: 700; }
+  .cons li::before { content: "− "; color: var(--bad-ink); font-weight: 700; }
+  .pros li, .cons li { color: var(--ink-2); margin-bottom: 3px; line-height: 1.4; }
+  .blast { margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--rule-strong); }
+  .blast .blab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; display: block; margin-bottom: 5px; }
+  .bchips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .bchip { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .bchip.warn { background: var(--warn-wash); color: var(--warn-ink); font-weight: 600; }
+
+  .flow { margin-top: 18px; background: var(--ground); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; overflow-x: auto; }
+  .flow .flab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .flow-line { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-width: 560px; }
+  .fnode { font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 6px; background: var(--surface); border: 1px solid var(--rule-strong); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .fnode.hi { border-color: var(--accent); color: var(--accent-ink); }
+  .fnode.gate { border-color: var(--warn-ink); color: var(--warn-ink); }
+  .farrow { color: var(--ink-3); flex: none; }
+  .unv { font-size: 11px; color: var(--warn-ink); font-weight: 600; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+
+  .manifest { margin-top: 58px; }
+  .man-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 16px; }
+  .man-head h2 { margin: 0; }
+  .man-sub { font-size: 14.5px; color: var(--ink-2); margin: 0 0 16px; max-width: 74ch; }
+  .man-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .vchip { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; text-align: center; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .v-ok { background: var(--good-wash); color: var(--good-ink); }
+  .v-un { background: var(--warn-wash); color: var(--warn-ink); }
+  .man-row p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .man-row p strong { color: var(--ink); }
+
+  .howto { margin-top: 52px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 60px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decision Dossier · feature: decision-dossier · July 20, 2026</div>
+  <h1>Three decisions before decompose</h1>
+  <p class="dek">Seven decisions were locked in the interview. These three remain open, and per the brief's own gate rule, decompose won't run until each terminates: clarified into the spec queue, backlogged, or discarded.</p>
+  <div class="locked">
+    <span class="lock-chip">✓ Hybrid round-trip</span>
+    <span class="lock-chip">✓ Design bookend only</span>
+    <span class="lock-chip">✓ Choice + typed rationale</span>
+    <span class="lock-chip">✓ All four visuals</span>
+    <span class="lock-chip">✓ Hard gate, explicit-defer escape</span>
+    <span class="lock-chip">✓ decision-log + Hard Constraints</span>
+    <span class="lock-chip">✓ Dogfood pilot, kill criterion</span>
+    <span class="lock-chip open">D1 open</span>
+    <span class="lock-chip open">D2 open</span>
+    <span class="lock-chip open">D3 open</span>
+  </div>
+</header>
+
+<section class="decision">
+  <span class="d-id">D1 · SKILL SHAPE</span>
+  <h2>Where does the deposition logic live?</h2>
+  <p class="d-why">Both <span class="mono">joycraft-design</span> and <span class="mono">joycraft-new-feature</span> end by producing an artifact a human must judge. The deposition step could be inlined into each, or become one shared skill both invoke. Skills must be self-contained (repo gotcha #3), but skill-to-skill routing is established practice (tune routes to assess/upgrade).</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head"><h3>New shared <span class="mono">joycraft-decide</span></h3><span class="tag">Recommended</span></div>
+      <ul class="pros">
+        <li>One canonical home for deposition logic — the optimize skill's own duplication-over-length rule</li>
+        <li>Design AND new-feature both route to it; future checkpoints reuse it</li>
+        <li>Pilot edits touch one skill, not two</li>
+      </ul>
+      <ul class="cons">
+        <li>One more skill in the routing vocabulary (discoverability tax)</li>
+        <li>Handoff must pass the design doc path cleanly</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">src/claude-skills/ +1 new</span><span class="bchip">design.md +5 lines</span><span class="bchip">new-feature.md +5 lines</span><span class="bchip">decompose.md gate check</span><span class="bchip">bundle regen + installed sync</span></div></div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><h3>Inline into <span class="mono">joycraft-design</span> only</h3></div>
+      <ul class="pros">
+        <li>No new skill; zero routing surface</li>
+        <li>Deposition lives exactly where the design doc is freshest</li>
+      </ul>
+      <ul class="cons">
+        <li>new-feature's brief path gets no deposition, or duplicates it later</li>
+        <li>Design.md grows; skill instruction budgets are a known constraint</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">design.md +~60 lines</span><span class="bchip">decompose.md gate check</span><span class="bchip warn">new-feature path uncovered</span></div></div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><h3>Inline into both skills</h3></div>
+      <ul class="pros">
+        <li>Full coverage without routing</li>
+      </ul>
+      <ul class="cons">
+        <li>Two copies of the deposition logic to keep in sync — the exact prescribed-duplication pattern the panel condemned (RF-4)</li>
+        <li>Sync burden multiplies across the ~24-file harness-variant fan-out later</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">design.md +~60</span><span class="bchip">new-feature.md +~60</span><span class="bchip warn">duplicated logic</span></div></div>
+    </div>
+  </div>
+  <div class="flow">
+    <span class="flab">Recommended shape · after</span>
+    <div class="flow-line">
+      <span class="fnode">design / new-feature</span><span class="farrow">→</span>
+      <span class="fnode hi">joycraft-decide</span><span class="farrow">→</span>
+      <span class="fnode">dossier.html + native questions</span><span class="farrow">→</span>
+      <span class="fnode">decision-log rows</span><span class="farrow">→</span>
+      <span class="fnode gate">decompose gate ✓</span>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D2 · DOSSIER PERSISTENCE</span>
+  <h2>Does the dossier file get committed?</h2>
+  <p class="d-why">The dossier is a generated human-only view (RF-DIET-1) — but views can still be worth keeping. The .gitattributes machinery from core-loop-refocus already exists for exactly this class of file.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head"><h3>Committed, marked linguist-generated</h3><span class="tag">Recommended</span></div>
+      <ul class="pros">
+        <li>Team-legible: a later reader sees what was decided AND what the decider saw</li>
+        <li>Collapsed in PRs via existing <span class="mono">.gitattributes</span> machinery — zero review noise</li>
+        <li>Reaper-compatible: archives with its feature folder</li>
+      </ul>
+      <ul class="cons">
+        <li>Repo weight (self-contained HTML, tens of KB per feature)</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">docs/features/&lt;f&gt;/dossier.html</span><span class="bchip">gitattributes.ts +1 entry</span></div></div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><h3>Gitignored local file</h3></div>
+      <ul class="pros">
+        <li>Zero repo weight</li>
+        <li>Still auto-openable locally</li>
+      </ul>
+      <ul class="cons">
+        <li>The context behind decisions evaporates — only the log rows survive</li>
+        <li>Useless for the collaborative-setup story later</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">gitignore profile +1</span></div></div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><h3>Ephemeral artifact only</h3></div>
+      <ul class="pros">
+        <li>Nothing to manage; claude.ai hosts it</li>
+      </ul>
+      <ul class="cons">
+        <li>Tied to one harness's artifact feature — breaks the codex/pi path permanently</li>
+        <li>Link rot risk in decision-log rows</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip warn">claude-only forever</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D3 · GATE ENCODING</span>
+  <h2>How does decompose know decisions are unresolved?</h2>
+  <p class="d-why">The gate needs a machine-readable signal. You already carry the scar of two parallel status systems (queue JSON vs frontmatter) that drifted — this decision determines whether we create a third.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head"><h3><span class="mono">decisions:</span> block in brief frontmatter</h3><span class="tag">Recommended</span></div>
+      <ul class="pros">
+        <li>One file, one source — no new bookkeeping surface to drift</li>
+        <li>YAML is machine-readable for the headless gate as-is</li>
+        <li>Human sees decision state every time the brief opens</li>
+      </ul>
+      <ul class="cons">
+        <li>Agents editing frontmatter must preserve the block faithfully</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">brief.md frontmatter</span><span class="bchip">decompose.md gate check</span></div></div>
+    </div>
+    <div class="opt">
+      <div class="opt-head"><h3>decisions.json next to the queue</h3></div>
+      <ul class="pros">
+        <li>Cleanly machine-parseable; matches queue JSON conventions</li>
+      </ul>
+      <ul class="cons">
+        <li>A third status-bearing file — the exact two-systems drift you just resolved to unify, reintroduced (RF-4)</li>
+        <li>Invisible to the human reading the brief</li>
+      </ul>
+      <div class="blast"><span class="blab">Blast radius</span><div class="bchips"><span class="bchip">docs/.joycraft/decisions.json</span><span class="bchip warn">new sync surface</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="manifest">
+  <div class="man-head"><span class="eyebrow">Integrity</span><h2>Assumptions asserted as fact</h2></div>
+  <p class="man-sub">Load-bearing claims this dossier and its brief rest on that were NOT posed as questions. Per RF-5, unverified claims are labeled — a persuasive document is still a persuasive artifact, including this one.</p>
+  <div class="man-row"><span class="vchip v-ok">Verified</span><p><strong>Artifacts cannot send data back to the session.</strong> Strict CSP blocks fetch/POST from published pages — the basis of the hybrid architecture (locked decision #1).</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span><p><strong>decision-log.md is the most re-read document in the repo</strong> (9 commits; smallest directory) — the basis for landing answers there.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span><p><strong>.gitattributes linguist-generated machinery exists and ships from init/upgrade</strong> (core-loop-refocus, PR #56/#57) — D2's recommended option depends on it.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span><p><strong>The native question UI is reliably invocable from skill instructions in end-user sessions.</strong> True in this session; not yet tested from an installed skill in a fresh project. Pilot spec 1 must verify this first.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span><p><strong>Dossier auto-open works across surfaces.</strong> Artifacts auto-open on claude.ai/code; terminal CLI behavior may be click-to-open. Acceptable for the pilot; verify before user rollout.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span><p><strong>≤5 questions is the right cap.</strong> Inherited from the panel's design (attention-block sizing, RF-1); no empirical data on Joycraft features yet — the pilot measures it.</p></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>Your agent will ask D1–D3 as forced-choice questions in the terminal, each requiring a one-sentence rationale. Every question carries a reject-this-framing escape — if both options are wrong, say what's right instead. Answers stamp into <span class="mono">brief.md</span> Decisions and <span class="mono">decision-log.md</span>; the decompose gate opens when all three terminate.</p>
+</div>
+
+<footer>
+  <p>First live decision dossier — the demo IS the feature. Feature: 2026-07-20-decision-dossier · Joycraft.</p>
+</footer>
+</div>

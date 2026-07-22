@@ -10,6 +10,14 @@ export interface ImproveOptions {
    * emitted telling them to run `npx joycraft init` to regenerate them locally.
    */
   privateProfile?: boolean;
+  /**
+   * When true, the generated document is the single shared AGENTS.md for a
+   * multi-tool install (Codex and/or Pi selected alongside or instead of
+   * Claude Code). Adds the External API Safety rules and a per-tool skill
+   * invocation note, since the one document serves every harness. CLAUDE.md
+   * then becomes an `@AGENTS.md` import pointer (see generateClaudeMdPointer).
+   */
+  multiTool?: boolean;
 }
 
 /**
@@ -67,6 +75,27 @@ function generateCommandsBlock(stack: StackInfo): string {
   if (stack.commands.deploy) lines.push(`# Deploy\n${stack.commands.deploy}`);
   lines.push('```');
   return lines.join('\n');
+}
+
+export function generateExternalApiSafetySection(): string {
+  return '### External API Safety\n- Read official docs and type definitions before writing code against a third-party SDK\n- Add third-party SDKs as devDependencies so typecheck runs against real types, not stubs\n- Critical integration paths should have a smoke test that validates against the real runtime';
+}
+
+/**
+ * The CLAUDE.md written for a multi-tool install, following Anthropic's
+ * documented pattern for repos that use AGENTS.md with other coding agents:
+ * a single shared AGENTS.md imported via `@AGENTS.md`, with a section for
+ * Claude-specific additions. Claude Code does not read AGENTS.md natively —
+ * the import line is what makes both tools read the same instructions.
+ * https://code.claude.com/docs/en/memory ("AGENTS.md")
+ */
+export function generateClaudeMdPointer(): string {
+  return `@AGENTS.md
+
+## Claude Code
+
+_Shared project instructions — boundaries, workflow, architecture — live in \`AGENTS.md\`, imported above so every AI tool reads the same source. Add Claude Code–specific instructions in this section only._
+`;
 }
 
 export function generateBoundariesSection(): string {
@@ -130,7 +159,10 @@ function generateGotchasSection(): string {
 _TODO: Add any gotchas, quirks, or non-obvious behaviors that developers should know about._`;
 }
 
-function generateGettingStartedSection(): string {
+function generateGettingStartedSection(multiTool = false): string {
+  const invocationNote = multiTool
+    ? '\n\nSkill names are shared across tools; only the invocation prefix differs: `/joycraft-*` (Claude Code), `$joycraft-*` (Codex), `/skill:joycraft-*` (Pi).'
+    : '';
   return `## Getting Started with Joycraft
 
 This project uses [Joycraft](https://github.com/maksutovic/joycraft) for AI development workflow. Available skills:
@@ -138,14 +170,14 @@ This project uses [Joycraft](https://github.com/maksutovic/joycraft) for AI deve
 | Skill | Purpose |
 |-------|---------|
 | \`/joycraft-setup\` | Start here — the first-run door; sets up and assesses your project |
-| \`/joycraft-tune\` | Assess your harness, apply upgrades, see path to Level 5 |
+| \`/joycraft-tune\` | Assess your harness, apply upgrades, see your maturity roadmap |
 | \`/joycraft-new-feature\` | Interview -> Feature Brief -> Atomic Specs |
 | \`/joycraft-interview\` | Lightweight brainstorm — yap about ideas, get a structured summary |
 | \`/joycraft-decompose\` | Break a brief into small, testable specs |
 | \`/joycraft-session-end\` | Capture discoveries, verify, commit |
-| \`/joycraft-implement-level5\` | Set up Level 5 — autofix loop, holdout scenarios, scenario evolution |
+| \`/joycraft-implement-level5\` | Experimental — Level 5 autofix loop, holdout scenarios, scenario evolution |
 
-Run \`/joycraft-tune\` to see where your project stands and what to improve next.`;
+Run \`/joycraft-tune\` to see where your project stands and what to improve next.${invocationNote}`;
 }
 
 export function generateContextMapSection(): string {
@@ -288,6 +320,13 @@ export function generateCLAUDEMd(
     '',
     generateBoundariesSection(),
     '',
+  ];
+
+  if (opts?.multiTool) {
+    lines.push(generateExternalApiSafetySection(), '');
+  }
+
+  lines.push(
     generateWorkflowSection(stack),
     '',
     generateArchitectureSection(),
@@ -298,9 +337,9 @@ export function generateCLAUDEMd(
     '',
     generateContextMapSection(),
     '',
-    generateGettingStartedSection(),
+    generateGettingStartedSection(opts?.multiTool ?? false),
     '',
-  ];
+  );
 
   if (opts?.privateProfile) {
     lines.push(generatePrivateSetupNote(), '');

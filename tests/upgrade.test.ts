@@ -28,7 +28,17 @@ describe('upgrade', () => {
 
   beforeEach(() => {
     tmpDir = createTmpDir();
-    return () => cleanup(tmpDir);
+    // Hermetic: never hit the live npm registry — an unmocked staleness check
+    // aborts every upgrade whenever the published version differs from local.
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ version: '0.0.0' }),
+    }) as unknown as typeof fetch;
+    return () => {
+      globalThis.fetch = origFetch;
+      cleanup(tmpDir);
+    };
   });
 
   it('shows error when project is not initialized', async () => {

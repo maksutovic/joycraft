@@ -4,6 +4,7 @@ import { createInterface } from 'node:readline';
 import { execFileSync } from 'node:child_process';
 import { readVersion, writeVersion, hashContent, truncateHash, LEGACY_VERSION_FILE, LEGACY_CLAUDE_STATE_PATH, parseGitignoreProfile } from './version.js';
 import { applyGitignoreProfile, resolveGitignoreProfile, validateGitignoreFlag, PRIVATE_PROFILE_IGNORES, PRIVATE_UNTRACK_COMMAND } from './gitignore.js';
+import { applyGitattributes } from './gitattributes.js';
 import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
@@ -445,6 +446,9 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   });
   const gitignoreProfile = resolvedProfile.profile;
   applyGitignoreProfile(targetDir, gitignoreProfile);
+  // Bring pre-existing projects up to the init behavior: collapse
+  // workflow-exhaust docs in PR review. Append-only + idempotent.
+  applyGitattributes(targetDir);
   if (gitignoreProfile === 'private') {
     // On a fresh switch to private, always surface the untrack hint. On a
     // re-run where private is already persisted (the easy-to-miss case), only

@@ -255,7 +255,7 @@ concurrent subagents/worktrees. Waves without the marker run sequentially.
 
 ## How to use this file
 
-Run the whole queue with `/joycraft-implement-feature docs/features/<slug>/` — it executes the specs in wave order (fresh-context subagent per spec) and finishes with session-end. Or run one spec at a time with `/joycraft-implement <spec-path>`; the implement skill reads this README first so it understands the spec's position in the wave plan, and continues through the queue itself. Each spec is self-contained for the actual implementation; this README provides ordering context only.
+Run the whole queue with `/joycraft-implement-feature docs/features/<slug>/` — it executes the specs in wave order (parallel-safe waves may run as concurrent subagents; everything else runs sequentially in the driving conversation) and finishes with session-end. Or run one spec at a time with `/joycraft-implement <spec-path>`; the implement skill reads this README first so it understands the spec's position in the wave plan, and continues through the queue itself. Each spec is self-contained for the actual implementation; this README provides ordering context only.
 ```
 
 The brief and the README serve different audiences: the brief is for *feature reviewers* (vision, scope, decomposition decisions); the README is for *implementers* (what to run next, what depends on what).
@@ -272,4 +272,4 @@ Next:
 ```
 Run /clear first.
 
-That one command runs the whole queue — fresh-context subagent per spec, wrap-up and commit after each, session-end once at the end. To drive one spec at a time instead: `/joycraft-implement docs/features/<slug>/specs/<first-spec>.md` (it wraps up and continues through the queue itself).
+That one command runs the whole queue — wrap-up and commit after each spec, parallel subagents only for waves marked parallel-safe, session-end once at the end. To drive one spec at a time instead: `/joycraft-implement docs/features/<slug>/specs/<first-spec>.md` (it wraps up and continues through the queue itself).

@@ -280,6 +280,67 @@ describe('init leaves project toolchain gates clean', () => {
     }
   });
 
+  it('claude-only install keeps the classic full CLAUDE.md (no pointer)', async () => {
+    const dir = createTmpDir();
+    try {
+      await initWithAnswers(dir, 'claude', 'shared');
+      const claude = readFileSync(join(dir, 'CLAUDE.md'), 'utf-8');
+      expect(claude).toContain('## Behavioral Boundaries');
+      expect(claude).toContain('## Getting Started with Joycraft');
+      expect(claude).not.toContain('@AGENTS.md');
+    } finally {
+      cleanup(dir);
+    }
+  });
+
+  it('multi-tool install writes an @AGENTS.md pointer CLAUDE.md and a full shared AGENTS.md', async () => {
+    const dir = createTmpDir();
+    try {
+      await initWithAnswers(dir, 'claude,codex', 'shared');
+      // CLAUDE.md is Anthropic's documented import-pointer pattern.
+      const claude = readFileSync(join(dir, 'CLAUDE.md'), 'utf-8');
+      expect(claude).toContain('@AGENTS.md');
+      expect(claude).toContain('## Claude Code');
+      expect(claude).not.toContain('## Behavioral Boundaries');
+      // AGENTS.md is the single shared doc: everything CLAUDE.md used to
+      // carry, plus the Codex-heritage API safety rules and a per-tool
+      // invocation note.
+      const agents = readFileSync(join(dir, 'AGENTS.md'), 'utf-8');
+      expect(agents).toContain('## Behavioral Boundaries');
+      expect(agents).toContain('## Development Workflow');
+      expect(agents).toContain('## Context Map');
+      expect(agents).toContain('## Getting Started with Joycraft');
+      expect(agents).toContain('### External API Safety');
+      expect(agents).toContain('$joycraft-*');
+    } finally {
+      cleanup(dir);
+    }
+  });
+
+  it('codex-only install also gets the pointer CLAUDE.md (AGENTS.md is the native file)', async () => {
+    const dir = createTmpDir();
+    try {
+      await initWithAnswers(dir, 'codex', 'shared');
+      expect(readFileSync(join(dir, 'CLAUDE.md'), 'utf-8')).toContain('@AGENTS.md');
+      expect(readFileSync(join(dir, 'AGENTS.md'), 'utf-8')).toContain('## Behavioral Boundaries');
+    } finally {
+      cleanup(dir);
+    }
+  });
+
+  it('multi-tool init never touches an existing AGENTS.md or CLAUDE.md', async () => {
+    const dir = createTmpDir();
+    try {
+      writeFileSync(join(dir, 'AGENTS.md'), '# Mine\n');
+      writeFileSync(join(dir, 'CLAUDE.md'), '# Also mine\n');
+      await initWithAnswers(dir, 'claude,codex', 'shared');
+      expect(readFileSync(join(dir, 'AGENTS.md'), 'utf-8')).toBe('# Mine\n');
+      expect(readFileSync(join(dir, 'CLAUDE.md'), 'utf-8')).toBe('# Also mine\n');
+    } finally {
+      cleanup(dir);
+    }
+  });
+
   it('excludes .pi from tsconfig when Pi is installed (real Next-style include glob)', async () => {
     const dir = createTmpDir();
     try {

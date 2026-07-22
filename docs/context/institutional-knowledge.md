@@ -1,3 +1,8 @@
+---
+last_updated: 2026-07-20
+last_updated_by: Maximilian Maksutovic
+---
+
 # Institutional Knowledge
 
 > Unwritten rules and context that AI agents can't derive from code.
@@ -9,6 +14,7 @@
 - Feature briefs go in `docs/briefs/` with the same date prefix pattern
 - Skills are namespaced `joycraft-*` to avoid collisions with other plugins
 - Discoveries are logged in `docs/discoveries/` — capture surprises, not routine work
+- Editing a PR body: `gh pr edit` fails in this repo (GraphQL Projects-classic deprecation error, edit silently not applied). Use `gh api repos/<owner>/<repo>/pulls/<N> -X PATCH -F body=@<file>` and verify with `gh pr view <N> --json body`
 
 ## Organizational Constraints
 
