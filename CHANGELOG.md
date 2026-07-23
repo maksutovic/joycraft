@@ -7,6 +7,65 @@ in a before → now → side-effects format, newest first.
 
 ---
 
+## 0.7.1 — Pilot Ring Graduates (2026-07-23)
+
+0.7.0 split the release into a product ring (shipped) and a pilot ring (Joycraft's
+own repo only). 0.7.1 graduates the entire pilot ring into the npm package — the
+pilot needs real external projects to iterate against, and the only way to learn
+what helps is to ship it.
+
+**Now shipped (previously pilot-only):**
+
+- **Two new skills.** `joycraft-decide` — the deposition checkpoint at the design
+  bookend: open questions become a decision dossier, the human answers
+  forced-choice questions with typed rationale, and every decision terminates
+  clarified / backlogged / discarded. `joycraft-harden` — converts eligible
+  prose boundaries into machine-checked deny patterns with your approval on an
+  exact diff, stamping provenance + a probation marker.
+- **Retrieve before you reason.** Research, design, and decompose open with a
+  bounded grep pass (3–6 terms, ≤5 files) over your knowledge layer and must
+  cite what they reused ("Prior knowledge reused: …") or state that nothing
+  relevant exists. Contradictions between a brief and a recorded decision are
+  surfaced, never silently resolved.
+- **Decision gate + provenance-cited specs.** Decompose refuses to run while a
+  brief has an unresolved `status: open` decision, and every constraint /
+  acceptance criterion in a generated spec carries a cite (`[src: D3]`,
+  `[src: design §2]`, `[src: brief "Scope"]`) or is stopped at the INVENTED
+  review gate before any spec file is written.
+- **Confidence anchors.** Design and new-feature self-score load-bearing claims
+  against a fixed anchor set (0/25/50/75/100); decide audits the scores and
+  blocks any load-bearing claim at ≤50 from propagating. The anchor definitions
+  ship as `docs/templates/context/anchors.md` — skills seed
+  `docs/context/anchors.md` from it on first use.
+- **`joycraft-optimize` v2 + the Reaper.** The overhead audit became a semantic
+  self-audit: every control gets one of six dispositions (KEEP / ONE_HOME /
+  LOAD_LATER / MAKE_A_CHECK / PROBATION / RETIRE) with an honest evidence
+  label, advisory only. Its Reaper pass is the single place feature folders
+  die: shipped folders are deleted only after `gh` confirms the PR merged
+  (ledger row + reap marker + merge = three legs), undead drafts are
+  archive-moved to `docs/archive/features/`, never deleted — all per-run
+  human-approved.
+- **Verifier oracle widening.** `joycraft-verify` now gathers the brief's Hard
+  Constraints, its stamped `decisions:`, and your project boundaries alongside
+  the spec, and reports spec-vs-brief drift as a distinct finding instead of
+  rubber-stamping the spec as the oracle.
+- **One home per fact.** Add-fact runs an overlap grep before writing;
+  time-ordered docs (decision log, shipped ledger) are newest-first,
+  prepend-only, with a 200-line budget and a rotation procedure — shipped as
+  `docs/templates/reference/knowledge-lifecycle.md`.
+- **Full `entry:` taxonomy.** Every skill now declares
+  `entry: human | agent | situational`; internal skills carry terse
+  "invoked by X" descriptions so they stop being auto-invoked by accident.
+- **Referenced docs now actually ship.** `docs/templates/reference/spec-status-lifecycle.md`
+  (referenced by shipped skills since 0.7.0) and
+  `docs/templates/DECISION_DOSSIER_TEMPLATE.html` (decide's locked dossier
+  skeleton) are in the package.
+
+*Side effects:* upgrade adds the two new skills and four new template files;
+skills you customized prompt before overwrite as usual. The graduated gates are
+new behavior — decompose blocking on open decisions and the INVENTED review are
+the two you'll feel first.
+
 ## 0.7.0 — The Living Harness (2026-07-21)
 
 0.6 made the workflow excellent at writing things down. 0.7 makes the harness

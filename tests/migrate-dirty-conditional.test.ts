@@ -32,10 +32,10 @@ describe('migrate-dirty-conditional: canonical files exist', () => {
     });
   }
 
-  it('src/skills/ contains exactly 20 canonical files after this spec', () => {
+  it('src/skills/ contains exactly 22 canonical files (20 + graduated decide/harden)', () => {
     const { readdirSync } = require('node:fs');
     const files = readdirSync(CANONICAL_DIR).filter((f: string) => f.endsWith('.md'));
-    expect(files.length).toBe(20);
+    expect(files.length).toBe(22);
   });
 });
 

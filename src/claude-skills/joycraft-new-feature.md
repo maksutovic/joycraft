@@ -1,5 +1,6 @@
 ---
 name: joycraft-new-feature
+entry: human
 description: Guided feature development — interview the user, produce a Feature Brief, then decompose into atomic specs
 instructions: 35
 ---
@@ -86,6 +87,8 @@ feature: <slug>
 
 If the brief was formalized from an existing draft, parse the existing draft's frontmatter and update `status:` from `draft` to `active`. Never silently overwrite — if the draft already has body content, preserve it and append/refine rather than replacing.
 
+**Self-score load-bearing claims.** Every **load-bearing** claim in the brief — one where downstream work would need to change if the claim turned out false, per `docs/context/anchors.md`'s definition — gets a discrete confidence anchor written inline as `(anchor: N)`, where `N` is one of `{0, 25, 50, 75, 100}` from `docs/context/anchors.md`. Self-score against that file's anchor meanings; never write a free-form numeric estimate outside that set, and never restate the anchor definitions here — `docs/context/anchors.md` is the one home for them. Descriptive color (background, motivation, "why this matters") is not load-bearing and does not get scored. If `docs/context/anchors.md` is missing (the knowledge-substrate spec hasn't run yet), seed it from `docs/templates/context/anchors.md` — or if that template is absent too, say so loudly and skip scoring. Never invent anchor definitions inline.
+
 Use this structure for the body:
 
 ```markdown
@@ -146,14 +149,15 @@ For each row in the decomposition table, create a self-contained spec file at `d
 
 **Why:** Each spec must be understandable WITHOUT reading the Feature Brief. This prevents the "Curse of Instructions" — no spec should require holding the entire feature in context. Copy relevant context into each spec.
 
-Each spec file MUST start with YAML frontmatter — the 4-field personal schema:
+Each spec file MUST start with YAML frontmatter — the 5-field spec schema (`status: todo`, not `active` — specs use the queue lifecycle `todo → in-review → done`, see `docs/reference/spec-status-lifecycle.md`):
 
 ```yaml
 ---
-status: active
+status: todo
 owner: <resolved name>
 created: YYYY-MM-DD
 feature: <slug>
+mode: checkpoint
 ---
 ```
 
@@ -164,6 +168,14 @@ If `docs/backlog/` items surface during the interview as "deferred work" candida
 Use this structure for each spec body:
 
 ```markdown
+---
+status: todo
+owner: <resolved name>
+created: YYYY-MM-DD
+feature: <slug>
+mode: checkpoint
+---
+
 # [Verb + Object] — Atomic Spec
 
 > **Parent Brief:** `docs/features/<slug>/brief.md`
@@ -277,6 +289,10 @@ To execute: Start a fresh session per spec. Each session should:
 
 Ready to start?
 ```
+
+Before the Handoff block, run the deposition checkpoint: invoke `/joycraft-decide <brief path>`
+so every open question in the brief terminates (clarified / backlogged / discarded) —
+the decompose gate stays closed while any decision is `open`.
 
 End with the canonical Handoff block. Include any backlog paths produced as a side effect.
 

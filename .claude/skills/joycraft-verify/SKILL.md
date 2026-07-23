@@ -28,16 +28,15 @@ Read the spec file and extract:
 3. **Test Plan** -- the table under the `## Test Plan` section, including any test commands
 4. **Constraints** -- the `## Constraints` section if present
 
-<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-provenance-gate.md (S1) -->
 ### Step 2.5: Gather Oracle Inputs Beyond the Spec (PROTOCOL)
 
 The spec alone is not the oracle — a spec can silently drift from the brief it was decomposed from, and a verifier that only reads the spec would rubber-stamp that drift. Before spawning the verifier subagent, also gather:
 
 1. **The parent brief's Hard Constraints** -- read `docs/features/<slug>/brief.md` (linked from the spec's `> **Parent Brief:**` line) and extract its Hard Constraints / non-negotiables section.
 2. **The brief's `decisions:` frontmatter block** -- the stamped decisions (id, question, status, choice, rationale) that constrained this feature.
-3. **AGENTS.md boundaries** -- the project's ALWAYS / ASK FIRST / NEVER boundaries (or `CLAUDE.md` if `AGENTS.md` doesn't exist).
+3. **CLAUDE.md boundaries** -- the project's ALWAYS / ASK FIRST / NEVER boundaries.
 
-If no parent brief exists (a standalone spec), skip items 1-2 and note "standalone spec, no brief oracle" — AGENTS.md boundaries still apply. Missing `decisions:` frontmatter (legacy brief) is not an error — proceed without it.
+If no parent brief exists (a standalone spec), skip items 1-2 and note "standalone spec, no brief oracle" — CLAUDE.md boundaries still apply. Missing `decisions:` frontmatter (legacy brief) is not an error — proceed without it.
 
 If the spec has no Acceptance Criteria section, tell the user:
 
@@ -91,11 +90,11 @@ BRIEF HARD CONSTRAINTS:
 BRIEF DECISIONS (decisions: frontmatter):
 [BRIEF_DECISIONS_OR_NONE]
 
-AGENTS.MD BOUNDARIES:
-[AGENTS_MD_BOUNDARIES]
+PROJECT BOUNDARIES (CLAUDE.md):
+[PROJECT_BOUNDARIES]
 
 YOUR TASK:
-Your oracle is the brief's Hard Constraints + decisions + AGENTS.md boundaries, not the spec in isolation — the spec is one implementer's translation of that oracle, and it can drift. For each acceptance criterion, determine if it PASSES or FAILS based on evidence:
+Your oracle is the brief's Hard Constraints + decisions + project boundaries, not the spec in isolation — the spec is one implementer's translation of that oracle, and it can drift. For each acceptance criterion, determine if it PASSES or FAILS based on evidence:
 
 1. Run the test commands listed above. Record the output.
 2. For each acceptance criterion:
@@ -103,7 +102,7 @@ Your oracle is the brief's Hard Constraints + decisions + AGENTS.md boundaries, 
    b. If no test exists, read the relevant source files to verify the criterion is met
    c. If the criterion cannot be verified by reading code or running tests, mark it MANUAL CHECK NEEDED
 3. For criteria about build/test passing, actually run the commands and report results.
-4. Separately, compare the SPEC (its Constraints and Acceptance Criteria) against the BRIEF HARD CONSTRAINTS, BRIEF DECISIONS, and AGENTS.MD BOUNDARIES above. If the spec contradicts, narrows, or omits something the brief/decisions/boundaries required, that is spec-vs-brief drift — report it as a FINDING, not folded silently into a criterion's pass/fail. A finding here is about the *spec*, not the implementation: don't auto-fail the implementation for a drift that originated upstream in the spec.
+4. Separately, compare the SPEC (its Constraints and Acceptance Criteria) against the BRIEF HARD CONSTRAINTS, BRIEF DECISIONS, and PROJECT BOUNDARIES above. If the spec contradicts, narrows, or omits something the brief/decisions/boundaries required, that is spec-vs-brief drift — report it as a FINDING, not folded silently into a criterion's pass/fail. A finding here is about the *spec*, not the implementation: don't auto-fail the implementation for a drift that originated upstream in the spec.
 
 OUTPUT FORMAT -- you MUST use this exact format:
 

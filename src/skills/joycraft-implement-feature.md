@@ -1,6 +1,9 @@
 ---
 name: joycraft-implement-feature
 <!-- harness:claude -->
+entry: human
+<!-- /harness -->
+<!-- harness:claude -->
 description: Run a feature's entire spec queue from one invocation — specs run inline in this conversation; parallel subagents only for waves marked parallel-safe; fail-fast, session-end once at the end
 instructions: 24
 <!-- /harness -->

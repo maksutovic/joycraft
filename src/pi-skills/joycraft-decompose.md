@@ -7,6 +7,23 @@ description: Break a feature brief into atomic specs — small, testable, indepe
 
 You have a Feature Brief (or the user has described a feature). Your job is to decompose it into atomic specs that can be executed independently — one spec per session.
 
+## Step 0: Retrieve Before You Reason (PROTOCOL)
+
+Before identifying spec boundaries or writing any spec file, run a bounded grep-first retrieval pass over the durable knowledge layer. This is not optional and it is not open-ended — it is a capped lookup, not a reading assignment.
+
+1. Derive **3-6 search terms** from the brief's (or inline description's) nouns and verbs — the feature's key concepts, not generic words.
+2. Grep the knowledge layer for those terms, in priority order:
+   - `docs/context/decision-log.md` (why past choices were made)
+   - `docs/context/shipped.md` (what/where already exists)
+   - `docs/discoveries/` (negative knowledge — things that didn't work)
+   - remaining `docs/context/*.md` files
+3. Read **at most 5 files/rows** total — the matches, not the surrounding context. If a grep term returns dozens of hits, read only the newest matches within the cap and say the result was truncated.
+4. If the knowledge layer is empty or missing (fresh project), report "nothing to retrieve" in one line and proceed — never block.
+
+**Output contract:** when presenting the decomposition table (Step 4), include a **"Prior knowledge reused"** list — each entry citing doc + row date/heading — or the explicit line "retrieval ran (terms: …), nothing relevant found." Silently skipping this is not compliant.
+
+**Contradictions:** if a retrieved decision contradicts the direction implied by the brief, surface it explicitly to the human before building the decomposition table — do not silently pick a side or omit the conflict.
+
 ## Step 1: Verify the Brief Exists
 
 Look for a Feature Brief at `docs/features/<slug>/brief.md`. If the user provided a brief path as an argument, use that. Otherwise, scan `docs/features/*/brief.md`.
@@ -18,6 +35,19 @@ If no brief exists, tell the user:
 > No feature brief found. Run `/skill:joycraft-new-feature` first to interview and create one, or describe the feature now and I'll work from your description.
 
 If the user describes the feature inline, work from that description directly. You don't need a formal brief to decompose — but recommend creating one for complex features.
+
+## Step 1.5: Decision Gate
+
+Before decomposing a brief file, parse its YAML frontmatter `decisions:` list. Frontmatter is the gate's **single source** — do not scan the body for open questions.
+
+- **No `decisions:` block** → pass; legacy briefs keep working.
+- **Frontmatter fails to parse** → fail **closed**: report the parse error, point at the brief file, and stop. Never decompose over a brief whose decision state is unreadable.
+- **Any entry with `status: open`** → refuse to decompose. Name only the open decisions (id + question) and stop:
+
+  > [N] open decision(s) gate this brief: [D2 — <question>, …]. Run `/skill:joycraft-decide <brief path>` to terminate them (clarified / backlogged / discarded), or explicitly defer specific ones ("backlog D2 — <reason>").
+
+- **Explicit defer** — the user says backlog it / skip for now / don't worry: set each named decision to `status: backlogged` with their one-line reason in the brief's frontmatter, add it to the feature's `docs/backlog/` entry (create one if needed), then re-evaluate the gate. Proceed only when zero decisions remain `open`, confirming in one line what was backlogged and where it was recorded (visible residue, never a silent edit).
+- `backlogged` and `discarded` never block — only `open` blocks.
 
 ## Step 2: Identify Natural Boundaries
 
@@ -50,12 +80,34 @@ For each atomic spec, define:
 
 ## Step 4: Present and Iterate
 
+Before the decomposition table, show the **"Prior knowledge reused"** list from Step 0's retrieval pass (or the explicit nothing-found line).
+
 Show the decomposition table to the user. Ask:
 1. "Does this breakdown match how you think about this feature?"
 2. "Are there any specs that feel too big or too small?"
 3. "Should any of these run in parallel (separate worktrees)?"
 
 Iterate until the user approves.
+
+### Step 4.5: INVENTED Review Gate (PROTOCOL)
+
+Every Constraint and Acceptance Criterion you are about to write into a spec (Step 5) needs a traceable source. Before generating any spec file, walk the constraints/ACs you intend to write for each row and classify each one's cite:
+
+- `[src: D<n>]` — traces to a stamped decision in the brief's `decisions:` frontmatter
+- `[src: design §<n>]` — traces to a numbered section of `docs/features/<slug>/design.md`
+- `[src: brief "<section>"]` — traces to a named section of the brief (or the inline description)
+- `[src: INVENTED]` — you could not trace it to any of the above; it's a premise you introduced
+
+List every `INVENTED` item in the table presentation, grouped by which spec row it belongs to. This review happens here, in the table, **before any spec file is written** — reviewing 10 generated files instead of one table is exactly the unreviewed-premise failure this gate exists to kill.
+
+For each `INVENTED` item, ask the human to pick one:
+1. **Approve** — the premise is correct and should be locked in. Append it to the brief's `decisions:` frontmatter block as a new entry (`id: D<next>`, `status: clarified`, the constraint's own text as `choice`, and a one-line `rationale`). Re-cite the constraint `[src: D<new-id>]`.
+2. **Reword to a traceable source** — the human points you at where it actually comes from (a brief section, a design section, an existing decision). Re-cite accordingly.
+3. **Drop** — remove the constraint/AC entirely from the spec you're about to generate.
+
+Do not proceed to Step 5 for a row that still has an unresolved `INVENTED` item. Decompose never self-approves an invented premise — this is a human-gated checkpoint on every pass, not a suggestion.
+
+If every constraint/AC in the decomposition traced cleanly with no `INVENTED` items, say so explicitly in the table presentation: **"All constraints traced — zero INVENTED."** Earned silence, not the absence of the check.
 
 ## Execution Modes (assign a mode per spec)
 
@@ -184,6 +236,8 @@ Strategy, data flow, key decisions. Name one rejected alternative.
 If `docs/templates/ATOMIC_SPEC_TEMPLATE.md` exists, reference it for the full template with additional guidance.
 
 Fill in all sections — each spec must be self-contained (no "see the brief for context"). Copy relevant constraints from the Feature Brief into each spec. Write acceptance criteria specific to THIS spec, not the whole feature. Every acceptance criterion must have at least one corresponding test in the Test Plan. If the user provided test strategy info from the interview, use it to choose test types and frameworks. Include the test harness verification rules in every Test Plan.
+
+**Cite every Constraints and Acceptance Criteria line (PROTOCOL).** Each line you write under `## Constraints` and `## Acceptance Criteria` carries a trailing `[src: …]` cite, resolved during Step 4.5's INVENTED review — one of exactly four forms: `[src: D<n>]`, `[src: design §<n>]`, `[src: brief "<section>"]`, `[src: INVENTED]` (only for items the human explicitly chose to leave as INVENTED, which should not happen given Step 4.5 resolves them first — this vocabulary extends the existing `decisions:` frontmatter gate, it is not a parallel provenance scheme). If a constraint traces to multiple sources, cite the most specific: `D<n>` over `design §<n>` over `brief "<section>"`. This cite requirement is scoped to Constraints and Acceptance Criteria only — the `## Approach` and `## Edge Cases` sections stay judgment prose, uncited; the cite load lands exactly where variance is born.
 
 ### Step 5a: Write the Spec Queue Manifest
 

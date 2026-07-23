@@ -39,9 +39,9 @@ describe('joycraft-session-end graduation path (ledger + reap marker)', () => {
     expect(c).toMatch(/never delete/);
   });
 
-  it('carries the PILOT divergence marker', () => {
+  it('graduated: carries no PILOT divergence marker', () => {
     const c = content();
-    expect(c).toMatch(/<!--\s*PILOT:/);
+    expect(c).not.toMatch(/<!--\s*PILOT:/);
   });
 
   it('references the overlap check before creating a new discovery/context file or row', () => {
@@ -75,9 +75,9 @@ describe('joycraft-add-fact overlap check + rotation reference', () => {
     expect(c).toMatch(/knowledge-lifecycle\.md/);
   });
 
-  it('carries the PILOT divergence marker', () => {
+  it('graduated: carries no PILOT divergence marker', () => {
     const c = content();
-    expect(c).toMatch(/<!--\s*PILOT:/);
+    expect(c).not.toMatch(/<!--\s*PILOT:/);
   });
 });
 

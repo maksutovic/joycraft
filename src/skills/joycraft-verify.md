@@ -1,6 +1,9 @@
 ---
 name: joycraft-verify
-description: Spawn an independent verifier subagent to check an implementation against its spec -- read-only, no code edits, structured pass/fail verdict
+<!-- harness:claude -->
+entry: agent
+<!-- /harness -->
+description: Invoked by session-end or the human directly — spawn an independent verifier subagent to check an implementation against its spec, read-only
 instructions: 30
 ---
 
@@ -27,6 +30,16 @@ Read the spec file and extract:
 2. **Acceptance Criteria** -- the checklist under the `## Acceptance Criteria` section
 3. **Test Plan** -- the table under the `## Test Plan` section, including any test commands
 4. **Constraints** -- the `## Constraints` section if present
+
+### Step 2.5: Gather Oracle Inputs Beyond the Spec (PROTOCOL)
+
+The spec alone is not the oracle — a spec can silently drift from the brief it was decomposed from, and a verifier that only reads the spec would rubber-stamp that drift. Before spawning the verifier subagent, also gather:
+
+1. **The parent brief's Hard Constraints** -- read `docs/features/<slug>/brief.md` (linked from the spec's `> **Parent Brief:**` line) and extract its Hard Constraints / non-negotiables section.
+2. **The brief's `decisions:` frontmatter block** -- the stamped decisions (id, question, status, choice, rationale) that constrained this feature.
+3. **{{boundary_file}} boundaries** -- the project's ALWAYS / ASK FIRST / NEVER boundaries.
+
+If no parent brief exists (a standalone spec), skip items 1-2 and note "standalone spec, no brief oracle" — {{boundary_file}} boundaries still apply. Missing `decisions:` frontmatter (legacy brief) is not an error — proceed without it.
 
 If the spec has no Acceptance Criteria section, tell the user:
 
@@ -74,8 +87,17 @@ TEST PLAN:
 CONSTRAINTS:
 [CONSTRAINTS_OR_NONE]
 
+BRIEF HARD CONSTRAINTS:
+[BRIEF_HARD_CONSTRAINTS_OR_STANDALONE]
+
+BRIEF DECISIONS (decisions: frontmatter):
+[BRIEF_DECISIONS_OR_NONE]
+
+PROJECT BOUNDARIES ({{boundary_file}}):
+[PROJECT_BOUNDARIES]
+
 YOUR TASK:
-For each acceptance criterion, determine if it PASSES or FAILS based on evidence:
+Your oracle is the brief's Hard Constraints + decisions + project boundaries, not the spec in isolation — the spec is one implementer's translation of that oracle, and it can drift. For each acceptance criterion, determine if it PASSES or FAILS based on evidence:
 
 1. Run the test commands listed above. Record the output.
 2. For each acceptance criterion:
@@ -83,6 +105,7 @@ For each acceptance criterion, determine if it PASSES or FAILS based on evidence
    b. If no test exists, read the relevant source files to verify the criterion is met
    c. If the criterion cannot be verified by reading code or running tests, mark it MANUAL CHECK NEEDED
 3. For criteria about build/test passing, actually run the commands and report results.
+4. Separately, compare the SPEC (its Constraints and Acceptance Criteria) against the BRIEF HARD CONSTRAINTS, BRIEF DECISIONS, and PROJECT BOUNDARIES above. If the spec contradicts, narrows, or omits something the brief/decisions/boundaries required, that is spec-vs-brief drift — report it as a FINDING, not folded silently into a criterion's pass/fail. A finding here is about the *spec*, not the implementation: don't auto-fail the implementation for a drift that originated upstream in the spec.
 
 OUTPUT FORMAT -- you MUST use this exact format:
 
@@ -93,6 +116,9 @@ VERIFICATION REPORT
 | 1 | [criterion text] | PASS/FAIL/MANUAL CHECK NEEDED | [what you observed] |
 | 2 | [criterion text] | PASS/FAIL/MANUAL CHECK NEEDED | [what you observed] |
 [continue for all criteria]
+
+FINDINGS (spec-vs-brief drift, if any):
+- [finding text, or "none found"]
 
 SUMMARY: X/Y criteria passed. [Z failures need attention. / All criteria verified.]
 
@@ -111,6 +137,8 @@ Take the subagent's response and present it to the user in this format:
 | 1 | ... | PASS | ... |
 | 2 | ... | FAIL | ... |
 
+**Findings (spec-vs-brief drift):** [list, or "none found"]
+
 **Overall: X/Y criteria passed.**
 
 [If all passed:]
@@ -121,6 +149,9 @@ N failures need attention. Review the evidence above and fix before proceeding.
 
 [If any MANUAL CHECK NEEDED:]
 N criteria need manual verification -- they can't be checked by reading code or running tests alone.
+
+[If any drift findings:]
+Spec-vs-brief drift found -- this is a finding against the spec, not the implementation. Review before the spec is trusted as the oracle for future verification passes.
 ```
 
 ## Step 6: Suggest Next Steps
@@ -164,6 +195,16 @@ Read the spec file and extract:
 2. **Acceptance Criteria** -- the checklist under the `## Acceptance Criteria` section
 3. **Test Plan** -- the table under the `## Test Plan` section, including any test commands
 4. **Constraints** -- the `## Constraints` section if present
+
+### Step 2.5: Gather Oracle Inputs Beyond the Spec (PROTOCOL)
+
+The spec alone is not the oracle — a spec can silently drift from the brief it was decomposed from, and a verifier that only reads the spec would rubber-stamp that drift. Before spawning the verifier subagent, also gather:
+
+1. **The parent brief's Hard Constraints** -- read `docs/features/<slug>/brief.md` (linked from the spec's `> **Parent Brief:**` line) and extract its Hard Constraints / non-negotiables section.
+2. **The brief's `decisions:` frontmatter block** -- the stamped decisions (id, question, status, choice, rationale) that constrained this feature.
+3. **{{boundary_file}} boundaries** -- the project's ALWAYS / ASK FIRST / NEVER boundaries.
+
+If no parent brief exists (a standalone spec), skip items 1-2 and note "standalone spec, no brief oracle" — {{boundary_file}} boundaries still apply. Missing `decisions:` frontmatter (legacy brief) is not an error — proceed without it.
 
 If the spec has no Acceptance Criteria section, tell the user:
 
@@ -213,8 +254,17 @@ TEST PLAN:
 CONSTRAINTS:
 [CONSTRAINTS_OR_NONE]
 
+BRIEF HARD CONSTRAINTS:
+[BRIEF_HARD_CONSTRAINTS_OR_STANDALONE]
+
+BRIEF DECISIONS (decisions: frontmatter):
+[BRIEF_DECISIONS_OR_NONE]
+
+PROJECT BOUNDARIES ({{boundary_file}}):
+[PROJECT_BOUNDARIES]
+
 YOUR TASK:
-For each acceptance criterion, determine if it PASSES or FAILS based on evidence:
+Your oracle is the brief's Hard Constraints + decisions + project boundaries, not the spec in isolation — the spec is one implementer's translation of that oracle, and it can drift. For each acceptance criterion, determine if it PASSES or FAILS based on evidence:
 
 1. Run the test commands listed above. Record the output.
 2. For each acceptance criterion:
@@ -222,6 +272,7 @@ For each acceptance criterion, determine if it PASSES or FAILS based on evidence
    b. If no test exists, read the relevant source files to verify the criterion is met
    c. If the criterion cannot be verified by reading code or running tests, mark it MANUAL CHECK NEEDED
 3. For criteria about build/test passing, actually run the commands and report results.
+4. Separately, compare the SPEC (its Constraints and Acceptance Criteria) against the BRIEF HARD CONSTRAINTS, BRIEF DECISIONS, and PROJECT BOUNDARIES above. If the spec contradicts, narrows, or omits something the brief/decisions/boundaries required, that is spec-vs-brief drift — report it as a FINDING, not folded silently into a criterion's pass/fail. A finding here is about the *spec*, not the implementation: don't auto-fail the implementation for a drift that originated upstream in the spec.
 
 OUTPUT FORMAT -- you MUST use this exact format:
 
@@ -232,6 +283,9 @@ VERIFICATION REPORT
 | 1 | [criterion text] | PASS/FAIL/MANUAL CHECK NEEDED | [what you observed] |
 | 2 | [criterion text] | PASS/FAIL/MANUAL CHECK NEEDED | [what you observed] |
 [continue for all criteria]
+
+FINDINGS (spec-vs-brief drift, if any):
+- [finding text, or "none found"]
 
 SUMMARY: X/Y criteria passed. [Z failures need attention. / All criteria verified.]
 
@@ -250,6 +304,8 @@ Take the subagent's response and present it to the user in this format:
 | 1 | ... | PASS | ... |
 | 2 | ... | FAIL | ... |
 
+**Findings (spec-vs-brief drift):** [list, or "none found"]
+
 **Overall: X/Y criteria passed.**
 
 [If all passed:]
@@ -260,6 +316,9 @@ N failures need attention. Review the evidence above and fix before proceeding.
 
 [If any MANUAL CHECK NEEDED:]
 N criteria need manual verification -- they can't be checked by reading code or running tests alone.
+
+[If any drift findings:]
+Spec-vs-brief drift found -- this is a finding against the spec, not the implementation. Review before the spec is trusted as the oracle for future verification passes.
 ```
 
 ## Step 6: Suggest Next Steps
@@ -303,6 +362,16 @@ Read the spec file and extract:
 2. **Acceptance Criteria** -- the checklist under the `## Acceptance Criteria` section
 3. **Test Plan** -- the table under the `## Test Plan` section, including any test commands
 4. **Constraints** -- the `## Constraints` section if present
+
+### Step 2.5: Gather Oracle Inputs Beyond the Spec (PROTOCOL)
+
+The spec alone is not the oracle — a spec can silently drift from the brief it was decomposed from, and a verifier that only reads the spec would rubber-stamp that drift. Before spawning the verifier subagent, also gather:
+
+1. **The parent brief's Hard Constraints** -- read `docs/features/<slug>/brief.md` (linked from the spec's `> **Parent Brief:**` line) and extract its Hard Constraints / non-negotiables section.
+2. **The brief's `decisions:` frontmatter block** -- the stamped decisions (id, question, status, choice, rationale) that constrained this feature.
+3. **{{boundary_file}} boundaries** -- the project's ALWAYS / ASK FIRST / NEVER boundaries.
+
+If no parent brief exists (a standalone spec), skip items 1-2 and note "standalone spec, no brief oracle" — {{boundary_file}} boundaries still apply. Missing `decisions:` frontmatter (legacy brief) is not an error — proceed without it.
 
 If the spec has no Acceptance Criteria section, tell the user:
 
@@ -350,8 +419,17 @@ TEST PLAN:
 CONSTRAINTS:
 [CONSTRAINTS_OR_NONE]
 
+BRIEF HARD CONSTRAINTS:
+[BRIEF_HARD_CONSTRAINTS_OR_STANDALONE]
+
+BRIEF DECISIONS (decisions: frontmatter):
+[BRIEF_DECISIONS_OR_NONE]
+
+PROJECT BOUNDARIES ({{boundary_file}}):
+[PROJECT_BOUNDARIES]
+
 YOUR TASK:
-For each acceptance criterion, determine if it PASSES or FAILS based on evidence:
+Your oracle is the brief's Hard Constraints + decisions + project boundaries, not the spec in isolation — the spec is one implementer's translation of that oracle, and it can drift. For each acceptance criterion, determine if it PASSES or FAILS based on evidence:
 
 1. Run the test commands listed above. Record the output.
 2. For each acceptance criterion:
@@ -359,6 +437,7 @@ For each acceptance criterion, determine if it PASSES or FAILS based on evidence
    b. If no test exists, read the relevant source files to verify the criterion is met
    c. If the criterion cannot be verified by reading code or running tests, mark it MANUAL CHECK NEEDED
 3. For criteria about build/test passing, actually run the commands and report results.
+4. Separately, compare the SPEC (its Constraints and Acceptance Criteria) against the BRIEF HARD CONSTRAINTS, BRIEF DECISIONS, and PROJECT BOUNDARIES above. If the spec contradicts, narrows, or omits something the brief/decisions/boundaries required, that is spec-vs-brief drift — report it as a FINDING, not folded silently into a criterion's pass/fail. A finding here is about the *spec*, not the implementation: don't auto-fail the implementation for a drift that originated upstream in the spec.
 
 OUTPUT FORMAT -- you MUST use this exact format:
 
@@ -369,6 +448,9 @@ VERIFICATION REPORT
 | 1 | [criterion text] | PASS/FAIL/MANUAL CHECK NEEDED | [what you observed] |
 | 2 | [criterion text] | PASS/FAIL/MANUAL CHECK NEEDED | [what you observed] |
 [continue for all criteria]
+
+FINDINGS (spec-vs-brief drift, if any):
+- [finding text, or "none found"]
 
 SUMMARY: X/Y criteria passed. [Z failures need attention. / All criteria verified.]
 
@@ -387,6 +469,8 @@ Take the subagent's response and present it to the user in this format:
 | 1 | ... | PASS | ... |
 | 2 | ... | FAIL | ... |
 
+**Findings (spec-vs-brief drift):** [list, or "none found"]
+
 **Overall: X/Y criteria passed.**
 
 [If all passed:]
@@ -397,6 +481,9 @@ N failures need attention. Review the evidence above and fix before proceeding.
 
 [If any MANUAL CHECK NEEDED:]
 N criteria need manual verification -- they can't be checked by reading code or running tests alone.
+
+[If any drift findings:]
+Spec-vs-brief drift found -- this is a finding against the spec, not the implementation. Review before the spec is trusted as the oracle for future verification passes.
 ```
 
 ## Step 6: Suggest Next Steps

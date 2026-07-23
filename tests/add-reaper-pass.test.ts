@@ -77,8 +77,8 @@ describe('add-reaper-pass: live features excluded', () => {
   });
 });
 
-describe('add-reaper-pass: PILOT marker retained', () => {
-  it('the skill file still carries a PILOT divergence marker', () => {
-    expect(content()).toMatch(/<!--\s*PILOT:/);
+describe('add-reaper-pass: graduated: no PILOT marker', () => {
+  it('the skill file no longer carries a PILOT divergence marker', () => {
+    expect(content()).not.toMatch(/<!--\s*PILOT:/);
   });
 });

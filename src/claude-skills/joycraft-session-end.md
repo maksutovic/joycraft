@@ -98,8 +98,6 @@ Fix any failures before proceeding. **If validation fails, stop — do NOT gradu
 
 ## 2b. Extraction: `done`-Graduation Ledger + Reap Marker
 
-<!-- PILOT: diverges from src/ — see 2026-07-21-living-harness brief -->
-
 This step runs **only when the feature as a whole reaches `done`** (every spec graduated in step 3 below, none left `todo`). It is the extraction half of the shipped-ledger design (D1/D2): the branch's own history is about to be squashed away by the merge, so the ledger row is what survives. This step never deletes the feature folder — that's the Reaper's job alone, and only after a verified merge (`joycraft-optimize`'s Reaper pass).
 
 **PROTOCOL — do these three in order:**

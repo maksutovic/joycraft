@@ -1,5 +1,6 @@
 ---
 name: joycraft-gather-context
+entry: situational
 description: First-run onboarding pass that populates the project context layer -- read what context already exists, then offer a gap-only interview and batch-write the missing fact rows and long-form reference docs
 instructions: 40
 ---

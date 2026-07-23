@@ -1,5 +1,6 @@
 ---
 name: joycraft-interview
+entry: human
 description: Brainstorm freely about what you want to build — yap, explore ideas, and get a structured summary you can use later
 instructions: 18
 ---

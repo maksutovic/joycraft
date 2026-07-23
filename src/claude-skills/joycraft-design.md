@@ -1,5 +1,6 @@
 ---
 name: joycraft-design
+entry: human
 description: Design discussion before decomposition — produce a ~200-line design artifact for human review, catching wrong assumptions before they propagate into specs
 ---
 
@@ -12,6 +13,23 @@ You are producing a design discussion document for a feature. This sits between 
 Then stop.
 
 ---
+
+## Step 0: Retrieve Before You Reason (PROTOCOL)
+
+Before exploring the codebase or writing anything, run a bounded grep-first retrieval pass over the durable knowledge layer. This is not optional and it is not open-ended — it is a capped lookup, not a reading assignment.
+
+1. Derive **3-6 search terms** from the brief's (and research doc's, if present) nouns and verbs — the feature's key concepts, not generic words.
+2. Grep the knowledge layer for those terms, in priority order:
+   - `docs/context/decision-log.md` (why past choices were made)
+   - `docs/context/shipped.md` (what/where already exists)
+   - `docs/discoveries/` (negative knowledge — things that didn't work)
+   - remaining `docs/context/*.md` files
+3. Read **at most 5 files/rows** total — the matches, not the surrounding context. If a grep term returns dozens of hits, read only the newest matches within the cap and say the result was truncated.
+4. If the knowledge layer is empty or missing (fresh project), report "nothing to retrieve" in one line and proceed — never block.
+
+**Output contract:** Section 1 (Current State) of the design document MUST include a **"Prior knowledge reused"** list — each entry citing doc + row date/heading — or the explicit line "retrieval ran (terms: …), nothing relevant found." Silently skipping this is not compliant.
+
+**Contradictions:** if a retrieved decision contradicts the direction implied by the brief, surface it explicitly in Section 5 (Open Questions) for the human to resolve — do not silently pick a side or omit the conflict.
 
 ## Step 1: Read Inputs
 
@@ -53,9 +71,13 @@ The document has exactly five sections:
 
 What exists today in the codebase that is relevant to this feature. Include file paths, function signatures, and data flows. Be specific — reference actual code, not abstractions. If no research doc was provided, note that and describe what you found through direct exploration.
 
+Open this section with the **"Prior knowledge reused"** list from Step 0's retrieval pass (or the explicit nothing-found line).
+
 ### Section 2: Desired End State
 
 What the codebase should look like when this feature is complete. Describe the change at a high level — new files, modified interfaces, new data flows. Do NOT include implementation steps. This is the "what," not the "how."
+
+**Self-score load-bearing claims.** Every **load-bearing** claim in this section — one where downstream work would need to change if the claim turned out false, per `docs/context/anchors.md`'s definition — gets a discrete confidence anchor written inline as `(anchor: N)`, where `N` is one of `{0, 25, 50, 75, 100}` from `docs/context/anchors.md`. Self-score against that file's anchor meanings; never write a free-form numeric estimate outside that set, and never restate the anchor definitions here — `docs/context/anchors.md` is the one home for them. Descriptive color (background, motivation, "why this matters") is not load-bearing and does not get scored. If `docs/context/anchors.md` is missing (the knowledge-substrate spec hasn't run yet), seed it from `docs/templates/context/anchors.md` — or if that template is absent too, say so loudly and skip scoring. Never invent anchor definitions inline.
 
 ### Section 3: Patterns to Follow
 
@@ -91,7 +113,7 @@ After writing the design document, update the parent brief with a back-reference
 3. If a `> **Design:**` line already exists, replace it — do NOT add a duplicate
 4. Write the brief back
 
-## Step 4: Reconcile Brief with Findings
+## Step 3.5: Reconcile Brief with Findings
 
 You've just written `docs/features/<slug>/design.md`. Before hand-off, the parent brief at `docs/features/<slug>/brief.md` may now disagree with what you discovered. Re-read it and check each of these sections:
 
@@ -113,7 +135,7 @@ If you make changes, note them at the bottom of `design.md` under a "Brief updat
 
 **Why this step exists:** the silent-drift gap. Without reconciliation, the brief and downstream artifacts diverge — and later decomposition is sized against the stale brief. This feature ("single-source-skills") hit exactly this: brief said "11 clean / 9 dirty" until the research re-audit forced a re-decomposition. Don't let it happen again.
 
-## Step 5: Present and STOP — Pre-Approval Hold
+## Step 4: Present and STOP — Pre-Approval Hold
 
 Present the design document to the user. Say:
 
@@ -128,7 +150,7 @@ Please review the document above. Specifically:
 Reply with your feedback. I will NOT proceed to decomposition until you have reviewed and approved this design.
 ```
 
-**CRITICAL: Do NOT emit the canonical Handoff block at this point.** The Handoff block emits ONLY after human approval (see "Step 6: Hand Off (Post-Approval Only)" below). The entire value of this skill is the pause — it forces a human checkpoint before mistakes propagate.
+**CRITICAL: Do NOT emit the canonical Handoff block at this point.** The Handoff block emits ONLY after human approval (see "Step 5: Hand Off (Post-Approval Only)" below). The entire value of this skill is the pause — it forces a human checkpoint before mistakes propagate.
 
 ## Offer to Capture Deferred Items to Backlog
 
@@ -149,12 +171,15 @@ source: docs/features/<slug>/brief.md
 
 **Never auto-write to `docs/backlog/`.** Every backlog entry is user-confirmed.
 
-## Step 6: Hand Off (Post-Approval Only)
+## Step 5: Hand Off (Post-Approval Only)
 
 Once the human approves the design:
 - Update the design document with their corrections and chosen options
 - Move answered questions from "Open Questions" to "Resolved Design Decisions"
 - Present the updated document for final confirmation
+- Run the deposition checkpoint: invoke `/joycraft-decide <design path>` so every
+  remaining open question terminates (clarified / backlogged / discarded) — the
+  decompose gate stays closed while any decision is `open`.
 - Once the user gives explicit approval, AND ONLY THEN, emit the canonical Handoff block:
 
 ## Recommended Next Steps

@@ -5,8 +5,6 @@ description: Assess and upgrade your project's AI development harness — score 
 instructions: 17
 ---
 
-<!-- PILOT: declared/verified boundary labels + probation surfacing diverge from src/ — see 2026-07-21-living-harness create-harden-skill spec -->
-
 # Tune — Project Harness Assessment & Upgrade
 
 You are evaluating and upgrading this project's AI development harness.

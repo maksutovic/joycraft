@@ -1,5 +1,6 @@
 ---
 name: joycraft-implement-feature
+entry: human
 description: Run a feature's entire spec queue from one invocation — specs run inline in this conversation; parallel subagents only for waves marked parallel-safe; fail-fast, session-end once at the end
 instructions: 24
 ---

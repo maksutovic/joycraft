@@ -1,5 +1,8 @@
 ---
 name: joycraft-collaborative-setup
+<!-- harness:claude -->
+entry: situational
+<!-- /harness -->
 description: Set up Joycraft for a team — scaffold per-area folders, owner conventions, and a team-facing CONTRIBUTING doc. Run once when adopting Joycraft on a multi-dev project.
 ---
 

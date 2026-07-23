@@ -1,5 +1,8 @@
 ---
 name: joycraft-tune
+<!-- harness:claude -->
+entry: human
+<!-- /harness -->
 description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show a harness maturity roadmap
 instructions: 17
 ---
@@ -29,7 +32,7 @@ Read {{boundary_file}} and explore the project. Score each with specific evidenc
 |-----------|--------------|
 | Spec Quality | `docs/features/<slug>/specs/` (scan recursively; also `docs/bugfixes/<area>/`) — structured? acceptance criteria? self-contained? |
 | Spec Granularity | Can each spec be done in one session? |
-| Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading) |
+| Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading). Label each rule **declared** or **verified**: verified means a matching `permissions.deny` string or `deny-patterns.txt` regex actually exists — the comment's presence alone doesn't earn it. Everything else is declared (prose only). Rules carrying a provenance comment (`<!-- origin: … probation: <model> -->`) whose `probation:` model no longer matches the current model are **probation-due** — surface them as a list; the human decides keep/retest/retire, tune never auto-retires. |
 | Skills & Hooks | `{{skills_dir}}/` files, hooks config |
 | Documentation | `docs/` structure, templates, referenced from {{boundary_file}}. Reward a lean + pointered {{boundary_file}}. **Flag a {{boundary_file}} exceeding ~200 lines** — recommend extracting long sections into `docs/context/reference/` and replacing them with a `## Context Map` pointer table. This is advisory only; tune never auto-edits {{boundary_file}}. |
 | Knowledge Capture | `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs — existence AND real content |
@@ -67,7 +70,7 @@ After applying, append to `docs{{skill_prefix}}history.md` and show a consolidat
 
 Show a tailored roadmap focused on harness maturity, not autonomy. Order the next steps by the project's actual gaps from Step 3:
 
-- **Boundaries with teeth** — ALWAYS/ASK FIRST/NEVER rules present, and the machine-checkable ones backed by deny patterns or hooks rather than prose alone
+- **Boundaries with teeth** — ALWAYS/ASK FIRST/NEVER rules present, and the machine-checkable ones backed by deny patterns or hooks rather than prose alone. Run `{{skill_prefix}}harden` to convert eligible declared rules to verified and stamp provenance; it never auto-applies, and it also surfaces probation-due rules for review.
 - **Lean {{boundary_file}}** — under ~200 lines, with long reference content extracted to `docs/context/reference/` behind a Context Map pointer table
 - **Context docs with real content** — production map, dangerous assumptions, decision log actually populated, not scaffolding
 - **Healthy spec-driven loop** — features flow interview → brief → specs → implement → session-end, with discoveries captured along the way

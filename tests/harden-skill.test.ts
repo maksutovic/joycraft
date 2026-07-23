@@ -41,9 +41,10 @@ describe('joycraft-harden skill exists with entry: agent frontmatter', () => {
 describe('joycraft-harden flow completeness', () => {
   const content = () => read(HARDEN_SKILL);
 
-  it('reads AGENTS.md boundaries + current settings.json permissions.deny + deny-patterns.txt', () => {
+  it('reads boundary-file boundaries + current settings.json permissions.deny + deny-patterns.txt', () => {
     const c = content();
-    expect(c).toContain('AGENTS.md');
+    // Claude-installed variant renders {{boundary_file}} as CLAUDE.md
+    expect(c).toMatch(/CLAUDE\.md|AGENTS\.md/);
     expect(c).toMatch(/permissions\.deny/);
     expect(c).toContain('deny-patterns.txt');
   });
@@ -90,10 +91,10 @@ describe('joycraft-harden constraints', () => {
     expect(c).toContain('deny-patterns.txt');
   });
 
-  it('never touches src/safeguard.ts or adds new hook frameworks', () => {
-    const c = content();
-    expect(c).toContain('src/safeguard.ts');
-    expect(c.toLowerCase()).toMatch(/never edits?|does not (edit|touch)|must not (edit|touch)/);
+  it('never rewrites the hook script or adds new hook frameworks', () => {
+    const c = content().toLowerCase();
+    expect(c).toMatch(/never rewrite the hook script|never the hook script/);
+    expect(c).toMatch(/never a new hook framework|never add a new hook framework/);
   });
 
   it('flags ASK FIRST -> deny conversions as a semantic downgrade', () => {
@@ -102,9 +103,9 @@ describe('joycraft-harden constraints', () => {
     expect(c).toMatch(/downgrade/);
   });
 
-  it('carries the PILOT divergence marker', () => {
+  it('graduated: no PILOT divergence marker remains', () => {
     const c = content();
-    expect(c).toMatch(/<!--\s*PILOT:/);
+    expect(c).not.toMatch(/<!--\s*PILOT:/);
   });
 });
 
@@ -166,8 +167,8 @@ describe('joycraft-tune learns declared vs verified boundary labels', () => {
     expect(c).toContain('/joycraft-harden');
   });
 
-  it('carries the PILOT divergence marker', () => {
+  it('graduated: no PILOT divergence marker remains', () => {
     const c = content();
-    expect(c).toMatch(/<!--\s*PILOT:/);
+    expect(c).not.toMatch(/<!--\s*PILOT:/);
   });
 });

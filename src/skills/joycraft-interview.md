@@ -1,5 +1,8 @@
 ---
 name: joycraft-interview
+<!-- harness:claude -->
+entry: human
+<!-- /harness -->
 description: Brainstorm freely about what you want to build — yap, explore ideas, and get a structured summary you can use later
 instructions: 18
 ---
