@@ -1,6 +1,6 @@
 ---
 name: joycraft-implement-level5
-description: Set up Level 5 autonomous development — autofix loop, holdout scenario testing, and scenario evolution from specs
+description: Invoked by tune's roadmap or the human opting into Level 5 — set up the autofix loop, holdout scenario testing, and scenario evolution from specs
 ---
 
 # Implement Level 5 — Autonomous Development Loop

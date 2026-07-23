@@ -77,10 +77,10 @@ describe('Decompose: cite requirement scoped to Constraints/Acceptance Criteria 
   });
 });
 
-describe('Decompose: PILOT divergence marker present', () => {
-  it('SKILL.md carries a PILOT marker on the provenance-gate edit', () => {
+describe('Decompose: graduated: no PILOT marker', () => {
+  it('SKILL.md carries no PILOT marker (graduated)', () => {
     const c = read(DECOMPOSE_SKILL);
-    expect(c).toMatch(/<!--\s*PILOT:/);
+    expect(c).not.toMatch(/<!--\s*PILOT:/);
   });
 });
 
@@ -95,9 +95,10 @@ describe('Verify: oracle re-pointed to brief + decisions + boundaries', () => {
     expect(c).toMatch(/decisions:/);
   });
 
-  it('SKILL.md references AGENTS.md boundaries as a verifier input', () => {
+  it('SKILL.md references the project boundary file as a verifier input', () => {
     const c = read(VERIFY_SKILL);
-    expect(c).toMatch(/AGENTS\.md/);
+    // Claude-installed variant renders {{boundary_file}} as CLAUDE.md
+    expect(c).toMatch(/CLAUDE\.md|AGENTS\.md/);
   });
 
   it('SKILL.md asks the verifier to flag spec-vs-brief drift as a finding', () => {
@@ -105,8 +106,8 @@ describe('Verify: oracle re-pointed to brief + decisions + boundaries', () => {
     expect(c.toLowerCase()).toMatch(/drift/);
   });
 
-  it('SKILL.md carries a PILOT marker on the oracle re-pointing edit', () => {
+  it('SKILL.md carries no PILOT marker on the oracle edit (graduated)', () => {
     const c = read(VERIFY_SKILL);
-    expect(c).toMatch(/<!--\s*PILOT:/);
+    expect(c).not.toMatch(/<!--\s*PILOT:/);
   });
 });

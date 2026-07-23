@@ -1,7 +1,7 @@
 ---
 name: joycraft-add-context
 entry: agent
-description: Invoked by gather-context or the human after a knowledge gap surfaces — author one long-form reference doc and wire a Context Map pointer
+description: Invoked by gather-context or the human after a knowledge gap surfaces — author one long-form reference doc and wire a pointer into CLAUDE.md's Context Map
 instructions: 34
 ---
 

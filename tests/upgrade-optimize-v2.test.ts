@@ -112,9 +112,9 @@ describe('joycraft-optimize v2: advisory only', () => {
 });
 
 describe('joycraft-optimize v2: PILOT marker', () => {
-  it('carries a PILOT divergence marker (repo-local v2, src/ has v1)', () => {
+  it('carries no PILOT marker (v2 graduated into src/)', () => {
     const c = read(OPTIMIZE_SKILL);
-    expect(c).toMatch(/<!--\s*PILOT:/);
+    expect(c).not.toMatch(/<!--\s*PILOT:/);
   });
 });
 

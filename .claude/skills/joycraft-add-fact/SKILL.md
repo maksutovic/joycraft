@@ -52,8 +52,6 @@ If the fact fits multiple categories, pick the **best fit** based on the primary
 
 ## Step 2b: Overlap Check (PROTOCOL)
 
-<!-- PILOT: diverges from src/ — see 2026-07-21-living-harness brief -->
-
 Before creating any new discovery/context file or row, grep the knowledge layer for an existing home for this fact:
 
 ```bash
@@ -139,7 +137,7 @@ Read the target document to understand its current structure. Note:
 
 Add the fact to the appropriate section of the target document. Match the existing format exactly:
 
-- **Time-ordered table documents** (decision-log): <!-- PILOT: diverges from src/ — see 2026-07-21-living-harness brief --> Prepend the new row directly under the header/separator, newest-first. Never modify or remove existing rows.
+- **Time-ordered table documents** (decision-log): Prepend the new row directly under the header/separator, newest-first. Never modify or remove existing rows.
 - **Other table-based documents** (production-map, dangerous-assumptions, troubleshooting): Add a new table row in the correct columns. Use today's date where a date column exists.
 - **List-based documents** (institutional-knowledge): Add a new list item (`- `) to the most appropriate section.
 

@@ -93,10 +93,10 @@ audits itself:
 artifacts, decompose refusing to run while a brief has an open decision, and
 hardened rules being genuinely blocked at the hook layer — including for you.
 
-Parts of this ship in the npm package today; the rest runs as a marked pilot in
-Joycraft's own repo and graduates once it survives real use — the same
-discipline Joycraft asks of your projects. The full before/now/side-effects
-record is in [CHANGELOG.md](CHANGELOG.md).
+As of **0.7.1 the full pilot ring ships in the npm package** — it piloted in
+Joycraft's own repo first (the same discipline Joycraft asks of your projects)
+and now needs real external projects to iterate against. The full
+before/now/side-effects record is in [CHANGELOG.md](CHANGELOG.md).
 
 ### Upgrading to 0.7
 
@@ -116,12 +116,14 @@ What this does to an existing setup:
 - **Session-end gains the extraction step.** The next time a feature finishes,
   it writes a `docs/context/shipped.md` ledger row and marks the brief
   `reap: eligible` — it never deletes anything.
-- **Four skills gain `entry:` frontmatter** (decompose, implement, spec-done,
-  session-end). Purely additive; invocation is unchanged.
+- **Every skill gains `entry:` frontmatter** (human / agent / situational).
+  Purely additive; invocation is unchanged.
 - **Harness selection is honored.** A Codex-only project stays Codex-only.
-- **Nothing pilots into your repo.** The 0.7 pilot ring (provenance gates,
-  confidence anchors, harden, optimize v2) runs in Joycraft's own repo first;
-  your project gets those pieces in a later release once they graduate.
+- **The pilot ring arrives (0.7.1).** Two new skills (`joycraft-decide`,
+  `joycraft-harden`), the retrieval pass, the decision gate + provenance-cited
+  specs, confidence anchors, and optimize v2 with the Reaper. The gates you'll
+  feel first: decompose blocks on open decisions, and invented spec premises
+  stop at a human review before any spec file is written.
 
 **Or let your agent drive it.** Paste this prompt into Claude Code, Codex, or
 Pi inside your project and it will run the upgrade, show you what changed, and

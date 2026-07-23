@@ -25,8 +25,10 @@ describe('Pi decompose skill handoff', () => {
   });
 
   it('only changes Step 7 (no other section renamed)', () => {
-    const steps = content.match(/^## Step \d+/gm) || [];
-    expect(steps).toHaveLength(7);
+    // 9 step headings since the living-harness graduation added Step 0
+    // (retrieval pass) and Step 1.5 (decision gate).
+    const steps = content.match(/^## Step [\d.]+/gm) || [];
+    expect(steps).toHaveLength(9);
     expect(content).toMatch(/## Step 7: Hand Off/);
   });
 });

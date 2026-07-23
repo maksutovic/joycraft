@@ -87,8 +87,7 @@ feature: <slug>
 
 If the brief was formalized from an existing draft, parse the existing draft's frontmatter and update `status:` from `draft` to `active`. Never silently overwrite — if the draft already has body content, preserve it and append/refine rather than replacing.
 
-<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-confidence-scoring.md (S2, D5) -->
-**Self-score load-bearing claims.** Every **load-bearing** claim in the brief — one where downstream work would need to change if the claim turned out false, per `docs/context/anchors.md`'s definition — gets a discrete confidence anchor written inline as `(anchor: N)`, where `N` is one of `{0, 25, 50, 75, 100}` from `docs/context/anchors.md`. Self-score against that file's anchor meanings; never write a free-form numeric estimate outside that set, and never restate the anchor definitions here — `docs/context/anchors.md` is the one home for them. Descriptive color (background, motivation, "why this matters") is not load-bearing and does not get scored. If `docs/context/anchors.md` is missing (the knowledge-substrate spec hasn't run yet), say so loudly and skip scoring — never invent anchor definitions inline.
+**Self-score load-bearing claims.** Every **load-bearing** claim in the brief — one where downstream work would need to change if the claim turned out false, per `docs/context/anchors.md`'s definition — gets a discrete confidence anchor written inline as `(anchor: N)`, where `N` is one of `{0, 25, 50, 75, 100}` from `docs/context/anchors.md`. Self-score against that file's anchor meanings; never write a free-form numeric estimate outside that set, and never restate the anchor definitions here — `docs/context/anchors.md` is the one home for them. Descriptive color (background, motivation, "why this matters") is not load-bearing and does not get scored. If `docs/context/anchors.md` is missing (the knowledge-substrate spec hasn't run yet), seed it from `docs/templates/context/anchors.md` — or if that template is absent too, say so loudly and skip scoring. Never invent anchor definitions inline.
 
 Use this structure for the body:
 
@@ -291,7 +290,6 @@ To execute: Start a fresh session per spec. Each session should:
 Ready to start?
 ```
 
-<!-- PILOT: diverges from src/ — see 2026-07-20-decision-dossier brief decision #7 -->
 Before the Handoff block, run the deposition checkpoint: invoke `/joycraft-decide <brief path>`
 so every open question in the brief terminates (clarified / backlogged / discarded) —
 the decompose gate stays closed while any decision is `open`.

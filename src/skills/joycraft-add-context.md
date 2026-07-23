@@ -1,6 +1,9 @@
 ---
 name: joycraft-add-context
-description: Author one long-form reference doc -- a design system, frontend/backend methodology, testing conventions, or any other long-form reference doc -- scaffolding it from a template and wiring a pointer into {{boundary_file}}'s Context Map
+<!-- harness:claude -->
+entry: agent
+<!-- /harness -->
+description: Invoked by gather-context or the human after a knowledge gap surfaces — author one long-form reference doc and wire a pointer into {{boundary_file}}'s Context Map
 instructions: 34
 ---
 

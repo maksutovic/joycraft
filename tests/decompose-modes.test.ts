@@ -125,8 +125,10 @@ describe('execution modes in joycraft-decompose', () => {
 
       it(`${label(variant)} does not skip "shipped" (migrated away)`, () => {
         const content = read(variant);
-        // "shipped" must not appear as a skip token in the filter.
-        expect(content).not.toContain('shipped');
+        // "shipped" must not appear as a status/skip token in the filter.
+        // (References to the docs/context/shipped.md ledger are fine — that's
+        // the Step 0 retrieval pass, not the status vocabulary.)
+        expect(content).not.toMatch(/`shipped`|status:\s*shipped|\bshipped\b(?![-.]md| ledger)/);
       });
 
       it(`${label(variant)} treats in-review as live, not skipped`, () => {

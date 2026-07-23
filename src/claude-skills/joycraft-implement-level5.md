@@ -1,6 +1,7 @@
 ---
 name: joycraft-implement-level5
-description: Set up Level 5 autonomous development — autofix loop, holdout scenario testing, and scenario evolution from specs
+entry: agent
+description: Invoked by tune's roadmap or the human opting into Level 5 — set up the autofix loop, holdout scenario testing, and scenario evolution from specs
 instructions: 35
 ---
 

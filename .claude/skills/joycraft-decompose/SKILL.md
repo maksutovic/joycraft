@@ -9,7 +9,6 @@ instructions: 32
 
 You have a Feature Brief (or the user has described a feature). Your job is to decompose it into atomic specs that can be executed independently — one spec per session.
 
-<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-retrieval-pass.md (S3) -->
 ## Step 0: Retrieve Before You Reason (PROTOCOL)
 
 Before identifying spec boundaries or writing any spec file, run a bounded grep-first retrieval pass over the durable knowledge layer. This is not optional and it is not open-ended — it is a capped lookup, not a reading assignment.
@@ -39,7 +38,6 @@ If no brief exists, tell the user:
 
 If the user describes the feature inline, work from that description directly. You don't need a formal brief to decompose — but recommend creating one for complex features.
 
-<!-- PILOT: diverges from src/ — see 2026-07-20-decision-dossier brief decision #7 -->
 ## Step 1.5: Decision Gate
 
 Before decomposing a brief file, parse its YAML frontmatter `decisions:` list. Frontmatter is the gate's **single source** — do not scan the body for open questions.
@@ -93,7 +91,6 @@ Show the decomposition table to the user. Ask:
 
 Iterate until the user approves.
 
-<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-provenance-gate.md (S1) -->
 ### Step 4.5: INVENTED Review Gate (PROTOCOL)
 
 Every Constraint and Acceptance Criterion you are about to write into a spec (Step 5) needs a traceable source. Before generating any spec file, walk the constraints/ACs you intend to write for each row and classify each one's cite:
@@ -242,7 +239,6 @@ If `docs/templates/ATOMIC_SPEC_TEMPLATE.md` exists, reference it for the full te
 
 Fill in all sections — each spec must be self-contained (no "see the brief for context"). Copy relevant constraints from the Feature Brief into each spec. Write acceptance criteria specific to THIS spec, not the whole feature. Every acceptance criterion must have at least one corresponding test in the Test Plan. If the user provided test strategy info from the interview, use it to choose test types and frameworks. Include the test harness verification rules in every Test Plan.
 
-<!-- PILOT: diverges from src/ — see docs/features/2026-07-21-living-harness/specs/add-provenance-gate.md (S1) -->
 **Cite every Constraints and Acceptance Criteria line (PROTOCOL).** Each line you write under `## Constraints` and `## Acceptance Criteria` carries a trailing `[src: …]` cite, resolved during Step 4.5's INVENTED review — one of exactly four forms: `[src: D<n>]`, `[src: design §<n>]`, `[src: brief "<section>"]`, `[src: INVENTED]` (only for items the human explicitly chose to leave as INVENTED, which should not happen given Step 4.5 resolves them first — this vocabulary extends the existing `decisions:` frontmatter gate, it is not a parallel provenance scheme). If a constraint traces to multiple sources, cite the most specific: `D<n>` over `design §<n>` over `brief "<section>"`. This cite requirement is scoped to Constraints and Acceptance Criteria only — the `## Approach` and `## Edge Cases` sections stay judgment prose, uncited; the cite load lands exactly where variance is born.
 
 ### Step 5a: Write the Spec Queue Manifest

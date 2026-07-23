@@ -104,11 +104,11 @@ describe('Retrieval step surfaces contradictions instead of silently overriding'
   }
 });
 
-describe('PILOT divergence marker present on all three edits', () => {
+describe('graduated: no PILOT divergence markers remain', () => {
   for (const [name, path] of SKILLS) {
-    it(`${name} SKILL.md carries a PILOT marker`, () => {
+    it(`${name} SKILL.md carries no PILOT marker (graduated)`, () => {
       const c = read(path);
-      expect(c).toMatch(/<!--\s*PILOT:/);
+      expect(c).not.toMatch(/<!--\s*PILOT:/);
     });
   }
 });

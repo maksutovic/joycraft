@@ -53,7 +53,9 @@ describe('skill status filtering', () => {
     });
 
     it('does not reference the migrated-away word "shipped"', () => {
-      expect(content).not.toContain('shipped');
+      // Status vocabulary only — the docs/context/shipped.md ledger reference
+      // from the Step 0 retrieval pass is fine.
+      expect(content).not.toMatch(/`shipped`|status:\s*shipped|\bshipped\b(?![-.]md| ledger)/);
     });
 
     it('treats in-review as live, not skipped', () => {
