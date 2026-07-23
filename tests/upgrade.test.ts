@@ -491,6 +491,58 @@ describe('upgrade', () => {
       // Summary reflects a skip.
       expect(logs.join('\n')).toContain('skipped');
     });
+
+    it('answering "a" accepts the current file and all remaining without further prompts', async () => {
+      await init(tmpDir, { force: false });
+
+      // Customize two managed files so two prompts would normally fire.
+      const relPaths = [
+        join('.claude', 'skills', 'joycraft-tune', 'SKILL.md'),
+        join('.claude', 'skills', 'joycraft-implement', 'SKILL.md'),
+      ];
+      const state = readVersion(tmpDir)!;
+      for (const relPath of relPaths) {
+        writeFileSync(join(tmpDir, relPath), 'MY HAND-EDITED SKILL', 'utf-8');
+        state.files[relPath] = hashContent('the pristine original bundled content');
+      }
+      writeVersion(tmpDir, '0.0.1', state.files);
+
+      const asked: string[] = [];
+      const origStdoutWrite = process.stdout.write.bind(process.stdout);
+      (process.stdout as { write: unknown }).write = ((chunk: unknown, ...rest: unknown[]) => {
+        if (typeof chunk === 'string' && chunk.includes('overwrite with latest?')) {
+          asked.push(chunk);
+        }
+        return (origStdoutWrite as (...a: unknown[]) => boolean)(chunk, ...rest);
+      }) as typeof process.stdout.write;
+
+      // Stdin yields "a" once; if a second prompt fired it would hang, so the
+      // test completing at all proves acceptAll suppressed further prompts.
+      const { Readable } = await import('node:stream');
+      const fakeStdin = Readable.from(['a\n']) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
+      const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+      Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
+
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => logs.push(args.join(' '));
+      try {
+        await upgrade(tmpDir, { yes: false });
+      } finally {
+        console.log = origLog;
+        (process.stdout as { write: unknown }).write = origStdoutWrite;
+        Object.defineProperty(process, 'stdin', stdinDesc);
+      }
+
+      // Only the first customized file prompted.
+      expect(asked.length).toBe(1);
+      // Both files were overwritten with the latest bundled content.
+      for (const relPath of relPaths) {
+        expect(readFileSync(join(tmpDir, relPath), 'utf-8')).not.toBe('MY HAND-EDITED SKILL');
+      }
+      const allLogs = logs.join('\n');
+      expect(allLogs).not.toContain('skipped');
+    });
   });
 
   describe('forced migration (flat → per-feature)', () => {

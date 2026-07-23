@@ -277,12 +277,17 @@ function ensureScriptExecutable(absolutePath: string): void {
   }
 }
 
-async function askUser(question: string): Promise<boolean> {
+type PromptAnswer = 'yes' | 'no' | 'all';
+
+async function askUser(question: string): Promise<PromptAnswer> {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   return new Promise((resolve) => {
-    rl.question(`${question} [y/N] `, (answer) => {
+    rl.question(`${question} [y/N/a=all] `, (answer) => {
       rl.close();
-      resolve(answer.trim().toLowerCase() === 'y');
+      const normalized = answer.trim().toLowerCase();
+      if (normalized === 'a' || normalized === 'all') resolve('all');
+      else if (normalized === 'y' || normalized === 'yes') resolve('yes');
+      else resolve('no');
     });
   });
 }
@@ -517,6 +522,9 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   let updated = 0;
   let skipped = 0;
   let added = 0;
+  // Answering "a" at any customized-file prompt accepts that file and every
+  // remaining one — same effect as --yes from that point on.
+  let acceptAll = false;
 
   for (const change of changes) {
     if (change.kind === 'new') {
@@ -539,12 +547,15 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
       const diffLabel = diff > 0 ? `+${diff} lines` : diff < 0 ? `${diff} lines` : 'same length';
       const label = `Customized: ${change.relativePath} (local: ${currentLines} lines, latest: ${newLines} lines, ${diffLabel})`;
 
-      if (opts.yes) {
+      if (opts.yes || acceptAll) {
         writeFileSync(change.absolutePath, change.newContent, 'utf-8');
+        ensureScriptExecutable(change.absolutePath);
         updated++;
+        if (acceptAll) console.log(`  ${label} — overwritten (all)`);
       } else {
-        const accept = await askUser(`${label} — overwrite with latest?`);
-        if (accept) {
+        const answer = await askUser(`${label} — overwrite with latest?`);
+        if (answer === 'all') acceptAll = true;
+        if (answer !== 'no') {
           writeFileSync(change.absolutePath, change.newContent, 'utf-8');
           ensureScriptExecutable(change.absolutePath);
           updated++;
