@@ -188,7 +188,7 @@ If the scope is simple (< 5 files, well-understood area, no architectural decisi
 | Brief is very short (1-2 sentences) | Still generate questions — even simple features benefit from understanding existing patterns |
 | `docs/features/<slug>/` doesn't exist | Lazy-create it |
 <!-- /harness -->
-<!-- harness:codex -->
+<!-- harness:codex|copilot -->
 You are producing objective codebase research to inform a future spec or implementation. The key insight: the researching agent must never see the brief or ticket — only research questions. This prevents opinions from contaminating the facts.
 
 **Guard clause:** If the user doesn't provide a brief path or inline description, ask:

@@ -174,7 +174,7 @@ Based on the verdict:
 | No specs found and no path given | Tell user to provide a spec path or create a spec first |
 | Spec status is "Complete" | Still run verification -- "Complete" means the implementer thinks it's done, verification confirms |
 <!-- /harness -->
-<!-- harness:codex -->
+<!-- harness:codex|copilot -->
 The user wants independent verification of an implementation. Your job is to find the relevant spec, extract its acceptance criteria and test plan, then spawn a separate verifier subagent that checks each criterion and produces a structured verdict.
 
 **Why a separate subagent?** Research found that agents reliably skew positive when grading their own work. Separating the agent doing the work from the agent judging it consistently outperforms self-evaluation. The verifier gets a clean context window with no implementation bias.

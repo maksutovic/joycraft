@@ -7,7 +7,7 @@ entry: human
 description: Run a feature's entire spec queue from one invocation — specs run inline in this conversation; parallel subagents only for waves marked parallel-safe; fail-fast, session-end once at the end
 instructions: 24
 <!-- /harness -->
-<!-- harness:codex -->
+<!-- harness:codex|copilot -->
 description: Run a feature's entire spec queue from one invocation — sequential chain with per-spec wrap-up, fail-fast, session-end once at the end
 <!-- /harness -->
 <!-- harness:pi -->
@@ -75,7 +75,7 @@ Feature run: <slug>
 - Discoveries: [n stubs consolidated | none]
 ```
 <!-- /harness -->
-<!-- harness:codex -->
+<!-- harness:codex|copilot -->
 One invocation runs a feature's whole spec queue: `{{skill_prefix}}implement-feature docs/features/<slug>/`. You drive the queue **sequentially in this conversation** — Codex has no subagent boundary to give each spec a fresh context, so the chain shares context and compensates with disciplined per-spec wrap-ups. This is ordinary interactive use — one human invocation, no headless loop, no ToS/cost caveat.
 
 > **Context honesty:** for queues of heavy `isolated`-mode specs, a shared-context chain is the wrong tool — true per-spec isolation comes from Pi's `joycraft-implement-loop` (fresh process per spec) or guided-manual (`/new` + re-invoke per spec). Say so up front when you see a queue dominated by `isolated` specs, then proceed only if the user confirms.
