@@ -93,7 +93,7 @@ export function readVersion(dir: string): VersionInfo | null {
       // returning them (absent or bogus → undefined, callers default to shared).
       const profile = parseGitignoreProfile(parsed.gitignoreProfile);
       // Sanitize harnesses similarly: drop unknown tokens; null (not an array)
-      // means "no recorded selection" → callers default to all three.
+      // means "no recorded selection" → callers default to all available.
       const harnesses = sanitizeHarnesses(parsed.harnesses);
       return {
         version: parsed.version,

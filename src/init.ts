@@ -5,7 +5,7 @@ import { generateCLAUDEMd, generateClaudeMdPointer } from './improve-claude-md.j
 import { generateAgentsMd } from './agents-md.js';
 import { generatePermissions } from './permissions.js';
 import { installSafeguardHooks } from './safeguard.js';
-import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
+import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, COPILOT_SKILLS } from './bundled-files.js';
 import {
   writeVersion,
   readVersion,
@@ -84,15 +84,15 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   const isPi = existsSync(join(targetDir, '.pi'));
 
   // Resolve which harnesses to install (interactive multi-select; non-interactive
-  // installs all three). Done before any scaffolding so a "none" selection is a
-  // clean no-op — and before the gitignore prompt so we don't ask a second
+  // installs all available). Done before any scaffolding so a "none" selection is
+  // a clean no-op — and before the gitignore prompt so we don't ask a second
   // question when there's nothing to track.
   const harnesses = await resolveHarnesses(process.stdin.isTTY === true);
   const wants = (h: Harness): boolean => harnesses.includes(h);
   if (harnesses.length === 0) {
     console.log(
       '\nNo harness selected — Joycraft will not install any skills.\n' +
-      'Please run init again and select at least one harness (claude, codex, pi).'
+      'Please run init again and select at least one harness (claude, codex, pi, copilot).'
     );
     return;
   }
@@ -194,6 +194,23 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     }
   }
 
+  // 2g. Install the Copilot harness: skills to .github/skills/.
+  // Copilot reads AGENTS.md directly, so no separate instructions file is needed.
+  if (wants('copilot')) {
+    const githubDir = join(targetDir, '.github');
+    ensureDir(githubDir);
+
+    // Copilot skills — same SKILL.md pattern as other harnesses.
+    const copilotSkillsDir = join(githubDir, 'skills');
+    ensureDir(copilotSkillsDir);
+    for (const [filename, content] of Object.entries(COPILOT_SKILLS)) {
+      const skillName = filename.replace(/\.md$/, '');
+      const skillDir = join(copilotSkillsDir, skillName);
+      ensureDir(skillDir);
+      writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
+    }
+  }
+
   // 3. Copy template files to docs/templates/
   const templatesDir = join(targetDir, 'docs', 'templates');
   ensureDir(templatesDir);
@@ -205,12 +222,12 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   // 4/5. Handle CLAUDE.md + AGENTS.md — only create if missing, never modify
   // existing (unless --force).
   //
-  // Multi-tool install (Codex and/or Pi selected): AGENTS.md is the single
-  // shared instruction file and CLAUDE.md is Anthropic's documented import
+  // Multi-tool install (Codex, Pi, and/or Copilot selected): AGENTS.md is the
+  // single shared instruction file and CLAUDE.md is Anthropic's documented import
   // pointer (`@AGENTS.md`) — Claude Code doesn't read AGENTS.md natively, and
   // two full sibling files drift. Claude-only install: classic full CLAUDE.md
   // plus the slim AGENTS.md, unchanged.
-  const multiTool = wants('codex') || wants('pi');
+  const multiTool = wants('codex') || wants('pi') || wants('copilot');
   const claudeMdPath = join(targetDir, 'CLAUDE.md');
   if (existsSync(claudeMdPath) && !opts.force) {
     result.skipped.push(claudeMdPath);
@@ -273,6 +290,12 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     }
     for (const [name, content] of Object.entries(PI_AGENTS)) {
       fileHashes[join('.pi', 'agents', name)] = hashContent(content);
+    }
+  }
+  if (wants('copilot')) {
+    for (const [filename, content] of Object.entries(COPILOT_SKILLS)) {
+      const skillName = filename.replace(/\.md$/, '');
+      fileHashes[join('.github', 'skills', skillName, 'SKILL.md')] = hashContent(content);
     }
   }
   writeVersion(targetDir, getPackageVersion(), fileHashes, gitignoreProfile, harnesses);
