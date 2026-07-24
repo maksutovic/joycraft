@@ -112,7 +112,7 @@ describe('gitignore profiles', () => {
   });
 
   describe('private profile', () => {
-    it('gitignores .claude/, .agents/, .pi/ and not docs or harness docs', async () => {
+    it('gitignores harness dirs and not docs or harness docs', async () => {
       await init(tmpDir, { force: false, gitignore: 'private' });
 
       const gi = lines(readGitignore(tmpDir));

@@ -197,11 +197,11 @@ edits are append-only — Joycraft never rewrites or removes your existing lines
 | Profile | Tracked in git | Gitignored |
 |---------|----------------|------------|
 | `shared` (default) | `CLAUDE.md`, `AGENTS.md`, `docs/`, `.claude/skills/`, `.agents/`, `.pi/`, `.github/skills/` | hidden upgrade state only (`docs/.joycraft/state.json`) |
-| `private` | `CLAUDE.md`, `AGENTS.md`, `docs/` | `.claude/`, `.agents/`, `.pi/`, `.github/` |
+| `private` | `CLAUDE.md`, `AGENTS.md`, `docs/` | `.claude/`, `.agents/`, `.pi/`, `.github/skills/joycraft-*/` |
 
 > Switching an existing project to `private` only updates `.gitignore`. If
 > harness files were already committed, untrack them with
-> `git rm -r --cached .claude .agents .pi .github` (Joycraft prints this reminder and
+> `git rm -r --cached .claude .agents .pi .github/skills/joycraft-*` (Joycraft prints this reminder and
 > never runs git for you).
 >
 > Under `private`, the harness dirs aren't committed — so a teammate who clones
