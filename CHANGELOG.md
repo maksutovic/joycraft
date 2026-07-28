@@ -7,6 +7,63 @@ in a before → now → side-effects format, newest first.
 
 ---
 
+## 0.7.5 — GitHub Copilot Support (2026-07-27)
+
+Joycraft installed to three harnesses: Claude Code, Codex, and Pi. A maintainer
+or user on GitHub Copilot had nothing to install.
+
+**Now:** Copilot is a fourth first-class harness. `init` offers it in the
+harness selection, skills generate into `.github/skills/<name>/SKILL.md`, and
+the `private` gitignore profile scopes to `.github/skills/joycraft-*/` rather
+than `.github/` — Actions workflows and issue templates stay tracked.
+
+The harness plumbing came from a community contribution
+([#61](https://github.com/maksutovic/joycraft/pull/61), thanks
+[@admhn](https://github.com/admhn)), which also carried two harness-agnostic
+Windows fixes: the template engine now normalizes CRLF before parsing, and the
+generator writes native line endings so regenerated files stop showing as
+spuriously modified on Windows checkouts. Both benefit Claude, Codex, and Pi
+equally.
+
+**Also fixed — `joycraft-optimize` audited the wrong directories.** It
+hardcoded a "Claude Code Path" globbing `.claude/skills/**` and a "Codex Path"
+globbing `.agents/skills/**`, with no harness conditional. Pi shipped those
+wrong paths since Pi support landed; Copilot inherited them. The failure was
+quiet rather than loud — the audit globbed a directory the project didn't have,
+found nothing, and reported clean. It now resolves per harness, and the plugin,
+MCP, and hook steps carry real per-harness branches.
+
+**Side-effects:**
+
+- **Existing installs gain Copilot on upgrade.** Projects whose state predates
+  harness selection resolve to "all available" harnesses, which is now four
+  rather than three. A Claude-only project upgrading will find a new
+  `.github/skills/` tree. Remove it if unwanted; a recorded harness selection
+  (any install from 0.6.x forward) is unaffected.
+- Twelve Copilot skills shipped stale in 0.7.3 — generated before 0.7.2's
+  output-style pointers landed, and merged without a textual conflict. Fixed in
+  0.7.4. If you installed Copilot skills from 0.7.3, run `npx joycraft upgrade`.
+
+---
+
+## 0.7.2 — Human-Readable Output Style (2026-07-27)
+
+Skills produced correct output that read like machine transcripts — dense
+tables, status glyphs, and enumerated findings where prose would communicate
+better.
+
+**Now:** a shared style contract lives at
+`docs/templates/reference/output-style.md`, and twelve skills point at it
+rather than restating terseness rules inline. The reference is the one home for
+the guidance; skills cite it.
+
+**Side-effects:** the scenarios starter ships as
+`example-scenario.test.ts.template` rather than `.test.ts`, so it stays out of
+your main project's test, lint, and build globs when scaffolded. Rename it on
+first use.
+
+---
+
 ## 0.7.1 — Pilot Ring Graduates (2026-07-23)
 
 0.7.0 split the release into a product ring (shipped) and a pilot ring (Joycraft's

@@ -97,12 +97,18 @@ is required, though you can add one via the GitHub Checks API if you prefer.
 
 ```
 $SCENARIOS_REPO/
-├── example-scenario.test.ts   # Starter file — replace with real scenarios
+├── example-scenario.test.ts.template   # Starter — rename to .test.ts, then edit
 ├── workflows/
-│   └── run.yml                # CI workflow (do not rename)
+│   └── run.yml                         # CI workflow (do not rename)
 ├── package.json
 └── README.md
 ```
+
+> **Rename the starter on first use.** It ships as
+> `example-scenario.test.ts.template` (not `.test.ts`) so it stays out of your
+> *main* project's test/lint/build globs when Joycraft scaffolds it there. Once
+> it's in this holdout repo, rename it so Vitest discovers it:
+> `mv example-scenario.test.ts.template example-scenario.test.ts`.
 
 Add new `.test.ts` files at the top level or in subdirectories. Vitest will
 discover them automatically.
