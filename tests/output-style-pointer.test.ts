@@ -29,6 +29,8 @@ const AUTHORING_PATH = /src\/templates\/reference\/output-style/;
 const read = (name: string) =>
   readFileSync(join(repoRoot, 'src', 'skills', `${name}.md`), 'utf-8');
 
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 /**
  * Explicit literal list, deliberately NOT derived from `entry:` frontmatter.
  * The set crosses the taxonomy on purpose: `optimize`, `verify`, and `decide`
@@ -67,6 +69,48 @@ describe('output-style pointer exclusions', () => {
   it('joycraft-setup does not cite the style doc', () => {
     expect(read('joycraft-setup')).not.toContain('output-style.md');
   });
+});
+
+/**
+ * D3 (2026-07-27): ordering is enforced, anchored to the *heading* the pointer
+ * sits under — not to a following fenced block.
+ *
+ * The fence is not the anchor. `joycraft-tune` and `joycraft-decide` have no
+ * fenced template after their pointer (their output moments are a written
+ * assessment and a bulleted summary), so a fence-anchored rule would fail two
+ * correctly-placed skills. Every one of the pointers does sit under a
+ * report/present/playback heading, which is what "at the output moment"
+ * actually means.
+ *
+ * This is a plain index comparison — nearest preceding heading — not the
+ * 1500-char windowed slice in `tests/retrieval-pass-skill.test.ts`. D3's
+ * original framing conflated the two and overstated the fragility.
+ */
+const OUTPUT_MOMENT =
+  /report|present|verdict|hand ?off|play ?back|discuss|feature brief|write assessment/i;
+// `feature brief` and `write assessment` are matched as phrases, not on the bare
+// words: `brief` alone also matches navigational headings like
+// "Step 1: Locate the brief", which would let a pointer buried at the top of a
+// skill pass. Verified by burying decide's pointer under that exact heading —
+// the loose pattern accepted it, this one rejects it.
+
+describe('output-style pointer sits at the output moment', () => {
+  for (const name of POINTER_SKILLS) {
+    it(`${name} cites the doc under a report/present heading`, () => {
+      const content = read(name);
+      const occurrences = [...content.matchAll(new RegExp(escapeRe(STYLE_DOC), 'g'))];
+      expect(occurrences.length, 'pointer present').toBeGreaterThan(0);
+
+      for (const match of occurrences) {
+        const headings = content.slice(0, match.index).match(/^#{1,4} .*$/gm) ?? [];
+        const nearest = headings.at(-1) ?? '';
+        expect(
+          nearest,
+          `pointer in ${name} sits under ${JSON.stringify(nearest)}, which does not read as an output moment`,
+        ).toMatch(OUTPUT_MOMENT);
+      }
+    });
+  }
 });
 
 describe('output-style pointer path correctness', () => {

@@ -27,9 +27,9 @@ decisions:
     rationale: because Anthropic's first-party guidance is the only evidence about the models Joycraft actually runs on, so it outranks star counts on skills never tested against frontier Claude
   - id: D3
     question: how much should a test enforce — pointer, placement, or prose?
-    status: backlogged
-    choice: backlogged
-    rationale: because the ≤5 question cap deferred it; presence-only is the standing recommendation pending a decision
+    status: clarified
+    choice: presence + heading-anchored ordering for all 11 skills; no prose assertion
+    rationale: because anchoring to the report/present heading rather than a following fence makes ordering provably uniform — all 15 pointers already satisfy it, so no skill needs an exemption
   - id: D4
     question: which skills get the pointer — all 9 entry: human, or only heavy output moments?
     status: backlogged
@@ -77,6 +77,10 @@ channel; it should carry decisions, not acknowledgments.
   projects at `docs/templates/reference/output-style.md`.
 - Joycraft-repo-specific guidance about its own self-hosting path asymmetry
   stays repo-local and must not reach the consumer of the library (D1).
+- The pointer test asserts presence AND placement: each pointer must sit under
+  a report/present/playback heading, anchored to the nearest preceding heading
+  rather than to a following fenced block (D3). No prose, tone, or length
+  assertion — that ceiling is unchanged.
 - The rule set is short (~6-10 rules), positively framed, and states the
   motivation behind each rule (D2). No long banned-phrase list.
 - No new user-invocable skill — the `entry: human` door budget is full at 9.
