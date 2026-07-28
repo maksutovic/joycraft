@@ -27,9 +27,15 @@ const LOOKUP = {
     skills_dir: '.pi/skills',
     boundary_file: 'AGENTS.md',
   },
+  copilot: {
+    skill_prefix: '/joycraft-',
+    clear: '/clear',
+    skills_dir: '.github/skills',
+    boundary_file: 'AGENTS.md',
+  },
 };
 
-const STRIP_INSTRUCTIONS = { claude: false, codex: true, pi: true };
+const STRIP_INSTRUCTIONS = { claude: false, codex: true, pi: true, copilot: true };
 
 /**
  * Transform a canonical skill markdown into a per-harness variant.
@@ -42,6 +48,12 @@ const STRIP_INSTRUCTIONS = { claude: false, codex: true, pi: true };
 export function applyTemplate(source, harness, filename) {
   const vars = LOOKUP[harness];
   if (!vars) throw new Error(`unknown harness: ${harness}`);
+
+  // Normalize line endings so all downstream logic sees only `\n` regardless
+  // of OS (Windows CRLF `\r\n` would otherwise break `openOnOwnLine` and
+  // `closeOnOwnLine` detection in processHarnessBlocks, and the
+  // splitFrontmatter offset math).
+  source = source.replace(/\r\n/g, '\n');
 
   // 1. Split frontmatter from body.
   const { frontmatter, body } = splitFrontmatter(source);

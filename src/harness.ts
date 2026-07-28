@@ -2,15 +2,16 @@ import { createInterface } from 'node:readline';
 
 /**
  * The AI coding harnesses Joycraft can install into a project. Each maps to a
- * hidden config dir and a skills install path:
- *   - claude → .claude/ (Claude Code)
- *   - codex  → .agents/ (OpenAI Codex)
- *   - pi     → .pi/     (Pi)
+ * config dir:
+ *   - claude  → .claude/ (Claude Code)
+ *   - codex   → .agents/ (OpenAI Codex)
+ *   - pi      → .pi/     (Pi)
+ *   - copilot → .github/ (GitHub Copilot)
  *
  * Single source of truth: the menu, the parser, and the install gates in
  * init.ts all derive from this list so a new harness can't leave a path stale.
  */
-export const HARNESSES = ['claude', 'codex', 'pi'] as const;
+export const HARNESSES = ['claude', 'codex', 'pi', 'copilot'] as const;
 export type Harness = (typeof HARNESSES)[number];
 
 /** Human-readable one-liner per harness, shown in the interactive menu. */
@@ -18,6 +19,7 @@ const HARNESS_LABELS: Record<Harness, string> = {
   claude: 'Claude Code (.claude/)',
   codex: 'OpenAI Codex (.agents/)',
   pi: 'Pi (.pi/)',
+  copilot: 'GitHub Copilot (.github/)',
 };
 
 function isHarness(value: string): value is Harness {
@@ -97,7 +99,7 @@ async function promptHarnesses(): Promise<Harness[]> {
 /**
  * Resolve which harnesses to install:
  *   - interactive (TTY): show the multi-select menu; honor an empty "none"
- *   - non-interactive: install all three, preserving long-standing init behavior
+ *   - non-interactive: install all available harnesses, preserving long-standing init behavior
  *     for scripted/CI runs that can't answer a prompt.
  */
 export async function resolveHarnesses(interactive: boolean): Promise<Harness[]> {

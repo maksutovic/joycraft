@@ -54,7 +54,7 @@ describe('init', () => {
         expect(existsSync(join(tmpDir, 'docs', sub))).toBe(false);
       }
 
-      // Multi-tool install (non-interactive = all three harnesses): AGENTS.md
+      // Multi-tool install (non-interactive = all available harnesses): AGENTS.md
       // is the single shared instruction file; CLAUDE.md imports it per
       // Anthropic's documented multi-tool pattern.
       expect(existsSync(join(tmpDir, 'CLAUDE.md'))).toBe(true);

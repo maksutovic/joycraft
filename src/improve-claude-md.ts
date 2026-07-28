@@ -12,7 +12,7 @@ export interface ImproveOptions {
   privateProfile?: boolean;
   /**
    * When true, the generated document is the single shared AGENTS.md for a
-   * multi-tool install (Codex and/or Pi selected alongside or instead of
+   * multi-tool install (Codex, Pi, and/or Copilot selected alongside or instead of
    * Claude Code). Adds the External API Safety rules and a per-tool skill
    * invocation note, since the one document serves every harness. CLAUDE.md
    * then becomes an `@AGENTS.md` import pointer (see generateClaudeMdPointer).

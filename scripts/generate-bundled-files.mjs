@@ -7,8 +7,22 @@ import {
   statSync,
 } from 'node:fs';
 import { join, relative } from 'node:path';
+import { EOL } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { applyTemplate } from './lib/skill-template.mjs';
+
+/**
+ * Convert LF line endings to the OS-native format (CRLF on Windows).
+ * This keeps git from flagging regenerated files as modified on Windows
+ * (where git's core.autocrlf converts LF→CRLF on checkout, so writing
+ * LF-only files makes them appear changed).
+ */
+function toNativeEOL(text) {
+  if (EOL === '\r\n') {
+    return text.replace(/\n/g, '\r\n');
+  }
+  return text;
+}
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -18,12 +32,14 @@ const CANONICAL_SKILLS_DIR = join(ROOT, 'src', 'skills');
 const SKILLS_DIR = join(ROOT, 'src', 'claude-skills');
 const CODEX_SKILLS_DIR = join(ROOT, 'src', 'codex-skills');
 const PI_SKILLS_DIR = join(ROOT, 'src', 'pi-skills');
+const COPILOT_SKILLS_DIR = join(ROOT, 'src', 'copilot-skills');
 const TEMPLATES_DIR = join(ROOT, 'src', 'templates');
 
 const HARNESS_TARGETS = /** @type {const} */ ([
   ['claude', SKILLS_DIR],
   ['codex', CODEX_SKILLS_DIR],
   ['pi', PI_SKILLS_DIR],
+  ['copilot', COPILOT_SKILLS_DIR],
 ]);
 
 /** Recursively walk a directory and return all file paths */
@@ -96,13 +112,14 @@ for (const [harness, dir] of HARNESS_TARGETS) {
   mkdirSync(dir, { recursive: true });
   for (const [file, source] of Object.entries(canonicalSkills)) {
     const transformed = applyTemplate(source, harness, file);
-    writeFileSync(join(dir, file), transformed);
+    writeFileSync(join(dir, file), toNativeEOL(transformed));
   }
 }
 
 const skills = readFlatDir(SKILLS_DIR);
 const codexSkills = readFlatDir(CODEX_SKILLS_DIR);
 const piSkills = readFlatDir(PI_SKILLS_DIR);
+const copilotSkills = readFlatDir(COPILOT_SKILLS_DIR);
 // Exclude the pi-* runtime trees — they ship to .pi/ via the PI_* records, not
 // to docs/templates/ (see readTreeDir doc). This is what keeps a stray
 // docs/templates/pi-extensions/joycraft-pipeline.ts out of users' TS programs.
@@ -118,10 +135,11 @@ const output = [
   formatRecord('TEMPLATES', templates),
   formatRecord('CODEX_SKILLS', codexSkills),
   formatRecord('PI_SKILLS', piSkills),
+  formatRecord('COPILOT_SKILLS', copilotSkills),
   formatRecord('PI_SCRIPTS', piScripts),
   formatRecord('PI_EXTENSIONS', piExtensions),
   formatRecord('PI_AGENTS', piAgents),
 ].join('\n');
 
 writeFileSync(OUTPUT, output);
-console.log(`Generated ${OUTPUT} (${Object.keys(skills).length} skills, ${Object.keys(templates).length} templates, ${Object.keys(codexSkills).length} codex skills, ${Object.keys(piSkills).length} pi skills)`);
+console.log(`Generated ${OUTPUT} (${Object.keys(skills).length} skills, ${Object.keys(templates).length} templates, ${Object.keys(codexSkills).length} codex skills, ${Object.keys(piSkills).length} pi skills, ${Object.keys(copilotSkills).length} copilot skills)`);

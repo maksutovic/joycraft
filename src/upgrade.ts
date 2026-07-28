@@ -5,7 +5,7 @@ import { execFileSync } from 'node:child_process';
 import { readVersion, writeVersion, hashContent, truncateHash, LEGACY_VERSION_FILE, LEGACY_CLAUDE_STATE_PATH, parseGitignoreProfile } from './version.js';
 import { applyGitignoreProfile, resolveGitignoreProfile, validateGitignoreFlag, PRIVATE_PROFILE_IGNORES, PRIVATE_UNTRACK_COMMAND } from './gitignore.js';
 import { applyGitattributes } from './gitattributes.js';
-import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from './bundled-files.js';
+import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, COPILOT_SKILLS } from './bundled-files.js';
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
 import { HARNESSES, sanitizeHarnesses, type Harness } from './harness.js';
@@ -77,7 +77,7 @@ interface FileChange {
 /**
  * Build the managed-file map for the diff/apply loop, scoped to the installed
  * harnesses. A Codex-only project must not have Claude/Pi files added back on
- * upgrade. `harnesses` comes from persisted state; callers pass all three for
+ * upgrade. `harnesses` comes from persisted state; callers pass all available for
  * back-compat when the project predates harness selection. Templates are
  * harness-agnostic and always included.
  */
@@ -113,6 +113,12 @@ function getManagedFiles(harnesses: readonly Harness[]): Record<string, string> 
     }
     for (const [name, content] of Object.entries(PI_AGENTS)) {
       files[join('.pi', 'agents', name)] = content;
+    }
+  }
+  if (wants('copilot')) {
+    for (const [name, content] of Object.entries(COPILOT_SKILLS)) {
+      const skillName = name.replace(/\.md$/, '');
+      files[join('.github', 'skills', skillName, 'SKILL.md')] = content;
     }
   }
   return files;
@@ -236,7 +242,7 @@ function migrateLegacyVersionFile(targetDir: string): boolean {
   // absent there — harmless.) Passing them explicitly matters here: the new
   // docs/ state doesn't exist yet, so writeVersion has nothing to preserve them
   // from. Dropping harnesses would make the later getManagedFiles() fall back to
-  // all three and resurrect a .claude/ on a Codex/Pi-only project.
+  // all available and resurrect a .claude/ on a Codex/Pi-only project.
   const profile = parseGitignoreProfile(parsed.gitignoreProfile) ?? undefined;
   const harnesses = sanitizeHarnesses(parsed.harnesses) ?? undefined;
 
@@ -423,7 +429,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   const installedHashes = installed?.files ?? {};
 
   // Scope the upgrade to the harnesses this project installed. State written
-  // before harness selection has no `harnesses` field → fall back to all three
+  // before harness selection has no `harnesses` field → fall back to all available
   // so existing projects keep getting every harness refreshed (back-compat).
   const harnesses: readonly Harness[] = installed?.harnesses ?? HARNESSES;
   const managedFiles = getManagedFiles(harnesses);

@@ -73,19 +73,20 @@ describe('parseHarnessSelection', () => {
 });
 
 describe('resolveHarnesses', () => {
-  it('installs all three when non-interactive', async () => {
+  it('installs all available when non-interactive', async () => {
     expect(await resolveHarnesses(false)).toEqual([...HARNESSES]);
   });
 });
 
 describe('init harness gating', () => {
-  it('non-interactive installs all three harness dirs', async () => {
+  it('non-interactive installs all available harness dirs', async () => {
     const dir = createTmpDir();
     try {
       await init(dir, { force: false });
       expect(existsSync(join(dir, '.claude', 'skills'))).toBe(true);
       expect(existsSync(join(dir, '.agents', 'skills'))).toBe(true);
       expect(existsSync(join(dir, '.pi', 'skills'))).toBe(true);
+      expect(existsSync(join(dir, '.github', 'skills'))).toBe(true);
     } finally {
       cleanup(dir);
     }
@@ -99,6 +100,7 @@ describe('init harness gating', () => {
       expect(existsSync(join(dir, '.claude', 'skills'))).toBe(true);
       expect(existsSync(join(dir, '.pi', 'skills'))).toBe(true);
       expect(existsSync(join(dir, '.agents'))).toBe(false);
+      expect(existsSync(join(dir, '.github'))).toBe(false);
     } finally {
       cleanup(dir);
     }
@@ -114,6 +116,7 @@ describe('init harness gating', () => {
       expect(existsSync(join(dir, '.claude'))).toBe(false);
       expect(existsSync(join(dir, '.agents'))).toBe(false);
       expect(existsSync(join(dir, '.pi'))).toBe(false);
+      expect(existsSync(join(dir, '.github'))).toBe(false);
       expect(existsSync(join(dir, 'CLAUDE.md'))).toBe(false);
       expect(existsSync(join(dir, 'docs'))).toBe(false);
     } finally {
@@ -126,12 +129,30 @@ describe('init harness gating', () => {
     try {
       await initWithAnswers(dir, 'codex', 'shared');
       expect(existsSync(join(dir, '.agents', 'skills'))).toBe(true);
-      // Zero Claude footprint — no .claude/ tree at all for a codex-only install.
+      // Zero Claude/Pi/Copilot footprint.
       expect(existsSync(join(dir, '.claude'))).toBe(false);
       expect(existsSync(join(dir, '.pi'))).toBe(false);
+      expect(existsSync(join(dir, '.github'))).toBe(false);
       // State lives in the harness-neutral docs/ home, not under any harness dir.
       expect(existsSync(join(dir, 'docs', '.joycraft', 'state.json'))).toBe(true);
       // Shared docs are harness-agnostic and still generated.
+      expect(existsSync(join(dir, 'CLAUDE.md'))).toBe(true);
+      expect(existsSync(join(dir, 'AGENTS.md'))).toBe(true);
+    } finally {
+      cleanup(dir);
+    }
+  });
+
+  it('installs only Copilot harness for a copilot-only install', async () => {
+    const dir = createTmpDir();
+    try {
+      await initWithAnswers(dir, 'copilot', 'shared');
+      expect(existsSync(join(dir, '.github', 'skills'))).toBe(true);
+      // Zero footprint from other harnesses.
+      expect(existsSync(join(dir, '.claude'))).toBe(false);
+      expect(existsSync(join(dir, '.agents'))).toBe(false);
+      expect(existsSync(join(dir, '.pi'))).toBe(false);
+      // Shared docs still generated.
       expect(existsSync(join(dir, 'CLAUDE.md'))).toBe(true);
       expect(existsSync(join(dir, 'AGENTS.md'))).toBe(true);
     } finally {
@@ -189,7 +210,7 @@ describe('harness selection persists to state', () => {
     }
   });
 
-  it('records all three for a non-interactive install', async () => {
+  it('records all available harnesses for a non-interactive install', async () => {
     const dir = createTmpDir();
     try {
       await init(dir, { force: false });
@@ -224,6 +245,7 @@ describe('upgrade respects persisted harness selection', () => {
       await withRegistryStub(() => upgrade(dir, { yes: true }));
       expect(existsSync(join(dir, '.claude'))).toBe(false);
       expect(existsSync(join(dir, '.pi'))).toBe(false);
+      expect(existsSync(join(dir, '.github'))).toBe(false);
       expect(existsSync(join(dir, '.agents', 'skills'))).toBe(true);
       // Selection survives the upgrade.
       expect(readVersion(dir)?.harnesses).toEqual(['codex']);
@@ -232,7 +254,7 @@ describe('upgrade respects persisted harness selection', () => {
     }
   });
 
-  it('refreshes all three when state predates harness selection (no harnesses field)', async () => {
+  it('refreshes all available when state predates harness selection (no harnesses field)', async () => {
     const dir = createTmpDir();
     try {
       mkdirSync(join(dir, '.claude', 'skills', 'joycraft-tune'), { recursive: true });
@@ -246,6 +268,7 @@ describe('upgrade respects persisted harness selection', () => {
       expect(existsSync(join(dir, '.claude', 'skills'))).toBe(true);
       expect(existsSync(join(dir, '.agents', 'skills'))).toBe(true);
       expect(existsSync(join(dir, '.pi', 'skills'))).toBe(true);
+      expect(existsSync(join(dir, '.github', 'skills'))).toBe(true);
     } finally {
       cleanup(dir);
     }
@@ -268,7 +291,7 @@ describe('init leaves project toolchain gates clean', () => {
   it('ships no toolchain-globbable .ts/.test.ts under docs/ (the create-next-app regression)', async () => {
     const dir = createTmpDir();
     try {
-      await init(dir, { force: false }); // non-interactive → all three harnesses
+      await init(dir, { force: false }); // non-interactive → all available harnesses
       const offenders = walk(join(dir, 'docs')).filter(
         (f) => f.endsWith('.ts') || f.endsWith('.tsx'),
       );
@@ -348,7 +371,7 @@ describe('init leaves project toolchain gates clean', () => {
         join(dir, 'tsconfig.json'),
         `{\n  "compilerOptions": { "strict": true },\n  "include": ["**/*.ts", "**/*.tsx"],\n  "exclude": ["node_modules"]\n}`,
       );
-      await init(dir, { force: false }); // all three → Pi included
+      await init(dir, { force: false }); // all available → Pi included
       // The live .pi/extensions/*.ts must exist (Pi runtime) but be excluded
       // from the user's TS program.
       expect(existsSync(join(dir, '.pi', 'extensions', 'joycraft-pipeline.ts'))).toBe(true);

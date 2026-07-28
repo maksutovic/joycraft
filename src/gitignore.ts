@@ -10,14 +10,19 @@ import {
 
 /**
  * The harness directories the `private` profile gitignores. Tracking only
- * CLAUDE.md, AGENTS.md, and docs/ means everything under these three dirs
- * stays local. `.claude/` already covers the hidden state file.
+ * CLAUDE.md, AGENTS.md, and docs/ means everything under these dirs stays
+ * local. `.claude/` already covers the hidden state file.
+ *
+ * `.github/skills/joycraft-*` is gitignored, NOT `.github/` or
+ * `.github/skills/` — `.github/` holds Actions workflows, issue templates,
+ * and other non-harness config, and `.github/skills/` may contain the
+ * user's own non-Joycraft Copilot skills.
  *
  * Single source of truth: every user-facing string that names these dirs
  * (prompts, summaries, the untrack hint, CLI help) derives from this list via
  * the constants below, so adding a harness dir can't leave stale messages.
  */
-export const PRIVATE_PROFILE_IGNORES = ['.claude/', '.agents/', '.pi/'];
+export const PRIVATE_PROFILE_IGNORES = ['.claude/', '.agents/', '.pi/', '.github/skills/joycraft-*/'];
 
 /** Human-readable list of the private-profile dirs, for prompts and summaries. */
 export const PRIVATE_DIRS_DISPLAY = PRIVATE_PROFILE_IGNORES.join(', ');
@@ -62,7 +67,7 @@ export function ensureGitignoreEntry(targetDir: string, line: string): boolean {
  * both profiles list it explicitly.
  *
  * - `shared`  — ignore only the hidden state file (commit the harness dirs).
- * - `private` — ignore the .claude/, .agents/, .pi/ trees AND the state file.
+ * - `private` — ignore the .claude/, .agents/, .pi/, .github/skills/joycraft-* trees AND the state file.
  *
  * Append-only and idempotent (via ensureGitignoreEntries), so re-running
  * init/upgrade never duplicates entries. Returns the list of lines actually
