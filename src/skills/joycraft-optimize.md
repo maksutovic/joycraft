@@ -84,38 +84,39 @@ If the skills directory doesn't exist (non-Joycraft project), report the taxonom
 
 ## Step 6: Audit Harness Files (v1 checks, folded into dispositions)
 
-### Claude Code Path
+1. **{{boundary_file}}** — count lines. Threshold: ≤200 lines. Over → `MAKE_A_CHECK` row (or `KEEP` with a note if content is unique and load-bearing per the duplication rule below).
+2. **Skill files** — glob `{{skills_dir}}/**/*.md`. Count lines per file. Threshold: ≤200 lines each.
 
-1. **CLAUDE.md** — count lines. Threshold: ≤200 lines. Over → `MAKE_A_CHECK` row (or `KEEP` with a note if content is unique and load-bearing per the duplication rule below).
-2. **Skill files** — glob `.claude/skills/**/*.md`. Count lines per file. Threshold: ≤200 lines each.
-
-### Codex Path
-
-1. **AGENTS.md** — count lines. Threshold: ≤200 lines.
-2. **Skill files** — glob `.agents/skills/**/*.md`. Count lines per file. Threshold: ≤200 lines each.
-
-### Both Platforms: Skill Description Budget
+### Skill Description Budget
 
 Sum the character length of every skill's `description:` frontmatter value — these all load at session start, before any skill is invoked. Codex documents an initial skill-list budget of ~2% of context (8,000 chars when context size is unknown) and silently shortens descriptions that exceed it, which breaks skill routing. Thresholds: PASS ≤6,000 total chars, WARN >6,000 (approaching the budget), FAIL >8,000 (Codex is already truncating). On Claude Code there is no documented cutoff — report the total as always-loaded overhead.
 
 ## Step 7: Audit Plugins & MCP Servers
 
-### Claude Code Path
-
+<!-- harness:claude -->
 1. **Installed plugins** — read `~/.claude/plugins/installed_plugins.json`. List plugin names and versions. If not found, report "no plugins file found."
 2. **Enabled plugins** — read `~/.claude/settings.json`, check `enabledPlugins` array. Show enabled vs installed count.
 3. **MCP servers** — read `~/.claude/settings.json`, count entries under `mcpServers`. List server names.
-
-### Codex Path
-
+<!-- /harness -->
+<!-- harness:codex -->
 1. **Plugin config** — read `~/.codex/config.toml`. List any plugin toggles. Note: Codex syncs its curated plugin marketplace at startup — this is a boot cost even if you don't use them.
 2. **MCP servers** — check `~/.codex/config.toml` for MCP server entries. List server names.
+<!-- /harness -->
+<!-- harness:pi -->
+1. **MCP servers** — check `~/.pi/config.json` for MCP server entries. List server names. If not found, report "no MCP config found."
+<!-- /harness -->
+<!-- harness:copilot -->
+1. **MCP servers** — check `~/.config/github-copilot/mcp.json` for MCP server entries. List server names. If not found, report "no MCP config found."
+<!-- /harness -->
 
-## Step 8: Audit Hooks (Claude Code Only)
+## Step 8: Audit Hooks
 
+<!-- harness:claude -->
 Read `.claude/settings.json` in the project directory. List all hook definitions under the `hooks` key — show the event name and command for each.
-
-For Codex: note "hook auditing not yet supported on Codex."
+<!-- /harness -->
+<!-- harness:codex|pi|copilot -->
+Hook auditing is not yet supported on this harness — note that and skip this step.
+<!-- /harness -->
 
 ## Step 9: Report
 
