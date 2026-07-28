@@ -1,3 +1,0 @@
-`.pi/scripts/joycraft/joycraft-mark-done` silently no-ops on the real manifest format: its `sed -E "/\"id\": *$SPEC_ID[,}]/s/\"status\".../"` addresses only the single line holding `"id": N`, but `"status"` sits ~3 lines below in the pretty-printed JSON, so the substitution never fires — yet it still exits 0 and prints "Spec #N marked in-review".
-
-Hit while wrapping up `docs/features/2026-07-27-human-readable-output-style/specs/add-style-pointers-to-skills.md`; worked around by editing `.joycraft-spec-queue.json` directly. Any spec-done/session-end run trusting this script's exit code leaves the queue unbumped.
