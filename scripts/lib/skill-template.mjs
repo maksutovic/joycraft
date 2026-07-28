@@ -41,7 +41,7 @@ const STRIP_INSTRUCTIONS = { claude: false, codex: true, pi: true, copilot: true
  * Transform a canonical skill markdown into a per-harness variant.
  *
  * @param {string} source   Canonical markdown (optional YAML frontmatter + body).
- * @param {'claude'|'codex'|'pi'} harness
+ * @param {'claude'|'codex'|'pi'|'copilot'} harness
  * @param {string} [filename]  Used only in error messages.
  * @returns {string}
  */

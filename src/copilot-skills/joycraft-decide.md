@@ -198,7 +198,9 @@ context needed to answer it later, and why it was deferred.
 
 ## Step 7: Report
 
-End with a terse summary:
+Write this summary, and the dossier prose in Step 4, to the style contract in `docs/templates/reference/output-style.md`.
+
+End with a summary — terse per the style contract above:
 
 - Table: id · question · terminal state · choice · rationale (flag any
   rationale that survived only via the re-prompt rule, and any `(not given)`)
