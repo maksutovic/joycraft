@@ -127,5 +127,5 @@ If the idea sounds complex — touches many files, involves architectural decisi
 - **This is NOT $joycraft-new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
 - **Let the user lead.** Your job is to listen, clarify, and capture — not to structure or direct.
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
-- **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.
+- **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail — and write it to the style contract in `docs/templates/reference/output-style.md`.
 - **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.

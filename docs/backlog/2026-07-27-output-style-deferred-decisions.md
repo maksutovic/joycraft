@@ -1,18 +1,18 @@
 ---
-status: backlog
+status: done
 owner: Maximilian Maksutovic
 created: 2026-07-27
 source: docs/features/2026-07-27-human-readable-output-style/brief.md
 ---
 
-# Deferred decisions — human-readable output style (D5 only; D3, D4 resolved)
+# Deferred decisions — human-readable output style (ALL RESOLVED)
 
 These three reached the deposition on 2026-07-27 but fell outside the ≤5
 question cap. They were pre-backlogged as visible residue, not silently cut.
 
-D4 and D3 have since been resolved and are kept below for the record. **Only D5
-is still deferred**, and it carries a standing recommendation rather than a
-decision.
+All three have since been resolved and are kept below for the record. **Nothing
+here is deferred any longer** — D4 landed as D7, D3 as heading-anchored ordering,
+D5 as a four-site reshape.
 
 > **Update 2026-07-27 (decompose):** D4 is **resolved** — stamped as **D7** in
 > the brief (11 skills; every human-facing output moment except
@@ -95,9 +95,25 @@ The original options, kept for the record:
   human-read block. Precise, but requires first defining what marks a block as
   human-read, and document-level audience markers were killed as RF-KILL-8.
 
-## D5 — Consolidate the existing scattered terseness directives?
+## D5 — Consolidate the existing scattered terseness directives? *(RESOLVED 2026-07-27)*
 
-**Standing recommendation: defer to a follow-up optimize pass.**
+**Resolved: reshape all four to defer to the style doc; delete nothing.** Each
+site keeps its concrete rule and gains a citation, so the doc becomes the single
+home for what "terse" means while the local rule keeps the specifics the doc
+deliberately omits.
+
+The premise below — that the four are near-duplicates the doc supersedes — did
+not survive reading them in context. None is a duplicate: two are sentences
+introducing a template ("End with a terse summary:"), one is scoped to a ledger
+row and continues into a budget procedure, and one is a numeric bound (1-2
+pages) that rule 7 refuses to give. Deleting any of them loses information.
+Reshaping does not.
+
+Also corrected: an earlier pass concluded this was moot because deletion was
+wrong. That conflated deletion with reshaping — the second was always available
+and is what shipped.
+
+The original framing, kept for the record:
 
 Today at least four near-duplicate rules live in skill bodies: "report tersely"
 (`joycraft-implement` ~160), "End with a terse summary" (`joycraft-decide`

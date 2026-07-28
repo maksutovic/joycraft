@@ -35,12 +35,18 @@ const POINTERED = [
   'joycraft-bugfix',
 ] as const;
 
-// Skills whose bodies are split into per-harness blocks. A pointer placed
-// outside every block would vanish for two of the three emitted variants, so
-// these carry one pointer per harness block.
-const PER_HARNESS: Record<string, number> = {
+// Expected citation count per skill. Two reasons a skill carries more than one:
+//
+//  - per-harness blocks (verify, implement-feature): a pointer outside every
+//    block would vanish for two of the three emitted variants.
+//  - several distinct output moments (interview, session-end): the draft brief
+//    and the playback, or the ledger row and the wrap-up report, are written at
+//    different steps and each needs the contract where it is written.
+const EXPECTED_CITATIONS: Record<string, number> = {
   'joycraft-verify': 3,
   'joycraft-implement-feature': 3,
+  'joycraft-interview': 2,
+  'joycraft-session-end': 2,
 };
 
 describe('canonical skills cite the output-style reference', () => {
@@ -56,7 +62,7 @@ describe('canonical skills cite the output-style reference', () => {
     it(`${name}.md carries one pointer per emitted variant`, () => {
       const c = read(name);
       const count = c.split(STYLE_DOC).length - 1;
-      expect(count).toBe(PER_HARNESS[name] ?? 1);
+      expect(count).toBe(EXPECTED_CITATIONS[name] ?? 1);
     });
   }
 
@@ -121,7 +127,7 @@ describe('pointers defer to the doc rather than restating it', () => {
       const lines = read(name)
         .split('\n')
         .filter((l) => l.includes(STYLE_DOC));
-      expect(lines.length).toBe(PER_HARNESS[name] ?? 1);
+      expect(lines.length).toBe(EXPECTED_CITATIONS[name] ?? 1);
       for (const l of lines) {
         expect(l.trim().length).toBeLessThanOrEqual(320);
       }

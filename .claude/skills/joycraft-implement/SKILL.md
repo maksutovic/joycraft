@@ -148,7 +148,7 @@ Run the once-per-feature finisher yourself: invoke `/joycraft-session-end` (or r
 
 ### Report
 
-After each spec's wrap-up, report tersely before continuing:
+After each spec's wrap-up, report before continuing — to the style contract in `docs/templates/reference/output-style.md`:
 
 ```
 Spec complete: [spec name] · mode: [mode] · tests: [N] passing · [wrapped up + committed | status bumped (batch)]

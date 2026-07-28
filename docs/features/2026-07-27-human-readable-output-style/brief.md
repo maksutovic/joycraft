@@ -37,9 +37,9 @@ decisions:
     rationale: because the ≤5 question cap deferred it as lower blast radius than the boundary and rule-shape questions
   - id: D5
     question: should this feature also consolidate the existing scattered terseness directives?
-    status: backlogged
-    choice: backlogged
-    rationale: because the ≤5 question cap deferred it; it widens the diff across six skills and can ride a later optimize ONE_HOME pass
+    status: clarified
+    choice: reshape all four directives to defer to the style doc; delete nothing
+    rationale: because the goal is better agent prose, not a smaller diff — each site keeps its concrete rule (1-2 pages, factual and thin) and gains a citation, so the doc becomes the single home for what terse means
   - id: D6
     question: must the style doc carry at least one worked before/after example?
     status: clarified

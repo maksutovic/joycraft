@@ -96,19 +96,25 @@ const OUTPUT_MOMENT =
 
 describe('output-style pointer sits at the output moment', () => {
   for (const name of POINTER_SKILLS) {
-    it(`${name} cites the doc under a report/present heading`, () => {
+    it(`${name} cites the doc at an output moment`, () => {
       const content = read(name);
       const occurrences = [...content.matchAll(new RegExp(escapeRe(STYLE_DOC), 'g'))];
       expect(occurrences.length, 'pointer present').toBeGreaterThan(0);
 
-      for (const match of occurrences) {
-        const headings = content.slice(0, match.index).match(/^#{1,4} .*$/gm) ?? [];
-        const nearest = headings.at(-1) ?? '';
-        expect(
-          nearest,
-          `pointer in ${name} sits under ${JSON.stringify(nearest)}, which does not read as an output moment`,
-        ).toMatch(OUTPUT_MOMENT);
-      }
+      // At least one citation must sit at an output moment — that is what makes
+      // the contract reach the agent when it writes. Additional citations may
+      // sit elsewhere: a skill can reference the contract from a guidance bullet
+      // or a mid-procedure step (interview's draft-brief rule, session-end's
+      // ledger row) where the rules also apply. Requiring every citation to be
+      // at an output moment would forbid those, which is not the intent.
+      const headingsFor = (index: number) =>
+        (content.slice(0, index).match(/^#{1,4} .*$/gm) ?? []).at(-1) ?? '';
+
+      const sited = occurrences.map((m) => headingsFor(m.index));
+      expect(
+        sited.some((h) => OUTPUT_MOMENT.test(h)),
+        `no citation in ${name} sits at an output moment; found under ${JSON.stringify(sited)}`,
+      ).toBe(true);
     });
   }
 });
