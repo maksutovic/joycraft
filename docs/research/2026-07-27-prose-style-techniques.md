@@ -8,6 +8,8 @@ source: deep-research workflow — 102 agents, 5 search angles, 20 sources fetch
 
 # Research — non-persona techniques for improving LLM technical prose (2024–2026)
 
+> **Design:** docs/features/2026-07-27-human-readable-output-style/design.md
+
 Question: what are practitioners actually doing to improve LLM prose style for
 technical writing (agent reports, docs, summaries, PR writeups), excluding
 novelty persona prompts? Companion to

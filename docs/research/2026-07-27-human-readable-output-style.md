@@ -7,6 +7,8 @@ feature: human-readable-output-style
 
 # Research — embedding a human-readable output style into Joycraft skills
 
+> **Design:** docs/features/2026-07-27-human-readable-output-style/design.md
+
 Question researched: how could Joycraft embed an "ADHD-style" human-readable
 output discipline directly into its skills (no new dependency/skill), applying
 it only to human-facing output moments while leaving agent-facing artifacts

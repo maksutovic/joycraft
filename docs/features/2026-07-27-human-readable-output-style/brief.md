@@ -3,6 +3,7 @@ status: active
 owner: Maximilian Maksutovic
 created: 2026-07-27
 feature: human-readable-output-style
+reap: eligible
 decisions:
   - id: B1
     question: skill-content ASK FIRST boundary — may this feature edit skill bodies?
