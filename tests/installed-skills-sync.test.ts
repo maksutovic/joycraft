@@ -74,10 +74,17 @@ describe('installed trees carry no skill the generator does not produce', () => 
         .filter((e) => e.isDirectory() && existsSync(join(dir, e.name, 'SKILL.md')))
         .map((e) => e.name);
 
-      const orphans = installed.filter((n) => !expected.has(n));
+      // Scoped to `joycraft-*` — every product skill carries that prefix, so
+      // anything else in an installed tree is a repo-local maintainer skill
+      // from `src/local-skills/` (synced by scripts/sync-skills.mjs, never
+      // bundled). Those have no generated source under `src/*-skills/` by
+      // design, so an unscoped check would report them as orphans forever.
+      const orphans = installed
+        .filter((n) => n.startsWith('joycraft-'))
+        .filter((n) => !expected.has(n));
       expect(
         orphans,
-        `${tree.installed} contains skills with no generated source — a rename or deletion left them behind`,
+        `${tree.installed} contains joycraft-* skills with no generated source — a rename or deletion left them behind`,
       ).toEqual([]);
     });
   }

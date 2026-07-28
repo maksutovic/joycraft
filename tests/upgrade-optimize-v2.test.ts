@@ -119,8 +119,12 @@ describe('joycraft-optimize v2: PILOT marker', () => {
 });
 
 describe('skill taxonomy: entry: frontmatter completeness (22/22)', () => {
+  // Product skills only. `.claude/skills/` also holds repo-local maintainer
+  // skills from `src/local-skills/` (see tests/local-skills-sync.test.ts) —
+  // those are not part of the shipped taxonomy, carry no `entry:` field, and
+  // must not count against the 22 or the human-door budget below.
   const skillDirs = readdirSync(SKILLS_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
+    .filter((d) => d.isDirectory() && d.name.startsWith('joycraft-'))
     .map((d) => d.name)
     .sort();
 
@@ -140,8 +144,9 @@ describe('skill taxonomy: entry: frontmatter completeness (22/22)', () => {
 
 describe('skill taxonomy: human-door budget', () => {
   it('at most 9 skills declare entry: human', () => {
+    // Product skills only — see the note on the taxonomy suite above.
     const skillDirs = readdirSync(SKILLS_DIR, { withFileTypes: true })
-      .filter((d) => d.isDirectory())
+      .filter((d) => d.isDirectory() && d.name.startsWith('joycraft-'))
       .map((d) => d.name);
     let humanCount = 0;
     for (const dir of skillDirs) {
@@ -155,8 +160,9 @@ describe('skill taxonomy: human-door budget', () => {
 
 describe('skill taxonomy: internals get terse anti-discovery descriptions', () => {
   it('agent-entry skills describe who invokes them and that they are not a user entry point', () => {
+    // Product skills only — see the note on the taxonomy suite above.
     const skillDirs = readdirSync(SKILLS_DIR, { withFileTypes: true })
-      .filter((d) => d.isDirectory())
+      .filter((d) => d.isDirectory() && d.name.startsWith('joycraft-'))
       .map((d) => d.name);
     for (const dir of skillDirs) {
       const content = read(join(SKILLS_DIR, dir, 'SKILL.md'));

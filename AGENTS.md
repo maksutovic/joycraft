@@ -9,7 +9,8 @@
 ## Behavioral Boundaries
 
 ### ALWAYS
-- Run `pnpm test --run && pnpm typecheck` before committing
+- Run `pnpm test && pnpm typecheck` before committing (`pnpm test` already runs once and exits — `--run` is not a valid pnpm flag here and fails)
+- Run `pnpm sync-skills` after editing anything under `src/skills/` or `src/local-skills/`, and commit the regenerated + installed copies in the same commit — a stale installed tree is what shipped twelve wrong copilot skills in 0.7.3
 - Commit style: `verb: concise message`
 - Reference atomic specs when implementing features — each spec is in `docs/features/<slug>/specs/`
 - Test against multiple stack types (Node.js, Python, Rust, Go at minimum)
@@ -59,13 +60,16 @@ Joycraft/
 │   ├── improve-claude-md.ts # Merge Joycraft sections into existing CLAUDE.md
 │   ├── agents-md.ts        # Generate AGENTS.md for Codex
 │   ├── version.ts          # Version tracking (docs/.joycraft/state.json)
-│   ├── skills/             # CANONICAL skill sources — 20 joycraft-*.md files, edit here
+│   ├── skills/             # CANONICAL skill sources — 22 joycraft-*.md files, edit here
 │   ├── claude-skills/      # GENERATED from src/skills/ by scripts/generate-bundled-files.mjs — never edit
 │   ├── codex-skills/       # GENERATED — Codex variants
 │   ├── pi-skills/          # GENERATED — Pi variants
+│   ├── copilot-skills/     # GENERATED — GitHub Copilot variants
+│   ├── local-skills/       # Repo-local maintainer skills — NOT bundled, never ship to npm
 │   └── templates/          # Bundled templates (copied to docs/templates/)
 ├── scripts/
-│   └── generate-bundled-files.mjs  # Regenerates src/*-skills/ from src/skills/
+│   ├── generate-bundled-files.mjs  # Regenerates src/*-skills/ from src/skills/
+│   └── sync-skills.mjs             # Copies generated + local skills into .claude/.agents/.pi/.github
 ├── templates/              # Source-of-truth templates (development reference)
 ├── tests/
 │   ├── detect.test.ts
@@ -112,7 +116,8 @@ npx joycraft init
 | `src/init.ts` | Main scaffolding logic — the core of `npx joycraft init` |
 | `src/improve-claude-md.ts` | Merge logic for existing CLAUDE.md files — most complex logic |
 | `templates/` | Source-of-truth for all templates — changes here propagate to users via upgrade |
-| `src/skills/` | Source-of-truth for all skills — `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/` are generated from it (never edit those directly) |
+| `src/skills/` | Source-of-truth for all product skills — `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/`, `src/copilot-skills/` are generated from it (never edit those directly) |
+| `src/local-skills/` | Repo-local maintainer skills (e.g. `release-docs-sync`). Transformed per-harness into the installed trees by `scripts/sync-skills.mjs`, but never bundled — nothing here ships to users |
 | `docs/features/<slug>/specs/` | Atomic specs for building Joycraft itself (per-feature queues) |
 | `docs/briefs/2026-03-23-joysmith-cli-plugin.md` | Feature Brief — the full vision |
 
