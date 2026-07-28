@@ -82,6 +82,8 @@ For each atomic spec, define:
 
 Before the decomposition table, show the **"Prior knowledge reused"** list from Step 0's retrieval pass (or the explicit nothing-found line).
 
+Write this presentation, and the hand-off in Step 8, to the style contract in `docs/templates/reference/output-style.md`.
+
 Show the decomposition table to the user. Ask:
 1. "Does this breakdown match how you think about this feature?"
 2. "Are there any specs that feel too big or too small?"

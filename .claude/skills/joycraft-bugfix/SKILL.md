@@ -31,6 +31,8 @@ Find the root cause. Start from the error site and trace backward. Read source f
 
 ## Phase 3: Discuss
 
+Write this presentation to the style contract in `docs/templates/reference/output-style.md`.
+
 Present findings to the user BEFORE writing any code or spec:
 1. **Symptom** — confirm it matches what they see
 2. **Root cause** — specific file(s) and line(s)
@@ -57,12 +59,18 @@ The spec file MUST start with YAML frontmatter — the 4-field personal schema (
 
 ```yaml
 ---
-status: active
+status: todo
 owner: <resolved name>
 created: YYYY-MM-DD
 area: <area>
 ---
 ```
+
+A bugfix spec is a spec, so its `status:` uses the spec vocabulary —
+`todo | in-review | done`, per `docs/templates/reference/spec-status-lifecycle.md`.
+Start at `todo`; `joycraft-spec-done` moves it to `in-review` and only
+`joycraft-session-end` reaches `done`. (Briefs, designs, and research docs use a
+different vocabulary — `active`/`draft`/`shipped` — which does not apply here.)
 
 **Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
 

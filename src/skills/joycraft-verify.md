@@ -127,6 +127,8 @@ If any test commands fail to run (missing dependencies, wrong command, etc.), re
 
 ## Step 5: Format and Present the Verdict
 
+Write this verdict to the style contract in `docs/templates/reference/output-style.md`.
+
 Take the subagent's response and present it to the user in this format:
 
 ```
@@ -294,6 +296,8 @@ If any test commands fail to run (missing dependencies, wrong command, etc.), re
 
 ## Step 5: Format and Present the Verdict
 
+Write this verdict to the style contract in `docs/templates/reference/output-style.md`.
+
 Take the subagent's response and present it to the user in this format:
 
 ```
@@ -458,6 +462,8 @@ If any test commands fail to run (missing dependencies, wrong command, etc.), re
 ```
 
 ## Step 5: Format and Present the Verdict
+
+Write this verdict to the style contract in `docs/templates/reference/output-style.md`.
 
 Take the subagent's response and present it to the user in this format:
 

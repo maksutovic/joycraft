@@ -44,6 +44,8 @@ When no `todo` specs remain, run the once-per-feature finisher yourself: read an
 
 ## Final Report
 
+Write this report to the style contract in `docs/templates/reference/output-style.md`.
+
 ```
 Feature run: <slug>
 - Specs completed: N of M (now in-review/done) · failures: [none | <spec> — <reason>]

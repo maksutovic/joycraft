@@ -1,0 +1,84 @@
+import { describe, it, expect } from 'vitest';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { join, dirname, basename } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const repoRoot = join(__dirname, '..');
+
+/**
+ * Every installed skill copy must byte-match the generated variant it mirrors.
+ *
+ * `tests/implement-mode-handoff.test.ts` asserts this too, but only for
+ * `joycraft-implement`. That single-skill coverage is why eleven skills shipped
+ * out of sync through two commits during the 2026-07-27 output-style feature
+ * without a red test: the source edits landed, the installed copies stayed
+ * stale, and nothing looked at them. This suite closes that gap for all 22.
+ *
+ * The mapping is generated tree -> installed tree:
+ *   src/claude-skills/<name>.md -> .claude/skills/<name>/SKILL.md
+ *   src/codex-skills/<name>.md  -> .agents/skills/<name>/SKILL.md
+ *   src/pi-skills/<name>.md     -> .pi/skills/<name>/SKILL.md
+ *
+ * A failure here means the generator ran but the installed copies were not
+ * re-synced — regenerate and copy, never edit an installed copy by hand (a
+ * rebuild silently discards it).
+ */
+
+const TREES = [
+  { generated: 'claude-skills', installed: join('.claude', 'skills'), harness: 'claude' },
+  { generated: 'codex-skills', installed: join('.agents', 'skills'), harness: 'codex' },
+  { generated: 'pi-skills', installed: join('.pi', 'skills'), harness: 'pi' },
+] as const;
+
+const read = (p: string) => readFileSync(p, 'utf-8');
+
+function generatedSkills(tree: string): string[] {
+  return readdirSync(join(repoRoot, 'src', tree))
+    .filter((f) => f.endsWith('.md'))
+    .map((f) => basename(f, '.md'))
+    .sort();
+}
+
+describe.each(TREES)('installed $harness skills byte-match their generated source', (tree) => {
+  const names = generatedSkills(tree.generated);
+
+  it('has at least one generated skill to compare', () => {
+    expect(names.length).toBeGreaterThan(0);
+  });
+
+  for (const name of names) {
+    it(`${name} is installed and identical`, () => {
+      const source = join(repoRoot, 'src', tree.generated, `${name}.md`);
+      const installed = join(repoRoot, tree.installed, name, 'SKILL.md');
+
+      expect(
+        existsSync(installed),
+        `${tree.installed}/${name}/SKILL.md is missing — the generated skill was never installed`,
+      ).toBe(true);
+
+      expect(
+        read(installed),
+        `${tree.installed}/${name}/SKILL.md differs from src/${tree.generated}/${name}.md — regenerate and re-sync`,
+      ).toBe(read(source));
+    });
+  }
+});
+
+describe('installed trees carry no skill the generator does not produce', () => {
+  for (const tree of TREES) {
+    it(`${tree.installed} has no orphaned skill`, () => {
+      const expected = new Set(generatedSkills(tree.generated));
+      const dir = join(repoRoot, tree.installed);
+      const installed = readdirSync(dir, { withFileTypes: true })
+        .filter((e) => e.isDirectory() && existsSync(join(dir, e.name, 'SKILL.md')))
+        .map((e) => e.name);
+
+      const orphans = installed.filter((n) => !expected.has(n));
+      expect(
+        orphans,
+        `${tree.installed} contains skills with no generated source — a rename or deletion left them behind`,
+      ).toEqual([]);
+    });
+  }
+});

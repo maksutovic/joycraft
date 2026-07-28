@@ -63,6 +63,8 @@ Keep asking until you can fill out a Feature Brief.
 
 ## Phase 2: Feature Brief
 
+Write everything you present to the human in this phase to the style contract in `docs/templates/reference/output-style.md`.
+
 Derive a slug `YYYY-MM-DD-<feature-name>` (today's date + kebab-case feature name).
 Write the Feature Brief to `docs/features/<slug>/brief.md`. Lazy-create the folder if needed.
 

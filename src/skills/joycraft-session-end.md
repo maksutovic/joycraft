@@ -111,7 +111,11 @@ This step runs **only when the feature as a whole reaches `done`** (every spec g
    | Date | Feature | What shipped | Where (paths) | PR | Owner |
    ```
 
-   Keep the row **factual and thin** — when/what/who/where/PR only. Narrative belongs in the decision log or discoveries, not the ledger. If prepending pushes `docs/context/shipped.md` over the 200-line budget, follow the rotation procedure in `docs/reference/knowledge-lifecycle.md` (numbered shards + pointer-only manifest, created only at first rotation).
+   Keep the row **factual and thin** — when/what/who/where/PR only. Narrative belongs in the decision log or discoveries, not the ledger.
+
+   Write the row's wording to the style contract in `docs/templates/reference/output-style.md`; where it and the ledger's fixed shape disagree, the shape wins.
+
+   If prepending pushes `docs/context/shipped.md` over the 200-line budget, follow the rotation procedure in `docs/reference/knowledge-lifecycle.md` (numbered shards + pointer-only manifest, created only at first rotation).
 
 2. **Confirm the feature's decisions landed in the decision log.** Grep `docs/context/decision-log.md` for the feature's D-ids (from the brief's frontmatter `decisions:` list, if present). Report which D-ids landed and which are missing. If any are missing, write them (prepend, per the decision-log's own newest-first rule) before proceeding to step 3 — don't mark reap-eligible with an incomplete extraction. A feature with no dossier/decisions at all is not an error: report "no stamped decisions" and continue.
 
@@ -156,6 +160,8 @@ Commit all changes including the discovery file (if created) and spec status upd
 If {{boundary_file}} does NOT have autonomous git rules (or has "ASK FIRST" for pushing), ask the user before pushing.
 
 ## 6. Report and Hand Off
+
+Write this report to the style contract in `docs/templates/reference/output-style.md`.
 
 ```
 Feature complete.

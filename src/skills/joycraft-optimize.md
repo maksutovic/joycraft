@@ -119,6 +119,8 @@ For Codex: note "hook auditing not yet supported on Codex."
 
 ## Step 9: Report
 
+Write the prose around the tables to the style contract in `docs/templates/reference/output-style.md`.
+
 Lead with the **disposition table** — one row per material control, columns: Control, Home File, Disposition, Evidence, Reason. Then the category summary:
 
 ```

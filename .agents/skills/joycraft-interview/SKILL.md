@@ -29,6 +29,8 @@ As they talk, weave in questions naturally — don't fire them all at once:
 
 ### 3. Play Back Understanding
 
+Write this playback, and the draft brief summary that follows, to the style contract in `docs/templates/reference/output-style.md`.
+
 After the user has gotten their ideas out, reflect back:
 "So if I'm hearing you right, you want to [summary]. The core problem is [X], and done looks like [Y]. Is that right?"
 
@@ -125,5 +127,5 @@ If the idea sounds complex — touches many files, involves architectural decisi
 - **This is NOT $joycraft-new-feature.** Do not push toward formal briefs, decomposition tables, or atomic specs. The point is exploration.
 - **Let the user lead.** Your job is to listen, clarify, and capture — not to structure or direct.
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
-- **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail.
+- **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail — and write it to the style contract in `docs/templates/reference/output-style.md`.
 - **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.

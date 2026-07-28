@@ -1,0 +1,545 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT DECISION DOSSIER · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. The joycraft-decide skill fills the content slots;
+  it MUST NOT alter the structure, the class names, or the CSS below. Keeping
+  the skeleton fixed is the whole point: freeform per-feature HTML would make
+  every dossier a fresh persuasive artifact. A fixed shell narrows the
+  persuasion surface to content, where the assumptions manifest polices it.
+
+  Slots are the HTML comments below whose text starts with "SLOT:". Each names a
+  region and gives filling guidance. Replace the slot comment (and any
+  placeholder) with real markup that uses ONLY the classes already defined in
+  the style block. (This contract comment intentionally does not nest a literal
+  example of the slot delimiters, because a nested comment terminator would end
+  this comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the SLOT regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · LABEL EVERY UNVERIFIED CLAIM (RF-5). Any load-bearing claim the dossier or
+      its brief rests on that was NOT posed to the human as a question goes in
+      the assumptions manifest. Claims you have checked use the Verified chip
+      (span class "vchip v-ok"); claims you have NOT checked MUST use the
+      Unverified chip (span class "vchip v-un"). Under-labeling (calling an
+      unchecked claim Verified) is the failure this manifest exists to prevent;
+      when in doubt, mark Unverified.
+    · Repeat the decision section (section class "decision") once per open
+      decision (copy-per-decision). Delete option cards you don't need; a binary
+      decision renders two cards, no stretching. The recommended option gets
+      class "opt rec" and a Recommended tag (span class "tag").
+    · Keep the header's context strip even when empty; the layout copes with an
+      empty strip, so do not remove the container.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject BOTH options and say what's right instead).
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more decision sections, then assumptions manifest, then how-to-answer box,
+  then footer. Do not reorder.
+  ============================================================================
+-->
+<title>Decision Dossier — human-readable-output-style</title>
+<style>
+  /* Design tokens: light theme is the default set on :root */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Locked / context strip. Use .locked with .lock-chip for a decisions-locked
+     strip (add .open for still-open items), OR .tiers with .tier-col for a
+     structured context grid. Either fills the same slot; both are optional but
+     the container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  .tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px 0 20px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  @media (max-width: 680px) { .tiers { grid-template-columns: 1fr; } }
+  .tier-col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .tier-col .tlab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+  .tier-model { font-size: 13px; font-weight: 700; padding: 4px 11px; border-radius: 6px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-role { font-size: 13.5px; color: var(--ink-2); }
+
+  section.decision { margin-top: 54px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 26px 30px 28px; }
+  .d-id { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  h2 { font-size: 23px; font-weight: 700; margin: 6px 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  .d-why { font-size: 15px; color: var(--ink-2); margin: 0 0 20px; max-width: 72ch; }
+
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .opt { border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; background: var(--ground); display: flex; flex-direction: column; gap: 8px; }
+  .opt.rec { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .opt-head { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  h3 { font-size: 15.5px; font-weight: 700; margin: 0; }
+  .tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; }
+  .pros, .cons { margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
+  .pros li::before { content: "+ "; color: var(--good-ink); font-weight: 700; }
+  .cons li::before { content: "− "; color: var(--bad-ink); font-weight: 700; }
+  .pros li, .cons li { color: var(--ink-2); margin-bottom: 3px; line-height: 1.4; }
+  .blast { margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--rule-strong); }
+  .blast .blab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; display: block; margin-bottom: 5px; }
+  .bchips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .bchip { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .bchip.warn { background: var(--warn-wash); color: var(--warn-ink); font-weight: 600; }
+
+  /* Optional per-decision flow diagram. Scrolls inside its own box on narrow
+     screens (min-width on .flow-line + overflow-x on .flow) so the body never
+     scrolls horizontally. */
+  .flow { margin-top: 18px; background: var(--ground); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; overflow-x: auto; }
+  .flow .flab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .flow-line { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-width: 560px; }
+  .fnode { font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 6px; background: var(--surface); border: 1px solid var(--rule-strong); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .fnode.hi { border-color: var(--accent); color: var(--accent-ink); }
+  .fnode.gate { border-color: var(--warn-ink); color: var(--warn-ink); }
+  .farrow { color: var(--ink-3); flex: none; }
+  .unv { font-size: 11px; color: var(--warn-ink); font-weight: 600; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+
+  .manifest { margin-top: 54px; }
+  .man-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .man-head h2 { margin: 0; }
+  .man-sub { font-size: 14.5px; color: var(--ink-2); margin: 8px 0 16px; max-width: 74ch; }
+  .man-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .vchip { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; text-align: center; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .v-ok { background: var(--good-wash); color: var(--good-ink); }
+  .v-un { background: var(--warn-wash); color: var(--warn-ink); }
+  .man-row p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .man-row p strong { color: var(--ink); }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decision Dossier · feature: human-readable-output-style · July 27, 2026</div>
+  <h1>How should a house output style bind Joycraft's skills?</h1>
+  <p class="dek">Locked: no new user-invocable skill, one reference doc cited by path, human-facing moments only, no rubric self-scoring loop. Open: where the doc lives, whether the rules are short-positive or a full banned list, how far a test enforces it — plus two ASK FIRST boundary crossings this feature cannot avoid.</p>
+  <div class="locked">
+    <span class="lock-chip">✓ No new skill (human-door budget full at 9)</span>
+    <span class="lock-chip">✓ Reference doc + path pointers</span>
+    <span class="lock-chip">✓ Human-facing moments only</span>
+    <span class="lock-chip">✓ No rubric self-scoring loop</span>
+    <span class="lock-chip open">B1 skill-content boundary</span>
+    <span class="lock-chip open">B2 template-content boundary</span>
+    <span class="lock-chip open">D1 where the doc lives</span>
+    <span class="lock-chip open">D2 rule-set shape</span>
+    <span class="lock-chip open">D3 test enforcement</span>
+  </div>
+</header>
+
+<section class="decision">
+  <span class="d-id">B1 · BOUNDARY · SKILL CONTENT</span>
+  <h2>This feature edits skill bodies, which AGENTS.md lists as ASK FIRST. Proceed?</h2>
+  <p class="d-why">"Changing skill content — skills are the user-facing interface" is an explicit ASK FIRST boundary. Adding a style pointer to human-facing skills means editing <span class="mono">src/skills/*.md</span>, regenerating three harness variants, and syncing installed copies. This question is mandatory and exempt from the question cap — I am not permitted to assume the answer.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Approve scoped skill edits</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>The feature is impossible without it — a reference doc no skill cites is a doc no agent reads at the moment it matters</li>
+        <li><span class="mono">docs/reference/skill-authoring.md</span> is the live cautionary precedent: shipped nowhere, cited by no skill</li>
+        <li>Edits are additive one-line pointers, not rewrites of existing steps</li>
+      </ul>
+      <ul class="cons">
+        <li>Touches the user-facing interface across up to 9 skills</li>
+        <li>Every edit needs bundle regen + installed-copy sync in the same commit or parity tests fail</li>
+        <li>Pointer placement risks the position-fragile 1500-char test windows</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip mono">src/skills/*.md</span>
+          <span class="bchip mono">src/{claude,codex,pi}-skills/</span>
+          <span class="bchip mono">src/bundled-files.ts</span>
+          <span class="bchip warn mono">.claude/skills/** (byte-match)</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Reference doc only, zero skill edits</h3>
+      </div>
+      <ul class="pros">
+        <li>Does not cross the ASK FIRST boundary at all</li>
+        <li>Smallest possible diff; no regen, no parity risk</li>
+      </ul>
+      <ul class="cons">
+        <li>Reproduces the skill-authoring.md failure mode by design — an uncited doc</li>
+        <li>Nothing carries the style rule to the output moment where it applies</li>
+        <li>Ships the appearance of a contract without the mechanism</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip mono">one new .md file</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">B2 · BOUNDARY · TEMPLATE CONTENT</span>
+  <h2>Should the style doc ship to user projects as bundled template content?</h2>
+  <p class="d-why">"Changing template content — templates are the core product, changes affect all users" is ASK FIRST. Anything added to <span class="mono">src/templates/</span> lands in every user's <span class="mono">docs/templates/</span> on init and is upgrade-tracked by hash. This is the same underlying choice as D1 viewed from the boundary side, and it is mandatory for that reason.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Yes — ship it as a template</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Skills shipped to users cite a path that actually exists in their project</li>
+        <li>Matches the two existing occupants of <span class="mono">src/templates/reference/</span></li>
+        <li>Upgrade machinery already handles nested reference keys</li>
+      </ul>
+      <ul class="cons">
+        <li>Adds permanent footprint to every user project</li>
+        <li>Imposes Joycraft's house voice on users who may not want it</li>
+        <li>Changing it later is a template change — this same boundary again</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip mono">src/templates/reference/</span>
+          <span class="bchip mono">src/bundled-files.ts TEMPLATES</span>
+          <span class="bchip warn">every user project on init/upgrade</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>No — repo-internal only</h3>
+      </div>
+      <ul class="pros">
+        <li>Zero user footprint; no template boundary crossed</li>
+        <li>Binds Joycraft's own authors, which is where output moments are written</li>
+      </ul>
+      <ul class="cons">
+        <li>Shipped skills would cite a dead path in user projects</li>
+        <li>Forces the pointer to be Joycraft-repo-only, splitting the contract</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip mono">docs/reference/</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D1 · WHERE THE DOC LIVES</span>
+  <h2>Which home does the style doc take, and therefore whom does it bind?</h2>
+  <p class="d-why">Joycraft's own repo reads <span class="mono">docs/reference/</span>, but a user project receives bundled templates at <span class="mono">docs/templates/reference/</span>. A single pointer string cannot be correct in both places, so this choice determines whether the contract binds Joycraft's authors, its users, or both.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Ship it: <span class="mono">src/templates/reference/output-style.md</span></h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Path resolves in user projects, where the shipped skills run</li>
+        <li>Consistent with knowledge-lifecycle.md and spec-status-lifecycle.md</li>
+        <li>Upgrade-tracked by hash like every other template</li>
+      </ul>
+      <ul class="cons">
+        <li>Joycraft's own repo then reads it from docs/templates/, not docs/reference/ — mildly odd for self-hosting</li>
+        <li>User footprint (see B2)</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip mono">src/templates/reference/</span>
+          <span class="bchip mono">src/init.ts:197-203</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Repo-internal: <span class="mono">docs/reference/output-style.md</span></h3>
+      </div>
+      <ul class="pros">
+        <li>No user footprint; mirrors skill-authoring.md exactly</li>
+        <li>Binds the authors who actually write the output moments</li>
+      </ul>
+      <ul class="cons">
+        <li>Broken pointer in every user project — load-bearing failure</li>
+        <li>skill-authoring.md shows this home produces docs nothing cites</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip warn">dead path for users</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Both homes, split by audience</h3>
+      </div>
+      <ul class="pros">
+        <li>Each audience gets the rules it needs at a path that resolves</li>
+        <li>Authoring-time rules could extend the existing skill-authoring.md</li>
+      </ul>
+      <ul class="cons">
+        <li>Two homes for related rules — the exact ONE_HOME condition optimize flags</li>
+        <li>Doubles the drift surface</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip mono">src/templates/reference/</span>
+          <span class="bchip mono">docs/reference/skill-authoring.md</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D2 · RULE-SET SHAPE</span>
+  <h2>Short positively-framed rules, or a full anti-slop banned list?</h2>
+  <p class="d-why">The two research clusters contradict each other outright. The popular published artifacts (stop-slop ~14.6k stars, deslop, no-ai-slop) are long negative-constraint lists. Anthropic's first-party July 2026 guidance for Fable/Opus-4.8-era models is the opposite: fewer hard constraints, because "do not do this" rules over-fire in the 10% of cases where they are wrong. Nobody has tested banned-list skills against frontier Claude. This is the design's load-bearing anchor-50 claim and the reason the block rule fired.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Short positive rule set (~6–10 rules) with stated motivation</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Matches verified first-party guidance for the model generation Joycraft targets</li>
+        <li>Low always-loaded token cost; degrades gracefully when a rule doesn't fit</li>
+        <li>Stating motivation lets the model generalize instead of pattern-matching</li>
+      </ul>
+      <ul class="cons">
+        <li>The reconciliation is inference from docs, not measured — research Caveat 2 says so explicitly</li>
+        <li>May be too weak to change behavior at all; no eval either way</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">one reference doc</span>
+          <span class="bchip">all human-facing output</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Full categorized banned-phrase list</h3>
+      </div>
+      <ul class="pros">
+        <li>The dominant published pattern with heavy real-world adoption</li>
+        <li>Concrete and mechanically checkable; precedent exists in the suite for a whole-file word ban</li>
+      </ul>
+      <ul class="cons">
+        <li>Directly contradicts Anthropic's guidance for recent models</li>
+        <li>Tell lists are self-described time-dated detectors needing re-profiling</li>
+        <li>Adoption is not efficacy — none ship a before/after eval</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip warn">large always-loaded doc</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Short positive rules + a small versioned tell list</h3>
+      </div>
+      <ul class="pros">
+        <li>Hedges the contradiction instead of betting on one side</li>
+        <li>Explicit versioning answers the research's open question on tell drift</li>
+      </ul>
+      <ul class="cons">
+        <li>More machinery, and the tell list still has no evidence behind it</li>
+        <li>Creates a recurring maintenance obligation at every model bump</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">reference doc + version metadata</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D3 · TEST ENFORCEMENT</span>
+  <h2>How much should a test enforce — the pointer, its placement, or the prose?</h2>
+  <p class="d-why">Prose quality has no mechanical oracle, and the suite has never asserted it. The existing content tests assert structural presence and ordering only. Going further re-introduces RF-KILL-2 (hard word-caps with silent cutting), already rejected. But a presence-only test proves wiring, not compliance.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Presence only</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Cheap; mirrors skill-handoff.test.ts substring assertions</li>
+        <li>No false positives; survives skill restructuring</li>
+        <li>Avoids the position-fragile windowing idiom entirely</li>
+      </ul>
+      <ul class="cons">
+        <li>A skill can cite the doc and still ignore it</li>
+        <li>Proves wiring, not behavior</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip mono">tests/ (one new file)</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Presence + ordering</h3>
+      </div>
+      <ul class="pros">
+        <li>Catches the pointer being buried where it won't be read at the right moment</li>
+      </ul>
+      <ul class="cons">
+        <li>The ordering assertion is already the most fragile idiom in the suite</li>
+        <li>Compounds the 1500-char window fragility this feature must avoid</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip warn mono">windowed test regions</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Presence + golden example in the doc</h3>
+      </div>
+      <ul class="pros">
+        <li>Research finding 7: concrete examples beat abstract instructions</li>
+        <li>Tests the doc's own usefulness, not just its existence</li>
+      </ul>
+      <ul class="cons">
+        <li>Tests the reference doc, not the skills that must obey it</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip mono">tests/ + reference doc</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="manifest">
+  <div class="man-head">
+    <span class="eyebrow">Integrity</span>
+    <h2>Assumptions asserted as fact</h2>
+  </div>
+  <p class="man-sub">These are load-bearing claims this dossier rests on that were NOT posed to you as questions. Per RF-5, anything unchecked is labeled Unverified. This dossier is itself a persuasive artifact — including this line, and including which questions I chose to frame.</p>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>The build engine has no include/inject primitive.</strong> Read <span class="mono">scripts/lib/skill-template.mjs</span>: header at :5-8 enumerates exactly three primitives, module is pure/no-I/O at :1, and <span class="mono">applyTemplate</span> is the only export. Shared content must duplicate, abuse a 5th LOOKUP key, or extend the engine.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>Bundled templates land at docs/templates/ in user projects.</strong> Read <span class="mono">src/init.ts:197-203</span> — every TEMPLATES entry is written under <span class="mono">docs/templates/</span> with ensureDir on the dirname, so nested reference/ keys already work.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>The human-door budget is already full.</strong> <span class="mono">grep "^entry:" src/skills/*.md</span> returns 9 human, 11 agent, 2 situational; the 2026-07-21 decision-log row caps human doors at ≤9. A new user-invocable style skill would breach it.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>Content tests read two different source-of-truth dirs.</strong> <span class="mono">tests/skill-handoff.test.ts:7</span> reads generated <span class="mono">src/claude-skills/</span>; <span class="mono">retrieval-pass-skill.test.ts:9-11</span> reads installed <span class="mono">.claude/skills/</span>. Both only see changes after the build step runs.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>A short positive rule set will actually change model output.</strong> Unchecked because no eval exists in either direction — the research says so in its own caveats. Verifying means running a before/after comparison on real Joycraft report output, which nobody in the cited literature has done.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>The reward-hacking result transfers to current Claude.</strong> Pan et al. 2024 measured GPT-3.5/GPT-4, not Claude. I used it to reject the rubric loop anyway. Verifying means replicating the writer-judge loop on a current model.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>The enumerated human-facing output moments are complete.</strong> Taken from the companion research doc's per-skill map, with approximate line numbers I did not re-walk skill by skill. Verifying means auditing all 22 skills directly.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>A one-line path pointer is sufficient to make an agent load and apply the doc.</strong> This is the mechanism the whole design rests on, assumed from the existing seven-skill pointer idiom. Nobody has checked whether agents actually follow those pointers at the output moment.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>My risk ranking is right.</strong> I pre-backlogged D4 (which skills get the pointer) and D5 (consolidating existing scattered directives) as lower blast radius. If you disagree, pull either back into this round — the ranking is my framing, not a fact.</p></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>Five forced-choice questions follow in the terminal, boundary questions first, one at a time. For each, use the free-text field and type "&lt;choice&gt; because &lt;one-sentence reason&gt;" — the rationale is what gets stamped into the decision log, not just the pick. If every option on a question is wrong, reject the framing: type what's right instead. "backlog because …" and "discard because …" are always valid answers, on any question.</p>
+</div>
+
+<footer>
+  <p>Joycraft decision dossier · feature: human-readable-output-style · design bookend deposition · rendered from DECISION_DOSSIER_TEMPLATE.html</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

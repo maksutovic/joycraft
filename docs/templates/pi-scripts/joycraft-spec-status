@@ -12,7 +12,18 @@ if [ -z "$MANIFEST" ]; then
   exit 1
 fi
 
-# Parse JSON with grep+sed (no jq dependency)
+# Parse JSON with grep+sed (no jq dependency).
+#
+# `grep -o '{[^}]*}'` is line-oriented, so it cannot see an object spanning
+# several lines. `joycraft-decompose` documents a compact one-object-per-line
+# manifest, but pretty-printed manifests (one key per line) are common in
+# practice and used to yield an empty queue here — indistinguishable from a
+# genuinely empty one. Collapsing each object onto a single line first makes
+# both layouts parse identically. The manifest on disk is never rewritten.
+normalize_manifest() {
+  tr '\n' ' ' < "$1" | sed 's/}[[:space:]]*,/}\n/g; s/}[[:space:]]*]/}\n/g'
+}
+
 echo "Spec Queue Status"
 echo "─────────────────"
 echo ""
@@ -25,11 +36,12 @@ while IFS= read -r line; do
   status=$(echo "$line" | sed -n 's/.*"status": *"\([^"]*\)".*/\1/p')
   
   if [ -n "$id" ] && [ -n "$file" ] && [ -n "$status" ]; then
-    if [ "$status" = "complete" ]; then
-      marker="[✓]"
-    else
-      marker="[ ]"
-    fi
+    # Glyphs per docs/reference/spec-status-lifecycle.md
+    case "$status" in
+      done)      marker="[✓]" ;;
+      in-review) marker="[~]" ;;
+      *)         marker="[ ]" ;;  # todo (and any unknown) render as not-started
+    esac
     printf "%s  #%s  %s  (%s)\n" "$marker" "$id" "$file" "$status"
   fi
-done < <(grep -o '{[^}]*}' "$MANIFEST" | grep '"id"')
+done < <(normalize_manifest "$MANIFEST" | grep -o '{[^}]*}' | grep '"id"')

@@ -1,0 +1,335 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT DECISION DOSSIER · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. The joycraft-decide skill fills the content slots;
+  it MUST NOT alter the structure, the class names, or the CSS below. Keeping
+  the skeleton fixed is the whole point: freeform per-feature HTML would make
+  every dossier a fresh persuasive artifact. A fixed shell narrows the
+  persuasion surface to content, where the assumptions manifest polices it.
+
+  Slots are the HTML comments below whose text starts with "SLOT:". Each names a
+  region and gives filling guidance. Replace the slot comment (and any
+  placeholder) with real markup that uses ONLY the classes already defined in
+  the style block. (This contract comment intentionally does not nest a literal
+  example of the slot delimiters, because a nested comment terminator would end
+  this comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the SLOT regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · LABEL EVERY UNVERIFIED CLAIM (RF-5). Any load-bearing claim the dossier or
+      its brief rests on that was NOT posed to the human as a question goes in
+      the assumptions manifest. Claims you have checked use the Verified chip
+      (span class "vchip v-ok"); claims you have NOT checked MUST use the
+      Unverified chip (span class "vchip v-un"). Under-labeling (calling an
+      unchecked claim Verified) is the failure this manifest exists to prevent;
+      when in doubt, mark Unverified.
+    · Repeat the decision section (section class "decision") once per open
+      decision (copy-per-decision). Delete option cards you don't need; a binary
+      decision renders two cards, no stretching. The recommended option gets
+      class "opt rec" and a Recommended tag (span class "tag").
+    · Keep the header's context strip even when empty; the layout copes with an
+      empty strip, so do not remove the container.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject BOTH options and say what's right instead).
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more decision sections, then assumptions manifest, then how-to-answer box,
+  then footer. Do not reorder.
+  ============================================================================
+-->
+<!-- SLOT:title · page title text, e.g. "Decision Dossier — <feature-name>" -->
+<title>Decision Dossier — TEMPLATE</title>
+<style>
+  /* Design tokens: light theme is the default set on :root */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Locked / context strip. Use .locked with .lock-chip for a decisions-locked
+     strip (add .open for still-open items), OR .tiers with .tier-col for a
+     structured context grid. Either fills the same slot; both are optional but
+     the container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  .tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px 0 20px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  @media (max-width: 680px) { .tiers { grid-template-columns: 1fr; } }
+  .tier-col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .tier-col .tlab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+  .tier-model { font-size: 13px; font-weight: 700; padding: 4px 11px; border-radius: 6px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-role { font-size: 13.5px; color: var(--ink-2); }
+
+  section.decision { margin-top: 54px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 26px 30px 28px; }
+  .d-id { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  h2 { font-size: 23px; font-weight: 700; margin: 6px 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  .d-why { font-size: 15px; color: var(--ink-2); margin: 0 0 20px; max-width: 72ch; }
+
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .opt { border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; background: var(--ground); display: flex; flex-direction: column; gap: 8px; }
+  .opt.rec { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .opt-head { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  h3 { font-size: 15.5px; font-weight: 700; margin: 0; }
+  .tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; }
+  .pros, .cons { margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
+  .pros li::before { content: "+ "; color: var(--good-ink); font-weight: 700; }
+  .cons li::before { content: "− "; color: var(--bad-ink); font-weight: 700; }
+  .pros li, .cons li { color: var(--ink-2); margin-bottom: 3px; line-height: 1.4; }
+  .blast { margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--rule-strong); }
+  .blast .blab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; display: block; margin-bottom: 5px; }
+  .bchips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .bchip { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .bchip.warn { background: var(--warn-wash); color: var(--warn-ink); font-weight: 600; }
+
+  /* Optional per-decision flow diagram. Scrolls inside its own box on narrow
+     screens (min-width on .flow-line + overflow-x on .flow) so the body never
+     scrolls horizontally. */
+  .flow { margin-top: 18px; background: var(--ground); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; overflow-x: auto; }
+  .flow .flab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .flow-line { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-width: 560px; }
+  .fnode { font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 6px; background: var(--surface); border: 1px solid var(--rule-strong); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .fnode.hi { border-color: var(--accent); color: var(--accent-ink); }
+  .fnode.gate { border-color: var(--warn-ink); color: var(--warn-ink); }
+  .farrow { color: var(--ink-3); flex: none; }
+  .unv { font-size: 11px; color: var(--warn-ink); font-weight: 600; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+
+  .manifest { margin-top: 54px; }
+  .man-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .man-head h2 { margin: 0; }
+  .man-sub { font-size: 14.5px; color: var(--ink-2); margin: 8px 0 16px; max-width: 74ch; }
+  .man-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .vchip { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; text-align: center; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .v-ok { background: var(--good-wash); color: var(--good-ink); }
+  .v-un { background: var(--warn-wash); color: var(--warn-ink); }
+  .man-row p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .man-row p strong { color: var(--ink); }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <!-- SLOT:eyebrow — kicker line, e.g. "Joycraft Decision Dossier · feature: <name> · <Month DD, YYYY>" -->
+  <div class="eyebrow">Joycraft Decision Dossier &middot; feature: human-readable-output-style &middot; July 27, 2026</div>
+  <!-- SLOT:title-h1 — the headline: what this dossier is deciding, in a phrase -->
+  <h1>How strictly should the pointer test enforce placement?</h1>
+  <!-- SLOT:dek — 1–2 sentence standfirst: what's locked, what's open, why it's here now -->
+  <p class="dek">The style contract shipped in PR #62 with a presence-only test. D3&rsquo;s presence-vs-ordering half was deferred unstamped &mdash; it is now answerable with evidence the shipped feature produced, rather than the speculation available when it was deferred.</p>
+  <!-- SLOT:context-strip — REQUIRED CONTAINER, keep even if empty.
+       Fill with EITHER a .locked strip of .lock-chip spans (add .open for
+       still-open items), OR a .tiers grid of .tier-col columns. Example:
+         <div class="locked">
+           <span class="lock-chip">✓ Locked thing</span>
+           <span class="lock-chip open">D1 open</span>
+         </div>
+  -->
+  <div class="locked">
+      <span class="lchip">D1 &middot; ships to <span class="mono">docs/templates/reference/output-style.md</span></span>
+      <span class="lchip">D2 &middot; short positive rule set, motivation per rule</span>
+      <span class="lchip">D6 &middot; doc carries a worked before/after example</span>
+      <span class="lchip">D7 &middot; 11 skills carry the pointer; <span class="mono">setup</span> excluded</span>
+      <span class="lchip">Shipped &middot; PR #62, 1545 tests green</span>
+    </div>
+</header>
+
+<!-- SLOT:decisions — REPEAT this <section class="decision"> once per open
+     decision (copy-per-decision). Delete option cards you don't need; the grid
+     handles 2–4 cards without stretching. Mark the recommended option
+     class="opt rec" and give it a Recommended tag. The .flow diagram is
+     OPTIONAL — include it only when a before/after shape clarifies the choice.
+-->
+<section class="decision">
+  <!-- SLOT:decision-id — e.g. "D1 · SHORT TOPIC" -->
+  <span class="d-id">D3 &middot; TEST STRICTNESS</span>
+  <!-- SLOT:decision-question — the decision framed as a question -->
+  <h2>Should the pointer test assert only that a skill cites the style doc, or also where the citation sits?</h2>
+  <!-- SLOT:decision-why — the tension: why this is genuinely open, in 1–3 sentences -->
+  <p class="d-why">Presence-only proves the wiring exists but cannot catch a pointer buried where no agent reads it. The original framing rejected ordering as the most fragile idiom in the suite &mdash; but that conflated a windowed slice with a plain index comparison, and measuring the eleven shipped skills shows the anchor an ordering rule needs does not exist uniformly.</p>
+  <div class="options">
+    <!-- SLOT:option-recommended — the recommended option card -->
+    <div class="opt rec">
+      <div class="opt-head">
+        <!-- SLOT:option-title — option name (use .mono for code identifiers) -->
+        <h3>Keep presence-only</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <!-- SLOT:option-pros — one <li> per upside -->
+      <ul class="pros">
+        <li>Already shipped, green, zero maintenance across 11 skills.</li>
+        <li>No false positives &mdash; a substring either appears or it does not.</li>
+        <li>Measured: 2 of 11 skills (<span class="mono">tune</span>, <span class="mono">decide</span>) have no fenced block after their pointer, so a fence-anchored rule fails them for reasons unrelated to placement quality.</li>
+      </ul>
+      <!-- SLOT:option-cons — one <li> per downside; be honest about the recommended one too -->
+      <ul class="cons">
+        <li>Cannot detect a pointer moved somewhere useless by a later edit.</li>
+        <li>Cannot tell a live instruction from a passing mention in a comment.</li>
+        <li>Leaves &ldquo;does the pointer change output?&rdquo; unanswered by any check.</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <!-- SLOT:option-blast — one .bchip per affected file/surface; add .warn to a chip that flags a risk -->
+        <div class="bchips"><span class="bchip">no change</span><span class="bchip mono">tests/output-style-pointer.test.ts</span></div>
+      </div>
+    </div>
+    <!-- SLOT:option-alternative — COPY this card once per non-recommended option
+         (drop the `rec` class and the Recommended tag). -->
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Add ordering for all 11</h3>
+      </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Ordering where an anchor exists</h3>
+      </div>
+      <ul class="pros">
+        <li>Catches the buried-pointer regression that presence-only misses.</li>
+        <li>Index comparison, not a windowed slice &mdash; materially less fragile than the idiom D3 originally cited.</li>
+      </ul>
+      <ul class="cons">
+        <li>Needs a stable anchor for the output moment; no single one holds for all 11 skills.</li>
+        <li><span class="mono">tune</span> and <span class="mono">decide</span> need bespoke anchors or exemptions &mdash; per-skill special cases in a test meant to be uniform.</li>
+        <li>Every future skill edit must keep the pointer ahead of a hardcoded heading.</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips"><span class="bchip mono">tests/output-style-pointer.test.ts</span><span class="bchip warn">11 skills constrained</span><span class="bchip warn">2 need exemptions</span></div>
+      </div>
+    </div>
+  </div>
+  <!-- SLOT:decision-flow — OPTIONAL. Delete entirely if no diagram helps.
+       When kept, fill .flow-line with .fnode nodes separated by .farrow arrows;
+       use .fnode.hi for the recommended node and .fnode.gate for a gate/stop. -->
+  <div class="flow">
+    <span class="flab">What each option can catch</span>
+    <div class="flow-line">
+      <span class="fnode hi">pointer exists</span>
+      <span class="farrow">&rarr;</span>
+      <span class="fnode">pointer sits before the output moment</span>
+      <span class="farrow">&rarr;</span>
+      <span class="fnode gate">pointer changes the output</span>
+    </div>
+  </div>
+  </div>
+</section>
+
+<section class="manifest">
+  <div class="man-head">
+    <span class="eyebrow">Integrity</span>
+    <h2>Assumptions asserted as fact</h2>
+  </div>
+  <!-- SLOT:manifest-sub — restate the RF-5 rule for this dossier: load-bearing
+       claims NOT posed as questions are labeled below; this is still a
+       persuasive artifact, including this line. -->
+  <p class="man-sub">Load-bearing claims this dossier rests on that are NOT posed as the question above. Unverified is the default; a Verified chip means the claim was checked directly and says how.</p>
+  <!-- SLOT:manifest-rows — one .man-row per load-bearing claim. Chip variants:
+       VERIFIED  → <span class="vchip v-ok">Verified</span>   (you checked it)
+       UNVERIFIED→ <span class="vchip v-un">Unverified</span> (you did NOT — MANDATORY per RF-5)
+       When in doubt, mark Unverified. Row shape:
+         <div class="man-row"><span class="vchip v-ok">Verified</span>
+           <p><strong>The claim.</strong> The evidence / why it holds.</p></div>
+         <div class="man-row"><span class="vchip v-un">Unverified</span>
+           <p><strong>The claim.</strong> Why it's unchecked and what would verify it.</p></div>
+  -->
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>9 of 11 pointers precede a fenced block; <span class="mono">tune</span> and <span class="mono">decide</span> have none after theirs.</strong> Measured directly against the eleven shipped <span class="mono">src/skills/</span> files by scanning each pointer offset against the next fence. This is the finding that reframes the decision.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>The ordering idiom is an index comparison, not a windowed slice.</strong> Read <span class="mono">tests/retrieval-pass-skill.test.ts:28-45</span> &mdash; it compares <span class="mono">indexOf</span> positions. The 1500-char window is a separate assertion in the same file. D3&rsquo;s original framing conflated them, overstating the fragility of ordering.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>Presence-only is shipped and green.</strong> <span class="mono">tests/output-style-pointer.test.ts</span> holds 24 assertions; the full suite is 1545 passing across 80 files as of <span class="mono">95c87a0</span>.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>A pointer read at the output moment changes agent output more than one read anywhere in the file.</strong> This is the premise the whole pointer design rests on, and nothing measures it. Verifying it needs an eval comparing report output with the pointer at the output moment vs. at the top of the file &mdash; no such eval exists.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>A future edit would plausibly move a pointer somewhere useless.</strong> The regression ordering protects against is hypothetical; there is no instance of it in this repo&rsquo;s history. Verifying it means waiting for the failure or auditing comparable pointer sets over time.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>Agents read the pointer at all.</strong> Presence in the file is not evidence of attention. Distinct from the claim above: this one asks whether the mechanism works at all, not whether position matters.</p></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <!-- SLOT:howto — how the human answers: forced-choice questions + one-sentence
+       rationale each, where the answers land. MUST name the reject-this-framing
+       escape: if BOTH options are wrong, the human says what's right instead. -->
+  <p>You will get one forced-choice question with these three options. Answer in the free-text field as &ldquo;&lt;choice&gt; because &lt;one-sentence reason&gt;&rdquo; &mdash; the rationale is stamped verbatim into the brief and the decision log. If all three options are wrong, reject the framing: type what is right instead. &ldquo;backlog because &hellip;&rdquo; and &ldquo;discard because &hellip;&rdquo; are always valid answers.</p>
+</div>
+
+<footer>
+  <!-- SLOT:footer — provenance line: which dossier / pilot run this is, feature slug -->
+  <p>Joycraft decision dossier &middot; feature <span class="mono">2026-07-27-human-readable-output-style</span> &middot; reopening D3 (presence-vs-ordering half) after the feature shipped in PR #62.</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

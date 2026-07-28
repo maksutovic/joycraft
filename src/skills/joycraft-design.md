@@ -139,6 +139,8 @@ If you make changes, note them at the bottom of `design.md` under a "Brief updat
 
 ## Step 4: Present and STOP — Pre-Approval Hold
 
+Write this presentation to the style contract in `docs/templates/reference/output-style.md`.
+
 Present the design document to the user. Say:
 
 ```

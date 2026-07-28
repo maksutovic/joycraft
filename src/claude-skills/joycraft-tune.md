@@ -42,6 +42,8 @@ Score 1 = absent, 3 = partially there, 5 = comprehensive. Give credit for substa
 
 Write to `docs/joycraft-assessment.md` AND display it. Include: scores table, detailed findings (evidence + gap + recommendation per dimension), and an upgrade plan (up to 5 actions ordered by impact).
 
+Write the displayed assessment and every report below it to the style contract in `docs/templates/reference/output-style.md`.
+
 ## Step 5: Apply Upgrades
 
 Apply using three tiers — do NOT ask per-item permission:
