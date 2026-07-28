@@ -32,9 +32,9 @@ decisions:
     rationale: because anchoring to the report/present heading rather than a following fence makes ordering provably uniform — all 15 pointers already satisfy it, so no skill needs an exemption
   - id: D4
     question: which skills get the pointer — all 9 entry: human, or only heavy output moments?
-    status: backlogged
-    choice: backlogged
-    rationale: because the ≤5 question cap deferred it as lower blast radius than the boundary and rule-shape questions
+    status: clarified
+    choice: superseded by D7 — 11 skills, every human-facing output moment except joycraft-setup
+    rationale: because decompose resolved it and stamped the answer as D7; this row was left stale at backlogged and is reconciled here
   - id: D5
     question: should this feature also consolidate the existing scattered terseness directives?
     status: clarified
