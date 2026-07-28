@@ -34,6 +34,18 @@ MANIFEST="$MANIFEST_PATH"
 TMPDIR=$(mktemp -d)
 trap 'rm -rf $TMPDIR' EXIT
 
+# `grep -o '{[^}]*}'` below is line-oriented, so it cannot see an object
+# spanning several lines. `joycraft-decompose` documents a compact
+# one-object-per-line manifest, but pretty-printed manifests (one key per line)
+# are common in practice — and there this extraction yielded zero entries, which
+# this script then reported as "Pipeline complete". That is the same output a
+# genuinely finished queue produces, so an autonomous loop would exit before
+# running a single spec. Collapsing each object onto one line first makes both
+# layouts parse identically. The manifest on disk is never rewritten.
+normalize_manifest() {
+  tr '\n' ' ' < "$1" | sed 's/}[[:space:]]*,/}\n/g; s/}[[:space:]]*]/}\n/g'
+}
+
 # Extract all spec entries (use process substitution to avoid pipefail+subshell issues)
 while IFS= read -r entry; do
   id=$(echo "$entry" | sed -n 's/.*"id": *\([0-9]*\).*/\1/p')
@@ -44,7 +56,7 @@ while IFS= read -r entry; do
   if [ -n "$id" ] && [ -n "$file" ] && [ -n "$status" ]; then
     echo "$id|$file|$status|$deps" >> "$TMPDIR/specs.txt"
   fi
-done < <(grep -o '{[^}]*}' "$MANIFEST")
+done < <(normalize_manifest "$MANIFEST" | grep -o '{[^}]*}')
 
 if [ ! -f "$TMPDIR/specs.txt" ]; then
   echo "Pipeline complete"

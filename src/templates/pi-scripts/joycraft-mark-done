@@ -64,11 +64,73 @@ fi
 
 # Replace the matching spec id's status — from ANY current value — to the
 # requested state, so re-running transitions (e.g. in-review → done) works.
-# Edit via a temp file rather than `sed -i`: in-place editing is non-portable
+#
+# This walks the file with a small state machine rather than a single sed
+# address, because the two keys need not share a line. `joycraft-decompose`
+# documents a compact one-object-per-line manifest, but hand-edited and
+# re-serialized manifests are commonly pretty-printed one key per line — and a
+# line-scoped `/"id": N/s/"status"…/` silently matches nothing there. Tracking
+# object boundaries handles both layouts and preserves the file's formatting.
+#
+# Edit via a temp file rather than `-i`: in-place editing is non-portable
 # (BSD/macOS needs `-i ''`, GNU/Linux rejects it), so we write to a temp file
 # and move it back — identical behavior on both platforms.
 TMP_MANIFEST="$(mktemp)"
-sed -E "/\"id\": *$SPEC_ID[,}]/s/\"status\": *\"[^\"]*\"/\"status\": \"$TO_STATE\"/" "$MANIFEST" > "$TMP_MANIFEST"
+awk -v want="$SPEC_ID" -v to="$TO_STATE" '
+  # Entering a new object resets the per-object state.
+  /\{/ { in_obj = 1; is_target = 0 }
+
+  # An object is the target once its "id" matches. On a compact one-line
+  # object this fires on the same line as "status", so the rewrite below must
+  # be evaluated after this check — hence the ordering of these blocks.
+  {
+    if (in_obj && match($0, /"id"[ \t]*:[ \t]*[0-9]+/)) {
+      idstr = substr($0, RSTART, RLENGTH)
+      sub(/^"id"[ \t]*:[ \t]*/, "", idstr)
+      if (idstr + 0 == want + 0) is_target = 1
+    }
+    if (is_target && /"status"[ \t]*:[ \t]*"[^"]*"/) {
+      sub(/"status"[ \t]*:[ \t]*"[^"]*"/, "\"status\": \"" to "\"")
+      changed = 1
+    }
+    print
+  }
+
+  /\}/ { in_obj = 0; is_target = 0 }
+
+  END { exit(changed ? 0 : 1) }
+' "$MANIFEST" > "$TMP_MANIFEST" && AWK_STATUS=0 || AWK_STATUS=$?
+# `&&/||` rather than a bare `$?`: under `set -e` a non-zero awk would abort the
+# script before the diagnostic below could run, turning a loud failure back into
+# a silent one.
+
+if [ "$AWK_STATUS" -ne 0 ]; then
+  rm -f "$TMP_MANIFEST"
+  echo "Spec #$SPEC_ID found but its \"status\" field could not be rewritten — manifest left unchanged." >&2
+  echo "This usually means the entry has no \"status\" key, or the manifest is malformed." >&2
+  exit 1
+fi
+
 mv "$TMP_MANIFEST" "$MANIFEST"
+
+# Verify the write landed. Reporting success on an unchanged file is the worse
+# half of the bug this guard exists to prevent: a silent no-op desyncs the queue
+# from the spec frontmatter, which is exactly what the status lifecycle forbids.
+if ! awk -v want="$SPEC_ID" -v to="$TO_STATE" '
+  /\{/ { in_obj = 1; is_target = 0 }
+  {
+    if (in_obj && match($0, /"id"[ \t]*:[ \t]*[0-9]+/)) {
+      idstr = substr($0, RSTART, RLENGTH)
+      sub(/^"id"[ \t]*:[ \t]*/, "", idstr)
+      if (idstr + 0 == want + 0) is_target = 1
+    }
+    if (is_target && $0 ~ ("\"status\"[ \t]*:[ \t]*\"" to "\"")) ok = 1
+  }
+  /\}/ { in_obj = 0; is_target = 0 }
+  END { exit(ok ? 0 : 1) }
+' "$MANIFEST"; then
+  echo "Spec #$SPEC_ID: status write did not land — manifest may be malformed." >&2
+  exit 1
+fi
 
 echo "Spec #$SPEC_ID marked $TO_STATE"
