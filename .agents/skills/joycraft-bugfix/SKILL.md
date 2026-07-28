@@ -29,6 +29,8 @@ Find the root cause. Start from the error site and trace backward. Read source f
 
 ## Phase 3: Discuss
 
+Write this presentation to the style contract in `docs/templates/reference/output-style.md`.
+
 Present findings to the user BEFORE writing any code or spec:
 1. **Symptom** — confirm it matches what they see
 2. **Root cause** — specific file(s) and line(s)

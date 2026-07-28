@@ -153,6 +153,8 @@ If CLAUDE.md does NOT have autonomous git rules (or has "ASK FIRST" for pushing)
 
 ## 6. Report and Hand Off
 
+Write this report to the style contract in `docs/templates/reference/output-style.md`.
+
 ```
 Feature complete.
 - Feature: [slug]

@@ -33,6 +33,8 @@ Notes:
 
 ## Step 3: Report
 
+Write this report to the style contract in `docs/templates/reference/output-style.md`.
+
 Relay the loop's outcome:
 
 - **Success** → which specs ran, and session-end's own report (validation, graduation `in-review → done`, push/PR per AGENTS.md autonomy).

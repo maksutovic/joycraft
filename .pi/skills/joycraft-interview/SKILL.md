@@ -29,6 +29,8 @@ As they talk, weave in questions naturally — don't fire them all at once:
 
 ### 3. Play Back Understanding
 
+Write this playback, and the draft brief summary that follows, to the style contract in `docs/templates/reference/output-style.md`.
+
 After the user has gotten their ideas out, reflect back:
 "So if I'm hearing you right, you want to [summary]. The core problem is [X], and done looks like [Y]. Is that right?"
 
