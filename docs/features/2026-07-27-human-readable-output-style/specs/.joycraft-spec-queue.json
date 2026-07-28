@@ -5,21 +5,21 @@
       "id": 1,
       "file": "write-output-style-reference.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint"
     },
     {
       "id": 2,
       "file": "test-output-style-template.md",
       "depends_on": [1],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch"
     },
     {
       "id": 3,
       "file": "add-style-pointers-to-skills.md",
       "depends_on": [1],
-      "status": "todo",
+      "status": "in-review",
       "mode": "isolated"
     },
     {
@@ -33,7 +33,7 @@
       "id": 5,
       "file": "document-repo-local-style-guidance.md",
       "depends_on": [1],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch"
     },
     {

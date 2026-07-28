@@ -68,6 +68,8 @@ When no `todo` specs remain, run the once-per-feature finisher yourself, in this
 
 ## Final Report
 
+Write this report to the style contract in `docs/templates/reference/output-style.md`.
+
 ```
 Feature run: <slug>
 - Specs completed: N of M (now in-review/done) · failures: [none | <spec> — <reason>]
@@ -115,6 +117,8 @@ When no `todo` specs remain, run the once-per-feature finisher yourself: read an
 
 ## Final Report
 
+Write this report to the style contract in `docs/templates/reference/output-style.md`.
+
 ```
 Feature run: <slug>
 - Specs completed: N of M (now in-review/done) · failures: [none | <spec> — <reason>]
@@ -150,6 +154,8 @@ Notes:
 - **ToS/cost:** this path is for Pi with a BYO API key or open-weight model — do not route a subscription OAuth through it.
 
 ## Step 3: Report
+
+Write this report to the style contract in `docs/templates/reference/output-style.md`.
 
 Relay the loop's outcome:
 
