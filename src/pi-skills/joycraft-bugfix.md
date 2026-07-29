@@ -31,6 +31,17 @@ Find the root cause. Start from the error site and trace backward. Read source f
 
 Write this presentation to the style contract in `docs/templates/reference/output-style.md`.
 
+### Decide first — the pre-presentation rule
+
+If the diagnosis contains any open question, or any load-bearing claim anchored
+≤50, invoke `/skill:joycraft-decide` on it NOW — before presenting. The Block Rule
+(`docs/context/anchors.md`) fires pre-approval, every time; presenting
+an artifact with open questions asks the human to approve an incomplete
+artifact.
+If the human already answered them in conversation, that counts as termination:
+stamp the `decisions:` frontmatter and proceed — no dossier required. Zero open
+questions and no ≤50 claims → the gate passes silently.
+
 Present findings to the user BEFORE writing any code or spec:
 1. **Symptom** — confirm it matches what they see
 2. **Root cause** — specific file(s) and line(s)

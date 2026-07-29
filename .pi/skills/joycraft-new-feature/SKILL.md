@@ -141,6 +141,17 @@ Present the brief to the user. Focus review on:
 - "Is anything in scope that shouldn't be?"
 - "Are the specs small enough? Can each be described in one sentence?"
 
+### Decide first — the pre-presentation rule
+
+If the artifact contains any open question, or any load-bearing claim anchored
+≤50, invoke `/skill:joycraft-decide` on it NOW — before presenting. The Block Rule
+(`docs/context/anchors.md`) fires pre-approval, every time; presenting
+an artifact with open questions asks the human to approve an incomplete
+artifact.
+If the human already answered them in conversation, that counts as termination:
+stamp the `decisions:` frontmatter and proceed — no dossier required. Zero open
+questions and no ≤50 claims → the gate passes silently.
+
 ### Render and open the brief
 
 `docs/features/<slug>/brief.md` is written first and stays **canonical** — agents

@@ -88,6 +88,17 @@ After writing the research document, update the parent brief with a back-referen
 3. If a `> **Research:**` line already exists, replace it — do NOT add a duplicate
 4. Write the brief back
 
+### Decide first — the pre-presentation rule
+
+If the artifact contains any open question, or any load-bearing claim anchored
+≤50, invoke `$joycraft-decide` on it NOW — before presenting. The Block Rule
+(`docs/context/anchors.md`) fires pre-approval, every time; presenting
+an artifact with open questions asks the human to approve an incomplete
+artifact.
+If the human already answered them in conversation, that counts as termination:
+stamp the `decisions:` frontmatter and proceed — no dossier required. Zero open
+questions and no ≤50 claims → the gate passes silently.
+
 ### Render and open the research
 
 `docs/features/<slug>/research.md` is written first and stays **canonical** —

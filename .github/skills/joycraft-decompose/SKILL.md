@@ -49,6 +49,12 @@ Before decomposing a brief file, parse its YAML frontmatter `decisions:` list. F
 - **Explicit defer** — the user says backlog it / skip for now / don't worry: set each named decision to `status: backlogged` with their one-line reason in the brief's frontmatter, add it to the feature's `docs/backlog/` entry (create one if needed), then re-evaluate the gate. Proceed only when zero decisions remain `open`, confirming in one line what was backlogged and where it was recorded (visible residue, never a silent edit).
 - `backlogged` and `discarded` never block — only `open` blocks.
 
+**The gate covers low-confidence claims too, not only `decisions:` rows.** A
+load-bearing claim in the brief carrying an inline anchor of ≤50 blocks exactly
+as an `open` decision does — the Block Rule, whose one home is
+`docs/context/anchors.md`. Name the anchored claims alongside the open decisions
+and route them through the same `/joycraft-decide` run.
+
 ## Step 2: Identify Natural Boundaries
 
 **Why:** Good boundaries make specs independently testable and committable. Bad boundaries create specs that can't be verified without other specs also being done.
@@ -83,6 +89,17 @@ For each atomic spec, define:
 Before the decomposition table, show the **"Prior knowledge reused"** list from Step 0's retrieval pass (or the explicit nothing-found line).
 
 Write this presentation, and the hand-off in Step 8, to the style contract in `docs/templates/reference/output-style.md`.
+
+### Decide first — the pre-presentation rule
+
+If the artifact contains any open question, or any load-bearing claim anchored
+≤50, invoke `/joycraft-decide` on it NOW — before presenting. The Block Rule
+(`docs/context/anchors.md`) fires pre-approval, every time; presenting
+an artifact with open questions asks the human to approve an incomplete
+artifact.
+If the human already answered them in conversation, that counts as termination:
+stamp the `decisions:` frontmatter and proceed — no dossier required. Zero open
+questions and no ≤50 claims → the gate passes silently.
 
 ### Render and open the decomposition
 

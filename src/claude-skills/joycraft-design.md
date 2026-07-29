@@ -139,6 +139,18 @@ If you make changes, note them at the bottom of `design.md` under a "Brief updat
 
 Write this presentation to the style contract in `docs/templates/reference/output-style.md`.
 
+### Decide first — the pre-presentation rule
+
+This is the **entry condition** of the presentation, not a post-approval step.
+If the artifact contains any open question, or any load-bearing claim anchored
+≤50, invoke `/joycraft-decide` on it NOW — before presenting. The Block Rule
+(`docs/context/anchors.md`) fires pre-approval, every time; presenting
+an artifact with open questions asks the human to approve an incomplete
+artifact.
+If the human already answered them in conversation, that counts as termination:
+stamp the `decisions:` frontmatter and proceed — no dossier required. Zero open
+questions and no ≤50 claims → the gate passes silently.
+
 ### Render and open the design
 
 `docs/features/<slug>/design.md` is written first and stays **canonical** —
@@ -218,9 +230,11 @@ Once the human approves the design:
 - Update the design document with their corrections and chosen options
 - Move answered questions from "Open Questions" to "Resolved Design Decisions"
 - Present the updated document for final confirmation
-- Run the deposition checkpoint: invoke `/joycraft-decide <design path>` so every
-  remaining open question terminates (clarified / backlogged / discarded) — the
-  decompose gate stays closed while any decision is `open`.
+- Confirm the deposition checkpoint: decisions were already terminated in Step 4
+  (clarified / backlogged / discarded) as the entry condition of the
+  presentation. If the human's feedback raised a *new* question, it terminates
+  the same way before hand-off — the decompose gate stays closed while any
+  decision is `open`.
 - Once the user gives explicit approval, AND ONLY THEN, emit the canonical Handoff block:
 
 ## Recommended Next Steps
