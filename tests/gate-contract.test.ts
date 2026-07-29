@@ -71,9 +71,13 @@ const SLOT_TEMPLATE_SKILLS: Record<string, number> = {
   'joycraft-decide': 1,
   'joycraft-tune': 1,
   'joycraft-optimize': 1,
+  // Eighth gate, added 2026-07-29: the interview's draft brief is a review
+  // gate too — field-verified on diligent-cwt when the human had to ask for
+  // the artifact the other seven gates already produce.
+  'joycraft-interview': 1,
 };
 
-/** Render-step skills: all seven gates except decide, which renders a dossier. */
+/** Render-step skills: all eight gates except decide, which renders a dossier. */
 const RENDER_SKILLS: Record<string, number> = {
   'joycraft-new-feature': 1,
   'joycraft-design': 1,
@@ -81,6 +85,7 @@ const RENDER_SKILLS: Record<string, number> = {
   'joycraft-research': 3,
   'joycraft-tune': 1,
   'joycraft-optimize': 1,
+  'joycraft-interview': 1,
 };
 
 /** Question-bearing skills that must terminate decisions before presenting. */
@@ -144,8 +149,8 @@ describe('group 1: every gate skill carries the inline slot template', () => {
     });
   }
 
-  it('covers exactly the seven gate skills the brief named', () => {
-    expect(Object.keys(SLOT_TEMPLATE_SKILLS)).toHaveLength(7);
+  it('covers the seven gate skills the brief named plus interview (follow-on)', () => {
+    expect(Object.keys(SLOT_TEMPLATE_SKILLS)).toHaveLength(8);
   });
 });
 
@@ -179,8 +184,8 @@ describe('group 2: every render-step skill cites the shared template', () => {
     });
   }
 
-  it('covers the six render skills — decide is excluded by design', () => {
-    expect(Object.keys(RENDER_SKILLS)).toHaveLength(6);
+  it('covers the seven render skills — decide is excluded by design', () => {
+    expect(Object.keys(RENDER_SKILLS)).toHaveLength(7);
     expect(Object.keys(RENDER_SKILLS)).not.toContain('joycraft-decide');
   });
 

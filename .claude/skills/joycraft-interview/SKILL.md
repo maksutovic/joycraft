@@ -90,6 +90,26 @@ Use this format for the body:
 [Any additional context, quotes, or tangents worth preserving]
 ```
 
+### Render and open the draft brief
+
+`docs/features/<slug>/brief.md` is written first and stays **canonical** — agents
+read the md, never the HTML. The HTML is a render of it and never invents content.
+
+1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
+   `<!-- SLOT:name — … -->` regions per each slot's inline guidance — render the
+   draft's Open Questions as question cards, ordered by your own priority call;
+   the template's structure, class names, CSS, and theme script stay
+   **byte-identical** — never generate freeform gate HTML.
+2. Write it to `docs/features/<slug>/brief.html` (committed later — the path is
+   already linguist-generated, so PRs collapse it). Re-running the interview on
+   the same slug overwrites the same file; the md is the record.
+3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
+   otherwise. If both fail, print the absolute path and continue — headless, CI,
+   and isolated mode are a no-op here, never a failure.
+4. Offer — don't push — an optional extra render: "I can also publish this draft
+   as a hosted artifact for a shareable link." Only publish if the human says
+   yes; the local file remains the canonical render. If declined, no retry.
+
 ### 5. Offer to Capture Deferred Items to Backlog
 
 If during the conversation deferred work surfaces (a tangent, a "later" item, a "out-of-scope but tempting" idea), ASK the user:
@@ -111,8 +131,25 @@ source: docs/features/<slug>/brief.md
 
 ### 6. Hand Off
 
-After writing the draft (and any backlog entries), present the canonical Handoff block.
-Include any backlog paths produced as a side effect.
+After writing the draft (and any backlog entries), your chat message is EXACTLY
+this template followed by the briefing block from Recommended Next Steps —
+nothing outside them. Do not summarize the brief after writing it — the
+artifact is the summary. Include any backlog paths produced as a side effect
+in the Artifact line.
+
+```markdown
+**Draft brief ready: <what this idea is, one line>**
+Artifact: <absolute brief.html path> (opened) · canonical: docs/features/<slug>/brief.md
+Open questions: <N> — <Q-numbers + ≤3-word labels, comma-separated>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
 
 ## Recommended Next Steps
 
@@ -155,3 +192,4 @@ If the idea sounds complex — touches many files, involves architectural decisi
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail — and write it to the style contract in `docs/templates/reference/output-style.md`.
 - **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
+- **Two channels, one home per fact.** `brief.md` and its HTML render carry the content; chat carries decisions and the slot template. Never restate in chat what the brief says — point at it.
