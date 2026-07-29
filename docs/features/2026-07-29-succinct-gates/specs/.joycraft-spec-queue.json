@@ -19,7 +19,7 @@
       "id": 3,
       "file": "add-artifact-render-steps.md",
       "depends_on": [1, 2],
-      "status": "todo",
+      "status": "in-review",
       "mode": "isolated"
     },
     {

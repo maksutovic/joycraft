@@ -84,6 +84,27 @@ Before the decomposition table, show the **"Prior knowledge reused"** list from 
 
 Write this presentation, and the hand-off in Step 8, to the style contract in `docs/templates/reference/output-style.md`.
 
+### Render and open the decomposition
+
+Write `docs/features/<slug>/decompose.md` first — the decomposition table and the
+review questions below it — and keep it **canonical**: agents read the md, never
+the HTML. The HTML is a render of it and never invents content.
+
+1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
+   `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
+   template's structure, class names, CSS, and theme script stay
+   **byte-identical** — never generate freeform gate HTML.
+2. Write it to `docs/features/<slug>/decompose.html` (committed later — the path
+   is already linguist-generated, so PRs collapse it). Re-decomposing overwrites
+   the same file; the md is the record.
+3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
+   otherwise. If both fail, print the absolute path and continue — headless, CI,
+   and isolated mode are a no-op here, never a failure.
+4. Offer — don't push — an optional extra render: "I can also publish this
+   decomposition as a hosted artifact for a shareable link." Only publish if the
+   human says yes; the local file remains the canonical render. If declined, no
+   retry.
+
 At this gate, your chat message is EXACTLY this template — nothing outside it.
 The content lives in the artifact, not the chat. The decomposition table goes
 in the artifact — never paste it into chat.
