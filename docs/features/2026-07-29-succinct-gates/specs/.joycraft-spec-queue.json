@@ -33,7 +33,7 @@
       "id": 5,
       "file": "gate-contract-tests.md",
       "depends_on": [1, 2, 3, 4, 7, 9],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch"
     },
     {
