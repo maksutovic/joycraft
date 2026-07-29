@@ -29,6 +29,16 @@ decisions:
     status: clarified
     choice: a fenced copy-pasteable briefing prompt — command, pickup sentence, decided/don't-reopen, Start, Hazard, Done-when
     rationale: because the human has been hand-writing these and finds a cold agent briefed in-prompt outperforms one told only which command to run (stamped 2026-07-29, format chosen from three previews)
+  - id: D6
+    question: where does the per-project execution profile live (swarm opt-in + per-harness model/effort)?
+    status: clarified
+    choice: a small "## Execution Profile" section in AGENTS.md, generated at init, adjustable via tune
+    rationale: because every harness already reads AGENTS.md each session — no pointer to follow (the failure mode this feature kills), hand-editable, team-shared via git
+  - id: D7
+    question: does this revive the backlogged model-tiering feature?
+    status: clarified
+    choice: profile as data only — briefings inject whatever the profile says; the stage-tiering defaults stay backlogged
+    rationale: because tuneable configuration was model-tiering's stated blocker and this ships it, but opinionated routing defaults remain a separate decision the human hasn't made
 ---
 
 # Succinct Gates — Feature Brief
@@ -156,12 +166,16 @@ which wrongly marked wave 1 parallel).
 | 5 | gate-contract-tests | Content tests asserting each gate skill carries the inline slot template, artifact step, and handoff briefing; static-shape test for the template | 1, 2, 3, 4, 7 | M |
 | 6 | regen-and-sync | Terminal bundle regeneration + installed-copy sync in one reviewable commit | 1–5, 7 | S |
 | 7 | handoff-briefing-prompts | Replace the bare `/clear + command` handoff with the D5 fenced briefing prompt in every skill that ends with a handoff | 4 | M |
+| 8 | capture-execution-profile | Init asks (per selected harness) swarm opt-in + model/effort and writes the D6 `## Execution Profile` AGENTS.md section; tune offers it when missing | None | M |
+| 9 | inject-profile-into-briefings | Decompose and implement-feature briefings read the Execution Profile and inject swarm/model/effort instruction lines (D7) | 7, 8 | S |
 
 ## Execution Strategy
 
-- [x] Sequential — seven waves of one spec each (order 1, 2, 3, 4, 7, 5, 6).
-  Spec 6 is terminal and derives from every preceding spec's output; specs
-  2–4 and 7 share Affected Files.
+- [x] Sequential — nine waves of one spec each (order 1, 2, 3, 4, 7, 8, 9,
+  5, 6). Spec 6 is terminal and derives from every preceding spec's output;
+  specs 2–4, 7, and 9 share Affected Files. Spec 8 is the one code spec
+  (init/tune/agents-md) and could in principle run parallel to 2–4, but the
+  sequential default keeps the queue simple.
 
 ## Success Criteria
 

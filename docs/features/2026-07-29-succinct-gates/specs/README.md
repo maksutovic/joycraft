@@ -28,13 +28,16 @@ supersedes `docs/backlog/2026-07-27-auto-open-review-artifacts.md` and
 | 5 | [gate-contract-tests.md](gate-contract-tests.md) | 1, 2, 3, 4, 7 | batch | `tests/gate-contract.test.ts`: presence + heading anchoring for template, render step, decide rule, handoff briefing; setup as negative control. |
 | 6 | [regen-and-sync.md](regen-and-sync.md) | 1–5, 7 | checkpoint | Terminal: generate all four harness trees + registry, sync installed copies, one commit. |
 | 7 | [handoff-briefing-prompts.md](handoff-briefing-prompts.md) | 4 | batch | D5 fenced briefing prompt (pickup / decided / start / hazard / done-when) replaces the bare `/clear + command` handoff in 8 skills. |
+| 8 | [capture-execution-profile.md](capture-execution-profile.md) | — | checkpoint | Init asks swarm opt-in + model/effort per selected harness; sentinel-delimited `## Execution Profile` section in AGENTS.md (D6); tune offers it when missing. Code spec: init/agents-md/merge/upgrade + tests. |
+| 9 | [inject-profile-into-briefings.md](inject-profile-into-briefings.md) | 7, 8 | batch | Decompose/new-feature briefings quote the profile verbatim as an `Execution:` line; implement-feature maps it onto subagent model/effort params (D7). |
 
 ## Execution waves
 
-Strictly sequential — seven waves of one spec each, in order
-**1, 2, 3, 4, 7, 5, 6**. Specs 2, 3, 4, and 7 edit the same gate-skill
-bodies (overlapping Affected Files), so no wave is parallel-safe. Spec 6 is
-terminal and derives from everything before it.
+Strictly sequential — nine waves of one spec each, in order
+**1, 2, 3, 4, 7, 8, 9, 5, 6**. Specs 2, 3, 4, 7, and 9 edit the same
+gate-skill bodies (overlapping Affected Files), so no wave is parallel-safe.
+Spec 8 is the one code spec. Spec 6 is terminal and derives from everything
+before it.
 
 ## Known hazard: the windowed tests
 
@@ -51,12 +54,15 @@ edit an assertion.
 
 ## Decisions stamped at decomposition
 
-All five interview questions terminated 2026-07-29, recorded in the brief's
+All seven interview questions terminated 2026-07-29, recorded in the brief's
 `decisions:` block: **D1** one generic template; **D2** ~10-line slot set
 (outcome / artifact path / decisions / next); **D3** tune + optimize join the
 gates; **D4** HTML committed + linguist-collapsed, markdown stays the
 canonical agent-readable record; **D5** the handoff is a fenced briefing
-prompt (pickup / decided / start / hazard / done-when), not a bare command.
+prompt (pickup / decided / start / hazard / done-when), not a bare command;
+**D6** the execution profile lives as a sentinel-delimited AGENTS.md section;
+**D7** profile is data only — model-tiering's routing defaults stay
+backlogged (`docs/backlog/2026-07-20-model-tiering.md`).
 
 ## How to use this file
 
