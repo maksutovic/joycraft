@@ -1,5 +1,6 @@
 ---
 status: active
+reap: eligible
 owner: Maximilian Maksutovic
 created: 2026-07-29
 feature: 2026-07-29-succinct-gates
@@ -184,10 +185,11 @@ which wrongly marked wave 1 parallel).
   payflow wall-of-text cannot recur within contract.
 - [ ] Decision prompts render as cards in the artifact, never as inline prose
   paragraphs in chat.
-- [ ] Every gate's canonical record is a committed `.md` an agent can read
+- [x] Every gate's canonical record is a committed `.md` an agent can read
   without touching HTML (D4).
-- [ ] A gate skill missing its slot template or artifact step fails
-  `pnpm test`.
-- [ ] `pnpm test && pnpm typecheck` green, parity + byte-match included.
-- [ ] No change to any `entry: agent` artifact contract (specs, queue JSON,
+- [x] A gate skill missing its slot template or artifact step fails
+  `pnpm test` (mutation-verified per assertion group in
+  `tests/gate-contract.test.ts`).
+- [x] `pnpm test && pnpm typecheck` green, parity + byte-match included.
+- [x] No change to any `entry: agent` artifact contract (specs, queue JSON,
   frontmatter stay dense).
