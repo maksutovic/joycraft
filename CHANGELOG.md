@@ -7,6 +7,30 @@ in a before → now → side-effects format, newest first.
 
 ---
 
+## 0.7.7 — Interview Joins the Gate Set (2026-07-29)
+
+Succinct Gates (0.7.6) covered seven approval bookends but skipped
+`/joycraft-interview`, the skill most sessions start with. A same-day field
+test showed the cost: the human had to ask "where's my artifact?", the draft
+brief's content crossed the chat three times (playback wall, file, recap),
+and the confirmation gate self-approved — playback and file-write landed in
+the same turn.
+
+**Now:** interview is the eighth gate skill. The draft brief renders as an
+auto-opened `brief.html` from the shared `REVIEW_GATE_TEMPLATE.html` (open
+questions as cards; the markdown stays the canonical agent-readable record),
+the post-write chat is the ~10-line slot template with an explicit "the
+artifact is the summary" rule, the playback is a fixed four-slot shape that
+blocks the file write until the human confirms or corrects, and questions are
+numbered for the session — referenced by number afterward, never re-listed.
+There is deliberately no per-turn question cap: the field failure was
+repetition, not batching.
+
+**Side effect:** an adversarial review panel drove the changes and its
+refuted over-corrections are recorded as MUST NOTs in the two follow-on specs
+under `docs/features/2026-07-29-succinct-gates/specs/`, so future edits don't
+resurrect one-question-per-turn serialization or a ban on invited pushback.
+
 ## 0.7.6 — Succinct Gates + One-Command Upgrade (2026-07-29)
 
 Every approval bookend (new-feature, design, decompose, research, decide, plus
