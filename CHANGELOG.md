@@ -7,6 +7,30 @@ in a before → now → side-effects format, newest first.
 
 ---
 
+## Unreleased — Succinct Gates + One-Command Upgrade
+
+Every approval bookend (new-feature, design, decompose, research, decide, plus
+the tune and optimize reports) delivered its content as chat prose of whatever
+length the agent felt like; the 0.7.2 pointer mechanism meant to cap it failed
+live on 2026-07-29. And `npx joycraft upgrade` on a stale npx cache detected
+its own staleness and bailed with a two-step "npm install -g, then re-run"
+instruction.
+
+**Now:** gates render an auto-opened HTML artifact from one generic
+`REVIEW_GATE_TEMPLATE.html` (the markdown stays the canonical agent-readable
+record), chat messages are capped by a fixed ~10-line slot template inline in
+each skill, decide fires before presentation, handoffs are fenced briefing
+prompts, and an `## Execution Profile` section in AGENTS.md (captured at init,
+inserted by upgrade, offered by tune) flows into those briefings as an
+`Execution:` line that implement-feature maps onto subagent model/effort. All
+of it is enforced by `tests/gate-contract.test.ts`.
+
+**Side effect:** a stale CLI now re-executes the upgrade through the pinned
+latest version via npx (with `--yes` or an interactive confirmation), so
+upgrade is one command again; the fallback message recommends
+`npx joycraft@latest upgrade`, which bypasses the npx cache that caused the
+staleness in the first place.
+
 ## 0.7.5 — GitHub Copilot Support (2026-07-27)
 
 Joycraft installed to three harnesses: Claude Code, Codex, and Pi. A maintainer

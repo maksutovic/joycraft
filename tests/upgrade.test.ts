@@ -76,9 +76,104 @@ describe('upgrade', () => {
     }
 
     expect(logs.some(l => l.includes('Joycraft CLI is out of date'))).toBe(true);
-    expect(logs.some(l => l.includes('npm install -g joycraft'))).toBe(true);
-    expect(logs.some(l => l.includes('re-run: npx joycraft upgrade'))).toBe(true);
+    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
     expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
+  });
+
+  it('stale CLI with --yes re-execs the latest version via npx', async () => {
+    await init(tmpDir, { force: false });
+
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ version: '999.0.0' }),
+    }) as unknown as typeof fetch;
+
+    const spawnCalls: { cmd: string; args: string[] }[] = [];
+    const spawnForReexec = ((cmd: string, args: string[]) => {
+      spawnCalls.push({ cmd, args });
+      return { status: 0 };
+    }) as never;
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: true, spawnForReexec });
+    } finally {
+      console.log = origLog;
+      globalThis.fetch = origFetch;
+    }
+
+    expect(spawnCalls).toHaveLength(1);
+    expect(spawnCalls[0].args).toContain('joycraft@999.0.0');
+    expect(spawnCalls[0].args).toContain('upgrade');
+    expect(spawnCalls[0].args).toContain('--yes');
+    // The re-exec ran the upgrade; the manual fallback line must not appear
+    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(false);
+    expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
+  });
+
+  it('stale CLI re-exec forwards --gitignore and falls back on spawn failure', async () => {
+    await init(tmpDir, { force: false });
+
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ version: '999.0.0' }),
+    }) as unknown as typeof fetch;
+
+    const spawnCalls: { cmd: string; args: string[] }[] = [];
+    const spawnForReexec = ((cmd: string, args: string[]) => {
+      spawnCalls.push({ cmd, args });
+      return { status: null, error: new Error('npx not found') };
+    }) as never;
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: true, gitignore: 'shared', spawnForReexec });
+    } finally {
+      console.log = origLog;
+      globalThis.fetch = origFetch;
+    }
+
+    expect(spawnCalls).toHaveLength(1);
+    expect(spawnCalls[0].args).toContain('--gitignore');
+    expect(spawnCalls[0].args).toContain('shared');
+    // Spawn failed → fall back to the manual instruction, never diff stale files
+    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
+    expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
+  });
+
+  it('stale CLI without --yes in a non-interactive session does not spawn', async () => {
+    await init(tmpDir, { force: false });
+
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ version: '999.0.0' }),
+    }) as unknown as typeof fetch;
+
+    const spawnCalls: unknown[] = [];
+    const spawnForReexec = ((cmd: string, args: string[]) => {
+      spawnCalls.push([cmd, args]);
+      return { status: 0 };
+    }) as never;
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: false, spawnForReexec });
+    } finally {
+      console.log = origLog;
+      globalThis.fetch = origFetch;
+    }
+
+    expect(spawnCalls).toHaveLength(0);
+    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
   });
 
   it('reports already up to date when nothing changed', async () => {
