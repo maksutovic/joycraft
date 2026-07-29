@@ -622,6 +622,40 @@ describe('upgrade', () => {
       expect(after.version).not.toBe('0.1.0');
     }
   });
+
+  describe('execution profile', () => {
+    const OPEN = '<!-- joycraft:execution-profile -->';
+
+    it('inserts the section into an AGENTS.md that has no profile', async () => {
+      await init(tmpDir, { force: false });
+      const agentsPath = join(tmpDir, 'AGENTS.md');
+      // Simulate a project that predates the profile: strip the section.
+      const stripped = readFileSync(agentsPath, 'utf-8')
+        .replace(/\n## Execution Profile[\s\S]*?<!-- \/joycraft:execution-profile -->\n/, '\n');
+      writeFileSync(agentsPath, stripped, 'utf-8');
+      expect(stripped).not.toContain(OPEN);
+
+      await upgrade(tmpDir, { yes: true });
+
+      const agents = readFileSync(agentsPath, 'utf-8');
+      expect(agents).toContain(OPEN);
+      expect(agents).toContain('Swarms: decompose no · implement no');
+    });
+
+    it('leaves an existing profile byte-identical', async () => {
+      await init(tmpDir, { force: false });
+      const agentsPath = join(tmpDir, 'AGENTS.md');
+      const before = readFileSync(agentsPath, 'utf-8').replace(
+        'Swarms: decompose no · implement no',
+        'Swarms: decompose yes · implement yes · hand-edited',
+      );
+      writeFileSync(agentsPath, before, 'utf-8');
+
+      await upgrade(tmpDir, { yes: true });
+
+      expect(readFileSync(agentsPath, 'utf-8')).toBe(before);
+    });
+  });
 });
 
 describe('version', () => {

@@ -1,5 +1,10 @@
 import type { StackInfo } from './detect.js';
 import {
+  ensureExecutionProfileSection,
+  renderExecutionProfileSection,
+  type ExecutionProfile,
+} from './execution-profile.js';
+import {
   generateBoundariesSection,
   generateExternalApiSafetySection,
   generatePrivateSetupNote,
@@ -63,7 +68,12 @@ function generateKeyFilesSection(): string {
   return `## Key Files\n\n| File | Purpose |\n|------|---------|\n| _TODO_ | _Add key files_ |`;
 }
 
-export function generateAgentsMd(projectName: string, stack: StackInfo, privateProfile = false): string {
+export function generateAgentsMd(
+  projectName: string,
+  stack: StackInfo,
+  privateProfile = false,
+  executionProfile?: ExecutionProfile,
+): string {
   const frameworkNote = stack.framework ? ` (${stack.framework})` : '';
   const langLabel = stack.language === 'unknown' ? '' : ` | **Stack:** ${stack.language}${frameworkNote}`;
 
@@ -87,6 +97,10 @@ export function generateAgentsMd(projectName: string, stack: StackInfo, privateP
     '',
   ];
 
+  if (executionProfile) {
+    lines.push(renderExecutionProfileSection(executionProfile), '');
+  }
+
   if (privateProfile) {
     lines.push(generatePrivateSetupNote(), '');
   }
@@ -94,7 +108,12 @@ export function generateAgentsMd(projectName: string, stack: StackInfo, privateP
   return lines.join('\n');
 }
 
-export function improveAgentsMd(existing: string, stack: StackInfo, privateProfile = false): string {
+export function improveAgentsMd(
+  existing: string,
+  stack: StackInfo,
+  privateProfile = false,
+  executionProfile?: ExecutionProfile,
+): string {
   const sections = parseSections(existing);
   const additions: string[] = [];
 
@@ -123,9 +142,12 @@ export function improveAgentsMd(existing: string, stack: StackInfo, privateProfi
   }
 
   if (additions.length === 0) {
-    return existing;
+    // Sentinel-based, not heading-based: an existing profile region is opaque
+    // user data and must come back byte-identical.
+    return ensureExecutionProfileSection(existing, executionProfile);
   }
 
   const trimmed = existing.trimEnd();
-  return trimmed + '\n\n' + additions.join('\n\n') + '\n';
+  const merged = trimmed + '\n\n' + additions.join('\n\n') + '\n';
+  return ensureExecutionProfileSection(merged, executionProfile);
 }

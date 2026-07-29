@@ -13,6 +13,8 @@ You are evaluating and upgrading this project's AI development harness.
 
 Check for: AGENTS.md (with meaningful content), `docs/features/<slug>/` (briefs + specs), `docs/bugfixes/<area>/`, `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs, `.pi/skills/`, and test configuration.
 
+**Execution profile:** grep AGENTS.md for the sentinel `<!-- joycraft:execution-profile -->`. Present ⇒ the project has an execution profile; absent ⇒ it has none, and Step 5 offers to write one.
+
 **Import pointer:** if AGENTS.md is essentially just an import line (e.g. CLAUDE.md containing `@AGENTS.md` — Joycraft's multi-tool layout), follow it: assess and upgrade the imported file as the boundary file, and leave the pointer file alone apart from Claude-specific additions under its `## Claude Code` section.
 
 ## Step 2: Route
@@ -87,6 +89,18 @@ guidance; observed live 2026-07-29).
 Apply using three tiers — do NOT ask per-item permission:
 
 **Tier 1 (silent):** Create missing dirs, install missing skills, copy missing templates, create AGENTS.md.
+
+**Execution profile offer:** If Step 1 found no `<!-- joycraft:execution-profile -->` sentinel in AGENTS.md, offer to add one — never write it unasked. On yes, ask per installed harness: use swarms for decompose? (y/n) use swarms for implement? (y/n) which model, and which effort? Model and effort are free text — suggest the current session's model as the default and never present a menu of model names. Append the answers as a sentinel-delimited section (skipping is first-class: a project that answers no to everything still gets the section, so downstream skills read an explicit answer rather than an absence):
+
+```markdown
+## Execution Profile
+
+<!-- joycraft:execution-profile -->
+- claude: Swarms: decompose yes · implement yes · model <model> · effort <effort>
+<!-- /joycraft:execution-profile -->
+```
+
+The profile is data the user owns, not configuration Joycraft manages: **never overwrite an existing profile without asking**, and preserve whatever is between the sentinels verbatim, including hand-edits that don't match this shape. Recommend no model or tier here — routing defaults are the backlogged model-tiering feature's scope.
 
 **Private-profile note:** If `.gitignore` ignores the harness dirs (`.claude/`, `.agents/`, `.pi/` — the `private` profile), teammates who clone won't get the skill files. Ensure CLAUDE.md and AGENTS.md each carry a one-line note — append if absent, idempotent (match on the phrase "After cloning, run"): `> **Private setup:** The harness dirs (.claude/, .agents/, .pi/) are gitignored in this repo, so they aren't committed. After cloning, run \`npx joycraft init\` to regenerate the skill files locally — it only creates missing files and leaves your committed \`CLAUDE.md\`, \`AGENTS.md\`, and \`docs/\` untouched (use \`--force\` only if you deliberately want to regenerate them).` Skip entirely under the `shared` profile.
 

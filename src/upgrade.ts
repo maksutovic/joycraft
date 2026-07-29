@@ -9,6 +9,7 @@ import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, 
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
 import { HARNESSES, sanitizeHarnesses, type Harness } from './harness.js';
+import { ensureExecutionProfileSection, defaultExecutionProfile } from './execution-profile.js';
 
 /**
  * Read-only check for harness files git is still tracking. Used to decide
@@ -455,6 +456,27 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   // Bring pre-existing projects up to the init behavior: collapse
   // workflow-exhaust docs in PR review. Append-only + idempotent.
   applyGitattributes(targetDir);
+
+  // Bring pre-profile projects up to the init behavior: insert the
+  // sentinel-delimited Execution Profile into AGENTS.md when it has none.
+  // Insert-only — a project that already has a profile (hand-edited or not)
+  // comes back byte-identical, because the region is user-owned data (D7).
+  // Upgrade can't ask questions here (it may be running --yes/non-interactive),
+  // so it writes the explicit-no default; /joycraft-tune offers the real
+  // questions.
+  const agentsMdPath = join(targetDir, 'AGENTS.md');
+  if (existsSync(agentsMdPath)) {
+    const existingAgents = readFileSync(agentsMdPath, 'utf-8');
+    const withProfile = ensureExecutionProfileSection(
+      existingAgents,
+      defaultExecutionProfile(harnesses)
+    );
+    if (withProfile !== existingAgents) {
+      writeFileSync(agentsMdPath, withProfile, 'utf-8');
+      console.log('  ~ AGENTS.md (added Execution Profile — run /joycraft-tune to fill it in)');
+    }
+  }
+
   if (gitignoreProfile === 'private') {
     // On a fresh switch to private, always surface the untrack hint. On a
     // re-run where private is already persisted (the easy-to-miss case), only

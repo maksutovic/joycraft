@@ -54,7 +54,7 @@
       "id": 8,
       "file": "capture-execution-profile.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint"
     },
     {
