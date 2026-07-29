@@ -1,0 +1,47 @@
+{
+  "feature": "2026-07-29-succinct-gates",
+  "specs": [
+    {
+      "id": 1,
+      "file": "write-gate-artifact-template.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 2,
+      "file": "inline-gate-slot-contracts.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "isolated"
+    },
+    {
+      "id": 3,
+      "file": "add-artifact-render-steps.md",
+      "depends_on": [1, 2],
+      "status": "todo",
+      "mode": "isolated"
+    },
+    {
+      "id": 4,
+      "file": "enforce-decide-pre-presentation.md",
+      "depends_on": [3],
+      "status": "todo",
+      "mode": "batch"
+    },
+    {
+      "id": 5,
+      "file": "gate-contract-tests.md",
+      "depends_on": [1, 2, 3, 4],
+      "status": "todo",
+      "mode": "batch"
+    },
+    {
+      "id": 6,
+      "file": "regen-and-sync.md",
+      "depends_on": [1, 2, 3, 4, 5],
+      "status": "todo",
+      "mode": "checkpoint"
+    }
+  ]
+}

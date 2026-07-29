@@ -1,5 +1,6 @@
 ---
-status: backlog
+status: superseded
+superseded_by: docs/features/2026-07-29-succinct-gates/brief.md
 owner: Maximilian Maksutovic
 created: 2026-07-27
 source: docs/features/2026-07-27-human-readable-output-style/design.md
