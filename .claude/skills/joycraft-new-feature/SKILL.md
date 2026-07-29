@@ -377,12 +377,15 @@ Run /clear first.
 
 Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /clear. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
 
+Before filling the briefing, read the `## Execution Profile` section of CLAUDE.md (between the `joycraft:execution-profile` sentinels). If swarms are enabled for **decompose** on the harness you're handing to, add one **Execution:** line to the briefing, quoting that harness's profile row **verbatim** — never translate, validate, or improve the model and effort names the human wrote. If the section is missing, or swarms are off for decompose, add no line and say nothing about it.
+
 ```
 /joycraft-decompose docs/features/<slug>/brief.md
 
 You are picking up the feature brief for <slug>, written <date>.
 Decisions <ids> are stamped in the brief — do not reopen them.
 Start: decompose the brief into atomic specs. Order: the brief's Decomposition section.
+Execution: swarm decompose — <harness> subagents <model> at effort <effort>.
 Hazard: <the one known trap, or "none known">.
 Done when: docs/features/<slug>/specs/ holds one file per spec plus README.md.
 ```
@@ -395,6 +398,7 @@ Filled example:
 You are picking up the feature brief for 2026-07-29-succinct-gates, written 2026-07-29.
 Decisions D1-D7 are stamped in the brief — do not reopen them.
 Start: decompose the brief into atomic specs. Order: the brief's Decomposition section.
+Execution: swarm decompose — claude subagents opus-5 at effort medium.
 Hazard: gate skills carry position-fragile windows that sliced tests read.
 Done when: docs/features/2026-07-29-succinct-gates/specs/ holds one file per spec plus README.md.
 ```

@@ -28,8 +28,12 @@ One invocation runs a feature's whole spec queue: `{{skill_prefix}}implement-fea
    > No spec queue found in [path]. Run `{{skill_prefix}}decompose` first — it writes the queue, the specs, and the wave plan.
 
 3. Read the sibling `README.md` (the wave plan written by `{{skill_prefix}}decompose`) — it tells you the intended order and which waves, if any, are marked **parallel-safe**.
-4. Report the plan before starting: feature slug, M specs, current statuses, the order you'll run them in.
-5. If **no `todo` specs remain**, skip to Step 4 and say why (everything is already `in-review`/`done`).
+4. **Check the invoking prompt for an `Execution:` line.** `{{skill_prefix}}decompose` writes one into its handoff briefing when the project's Execution Profile (the `joycraft:execution-profile` region of {{boundary_file}}) enables swarms for implement — e.g. `Execution: swarm implement — claude subagents opus-5 at effort medium.`
+   - **Line present** → every subagent you spawn in Step 2 uses the stated **model** and **effort** as its spawn params. Those params are the one enforceable hook; pass the names through verbatim, exactly as written. A line naming a harness other than the one you're running is not yours — ignore it.
+   - **No line** (profile absent, swarms off, or the human stripped it) → **inherit the session's model and effort**, as this skill has always done. Spawn nothing extra and say nothing about it.
+   - The pasted prompt is the authority at execution time: a hand-edited `Execution:` line overrides whatever the profile says.
+5. Report the plan before starting: feature slug, M specs, current statuses, the order you'll run them in.
+6. If **no `todo` specs remain**, skip to Step 4 and say why (everything is already `in-review`/`done`).
 
 ## Step 2: The Loop — Inline by Default, Subagents Only Where They Earn It
 
@@ -45,14 +49,16 @@ Repeat until no `todo` specs remain:
 
    Do **not** route sequential specs through subagents — inline execution keeps the work visible in the conversation and spends no orchestration overhead where there is nothing to orchestrate.
 
-4. **Subagent prompt** (parallel waves and `isolated` specs only; fill in concrete paths — the subagent starts with zero context):
+4. **Subagent spawn params**: every subagent below runs at the model and effort from Step 1's `Execution:` line, or inherits the session's when there was no line.
+
+5. **Subagent prompt** (parallel waves and `isolated` specs only; fill in concrete paths — the subagent starts with zero context):
 
    > Implement exactly one atomic spec: `<spec-path>`.
    > 1. Read `{{skills_dir}}/joycraft-implement/SKILL.md` and follow it for this spec — strict TDD (write the Test Plan's tests first, confirm they fail, implement until green), every Acceptance Criterion met. IMPORTANT: skip that skill's "continue the queue" step — you own exactly this one spec.
    > 2. Then perform the per-spec wrap-up defined in `{{skills_dir}}/joycraft-spec-done/SKILL.md`: bump the spec to `in-review` in BOTH `.joycraft-spec-queue.json` and the spec file's `status:` frontmatter; write a 2-line discovery stub at `docs/discoveries/` ONLY if something contradicted the spec; commit as `spec: <spec-name>`. Do NOT push, do NOT open a PR, do NOT run session-end, do NOT touch other specs.
    > 3. Reply with: tests written and passing (counts), each Acceptance Criterion's status, the commit hash, and the discovery stub path if any. If you could not get tests green, say so explicitly and DO NOT bump the status or commit a broken state.
 
-5. **Verify, don't trust** — after every spec, inline or subagent: confirm in the queue JSON that the spec is `in-review` and in `git log` that the `spec: <name>` commit exists. For a parallel wave, verify every spec in the wave before starting anything new. Anything missing, or a failure reported → fail-fast (Step 3).
+6. **Verify, don't trust** — after every spec, inline or subagent: confirm in the queue JSON that the spec is `in-review` and in `git log` that the `spec: <name>` commit exists. For a parallel wave, verify every spec in the wave before starting anything new. Anything missing, or a failure reported → fail-fast (Step 3).
 
 ## Step 3: Fail-Fast
 

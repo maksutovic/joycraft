@@ -391,12 +391,15 @@ Run {{clear}} first.
 
 Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after {{clear}}. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
 
+Before filling the briefing, read the `## Execution Profile` section of {{boundary_file}} (between the `joycraft:execution-profile` sentinels). If swarms are enabled for **implement** on the harness you're handing to, add one **Execution:** line to the briefing, quoting that harness's profile row **verbatim** — never translate, validate, or improve the model and effort names the human wrote. If the section is missing, or swarms are off for implement, add no line and say nothing about it.
+
 ```
 {{skill_prefix}}implement-feature docs/features/<slug>/
 
 You are picking up the spec queue for <slug>, decomposed <date>.
 Decisions <ids> are stamped in the brief — do not reopen them.
 Start: <first-spec>.md (mode: <mode>). Order: specs/README.md.
+Execution: swarm implement — <harness> subagents <model> at effort <effort>.
 Hazard: <the one known trap, or "none known">.
 Done when: every spec in .joycraft-spec-queue.json is in-review and the suite is green.
 ```
@@ -409,6 +412,7 @@ Filled example:
 You are picking up the spec queue for 2026-07-29-succinct-gates, decomposed 2026-07-29.
 Decisions D1-D7 are stamped in the brief — do not reopen them.
 Start: write-gate-artifact-template.md (mode: checkpoint). Order: specs/README.md.
+Execution: swarm implement — claude subagents opus-5 at effort medium.
 Hazard: windowed skill tests slice fixed regions; edit src/skills/ only.
 Done when: every spec in .joycraft-spec-queue.json is in-review and the suite is green.
 ```

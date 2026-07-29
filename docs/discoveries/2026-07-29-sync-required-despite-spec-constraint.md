@@ -1,0 +1,2 @@
+The spec's "MUST NOT regenerate bundles or sync installed copies — spec 6 owns both" is unachievable: `tests/installed-skills-sync.test.ts` fails (12 tests) the moment `src/skills/` changes, so leaving copies stale means committing a red suite.
+Ran the sanctioned `pnpm sync-skills` in the same commit per `docs/discoveries/2026-07-29-test-suite-regenerates-bundles.md`; see `docs/features/2026-07-29-succinct-gates/specs/inject-profile-into-briefings.md`.
