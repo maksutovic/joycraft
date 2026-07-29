@@ -30,6 +30,8 @@ supersedes `docs/backlog/2026-07-27-auto-open-review-artifacts.md` and
 | 7 | [handoff-briefing-prompts.md](handoff-briefing-prompts.md) | 4 | batch | D5 fenced briefing prompt (pickup / decided / start / hazard / done-when) replaces the bare `/clear + command` handoff in 8 skills. |
 | 8 | [capture-execution-profile.md](capture-execution-profile.md) | — | checkpoint | Init asks swarm opt-in + model/effort per selected harness; sentinel-delimited `## Execution Profile` section in AGENTS.md (D6); tune offers it when missing. Code spec: init/agents-md/merge/upgrade + tests. |
 | 9 | [inject-profile-into-briefings.md](inject-profile-into-briefings.md) | 7, 8 | batch | Decompose/new-feature briefings quote the profile verbatim as an `Execution:` line; implement-feature maps it onto subagent model/effort params (D7). |
+| 10 | [interview-joins-the-gate-set.md](interview-joins-the-gate-set.md) | 1–6 shipped | isolated | **Follow-on (2026-07-29 field test + panel):** interview becomes the 8th gate skill — render step, D2 slot template, two-channel Guidelines bullet, test rosters. |
+| 11 | [interview-playback-and-question-contract.md](interview-playback-and-question-contract.md) | 10 | isolated | **Follow-on:** inline slot playback with caps replaces the Step 3 pointer; blocking ratification; question numbering + never-relist + Q/Default/Ask shape. No per-turn cap. |
 
 ## Execution waves
 
@@ -38,6 +40,13 @@ Strictly sequential — nine waves of one spec each, in order
 gate-skill bodies (overlapping Affected Files), so no wave is parallel-safe.
 Spec 8 is the one code spec. Spec 6 is terminal and derives from everything
 before it.
+
+**Follow-on wave (added 2026-07-29 after the diligent-cwt field test):**
+specs 10 then 11, strictly sequential — both edit
+`src/skills/joycraft-interview.md`. Each runs its own `pnpm sync-skills` in
+its own commit (spec 6 already ran; it is not reopened). Origin: adversarial
+review panel verdict **not-yapless** on the 0.7.6 interview transcript —
+findings and refuted over-corrections are recorded in the two spec files.
 
 ## Known hazard: the windowed tests
 

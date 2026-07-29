@@ -22,7 +22,25 @@ Let the user talk freely. Do not interrupt their flow. Do not push toward struct
 
 ### 2. Ask Clarifying Questions
 
-As they talk, weave in questions naturally — don't fire them all at once:
+Question discipline — hard rules, not vibes:
+
+- **Number questions continuously across the session** (Q1…Qn, never reset),
+  including questions that surface mid-stream.
+- **Never re-list an open question verbatim.** Refer to it by number plus a
+  ≤3-word label: "Q1 hero content type, Q5 PoC boundary — still open."
+- **Every question takes this three-line shape** — full argumentation lives
+  in the draft brief, not the chat:
+
+  ```
+  Q<n>: <the question>
+  Default: <your recommendation> — <one-line why>
+  Accept, override, or park?
+  ```
+
+- **No per-turn cap.** Batch questions to match how the user answers. The
+  rule is never repeat, not never batch.
+
+Territory worth covering as they talk:
 
 - **What problem does this solve?** Who feels the pain today?
 - **What does "done" look like?** If this worked perfectly, what would a user see?
@@ -33,12 +51,21 @@ As they talk, weave in questions naturally — don't fire them all at once:
 
 ### 3. Play Back Understanding
 
-Write this playback, and the draft brief summary that follows, to the style contract in `docs/templates/reference/output-style.md`.
+After the user has gotten their ideas out, play back in EXACTLY this
+fixed-slot shape — the per-slot caps are hard, and the playback is never
+narrated as prose:
 
-After the user has gotten their ideas out, reflect back:
-"So if I'm hearing you right, you want to [summary]. The core problem is [X], and done looks like [Y]. Is that right?"
+```
+Mission: <1 line>
+Settled: <≤5 bullets, one line each>
+Open: <Q-numbers + ≤3-word labels only — no restatement>
+Confirm or correct — then I write the draft.
+```
 
-Let them correct and refine. Iterate until they say "yes, that's it."
+This playback is a **blocking gate**: Step 4's file write — and any commit —
+happens only after an affirmative or corrected reply. One round, not a
+yes/no loop: inline corrections count as approval of everything else. Apply
+them, re-play only the changed lines, and proceed.
 
 ### 4. Write a Draft Brief
 
@@ -92,6 +119,26 @@ Use this format for the body:
 [Any additional context, quotes, or tangents worth preserving]
 ```
 
+### Render and open the draft brief
+
+`docs/features/<slug>/brief.md` is written first and stays **canonical** — agents
+read the md, never the HTML. The HTML is a render of it and never invents content.
+
+1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
+   `<!-- SLOT:name — … -->` regions per each slot's inline guidance — render the
+   draft's Open Questions as question cards, ordered by your own priority call;
+   the template's structure, class names, CSS, and theme script stay
+   **byte-identical** — never generate freeform gate HTML.
+2. Write it to `docs/features/<slug>/brief.html` (committed later — the path is
+   already linguist-generated, so PRs collapse it). Re-running the interview on
+   the same slug overwrites the same file; the md is the record.
+3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
+   otherwise. If both fail, print the absolute path and continue — headless, CI,
+   and isolated mode are a no-op here, never a failure.
+4. Offer — don't push — an optional extra render: "I can also publish this draft
+   as a hosted artifact for a shareable link." Only publish if the human says
+   yes; the local file remains the canonical render. If declined, no retry.
+
 ### 5. Offer to Capture Deferred Items to Backlog
 
 If during the conversation deferred work surfaces (a tangent, a "later" item, a "out-of-scope but tempting" idea), ASK the user:
@@ -113,8 +160,27 @@ source: docs/features/<slug>/brief.md
 
 ### 6. Hand Off
 
-After writing the draft (and any backlog entries), present the canonical Handoff block.
-Include any backlog paths produced as a side effect.
+After writing the draft (and any backlog entries), your chat message is EXACTLY
+this template followed by the briefing block from Recommended Next Steps —
+nothing outside them. Do not summarize the brief after writing it — the
+artifact is the summary. Include any backlog paths produced as a side effect
+in the Artifact line. Tone follows the style contract in
+`docs/templates/reference/output-style.md`; volume and placement are fixed by
+the template itself.
+
+```markdown
+**Draft brief ready: <what this idea is, one line>**
+Artifact: <absolute brief.html path> (opened) · canonical: docs/features/<slug>/brief.md
+Open questions: <N> — <Q-numbers + ≤3-word labels, comma-separated>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
 
 ## Recommended Next Steps
 
@@ -157,3 +223,4 @@ If the idea sounds complex — touches many files, involves architectural decisi
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail — and write it to the style contract in `docs/templates/reference/output-style.md`.
 - **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
+- **Two channels, one home per fact.** `brief.md` and its HTML render carry the content; chat carries decisions and the slot template. Never restate in chat what the brief says — point at it.

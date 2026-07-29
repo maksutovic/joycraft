@@ -71,9 +71,13 @@ const SLOT_TEMPLATE_SKILLS: Record<string, number> = {
   'joycraft-decide': 1,
   'joycraft-tune': 1,
   'joycraft-optimize': 1,
+  // Eighth gate, added 2026-07-29: the interview's draft brief is a review
+  // gate too — field-verified on diligent-cwt when the human had to ask for
+  // the artifact the other seven gates already produce.
+  'joycraft-interview': 1,
 };
 
-/** Render-step skills: all seven gates except decide, which renders a dossier. */
+/** Render-step skills: all eight gates except decide, which renders a dossier. */
 const RENDER_SKILLS: Record<string, number> = {
   'joycraft-new-feature': 1,
   'joycraft-design': 1,
@@ -81,6 +85,7 @@ const RENDER_SKILLS: Record<string, number> = {
   'joycraft-research': 3,
   'joycraft-tune': 1,
   'joycraft-optimize': 1,
+  'joycraft-interview': 1,
 };
 
 /** Question-bearing skills that must terminate decisions before presenting. */
@@ -144,8 +149,8 @@ describe('group 1: every gate skill carries the inline slot template', () => {
     });
   }
 
-  it('covers exactly the seven gate skills the brief named', () => {
-    expect(Object.keys(SLOT_TEMPLATE_SKILLS)).toHaveLength(7);
+  it('covers the seven gate skills the brief named plus interview (follow-on)', () => {
+    expect(Object.keys(SLOT_TEMPLATE_SKILLS)).toHaveLength(8);
   });
 });
 
@@ -179,8 +184,8 @@ describe('group 2: every render-step skill cites the shared template', () => {
     });
   }
 
-  it('covers the six render skills — decide is excluded by design', () => {
-    expect(Object.keys(RENDER_SKILLS)).toHaveLength(6);
+  it('covers the seven render skills — decide is excluded by design', () => {
+    expect(Object.keys(RENDER_SKILLS)).toHaveLength(7);
     expect(Object.keys(RENDER_SKILLS)).not.toContain('joycraft-decide');
   });
 
@@ -286,6 +291,49 @@ describe('group 6: joycraft-setup is a router and carries no gate machinery', ()
       expect(read('joycraft-setup')).not.toContain(marker);
     });
   }
+});
+
+// ---------------------------------------------------------------------------
+// Group 7 — interview playback & question contract (follow-on, 2026-07-29)
+// ---------------------------------------------------------------------------
+
+describe('group 7: interview carries the playback and question contract', () => {
+  const content = () => read('joycraft-interview');
+
+  it('carries the fixed-slot playback under the playback heading', () => {
+    const c = content();
+    for (const marker of ['Mission: <1 line>', 'Confirm or correct — then I write the draft.']) {
+      const hits = occurrences(c, marker);
+      expect(hits.length, `${marker} present`).toBe(1);
+      expect(/play ?back/i.test(headingAt(c, hits[0]))).toBe(true);
+    }
+  });
+
+  it('states the playback is a blocking gate', () => {
+    expect(content()).toContain('blocking gate');
+  });
+
+  it('carries the never-relist and three-line question rules', () => {
+    const c = content();
+    expect(c).toContain('Never re-list an open question');
+    expect(c).toContain('Accept, override, or park?');
+  });
+
+  it('keeps the per-turn cap out — batching is protected behavior', () => {
+    expect(content()).toContain('No per-turn cap');
+  });
+
+  it('delegates no playback volume to the style pointer (pointer sits at other moments)', () => {
+    // The pointer mechanism was the root cause of the 2026-07-29 playback
+    // wall; volume and placement now live in the inline template. The two
+    // remaining citations (hand-off tone, draft-brief guideline) are asserted
+    // by tests/style-pointer-placement.test.ts — here we only pin that none
+    // sits under the playback heading.
+    const c = content();
+    for (const index of occurrences(c, 'output-style.md')) {
+      expect(/play ?back/i.test(headingAt(c, index))).toBe(false);
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------
