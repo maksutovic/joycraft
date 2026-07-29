@@ -18,7 +18,7 @@ mode: checkpoint
 ## What
 
 Terminal spec. Run the generator and the sync so every change from specs 1–5
-propagates: `node scripts/generate-bundled-files.mjs` refreshes
+and 7 propagates: `node scripts/generate-bundled-files.mjs` refreshes
 `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/`,
 `src/copilot-skills/` and the bundled-files registry (including the new
 `REVIEW_GATE_TEMPLATE.html` entry), then `pnpm sync-skills` refreshes the

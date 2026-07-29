@@ -25,14 +25,16 @@ supersedes `docs/backlog/2026-07-27-auto-open-review-artifacts.md` and
 | 2 | [inline-gate-slot-contracts.md](inline-gate-slot-contracts.md) | — | isolated | The 10-line fixed-slot chat template, inline at 7 skills' gate steps. |
 | 3 | [add-artifact-render-steps.md](add-artifact-render-steps.md) | 1, 2 | isolated | Render + auto-open steps (decide's Step 4 pattern) in the 6 skills without one; md stays canonical. |
 | 4 | [enforce-decide-pre-presentation.md](enforce-decide-pre-presentation.md) | 3 | batch | Decide fires pre-presentation in 5 question-bearing skills; fixes design's Step 4/5 ordering. |
-| 5 | [gate-contract-tests.md](gate-contract-tests.md) | 1, 2, 3, 4 | batch | `tests/gate-contract.test.ts`: presence + heading anchoring for template, render step, decide rule; setup as negative control. |
-| 6 | [regen-and-sync.md](regen-and-sync.md) | 1–5 | checkpoint | Terminal: generate all four harness trees + registry, sync installed copies, one commit. |
+| 5 | [gate-contract-tests.md](gate-contract-tests.md) | 1, 2, 3, 4, 7 | batch | `tests/gate-contract.test.ts`: presence + heading anchoring for template, render step, decide rule, handoff briefing; setup as negative control. |
+| 6 | [regen-and-sync.md](regen-and-sync.md) | 1–5, 7 | checkpoint | Terminal: generate all four harness trees + registry, sync installed copies, one commit. |
+| 7 | [handoff-briefing-prompts.md](handoff-briefing-prompts.md) | 4 | batch | D5 fenced briefing prompt (pickup / decided / start / hazard / done-when) replaces the bare `/clear + command` handoff in 8 skills. |
 
 ## Execution waves
 
-Strictly sequential — six waves of one spec each. Specs 2, 3, and 4 edit the
-same gate-skill bodies (overlapping Affected Files), so no wave is
-parallel-safe. Spec 6 is terminal and derives from everything before it.
+Strictly sequential — seven waves of one spec each, in order
+**1, 2, 3, 4, 7, 5, 6**. Specs 2, 3, 4, and 7 edit the same gate-skill
+bodies (overlapping Affected Files), so no wave is parallel-safe. Spec 6 is
+terminal and derives from everything before it.
 
 ## Known hazard: the windowed tests
 
@@ -49,11 +51,12 @@ edit an assertion.
 
 ## Decisions stamped at decomposition
 
-All four interview questions terminated 2026-07-29, recorded in the brief's
+All five interview questions terminated 2026-07-29, recorded in the brief's
 `decisions:` block: **D1** one generic template; **D2** ~10-line slot set
 (outcome / artifact path / decisions / next); **D3** tune + optimize join the
 gates; **D4** HTML committed + linguist-collapsed, markdown stays the
-canonical agent-readable record.
+canonical agent-readable record; **D5** the handoff is a fenced briefing
+prompt (pickup / decided / start / hazard / done-when), not a bare command.
 
 ## How to use this file
 

@@ -24,6 +24,11 @@ decisions:
     status: clarified
     choice: committed + linguist-collapsed, AND the markdown stays canonical — agents read .md, humans get HTML
     rationale: because the two-channel split runs all the way down — HTML never replaces the agent-readable record, it renders it; dossier.html precedent plus .gitattributes already solves PR noise
+  - id: D5
+    question: what replaces the bare "/clear + command" handoff at the end of each gate?
+    status: clarified
+    choice: a fenced copy-pasteable briefing prompt — command, pickup sentence, decided/don't-reopen, Start, Hazard, Done-when
+    rationale: because the human has been hand-writing these and finds a cold agent briefed in-prompt outperforms one told only which command to run (stamped 2026-07-29, format chosen from three previews)
 ---
 
 # Succinct Gates — Feature Brief
@@ -148,13 +153,15 @@ which wrongly marked wave 1 parallel).
 | 2 | inline-gate-slot-contracts | Write the D2 fixed-slot chat template inline at the gate step of the 7 skills (new-feature, design, decompose, research, decide, tune, optimize) | None | M |
 | 3 | add-artifact-render-steps | Add render + auto-open artifact steps (md stays canonical per D4, headless no-op) to the 6 skills without one (all but decide) | 1, 2 | M |
 | 4 | enforce-decide-pre-presentation | Open questions or ≤50 load-bearing claims invoke decide before any gate presentation; fix design's Step 4/5 ordering ambiguity | 3 | S |
-| 5 | gate-contract-tests | Content tests asserting each gate skill carries the inline slot template and artifact step; static-shape test for the template | 1, 2, 3, 4 | M |
-| 6 | regen-and-sync | Terminal bundle regeneration + installed-copy sync in one reviewable commit | 1–5 | S |
+| 5 | gate-contract-tests | Content tests asserting each gate skill carries the inline slot template, artifact step, and handoff briefing; static-shape test for the template | 1, 2, 3, 4, 7 | M |
+| 6 | regen-and-sync | Terminal bundle regeneration + installed-copy sync in one reviewable commit | 1–5, 7 | S |
+| 7 | handoff-briefing-prompts | Replace the bare `/clear + command` handoff with the D5 fenced briefing prompt in every skill that ends with a handoff | 4 | M |
 
 ## Execution Strategy
 
-- [x] Sequential — six waves of one spec each. Spec 6 is terminal and derives
-  from every preceding spec's output; specs 2–4 share Affected Files.
+- [x] Sequential — seven waves of one spec each (order 1, 2, 3, 4, 7, 5, 6).
+  Spec 6 is terminal and derives from every preceding spec's output; specs
+  2–4 and 7 share Affected Files.
 
 ## Success Criteria
 

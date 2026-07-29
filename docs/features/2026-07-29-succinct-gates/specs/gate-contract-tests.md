@@ -32,7 +32,11 @@ Create `tests/gate-contract.test.ts` asserting, against the canonical
 3. **Decide pre-presentation rule** — each of the five question-bearing
    skills (new-feature, design, decompose, research, bugfix) contains
    `before presenting`.
-4. **Negative control** — `joycraft-setup` contains none of the markers
+4. **Handoff briefing presence** — each handoff-emitting skill (new-feature,
+   interview, decompose, design, research, decide, bugfix, session-end)
+   contains the briefing marker (`Done when:`) inside a fenced block near its
+   handoff heading (spec 7).
+5. **Negative control** — `joycraft-setup` contains none of the markers
    (same exclusion logic as the pointer test).
 
 Also fold the spec-1 template static-shape assertions here if they were
@@ -47,7 +51,7 @@ does not.
 
 ## Acceptance Criteria
 
-- [ ] All four assertion groups implemented against `src/skills/` sources.
+- [ ] All five assertion groups implemented against `src/skills/` sources.
 - [ ] Tests FAIL if any gate skill loses its template, render step, or decide
   rule (verified by mutation: temporarily delete one marker, observe red).
 - [ ] Tests are position-tolerant — they assert presence + heading anchoring,
@@ -59,13 +63,13 @@ does not.
 
 | Acceptance Criterion | Test | Type |
 |---------------------|------|------|
-| Assertion groups 1–4 | the new test file itself | unit |
+| Assertion groups 1–5 | the new test file itself | unit |
 | Red on mutation | delete a marker in a scratch copy, run suite, confirm failure, restore | manual |
 | No new fragility | assertions use heading-anchored search, mirrored from `output-style-pointer.test.ts` | review |
 
 **Execution order:**
-1. Write the test file — it must PASS against specs 2–4's completed edits
-   (this spec depends on them) and FAIL against a mutated copy
+1. Write the test file — it must PASS against specs 2–4 and 7's completed
+   edits (this spec depends on them) and FAIL against a mutated copy
 2. Run the mutation check (red), restore (green)
 3. Wire into the default `pnpm test` run (vitest picks up `tests/*.test.ts`
    automatically)

@@ -32,16 +32,23 @@
     {
       "id": 5,
       "file": "gate-contract-tests.md",
-      "depends_on": [1, 2, 3, 4],
+      "depends_on": [1, 2, 3, 4, 7],
       "status": "todo",
       "mode": "batch"
     },
     {
       "id": 6,
       "file": "regen-and-sync.md",
-      "depends_on": [1, 2, 3, 4, 5],
+      "depends_on": [1, 2, 3, 4, 5, 7],
       "status": "todo",
       "mode": "checkpoint"
+    },
+    {
+      "id": 7,
+      "file": "handoff-briefing-prompts.md",
+      "depends_on": [4],
+      "status": "todo",
+      "mode": "batch"
     }
   ]
 }
