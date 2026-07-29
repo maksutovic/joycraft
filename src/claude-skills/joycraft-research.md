@@ -163,6 +163,25 @@ If you make changes, note them at the bottom of `research.md` under a "Brief upd
 
 **Why this step exists:** the silent-drift gap. Without reconciliation, the brief and downstream artifacts diverge — and later decomposition is sized against the stale brief. This feature ("single-source-skills") hit exactly this: brief said "11 clean / 9 dirty" until the research re-audit forced a re-decomposition. Don't let it happen again.
 
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat. Findings go in the research
+document — never paste them into chat.
+
+```markdown
+**Research complete: <the finding that changes what we build, one line>**
+Artifact: <absolute path> (opened) · canonical: docs/features/<slug>/research.md
+Decisions needed: <N> — <ids/titles, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
 End with the canonical Handoff block.
 
 ## Recommended Next Steps

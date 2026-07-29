@@ -88,7 +88,26 @@ Before the decomposition table, show the **"Prior knowledge reused"** list from 
 
 Write this presentation, and the hand-off in Step 8, to the style contract in `docs/templates/reference/output-style.md`.
 
-Show the decomposition table to the user. Ask:
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat. The decomposition table goes
+in the artifact — never paste it into chat.
+
+```markdown
+**Decomposition ready: <N> specs across <M> waves**
+Artifact: <absolute path> (opened) · canonical: docs/features/<slug>/specs/
+Decisions needed: <N> — <ids/titles, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
+The review questions below belong in the artifact beside the table. Ask:
 1. "Does this breakdown match how you think about this feature?"
 2. "Are there any specs that feel too big or too small?"
 3. "Should any of these run in parallel (separate worktrees)?"

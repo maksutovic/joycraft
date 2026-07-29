@@ -42,6 +42,25 @@ Write to `docs$joycraft-assessment.md` AND display it. Include: scores table, de
 
 Write the displayed assessment and every report below it to the style contract in `docs/templates/reference/output-style.md`.
 
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat. The scores table and the
+per-dimension findings go in the assessment — never paste them into chat.
+
+```markdown
+**Harness assessed: <overall level / headline gap, one line>**
+Artifact: <absolute path> (opened) · canonical: docs/assessment.md
+Decisions needed: <N> — <upgrade choices, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
 ## Step 5: Apply Upgrades
 
 Apply using three tiers — do NOT ask per-item permission:

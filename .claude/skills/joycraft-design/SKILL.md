@@ -139,7 +139,26 @@ If you make changes, note them at the bottom of `design.md` under a "Brief updat
 
 Write this presentation to the style contract in `docs/templates/reference/output-style.md`.
 
-Present the design document to the user. Say:
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat.
+
+```markdown
+**Design ready: <the design's central choice, one line>**
+Artifact: <absolute path> (opened) · canonical: docs/features/<slug>/design.md
+Decisions needed: <N> — <open-question ids/titles, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
+The review questions below are the artifact's content, not your chat message —
+Section 5 already carries them. Say:
 
 ```
 Design discussion written to docs/features/<slug>/design.md

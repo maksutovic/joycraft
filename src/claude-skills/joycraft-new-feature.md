@@ -143,6 +143,24 @@ Present the brief to the user. Focus review on:
 - "Is anything in scope that shouldn't be?"
 - "Are the specs small enough? Can each be described in one sentence?"
 
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat.
+
+```markdown
+**Brief ready: <what this feature is, one line>**
+Artifact: <absolute path> (opened) · canonical: docs/features/<slug>/brief.md
+Decisions needed: <N> — <ids/titles, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
 Iterate until approved.
 
 ## Phase 3: Generate Atomic Specs
@@ -254,6 +272,27 @@ source: docs/features/<slug>/brief.md
 **Never auto-write to `docs/backlog/`.** Every backlog entry is user-confirmed.
 
 ## Phase 4: Hand Off for Execution
+
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat.
+
+```markdown
+**Specs ready: <N> specs for <feature>**
+Artifact: <absolute path> (opened) · canonical: docs/features/<slug>/specs/
+Decisions needed: <N> — <ids/titles, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
+The handoff block below is the artifact's content, not your chat message —
+write it to the artifact and let the slot template carry the chat.
 
 Before jumping to execution, consider whether research or design would catch wrong assumptions early:
 

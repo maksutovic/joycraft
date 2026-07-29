@@ -122,6 +122,27 @@ Hook auditing is not yet supported on this harness — note that and skip this s
 
 Write the prose around the tables to the style contract in `docs/templates/reference/output-style.md`.
 
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat. The disposition table and the
+overhead report go in the artifact — never paste them into chat.
+
+```markdown
+**Harness audited: <N> controls — <headline disposition, one line>**
+Artifact: <absolute path> (opened) · canonical: <overhead report md path>
+Decisions needed: <N> — <controls awaiting a call, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
+The report below is the artifact's content, not your chat message.
+
 Lead with the **disposition table** — one row per material control, columns: Control, Home File, Disposition, Evidence, Reason. Then the category summary:
 
 ```
