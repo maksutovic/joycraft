@@ -389,6 +389,30 @@ Next:
 ```
 Run {{clear}} first.
 
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after {{clear}}. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+{{skill_prefix}}implement-feature docs/features/<slug>/
+
+You are picking up the spec queue for <slug>, decomposed <date>.
+Decisions <ids> are stamped in the brief — do not reopen them.
+Start: <first-spec>.md (mode: <mode>). Order: specs/README.md.
+Hazard: <the one known trap, or "none known">.
+Done when: every spec in .joycraft-spec-queue.json is in-review and the suite is green.
+```
+
+Filled example:
+
+```
+{{skill_prefix}}implement-feature docs/features/2026-07-29-succinct-gates/
+
+You are picking up the spec queue for 2026-07-29-succinct-gates, decomposed 2026-07-29.
+Decisions D1-D7 are stamped in the brief — do not reopen them.
+Start: write-gate-artifact-template.md (mode: checkpoint). Order: specs/README.md.
+Hazard: windowed skill tests slice fixed regions; edit src/skills/ only.
+Done when: every spec in .joycraft-spec-queue.json is in-review and the suite is green.
+```
+
 That one command runs the whole queue — wrap-up and commit after each spec, parallel subagents only for waves marked parallel-safe, session-end once at the end. To drive one spec at a time instead: `{{skill_prefix}}implement docs/features/<slug>/specs/<first-spec>.md` (it wraps up and continues through the queue itself).
 <!-- /harness -->
 <!-- harness:pi -->

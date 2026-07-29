@@ -120,6 +120,30 @@ Next:
 ```
 Run /clear first.
 
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /clear. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+/joycraft-new-feature docs/features/<slug>/brief.md
+
+You are picking up the interview draft for <slug>, drafted <date>.
+Decisions <ids> are settled in the draft — do not reopen them.
+Start: turn the draft into a full Feature Brief. Order: the draft's Open Questions.
+Hazard: <the one known trap, or "none known">.
+Done when: docs/features/<slug>/brief.md has Vision, Constraints, and Decomposition filled.
+```
+
+Filled example:
+
+```
+/joycraft-new-feature docs/features/2026-07-29-succinct-gates/brief.md
+
+You are picking up the interview draft for 2026-07-29-succinct-gates, drafted 2026-07-29.
+Decisions D1-D2 are settled in the draft — do not reopen them.
+Start: turn the draft into a full Feature Brief. Order: the draft's Open Questions.
+Hazard: none known.
+Done when: docs/features/2026-07-29-succinct-gates/brief.md has Vision, Constraints, and Decomposition filled.
+```
+
 If the idea sounds complex — touches many files, involves architectural decisions, or the user is working in an unfamiliar area — nudge them toward research and design (e.g., `/joycraft-research` then `/joycraft-design`). But present it as a recommendation, not a gate.
 
 ## Guidelines

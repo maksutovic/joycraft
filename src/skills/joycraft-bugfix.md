@@ -174,4 +174,28 @@ Next:
 ```
 Run {{clear}} first.
 
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after {{clear}}. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+{{skill_prefix}}implement docs/bugfixes/<area>/<bug-name>.md
+
+You are picking up the bugfix spec for <bug-name>, diagnosed <date>.
+The root cause and chosen fix are stamped in the spec — do not reopen them.
+Start: <bug-name>.md (mode: checkpoint). Order: single spec, no queue.
+Hazard: <the one known trap, or "none known">.
+Done when: the spec's regression test fails before the fix and passes after.
+```
+
+Filled example:
+
+```
+{{skill_prefix}}implement docs/bugfixes/upgrade/stale-installed-skills.md
+
+You are picking up the bugfix spec for stale-installed-skills, diagnosed 2026-07-29.
+The root cause and chosen fix are stamped in the spec — do not reopen them.
+Start: stale-installed-skills.md (mode: checkpoint). Order: single spec, no queue.
+Hazard: the installed tree is generated; fix the source, then sync.
+Done when: the spec's regression test fails before the fix and passes after.
+```
+
 **Why:** A fresh session for implementation produces better results. This diagnostic session has context noise from exploration — a clean session with just the spec is more focused.

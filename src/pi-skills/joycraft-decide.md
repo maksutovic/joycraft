@@ -230,3 +230,37 @@ The summary below is the artifact's content, not your chat message:
 - Files stamped (brief, decision-log, backlog entries, dossier path)
 - **Gate status:** "all decisions terminated — decompose gate open" or
   "N decisions still open — decompose gate CLOSED" (after an explicit stop)
+
+## Recommended Next Steps
+
+Only once the gate is open. If any decision is still `open`, stop here instead — the next step does not start.
+
+Next:
+```bash
+/skill:joycraft-decompose docs/features/<slug>/brief.md
+```
+Run /new first.
+
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /new. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+/skill:joycraft-decompose docs/features/<slug>/brief.md
+
+You are picking up the decision dossier for <slug>, decided <date>.
+Decisions <ids> are stamped in the brief and decision-log — do not reopen them.
+Start: decompose the brief. Order: the brief's Decomposition section.
+Hazard: <the one known trap, or "none known">.
+Done when: docs/features/<slug>/specs/ holds one file per spec plus README.md.
+```
+
+Filled example:
+
+```
+/skill:joycraft-decompose docs/features/2026-07-29-succinct-gates/brief.md
+
+You are picking up the decision dossier for 2026-07-29-succinct-gates, decided 2026-07-29.
+Decisions D1-D7 are stamped in the brief and decision-log — do not reopen them.
+Start: decompose the brief. Order: the brief's Decomposition section.
+Hazard: none known.
+Done when: docs/features/2026-07-29-succinct-gates/specs/ holds one file per spec plus README.md.
+```

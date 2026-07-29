@@ -47,7 +47,7 @@
       "id": 7,
       "file": "handoff-briefing-prompts.md",
       "depends_on": [4],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch"
     },
     {

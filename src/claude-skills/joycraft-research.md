@@ -223,6 +223,30 @@ Next:
 ```
 Run /clear first.
 
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /clear. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+/joycraft-design docs/features/<slug>/research.md
+
+You are picking up codebase research for <slug>, researched <date>.
+Findings <ids> are recorded in research.md — do not reopen them.
+Start: draft the design against those findings. Order: research.md's question order.
+Hazard: <the one known trap, or "none known">.
+Done when: docs/features/<slug>/design.md exists and the human has approved it.
+```
+
+Filled example:
+
+```
+/joycraft-design docs/features/2026-07-29-succinct-gates/research.md
+
+You are picking up codebase research for 2026-07-29-succinct-gates, researched 2026-07-29.
+Findings Q1-Q5 are recorded in research.md — do not reopen them.
+Start: draft the design against those findings. Order: research.md's question order.
+Hazard: skill sources fan out to four generated harness trees.
+Done when: docs/features/2026-07-29-succinct-gates/design.md exists and the human has approved it.
+```
+
 If the scope is simple (< 5 files, well-understood area, no architectural decisions), instead hand off to `/joycraft-decompose docs/features/<slug>/brief.md` to skip design and break directly into atomic specs.
 
 ## Edge Cases

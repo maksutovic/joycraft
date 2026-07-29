@@ -149,4 +149,28 @@ Next:
 ```
 Run /new first.
 
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /new. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+/skill:joycraft-implement docs/features/<slug>/specs/<next-spec>.md
+
+You are picking up the spec queue for <slug>, last session ended <date>.
+Decisions <ids> are stamped in the brief — do not reopen them.
+Start: <next-spec>.md (mode: <mode>). Order: specs/README.md.
+Hazard: <the one known trap, or "none known">.
+Done when: <next-spec> is in-review, committed, and the suite is green.
+```
+
+Filled example:
+
+```
+/skill:joycraft-implement docs/features/2026-07-29-succinct-gates/specs/gate-contract-tests.md
+
+You are picking up the spec queue for 2026-07-29-succinct-gates, last session ended 2026-07-29.
+Decisions D1-D7 are stamped in the brief — do not reopen them.
+Start: gate-contract-tests.md (mode: batch). Order: specs/README.md.
+Hazard: the suite regenerates bundles; commit machine-generated output as-is.
+Done when: gate-contract-tests is in-review, committed, and the suite is green.
+```
+
 If all specs in the feature are complete, hand off to a feature-level wrap-up instead (PR review, etc.) — the Handoff block is just the slash command for whatever the next move is.

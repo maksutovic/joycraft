@@ -373,6 +373,30 @@ Next:
 ```
 Run /clear first.
 
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /clear. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+/joycraft-decompose docs/features/<slug>/brief.md
+
+You are picking up the feature brief for <slug>, written <date>.
+Decisions <ids> are stamped in the brief — do not reopen them.
+Start: decompose the brief into atomic specs. Order: the brief's Decomposition section.
+Hazard: <the one known trap, or "none known">.
+Done when: docs/features/<slug>/specs/ holds one file per spec plus README.md.
+```
+
+Filled example:
+
+```
+/joycraft-decompose docs/features/2026-07-29-succinct-gates/brief.md
+
+You are picking up the feature brief for 2026-07-29-succinct-gates, written 2026-07-29.
+Decisions D1-D7 are stamped in the brief — do not reopen them.
+Start: decompose the brief into atomic specs. Order: the brief's Decomposition section.
+Hazard: gate skills carry position-fragile windows that sliced tests read.
+Done when: docs/features/2026-07-29-succinct-gates/specs/ holds one file per spec plus README.md.
+```
+
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused. Research and design catch wrong assumptions before they propagate into specs — but skip them if the scope is clear and well-understood.
 
 You can also use `/joycraft-decompose` to re-decompose a brief if the breakdown needs adjustment, or run `/joycraft-interview` first for a lighter brainstorm before committing to the full workflow.

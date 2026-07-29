@@ -245,3 +245,27 @@ Next:
 Run /new first.
 
 Include any backlog paths produced as a side effect.
+
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /new. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+/skill:joycraft-decompose docs/features/<slug>/brief.md
+
+You are picking up the approved design for <slug>, approved <date>.
+Decisions <ids> are stamped in design.md — do not reopen them.
+Start: decompose the brief against design.md. Order: the design's build sequence.
+Hazard: <the one known trap, or "none known">.
+Done when: docs/features/<slug>/specs/ holds one file per spec plus README.md.
+```
+
+Filled example:
+
+```
+/skill:joycraft-decompose docs/features/2026-07-29-succinct-gates/brief.md
+
+You are picking up the approved design for 2026-07-29-succinct-gates, approved 2026-07-29.
+Decisions D1-D7 are stamped in design.md — do not reopen them.
+Start: decompose the brief against design.md. Order: the design's build sequence.
+Hazard: the gate skills are shared by four harness variants.
+Done when: docs/features/2026-07-29-succinct-gates/specs/ holds one file per spec plus README.md.
+```
