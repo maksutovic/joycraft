@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync, rmSync, rmdirSync, readdirSync, chmodSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { readVersion, writeVersion, hashContent, truncateHash, LEGACY_VERSION_FILE, LEGACY_CLAUDE_STATE_PATH, parseGitignoreProfile } from './version.js';
 import { applyGitignoreProfile, resolveGitignoreProfile, validateGitignoreFlag, PRIVATE_PROFILE_IGNORES, PRIVATE_UNTRACK_COMMAND } from './gitignore.js';
 import { applyGitattributes } from './gitattributes.js';
@@ -9,6 +9,7 @@ import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, 
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
 import { HARNESSES, sanitizeHarnesses, type Harness } from './harness.js';
+import { ensureExecutionProfileSection, defaultExecutionProfile } from './execution-profile.js';
 
 /**
  * Read-only check for harness files git is still tracking. Used to decide
@@ -65,6 +66,31 @@ export interface UpgradeOptions {
   yes: boolean;
   /** Raw --gitignore value from the CLI, if provided. Validated in upgrade(). */
   gitignore?: string;
+  /** Test seam for the stale-CLI re-exec; defaults to child_process.spawnSync. */
+  spawnForReexec?: (
+    cmd: string,
+    args: string[],
+    opts: { stdio: 'inherit' }
+  ) => { status: number | null; error?: Error };
+}
+
+/**
+ * Re-run the upgrade through the latest published CLI. Pinning the exact
+ * version bypasses npx's cache, which is what leaves a bare `npx joycraft`
+ * stale in the first place. Returns false if the spawn itself failed.
+ */
+function reexecLatestUpgrade(targetDir: string, opts: UpgradeOptions, latest: string): boolean {
+  const args = ['-y', `joycraft@${latest}`, 'upgrade', targetDir];
+  if (opts.yes) args.push('--yes');
+  if (opts.gitignore !== undefined) args.push('--gitignore', opts.gitignore);
+  const spawn = opts.spawnForReexec ?? spawnSync;
+  const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  const result = spawn(npx, args, { stdio: 'inherit' });
+  if (result.error) return false;
+  if (typeof result.status === 'number' && result.status !== 0) {
+    process.exitCode = result.status;
+  }
+  return true;
 }
 
 interface FileChange {
@@ -374,14 +400,20 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   // legacy migration, docs migration) so a typo'd value changes nothing.
   if (opts.gitignore !== undefined) validateGitignoreFlag(opts.gitignore);
 
-  // Guard: if the CLI itself is out of date, warn and bail before comparing
-  // project files against stale bundled content.
+  // Guard: if the CLI itself is out of date, never compare project files
+  // against stale bundled content. With --yes or an interactive confirmation,
+  // re-exec the pinned latest version via npx so upgrade stays one command;
+  // otherwise (or if the spawn fails) tell the user the one-liner.
   const cliCheck = await checkCliVersion();
-  if (cliCheck.stale) {
+  if (cliCheck.stale && cliCheck.latest) {
     const pkgVersion = getPackageVersion();
     console.log(`Joycraft CLI is out of date (you have ${pkgVersion}, latest is ${cliCheck.latest}).`);
-    console.log('Update with: npm install -g joycraft');
-    console.log('Then re-run: npx joycraft upgrade');
+    const rerun =
+      opts.yes ||
+      (process.stdin.isTTY === true &&
+        (await askUser(`Run joycraft@${cliCheck.latest} via npx now?`)));
+    if (rerun && reexecLatestUpgrade(targetDir, opts, cliCheck.latest)) return;
+    console.log('Update and re-run in one step with: npx joycraft@latest upgrade');
     return;
   }
 
@@ -455,6 +487,27 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   // Bring pre-existing projects up to the init behavior: collapse
   // workflow-exhaust docs in PR review. Append-only + idempotent.
   applyGitattributes(targetDir);
+
+  // Bring pre-profile projects up to the init behavior: insert the
+  // sentinel-delimited Execution Profile into AGENTS.md when it has none.
+  // Insert-only — a project that already has a profile (hand-edited or not)
+  // comes back byte-identical, because the region is user-owned data (D7).
+  // Upgrade can't ask questions here (it may be running --yes/non-interactive),
+  // so it writes the explicit-no default; /joycraft-tune offers the real
+  // questions.
+  const agentsMdPath = join(targetDir, 'AGENTS.md');
+  if (existsSync(agentsMdPath)) {
+    const existingAgents = readFileSync(agentsMdPath, 'utf-8');
+    const withProfile = ensureExecutionProfileSection(
+      existingAgents,
+      defaultExecutionProfile(harnesses)
+    );
+    if (withProfile !== existingAgents) {
+      writeFileSync(agentsMdPath, withProfile, 'utf-8');
+      console.log('  ~ AGENTS.md (added Execution Profile — run /joycraft-tune to fill it in)');
+    }
+  }
+
   if (gitignoreProfile === 'private') {
     // On a fresh switch to private, always surface the untrack hint. On a
     // re-run where private is already persisted (the easy-to-miss case), only

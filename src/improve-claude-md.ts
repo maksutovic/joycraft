@@ -1,6 +1,11 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type { StackInfo } from './detect.js';
+import {
+  ensureExecutionProfileSection,
+  renderExecutionProfileSection,
+  type ExecutionProfile,
+} from './execution-profile.js';
 
 export interface ImproveOptions {
   projectDir?: string;
@@ -18,6 +23,13 @@ export interface ImproveOptions {
    * then becomes an `@AGENTS.md` import pointer (see generateClaudeMdPointer).
    */
   multiTool?: boolean;
+  /**
+   * The project's Execution Profile (D6). When supplied, a sentinel-delimited
+   * `## Execution Profile` section is written (generate) or inserted-if-absent
+   * (improve). An existing region is never rewritten — it's the user's data.
+   * Only meaningful for documents that serve as AGENTS.md.
+   */
+  executionProfile?: ExecutionProfile;
 }
 
 /**
@@ -295,11 +307,13 @@ export function improveCLAUDEMd(
   }
 
   if (additions.length === 0) {
-    return working === existing ? existing : working;
+    const unchanged = working === existing ? existing : working;
+    return ensureExecutionProfileSection(unchanged, opts?.executionProfile);
   }
 
   const trimmed = working.trimEnd();
-  return trimmed + '\n\n' + additions.join('\n\n') + '\n';
+  const merged = trimmed + '\n\n' + additions.join('\n\n') + '\n';
+  return ensureExecutionProfileSection(merged, opts?.executionProfile);
 }
 
 export function generateCLAUDEMd(
@@ -340,6 +354,10 @@ export function generateCLAUDEMd(
     generateGettingStartedSection(opts?.multiTool ?? false),
     '',
   );
+
+  if (opts?.executionProfile) {
+    lines.push(renderExecutionProfileSection(opts.executionProfile), '');
+  }
 
   if (opts?.privateProfile) {
     lines.push(generatePrivateSetupNote(), '');

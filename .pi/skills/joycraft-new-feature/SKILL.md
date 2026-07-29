@@ -141,6 +141,54 @@ Present the brief to the user. Focus review on:
 - "Is anything in scope that shouldn't be?"
 - "Are the specs small enough? Can each be described in one sentence?"
 
+### Decide first — the pre-presentation rule
+
+If the artifact contains any open question, or any load-bearing claim anchored
+≤50, invoke `/skill:joycraft-decide` on it NOW — before presenting. The Block Rule
+(`docs/context/anchors.md`) fires pre-approval, every time; presenting
+an artifact with open questions asks the human to approve an incomplete
+artifact.
+If the human already answered them in conversation, that counts as termination:
+stamp the `decisions:` frontmatter and proceed — no dossier required. Zero open
+questions and no ≤50 claims → the gate passes silently.
+
+### Render and open the brief
+
+`docs/features/<slug>/brief.md` is written first and stays **canonical** — agents
+read the md, never the HTML. The HTML is a render of it and never invents content.
+
+1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
+   `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
+   template's structure, class names, CSS, and theme script stay
+   **byte-identical** — never generate freeform gate HTML.
+2. Write it to `docs/features/<slug>/brief.html` (committed later — the path is
+   already linguist-generated, so PRs collapse it). Re-running the gate
+   overwrites the same file; the md is the record.
+3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
+   otherwise. If both fail, print the absolute path and continue — headless, CI,
+   and isolated mode are a no-op here, never a failure.
+4. Offer — don't push — an optional extra render: "I can also publish this brief
+   as a hosted artifact for a shareable link." Only publish if the human says
+   yes; the local file remains the canonical render. If declined, no retry.
+
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat.
+
+```markdown
+**Brief ready: <what this feature is, one line>**
+Artifact: <absolute path> (opened) · canonical: docs/features/<slug>/brief.md
+Decisions needed: <N> — <ids/titles, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
 Iterate until approved.
 
 ## Phase 3: Generate Atomic Specs
@@ -253,6 +301,27 @@ source: docs/features/<slug>/brief.md
 
 ## Phase 4: Hand Off for Execution
 
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat.
+
+```markdown
+**Specs ready: <N> specs for <feature>**
+Artifact: <absolute path> (opened) · canonical: docs/features/<slug>/specs/
+Decisions needed: <N> — <ids/titles, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
+The handoff block below is the artifact's content, not your chat message —
+write it to the artifact and let the slot template carry the chat.
+
 Before jumping to execution, consider whether research or design would catch wrong assumptions early:
 
 ```
@@ -303,6 +372,34 @@ Next:
 /skill:joycraft-decompose docs/features/<slug>/brief.md
 ```
 Run /new first.
+
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /new. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+Before filling the briefing, read the `## Execution Profile` section of AGENTS.md (between the `joycraft:execution-profile` sentinels). If swarms are enabled for **decompose** on the harness you're handing to, add one **Execution:** line to the briefing, quoting that harness's profile row **verbatim** — never translate, validate, or improve the model and effort names the human wrote. If the section is missing, or swarms are off for decompose, add no line and say nothing about it.
+
+```
+/skill:joycraft-decompose docs/features/<slug>/brief.md
+
+You are picking up the feature brief for <slug>, written <date>.
+Decisions <ids> are stamped in the brief — do not reopen them.
+Start: decompose the brief into atomic specs. Order: the brief's Decomposition section.
+Execution: swarm decompose — <harness> subagents <model> at effort <effort>.
+Hazard: <the one known trap, or "none known">.
+Done when: docs/features/<slug>/specs/ holds one file per spec plus README.md.
+```
+
+Filled example:
+
+```
+/skill:joycraft-decompose docs/features/2026-07-29-succinct-gates/brief.md
+
+You are picking up the feature brief for 2026-07-29-succinct-gates, written 2026-07-29.
+Decisions D1-D7 are stamped in the brief — do not reopen them.
+Start: decompose the brief into atomic specs. Order: the brief's Decomposition section.
+Execution: swarm decompose — claude subagents opus-5 at effort medium.
+Hazard: gate skills carry position-fragile windows that sliced tests read.
+Done when: docs/features/2026-07-29-succinct-gates/specs/ holds one file per spec plus README.md.
+```
 
 **Why:** A fresh session for execution produces better results. The interview session has too much context noise — a clean session with just the spec is more focused. Research and design catch wrong assumptions before they propagate into specs — but skip them if the scope is clear and well-understood.
 

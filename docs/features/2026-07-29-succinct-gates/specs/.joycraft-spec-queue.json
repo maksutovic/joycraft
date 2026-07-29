@@ -1,0 +1,68 @@
+{
+  "feature": "2026-07-29-succinct-gates",
+  "specs": [
+    {
+      "id": 1,
+      "file": "write-gate-artifact-template.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 2,
+      "file": "inline-gate-slot-contracts.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "isolated"
+    },
+    {
+      "id": 3,
+      "file": "add-artifact-render-steps.md",
+      "depends_on": [1, 2],
+      "status": "done",
+      "mode": "isolated"
+    },
+    {
+      "id": 4,
+      "file": "enforce-decide-pre-presentation.md",
+      "depends_on": [3],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 5,
+      "file": "gate-contract-tests.md",
+      "depends_on": [1, 2, 3, 4, 7, 9],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 6,
+      "file": "regen-and-sync.md",
+      "depends_on": [1, 2, 3, 4, 5, 7, 8, 9],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 7,
+      "file": "handoff-briefing-prompts.md",
+      "depends_on": [4],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 8,
+      "file": "capture-execution-profile.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 9,
+      "file": "inject-profile-into-briefings.md",
+      "depends_on": [7, 8],
+      "status": "done",
+      "mode": "batch"
+    }
+  ]
+}

@@ -687,4 +687,49 @@ describe('init', () => {
       expect(piKeys.some(k => k.includes('.pi/agents/joycraft-researcher.md'))).toBe(true);
     });
   });
+
+  describe('execution profile', () => {
+    it('writes the sentinel-delimited Execution Profile section into AGENTS.md', async () => {
+      await init(tmpDir, { force: false });
+
+      const agents = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
+      expect(agents).toContain('## Execution Profile');
+      expect(agents).toContain('<!-- joycraft:execution-profile -->');
+      expect(agents).toContain('<!-- /joycraft:execution-profile -->');
+      expect(agents).toMatch(/Swarms: decompose (yes|no) · implement (yes|no)/);
+    });
+
+    it('non-interactive init never blocks and defaults to no swarms + session default', async () => {
+      // No TTY in the test runner — this is the non-interactive path.
+      await init(tmpDir, { force: false });
+
+      const agents = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
+      expect(agents).toContain('Swarms: decompose no · implement no');
+      expect(agents).toContain('session default');
+    });
+
+    it('writes one profile line per selected harness', async () => {
+      await init(tmpDir, { force: false });
+
+      const agents = readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8');
+      // Non-interactive selects every harness.
+      for (const h of ['claude', 'codex', 'pi', 'copilot']) {
+        expect(agents).toMatch(new RegExp(`^- ${h}:`, 'm'));
+      }
+    });
+
+    it('leaves an existing AGENTS.md profile byte-identical on re-run', async () => {
+      await init(tmpDir, { force: false });
+      const agentsPath = join(tmpDir, 'AGENTS.md');
+      const before = readFileSync(agentsPath, 'utf-8').replace(
+        'Swarms: decompose no · implement no',
+        'Swarms: decompose yes · implement yes',
+      );
+      writeFileSync(agentsPath, before, 'utf-8');
+
+      await init(tmpDir, { force: false });
+
+      expect(readFileSync(agentsPath, 'utf-8')).toBe(before);
+    });
+  });
 });

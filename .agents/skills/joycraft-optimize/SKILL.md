@@ -100,6 +100,49 @@ Hook auditing is not yet supported on this harness — note that and skip this s
 
 Write the prose around the tables to the style contract in `docs/templates/reference/output-style.md`.
 
+### Render and open the overhead report
+
+Write the overhead report md first (the disposition table and the report
+sections below) and keep it **canonical** — agents read the md, never the HTML.
+The HTML is a render of it and never invents content.
+
+1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
+   `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
+   template's structure, class names, CSS, and theme script stay
+   **byte-identical** — never generate freeform gate HTML.
+2. Write it beside the report — same directory, same basename, `.html`
+   extension (e.g. `docs/context/overhead-report.html`) — creating the directory
+   if it doesn't exist yet. Re-running the audit overwrites the same file; the md
+   is the record.
+3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
+   otherwise. If both fail, print the absolute path and continue — headless, CI,
+   and isolated mode are a no-op here, never a failure.
+4. Offer — don't push — an optional extra render: "I can also publish this
+   overhead report as a hosted artifact for a shareable link." Only publish if
+   the human says yes; the local file remains the canonical render. If declined,
+   no retry.
+
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat. The disposition table and the
+overhead report go in the artifact — never paste them into chat.
+
+```markdown
+**Harness audited: <N> controls — <headline disposition, one line>**
+Artifact: <absolute path> (opened) · canonical: <overhead report md path>
+Decisions needed: <N> — <controls awaiting a call, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
+The report below is the artifact's content, not your chat message.
+
 Lead with the **disposition table** — one row per material control, columns: Control, Home File, Disposition, Evidence, Reason. Then the category summary:
 
 ```

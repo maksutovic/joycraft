@@ -27,9 +27,19 @@ function readSettings(dir: string): Record<string, unknown> {
  * supplying answers line by line. The first answer feeds the harness menu; a
  * second (if given) feeds the gitignore-profile prompt. Mirrors the
  * stdin-boundary pattern in tests/gitignore-profiles.test.ts.
+ *
+ * Between those two, init now asks the execution-profile questions — four per
+ * selected harness (swarm decompose, swarm implement, model, effort). These
+ * tests are about harness gating, not the profile, so the helper pads blank
+ * answers (= accept every default) so each caller's trailing gitignore answer
+ * still lands on the gitignore prompt.
  */
 async function initWithAnswers(dir: string, ...answers: string[]): Promise<string> {
-  const fakeStdin = Readable.from(answers.map((a) => `${a}\n`)) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
+  const [harnessAnswer, ...rest] = answers;
+  const selected = parseHarnessSelection(harnessAnswer ?? '') ?? [];
+  const profileBlanks = Array<string>(selected.length * 4).fill('');
+  const answers_ = [harnessAnswer ?? '', ...profileBlanks, ...rest];
+  const fakeStdin = Readable.from(answers_.map((a) => `${a}\n`)) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
   fakeStdin.isTTY = true;
   const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
   Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });

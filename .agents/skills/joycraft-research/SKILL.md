@@ -88,6 +88,58 @@ After writing the research document, update the parent brief with a back-referen
 3. If a `> **Research:**` line already exists, replace it — do NOT add a duplicate
 4. Write the brief back
 
+### Decide first — the pre-presentation rule
+
+If the artifact contains any open question, or any load-bearing claim anchored
+≤50, invoke `$joycraft-decide` on it NOW — before presenting. The Block Rule
+(`docs/context/anchors.md`) fires pre-approval, every time; presenting
+an artifact with open questions asks the human to approve an incomplete
+artifact.
+If the human already answered them in conversation, that counts as termination:
+stamp the `decisions:` frontmatter and proceed — no dossier required. Zero open
+questions and no ≤50 claims → the gate passes silently.
+
+### Render and open the research
+
+`docs/features/<slug>/research.md` is written first and stays **canonical** —
+agents read the md, never the HTML. The HTML is a render of it and never invents
+content.
+
+1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
+   `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
+   template's structure, class names, CSS, and theme script stay
+   **byte-identical** — never generate freeform gate HTML.
+2. Write it to `docs/features/<slug>/research.html` (committed later — the path
+   is already linguist-generated, so PRs collapse it). Re-running the gate
+   overwrites the same file; the md is the record.
+3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
+   otherwise. If both fail, print the absolute path and continue — headless, CI,
+   and isolated mode are a no-op here, never a failure.
+4. Offer — don't push — an optional extra render: "I can also publish this
+   research as a hosted artifact for a shareable link." Only publish if the human
+   says yes; the local file remains the canonical render. If declined, no retry.
+
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat. Findings go in the research
+document — never paste them into chat.
+
+```markdown
+**Research complete: <the finding that changes what we build, one line>**
+Artifact: <absolute path> (opened) · canonical: docs/features/<slug>/research.md
+Decisions needed: <N> — <ids/titles, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
+The block below is the artifact's content, not your chat message.
+
 Present:
 ```
 Research complete: docs/features/<slug>/research.md

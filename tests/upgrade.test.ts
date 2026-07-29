@@ -76,9 +76,104 @@ describe('upgrade', () => {
     }
 
     expect(logs.some(l => l.includes('Joycraft CLI is out of date'))).toBe(true);
-    expect(logs.some(l => l.includes('npm install -g joycraft'))).toBe(true);
-    expect(logs.some(l => l.includes('re-run: npx joycraft upgrade'))).toBe(true);
+    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
     expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
+  });
+
+  it('stale CLI with --yes re-execs the latest version via npx', async () => {
+    await init(tmpDir, { force: false });
+
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ version: '999.0.0' }),
+    }) as unknown as typeof fetch;
+
+    const spawnCalls: { cmd: string; args: string[] }[] = [];
+    const spawnForReexec = ((cmd: string, args: string[]) => {
+      spawnCalls.push({ cmd, args });
+      return { status: 0 };
+    }) as never;
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: true, spawnForReexec });
+    } finally {
+      console.log = origLog;
+      globalThis.fetch = origFetch;
+    }
+
+    expect(spawnCalls).toHaveLength(1);
+    expect(spawnCalls[0].args).toContain('joycraft@999.0.0');
+    expect(spawnCalls[0].args).toContain('upgrade');
+    expect(spawnCalls[0].args).toContain('--yes');
+    // The re-exec ran the upgrade; the manual fallback line must not appear
+    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(false);
+    expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
+  });
+
+  it('stale CLI re-exec forwards --gitignore and falls back on spawn failure', async () => {
+    await init(tmpDir, { force: false });
+
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ version: '999.0.0' }),
+    }) as unknown as typeof fetch;
+
+    const spawnCalls: { cmd: string; args: string[] }[] = [];
+    const spawnForReexec = ((cmd: string, args: string[]) => {
+      spawnCalls.push({ cmd, args });
+      return { status: null, error: new Error('npx not found') };
+    }) as never;
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: true, gitignore: 'shared', spawnForReexec });
+    } finally {
+      console.log = origLog;
+      globalThis.fetch = origFetch;
+    }
+
+    expect(spawnCalls).toHaveLength(1);
+    expect(spawnCalls[0].args).toContain('--gitignore');
+    expect(spawnCalls[0].args).toContain('shared');
+    // Spawn failed → fall back to the manual instruction, never diff stale files
+    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
+    expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
+  });
+
+  it('stale CLI without --yes in a non-interactive session does not spawn', async () => {
+    await init(tmpDir, { force: false });
+
+    const origFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ version: '999.0.0' }),
+    }) as unknown as typeof fetch;
+
+    const spawnCalls: unknown[] = [];
+    const spawnForReexec = ((cmd: string, args: string[]) => {
+      spawnCalls.push([cmd, args]);
+      return { status: 0 };
+    }) as never;
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: false, spawnForReexec });
+    } finally {
+      console.log = origLog;
+      globalThis.fetch = origFetch;
+    }
+
+    expect(spawnCalls).toHaveLength(0);
+    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
   });
 
   it('reports already up to date when nothing changed', async () => {
@@ -621,6 +716,40 @@ describe('upgrade', () => {
     if (PKG_VERSION !== '0.1.0') {
       expect(after.version).not.toBe('0.1.0');
     }
+  });
+
+  describe('execution profile', () => {
+    const OPEN = '<!-- joycraft:execution-profile -->';
+
+    it('inserts the section into an AGENTS.md that has no profile', async () => {
+      await init(tmpDir, { force: false });
+      const agentsPath = join(tmpDir, 'AGENTS.md');
+      // Simulate a project that predates the profile: strip the section.
+      const stripped = readFileSync(agentsPath, 'utf-8')
+        .replace(/\n## Execution Profile[\s\S]*?<!-- \/joycraft:execution-profile -->\n/, '\n');
+      writeFileSync(agentsPath, stripped, 'utf-8');
+      expect(stripped).not.toContain(OPEN);
+
+      await upgrade(tmpDir, { yes: true });
+
+      const agents = readFileSync(agentsPath, 'utf-8');
+      expect(agents).toContain(OPEN);
+      expect(agents).toContain('Swarms: decompose no · implement no');
+    });
+
+    it('leaves an existing profile byte-identical', async () => {
+      await init(tmpDir, { force: false });
+      const agentsPath = join(tmpDir, 'AGENTS.md');
+      const before = readFileSync(agentsPath, 'utf-8').replace(
+        'Swarms: decompose no · implement no',
+        'Swarms: decompose yes · implement yes · hand-edited',
+      );
+      writeFileSync(agentsPath, before, 'utf-8');
+
+      await upgrade(tmpDir, { yes: true });
+
+      expect(readFileSync(agentsPath, 'utf-8')).toBe(before);
+    });
   });
 });
 

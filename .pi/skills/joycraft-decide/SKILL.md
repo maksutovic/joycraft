@@ -203,7 +203,26 @@ context needed to answer it later, and why it was deferred.
 
 Write this summary, and the dossier prose in Step 4, to the style contract in `docs/templates/reference/output-style.md`.
 
-End with a summary — terse per the style contract above:
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat. The per-decision table goes in
+the dossier — never paste it into chat.
+
+```markdown
+**Decisions terminated: <N> of <M> — <gate open | gate CLOSED>**
+Artifact: <absolute path> (opened) · canonical: <dossier md path>
+Decisions needed: <N> — <ids/titles still open, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
+The summary below is the artifact's content, not your chat message:
 
 - Table: id · question · terminal state · choice · rationale (flag any
   rationale that survived only via the re-prompt rule, and any `(not given)`)
@@ -211,3 +230,37 @@ End with a summary — terse per the style contract above:
 - Files stamped (brief, decision-log, backlog entries, dossier path)
 - **Gate status:** "all decisions terminated — decompose gate open" or
   "N decisions still open — decompose gate CLOSED" (after an explicit stop)
+
+## Recommended Next Steps
+
+Only once the gate is open. If any decision is still `open`, stop here instead — the next step does not start.
+
+Next:
+```bash
+/skill:joycraft-decompose docs/features/<slug>/brief.md
+```
+Run /new first.
+
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /new. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+/skill:joycraft-decompose docs/features/<slug>/brief.md
+
+You are picking up the decision dossier for <slug>, decided <date>.
+Decisions <ids> are stamped in the brief and decision-log — do not reopen them.
+Start: decompose the brief. Order: the brief's Decomposition section.
+Hazard: <the one known trap, or "none known">.
+Done when: docs/features/<slug>/specs/ holds one file per spec plus README.md.
+```
+
+Filled example:
+
+```
+/skill:joycraft-decompose docs/features/2026-07-29-succinct-gates/brief.md
+
+You are picking up the decision dossier for 2026-07-29-succinct-gates, decided 2026-07-29.
+Decisions D1-D7 are stamped in the brief and decision-log — do not reopen them.
+Start: decompose the brief. Order: the brief's Decomposition section.
+Hazard: none known.
+Done when: docs/features/2026-07-29-succinct-gates/specs/ holds one file per spec plus README.md.
+```

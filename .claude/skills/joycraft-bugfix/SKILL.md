@@ -33,6 +33,17 @@ Find the root cause. Start from the error site and trace backward. Read source f
 
 Write this presentation to the style contract in `docs/templates/reference/output-style.md`.
 
+### Decide first — the pre-presentation rule
+
+If the diagnosis contains any open question, or any load-bearing claim anchored
+≤50, invoke `/joycraft-decide` on it NOW — before presenting. The Block Rule
+(`docs/context/anchors.md`) fires pre-approval, every time; presenting
+an artifact with open questions asks the human to approve an incomplete
+artifact.
+If the human already answered them in conversation, that counts as termination:
+stamp the `decisions:` frontmatter and proceed — no dossier required. Zero open
+questions and no ≤50 claims → the gate passes silently.
+
 Present findings to the user BEFORE writing any code or spec:
 1. **Symptom** — confirm it matches what they see
 2. **Root cause** — specific file(s) and line(s)
@@ -160,5 +171,29 @@ Next:
 /joycraft-implement docs/bugfixes/<area>/bugfix-name.md
 ```
 Run /clear first.
+
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /clear. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+/joycraft-implement docs/bugfixes/<area>/<bug-name>.md
+
+You are picking up the bugfix spec for <bug-name>, diagnosed <date>.
+The root cause and chosen fix are stamped in the spec — do not reopen them.
+Start: <bug-name>.md (mode: checkpoint). Order: single spec, no queue.
+Hazard: <the one known trap, or "none known">.
+Done when: the spec's regression test fails before the fix and passes after.
+```
+
+Filled example:
+
+```
+/joycraft-implement docs/bugfixes/upgrade/stale-installed-skills.md
+
+You are picking up the bugfix spec for stale-installed-skills, diagnosed 2026-07-29.
+The root cause and chosen fix are stamped in the spec — do not reopen them.
+Start: stale-installed-skills.md (mode: checkpoint). Order: single spec, no queue.
+Hazard: the installed tree is generated; fix the source, then sync.
+Done when: the spec's regression test fails before the fix and passes after.
+```
 
 **Why:** A fresh session for implementation produces better results. This diagnostic session has context noise from exploration — a clean session with just the spec is more focused.

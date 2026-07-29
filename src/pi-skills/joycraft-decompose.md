@@ -49,6 +49,12 @@ Before decomposing a brief file, parse its YAML frontmatter `decisions:` list. F
 - **Explicit defer** — the user says backlog it / skip for now / don't worry: set each named decision to `status: backlogged` with their one-line reason in the brief's frontmatter, add it to the feature's `docs/backlog/` entry (create one if needed), then re-evaluate the gate. Proceed only when zero decisions remain `open`, confirming in one line what was backlogged and where it was recorded (visible residue, never a silent edit).
 - `backlogged` and `discarded` never block — only `open` blocks.
 
+**The gate covers low-confidence claims too, not only `decisions:` rows.** A
+load-bearing claim in the brief carrying an inline anchor of ≤50 blocks exactly
+as an `open` decision does — the Block Rule, whose one home is
+`docs/context/anchors.md`. Name the anchored claims alongside the open decisions
+and route them through the same `/skill:joycraft-decide` run.
+
 ## Step 2: Identify Natural Boundaries
 
 **Why:** Good boundaries make specs independently testable and committable. Bad boundaries create specs that can't be verified without other specs also being done.
@@ -84,7 +90,58 @@ Before the decomposition table, show the **"Prior knowledge reused"** list from 
 
 Write this presentation, and the hand-off in Step 8, to the style contract in `docs/templates/reference/output-style.md`.
 
-Show the decomposition table to the user. Ask:
+### Decide first — the pre-presentation rule
+
+If the artifact contains any open question, or any load-bearing claim anchored
+≤50, invoke `/skill:joycraft-decide` on it NOW — before presenting. The Block Rule
+(`docs/context/anchors.md`) fires pre-approval, every time; presenting
+an artifact with open questions asks the human to approve an incomplete
+artifact.
+If the human already answered them in conversation, that counts as termination:
+stamp the `decisions:` frontmatter and proceed — no dossier required. Zero open
+questions and no ≤50 claims → the gate passes silently.
+
+### Render and open the decomposition
+
+Write `docs/features/<slug>/decompose.md` first — the decomposition table and the
+review questions below it — and keep it **canonical**: agents read the md, never
+the HTML. The HTML is a render of it and never invents content.
+
+1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
+   `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
+   template's structure, class names, CSS, and theme script stay
+   **byte-identical** — never generate freeform gate HTML.
+2. Write it to `docs/features/<slug>/decompose.html` (committed later — the path
+   is already linguist-generated, so PRs collapse it). Re-decomposing overwrites
+   the same file; the md is the record.
+3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
+   otherwise. If both fail, print the absolute path and continue — headless, CI,
+   and isolated mode are a no-op here, never a failure.
+4. Offer — don't push — an optional extra render: "I can also publish this
+   decomposition as a hosted artifact for a shareable link." Only publish if the
+   human says yes; the local file remains the canonical render. If declined, no
+   retry.
+
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat. The decomposition table goes
+in the artifact — never paste it into chat.
+
+```markdown
+**Decomposition ready: <N> specs across <M> waves**
+Artifact: <absolute path> (opened) · canonical: docs/features/<slug>/specs/
+Decisions needed: <N> — <ids/titles, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
+The review questions below belong in the artifact beside the table. Ask:
 1. "Does this breakdown match how you think about this feature?"
 2. "Are there any specs that feel too big or too small?"
 3. "Should any of these run in parallel (separate worktrees)?"
@@ -240,6 +297,8 @@ If `docs/templates/ATOMIC_SPEC_TEMPLATE.md` exists, reference it for the full te
 Fill in all sections — each spec must be self-contained (no "see the brief for context"). Copy relevant constraints from the Feature Brief into each spec. Write acceptance criteria specific to THIS spec, not the whole feature. Every acceptance criterion must have at least one corresponding test in the Test Plan. If the user provided test strategy info from the interview, use it to choose test types and frameworks. Include the test harness verification rules in every Test Plan.
 
 **Cite every Constraints and Acceptance Criteria line (PROTOCOL).** Each line you write under `## Constraints` and `## Acceptance Criteria` carries a trailing `[src: …]` cite, resolved during Step 4.5's INVENTED review — one of exactly four forms: `[src: D<n>]`, `[src: design §<n>]`, `[src: brief "<section>"]`, `[src: INVENTED]` (only for items the human explicitly chose to leave as INVENTED, which should not happen given Step 4.5 resolves them first — this vocabulary extends the existing `decisions:` frontmatter gate, it is not a parallel provenance scheme). If a constraint traces to multiple sources, cite the most specific: `D<n>` over `design §<n>` over `brief "<section>"`. This cite requirement is scoped to Constraints and Acceptance Criteria only — the `## Approach` and `## Edge Cases` sections stay judgment prose, uncited; the cite load lands exactly where variance is born.
+
+**Never defer derived-artifact sync to a terminal spec.** When the project generates artifacts from sources (bundled copies, installed trees, compiled outputs) and its test suite enforces that they match, every spec that edits a source must regenerate and sync in its own commit — otherwise each spec commits a red suite, and a terminal "run the sync" spec whose precondition is a green suite becomes unsatisfiable. Do not write "MUST NOT regenerate/sync — the terminal spec owns it" constraints. A terminal spec may still exist, but scope it as a zero-drift verification gate (run the generators, assert nothing changes), never as the owner of the sync.
 
 ### Step 5a: Write the Spec Queue Manifest
 

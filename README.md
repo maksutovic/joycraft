@@ -126,6 +126,15 @@ What this does to an existing setup:
   specs, confidence anchors, and optimize v2 with the Reaper. The gates you'll
   feel first: decompose blocks on open decisions, and invented spec premises
   stop at a human review before any spec file is written.
+- **Gates get succinct (0.7.6).** Every approval bookend (brief, design,
+  decompose, research, decide, plus the tune and optimize reports) renders an
+  auto-opened HTML artifact and caps its chat message at ~10 fixed slots — the
+  markdown stays the canonical record agents read. Handoffs become fenced,
+  copy-pasteable briefing prompts. `upgrade` adds an `## Execution Profile`
+  section to AGENTS.md (swarm opt-in + per-harness model/effort) that flows
+  into those briefings. And a stale CLI now re-runs itself through
+  `npx joycraft@<latest>` instead of telling you to update separately —
+  upgrade is one command again.
 
 **Or let your agent drive it.** Paste this prompt into Claude Code, Codex, Pi,
 or GitHub Copilot inside your project and it will run the upgrade, show you

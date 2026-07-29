@@ -138,7 +138,58 @@ If you make changes, note them at the bottom of `design.md` under a "Brief updat
 
 Write this presentation to the style contract in `docs/templates/reference/output-style.md`.
 
-Present the design document to the user. Say:
+### Decide first — the pre-presentation rule
+
+This is the **entry condition** of the presentation, not a post-approval step.
+If the artifact contains any open question, or any load-bearing claim anchored
+≤50, invoke `/skill:joycraft-decide` on it NOW — before presenting. The Block Rule
+(`docs/context/anchors.md`) fires pre-approval, every time; presenting
+an artifact with open questions asks the human to approve an incomplete
+artifact.
+If the human already answered them in conversation, that counts as termination:
+stamp the `decisions:` frontmatter and proceed — no dossier required. Zero open
+questions and no ≤50 claims → the gate passes silently.
+
+### Render and open the design
+
+`docs/features/<slug>/design.md` is written first and stays **canonical** —
+agents read the md, never the HTML. The HTML is a render of it and never invents
+content.
+
+1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
+   `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
+   template's structure, class names, CSS, and theme script stay
+   **byte-identical** — never generate freeform gate HTML.
+2. Write it to `docs/features/<slug>/design.html` (committed later — the path is
+   already linguist-generated, so PRs collapse it). Re-running the gate
+   overwrites the same file; the md is the record.
+3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
+   otherwise. If both fail, print the absolute path and continue — headless, CI,
+   and isolated mode are a no-op here, never a failure.
+4. Offer — don't push — an optional extra render: "I can also publish this design
+   as a hosted artifact for a shareable link." Only publish if the human says
+   yes; the local file remains the canonical render. If declined, no retry.
+
+At this gate, your chat message is EXACTLY this template — nothing outside it.
+The content lives in the artifact, not the chat.
+
+```markdown
+**Design ready: <the design's central choice, one line>**
+Artifact: <absolute path> (opened) · canonical: docs/features/<slug>/design.md
+Decisions needed: <N> — <open-question ids/titles, comma-separated>
+<one-line summary per decision, only if N ≤ 4>
+Next: <the single action you want from the human>
+
+Ten lines maximum. If you are about to write an eleventh line, the content
+belongs in the artifact — move it there.
+```
+
+Keep it inline here on purpose: inline placement is load-bearing — referenced
+docs get partially read or skipped at output time (Anthropic skill-authoring
+guidance; observed live 2026-07-29).
+
+The review questions below are the artifact's content, not your chat message —
+Section 5 already carries them. Say:
 
 ```
 Design discussion written to docs/features/<slug>/design.md
@@ -178,9 +229,11 @@ Once the human approves the design:
 - Update the design document with their corrections and chosen options
 - Move answered questions from "Open Questions" to "Resolved Design Decisions"
 - Present the updated document for final confirmation
-- Run the deposition checkpoint: invoke `/skill:joycraft-decide <design path>` so every
-  remaining open question terminates (clarified / backlogged / discarded) — the
-  decompose gate stays closed while any decision is `open`.
+- Confirm the deposition checkpoint: decisions were already terminated in Step 4
+  (clarified / backlogged / discarded) as the entry condition of the
+  presentation. If the human's feedback raised a *new* question, it terminates
+  the same way before hand-off — the decompose gate stays closed while any
+  decision is `open`.
 - Once the user gives explicit approval, AND ONLY THEN, emit the canonical Handoff block:
 
 ## Recommended Next Steps
@@ -192,3 +245,27 @@ Next:
 Run /new first.
 
 Include any backlog paths produced as a side effect.
+
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /new. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+```
+/skill:joycraft-decompose docs/features/<slug>/brief.md
+
+You are picking up the approved design for <slug>, approved <date>.
+Decisions <ids> are stamped in design.md — do not reopen them.
+Start: decompose the brief against design.md. Order: the design's build sequence.
+Hazard: <the one known trap, or "none known">.
+Done when: docs/features/<slug>/specs/ holds one file per spec plus README.md.
+```
+
+Filled example:
+
+```
+/skill:joycraft-decompose docs/features/2026-07-29-succinct-gates/brief.md
+
+You are picking up the approved design for 2026-07-29-succinct-gates, approved 2026-07-29.
+Decisions D1-D7 are stamped in design.md — do not reopen them.
+Start: decompose the brief against design.md. Order: the design's build sequence.
+Hazard: the gate skills are shared by four harness variants.
+Done when: docs/features/2026-07-29-succinct-gates/specs/ holds one file per spec plus README.md.
+```

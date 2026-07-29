@@ -23,6 +23,7 @@ import {
 import { applyGitattributes } from './gitattributes.js';
 import { getPackageVersion } from './package-version.js';
 import { resolveHarnesses, type Harness } from './harness.js';
+import { resolveExecutionProfile } from './execution-profile.js';
 import { ensurePiExcludedFromTsconfig } from './tsconfig.js';
 
 export interface InitOptions {
@@ -96,6 +97,12 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     );
     return;
   }
+
+  // Capture the Execution Profile (D6) for the harnesses just selected — swarm
+  // opt-in and free-text model/effort per harness. Interactive asks;
+  // non-interactive takes the explicit-no default so a scripted run never
+  // blocks. It is written into AGENTS.md below (its one and only home).
+  const executionProfile = await resolveExecutionProfile(harnesses, process.stdin.isTTY === true);
 
   // Resolve the gitignore profile up front (flag → persisted → prompt → default)
   // so it governs both the .gitignore writes and the "teammates won't get skills"
@@ -244,6 +251,12 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
 
   const agentsMdPath = join(targetDir, 'AGENTS.md');
   if (existsSync(agentsMdPath) && !opts.force) {
+    // An existing AGENTS.md is never touched by init — not even to insert the
+    // Execution Profile. Init's contract is create-if-missing (NEVER overwrite
+    // user files without --force), and a user's AGENTS.md is theirs. The
+    // insert-if-absent path belongs to `joycraft upgrade` (and the interactive
+    // offer to `/joycraft-tune`), which is where users opt into Joycraft
+    // editing files they already own.
     result.skipped.push(agentsMdPath);
   } else {
     const projectName = basename(targetDir);
@@ -251,8 +264,9 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
       ? generateCLAUDEMd(projectName, stack, existingSkills, {
           privateProfile: gitignoreProfile === 'private',
           multiTool: true,
+          executionProfile,
         })
-      : generateAgentsMd(projectName, stack, gitignoreProfile === 'private');
+      : generateAgentsMd(projectName, stack, gitignoreProfile === 'private', executionProfile);
     writeFileSync(agentsMdPath, content, 'utf-8');
     result.created.push(agentsMdPath);
   }
@@ -346,7 +360,7 @@ try {
   const res = await fetch('https://registry.npmjs.org/joycraft/latest', { signal: AbortSignal.timeout(3000) });
   if (res.ok) {
     const latest = (await res.json()).version;
-    if (data.version !== latest) console.log('Joycraft ' + latest + ' available (you have ' + data.version + '). Run: npm install -g joycraft');
+    if (data.version !== latest) console.log('Joycraft ' + latest + ' available (you have ' + data.version + '). Run: npx joycraft@latest upgrade');
   }
 } catch {}
 `;
