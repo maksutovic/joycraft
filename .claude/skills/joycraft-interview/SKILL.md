@@ -20,7 +20,25 @@ Let the user talk freely. Do not interrupt their flow. Do not push toward struct
 
 ### 2. Ask Clarifying Questions
 
-As they talk, weave in questions naturally — don't fire them all at once:
+Question discipline — hard rules, not vibes:
+
+- **Number questions continuously across the session** (Q1…Qn, never reset),
+  including questions that surface mid-stream.
+- **Never re-list an open question verbatim.** Refer to it by number plus a
+  ≤3-word label: "Q1 hero content type, Q5 PoC boundary — still open."
+- **Every question takes this three-line shape** — full argumentation lives
+  in the draft brief, not the chat:
+
+  ```
+  Q<n>: <the question>
+  Default: <your recommendation> — <one-line why>
+  Accept, override, or park?
+  ```
+
+- **No per-turn cap.** Batch questions to match how the user answers. The
+  rule is never repeat, not never batch.
+
+Territory worth covering as they talk:
 
 - **What problem does this solve?** Who feels the pain today?
 - **What does "done" look like?** If this worked perfectly, what would a user see?
@@ -31,12 +49,21 @@ As they talk, weave in questions naturally — don't fire them all at once:
 
 ### 3. Play Back Understanding
 
-Write this playback, and the draft brief summary that follows, to the style contract in `docs/templates/reference/output-style.md`.
+After the user has gotten their ideas out, play back in EXACTLY this
+fixed-slot shape — the per-slot caps are hard, and the playback is never
+narrated as prose:
 
-After the user has gotten their ideas out, reflect back:
-"So if I'm hearing you right, you want to [summary]. The core problem is [X], and done looks like [Y]. Is that right?"
+```
+Mission: <1 line>
+Settled: <≤5 bullets, one line each>
+Open: <Q-numbers + ≤3-word labels only — no restatement>
+Confirm or correct — then I write the draft.
+```
 
-Let them correct and refine. Iterate until they say "yes, that's it."
+This playback is a **blocking gate**: Step 4's file write — and any commit —
+happens only after an affirmative or corrected reply. One round, not a
+yes/no loop: inline corrections count as approval of everything else. Apply
+them, re-play only the changed lines, and proceed.
 
 ### 4. Write a Draft Brief
 
@@ -135,7 +162,9 @@ After writing the draft (and any backlog entries), your chat message is EXACTLY
 this template followed by the briefing block from Recommended Next Steps —
 nothing outside them. Do not summarize the brief after writing it — the
 artifact is the summary. Include any backlog paths produced as a side effect
-in the Artifact line.
+in the Artifact line. Tone follows the style contract in
+`docs/templates/reference/output-style.md`; volume and placement are fixed by
+the template itself.
 
 ```markdown
 **Draft brief ready: <what this idea is, one line>**

@@ -294,6 +294,49 @@ describe('group 6: joycraft-setup is a router and carries no gate machinery', ()
 });
 
 // ---------------------------------------------------------------------------
+// Group 7 — interview playback & question contract (follow-on, 2026-07-29)
+// ---------------------------------------------------------------------------
+
+describe('group 7: interview carries the playback and question contract', () => {
+  const content = () => read('joycraft-interview');
+
+  it('carries the fixed-slot playback under the playback heading', () => {
+    const c = content();
+    for (const marker of ['Mission: <1 line>', 'Confirm or correct — then I write the draft.']) {
+      const hits = occurrences(c, marker);
+      expect(hits.length, `${marker} present`).toBe(1);
+      expect(/play ?back/i.test(headingAt(c, hits[0]))).toBe(true);
+    }
+  });
+
+  it('states the playback is a blocking gate', () => {
+    expect(content()).toContain('blocking gate');
+  });
+
+  it('carries the never-relist and three-line question rules', () => {
+    const c = content();
+    expect(c).toContain('Never re-list an open question');
+    expect(c).toContain('Accept, override, or park?');
+  });
+
+  it('keeps the per-turn cap out — batching is protected behavior', () => {
+    expect(content()).toContain('No per-turn cap');
+  });
+
+  it('delegates no playback volume to the style pointer (pointer sits at other moments)', () => {
+    // The pointer mechanism was the root cause of the 2026-07-29 playback
+    // wall; volume and placement now live in the inline template. The two
+    // remaining citations (hand-off tone, draft-brief guideline) are asserted
+    // by tests/style-pointer-placement.test.ts — here we only pin that none
+    // sits under the playback heading.
+    const c = content();
+    for (const index of occurrences(c, 'output-style.md')) {
+      expect(/play ?back/i.test(headingAt(c, index))).toBe(false);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Roster drift
 // ---------------------------------------------------------------------------
 
