@@ -60,6 +60,7 @@ Joycraft/
 │   ├── improve-claude-md.ts # Merge Joycraft sections into existing CLAUDE.md
 │   ├── agents-md.ts        # Generate AGENTS.md for Codex
 │   ├── version.ts          # Version tracking (docs/.joycraft/state.json)
+│   ├── execution-profile.ts # Sentinel-delimited ## Execution Profile section in AGENTS.md (swarm opt-in, per-harness model/effort)
 │   ├── skills/             # CANONICAL skill sources — 22 joycraft-*.md files, edit here
 │   ├── claude-skills/      # GENERATED from src/skills/ by scripts/generate-bundled-files.mjs — never edit
 │   ├── codex-skills/       # GENERATED — Codex variants

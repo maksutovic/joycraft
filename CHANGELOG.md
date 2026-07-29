@@ -7,7 +7,7 @@ in a before → now → side-effects format, newest first.
 
 ---
 
-## Unreleased — Succinct Gates + One-Command Upgrade
+## 0.7.6 — Succinct Gates + One-Command Upgrade (2026-07-29)
 
 Every approval bookend (new-feature, design, decompose, research, decide, plus
 the tune and optimize reports) delivered its content as chat prose of whatever
