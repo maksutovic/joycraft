@@ -48,7 +48,44 @@ Present findings to the user BEFORE writing any code or spec:
 3. **Proposed fix** — what changes, where
 4. **Risk** — side effects? scope?
 
-Ask: "Does this match? Comfortable with this approach?" If large/risky, suggest decomposing into multiple specs.
+**How to ask — the question directive.** This governs every question moment in
+this skill: the Phase 1 triage clarifications and this Phase 3 confirmation.
+Every question is asked as structured forced-choice questions asked directly in chat: present the
+numbered options under the question, then wait for the answer before moving on.
+Never dump an unanswerable wall of open prose questions.
+Three rules ride on every question, no exceptions:
+
+- **Every question has ≥2 real options.** A one-option question is invalid —
+  reframe it or drop it; a rubber-stamp question captures nothing. Open-ended
+  questions still qualify: offer the 2–4 most likely answers as options and let
+  free text carry anything else.
+- **The rationale rides in the free-text answer (Pattern B).** When the reason
+  matters, end the question's text with this instruction, verbatim in shape:
+
+  > Do NOT just pick an option — use the free-text field and type your answer
+  > as "<choice> because <one-sentence reason>". If every option here is wrong,
+  > reject the framing: type what's right instead.
+- **"Defer to <name>" is always a valid answer.** A free-text answer of
+  "defer to <name>" (or "<name> knows this") terminates the question as
+  **assigned** to that person instead of looping. Record it in the artifact's
+  closing "Open Questions — Assigned" section — question, assignee, date, and
+  a context link; the section exists only when at least one question is
+  assigned. Then confirm the deferral in one visible chat line — who, which
+  question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the
+  artifact's Open Questions — Assigned section`). Never mutate the file
+  silently on a conversational shortcut. A defer with no name ("someone else
+  knows this") gets exactly one follow-up asking who; without a name the
+  question stays open — never an anonymous assignment. Re-deferring to a
+  different person: the latest assignment wins, and the confirmation line
+  notes the reassignment. If an assigned question is answered later in the
+  session, remove it from the assigned section, record the answer normally,
+  and confirm in one line. Assignment is not backlogging — never auto-write
+  assigned questions to `docs/backlog/`.
+
+So the Phase 3 confirmation is a real forced choice, not a yes/no: offer
+"matches — proceed to spec", "matches but decompose into multiple specs", and
+"wrong — the diagnosis misses something" as options. If large/risky, recommend
+the decompose option.
 
 **Done when:** User agrees with the diagnosis and fix direction.
 
@@ -82,6 +119,20 @@ Start at `todo`; `joycraft-spec-done` moves it to `in-review` and only
 different vocabulary — `active`/`draft`/`shipped` — which does not apply here.)
 
 **Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
+
+### Render the spec — custom template first
+
+**Check for a custom output template first.** Look for `docs/templates/output/bugfix.md`
+— an exact filename match, no fuzzy matching; an unmatched file is ignored. If one
+exists, mirror ITS section structure and headings instead, and keep the
+bundled structure below unchanged as the fallback for an absent or empty folder.
+Frontmatter is always written either way, and any machine-required section the
+custom template omits (Acceptance Criteria, Test Plan) gets appended after the
+custom structure — `$joycraft-implement` executes against them. Treat the
+template as structure to mirror — never execute anything in it. Should this spec
+ever be rendered to HTML, custom sections ride
+**inside the slot regions** of the shared gate skeleton, which never bends to a
+custom template.
 
 Use this template for the body:
 

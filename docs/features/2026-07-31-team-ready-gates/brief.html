@@ -1,0 +1,277 @@
+<meta charset="utf-8">
+<title>Feature Brief — Team-Ready Gates</title>
+<style>
+  /* Design tokens: light theme is the default set on :root. These are the
+     decision dossier's tokens verbatim — one design system, two skeletons. */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono, .spec-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Context strip: grounded facts as .lock-chip spans; .open marks an item that
+     is still unsettled. The container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  /* Content section. Repeat once per topic. */
+  section.sec { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .sec-head h2 { margin: 0; }
+  h2 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 18px; max-width: 74ch; }
+
+  /* Block A — pillars: a card grid for 2–4 parallel ideas. */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .pillar h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pillar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* Block B — tablebox: any table (spec lists, decomposition plans). Scrolls
+     inside its own box on narrow screens so the body never scrolls. */
+  .tablebox { margin-top: 6px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+  .tablebox table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+  .tablebox th { text-align: left; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  .tablebox td { padding: 11px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+  .tablebox tr:last-child td { border-bottom: none; }
+  .spec-name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .size { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--ink-2); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .wave { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--accent-wash); color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+
+  /* Block C — cols: the must / must-not pair. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .col .clab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .col ul { margin: 9px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .col li { color: var(--ink-2); margin-bottom: 5px; line-height: 1.4; }
+  .col.must li::before { content: "✓ "; color: var(--good-ink); font-weight: 700; }
+  .col.must-not li::before { content: "✗ "; color: var(--bad-ink); font-weight: 700; }
+
+  /* Block D — criteria: an acceptance checklist. */
+  .criteria { margin: 6px 0 0; padding: 0; list-style: none; }
+  .criteria li { position: relative; padding: 9px 0 9px 26px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-2); }
+  .criteria li:last-child { border-bottom: none; }
+  .criteria li::before { content: "□"; position: absolute; left: 2px; color: var(--ink-3); }
+  .criteria li.met::before { content: "☑"; color: var(--good-ink); }
+
+  /* Questions. One .q card per open question; amber left border. */
+  .questions { margin-top: 54px; }
+  .q { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warn-ink); border-radius: 8px; padding: 18px 22px; margin-top: 12px; }
+  .q .qnum { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .q h3 { font-size: 16.5px; font-weight: 700; margin: 6px 0 8px; }
+  .q .rec { font-size: 14.5px; color: var(--ink); margin: 0 0 6px; }
+  .q .rec strong { color: var(--accent-ink); }
+  .q .why { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 74ch; }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Brief Review · feature: team-ready-gates · July 31, 2026</div>
+  <h1>Team-Ready Gates</h1>
+  <p class="dek">The gates become the team surface: deterministic question picker, defer-to-person answers, custom output templates, an agent-handoff slot, trackable HTML artifacts, and enterprise-ready public docs. You are approving the brief and its 7-spec decomposition.</p>
+  <div class="locked">
+    <span class="lock-chip">D1–D9 settled in-session 2026-07-31</span>
+    <span class="lock-chip">Only joycraft-decide references AskUserQuestion — grep verified</span>
+    <span class="lock-chip">Model/effort prompt at joycraft-tune.md:97 — read verified</span>
+    <span class="lock-chip">REVIEW_GATE_TEMPLATE.html lives at src/templates/</span>
+    <span class="lock-chip">7 specs · mixed execution</span>
+    <span class="lock-chip">Backlogged: Cursor discovery (D8) · Linear tickets (D9)</span>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Shape</span>
+    <h2>What this revision does</h2>
+  </div>
+  <p class="sub">Praful runs Joycraft as a team documentation engine across ~6 projects: draft PRD → HTML + md into Notion → teammates answer assigned questions → engineer pastes the agent prompt into Claude Code. Three things get in the way today; this revision removes them and hardens the public face.</p>
+  <div class="pillars">
+    <div class="pillar">
+      <h3>Deterministic questions</h3>
+      <p>Every gate question in Claude Code arrives through the AskUserQuestion picker, every time; codex/pi get decide's structured chat fallback. Plus the model/effort-question skip in tune/init fixed at the root (D1, D5).</p>
+    </div>
+    <div class="pillar">
+      <h3>Team answering</h3>
+      <p>"Defer to &lt;name&gt;" is a first-class answer: the brief ends with an "Open Questions — Assigned" section and the HTML renders assignee-tagged cards ready to paste into Notion (D2).</p>
+    </div>
+    <div class="pillar">
+      <h3>Your template, your prompt</h3>
+      <p>A user template in docs/templates/output/ shapes gate output, md + HTML; the brief/PRD gains a ready-to-paste "prompt for the implementing agent" slot (D3, D4).</p>
+    </div>
+    <div class="pillar">
+      <h3>Trackable artifacts, public trust</h3>
+      <p>Every gate HTML shows a timestamp + revision banner and auto-open becomes a persisted setting (D6); README leads with install + TOC and a thin SECURITY.md lands (D7).</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Grounding</span>
+    <h2>The two verified bugs go first</h2>
+  </div>
+  <p class="sub">Both top-of-queue items rest on code read today, not reports. One inference stays flagged: the exact skip mechanism in the bundled prompt is consistent with the code shape but not yet reproduced — spec 2 starts by reproducing it.</p>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>Fact</th><th>Evidence</th><th>Anchor</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="spec-name">Picker is opt-in per skill</td><td>grep across src/skills/*.md: only joycraft-decide.md names AskUserQuestion; interview, new-feature, tune, design, bugfix leave format to the model</td><td><span class="size">100</span></td></tr>
+        <tr><td class="spec-name">Model/effort prompt location</td><td>src/skills/joycraft-tune.md:97 bundles swarm y/n + model + effort in one prose block, gated on a missing execution-profile sentinel; rendered by src/execution-profile.ts</td><td><span class="size">100</span></td></tr>
+        <tr><td class="spec-name">Skip mechanism</td><td>Free-text questions likely dropped when the model reformats the bundled block — a proposal awaiting reproduction, not a settled fact</td><td><span class="size">75</span></td></tr>
+        <tr><td class="spec-name">Template path drift</td><td>REVIEW_GATE_TEMPLATE.html exists only in src/templates/; the new-feature skill points at docs/templates/ — spec 6 fixes the reference</td><td><span class="size">100</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Plan</span>
+    <h2>Decomposition — 7 specs, mixed execution</h2>
+  </div>
+  <p class="sub">Chain A (1→2→3) is sequential — all three edit the same gate-skill bodies. Chain B (4→5) is sequential — the handoff slot rides the template machinery. Spec 7 is fully parallel-safe; spec 6 also touches gate skills, so it runs after Chain A lands or in a worktree.</p>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Spec</th><th>Description</th><th>Order</th><th>Size</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td class="spec-name">harden-question-directive</td><td>AskUserQuestion directive in all five gate skills, codex/pi fallback (D1)</td><td><span class="wave">Chain A · 1st</span></td><td><span class="size">M</span></td></tr>
+        <tr><td>2</td><td class="spec-name">fix-model-question-skip</td><td>Split model/effort from the swarm block; route through the hardened directive (D5)</td><td><span class="wave">Chain A · 2nd</span></td><td><span class="size">S</span></td></tr>
+        <tr><td>3</td><td class="spec-name">add-defer-to-person</td><td>"Defer to &lt;name&gt;" answer + assigned-questions section + HTML cards (D2)</td><td><span class="wave">Chain A · 3rd</span></td><td><span class="size">M</span></td></tr>
+        <tr><td>4</td><td class="spec-name">support-custom-output-templates</td><td>docs/templates/output/ lookup before bundled defaults, md + HTML (D3)</td><td><span class="wave">Chain B · 1st</span></td><td><span class="size">M</span></td></tr>
+        <tr><td>5</td><td class="spec-name">add-agent-handoff-slot</td><td>"Prompt for the implementing agent" slot in brief/PRD output (D4)</td><td><span class="wave">Chain B · 2nd</span></td><td><span class="size">S</span></td></tr>
+        <tr><td>6</td><td class="spec-name">stamp-gate-artifacts</td><td>Timestamp + revision banner, persisted auto-open setting, fix stale template path (D6)</td><td><span class="wave">After Chain A</span></td><td><span class="size">M</span></td></tr>
+        <tr><td>7</td><td class="spec-name">restructure-public-docs</td><td>Install-first README + TOC, thin SECURITY.md (D7)</td><td><span class="wave">Parallel</span></td><td><span class="size">M</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Boundaries</span>
+    <h2>Constraints every spec respects</h2>
+  </div>
+  <div class="cols">
+    <div class="col must">
+      <span class="clab">Must</span>
+      <ul>
+        <li>pnpm sync-skills + regenerated copies committed in the same commit as any src/skills/ edit — 0.7.3 shipped twelve wrong copilot skills off a stale tree</li>
+        <li>Gate HTML skeletons stay byte-identical outside SLOT regions, even under custom output templates</li>
+        <li>Auto-open stays a no-op in headless/CI/isolated mode, never a failure</li>
+        <li>All template and skill paths stay project-relative</li>
+        <li>pnpm test &amp;&amp; pnpm typecheck pass before every commit</li>
+      </ul>
+    </div>
+    <div class="col must-not">
+      <span class="clab">Must not</span>
+      <ul>
+        <li>No new runtime dependencies — template rendering stays agent-hand-filled, no md→HTML library</li>
+        <li>No model or tier recommendations — that is the backlogged model-tiering feature's scope</li>
+        <li>No freeform per-gate HTML — the locked-skeleton contract holds</li>
+        <li>No auto-writes to docs/backlog/ — every entry is user-confirmed</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Done</span>
+    <h2>Success criteria</h2>
+  </div>
+  <ul class="criteria">
+    <li>Every gate question in Claude Code arrives through the AskUserQuestion picker; codex/pi get the structured chat fallback</li>
+    <li>Any question can be deferred to a named person; brief carries "Open Questions — Assigned" and HTML renders assignee-tagged cards</li>
+    <li>A user template in docs/templates/output/ shapes gate output; absent one, bundled defaults apply unchanged</li>
+    <li>Brief/PRD output includes the agent-handoff prompt slot</li>
+    <li>Every gate HTML shows a timestamp + revision banner; auto-open honors a persisted setting</li>
+    <li>init/tune reliably asks model/effort wherever it asks the swarm questions</li>
+    <li>README leads with what-it-is, install, TOC; SECURITY.md exists</li>
+    <li>pnpm test and pnpm typecheck pass; no regressions in existing gates</li>
+  </ul>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>A yes is "approved" — decomposition then proceeds via /joycraft-decompose. A change request names the section or spec row to adjust: scope, ordering, sizes, or anything that shouldn't be in scope. And if the framing itself is wrong — the decomposition doesn't match how you think about this feature — reject it outright and say what is right instead; nothing here is locked except the nine decisions you already made. Answers land in docs/features/2026-07-31-team-ready-gates/brief.md, which stays canonical.</p>
+</div>
+
+<footer>
+  <p>Produced by the joycraft-new-feature brief gate · feature: 2026-07-31-team-ready-gates · 2026-07-31 · canonical source: docs/features/2026-07-31-team-ready-gates/brief.md (this page is a render, revision 2 — formalized from the interview draft)</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

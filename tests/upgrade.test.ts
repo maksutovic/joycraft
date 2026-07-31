@@ -302,6 +302,73 @@ describe('upgrade', () => {
     expect(logs.some(l => l.includes('added 1 new'))).toBe(true);
   });
 
+  it('adds docs/templates/output/README.md to a project that predates it', async () => {
+    await init(tmpDir, { force: false });
+
+    // Simulate a project installed before the output-template convention existed.
+    const readmeRel = join('docs', 'templates', 'output', 'README.md');
+    const readmePath = join(tmpDir, readmeRel);
+    rmSync(readmePath);
+
+    const versionInfo = readVersion(tmpDir)!;
+    delete versionInfo.files[readmeRel];
+    writeVersion(tmpDir, versionInfo.version, versionInfo.files);
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: true });
+    } finally {
+      console.log = origLog;
+    }
+
+    expect(existsSync(readmePath)).toBe(true);
+  });
+
+  it('adds docs/templates/REVIEW_GATE_TEMPLATE.html to a project that predates it', async () => {
+    await init(tmpDir, { force: false });
+
+    // Simulate a project installed before the review-gate template shipped.
+    const templateRel = join('docs', 'templates', 'REVIEW_GATE_TEMPLATE.html');
+    const templatePath = join(tmpDir, templateRel);
+    rmSync(templatePath);
+
+    const versionInfo = readVersion(tmpDir)!;
+    delete versionInfo.files[templateRel];
+    writeVersion(tmpDir, versionInfo.version, versionInfo.files);
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: true });
+    } finally {
+      console.log = origLog;
+    }
+
+    expect(existsSync(templatePath)).toBe(true);
+  });
+
+  it('never overwrites a user template living beside the README', async () => {
+    await init(tmpDir, { force: false });
+
+    const userTemplate = join(tmpDir, 'docs', 'templates', 'output', 'prd.md');
+    writeFileSync(userTemplate, '# Acme PRD\n', 'utf-8');
+
+    const origLog = console.log;
+    console.log = () => {};
+    try {
+      await upgrade(tmpDir, { yes: true });
+    } finally {
+      console.log = origLog;
+    }
+
+    // The directory is scaffolded, not managed: nothing Joycraft ships is keyed
+    // to prd.md, so upgrade has no reason to touch it — assert it doesn't.
+    expect(readFileSync(userTemplate, 'utf-8')).toBe('# Acme PRD\n');
+  });
+
   it('removes deprecated skill directories during upgrade', async () => {
     await init(tmpDir, { force: false });
 

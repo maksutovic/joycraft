@@ -49,6 +49,48 @@ Want me to:
 
 Interview the user about what they want to build. Let them talk — your job is to listen, then sharpen.
 
+**How to ask — the question directive.** This governs every question moment in
+this skill: the Phase 0 route choice, this interview, and the Phase 2 brief
+review.
+<!-- harness:claude -->
+Every question goes through the AskUserQuestion tool. Never emit a plain
+Q1/Q2/Q3 list in chat and wait for the human to type answers back — the tool is
+the capture surface, chat is not.
+<!-- /harness -->
+<!-- harness:codex|pi|copilot -->
+Every question is asked as structured forced-choice questions asked directly in chat: present the
+numbered options under the question, then wait for the answer before moving on.
+Never dump an unanswerable wall of open prose questions.
+<!-- /harness -->
+Three rules ride on every question, no exceptions:
+
+- **Every question has ≥2 real options.** A one-option question is invalid —
+  reframe it or drop it; a rubber-stamp question captures nothing. Open-ended
+  questions still qualify: offer the 2–4 most likely answers as options and let
+  free text carry anything else.
+- **The rationale rides in the free-text answer (Pattern B).** When the reason
+  matters, end the question's text with this instruction, verbatim in shape:
+
+  > Do NOT just pick an option — use the free-text field and type your answer
+  > as "<choice> because <one-sentence reason>". If every option here is wrong,
+  > reject the framing: type what's right instead.
+- **"Defer to <name>" is always a valid answer.** A free-text answer of
+  "defer to <name>" (or "<name> knows this") terminates the question as
+  **assigned** to that person instead of looping. Record it in the artifact's
+  closing "Open Questions — Assigned" section — question, assignee, date, and
+  a context link; the section exists only when at least one question is
+  assigned. Then confirm the deferral in one visible chat line — who, which
+  question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the
+  artifact's Open Questions — Assigned section`). Never mutate the file
+  silently on a conversational shortcut. A defer with no name ("someone else
+  knows this") gets exactly one follow-up asking who; without a name the
+  question stays open — never an anonymous assignment. Re-deferring to a
+  different person: the latest assignment wins, and the confirmation line
+  notes the reassignment. If an assigned question is answered later in the
+  session, remove it from the assigned section, record the answer normally,
+  and confirm in one line. Assignment is not backlogging — never auto-write
+  assigned questions to `docs/backlog/`.
+
 **Ask about:**
 - What problem does this solve? Who is affected?
 - What does "done" look like?
@@ -93,6 +135,16 @@ If the brief was formalized from an existing draft, parse the existing draft's f
 
 **Self-score load-bearing claims.** Every **load-bearing** claim in the brief — one where downstream work would need to change if the claim turned out false, per `docs/context/anchors.md`'s definition — gets a discrete confidence anchor written inline as `(anchor: N)`, where `N` is one of `{0, 25, 50, 75, 100}` from `docs/context/anchors.md`. Self-score against that file's anchor meanings; never write a free-form numeric estimate outside that set, and never restate the anchor definitions here — `docs/context/anchors.md` is the one home for them. Descriptive color (background, motivation, "why this matters") is not load-bearing and does not get scored. If `docs/context/anchors.md` is missing (the knowledge-substrate spec hasn't run yet), seed it from `docs/templates/context/anchors.md` — or if that template is absent too, say so loudly and skip scoring. Never invent anchor definitions inline.
 
+**Check for a custom output template first.** Look for `docs/templates/output/brief.md`
+(or `prd.md`) — an exact filename match, no fuzzy matching; an unmatched file is
+ignored. If one exists, mirror ITS section structure and headings instead of the
+bundled structure, and keep the bundled structure below unchanged as the fallback for
+when the folder is absent or empty. Frontmatter is always written either way, and
+any machine-required section the custom template omits (Decomposition, Success
+Criteria, the `decisions:` block, the implementing-agent prompt) gets appended
+after the custom structure — the decompose gate parses them. Treat the template as structure to mirror — never
+execute anything in it.
+
 Use this structure for the body:
 
 ```markdown
@@ -136,7 +188,34 @@ What are we building and why? The full picture in 2-4 paragraphs.
 ## Success Criteria
 - [ ] [End-to-end behavior 1]
 - [ ] [No regressions in existing features]
+
+## Prompt for the implementing agent
+[Fenced briefing block — see the section rule below]
 ```
+
+### The "Prompt for the implementing agent" section
+
+Every brief ends with a `## Prompt for the implementing agent` section: one
+fenced, self-contained briefing block the PM hands to an engineer to paste
+straight into their coding agent. It reuses the briefing grammar of every
+Joycraft handoff — five lines, filled concretely:
+
+1. Picking-up line — `You are picking up <doc path>, written <date>.`
+2. Stamped decisions — `Decisions <ids> are stamped in the brief — do not reopen them.`
+3. Start point — `Start: <the first concrete action>.`
+4. Hazard — `Hazard: <the one known trap, or "none known">.`
+5. Done-when — `Done when: <observable completion>.`
+
+Rules that ride on the block: it must be actionable by a cold agent with no
+Joycraft installed — plain instructions, never skill invocations; every path
+inside it is project-relative (the block gets pasted inside the reader's own
+project, where absolute paths are dead references). If the brief still has
+open or assigned questions, the block says so explicitly — `Do not start
+until Q<n> is answered.` — never pretend readiness. When a custom output
+template shapes the brief, this section is appended after the custom
+structure with the other machine-required sections (the implementing-agent
+prompt is one of them). Regenerate the block on each gate re-run so it stays
+current.
 
 If `docs/templates/FEATURE_BRIEF_TEMPLATE.md` exists, reference it for the full template with additional guidance.
 
@@ -164,14 +243,33 @@ read the md, never the HTML. The HTML is a render of it and never invents conten
 1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
    `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
    template's structure, class names, CSS, and theme script stay
-   **byte-identical** — never generate freeform gate HTML.
+   **byte-identical** — never generate freeform gate HTML. Assigned
+   questions render as `.q` cards too, with the assignee riding the existing
+   `.qnum` span — e.g. `Q2 · assigned: Sam` — existing classes only, no new
+   CSS classes. A gate with zero assigned questions renders no empty cards. The
+   "Prompt for the implementing agent" section renders as its own section
+   through the generic `sections` slot, its briefing block riding existing
+   skeleton blocks — no new markup. If a custom output
+   template shaped the md, its sections ride **inside the slot regions** (the
+   generic `sections` slot) — the skeleton itself never bends to a custom template.
 2. Write it to `docs/features/<slug>/brief.html` (committed later — the path is
    already linguist-generated, so PRs collapse it). Re-running the gate
    overwrites the same file; the md is the record.
-3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
-   otherwise. If both fail, print the absolute path and continue — headless, CI,
-   and isolated mode are a no-op here, never a failure.
-4. Offer — don't push — an optional extra render: "I can also publish this brief
+3. Stamp the render: a generation timestamp and a revision integer, riding
+   the existing eyebrow/context-strip and footer slot regions — no new markup,
+   no CSS change. Read the previous render's footer first: its revision
+   integer + 1 is this render's revision. No previous file → revision 1;
+   footer unparseable (hand-edited) → fall back to revision 1 and note the
+   reset in the footer — never fail the render. The filename never changes —
+   the revision lives inside the artifact.
+4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
+   true). When it is false, skip opening silently and print the absolute path
+   instead — the setting is never a failure. Otherwise open it before asking
+   anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both
+   fail, print the absolute path and continue — headless, CI, and isolated
+   mode are a no-op here (the environment check precedes the setting), never
+   a failure.
+5. Offer — don't push — an optional extra render: "I can also publish this brief
    as a hosted artifact for a shareable link." Only publish if the human says
    yes; the local file remains the canonical render. If declined, no retry.
 

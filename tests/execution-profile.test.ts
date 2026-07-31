@@ -10,8 +10,11 @@ import {
   hasExecutionProfile,
   defaultExecutionProfile,
   renderExecutionProfileSection,
+  resolveExecutionProfile,
+  SESSION_DEFAULT,
   type ExecutionProfile,
 } from '../src/execution-profile';
+import type { Harness } from '../src/harness';
 import { generateAgentsMd, improveAgentsMd } from '../src/agents-md';
 import { generateCLAUDEMd, improveCLAUDEMd } from '../src/improve-claude-md';
 import type { StackInfo } from '../src/detect';
@@ -166,6 +169,96 @@ describe('interactive init captures the answers', () => {
     const agents = readFileSync(join(dir, 'AGENTS.md'), 'utf-8');
     expect(agents).toContain('- claude: Swarms: decompose yes · implement no · model my-model-x · effort high');
     rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+/**
+ * The `fix-model-question-skip` guarantee, on the CLI side: whenever the swarm
+ * questions are asked, the model and effort questions are asked too. The skill
+ * text lost them by bundling four questions into one paragraph; the readline
+ * flow must never have the equivalent gap, including on the all-"no" path where
+ * an early return would be a tempting shortcut.
+ */
+describe('interactive ask flow always asks model and effort', () => {
+  /** Drive `resolveExecutionProfile` with scripted answers; capture every prompt written. */
+  const driveAsk = async (harnesses: Harness[], answers: string[]) => {
+    const prompts: string[] = [];
+    const fakeStdin = Readable.from(answers.map((a) => `${a}\n`)) as unknown as NodeJS.ReadStream & {
+      isTTY?: boolean;
+    };
+    fakeStdin.isTTY = true;
+    const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+    Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
+    const origWrite = process.stdout.write.bind(process.stdout);
+    const origLog = console.log;
+    // readline renders its prompt through stdout.write, not console.log.
+    process.stdout.write = ((chunk: string | Uint8Array, ...rest: unknown[]) => {
+      prompts.push(typeof chunk === 'string' ? chunk : Buffer.from(chunk).toString('utf-8'));
+      return true;
+    }) as typeof process.stdout.write;
+    console.log = (...args: unknown[]) => {
+      prompts.push(args.map(String).join(' '));
+    };
+    try {
+      const profileResult = await resolveExecutionProfile(harnesses, true);
+      return { profile: profileResult, prompts: prompts.join('\n') };
+    } finally {
+      process.stdout.write = origWrite;
+      console.log = origLog;
+      Object.defineProperty(process, 'stdin', stdinDesc);
+    }
+  };
+
+  it('asks decompose, implement, model and effort for a harness', async () => {
+    const { prompts, profile: got } = await driveAsk(['claude'], ['y', 'y', 'my-model', 'high']);
+    expect(prompts).toMatch(/swarms for decompose/i);
+    expect(prompts).toMatch(/swarms for implement/i);
+    expect(prompts).toMatch(/model/i);
+    expect(prompts).toMatch(/effort/i);
+    expect(got.entries[0].model).toBe('my-model');
+    expect(got.entries[0].effort).toBe('high');
+  });
+
+  it('still asks model and effort when every swarm answer is no', async () => {
+    const { prompts, profile: got } = await driveAsk(['claude'], ['n', 'n', 'slow-model', 'low']);
+    expect(prompts).toMatch(/model/i);
+    expect(prompts).toMatch(/effort/i);
+    expect(got.entries[0]).toMatchObject({
+      swarmDecompose: false,
+      swarmImplement: false,
+      model: 'slow-model',
+      effort: 'low',
+    });
+  });
+
+  it('offers the session default on the model and effort prompts', async () => {
+    const { prompts } = await driveAsk(['claude'], ['n', 'n', '', '']);
+    expect(prompts).toContain(`Model (${SESSION_DEFAULT})`);
+    expect(prompts).toContain(`Effort (${SESSION_DEFAULT})`);
+  });
+
+  it('falls back to the session default when the answer is empty', async () => {
+    const { profile: got } = await driveAsk(['claude'], ['n', 'n', '', '']);
+    expect(got.entries[0].model).toBe(SESSION_DEFAULT);
+    expect(got.entries[0].effort).toBe(SESSION_DEFAULT);
+  });
+
+  it('asks all four questions for every selected harness', async () => {
+    const { profile: got } = await driveAsk(
+      ['claude', 'pi'],
+      ['y', 'n', 'model-a', 'medium', 'n', 'y', 'model-b', 'max'],
+    );
+    expect(got.entries).toHaveLength(2);
+    expect(got.entries[0]).toMatchObject({ harness: 'claude', model: 'model-a', effort: 'medium' });
+    expect(got.entries[1]).toMatchObject({ harness: 'pi', model: 'model-b', effort: 'max' });
+  });
+
+  it('degrades to the session default when stdin runs out mid-interview', async () => {
+    // EOF after the swarm answers: the remaining questions must not hang or
+    // throw, and the profile still lands with explicit values.
+    const { profile: got } = await driveAsk(['claude'], ['y', 'y']);
+    expect(got.entries[0].model).toBe(SESSION_DEFAULT);
+    expect(got.entries[0].effort).toBe(SESSION_DEFAULT);
   });
 });
 

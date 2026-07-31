@@ -337,6 +337,460 @@ describe('group 7: interview carries the playback and question contract', () => 
 });
 
 // ---------------------------------------------------------------------------
+// Group 8 — question directive (harden-question-directive, 2026-07-31)
+// ---------------------------------------------------------------------------
+
+/**
+ * Every human-facing question moment in the five gate skills must route through
+ * the harness's native question UI: the AskUserQuestion tool on claude, the
+ * structured chat fallback on codex/pi/copilot. Before this spec only
+ * `joycraft-decide` said so, and users intermittently got plain Q1/Q2/Q3 chat
+ * lists — the top complaint in the 2026-07-31 team-usage feedback.
+ *
+ * Asserted on the *generated* trees, not just the canonical source: the whole
+ * point is that the claude variant carries the tool name and the codex/pi
+ * variants carry the fallback instead, which only the per-harness render shows.
+ */
+const QUESTION_DIRECTIVE_SKILLS = [
+  'joycraft-interview',
+  'joycraft-new-feature',
+  'joycraft-tune',
+  'joycraft-design',
+  'joycraft-bugfix',
+] as const;
+
+const readVariant = (harness: string, name: string) =>
+  readFileSync(join(repoRoot, 'src', `${harness}-skills`, `${name}.md`), 'utf-8');
+
+const QUESTION_TOOL = 'AskUserQuestion';
+const FALLBACK_MARKER = 'structured forced-choice questions asked directly in chat';
+const TWO_OPTION_RULE = 'Every question has ≥2 real options';
+const PATTERN_B = '<choice> because';
+
+describe('group 8: every gate skill carries the question directive', () => {
+  for (const name of QUESTION_DIRECTIVE_SKILLS) {
+    it(`${name}.md directs the claude variant to the ${QUESTION_TOOL} tool`, () => {
+      expect(readVariant('claude', name)).toContain(QUESTION_TOOL);
+    });
+
+    for (const harness of ['codex', 'pi', 'copilot']) {
+      it(`${name}.md gives the ${harness} variant the chat fallback, not the tool`, () => {
+        const content = readVariant(harness, name);
+        expect(content, `${harness} variant must not name a claude-only tool`).not.toContain(
+          QUESTION_TOOL,
+        );
+        expect(content).toContain(FALLBACK_MARKER);
+      });
+    }
+
+    it(`${name}.md states the two-option minimum and Pattern B wording`, () => {
+      // Asserted on the canonical source: both rules are harness-independent
+      // prose and must survive into every variant.
+      const content = read(name);
+      expect(content).toContain(TWO_OPTION_RULE);
+      expect(content).toContain(PATTERN_B);
+    });
+  }
+
+  it('covers exactly the five gate skills the spec named', () => {
+    expect(QUESTION_DIRECTIVE_SKILLS).toHaveLength(5);
+  });
+
+  it('joycraft-decide still carries the directive it set the pattern for', () => {
+    expect(readVariant('claude', 'joycraft-decide')).toContain(QUESTION_TOOL);
+    expect(readVariant('codex', 'joycraft-decide')).toContain(FALLBACK_MARKER);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Group 10 — execution-profile offer asks model and effort (fix-model-question-skip)
+// ---------------------------------------------------------------------------
+
+/**
+ * A real user answered tune's swarm questions on 2026-07-31 and was never asked
+ * model or effort: the offer was one prose paragraph that bundled all four
+ * questions into a single sentence, and the trailing free-text clauses got
+ * reformatted away. The fix is structural — four separately enumerated question
+ * steps — so these assertions pin the enumeration, not the prose around it.
+ */
+describe('group 10: the execution-profile offer enumerates model and effort', () => {
+  /**
+   * The offer's question block, sliced by heading rather than by character
+   * window (same anchoring rule as the rest of this file): from the offer's
+   * bold label to the fenced example section that follows it.
+   */
+  const offerBlock = () => {
+    const c = read('joycraft-tune');
+    const start = c.indexOf('**Execution profile offer:**');
+    expect(start, 'offer label present').toBeGreaterThan(-1);
+    const end = c.indexOf('**Private-profile note:**', start);
+    return c.slice(start, end === -1 ? undefined : end);
+  };
+
+  it('asks the four questions as separately enumerated steps', () => {
+    const block = offerBlock();
+    for (const step of ['Q1', 'Q2', 'Q3', 'Q4']) {
+      expect(block, `${step} enumerated`).toContain(step);
+    }
+  });
+
+  it('gives model and effort their own question lines', () => {
+    const block = offerBlock();
+    const lines = block.split('\n');
+    const modelLine = lines.find((l) => /^-?\s*\*\*Q3/.test(l.trim()));
+    const effortLine = lines.find((l) => /^-?\s*\*\*Q4/.test(l.trim()));
+    expect(modelLine, 'Q3 is its own line').toBeTruthy();
+    expect(effortLine, 'Q4 is its own line').toBeTruthy();
+    expect(modelLine!.toLowerCase()).toContain('model');
+    expect(effortLine!.toLowerCase()).toContain('effort');
+    // The regression shape: model and effort riding as trailing clauses of the
+    // same sentence as the swarm questions.
+    expect(modelLine).not.toMatch(/swarm/i);
+    expect(effortLine).not.toMatch(/swarm/i);
+  });
+
+  it('routes the offer through the question directive', () => {
+    const block = offerBlock();
+    expect(block).toMatch(/question directive/i);
+  });
+
+  it('keeps model and effort free text with the session default offered', () => {
+    // Whitespace-collapsed: the canonical source is hard-wrapped at ~78 cols,
+    // so a sentence-level assertion must not depend on where a line breaks.
+    const block = offerBlock().replace(/\s+/g, ' ');
+    expect(block).toContain('session default');
+    expect(block).toMatch(/free text/i);
+    expect(block).toMatch(/never present a menu of model names/i);
+  });
+
+  it('states the questions are asked even when every swarm answer is no', () => {
+    expect(offerBlock()).toMatch(/never skipped|even if|regardless/i);
+  });
+
+  it('reaches the claude variant with the question tool named', () => {
+    const variant = readVariant('claude', 'joycraft-tune');
+    expect(variant).toContain('**Q3');
+    expect(variant).toContain('**Q4');
+    expect(variant).toContain(QUESTION_TOOL);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Group 9 — custom output templates (support-custom-output-templates, 2026-07-31)
+// ---------------------------------------------------------------------------
+
+/**
+ * A team with its own PRD format drops it into `docs/templates/output/` and the
+ * document-producing gates follow it instead of the bundled structure. The
+ * lookup is a skill instruction, not code: rendering stays agent-hand-filled
+ * (no md→HTML library, AGENTS.md NEVER on runtime deps), so what we can assert
+ * mechanically is that every document-producing gate *tells the agent to look*.
+ *
+ * Anchored by heading like the rest of this file — the lookup has to sit at the
+ * skill's output moment, not in an unrelated preamble where it would never fire.
+ */
+const CUSTOM_TEMPLATE_SKILLS = [
+  'joycraft-interview',
+  'joycraft-new-feature',
+  'joycraft-design',
+  'joycraft-bugfix',
+] as const;
+
+const OUTPUT_DIR = 'docs/templates/output/';
+const SKELETON_RULE = 'inside the slot regions';
+const FALLBACK_RULE = 'bundled structure below unchanged';
+
+describe('group 9: document-producing gates check for a custom output template', () => {
+  for (const name of CUSTOM_TEMPLATE_SKILLS) {
+    it(`${name}.md points at ${OUTPUT_DIR}`, () => {
+      expect(occurrences(read(name), OUTPUT_DIR).length).toBeGreaterThan(0);
+    });
+
+    it(`${name}.md sites the lookup at an output moment`, () => {
+      const content = read(name);
+      const sited = occurrences(content, OUTPUT_DIR).map((i) => headingAt(content, i));
+      for (const heading of sited) {
+        expect(
+          OUTPUT_MOMENT.test(heading),
+          `custom-template lookup in ${name} sits under ${JSON.stringify(heading)}`,
+        ).toBe(true);
+      }
+    });
+
+    it(`${name}.md states the absent-template fallback`, () => {
+      expect(read(name)).toContain(FALLBACK_RULE);
+    });
+
+    it(`${name}.md keeps custom sections inside the locked skeleton`, () => {
+      expect(read(name)).toContain(SKELETON_RULE);
+    });
+
+    it(`${name}.md keeps the machine-required sections regardless`, () => {
+      // Edge case from the spec: a custom template that omits frontmatter or the
+      // decisions block must not cost Joycraft the sections downstream skills parse.
+      expect(read(name).toLowerCase()).toContain('frontmatter is always written');
+    });
+  }
+
+  it('covers exactly the four document-producing gates', () => {
+    expect(CUSTOM_TEMPLATE_SKILLS).toHaveLength(4);
+  });
+
+  it('matches templates by exact filename — no fuzzy matching', () => {
+    // Ambiguity edge case: unmatched files are ignored rather than guessed at.
+    for (const name of CUSTOM_TEMPLATE_SKILLS) {
+      expect(read(name)).toContain('exact filename match');
+    }
+  });
+
+  it('names no absolute paths in the lookup instruction', () => {
+    // Skills are copied into user projects; an absolute path would be a dead
+    // reference there (AGENTS.md NEVER: reference absolute paths).
+    for (const name of CUSTOM_TEMPLATE_SKILLS) {
+      const content = read(name);
+      for (const index of occurrences(content, OUTPUT_DIR)) {
+        const line = content.slice(content.lastIndexOf('\n', index) + 1, content.indexOf('\n', index));
+        expect(line).not.toMatch(/\/Users\/|\/home\/|^\s*-?\s*`?\//);
+      }
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Group 11 — defer-to-person (add-defer-to-person, 2026-07-31)
+// ---------------------------------------------------------------------------
+
+/**
+ * "Defer to <name>" is a first-class answer at every gate question: the
+ * question terminates as assigned instead of looping, the artifact carries an
+ * "Open Questions — Assigned" section, and the gate HTML tags the assignee on
+ * the existing `.q`/`.qnum` card — no new CSS. Praful's team flow assigns
+ * questions to people who aren't in the session; before this spec a question
+ * could only be answered or parked, so assignment lived in his head.
+ */
+const DEFER_SKILLS = [
+  'joycraft-interview',
+  'joycraft-new-feature',
+  'joycraft-tune',
+  'joycraft-design',
+  'joycraft-bugfix',
+  'joycraft-decide',
+] as const;
+
+/** The defer skills whose gates render the review-gate HTML (bugfix and decide do not). */
+const DEFER_RENDER_SKILLS = [
+  'joycraft-interview',
+  'joycraft-new-feature',
+  'joycraft-tune',
+  'joycraft-design',
+] as const;
+
+const DEFER_MARKER = 'defer to <name>';
+const ASSIGNED_SECTION = 'Open Questions — Assigned';
+const DEFER_CONFIRM = 'who, which question, where it was recorded';
+const ASSIGNEE_TAG = '· assigned:';
+
+describe('group 11: defer-to-person is a first-class answer at every gate', () => {
+  for (const name of DEFER_SKILLS) {
+    it(`${name}.md terminates a defer answer as assigned, into the assigned section`, () => {
+      const content = read(name);
+      expect(content).toContain(DEFER_MARKER);
+      expect(content).toContain(ASSIGNED_SECTION);
+    });
+
+    it(`${name}.md mandates the one-line visible confirmation`, () => {
+      // D11: silent file mutation on a conversational shortcut is the known
+      // failure mode — the confirmation line is a MUST, not a nicety.
+      // Whitespace-collapsed (group 10 precedent): the sources are hard-wrapped
+      // at ~78 cols, so sentence-level markers must not depend on line breaks.
+      expect(read(name).replace(/\s+/g, ' ')).toContain(DEFER_CONFIRM);
+    });
+
+    it(`${name}.md refuses anonymous assignments and backlog auto-writes`, () => {
+      const content = read(name);
+      expect(content).toContain('never an anonymous assignment');
+      expect(content).toContain('Assignment is not backlogging');
+    });
+
+    it(`${name}.md carries the defer block into the claude variant`, () => {
+      // Harness-independent prose: it must survive the per-harness render.
+      const variant = readVariant('claude', name);
+      expect(variant).toContain(DEFER_MARKER);
+      expect(variant).toContain(ASSIGNED_SECTION);
+    });
+  }
+
+  for (const name of DEFER_RENDER_SKILLS) {
+    it(`${name}.md renders assigned cards on the existing classes only`, () => {
+      const content = read(name);
+      const collapsed = content.replace(/\s+/g, ' ');
+      expect(content).toContain('.qnum');
+      expect(collapsed).toContain(ASSIGNEE_TAG);
+      expect(collapsed).toMatch(/no new CSS class/i);
+      expect(content).not.toContain('.assignee');
+    });
+  }
+
+  it('joycraft-decide adds assigned to the termination vocabulary, non-blocking', () => {
+    const content = read('joycraft-decide');
+    expect(content).toContain('`assigned`');
+    expect(content.replace(/\s+/g, ' ')).toContain(
+      'treats `assigned` like `backlogged` only when the human explicitly proceeds',
+    );
+  });
+
+  it('the review-gate template documents the assignee tag on the qnum slot', () => {
+    // Slot-comment guidance only — the skeleton and CSS stay untouched, which
+    // tests/review-gate-template.test.ts pins structurally.
+    const template = readFileSync(
+      join(repoRoot, 'src', 'templates', 'REVIEW_GATE_TEMPLATE.html'),
+      'utf-8',
+    );
+    expect(template).toContain('· assigned:');
+  });
+
+  it('covers exactly the six gate skills the spec named', () => {
+    expect(DEFER_SKILLS).toHaveLength(6);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Group 12 — implementing-agent handoff prompt (add-agent-handoff-slot, 2026-07-31)
+// ---------------------------------------------------------------------------
+
+/**
+ * Briefs from the interview and new-feature gates end with a "Prompt for the
+ * implementing agent" section: a fenced, self-contained briefing a PM hands to
+ * an engineer to paste straight into their coding agent. Same briefing grammar
+ * as every Joycraft handoff (picking-up, decisions, start, hazard, done-when),
+ * but retargeted at the user's engineer — Praful builds this block by hand for
+ * every PRD today.
+ */
+const HANDOFF_SLOT_SKILLS = ['joycraft-interview', 'joycraft-new-feature'] as const;
+
+const HANDOFF_SECTION = 'Prompt for the implementing agent';
+const HANDOFF_INSTRUCTION_HEADING = '### The "Prompt for the implementing agent" section';
+const BRIEFING_LINES = ['You are picking up', 'Decisions', 'Start:', 'Hazard:', 'Done when:'];
+
+/** The instruction block, sliced heading-to-heading (group 10 precedent). */
+const handoffBlock = (name: string) => {
+  const content = read(name);
+  const start = content.indexOf(HANDOFF_INSTRUCTION_HEADING);
+  expect(start, `${name}: handoff instruction heading present`).toBeGreaterThan(-1);
+  const rest = content.slice(start + HANDOFF_INSTRUCTION_HEADING.length);
+  const next = rest.search(/\n#{2,3} /);
+  return rest.slice(0, next === -1 ? undefined : next);
+};
+
+describe('group 12: briefs carry the implementing-agent handoff prompt', () => {
+  for (const name of HANDOFF_SLOT_SKILLS) {
+    it(`${name}.md puts the handoff section in the brief structure`, () => {
+      expect(read(name)).toContain(`## ${HANDOFF_SECTION}`);
+    });
+
+    it(`${name}.md carries the section into the claude variant`, () => {
+      expect(readVariant('claude', name)).toContain(HANDOFF_SECTION);
+    });
+
+    it(`${name}.md enumerates the five briefing lines in the instruction`, () => {
+      const block = handoffBlock(name);
+      for (const line of BRIEFING_LINES) {
+        expect(block, `${name}: briefing line ${JSON.stringify(line)}`).toContain(line);
+      }
+    });
+
+    it(`${name}.md keeps the prompt actionable by a cold agent without Joycraft`, () => {
+      const block = handoffBlock(name).replace(/\s+/g, ' ');
+      expect(block).toContain('cold agent');
+      expect(block).toContain('no Joycraft installed');
+      expect(block).toMatch(/project-relative/);
+    });
+
+    it(`${name}.md refuses to pretend readiness over open or assigned questions`, () => {
+      expect(handoffBlock(name).replace(/\s+/g, ' ')).toContain('Do not start until');
+    });
+
+    it(`${name}.md appends the handoff after a custom output template's structure`, () => {
+      // D3: machine-required sections survive a custom template — the handoff
+      // prompt joins Open Questions and decisions on that list.
+      expect(read(name).replace(/\s+/g, ' ')).toContain('implementing-agent prompt');
+    });
+  }
+
+  it('the interview draft carries the slot too, marked draft-stage', () => {
+    expect(handoffBlock('joycraft-interview').replace(/\s+/g, ' ')).toContain('draft');
+  });
+
+  it('covers exactly the two brief-producing gates', () => {
+    expect(HANDOFF_SLOT_SKILLS).toHaveLength(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Group 13 — stamped artifacts + persisted auto-open (stamp-gate-artifacts, 2026-07-31)
+// ---------------------------------------------------------------------------
+
+/**
+ * With many gate tabs open across six projects there was no way to tell which
+ * render is latest, and auto-open was forced on. Every render-and-open gate now
+ * stamps a generation timestamp + revision integer into the existing
+ * eyebrow/footer slot regions (revision read from the previous render's footer
+ * — no new state file, D13), and checks the persisted `autoOpen` flag in
+ * `docs/.joycraft/state.json` before opening (D6/D12).
+ *
+ * Roster note: the spec's Affected Files list named bugfix, but bugfix has no
+ * render/open step to stamp — the six below are the gates that actually render.
+ */
+const STAMP_SKILLS = [
+  'joycraft-interview',
+  'joycraft-new-feature',
+  'joycraft-tune',
+  'joycraft-design',
+  'joycraft-decide',
+  'joycraft-decompose',
+] as const;
+
+describe('group 13: gate artifacts are stamped and auto-open is a setting', () => {
+  for (const name of STAMP_SKILLS) {
+    it(`${name}.md stamps timestamp + revision through the existing slots`, () => {
+      const collapsed = read(name).replace(/\s+/g, ' ');
+      expect(collapsed).toContain('generation timestamp');
+      expect(collapsed).toContain("previous render's footer");
+      expect(collapsed).toContain('revision 1');
+      expect(collapsed).toContain('never fail the render');
+    });
+
+    it(`${name}.md keeps filenames stable across revisions`, () => {
+      expect(read(name).replace(/\s+/g, ' ')).toContain('filename never changes');
+    });
+
+    it(`${name}.md checks autoOpen before opening, defaulting to true`, () => {
+      const collapsed = read(name).replace(/\s+/g, ' ');
+      expect(collapsed).toContain('`autoOpen`');
+      expect(collapsed).toContain('docs/.joycraft/state.json');
+      expect(collapsed).toContain('missing file or key = true');
+    });
+  }
+
+  it('joycraft-tune offers the autoOpen toggle', () => {
+    expect(read('joycraft-tune').replace(/\s+/g, ' ')).toContain('flip `autoOpen`');
+  });
+
+  it('the template documents the stamp in its slot comments only', () => {
+    const template = readFileSync(
+      join(repoRoot, 'src', 'templates', 'REVIEW_GATE_TEMPLATE.html'),
+      'utf-8',
+    ).replace(/\s+/g, ' ');
+    expect(template).toContain('rev N');
+    expect(template).toContain('increments');
+  });
+
+  it('covers exactly the six render-and-open gate skills', () => {
+    expect(STAMP_SKILLS).toHaveLength(6);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Roster drift
 // ---------------------------------------------------------------------------
 
@@ -353,6 +807,11 @@ describe('roster drift', () => {
     ...PRE_PRESENTATION_SKILLS,
     ...HANDOFF_SKILLS,
     ...EXECUTION_PROFILE_SKILLS,
+    ...QUESTION_DIRECTIVE_SKILLS,
+    ...CUSTOM_TEMPLATE_SKILLS,
+    ...DEFER_SKILLS,
+    ...HANDOFF_SLOT_SKILLS,
+    ...STAMP_SKILLS,
   ]);
 
   for (const name of rostered) {

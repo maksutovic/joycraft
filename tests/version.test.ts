@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync, existsSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { getLevel, readVersion, writeVersion, hashContent, STATE_PATH } from '../src/version';
+import { getLevel, readVersion, writeVersion, getAutoOpen, hashContent, STATE_PATH } from '../src/version';
 
 describe('getLevel', () => {
   let dir: string;
@@ -115,6 +115,70 @@ describe('version state location', () => {
       expect(h).toHaveLength(16);
       expect(h).toMatch(/^[0-9a-f]{16}$/);
     }
+    cleanup();
+  });
+});
+
+describe('autoOpen state (stamp-gate-artifacts)', () => {
+  let dir: string;
+  const fresh = () => {
+    dir = mkdtempSync(join(tmpdir(), 'joycraft-autoopen-'));
+  };
+  const cleanup = () => rmSync(dir, { recursive: true, force: true });
+  const statePath = () => join(dir, STATE_PATH);
+
+  it('defaults to true when no state file exists', () => {
+    fresh();
+    expect(getAutoOpen(dir)).toBe(true);
+    cleanup();
+  });
+
+  it('defaults to true when the key is missing from an existing state file', () => {
+    fresh();
+    writeVersion(dir, '1.0.0', {});
+    expect(getAutoOpen(dir)).toBe(true);
+    cleanup();
+  });
+
+  it('round-trips autoOpen: false through write/readVersion', () => {
+    fresh();
+    writeVersion(dir, '1.0.0', {}, undefined, undefined, false);
+    expect(getAutoOpen(dir)).toBe(false);
+    expect(readVersion(dir)!.autoOpen).toBe(false);
+    cleanup();
+  });
+
+  it('preserves a persisted autoOpen across writes that do not pass it', () => {
+    fresh();
+    writeVersion(dir, '1.0.0', {}, undefined, undefined, false);
+    writeVersion(dir, '1.0.1', {});
+    expect(getAutoOpen(dir)).toBe(false);
+    cleanup();
+  });
+
+  it('ignores a non-boolean autoOpen value (treated as absent)', () => {
+    fresh();
+    mkdirSync(join(dir, 'docs', '.joycraft'), { recursive: true });
+    writeFileSync(
+      statePath(),
+      JSON.stringify({ version: '1.0.0', files: {}, autoOpen: 'yes' }),
+    );
+    expect(getAutoOpen(dir)).toBe(true);
+    cleanup();
+  });
+
+  it('preserves unknown keys when rewriting state.json (D12)', () => {
+    fresh();
+    mkdirSync(join(dir, 'docs', '.joycraft'), { recursive: true });
+    writeFileSync(
+      statePath(),
+      JSON.stringify({ version: '1.0.0', files: {}, futureKey: { nested: 1 } }),
+    );
+    writeVersion(dir, '1.0.1', {}, undefined, undefined, false);
+    const raw = JSON.parse(readFileSync(statePath(), 'utf-8'));
+    expect(raw.futureKey).toEqual({ nested: 1 });
+    expect(raw.version).toBe('1.0.1');
+    expect(raw.autoOpen).toBe(false);
     cleanup();
   });
 });

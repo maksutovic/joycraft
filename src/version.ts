@@ -71,6 +71,12 @@ export interface VersionInfo {
    * three" for backward compatibility.
    */
   harnesses?: Harness[];
+  /**
+   * Whether gate skills auto-open rendered HTML artifacts (`open`/`xdg-open`).
+   * Absent means true — auto-open was unconditional before this field existed.
+   * Persisted here (not a new file) per D12; tune offers the toggle.
+   */
+  autoOpen?: boolean;
 }
 
 export function hashContent(content: string): string {
@@ -100,6 +106,9 @@ export function readVersion(dir: string): VersionInfo | null {
         files: parsed.files,
         ...(profile ? { gitignoreProfile: profile } : {}),
         ...(harnesses ? { harnesses } : {}),
+        // Only a real boolean counts; anything else is treated as absent
+        // (and absent means true at every call site).
+        ...(typeof parsed.autoOpen === 'boolean' ? { autoOpen: parsed.autoOpen } : {}),
       };
     }
     return null;
@@ -113,15 +122,39 @@ export function writeVersion(
   version: string,
   files: Record<string, string>,
   gitignoreProfile?: GitignoreProfile,
-  harnesses?: Harness[]
+  harnesses?: Harness[],
+  autoOpen?: boolean
 ): void {
   const filePath = join(dir, STATE_PATH);
-  // An omitted profile/harness-list means "no new decision", not "clear it":
-  // preserve whatever is already persisted so call sites that only refresh
-  // version/hashes can never silently strip a saved choice.
+  // An omitted profile/harness-list/autoOpen means "no new decision", not
+  // "clear it": preserve whatever is already persisted so call sites that only
+  // refresh version/hashes can never silently strip a saved choice.
   const existing = readVersion(dir);
   const profile = gitignoreProfile ?? existing?.gitignoreProfile;
   const selectedHarnesses = harnesses ?? existing?.harnesses;
+  const openSetting = autoOpen ?? existing?.autoOpen;
+  // Unknown keys survive rewrites (D12): a newer Joycraft may have stamped
+  // fields this version doesn't know about. Known keys are stripped from the
+  // raw pass-through so the sanitized values above stay authoritative.
+  let unknownKeys: Record<string, unknown> = {};
+  if (existsSync(filePath)) {
+    try {
+      const raw = JSON.parse(readFileSync(filePath, 'utf-8'));
+      if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+        const {
+          version: _v,
+          files: _f,
+          gitignoreProfile: _g,
+          harnesses: _h,
+          autoOpen: _a,
+          ...rest
+        } = raw as Record<string, unknown>;
+        unknownKeys = rest;
+      }
+    } catch {
+      // Unreadable state is rewritten from scratch — same as readVersion's null.
+    }
+  }
   // Store truncated hashes — single source of truth for the on-disk shape.
   const truncated: Record<string, string> = {};
   for (const [path, hash] of Object.entries(files)) {
@@ -132,9 +165,20 @@ export function writeVersion(
     files: truncated,
     ...(profile ? { gitignoreProfile: profile } : {}),
     ...(selectedHarnesses ? { harnesses: selectedHarnesses } : {}),
+    ...(openSetting !== undefined ? { autoOpen: openSetting } : {}),
+    ...unknownKeys,
   };
   mkdirSync(dirname(filePath), { recursive: true });
   writeFileSync(filePath, JSON.stringify(data, null, 2) + '\n', 'utf-8');
+}
+
+/**
+ * The persisted auto-open setting for gate HTML renders. Missing state file or
+ * missing/invalid key both mean true — auto-open was unconditional before the
+ * setting existed, and that stays the default.
+ */
+export function getAutoOpen(dir: string): boolean {
+  return readVersion(dir)?.autoOpen ?? true;
 }
 
 /**

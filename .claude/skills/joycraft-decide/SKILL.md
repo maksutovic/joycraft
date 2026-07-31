@@ -1,7 +1,7 @@
 ---
 name: joycraft-decide
 entry: agent
-description: Invoked at the design bookend by decompose's decision gate or the human directly — turn open questions into a decision dossier; every decision terminates clarified, backlogged, or discarded
+description: Invoked at the design bookend by decompose's decision gate or the human directly — turn open questions into a decision dossier; every decision terminates clarified, backlogged, discarded, or assigned
 ---
 
 # Decide (Deposition Checkpoint)
@@ -10,8 +10,9 @@ You are running the decision checkpoint at the design bookend. The human does
 not read-and-hope; they get a decision dossier (context brought TO the
 decision) and answer forced-choice questions with a one-sentence typed
 rationale each. Every open question leaves this skill in exactly one terminal
-state: **clarified**, **backlogged**, or **discarded**. The decompose gate
-stays closed while any decision is still `open`.
+state: **clarified**, **backlogged**, **discarded**, or **assigned** (deferred
+to a named person). The decompose gate stays closed while any decision is
+still `open`.
 
 Two hard rules frame everything below:
 
@@ -122,9 +123,19 @@ only enforces them). You are the **auditor**, not the author:
    VERIFIED/UNVERIFIED honesty as the manifest).
 2. Write it to `docs/features/<slug>/dossier.html` (committed later —
    the path is already linguist-generated, so PRs collapse it).
-3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
-   otherwise. If both fail, print the absolute path and continue.
-4. Offer — don't push — an optional extra render: "I can also publish this
+3. Stamp the render: a generation timestamp and a revision integer, riding
+   the existing eyebrow/context-strip and footer slot regions — no new markup,
+   no CSS change. Read the previous render's footer first: its revision
+   integer + 1 is this render's revision. No previous file → revision 1;
+   footer unparseable (hand-edited) → fall back to revision 1 and note the
+   reset in the footer — never fail the render. The filename never changes —
+   the revision lives inside the artifact.
+4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
+   true). When it is false, skip opening silently and print the absolute path
+   instead — the setting is never a failure. Otherwise open it before asking
+   anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both
+   fail, print the absolute path and continue.
+5. Offer — don't push — an optional extra render: "I can also publish this
    dossier as a hosted artifact for a shareable link." Only publish if the
    human says yes; the local file remains the canonical render.
 
@@ -146,6 +157,22 @@ Mechanics that are load-bearing:
 
   The free-text row IS the reject-this-framing escape (RF-KILL-6) — every
   question must carry it.
+- **"Defer to <name>" is always a valid answer.** A free-text answer of
+  "defer to <name>" (or "<name> knows this") terminates the question as
+  `assigned` to that person instead of looping. Record it in the artifact's
+  closing "Open Questions — Assigned" section — question, assignee, date, and
+  a context link; the section exists only when at least one question is
+  assigned. Then confirm the deferral in one visible chat line — who, which
+  question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the
+  artifact's Open Questions — Assigned section`). Never mutate the file
+  silently on a conversational shortcut. A defer with no name ("someone else
+  knows this") gets exactly one follow-up asking who; without a name the
+  question stays open — never an anonymous assignment. Re-deferring to a
+  different person: the latest assignment wins, and the confirmation line
+  notes the reassignment. If an assigned question is answered later in the
+  session, remove it from the assigned section, stamp the decision normally,
+  and confirm in one line. Assignment is not backlogging — never auto-write
+  assigned questions to `docs/backlog/`.
 - **Exactly one re-prompt.** If an answer arrives without a rationale (a bare
   option pick, or free text with no "because"/reason), the human may lack
   context: point them at that decision's dossier section, then re-ask the
@@ -164,8 +191,12 @@ Mechanics that are load-bearing:
 
 ## Step 6: Stamp — three surfaces, terminal states enforced
 
-Every asked question ends `clarified`, `backlogged`, or `discarded` (only a
-Step-5 explicit stop may leave `open` behind). Stamp each decision into:
+Every asked question ends `clarified`, `backlogged`, `discarded`, or
+`assigned` (only a Step-5 explicit stop may leave `open` behind). Assigned
+questions are non-blocking in a specific sense: the decompose gate treats
+`assigned` like `backlogged` only when the human explicitly proceeds — by
+default assigned questions surface at the gate until answered. Stamp each
+decision into:
 
 1. **The brief's frontmatter `decisions:` block** (single source for the
    decompose gate — create the block if the brief lacks one):
@@ -174,14 +205,17 @@ Step-5 explicit stop may leave `open` behind). Stamp each decision into:
    decisions:
      - id: D4
        question: export file format
-       status: clarified        # clarified | backlogged | discarded
+       status: clarified        # clarified | backlogged | discarded | assigned
        choice: JSON, no runtime dep
        rationale: because zero deps beats annotatability for a machine file
    ```
 
    Backlogged rows: `choice: backlogged`, rationale = the human's reason (or
    the cap-overflow note). Discarded rows: `choice: discarded`, rationale =
-   the recorded reason.
+   the recorded reason. Assigned rows: `choice: assigned to <name>`,
+   rationale = why that person owns the answer; the row mirrors the
+   artifact's "Open Questions — Assigned" section, which stays the canonical
+   record the assignee reads.
 
 2. **The brief's `## Hard Constraints`** (create the section if absent):
    append one bullet per clarified choice that constrains implementation.

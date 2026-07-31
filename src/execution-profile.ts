@@ -116,7 +116,17 @@ export function ensureExecutionProfileSection(
  */
 function ask(question: string): Promise<string> {
   return new Promise((resolve) => {
-    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    const input = process.stdin;
+    // A stream that already ended emits no further 'close' on a *new* readline
+    // interface, so the close-guard below never fires and the question hangs
+    // forever. Detect the spent stream up front instead: this is the path a
+    // short piped answer list takes once it runs out, and every remaining
+    // question must degrade to its default rather than block the init.
+    if (input.readableEnded === true || input.destroyed === true) {
+      resolve('');
+      return;
+    }
+    const rl = createInterface({ input, output: process.stdout });
     let settled = false;
     const done = (value: string): void => {
       if (settled) return;

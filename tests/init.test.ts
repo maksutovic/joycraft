@@ -84,6 +84,32 @@ describe('init', () => {
       expect(existsSync(join(tmpDir, 'docs', 'templates', 'context', 'troubleshooting.md'))).toBe(true);
     });
 
+    it('scaffolds docs/templates/output/ with the convention README', async () => {
+      await init(tmpDir, { force: false });
+
+      const readme = join(tmpDir, 'docs', 'templates', 'output', 'README.md');
+      expect(existsSync(readme)).toBe(true);
+
+      // The README is the only documentation of the convention users get, so it
+      // has to state both halves: how a template is matched, and what it may hold.
+      const content = readFileSync(readme, 'utf-8');
+      expect(content).toContain('exact filename match');
+      expect(content).toMatch(/brief\.md/);
+      expect(content).not.toMatch(/\/Users\/|\/home\//);
+    });
+
+    it('leaves a user file in docs/templates/output/ untouched', async () => {
+      await init(tmpDir, { force: false });
+
+      const userTemplate = join(tmpDir, 'docs', 'templates', 'output', 'brief.md');
+      writeFileSync(userTemplate, '# Our PRD\n', 'utf-8');
+
+      // Re-running init must not clobber what the user put there — including
+      // under --force, which only governs Joycraft's own managed files.
+      await init(tmpDir, { force: true });
+      expect(readFileSync(userTemplate, 'utf-8')).toBe('# Our PRD\n');
+    });
+
     it('summary mentions docs/features/<slug>/ as the feature destination', async () => {
       const logs: string[] = [];
       const origLog = console.log;

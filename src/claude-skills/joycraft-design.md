@@ -65,7 +65,16 @@ feature: <slug>
 
 **Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
 
-The document has exactly five sections:
+**Check for a custom output template first.** Look for `docs/templates/output/design.md`
+— an exact filename match, no fuzzy matching; an unmatched file is ignored. If one
+exists, mirror ITS section structure and headings instead, and keep the
+bundled structure below unchanged as the fallback for an absent or empty folder.
+Frontmatter is always written either way, and any machine-required section the
+custom template omits (Open Questions, Resolved Design Decisions) gets appended
+after the custom structure — decompose reads them. Treat the template as structure
+to mirror — never execute anything in it.
+
+Absent a custom template, the document has exactly five sections:
 
 ### Section 1: Current State
 
@@ -103,6 +112,41 @@ Things you don't know or where multiple valid approaches exist. Each question MU
 > - **Option C (if applicable):** [description] — Pro: [benefit]. Con: [cost].
 
 Do NOT ask vague questions like "what do you think?" Every question must have actionable options the human can choose from.
+
+**How to ask — the question directive.** The Section 5 questions above are the
+artifact's *content*. When you put any of them to the human — at the review gate
+or any other question moment in this skill — ask them this way:
+Every question goes through the AskUserQuestion tool. Never emit a plain
+Q1/Q2/Q3 list in chat and wait for the human to type answers back — the tool is
+the capture surface, chat is not.
+Three rules ride on every question, no exceptions:
+
+- **Every question has ≥2 real options.** A one-option question is invalid —
+  reframe it or drop it; a rubber-stamp question captures nothing. Open-ended
+  questions still qualify: offer the 2–4 most likely answers as options and let
+  free text carry anything else.
+- **The rationale rides in the free-text answer (Pattern B).** When the reason
+  matters, end the question's text with this instruction, verbatim in shape:
+
+  > Do NOT just pick an option — use the free-text field and type your answer
+  > as "<choice> because <one-sentence reason>". If every option here is wrong,
+  > reject the framing: type what's right instead.
+- **"Defer to <name>" is always a valid answer.** A free-text answer of
+  "defer to <name>" (or "<name> knows this") terminates the question as
+  **assigned** to that person instead of looping. Record it in the artifact's
+  closing "Open Questions — Assigned" section — question, assignee, date, and
+  a context link; the section exists only when at least one question is
+  assigned. Then confirm the deferral in one visible chat line — who, which
+  question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the
+  artifact's Open Questions — Assigned section`). Never mutate the file
+  silently on a conversational shortcut. A defer with no name ("someone else
+  knows this") gets exactly one follow-up asking who; without a name the
+  question stays open — never an anonymous assignment. Re-deferring to a
+  different person: the latest assignment wins, and the confirmation line
+  notes the reassignment. If an assigned question is answered later in the
+  session, remove it from the assigned section, record the answer normally,
+  and confirm in one line. Assignment is not backlogging — never auto-write
+  assigned questions to `docs/backlog/`.
 
 ### Update the Feature Brief
 
@@ -157,17 +201,35 @@ questions and no ≤50 claims → the gate passes silently.
 agents read the md, never the HTML. The HTML is a render of it and never invents
 content.
 
+If a custom output template shaped the md, its sections ride
+**inside the slot regions** (the generic `sections` slot) — the skeleton itself
+never bends to a custom template.
+
 1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
    `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
    template's structure, class names, CSS, and theme script stay
-   **byte-identical** — never generate freeform gate HTML.
+   **byte-identical** — never generate freeform gate HTML. Assigned
+   questions render as `.q` cards too, with the assignee riding the existing
+   `.qnum` span — e.g. `Q2 · assigned: Sam` — existing classes only, no new
+   CSS classes. A gate with zero assigned questions renders no empty cards.
 2. Write it to `docs/features/<slug>/design.html` (committed later — the path is
    already linguist-generated, so PRs collapse it). Re-running the gate
    overwrites the same file; the md is the record.
-3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
-   otherwise. If both fail, print the absolute path and continue — headless, CI,
-   and isolated mode are a no-op here, never a failure.
-4. Offer — don't push — an optional extra render: "I can also publish this design
+3. Stamp the render: a generation timestamp and a revision integer, riding
+   the existing eyebrow/context-strip and footer slot regions — no new markup,
+   no CSS change. Read the previous render's footer first: its revision
+   integer + 1 is this render's revision. No previous file → revision 1;
+   footer unparseable (hand-edited) → fall back to revision 1 and note the
+   reset in the footer — never fail the render. The filename never changes —
+   the revision lives inside the artifact.
+4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
+   true). When it is false, skip opening silently and print the absolute path
+   instead — the setting is never a failure. Otherwise open it before asking
+   anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both
+   fail, print the absolute path and continue — headless, CI, and isolated
+   mode are a no-op here (the environment check precedes the setting), never
+   a failure.
+5. Offer — don't push — an optional extra render: "I can also publish this design
    as a hosted artifact for a shareable link." Only publish if the human says
    yes; the local file remains the canonical render. If declined, no retry.
 

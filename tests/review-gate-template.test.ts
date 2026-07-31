@@ -60,6 +60,42 @@ describe('REVIEW_GATE_TEMPLATE.html — file + slots', () => {
   });
 });
 
+describe('REVIEW_GATE_TEMPLATE.html — custom output templates stay inside the slots', () => {
+  /**
+   * `support-custom-output-templates` lets a team's own PRD format shape gate
+   * output. The locked-skeleton contract says that reshaping happens *inside*
+   * the slot regions and never to the skeleton itself.
+   *
+   * A byte/hash pin would be the strictest form, but it would also fail
+   * legitimately when a later spec edits the skeleton on purpose. So we pin the
+   * structural invariants a custom template could plausibly erode instead —
+   * these hold no matter whose sections end up in the `sections` slot.
+   */
+  it('routes custom sections through a generic sections slot', () => {
+    // The mapping target: custom sections have somewhere to go that is not a
+    // gate-specific slot. Without this, honoring a custom template would mean
+    // inventing skeleton markup.
+    expect(readTemplate()).toContain('SLOT:sections');
+  });
+
+  it('keeps every slot a comment, so filling one cannot alter the skeleton', () => {
+    const content = readTemplate();
+    for (const slot of SLOT_NAMES) {
+      expect(
+        content,
+        `SLOT:${slot} must be declared inside an HTML comment`,
+      ).toMatch(new RegExp(`<!--\\s*SLOT:${slot}\\b`));
+    }
+  });
+
+  it('ships no custom-template lookup logic of its own', () => {
+    // The lookup is a skill instruction, not template machinery: rendering
+    // stays agent-hand-filled with no runtime dependency (AGENTS.md NEVER).
+    const content = readTemplate();
+    expect(content).not.toContain('docs/templates/output/');
+  });
+});
+
 describe('REVIEW_GATE_TEMPLATE.html — design tokens', () => {
   it('defines --ground on :root', () => {
     const html = readTemplate();
@@ -153,6 +189,15 @@ describe('REVIEW_GATE_TEMPLATE.html — registration', () => {
     const { TEMPLATES } = await import('../src/bundled-files.js');
     expect(TEMPLATES).toHaveProperty('REVIEW_GATE_TEMPLATE.html');
     expect(TEMPLATES['REVIEW_GATE_TEMPLATE.html']).toBe(readTemplate());
+  });
+
+  it('ships an identical repo copy at docs/templates/ so the skills\u2019 path resolves here', () => {
+    // Installed skills say `docs/templates/REVIEW_GATE_TEMPLATE.html` \u2014 a
+    // project-relative path that must resolve in this repo too (the dossier
+    // template follows the same convention). Byte-identical, like the dossier.
+    const repoCopy = join(ROOT, 'docs', 'templates', 'REVIEW_GATE_TEMPLATE.html');
+    expect(existsSync(repoCopy)).toBe(true);
+    expect(readFileSync(repoCopy, 'utf-8')).toBe(readTemplate());
   });
 
   it('installs to docs/templates/REVIEW_GATE_TEMPLATE.html on init', async () => {

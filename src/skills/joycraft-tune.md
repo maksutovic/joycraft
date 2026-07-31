@@ -23,7 +23,7 @@ Check for: {{boundary_file}} (with meaningful content), `docs/features/<slug>/` 
 
 ## Step 2: Route
 
-- **No harness** (no {{boundary_file}} or just a README): Recommend `npx joycraft init` and stop.
+- **No harness** (no {{boundary_file}} or just a README): Recommend `npx joycraft@latest init` and stop.
 - **Harness exists**: Continue to assessment.
 
 ## Step 3: Assess — Score 7 Dimensions (1-5 scale)
@@ -57,14 +57,28 @@ content.
 1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
    `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
    template's structure, class names, CSS, and theme script stay
-   **byte-identical** — never generate freeform gate HTML.
+   **byte-identical** — never generate freeform gate HTML. Assigned
+   questions render as `.q` cards too, with the assignee riding the existing
+   `.qnum` span — e.g. `Q2 · assigned: Sam` — existing classes only, no new
+   CSS classes. A gate with zero assigned questions renders no empty cards.
 2. Write it beside the report as `docs{{skill_prefix}}assessment.html`, creating
    the directory if it doesn't exist yet. Re-running `/tune` overwrites the same
    file; the md is the record.
-3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
-   otherwise. If both fail, print the absolute path and continue — headless, CI,
-   and isolated mode are a no-op here, never a failure.
-4. Offer — don't push — an optional extra render: "I can also publish this
+3. Stamp the render: a generation timestamp and a revision integer, riding
+   the existing eyebrow/context-strip and footer slot regions — no new markup,
+   no CSS change. Read the previous render's footer first: its revision
+   integer + 1 is this render's revision. No previous file → revision 1;
+   footer unparseable (hand-edited) → fall back to revision 1 and note the
+   reset in the footer — never fail the render. The filename never changes —
+   the revision lives inside the artifact.
+4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
+   true). When it is false, skip opening silently and print the absolute path
+   instead — the setting is never a failure. Otherwise open it before asking
+   anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both
+   fail, print the absolute path and continue — headless, CI, and isolated
+   mode are a no-op here (the environment check precedes the setting), never
+   a failure.
+5. Offer — don't push — an optional extra render: "I can also publish this
    assessment as a hosted artifact for a shareable link." Only publish if the
    human says yes; the local file remains the canonical render. If declined, no
    retry.
@@ -90,11 +104,81 @@ guidance; observed live 2026-07-29).
 
 ## Step 5: Apply Upgrades
 
+**How to ask — the question directive.** This governs every question moment in
+this step: the execution-profile offer, the git-autonomy choice, and any Tier 3
+confirmation.
+<!-- harness:claude -->
+Every question goes through the AskUserQuestion tool. Never emit a plain
+Q1/Q2/Q3 list in chat and wait for the human to type answers back — the tool is
+the capture surface, chat is not.
+<!-- /harness -->
+<!-- harness:codex|pi|copilot -->
+Every question is asked as structured forced-choice questions asked directly in chat: present the
+numbered options under the question, then wait for the answer before moving on.
+Never dump an unanswerable wall of open prose questions.
+<!-- /harness -->
+Three rules ride on every question, no exceptions:
+
+- **Every question has ≥2 real options.** A one-option question is invalid —
+  reframe it or drop it; a rubber-stamp question captures nothing. Open-ended
+  questions still qualify: offer the 2–4 most likely answers as options and let
+  free text carry anything else.
+- **The rationale rides in the free-text answer (Pattern B).** When the reason
+  matters, end the question's text with this instruction, verbatim in shape:
+
+  > Do NOT just pick an option — use the free-text field and type your answer
+  > as "<choice> because <one-sentence reason>". If every option here is wrong,
+  > reject the framing: type what's right instead.
+- **"Defer to <name>" is always a valid answer.** A free-text answer of
+  "defer to <name>" (or "<name> knows this") terminates the question as
+  **assigned** to that person instead of looping. Record it in the artifact's
+  closing "Open Questions — Assigned" section — question, assignee, date, and
+  a context link; the section exists only when at least one question is
+  assigned. Then confirm the deferral in one visible chat line — who, which
+  question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the
+  artifact's Open Questions — Assigned section`). Never mutate the file
+  silently on a conversational shortcut. A defer with no name ("someone else
+  knows this") gets exactly one follow-up asking who; without a name the
+  question stays open — never an anonymous assignment. Re-deferring to a
+  different person: the latest assignment wins, and the confirmation line
+  notes the reassignment. If an assigned question is answered later in the
+  session, remove it from the assigned section, record the answer normally,
+  and confirm in one line. Assignment is not backlogging — never auto-write
+  assigned questions to `docs/backlog/`.
+
 Apply using three tiers — do NOT ask per-item permission:
 
 **Tier 1 (silent):** Create missing dirs, install missing skills, copy missing templates, create AGENTS.md.
 
-**Execution profile offer:** If Step 1 found no `<!-- joycraft:execution-profile -->` sentinel in AGENTS.md, offer to add one — never write it unasked. On yes, ask per installed harness: use swarms for decompose? (y/n) use swarms for implement? (y/n) which model, and which effort? Model and effort are free text — suggest the current session's model as the default and never present a menu of model names. Append the answers as a sentinel-delimited section (skipping is first-class: a project that answers no to everything still gets the section, so downstream skills read an explicit answer rather than an absence):
+**Auto-open toggle:** gate renders open automatically by default. Offer —
+through the question directive above — to flip `autoOpen` in
+`docs/.joycraft/state.json` (missing file or key = true). On an answer, write
+the key while preserving every other key in the file, and confirm the new
+value in one line. Never flip it unasked.
+
+**Execution profile offer:** If Step 1 found no `<!-- joycraft:execution-profile -->` sentinel in AGENTS.md, offer to add one — never write it unasked.
+
+On yes, ask **four separate questions per installed harness**, each one its own
+question through the question directive above. Ask them as four questions, not
+as one paragraph: a 2026-07-31 user answered the swarm pair and was never asked
+the rest, because a single bundled prose block lets the trailing questions be
+reformatted away.
+
+- **Q1 — swarms for decompose?** Options: yes / no.
+- **Q2 — swarms for implement?** Options: yes / no.
+- **Q3 — which model?** Free text, with the current session's model offered as
+  one option and `session default` as the other. Never present a menu of model
+  names — model names age faster than releases. A bare model name with no
+  reason is a complete answer.
+- **Q4 — which effort?** Free text, with the harness's usual effort levels
+  offered and `session default` as the fallback option.
+
+Q3 and Q4 are never skipped — ask them even if Q1 and Q2 were both answered
+"no", and even if the human sounds done. If a question genuinely goes
+unanswered, write `session default` rather than dropping the field. Append the
+answers as a sentinel-delimited section (skipping is first-class: a project that
+answers no to everything still gets the section, so downstream skills read an
+explicit answer rather than an absence):
 
 ```markdown
 ## Execution Profile
@@ -106,7 +190,7 @@ Apply using three tiers — do NOT ask per-item permission:
 
 The profile is data the user owns, not configuration Joycraft manages: **never overwrite an existing profile without asking**, and preserve whatever is between the sentinels verbatim, including hand-edits that don't match this shape. Recommend no model or tier here — routing defaults are the backlogged model-tiering feature's scope.
 
-**Private-profile note:** If `.gitignore` ignores the harness dirs (`.claude/`, `.agents/`, `.pi/` — the `private` profile), teammates who clone won't get the skill files. Ensure CLAUDE.md and AGENTS.md each carry a one-line note — append if absent, idempotent (match on the phrase "After cloning, run"): `> **Private setup:** The harness dirs (.claude/, .agents/, .pi/) are gitignored in this repo, so they aren't committed. After cloning, run \`npx joycraft init\` to regenerate the skill files locally — it only creates missing files and leaves your committed \`CLAUDE.md\`, \`AGENTS.md\`, and \`docs/\` untouched (use \`--force\` only if you deliberately want to regenerate them).` Skip entirely under the `shared` profile.
+**Private-profile note:** If `.gitignore` ignores the harness dirs (`.claude/`, `.agents/`, `.pi/` — the `private` profile), teammates who clone won't get the skill files. Ensure CLAUDE.md and AGENTS.md each carry a one-line note — append if absent, idempotent (match on the phrase "After cloning, run"): `> **Private setup:** The harness dirs (.claude/, .agents/, .pi/) are gitignored in this repo, so they aren't committed. After cloning, run \`npx joycraft@latest init\` to regenerate the skill files locally — it only creates missing files and leaves your committed \`CLAUDE.md\`, \`AGENTS.md\`, and \`docs/\` untouched (use \`--force\` only if you deliberately want to regenerate them).` Skip entirely under the `shared` profile.
 
 **Already-tracked harness files (private profile):** If the project is on the `private` profile but `git ls-files` shows tracked files under `.claude/`, `.agents/`, or `.pi/`, those files were committed before the switch and the gitignore won't untrack them. Surface the copy-pasteable fix once, prominently, in your upgrade results — `git rm -r --cached .claude .agents .pi` — and note it's advisory (never run git yourself). Skip when no harness files are tracked, and skip entirely under `shared`.
 
