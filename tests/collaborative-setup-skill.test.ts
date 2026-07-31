@@ -28,7 +28,7 @@ describe('joycraft-collaborative-setup skill', () => {
   it('tells user to run npx joycraft upgrade first if flat layout detected', () => {
     const content = readFileSync(join(skillsDir, 'joycraft-collaborative-setup.md'), 'utf-8');
     expect(content.toLowerCase()).toContain('flat layout');
-    expect(content).toContain('joycraft upgrade');
+    expect(content).toMatch(/joycraft(@latest)? upgrade/);
   });
 
   it('ends with the canonical Handoff block', () => {

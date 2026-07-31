@@ -22,7 +22,7 @@ We use [Joycraft](https://www.npmjs.com/package/joycraft) for AI-assisted develo
 ## Onboarding
 
 When a new dev joins:
-1. Run `npx joycraft init` (idempotent on already-set-up projects)
+1. Run `npx joycraft@latest init` (idempotent on already-set-up projects)
 2. Read `docs/areas/<your-area>/README.md` for context
 3. Read this file for team conventions
 4. Skim a few recent `docs/features/*/brief.md` files to see how we frame work

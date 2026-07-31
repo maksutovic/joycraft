@@ -34,7 +34,7 @@ Before scaffolding team structure, check the project's docs/ for per-feature art
 
 If any **flat layout** artifacts exist, tell the user:
 
-> "I see flat-layout artifacts in your docs/ (briefs/research/designs). Run `npx joycraft upgrade` first — it will migrate them into `docs/features/<slug>/` automatically. Then re-run this skill."
+> "I see flat-layout artifacts in your docs/ (briefs/research/designs). Run `npx joycraft@latest upgrade` first — it will migrate them into `docs/features/<slug>/` automatically. Then re-run this skill."
 
 Then stop. Skills don't reliably shell out, so the CLI does the migration.
 
@@ -98,7 +98,7 @@ If the user provided NEVER / ASK FIRST rules for the area, also write `docs/area
 
 Lazy-create `docs/CONTRIBUTING-joycraft.md` (NOT the project's main `CONTRIBUTING.md` — keep them separate so neither stomps on the other).
 
-If `docs/templates/CONTRIBUTING-joycraft-template.md` exists in the project (it should — bundled by `npx joycraft init`), use it as the starting point. If not, fall back to the inline template below.
+If `docs/templates/CONTRIBUTING-joycraft-template.md` exists in the project (it should — bundled by `npx joycraft@latest init`), use it as the starting point. If not, fall back to the inline template below.
 
 The doc starts with shared frontmatter:
 
@@ -129,7 +129,7 @@ We use [Joycraft](https://www.npmjs.com/package/joycraft) for AI-assisted develo
 ## Onboarding
 
 When a new dev joins:
-1. Run `npx joycraft init` (idempotent on already-set-up projects)
+1. Run `npx joycraft@latest init` (idempotent on already-set-up projects)
 2. Read `docs/areas/<your-area>/README.md` for context
 ```
 
@@ -137,11 +137,11 @@ If `docs/CONTRIBUTING-joycraft.md` already exists, ASK before overwriting — of
 
 ## Step 6: Trigger AGENTS.md Update
 
-Now that `docs/areas/` exists, the next `npx joycraft upgrade` (or any future `npx joycraft init`) will pick it up and add the **Areas pointer** to AGENTS.md automatically — that pointer tells the agent "when working on the X area, read docs/areas/X/README.md first."
+Now that `docs/areas/` exists, the next `npx joycraft@latest upgrade` (or any future `npx joycraft@latest init`) will pick it up and add the **Areas pointer** to AGENTS.md automatically — that pointer tells the agent "when working on the X area, read docs/areas/X/README.md first."
 
 Tell the user:
 
-> "Run `npx joycraft upgrade` to refresh AGENTS.md with the Areas pointer (or `npx joycraft init` if you haven't initialized yet)."
+> "Run `npx joycraft@latest upgrade` to refresh AGENTS.md with the Areas pointer (or `npx joycraft@latest init` if you haven't initialized yet)."
 
 Don't try to shell out from inside the skill — let the user run the CLI deliberately.
 
@@ -161,6 +161,6 @@ Include the path to `docs/CONTRIBUTING-joycraft.md` and any newly-created area R
 
 ## Notes
 
-- This skill does NOT migrate flat-layout artifacts on its own. That's `npx joycraft upgrade`'s job — Step 2 directs the user to run it first.
+- This skill does NOT migrate flat-layout artifacts on its own. That's `npx joycraft@latest upgrade`'s job — Step 2 directs the user to run it first.
 - Area names are user-provided. Don't auto-detect from `src/auth/`, `src/api/`, etc. — many projects have monorepo or non-conventional layouts and auto-detection produces noise.
 - If the user stops mid-way (Ctrl-C, abandons), whatever's been written stays. Re-running the skill is the recovery path; it's idempotent on existing area folders (asks before overwriting).

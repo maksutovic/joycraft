@@ -15,7 +15,7 @@ You are guiding the user through setting up Level 5: the autonomous feedback loo
 
 Check prerequisites:
 
-1. **Project must be initialized.** Look for `docs/.joycraft/state.json` (older installs may still have it at the legacy `.claude/.joycraft/state.json` or a `.joycraft-version` at the repo root). If none exist, tell the user to run `npx joycraft init` first.
+1. **Project must be initialized.** Look for `docs/.joycraft/state.json` (older installs may still have it at the legacy `.claude/.joycraft/state.json` or a `.joycraft-version` at the repo root). If none exist, tell the user to run `npx joycraft@latest init` first.
 2. **Project should be at Level 4.** Check `docs{{skill_prefix}}assessment.md` if it exists. If the project hasn't been assessed yet, suggest running `{{skill_prefix}}tune` first. But don't block — the user may know they're ready.
 3. **Git repo with GitHub remote.** This setup requires GitHub Actions. Check for `.git/` and a GitHub remote.
 
@@ -68,7 +68,7 @@ Accept the default or the user's choice.
 Run the CLI command with the gathered configuration:
 
 ```bash
-npx joycraft init-autofix --scenarios-repo {name} --app-id {id}
+npx joycraft@latest init-autofix --scenarios-repo {name} --app-id {id}
 ```
 
 Review the output with the user. Confirm files were created.

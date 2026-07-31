@@ -16,7 +16,7 @@ Harden is convert-what-exists — it never interviews from scratch (that's `joyc
 Read the project's boundary file (CLAUDE.md, or wherever the ALWAYS/ASK FIRST/NEVER
 rules live), `.claude/settings.json` `permissions.deny`, and
 `.claude/hooks/joycraft/deny-patterns.txt`. These are the **only two enforcement surfaces**
-you target. Both are installed by Joycraft's safeguard machinery (`npx joycraft init`) —
+you target. Both are installed by Joycraft's safeguard machinery (`npx joycraft@latest init`) —
 you append to the files it produces, you never rewrite the hook script itself, and you
 never add a new hook framework.
 

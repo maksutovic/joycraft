@@ -146,11 +146,11 @@ it("init creates a CLAUDE.md file", () => {
 
 ## Relationship to Joycraft
 
-This repository was bootstrapped by `npx joycraft init --autofix`. Joycraft
+This repository was bootstrapped by `npx joycraft@latest init --autofix`. Joycraft
 manages the `run.yml` workflow and keeps it in sync when you run
-`npx joycraft upgrade`. The test files are yours — Joycraft will never
+`npx joycraft@latest upgrade`. The test files are yours — Joycraft will never
 overwrite them.
 
 If the `run.yml` workflow needs updating (e.g., a new version of
-`actions/create-github-app-token`), run `npx joycraft upgrade` in this repo
+`actions/create-github-app-token`), run `npx joycraft@latest upgrade` in this repo
 and review the diff before applying.

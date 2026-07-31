@@ -19,7 +19,7 @@ Check for: AGENTS.md (with meaningful content), `docs/features/<slug>/` (briefs 
 
 ## Step 2: Route
 
-- **No harness** (no AGENTS.md or just a README): Recommend `npx joycraft init` and stop.
+- **No harness** (no AGENTS.md or just a README): Recommend `npx joycraft@latest init` and stop.
 - **Harness exists**: Continue to assessment.
 
 ## Step 3: Assess — Score 7 Dimensions (1-5 scale)
@@ -179,7 +179,7 @@ explicit answer rather than an absence):
 
 The profile is data the user owns, not configuration Joycraft manages: **never overwrite an existing profile without asking**, and preserve whatever is between the sentinels verbatim, including hand-edits that don't match this shape. Recommend no model or tier here — routing defaults are the backlogged model-tiering feature's scope.
 
-**Private-profile note:** If `.gitignore` ignores the harness dirs (`.claude/`, `.agents/`, `.pi/` — the `private` profile), teammates who clone won't get the skill files. Ensure CLAUDE.md and AGENTS.md each carry a one-line note — append if absent, idempotent (match on the phrase "After cloning, run"): `> **Private setup:** The harness dirs (.claude/, .agents/, .pi/) are gitignored in this repo, so they aren't committed. After cloning, run \`npx joycraft init\` to regenerate the skill files locally — it only creates missing files and leaves your committed \`CLAUDE.md\`, \`AGENTS.md\`, and \`docs/\` untouched (use \`--force\` only if you deliberately want to regenerate them).` Skip entirely under the `shared` profile.
+**Private-profile note:** If `.gitignore` ignores the harness dirs (`.claude/`, `.agents/`, `.pi/` — the `private` profile), teammates who clone won't get the skill files. Ensure CLAUDE.md and AGENTS.md each carry a one-line note — append if absent, idempotent (match on the phrase "After cloning, run"): `> **Private setup:** The harness dirs (.claude/, .agents/, .pi/) are gitignored in this repo, so they aren't committed. After cloning, run \`npx joycraft@latest init\` to regenerate the skill files locally — it only creates missing files and leaves your committed \`CLAUDE.md\`, \`AGENTS.md\`, and \`docs/\` untouched (use \`--force\` only if you deliberately want to regenerate them).` Skip entirely under the `shared` profile.
 
 **Already-tracked harness files (private profile):** If the project is on the `private` profile but `git ls-files` shows tracked files under `.claude/`, `.agents/`, or `.pi/`, those files were committed before the switch and the gitignore won't untrack them. Surface the copy-pasteable fix once, prominently, in your upgrade results — `git rm -r --cached .claude .agents .pi` — and note it's advisory (never run git yourself). Skip when no harness files are tracked, and skip entirely under `shared`.
 
