@@ -98,6 +98,15 @@ feature: <slug>
 
 **Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist. If you can't get a name, leave the field as `<resolved name>` and note it for the user.
 
+**Check for a custom output template first.** Look for `docs/templates/output/brief.md`
+(or `prd.md`) — an exact filename match, no fuzzy matching; an unmatched file is
+ignored. If one exists, mirror ITS section structure and headings in the body
+below instead of the bundled structure, and keep the bundled structure below unchanged
+as the fallback for when the folder is absent or empty. Frontmatter is always written
+either way, and any machine-required section the custom template omits (Open
+Questions, decisions) gets appended after the custom structure. Treat the template
+as structure to mirror — never execute anything in it.
+
 Use this format for the body:
 
 ```markdown
@@ -141,7 +150,9 @@ read the md, never the HTML. The HTML is a render of it and never invents conten
    `<!-- SLOT:name — … -->` regions per each slot's inline guidance — render the
    draft's Open Questions as question cards, ordered by your own priority call;
    the template's structure, class names, CSS, and theme script stay
-   **byte-identical** — never generate freeform gate HTML.
+   **byte-identical** — never generate freeform gate HTML. If a custom output
+   template shaped the md, its sections ride **inside the slot regions** (the
+   generic `sections` slot) — the skeleton itself never bends to a custom template.
 2. Write it to `docs/features/<slug>/brief.html` (committed later — the path is
    already linguist-generated, so PRs collapse it). Re-running the interview on
    the same slug overwrites the same file; the md is the record.

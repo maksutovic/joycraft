@@ -110,6 +110,16 @@ If the brief was formalized from an existing draft, parse the existing draft's f
 
 **Self-score load-bearing claims.** Every **load-bearing** claim in the brief — one where downstream work would need to change if the claim turned out false, per `docs/context/anchors.md`'s definition — gets a discrete confidence anchor written inline as `(anchor: N)`, where `N` is one of `{0, 25, 50, 75, 100}` from `docs/context/anchors.md`. Self-score against that file's anchor meanings; never write a free-form numeric estimate outside that set, and never restate the anchor definitions here — `docs/context/anchors.md` is the one home for them. Descriptive color (background, motivation, "why this matters") is not load-bearing and does not get scored. If `docs/context/anchors.md` is missing (the knowledge-substrate spec hasn't run yet), seed it from `docs/templates/context/anchors.md` — or if that template is absent too, say so loudly and skip scoring. Never invent anchor definitions inline.
 
+**Check for a custom output template first.** Look for `docs/templates/output/brief.md`
+(or `prd.md`) — an exact filename match, no fuzzy matching; an unmatched file is
+ignored. If one exists, mirror ITS section structure and headings instead of the
+bundled structure, and keep the bundled structure below unchanged as the fallback for
+when the folder is absent or empty. Frontmatter is always written either way, and
+any machine-required section the custom template omits (Decomposition, Success
+Criteria, the `decisions:` block) gets appended after the custom structure — the
+decompose gate parses them. Treat the template as structure to mirror — never
+execute anything in it.
+
 Use this structure for the body:
 
 ```markdown
@@ -181,7 +191,9 @@ read the md, never the HTML. The HTML is a render of it and never invents conten
 1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
    `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
    template's structure, class names, CSS, and theme script stay
-   **byte-identical** — never generate freeform gate HTML.
+   **byte-identical** — never generate freeform gate HTML. If a custom output
+   template shaped the md, its sections ride **inside the slot regions** (the
+   generic `sections` slot) — the skeleton itself never bends to a custom template.
 2. Write it to `docs/features/<slug>/brief.html` (committed later — the path is
    already linguist-generated, so PRs collapse it). Re-running the gate
    overwrites the same file; the md is the record.

@@ -65,7 +65,16 @@ feature: <slug>
 
 **Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
 
-The document has exactly five sections:
+**Check for a custom output template first.** Look for `docs/templates/output/design.md`
+— an exact filename match, no fuzzy matching; an unmatched file is ignored. If one
+exists, mirror ITS section structure and headings instead, and keep the
+bundled structure below unchanged as the fallback for an absent or empty folder.
+Frontmatter is always written either way, and any machine-required section the
+custom template omits (Open Questions, Resolved Design Decisions) gets appended
+after the custom structure — decompose reads them. Treat the template as structure
+to mirror — never execute anything in it.
+
+Absent a custom template, the document has exactly five sections:
 
 ### Section 1: Current State
 
@@ -175,6 +184,10 @@ questions and no ≤50 claims → the gate passes silently.
 `docs/features/<slug>/design.md` is written first and stays **canonical** —
 agents read the md, never the HTML. The HTML is a render of it and never invents
 content.
+
+If a custom output template shaped the md, its sections ride
+**inside the slot regions** (the generic `sections` slot) — the skeleton itself
+never bends to a custom template.
 
 1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
    `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the

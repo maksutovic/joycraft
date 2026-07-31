@@ -60,6 +60,42 @@ describe('REVIEW_GATE_TEMPLATE.html — file + slots', () => {
   });
 });
 
+describe('REVIEW_GATE_TEMPLATE.html — custom output templates stay inside the slots', () => {
+  /**
+   * `support-custom-output-templates` lets a team's own PRD format shape gate
+   * output. The locked-skeleton contract says that reshaping happens *inside*
+   * the slot regions and never to the skeleton itself.
+   *
+   * A byte/hash pin would be the strictest form, but it would also fail
+   * legitimately when a later spec edits the skeleton on purpose. So we pin the
+   * structural invariants a custom template could plausibly erode instead —
+   * these hold no matter whose sections end up in the `sections` slot.
+   */
+  it('routes custom sections through a generic sections slot', () => {
+    // The mapping target: custom sections have somewhere to go that is not a
+    // gate-specific slot. Without this, honoring a custom template would mean
+    // inventing skeleton markup.
+    expect(readTemplate()).toContain('SLOT:sections');
+  });
+
+  it('keeps every slot a comment, so filling one cannot alter the skeleton', () => {
+    const content = readTemplate();
+    for (const slot of SLOT_NAMES) {
+      expect(
+        content,
+        `SLOT:${slot} must be declared inside an HTML comment`,
+      ).toMatch(new RegExp(`<!--\\s*SLOT:${slot}\\b`));
+    }
+  });
+
+  it('ships no custom-template lookup logic of its own', () => {
+    // The lookup is a skill instruction, not template machinery: rendering
+    // stays agent-hand-filled with no runtime dependency (AGENTS.md NEVER).
+    const content = readTemplate();
+    expect(content).not.toContain('docs/templates/output/');
+  });
+});
+
 describe('REVIEW_GATE_TEMPLATE.html — design tokens', () => {
   it('defines --ground on :root', () => {
     const html = readTemplate();
