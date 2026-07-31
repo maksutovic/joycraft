@@ -1,0 +1,263 @@
+<meta charset="utf-8">
+<title>Decompose Review — Team-Ready Gates</title>
+<style>
+  /* Design tokens: light theme is the default set on :root. These are the
+     decision dossier's tokens verbatim — one design system, two skeletons. */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono, .spec-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Context strip: grounded facts as .lock-chip spans; .open marks an item that
+     is still unsettled. The container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  /* Content section. Repeat once per topic. */
+  section.sec { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .sec-head h2 { margin: 0; }
+  h2 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 18px; max-width: 74ch; }
+
+  /* Block A — pillars: a card grid for 2–4 parallel ideas. */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .pillar h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pillar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* Block B — tablebox: any table (spec lists, decomposition plans). Scrolls
+     inside its own box on narrow screens so the body never scrolls. */
+  .tablebox { margin-top: 6px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+  .tablebox table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+  .tablebox th { text-align: left; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  .tablebox td { padding: 11px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+  .tablebox tr:last-child td { border-bottom: none; }
+  .spec-name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .size { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--ink-2); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .wave { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--accent-wash); color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+
+  /* Block C — cols: the must / must-not pair. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .col .clab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .col ul { margin: 9px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .col li { color: var(--ink-2); margin-bottom: 5px; line-height: 1.4; }
+  .col.must li::before { content: "✓ "; color: var(--good-ink); font-weight: 700; }
+  .col.must-not li::before { content: "✗ "; color: var(--bad-ink); font-weight: 700; }
+
+  /* Block D — criteria: an acceptance checklist. */
+  .criteria { margin: 6px 0 0; padding: 0; list-style: none; }
+  .criteria li { position: relative; padding: 9px 0 9px 26px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-2); }
+  .criteria li:last-child { border-bottom: none; }
+  .criteria li::before { content: "□"; position: absolute; left: 2px; color: var(--ink-3); }
+  .criteria li.met::before { content: "☑"; color: var(--good-ink); }
+
+  /* Questions. One .q card per open question; amber left border. */
+  .questions { margin-top: 54px; }
+  .q { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warn-ink); border-radius: 8px; padding: 18px 22px; margin-top: 12px; }
+  .q .qnum { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .q h3 { font-size: 16.5px; font-weight: 700; margin: 6px 0 8px; }
+  .q .rec { font-size: 14.5px; color: var(--ink); margin: 0 0 6px; }
+  .q .rec strong { color: var(--accent-ink); }
+  .q .why { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 74ch; }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decompose Review · feature: team-ready-gates · July 31, 2026</div>
+  <h1>7 specs, 3 waves — and 4 premises that need your word</h1>
+  <p class="dek">The approved brief decomposed into an executable queue. Before spec files are written you decide two things: the four INVENTED premises (I1–I4, proposed as D10–D13) and the execution-mode recommendation (checkpoint for all seven).</p>
+  <div class="locked">
+    <span class="lock-chip">D1–D9 stamped — not reopened</span>
+    <span class="lock-chip">Retrieval ran: 5 knowledge-layer items reused</span>
+    <span class="lock-chip">No contradictions with prior decisions</span>
+    <span class="lock-chip">Waves 1–2 parallel-safe · wave 3 sequential</span>
+    <span class="lock-chip open">I1–I4 await approve / reword / drop</span>
+    <span class="lock-chip open">Execution modes await your OK</span>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Reused</span>
+    <h2>Prior knowledge feeding this decomposition</h2>
+  </div>
+  <p class="sub">Bounded retrieval (terms: AskUserQuestion, auto-open, execution profile, gate template, SECURITY) hit five reusable items; none contradict the brief.</p>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>Source</th><th>Fact</th><th>Feeds</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="spec-name">decision-log 2026-07-20</td><td>AskUserQuestion rejects single-option questions; Pattern B ("&lt;choice&gt; because &lt;reason&gt;" via free-text row) is the proven capture pattern</td><td>Specs 1, 2</td></tr>
+        <tr><td class="spec-name">decision-log 2026-07-29</td><td>Execution profile is data only; model-tiering stays backlogged — spec 2 must not add routing policy</td><td>Spec 2</td></tr>
+        <tr><td class="spec-name">shipped 2026-07-29</td><td>tests/gate-contract.test.ts exists — the home for new gate-coverage assertions</td><td>Specs 1, 3, 6</td></tr>
+        <tr><td class="spec-name">discovery 2026-07-20</td><td>File-mutating conversational branches need visible confirmation in the ACs or agents act silently</td><td>Spec 3</td></tr>
+        <tr><td class="spec-name">discovery 2026-07-29</td><td>Enumerate gate/handoff sites by the "Recommended Next Steps" heading, never literal greps; every skill-editing spec syncs bundles in its own commit</td><td>All skill specs</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Plan</span>
+    <h2>Decomposition — 7 specs</h2>
+  </div>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Spec</th><th>Description</th><th>Deps</th><th>Wave</th><th>Size</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td class="spec-name">harden-question-directive</td><td>AskUserQuestion directive (≥2 real options, Pattern B free-text routing, codex/pi structured-chat fallback) in interview, new-feature, tune, design, bugfix</td><td>—</td><td><span class="wave">W1</span></td><td><span class="size">M</span></td></tr>
+        <tr><td>7</td><td class="spec-name">restructure-public-docs</td><td>Install-first README + TOC, details to linked docs, thin SECURITY.md</td><td>—</td><td><span class="wave">W1</span></td><td><span class="size">M</span></td></tr>
+        <tr><td>2</td><td class="spec-name">fix-model-question-skip</td><td>Split model/effort out of the bundled execution-profile block; route through the hardened directive in tune + interactive init</td><td>1</td><td><span class="wave">W2</span></td><td><span class="size">S</span></td></tr>
+        <tr><td>4</td><td class="spec-name">support-custom-output-templates</td><td>Gate skills check docs/templates/output/ before bundled defaults, md + HTML, locked skeleton intact</td><td>—</td><td><span class="wave">W2</span></td><td><span class="size">M</span></td></tr>
+        <tr><td>3</td><td class="spec-name">add-defer-to-person</td><td>"Defer to &lt;name&gt;" first-class answer, "Open Questions — Assigned" md section, assignee-tagged HTML cards, visible confirmation</td><td>1</td><td><span class="wave">W3 · 1st</span></td><td><span class="size">M</span></td></tr>
+        <tr><td>5</td><td class="spec-name">add-agent-handoff-slot</td><td>"Prompt for the implementing agent" slot in brief/PRD output, md + HTML</td><td>4</td><td><span class="wave">W3 · 2nd</span></td><td><span class="size">S</span></td></tr>
+        <tr><td>6</td><td class="spec-name">stamp-gate-artifacts</td><td>Timestamp + revision banner, persisted auto-open setting, fix stale template path references</td><td>1</td><td><span class="wave">W3 · 3rd</span></td><td><span class="size">M</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Waves</span>
+    <h2>Execution waves + modes</h2>
+  </div>
+  <p class="sub">CLAUDE.md carries no default-execution-mode line, so the project default is batch; the recommendation overrides it to checkpoint for all seven — every spec is S/M and the sync-skills same-commit hazard makes atomic per-spec commits valuable. A final zero-drift check rides spec 6's ACs; no terminal sync spec.</p>
+  <div class="pillars">
+    <div class="pillar">
+      <h3>Wave 1 — specs 1, 7 · parallel-safe</h3>
+      <p>Affected files disjoint: spec 1 lives in src/skills/ gate bodies + generated/installed copies; spec 7 touches only README.md and SECURITY.md.</p>
+    </div>
+    <div class="pillar">
+      <h3>Wave 2 — specs 2, 4 · parallel-safe</h3>
+      <p>Disjoint per-skill files: spec 2 edits joycraft-tune.md + src/execution-profile.ts + init; spec 4 edits the output-rendering steps of interview, new-feature, design, bugfix, decompose.</p>
+    </div>
+    <div class="pillar">
+      <h3>Wave 3 — specs 3 → 5 → 6 · sequential</h3>
+      <p>NOT parallel-safe: all three touch src/templates/REVIEW_GATE_TEMPLATE.html contract comments and the same gate-skill render steps. Runs in order after waves 1–2.</p>
+    </div>
+    <div class="pillar">
+      <h3>Mode — checkpoint × 7</h3>
+      <p>joycraft-spec-done after each spec (commit + status bump), shared context throughout, session-end once at the end. Say the word to switch any spec to batch or isolated.</p>
+    </div>
+  </div>
+</section>
+
+<section class="questions">
+  <div class="sec-head">
+    <span class="eyebrow">Open</span>
+    <h2>Questions for you</h2>
+  </div>
+  <div class="q">
+    <span class="qnum">I1 → D10</span>
+    <h3>Lock Pattern B for every gate question directive?</h3>
+    <p class="rec"><strong>Recommend:</strong> approve — directives require ≥2 real options and route free-text via "&lt;choice&gt; because &lt;reason&gt;".</p>
+    <p class="why">This traces to the 2026-07-20 decision-log row, not to D1–D9 or the brief, so decompose cannot self-approve it. It is the proven pattern (3/3 native-UI trials) and spec 2's free-text model/effort questions would otherwise risk the invalid single-option shape.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">I2 → D11</span>
+    <h3>Require a visible one-line confirmation on every defer-to-person?</h3>
+    <p class="rec"><strong>Recommend:</strong> approve — who, which question, where recorded, every time.</p>
+    <p class="why">The 2026-07-20 defer discovery showed agents execute file-mutating shortcuts silently unless the confirmation is in the ACs. Team deferral is exactly such a branch; without this a question can be assigned with no residue in chat.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">I3 → D12</span>
+    <h3>Persist the auto-open setting in docs/.joycraft/state.json?</h3>
+    <p class="rec"><strong>Recommend:</strong> approve — reuse the existing version-state file, no new config surface.</p>
+    <p class="why">The brief says "persisted on/off setting" but names no location. state.json already lives under docs/.joycraft and travels with the project; the alternative (a new settings file or CLAUDE.md line) adds a discovery surface for one boolean.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">I4 → D13</span>
+    <h3>Track revision as an integer in the HTML footer, incremented per re-render?</h3>
+    <p class="rec"><strong>Recommend:</strong> approve — self-contained in the artifact, no new state file.</p>
+    <p class="why">The brief says "revision banner" but names no mechanism. Reading the previous render's footer and incrementing keeps filenames stable and state local to the artifact; the alternative (revision counters in state.json) couples every gate render to shared state for a display-only number.</p>
+  </div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>Answer the four premises individually ("approve I1–I4", or per-item: approve / reword to a source you name / drop) and OK or adjust the checkpoint-everywhere mode plan. Approvals land as D10–D13 in the brief's decisions frontmatter and the spec files are generated immediately after. If the framing itself is wrong — the wave plan or the spec boundaries don't match how you think about this feature — reject it outright and say what is right instead. The canonical record is docs/features/2026-07-31-team-ready-gates/decompose.md.</p>
+</div>
+
+<footer>
+  <p>Produced by the joycraft-decompose gate · feature: 2026-07-31-team-ready-gates · 2026-07-31 · canonical source: docs/features/2026-07-31-team-ready-gates/decompose.md</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>
