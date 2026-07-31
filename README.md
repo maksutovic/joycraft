@@ -8,59 +8,69 @@
 
 ## What is Joycraft?
 
-Joycraft is a CLI tool that installs structured development skills into [Claude Code](https://code.claude.com/docs), [OpenAI Codex](https://openai.com/codex), [Pi](https://github.com/earendil-works/pi-coding-agent), and [GitHub Copilot](https://github.com/features/copilot), along with behavioral boundaries, templates, and documentation structure.
-
-It replaces unstructured prompting with spec-driven development: you interview, you write specs, the agent executes. The harness it installs — boundaries, context docs, skills — matures alongside your project instead of rotting.
+A CLI that installs spec-driven development into [Claude Code](https://code.claude.com/docs), [OpenAI Codex](https://openai.com/codex), [Pi](https://github.com/earendil-works/pi-coding-agent), and [GitHub Copilot](https://github.com/features/copilot): skills, behavioral boundaries, templates, and a docs structure that matures with your project.
 
 ```bash
 cd /path/to/your/project
 npx joycraft init
 ```
 
-That is the whole install. `init` asks which AI harnesses to set up, detects your stack, and scaffolds the rest. Full step-by-step: [Setup walkthrough](docs/guides/setup-walkthrough.md).
-
 ## Contents
 
+- [Install](#install) · [Use](#use) · [Upgrade](#upgrade)
 - [Setup walkthrough](docs/guides/setup-walkthrough.md) — every step from install to first feature
-- [Quick start](#quick-start) — what `init` creates
 - [Which skill do I need?](#which-skill-do-i-need) — the skill table and the core loop
-- [Platform support](docs/guides/platform-support.md) — Claude Code, Codex, Pi, Copilot, supported stacks, headless execution on Pi
-- [The levels](docs/guides/levels.md) — Dan Shapiro's 5 Levels, where Joycraft aims, and the credits
+- [What init creates](#what-init-creates)
+- [Platform support](docs/guides/platform-support.md) — Claude Code, Codex, Pi, Copilot, stacks, headless Pi
 - [Upgrading](docs/guides/upgrading.md) — `npx joycraft upgrade` and what's new in 0.7
 - [Git tracking](docs/guides/git-tracking.md) — shared vs private profiles, reviewable PRs
 - [Migration: flat → per-feature layout](docs/guides/migration-per-feature-layout.md) — the v0.6 docs move
-- [Security](SECURITY.md) — what Joycraft executes, boundaries, deny patterns
-- [Guides](#guides) — interview, research and design, test-first, tuning, token discipline
+- [The levels](docs/guides/levels.md) — Dan Shapiro's 5 Levels, where Joycraft aims, and the credits
+- [Security](SECURITY.md) · [Guides](#guides) · [Why Joycraft?](#why-joycraft)
 - [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [License](LICENSE)
 
-## Quick Start
-
-Install the CLI (optional — `npx` works without it):
+## Install
 
 ```bash
-npm install -g joycraft
-```
-
-Then, from your project's root directory:
-
-```bash
+cd /path/to/your/project
 npx joycraft init
 ```
 
-`init` first asks which harnesses to install and whether to commit or gitignore them, then auto-detects your tech stack and creates:
+Answer two questions — which harnesses to install, and whether to commit them — and `init` does the rest: detects your stack, writes `AGENTS.md`/`CLAUDE.md` with your real build/test commands, installs the skills. Safe to re-run: it only creates missing files, never overwrites yours.
 
-- **AGENTS.md** with behavioral boundaries (Always / Ask First / Never) and correct build/test/lint commands — the single shared instruction file when more than one tool is selected
-- **CLAUDE.md** — on a multi-tool install this is [Anthropic's documented import pattern](https://code.claude.com/docs/en/memory): `@AGENTS.md` plus a `## Claude Code` section for Claude-specific additions, so every tool reads one source and nothing drifts. A Claude-only install gets the classic full CLAUDE.md instead
-- **22 skills** installed to the selected harnesses — `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), `.pi/skills/` (Pi), and/or `.github/skills/` (GitHub Copilot) — see [Which skill do I need?](#which-skill-do-i-need) below
-- **Pi pipeline runtime** in `.pi/scripts/joycraft/` (when Pi is selected) — the headless spec-execution driver and its helpers
-- **Agent teams enabled** — when Claude Code is selected, `init` sets `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` so subagent-driven skills like `/joycraft-research` work out of the box (idempotent — it never clobbers a value you already set)
-- **docs/** structure: `docs/context/` is created up front; feature work lands in `docs/features/<slug>/{brief.md, research.md, design.md, specs/}` and deferred work in `docs/backlog/` — these are created lazily by the skills that write to them. Joycraft's own upgrade state lives hidden at `docs/.joycraft/state.json` (harness-neutral, gitignored — never committed)
-- **Context documents** in `docs/context/`: production map, dangerous assumptions, decision log, institutional knowledge, and troubleshooting guide
-- **Templates** including atomic spec, feature brief, implementation plan, boundary framework, and workflow templates for scenario generation and autofix loops
+`npm install -g joycraft` if you'd rather have the command on your PATH; `npx` works without it. Every step from install to first shipped feature: [Setup walkthrough](docs/guides/setup-walkthrough.md).
 
-`init` only creates *missing* files, so it is safe to re-run on a project that already has Joycraft or a hand-tuned `CLAUDE.md` — details in [Git tracking](docs/guides/git-tracking.md#re-running-init-on-an-existing-project).
+## Use
 
-Harness choice, invocation syntax per tool, supported stacks, and Pi's headless loop are covered in [Platform support](docs/guides/platform-support.md).
+Inside your AI tool, drive everything with slash commands:
+
+```
+/joycraft-setup                                     # first run — onboarding, where to begin
+/joycraft-new-feature                               # interview → Feature Brief → atomic specs
+/joycraft-implement-feature docs/features/<slug>/   # run the whole spec queue, TDD per spec
+/joycraft-session-end                               # wrap up: validate, graduate specs, push/PR
+/joycraft-tune                                      # score your harness, apply upgrades
+```
+
+Brainstorming first? `/joycraft-interview`. Fixing a bug? `/joycraft-bugfix`. The full table is at [Which skill do I need?](#which-skill-do-i-need); invocation syntax per tool is in [Platform support](docs/guides/platform-support.md).
+
+## Upgrade
+
+```bash
+npx joycraft upgrade
+```
+
+Refreshes skills and templates for the harnesses you selected at init. Unmodified files update automatically; files you've customized show a diff and ask first (`--yes` for CI). Details and release notes: [Upgrading](docs/guides/upgrading.md).
+
+## What init creates
+
+- **AGENTS.md** — behavioral boundaries (Always / Ask First / Never) plus your stack's real build/test/lint commands; the single shared instruction file when more than one tool is selected
+- **CLAUDE.md** — on a multi-tool install, [Anthropic's documented import pattern](https://code.claude.com/docs/en/memory): `@AGENTS.md` plus a `## Claude Code` section, so every tool reads one source. A Claude-only install gets the classic full CLAUDE.md
+- **22 skills** — installed to `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), `.pi/skills/` (Pi), and/or `.github/skills/` (Copilot); Pi also gets the headless pipeline runtime in `.pi/scripts/joycraft/`
+- **docs/** — `docs/context/` (production map, dangerous assumptions, decision log, institutional knowledge, troubleshooting) plus templates; feature folders and `docs/backlog/` are created lazily by the skills that write to them. Joycraft's own state hides at `docs/.joycraft/state.json` (gitignored)
+- **Agent teams enabled** — with Claude Code selected, `init` sets `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` so subagent-driven skills work out of the box (never clobbers a value you set)
+
+Re-running on an existing project is covered in [Git tracking](docs/guides/git-tracking.md#re-running-init-on-an-existing-project).
 
 ## The Workflow
 
@@ -122,6 +132,12 @@ flowchart LR
 | [Agent compatibility](docs/guides/agent-compatibility.md) | How CLAUDE.md and AGENTS.md stay one source across four tools |
 | [Level 5: the autonomous loop](docs/guides/level-5-autonomy.md) | Experimental — workflows, holdout scenarios, and what it really costs |
 | [Methodology](docs/guides/methodology.md) | Why this exists: METR's slowdown finding and the teams that beat it |
+
+## Why Joycraft?
+
+Unstructured prompting rots: instructions pile up in one file, the agent forgets what was decided, and every session starts from zero. Joycraft replaces it with spec-driven development — you interview, you approve the brief and the specs, the agent executes with TDD — and installs a harness (boundaries, context docs, skills) that matures alongside your project instead of decaying. The gates produce shareable artifacts (markdown + HTML) your team can answer in Notion, and every brief ends with a prompt an engineer pastes straight into their coding agent.
+
+The name of the game is Dan Shapiro's [5 Levels of Vibe Coding](docs/guides/levels.md): Joycraft takes a project from Level 1 to a solid Level 4, with an experimental path to 5. The reasoning and the evidence live in the [Methodology guide](docs/guides/methodology.md).
 
 ## Security
 
