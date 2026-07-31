@@ -111,7 +111,29 @@ Apply using three tiers — do NOT ask per-item permission:
 
 **Tier 1 (silent):** Create missing dirs, install missing skills, copy missing templates, create AGENTS.md.
 
-**Execution profile offer:** If Step 1 found no `<!-- joycraft:execution-profile -->` sentinel in AGENTS.md, offer to add one — never write it unasked. On yes, ask per installed harness: use swarms for decompose? (y/n) use swarms for implement? (y/n) which model, and which effort? Model and effort are free text — suggest the current session's model as the default and never present a menu of model names. Append the answers as a sentinel-delimited section (skipping is first-class: a project that answers no to everything still gets the section, so downstream skills read an explicit answer rather than an absence):
+**Execution profile offer:** If Step 1 found no `<!-- joycraft:execution-profile -->` sentinel in AGENTS.md, offer to add one — never write it unasked.
+
+On yes, ask **four separate questions per installed harness**, each one its own
+question through the question directive above. Ask them as four questions, not
+as one paragraph: a 2026-07-31 user answered the swarm pair and was never asked
+the rest, because a single bundled prose block lets the trailing questions be
+reformatted away.
+
+- **Q1 — swarms for decompose?** Options: yes / no.
+- **Q2 — swarms for implement?** Options: yes / no.
+- **Q3 — which model?** Free text, with the current session's model offered as
+  one option and `session default` as the other. Never present a menu of model
+  names — model names age faster than releases. A bare model name with no
+  reason is a complete answer.
+- **Q4 — which effort?** Free text, with the harness's usual effort levels
+  offered and `session default` as the fallback option.
+
+Q3 and Q4 are never skipped — ask them even if Q1 and Q2 were both answered
+"no", and even if the human sounds done. If a question genuinely goes
+unanswered, write `session default` rather than dropping the field. Append the
+answers as a sentinel-delimited section (skipping is first-class: a project that
+answers no to everything still gets the section, so downstream skills read an
+explicit answer rather than an absence):
 
 ```markdown
 ## Execution Profile

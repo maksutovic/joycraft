@@ -403,6 +403,160 @@ describe('group 8: every gate skill carries the question directive', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Group 10 — execution-profile offer asks model and effort (fix-model-question-skip)
+// ---------------------------------------------------------------------------
+
+/**
+ * A real user answered tune's swarm questions on 2026-07-31 and was never asked
+ * model or effort: the offer was one prose paragraph that bundled all four
+ * questions into a single sentence, and the trailing free-text clauses got
+ * reformatted away. The fix is structural — four separately enumerated question
+ * steps — so these assertions pin the enumeration, not the prose around it.
+ */
+describe('group 10: the execution-profile offer enumerates model and effort', () => {
+  /**
+   * The offer's question block, sliced by heading rather than by character
+   * window (same anchoring rule as the rest of this file): from the offer's
+   * bold label to the fenced example section that follows it.
+   */
+  const offerBlock = () => {
+    const c = read('joycraft-tune');
+    const start = c.indexOf('**Execution profile offer:**');
+    expect(start, 'offer label present').toBeGreaterThan(-1);
+    const end = c.indexOf('**Private-profile note:**', start);
+    return c.slice(start, end === -1 ? undefined : end);
+  };
+
+  it('asks the four questions as separately enumerated steps', () => {
+    const block = offerBlock();
+    for (const step of ['Q1', 'Q2', 'Q3', 'Q4']) {
+      expect(block, `${step} enumerated`).toContain(step);
+    }
+  });
+
+  it('gives model and effort their own question lines', () => {
+    const block = offerBlock();
+    const lines = block.split('\n');
+    const modelLine = lines.find((l) => /^-?\s*\*\*Q3/.test(l.trim()));
+    const effortLine = lines.find((l) => /^-?\s*\*\*Q4/.test(l.trim()));
+    expect(modelLine, 'Q3 is its own line').toBeTruthy();
+    expect(effortLine, 'Q4 is its own line').toBeTruthy();
+    expect(modelLine!.toLowerCase()).toContain('model');
+    expect(effortLine!.toLowerCase()).toContain('effort');
+    // The regression shape: model and effort riding as trailing clauses of the
+    // same sentence as the swarm questions.
+    expect(modelLine).not.toMatch(/swarm/i);
+    expect(effortLine).not.toMatch(/swarm/i);
+  });
+
+  it('routes the offer through the question directive', () => {
+    const block = offerBlock();
+    expect(block).toMatch(/question directive/i);
+  });
+
+  it('keeps model and effort free text with the session default offered', () => {
+    // Whitespace-collapsed: the canonical source is hard-wrapped at ~78 cols,
+    // so a sentence-level assertion must not depend on where a line breaks.
+    const block = offerBlock().replace(/\s+/g, ' ');
+    expect(block).toContain('session default');
+    expect(block).toMatch(/free text/i);
+    expect(block).toMatch(/never present a menu of model names/i);
+  });
+
+  it('states the questions are asked even when every swarm answer is no', () => {
+    expect(offerBlock()).toMatch(/never skipped|even if|regardless/i);
+  });
+
+  it('reaches the claude variant with the question tool named', () => {
+    const variant = readVariant('claude', 'joycraft-tune');
+    expect(variant).toContain('**Q3');
+    expect(variant).toContain('**Q4');
+    expect(variant).toContain(QUESTION_TOOL);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Group 9 — custom output templates (support-custom-output-templates, 2026-07-31)
+// ---------------------------------------------------------------------------
+
+/**
+ * A team with its own PRD format drops it into `docs/templates/output/` and the
+ * document-producing gates follow it instead of the bundled structure. The
+ * lookup is a skill instruction, not code: rendering stays agent-hand-filled
+ * (no md→HTML library, AGENTS.md NEVER on runtime deps), so what we can assert
+ * mechanically is that every document-producing gate *tells the agent to look*.
+ *
+ * Anchored by heading like the rest of this file — the lookup has to sit at the
+ * skill's output moment, not in an unrelated preamble where it would never fire.
+ */
+const CUSTOM_TEMPLATE_SKILLS = [
+  'joycraft-interview',
+  'joycraft-new-feature',
+  'joycraft-design',
+  'joycraft-bugfix',
+] as const;
+
+const OUTPUT_DIR = 'docs/templates/output/';
+const SKELETON_RULE = 'inside the slot regions';
+const FALLBACK_RULE = 'bundled structure below unchanged';
+
+describe('group 9: document-producing gates check for a custom output template', () => {
+  for (const name of CUSTOM_TEMPLATE_SKILLS) {
+    it(`${name}.md points at ${OUTPUT_DIR}`, () => {
+      expect(occurrences(read(name), OUTPUT_DIR).length).toBeGreaterThan(0);
+    });
+
+    it(`${name}.md sites the lookup at an output moment`, () => {
+      const content = read(name);
+      const sited = occurrences(content, OUTPUT_DIR).map((i) => headingAt(content, i));
+      for (const heading of sited) {
+        expect(
+          OUTPUT_MOMENT.test(heading),
+          `custom-template lookup in ${name} sits under ${JSON.stringify(heading)}`,
+        ).toBe(true);
+      }
+    });
+
+    it(`${name}.md states the absent-template fallback`, () => {
+      expect(read(name)).toContain(FALLBACK_RULE);
+    });
+
+    it(`${name}.md keeps custom sections inside the locked skeleton`, () => {
+      expect(read(name)).toContain(SKELETON_RULE);
+    });
+
+    it(`${name}.md keeps the machine-required sections regardless`, () => {
+      // Edge case from the spec: a custom template that omits frontmatter or the
+      // decisions block must not cost Joycraft the sections downstream skills parse.
+      expect(read(name).toLowerCase()).toContain('frontmatter is always written');
+    });
+  }
+
+  it('covers exactly the four document-producing gates', () => {
+    expect(CUSTOM_TEMPLATE_SKILLS).toHaveLength(4);
+  });
+
+  it('matches templates by exact filename — no fuzzy matching', () => {
+    // Ambiguity edge case: unmatched files are ignored rather than guessed at.
+    for (const name of CUSTOM_TEMPLATE_SKILLS) {
+      expect(read(name)).toContain('exact filename match');
+    }
+  });
+
+  it('names no absolute paths in the lookup instruction', () => {
+    // Skills are copied into user projects; an absolute path would be a dead
+    // reference there (AGENTS.md NEVER: reference absolute paths).
+    for (const name of CUSTOM_TEMPLATE_SKILLS) {
+      const content = read(name);
+      for (const index of occurrences(content, OUTPUT_DIR)) {
+        const line = content.slice(content.lastIndexOf('\n', index) + 1, content.indexOf('\n', index));
+        expect(line).not.toMatch(/\/Users\/|\/home\/|^\s*-?\s*`?\//);
+      }
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Roster drift
 // ---------------------------------------------------------------------------
 
@@ -420,6 +574,7 @@ describe('roster drift', () => {
     ...HANDOFF_SKILLS,
     ...EXECUTION_PROFILE_SKILLS,
     ...QUESTION_DIRECTIVE_SKILLS,
+    ...CUSTOM_TEMPLATE_SKILLS,
   ]);
 
   for (const name of rostered) {
