@@ -557,6 +557,104 @@ describe('group 9: document-producing gates check for a custom output template',
 });
 
 // ---------------------------------------------------------------------------
+// Group 11 — defer-to-person (add-defer-to-person, 2026-07-31)
+// ---------------------------------------------------------------------------
+
+/**
+ * "Defer to <name>" is a first-class answer at every gate question: the
+ * question terminates as assigned instead of looping, the artifact carries an
+ * "Open Questions — Assigned" section, and the gate HTML tags the assignee on
+ * the existing `.q`/`.qnum` card — no new CSS. Praful's team flow assigns
+ * questions to people who aren't in the session; before this spec a question
+ * could only be answered or parked, so assignment lived in his head.
+ */
+const DEFER_SKILLS = [
+  'joycraft-interview',
+  'joycraft-new-feature',
+  'joycraft-tune',
+  'joycraft-design',
+  'joycraft-bugfix',
+  'joycraft-decide',
+] as const;
+
+/** The defer skills whose gates render the review-gate HTML (bugfix and decide do not). */
+const DEFER_RENDER_SKILLS = [
+  'joycraft-interview',
+  'joycraft-new-feature',
+  'joycraft-tune',
+  'joycraft-design',
+] as const;
+
+const DEFER_MARKER = 'defer to <name>';
+const ASSIGNED_SECTION = 'Open Questions — Assigned';
+const DEFER_CONFIRM = 'who, which question, where it was recorded';
+const ASSIGNEE_TAG = '· assigned:';
+
+describe('group 11: defer-to-person is a first-class answer at every gate', () => {
+  for (const name of DEFER_SKILLS) {
+    it(`${name}.md terminates a defer answer as assigned, into the assigned section`, () => {
+      const content = read(name);
+      expect(content).toContain(DEFER_MARKER);
+      expect(content).toContain(ASSIGNED_SECTION);
+    });
+
+    it(`${name}.md mandates the one-line visible confirmation`, () => {
+      // D11: silent file mutation on a conversational shortcut is the known
+      // failure mode — the confirmation line is a MUST, not a nicety.
+      // Whitespace-collapsed (group 10 precedent): the sources are hard-wrapped
+      // at ~78 cols, so sentence-level markers must not depend on line breaks.
+      expect(read(name).replace(/\s+/g, ' ')).toContain(DEFER_CONFIRM);
+    });
+
+    it(`${name}.md refuses anonymous assignments and backlog auto-writes`, () => {
+      const content = read(name);
+      expect(content).toContain('never an anonymous assignment');
+      expect(content).toContain('Assignment is not backlogging');
+    });
+
+    it(`${name}.md carries the defer block into the claude variant`, () => {
+      // Harness-independent prose: it must survive the per-harness render.
+      const variant = readVariant('claude', name);
+      expect(variant).toContain(DEFER_MARKER);
+      expect(variant).toContain(ASSIGNED_SECTION);
+    });
+  }
+
+  for (const name of DEFER_RENDER_SKILLS) {
+    it(`${name}.md renders assigned cards on the existing classes only`, () => {
+      const content = read(name);
+      const collapsed = content.replace(/\s+/g, ' ');
+      expect(content).toContain('.qnum');
+      expect(collapsed).toContain(ASSIGNEE_TAG);
+      expect(collapsed).toMatch(/no new CSS class/i);
+      expect(content).not.toContain('.assignee');
+    });
+  }
+
+  it('joycraft-decide adds assigned to the termination vocabulary, non-blocking', () => {
+    const content = read('joycraft-decide');
+    expect(content).toContain('`assigned`');
+    expect(content.replace(/\s+/g, ' ')).toContain(
+      'treats `assigned` like `backlogged` only when the human explicitly proceeds',
+    );
+  });
+
+  it('the review-gate template documents the assignee tag on the qnum slot', () => {
+    // Slot-comment guidance only — the skeleton and CSS stay untouched, which
+    // tests/review-gate-template.test.ts pins structurally.
+    const template = readFileSync(
+      join(repoRoot, 'src', 'templates', 'REVIEW_GATE_TEMPLATE.html'),
+      'utf-8',
+    );
+    expect(template).toContain('· assigned:');
+  });
+
+  it('covers exactly the six gate skills the spec named', () => {
+    expect(DEFER_SKILLS).toHaveLength(6);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Roster drift
 // ---------------------------------------------------------------------------
 
@@ -575,6 +673,7 @@ describe('roster drift', () => {
     ...EXECUTION_PROFILE_SKILLS,
     ...QUESTION_DIRECTIVE_SKILLS,
     ...CUSTOM_TEMPLATE_SKILLS,
+    ...DEFER_SKILLS,
   ]);
 
   for (const name of rostered) {

@@ -33,7 +33,7 @@ Every question in this skill is asked as structured forced-choice questions aske
 present the numbered options under the question, then wait for the answer before
 moving on. Never dump an unanswerable wall of open prose questions.
 <!-- /harness -->
-Two rules ride on every question, no exceptions:
+Three rules ride on every question, no exceptions:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —
   reframe it or drop it; a rubber-stamp question captures nothing. Open-ended
@@ -45,6 +45,22 @@ Two rules ride on every question, no exceptions:
   > Do NOT just pick an option — use the free-text field and type your answer
   > as "<choice> because <one-sentence reason>". If every option here is wrong,
   > reject the framing: type what's right instead.
+- **"Defer to <name>" is always a valid answer.** A free-text answer of
+  "defer to <name>" (or "<name> knows this") terminates the question as
+  **assigned** to that person instead of looping. Record it in the artifact's
+  closing "Open Questions — Assigned" section — question, assignee, date, and
+  a context link; the section exists only when at least one question is
+  assigned. Then confirm the deferral in one visible chat line — who, which
+  question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the
+  artifact's Open Questions — Assigned section`). Never mutate the file
+  silently on a conversational shortcut. A defer with no name ("someone else
+  knows this") gets exactly one follow-up asking who; without a name the
+  question stays open — never an anonymous assignment. Re-deferring to a
+  different person: the latest assignment wins, and the confirmation line
+  notes the reassignment. If an assigned question is answered later in the
+  session, remove it from the assigned section, record the answer normally,
+  and confirm in one line. Assignment is not backlogging — never auto-write
+  assigned questions to `docs/backlog/`.
 
 Question discipline — hard rules, not vibes:
 
@@ -161,7 +177,10 @@ read the md, never the HTML. The HTML is a render of it and never invents conten
    `<!-- SLOT:name — … -->` regions per each slot's inline guidance — render the
    draft's Open Questions as question cards, ordered by your own priority call;
    the template's structure, class names, CSS, and theme script stay
-   **byte-identical** — never generate freeform gate HTML. If a custom output
+   **byte-identical** — never generate freeform gate HTML. Assigned
+   questions render as `.q` cards too, with the assignee riding the existing
+   `.qnum` span — e.g. `Q2 · assigned: Sam` — existing classes only, no new
+   CSS classes. A gate with zero assigned questions renders no empty cards. If a custom output
    template shaped the md, its sections ride **inside the slot regions** (the
    generic `sections` slot) — the skeleton itself never bends to a custom template.
 2. Write it to `docs/features/<slug>/brief.html` (committed later — the path is
