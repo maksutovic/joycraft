@@ -1,5 +1,6 @@
 ---
 status: active
+reap: eligible
 owner: Maximilian Maksutovic
 created: 2026-07-31
 feature: 2026-07-31-team-ready-gates
