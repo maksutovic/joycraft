@@ -86,6 +86,25 @@ guidance; observed live 2026-07-29).
 
 ## Step 5: Apply Upgrades
 
+**How to ask — the question directive.** This governs every question moment in
+this step: the execution-profile offer, the git-autonomy choice, and any Tier 3
+confirmation.
+Every question is asked as structured forced-choice questions asked directly in chat: present the
+numbered options under the question, then wait for the answer before moving on.
+Never dump an unanswerable wall of open prose questions.
+Two rules ride on every question, no exceptions:
+
+- **Every question has ≥2 real options.** A one-option question is invalid —
+  reframe it or drop it; a rubber-stamp question captures nothing. Open-ended
+  questions still qualify: offer the 2–4 most likely answers as options and let
+  free text carry anything else.
+- **The rationale rides in the free-text answer (Pattern B).** When the reason
+  matters, end the question's text with this instruction, verbatim in shape:
+
+  > Do NOT just pick an option — use the free-text field and type your answer
+  > as "<choice> because <one-sentence reason>". If every option here is wrong,
+  > reject the framing: type what's right instead.
+
 Apply using three tiers — do NOT ask per-item permission:
 
 **Tier 1 (silent):** Create missing dirs, install missing skills, copy missing templates, create AGENTS.md.

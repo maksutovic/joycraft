@@ -104,6 +104,25 @@ Things you don't know or where multiple valid approaches exist. Each question MU
 
 Do NOT ask vague questions like "what do you think?" Every question must have actionable options the human can choose from.
 
+**How to ask — the question directive.** The Section 5 questions above are the
+artifact's *content*. When you put any of them to the human — at the review gate
+or any other question moment in this skill — ask them this way:
+Every question goes through the AskUserQuestion tool. Never emit a plain
+Q1/Q2/Q3 list in chat and wait for the human to type answers back — the tool is
+the capture surface, chat is not.
+Two rules ride on every question, no exceptions:
+
+- **Every question has ≥2 real options.** A one-option question is invalid —
+  reframe it or drop it; a rubber-stamp question captures nothing. Open-ended
+  questions still qualify: offer the 2–4 most likely answers as options and let
+  free text carry anything else.
+- **The rationale rides in the free-text answer (Pattern B).** When the reason
+  matters, end the question's text with this instruction, verbatim in shape:
+
+  > Do NOT just pick an option — use the free-text field and type your answer
+  > as "<choice> because <one-sentence reason>". If every option here is wrong,
+  > reject the framing: type what's right instead.
+
 ### Update the Feature Brief
 
 After writing the design document, update the parent brief with a back-reference:

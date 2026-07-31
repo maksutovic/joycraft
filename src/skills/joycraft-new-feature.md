@@ -49,6 +49,32 @@ Want me to:
 
 Interview the user about what they want to build. Let them talk — your job is to listen, then sharpen.
 
+**How to ask — the question directive.** This governs every question moment in
+this skill: the Phase 0 route choice, this interview, and the Phase 2 brief
+review.
+<!-- harness:claude -->
+Every question goes through the AskUserQuestion tool. Never emit a plain
+Q1/Q2/Q3 list in chat and wait for the human to type answers back — the tool is
+the capture surface, chat is not.
+<!-- /harness -->
+<!-- harness:codex|pi|copilot -->
+Every question is asked as structured forced-choice questions asked directly in chat: present the
+numbered options under the question, then wait for the answer before moving on.
+Never dump an unanswerable wall of open prose questions.
+<!-- /harness -->
+Two rules ride on every question, no exceptions:
+
+- **Every question has ≥2 real options.** A one-option question is invalid —
+  reframe it or drop it; a rubber-stamp question captures nothing. Open-ended
+  questions still qualify: offer the 2–4 most likely answers as options and let
+  free text carry anything else.
+- **The rationale rides in the free-text answer (Pattern B).** When the reason
+  matters, end the question's text with this instruction, verbatim in shape:
+
+  > Do NOT just pick an option — use the free-text field and type your answer
+  > as "<choice> because <one-sentence reason>". If every option here is wrong,
+  > reject the framing: type what's right instead.
+
 **Ask about:**
 - What problem does this solve? Who is affected?
 - What does "done" look like?

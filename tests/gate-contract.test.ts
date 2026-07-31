@@ -337,6 +337,72 @@ describe('group 7: interview carries the playback and question contract', () => 
 });
 
 // ---------------------------------------------------------------------------
+// Group 8 — question directive (harden-question-directive, 2026-07-31)
+// ---------------------------------------------------------------------------
+
+/**
+ * Every human-facing question moment in the five gate skills must route through
+ * the harness's native question UI: the AskUserQuestion tool on claude, the
+ * structured chat fallback on codex/pi/copilot. Before this spec only
+ * `joycraft-decide` said so, and users intermittently got plain Q1/Q2/Q3 chat
+ * lists — the top complaint in the 2026-07-31 team-usage feedback.
+ *
+ * Asserted on the *generated* trees, not just the canonical source: the whole
+ * point is that the claude variant carries the tool name and the codex/pi
+ * variants carry the fallback instead, which only the per-harness render shows.
+ */
+const QUESTION_DIRECTIVE_SKILLS = [
+  'joycraft-interview',
+  'joycraft-new-feature',
+  'joycraft-tune',
+  'joycraft-design',
+  'joycraft-bugfix',
+] as const;
+
+const readVariant = (harness: string, name: string) =>
+  readFileSync(join(repoRoot, 'src', `${harness}-skills`, `${name}.md`), 'utf-8');
+
+const QUESTION_TOOL = 'AskUserQuestion';
+const FALLBACK_MARKER = 'structured forced-choice questions asked directly in chat';
+const TWO_OPTION_RULE = 'Every question has ≥2 real options';
+const PATTERN_B = '<choice> because';
+
+describe('group 8: every gate skill carries the question directive', () => {
+  for (const name of QUESTION_DIRECTIVE_SKILLS) {
+    it(`${name}.md directs the claude variant to the ${QUESTION_TOOL} tool`, () => {
+      expect(readVariant('claude', name)).toContain(QUESTION_TOOL);
+    });
+
+    for (const harness of ['codex', 'pi', 'copilot']) {
+      it(`${name}.md gives the ${harness} variant the chat fallback, not the tool`, () => {
+        const content = readVariant(harness, name);
+        expect(content, `${harness} variant must not name a claude-only tool`).not.toContain(
+          QUESTION_TOOL,
+        );
+        expect(content).toContain(FALLBACK_MARKER);
+      });
+    }
+
+    it(`${name}.md states the two-option minimum and Pattern B wording`, () => {
+      // Asserted on the canonical source: both rules are harness-independent
+      // prose and must survive into every variant.
+      const content = read(name);
+      expect(content).toContain(TWO_OPTION_RULE);
+      expect(content).toContain(PATTERN_B);
+    });
+  }
+
+  it('covers exactly the five gate skills the spec named', () => {
+    expect(QUESTION_DIRECTIVE_SKILLS).toHaveLength(5);
+  });
+
+  it('joycraft-decide still carries the directive it set the pattern for', () => {
+    expect(readVariant('claude', 'joycraft-decide')).toContain(QUESTION_TOOL);
+    expect(readVariant('codex', 'joycraft-decide')).toContain(FALLBACK_MARKER);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Roster drift
 // ---------------------------------------------------------------------------
 
@@ -353,6 +419,7 @@ describe('roster drift', () => {
     ...PRE_PRESENTATION_SKILLS,
     ...HANDOFF_SKILLS,
     ...EXECUTION_PROFILE_SKILLS,
+    ...QUESTION_DIRECTIVE_SKILLS,
   ]);
 
   for (const name of rostered) {
