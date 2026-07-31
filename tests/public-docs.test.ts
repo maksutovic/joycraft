@@ -29,7 +29,7 @@ describe('README.md — install-first structure', () => {
   const firstScreen = readme.split('\n').slice(0, 40).join('\n');
 
   it('shows the install/quick-start command within the first 40 lines', () => {
-    expect(firstScreen).toContain('npx joycraft init');
+    expect(firstScreen).toMatch(/npx joycraft(@latest)? init/);
   });
 
   it('says what Joycraft is on the first screen', () => {
@@ -47,7 +47,7 @@ describe('README.md — install-first structure', () => {
   it('links a setup walkthrough that lists the steps a new user runs', () => {
     expect(readme).toContain('docs/guides/setup-walkthrough.md');
     const walkthrough = read('docs/guides/setup-walkthrough.md');
-    expect(walkthrough).toContain('npx joycraft init');
+    expect(walkthrough).toMatch(/npx joycraft(@latest)? init/);
     expect(walkthrough).toMatch(/^\s*1\.\s+/m);
   });
 

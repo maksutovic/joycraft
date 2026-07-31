@@ -11,7 +11,7 @@ feature. Nothing here is optional-but-hidden — this is the whole path.
 npm install -g joycraft
 ```
 
-You can skip the global install and use `npx joycraft` everywhere instead; the
+You can skip the global install and use `npx joycraft@latest` everywhere instead (the `@latest` matters: npx caches, and a bare `npx joycraft` can run a stale cached version); the
 commands below work either way.
 
 ## 2. Go to your project root
@@ -26,7 +26,7 @@ root, not inside a subpackage.
 ## 3. Initialize
 
 ```bash
-npx joycraft init
+npx joycraft@latest init
 ```
 
 `init` asks two questions and then writes files:
@@ -104,7 +104,7 @@ PR.
 ## 9. Keep it current
 
 ```bash
-npx joycraft upgrade
+npx joycraft@latest upgrade
 ```
 
 Refreshes the skills and templates you installed without clobbering your

@@ -12,7 +12,7 @@ A CLI that installs spec-driven development into [Claude Code](https://code.clau
 
 ```bash
 cd /path/to/your/project
-npx joycraft init
+npx joycraft@latest init
 ```
 
 ## Contents
@@ -22,7 +22,7 @@ npx joycraft init
 - [Which skill do I need?](#which-skill-do-i-need) — the skill table and the core loop
 - [What init creates](#what-init-creates)
 - [Platform support](docs/guides/platform-support.md) — Claude Code, Codex, Pi, Copilot, stacks, headless Pi
-- [Upgrading](docs/guides/upgrading.md) — `npx joycraft upgrade` and what's new in 0.7
+- [Upgrading](docs/guides/upgrading.md) — `npx joycraft@latest upgrade` and what's new in 0.7
 - [Git tracking](docs/guides/git-tracking.md) — shared vs private profiles, reviewable PRs
 - [Migration: flat → per-feature layout](docs/guides/migration-per-feature-layout.md) — the v0.6 docs move
 - [The levels](docs/guides/levels.md) — Dan Shapiro's 5 Levels, where Joycraft aims, and the credits
@@ -33,7 +33,7 @@ npx joycraft init
 
 ```bash
 cd /path/to/your/project
-npx joycraft init
+npx joycraft@latest init
 ```
 
 Answer two questions — which harnesses to install, and whether to commit them — and `init` does the rest: detects your stack, writes `AGENTS.md`/`CLAUDE.md` with your real build/test commands, installs the skills. Safe to re-run: it only creates missing files, never overwrites yours.
@@ -57,7 +57,7 @@ Brainstorming first? `/joycraft-interview`. Fixing a bug? `/joycraft-bugfix`. Th
 ## Upgrade
 
 ```bash
-npx joycraft upgrade
+npx joycraft@latest upgrade
 ```
 
 Refreshes skills and templates for the harnesses you selected at init. Unmodified files update automatically; files you've customized show a diff and ask first (`--yes` for CI). Details and release notes: [Upgrading](docs/guides/upgrading.md).
