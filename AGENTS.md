@@ -179,3 +179,13 @@ Read the relevant atomic spec in docs/features/<slug>/specs/
 | workflow-skills | 3 | Ready |
 | upgrade-cli | 3 | Ready |
 | agents-md-support | 3 | Ready |
+
+---
+
+## Execution Profile
+
+<!-- joycraft:execution-profile -->
+- claude: Swarms: decompose yes · implement yes · model opus 5 · effort medium
+- codex: Swarms: decompose yes · implement yes · model 5.6 terra · effort medium
+- pi: Swarms: decompose yes · implement yes · model kimi-k3 · effort max
+<!-- /joycraft:execution-profile -->
