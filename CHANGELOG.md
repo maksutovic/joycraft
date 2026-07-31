@@ -7,6 +7,36 @@ in a before → now → side-effects format, newest first.
 
 ---
 
+## 0.7.8 — Team-Ready Gates (2026-07-31)
+
+The gates became the team surface: PRDs drafted across many projects, shared
+into Notion, answered by people who aren't in the session, and handed to an
+engineer with a paste-ready prompt. Six things stood in the way — the question
+picker appeared only intermittently, a question could only be answered or
+parked, output structure was fixed, the agent prompt was hand-built per PRD,
+stale gate tabs were indistinguishable, and auto-open was forced on.
+
+**Now:** every gate question routes through the harness-native question UI
+(AskUserQuestion on claude; structured chat on codex/pi/copilot) with ≥2 real
+options and Pattern B rationale. "Defer to <name>" is a first-class answer:
+questions terminate `assigned`, the artifact ends with an "Open Questions —
+Assigned" section, and the gate HTML tags the assignee on the existing
+question cards. A team's own PRD template dropped into `docs/templates/output/`
+shapes brief output (exact filename match, machine-required sections always
+appended). Briefs end with a fenced "Prompt for the implementing agent"
+briefing block. Every render carries a timestamp + revision stamp in the
+existing slots (revision read from the previous footer — no new state), and
+auto-open persists as `autoOpen` in `docs/.joycraft/state.json` (unknown keys
+now survive state rewrites; tune offers the toggle). Tune's execution-profile
+offer asks model and effort as their own enumerated questions — the bundled
+prose block that silently dropped them is gone, and the CLI's interview no
+longer hangs when stdin ends mid-offer.
+
+**Side effects:** `REVIEW_GATE_TEMPLATE.html` now actually ships to
+`docs/templates/` (the path the skills always cited); the README is
+install-first with a TOC and a thin `SECURITY.md` points at the harness
+vendors' security docs.
+
 ## 0.7.7 — Interview Joins the Gate Set (2026-07-29)
 
 Succinct Gates (0.7.6) covered seven approval bookends but skipped

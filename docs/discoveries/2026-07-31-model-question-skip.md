@@ -1,3 +1,10 @@
+---
+status: todo
+owner: Maximilian Maksutovic
+created: 2026-07-31
+feature: 2026-07-31-team-ready-gates
+---
+
 # Model question skip — two separate causes, not one
 
 **Skill side (the reported bug):** tune's execution-profile offer bundled all four questions into one prose sentence, so the model/effort clauses were reformatted away at render time. Fixed by enumerating Q1–Q4 as separate question steps routed through the question directive.

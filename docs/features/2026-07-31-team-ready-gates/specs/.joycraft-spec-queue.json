@@ -1,12 +1,62 @@
 {
   "feature": "2026-07-31-team-ready-gates",
   "specs": [
-    { "id": 1, "file": "harden-question-directive.md", "depends_on": [], "status": "in-review", "mode": "batch" },
-    { "id": 2, "file": "fix-model-question-skip.md", "depends_on": [1], "status": "in-review", "mode": "batch" },
-    { "id": 3, "file": "add-defer-to-person.md", "depends_on": [1], "status": "in-review", "mode": "batch" },
-    { "id": 4, "file": "support-custom-output-templates.md", "depends_on": [], "status": "in-review", "mode": "batch" },
-    { "id": 5, "file": "add-agent-handoff-slot.md", "depends_on": [4], "status": "in-review", "mode": "batch" },
-    { "id": 6, "file": "stamp-gate-artifacts.md", "depends_on": [1], "status": "in-review", "mode": "batch" },
-    { "id": 7, "file": "restructure-public-docs.md", "depends_on": [], "status": "in-review", "mode": "batch" }
+    {
+      "id": 1,
+      "file": "harden-question-directive.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 2,
+      "file": "fix-model-question-skip.md",
+      "depends_on": [
+        1
+      ],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 3,
+      "file": "add-defer-to-person.md",
+      "depends_on": [
+        1
+      ],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 4,
+      "file": "support-custom-output-templates.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 5,
+      "file": "add-agent-handoff-slot.md",
+      "depends_on": [
+        4
+      ],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 6,
+      "file": "stamp-gate-artifacts.md",
+      "depends_on": [
+        1
+      ],
+      "status": "done",
+      "mode": "batch"
+    },
+    {
+      "id": 7,
+      "file": "restructure-public-docs.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch"
+    }
   ]
 }
