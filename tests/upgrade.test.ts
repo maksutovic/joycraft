@@ -326,6 +326,30 @@ describe('upgrade', () => {
     expect(existsSync(readmePath)).toBe(true);
   });
 
+  it('adds docs/templates/REVIEW_GATE_TEMPLATE.html to a project that predates it', async () => {
+    await init(tmpDir, { force: false });
+
+    // Simulate a project installed before the review-gate template shipped.
+    const templateRel = join('docs', 'templates', 'REVIEW_GATE_TEMPLATE.html');
+    const templatePath = join(tmpDir, templateRel);
+    rmSync(templatePath);
+
+    const versionInfo = readVersion(tmpDir)!;
+    delete versionInfo.files[templateRel];
+    writeVersion(tmpDir, versionInfo.version, versionInfo.files);
+
+    const logs: string[] = [];
+    const origLog = console.log;
+    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    try {
+      await upgrade(tmpDir, { yes: true });
+    } finally {
+      console.log = origLog;
+    }
+
+    expect(existsSync(templatePath)).toBe(true);
+  });
+
   it('never overwrites a user template living beside the README', async () => {
     await init(tmpDir, { force: false });
 

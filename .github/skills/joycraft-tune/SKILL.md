@@ -60,10 +60,21 @@ content.
 2. Write it beside the report as `docs/joycraft-assessment.html`, creating
    the directory if it doesn't exist yet. Re-running `/tune` overwrites the same
    file; the md is the record.
-3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
-   otherwise. If both fail, print the absolute path and continue — headless, CI,
-   and isolated mode are a no-op here, never a failure.
-4. Offer — don't push — an optional extra render: "I can also publish this
+3. Stamp the render: a generation timestamp and a revision integer, riding
+   the existing eyebrow/context-strip and footer slot regions — no new markup,
+   no CSS change. Read the previous render's footer first: its revision
+   integer + 1 is this render's revision. No previous file → revision 1;
+   footer unparseable (hand-edited) → fall back to revision 1 and note the
+   reset in the footer — never fail the render. The filename never changes —
+   the revision lives inside the artifact.
+4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
+   true). When it is false, skip opening silently and print the absolute path
+   instead — the setting is never a failure. Otherwise open it before asking
+   anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both
+   fail, print the absolute path and continue — headless, CI, and isolated
+   mode are a no-op here (the environment check precedes the setting), never
+   a failure.
+5. Offer — don't push — an optional extra render: "I can also publish this
    assessment as a hosted artifact for a shareable link." Only publish if the
    human says yes; the local file remains the canonical render. If declined, no
    retry.
@@ -127,6 +138,12 @@ Three rules ride on every question, no exceptions:
 Apply using three tiers — do NOT ask per-item permission:
 
 **Tier 1 (silent):** Create missing dirs, install missing skills, copy missing templates, create AGENTS.md.
+
+**Auto-open toggle:** gate renders open automatically by default. Offer —
+through the question directive above — to flip `autoOpen` in
+`docs/.joycraft/state.json` (missing file or key = true). On an answer, write
+the key while preserving every other key in the file, and confirm the new
+value in one line. Never flip it unasked.
 
 **Execution profile offer:** If Step 1 found no `<!-- joycraft:execution-profile -->` sentinel in AGENTS.md, offer to add one — never write it unasked.
 

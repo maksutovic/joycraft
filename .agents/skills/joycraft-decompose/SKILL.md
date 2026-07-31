@@ -114,10 +114,21 @@ the HTML. The HTML is a render of it and never invents content.
 2. Write it to `docs/features/<slug>/decompose.html` (committed later — the path
    is already linguist-generated, so PRs collapse it). Re-decomposing overwrites
    the same file; the md is the record.
-3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
-   otherwise. If both fail, print the absolute path and continue — headless, CI,
-   and isolated mode are a no-op here, never a failure.
-4. Offer — don't push — an optional extra render: "I can also publish this
+3. Stamp the render: a generation timestamp and a revision integer, riding
+   the existing eyebrow/context-strip and footer slot regions — no new markup,
+   no CSS change. Read the previous render's footer first: its revision
+   integer + 1 is this render's revision. No previous file → revision 1;
+   footer unparseable (hand-edited) → fall back to revision 1 and note the
+   reset in the footer — never fail the render. The filename never changes —
+   the revision lives inside the artifact.
+4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
+   true). When it is false, skip opening silently and print the absolute path
+   instead — the setting is never a failure. Otherwise open it before asking
+   anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both
+   fail, print the absolute path and continue — headless, CI, and isolated
+   mode are a no-op here (the environment check precedes the setting), never
+   a failure.
+5. Offer — don't push — an optional extra render: "I can also publish this
    decomposition as a hosted artifact for a shareable link." Only publish if the
    human says yes; the local file remains the canonical render. If declined, no
    retry.

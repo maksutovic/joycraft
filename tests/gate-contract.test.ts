@@ -727,6 +727,70 @@ describe('group 12: briefs carry the implementing-agent handoff prompt', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Group 13 — stamped artifacts + persisted auto-open (stamp-gate-artifacts, 2026-07-31)
+// ---------------------------------------------------------------------------
+
+/**
+ * With many gate tabs open across six projects there was no way to tell which
+ * render is latest, and auto-open was forced on. Every render-and-open gate now
+ * stamps a generation timestamp + revision integer into the existing
+ * eyebrow/footer slot regions (revision read from the previous render's footer
+ * — no new state file, D13), and checks the persisted `autoOpen` flag in
+ * `docs/.joycraft/state.json` before opening (D6/D12).
+ *
+ * Roster note: the spec's Affected Files list named bugfix, but bugfix has no
+ * render/open step to stamp — the six below are the gates that actually render.
+ */
+const STAMP_SKILLS = [
+  'joycraft-interview',
+  'joycraft-new-feature',
+  'joycraft-tune',
+  'joycraft-design',
+  'joycraft-decide',
+  'joycraft-decompose',
+] as const;
+
+describe('group 13: gate artifacts are stamped and auto-open is a setting', () => {
+  for (const name of STAMP_SKILLS) {
+    it(`${name}.md stamps timestamp + revision through the existing slots`, () => {
+      const collapsed = read(name).replace(/\s+/g, ' ');
+      expect(collapsed).toContain('generation timestamp');
+      expect(collapsed).toContain("previous render's footer");
+      expect(collapsed).toContain('revision 1');
+      expect(collapsed).toContain('never fail the render');
+    });
+
+    it(`${name}.md keeps filenames stable across revisions`, () => {
+      expect(read(name).replace(/\s+/g, ' ')).toContain('filename never changes');
+    });
+
+    it(`${name}.md checks autoOpen before opening, defaulting to true`, () => {
+      const collapsed = read(name).replace(/\s+/g, ' ');
+      expect(collapsed).toContain('`autoOpen`');
+      expect(collapsed).toContain('docs/.joycraft/state.json');
+      expect(collapsed).toContain('missing file or key = true');
+    });
+  }
+
+  it('joycraft-tune offers the autoOpen toggle', () => {
+    expect(read('joycraft-tune').replace(/\s+/g, ' ')).toContain('flip `autoOpen`');
+  });
+
+  it('the template documents the stamp in its slot comments only', () => {
+    const template = readFileSync(
+      join(repoRoot, 'src', 'templates', 'REVIEW_GATE_TEMPLATE.html'),
+      'utf-8',
+    ).replace(/\s+/g, ' ');
+    expect(template).toContain('rev N');
+    expect(template).toContain('increments');
+  });
+
+  it('covers exactly the six render-and-open gate skills', () => {
+    expect(STAMP_SKILLS).toHaveLength(6);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Roster drift
 // ---------------------------------------------------------------------------
 
@@ -746,6 +810,8 @@ describe('roster drift', () => {
     ...QUESTION_DIRECTIVE_SKILLS,
     ...CUSTOM_TEMPLATE_SKILLS,
     ...DEFER_SKILLS,
+    ...HANDOFF_SLOT_SKILLS,
+    ...STAMP_SKILLS,
   ]);
 
   for (const name of rostered) {

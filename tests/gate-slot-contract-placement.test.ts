@@ -84,7 +84,9 @@ describe('gate skills carry the inline fixed-slot template', () => {
         const lastHeading = before.lastIndexOf('\n#');
         expect(lastHeading, 'a heading precedes the slot template').toBeGreaterThan(-1);
         // The anchoring heading must be close to the block, not the file title.
-        expect(idx - lastHeading).toBeLessThan(2500);
+        // 2026-07-31 (stamp-gate-artifacts): the render flow under the same
+        // heading gained the stamp + autoOpen steps; widened from 2500.
+        expect(idx - lastHeading).toBeLessThan(3600);
         from = idx + CAP_SENTENCE.length;
       }
     });

@@ -191,6 +191,15 @@ describe('REVIEW_GATE_TEMPLATE.html — registration', () => {
     expect(TEMPLATES['REVIEW_GATE_TEMPLATE.html']).toBe(readTemplate());
   });
 
+  it('ships an identical repo copy at docs/templates/ so the skills\u2019 path resolves here', () => {
+    // Installed skills say `docs/templates/REVIEW_GATE_TEMPLATE.html` \u2014 a
+    // project-relative path that must resolve in this repo too (the dossier
+    // template follows the same convention). Byte-identical, like the dossier.
+    const repoCopy = join(ROOT, 'docs', 'templates', 'REVIEW_GATE_TEMPLATE.html');
+    expect(existsSync(repoCopy)).toBe(true);
+    expect(readFileSync(repoCopy, 'utf-8')).toBe(readTemplate());
+  });
+
   it('installs to docs/templates/REVIEW_GATE_TEMPLATE.html on init', async () => {
     const { init } = await import('../src/init.js');
     const dir = mkdtempSync(join(tmpdir(), 'joycraft-review-gate-'));

@@ -77,13 +77,17 @@ describe('the six gate skills instruct the render-and-open flow', () => {
       expect(render).toBeGreaterThan(-1);
       expect(cap).toBeGreaterThan(-1);
       // Nearest cap sentence must be within a short distance of the render step.
+      // 2026-07-31 (stamp-gate-artifacts): the render flow gained two steps —
+      // the timestamp/revision stamp and the autoOpen check — which sit between
+      // the render step and the slot template by design; the window widened
+      // from 2000 to absorb them. Still fails if the two drift a file apart.
       let nearest = Infinity;
       let idx = c.indexOf(CAP_SENTENCE);
       while (idx > -1) {
         nearest = Math.min(nearest, Math.abs(idx - render));
         idx = c.indexOf(CAP_SENTENCE, idx + 1);
       }
-      expect(nearest).toBeLessThan(2000);
+      expect(nearest).toBeLessThan(3200);
     });
   }
 });
