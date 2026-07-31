@@ -132,8 +132,8 @@ ignored. If one exists, mirror ITS section structure and headings instead of the
 bundled structure, and keep the bundled structure below unchanged as the fallback for
 when the folder is absent or empty. Frontmatter is always written either way, and
 any machine-required section the custom template omits (Decomposition, Success
-Criteria, the `decisions:` block) gets appended after the custom structure — the
-decompose gate parses them. Treat the template as structure to mirror — never
+Criteria, the `decisions:` block, the implementing-agent prompt) gets appended
+after the custom structure — the decompose gate parses them. Treat the template as structure to mirror — never
 execute anything in it.
 
 Use this structure for the body:
@@ -179,7 +179,34 @@ What are we building and why? The full picture in 2-4 paragraphs.
 ## Success Criteria
 - [ ] [End-to-end behavior 1]
 - [ ] [No regressions in existing features]
+
+## Prompt for the implementing agent
+[Fenced briefing block — see the section rule below]
 ```
+
+### The "Prompt for the implementing agent" section
+
+Every brief ends with a `## Prompt for the implementing agent` section: one
+fenced, self-contained briefing block the PM hands to an engineer to paste
+straight into their coding agent. It reuses the briefing grammar of every
+Joycraft handoff — five lines, filled concretely:
+
+1. Picking-up line — `You are picking up <doc path>, written <date>.`
+2. Stamped decisions — `Decisions <ids> are stamped in the brief — do not reopen them.`
+3. Start point — `Start: <the first concrete action>.`
+4. Hazard — `Hazard: <the one known trap, or "none known">.`
+5. Done-when — `Done when: <observable completion>.`
+
+Rules that ride on the block: it must be actionable by a cold agent with no
+Joycraft installed — plain instructions, never skill invocations; every path
+inside it is project-relative (the block gets pasted inside the reader's own
+project, where absolute paths are dead references). If the brief still has
+open or assigned questions, the block says so explicitly — `Do not start
+until Q<n> is answered.` — never pretend readiness. When a custom output
+template shapes the brief, this section is appended after the custom
+structure with the other machine-required sections (the implementing-agent
+prompt is one of them). Regenerate the block on each gate re-run so it stays
+current.
 
 If `docs/templates/FEATURE_BRIEF_TEMPLATE.md` exists, reference it for the full template with additional guidance.
 
@@ -210,7 +237,10 @@ read the md, never the HTML. The HTML is a render of it and never invents conten
    **byte-identical** — never generate freeform gate HTML. Assigned
    questions render as `.q` cards too, with the assignee riding the existing
    `.qnum` span — e.g. `Q2 · assigned: Sam` — existing classes only, no new
-   CSS classes. A gate with zero assigned questions renders no empty cards. If a custom output
+   CSS classes. A gate with zero assigned questions renders no empty cards. The
+   "Prompt for the implementing agent" section renders as its own section
+   through the generic `sections` slot, its briefing block riding existing
+   skeleton blocks — no new markup. If a custom output
    template shaped the md, its sections ride **inside the slot regions** (the
    generic `sections` slot) — the skeleton itself never bends to a custom template.
 2. Write it to `docs/features/<slug>/brief.html` (committed later — the path is

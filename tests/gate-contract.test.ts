@@ -655,6 +655,78 @@ describe('group 11: defer-to-person is a first-class answer at every gate', () =
 });
 
 // ---------------------------------------------------------------------------
+// Group 12 — implementing-agent handoff prompt (add-agent-handoff-slot, 2026-07-31)
+// ---------------------------------------------------------------------------
+
+/**
+ * Briefs from the interview and new-feature gates end with a "Prompt for the
+ * implementing agent" section: a fenced, self-contained briefing a PM hands to
+ * an engineer to paste straight into their coding agent. Same briefing grammar
+ * as every Joycraft handoff (picking-up, decisions, start, hazard, done-when),
+ * but retargeted at the user's engineer — Praful builds this block by hand for
+ * every PRD today.
+ */
+const HANDOFF_SLOT_SKILLS = ['joycraft-interview', 'joycraft-new-feature'] as const;
+
+const HANDOFF_SECTION = 'Prompt for the implementing agent';
+const HANDOFF_INSTRUCTION_HEADING = '### The "Prompt for the implementing agent" section';
+const BRIEFING_LINES = ['You are picking up', 'Decisions', 'Start:', 'Hazard:', 'Done when:'];
+
+/** The instruction block, sliced heading-to-heading (group 10 precedent). */
+const handoffBlock = (name: string) => {
+  const content = read(name);
+  const start = content.indexOf(HANDOFF_INSTRUCTION_HEADING);
+  expect(start, `${name}: handoff instruction heading present`).toBeGreaterThan(-1);
+  const rest = content.slice(start + HANDOFF_INSTRUCTION_HEADING.length);
+  const next = rest.search(/\n#{2,3} /);
+  return rest.slice(0, next === -1 ? undefined : next);
+};
+
+describe('group 12: briefs carry the implementing-agent handoff prompt', () => {
+  for (const name of HANDOFF_SLOT_SKILLS) {
+    it(`${name}.md puts the handoff section in the brief structure`, () => {
+      expect(read(name)).toContain(`## ${HANDOFF_SECTION}`);
+    });
+
+    it(`${name}.md carries the section into the claude variant`, () => {
+      expect(readVariant('claude', name)).toContain(HANDOFF_SECTION);
+    });
+
+    it(`${name}.md enumerates the five briefing lines in the instruction`, () => {
+      const block = handoffBlock(name);
+      for (const line of BRIEFING_LINES) {
+        expect(block, `${name}: briefing line ${JSON.stringify(line)}`).toContain(line);
+      }
+    });
+
+    it(`${name}.md keeps the prompt actionable by a cold agent without Joycraft`, () => {
+      const block = handoffBlock(name).replace(/\s+/g, ' ');
+      expect(block).toContain('cold agent');
+      expect(block).toContain('no Joycraft installed');
+      expect(block).toMatch(/project-relative/);
+    });
+
+    it(`${name}.md refuses to pretend readiness over open or assigned questions`, () => {
+      expect(handoffBlock(name).replace(/\s+/g, ' ')).toContain('Do not start until');
+    });
+
+    it(`${name}.md appends the handoff after a custom output template's structure`, () => {
+      // D3: machine-required sections survive a custom template — the handoff
+      // prompt joins Open Questions and decisions on that list.
+      expect(read(name).replace(/\s+/g, ' ')).toContain('implementing-agent prompt');
+    });
+  }
+
+  it('the interview draft carries the slot too, marked draft-stage', () => {
+    expect(handoffBlock('joycraft-interview').replace(/\s+/g, ' ')).toContain('draft');
+  });
+
+  it('covers exactly the two brief-producing gates', () => {
+    expect(HANDOFF_SLOT_SKILLS).toHaveLength(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Roster drift
 // ---------------------------------------------------------------------------
 
