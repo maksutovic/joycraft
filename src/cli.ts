@@ -11,6 +11,11 @@ const GITIGNORE_OPTION_DESC = `Gitignore profile: 'shared' (commit skills) or 'p
 
 const program = new Command();
 
+// Set by the upgrade action when the stale-CLI guard already delegated to (or
+// pointed the user at) the latest version — the postAction nudge would only
+// contradict the upgrade that just ran.
+let suppressUpdateNudge = false;
+
 program
   .name('joycraft')
   .description('Scaffold and upgrade AI development harnesses')
@@ -41,7 +46,8 @@ program
   .action(async (dir: string, opts: { yes?: boolean; gitignore?: string }) => {
     const { upgrade } = await import('./upgrade.js');
     try {
-      await upgrade(dir, { yes: opts.yes ?? false, gitignore: opts.gitignore });
+      const result = await upgrade(dir, { yes: opts.yes ?? false, gitignore: opts.gitignore });
+      suppressUpdateNudge = result.cliWasStale;
     } catch (err) {
       console.error(err instanceof Error ? err.message : String(err));
       process.exit(1);
@@ -109,6 +115,7 @@ const updateCheckPromise = (async (): Promise<string | null> => {
 
 // Print update nudge after every command
 program.hook('postAction', async () => {
+  if (suppressUpdateNudge) return;
   const message = await updateCheckPromise;
   if (message) {
     console.log(message);

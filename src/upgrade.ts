@@ -393,7 +393,17 @@ function runForcedMigration(projectDir: string): void {
   printMigrationBanner();
 }
 
-export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> {
+export interface UpgradeResult {
+  /**
+   * True when the stale-CLI guard handled this run (re-exec'd the latest
+   * version or printed the manual one-liner). The CLI layer uses this to
+   * suppress its postAction update nudge, which would otherwise contradict
+   * the upgrade the delegated run just completed.
+   */
+  cliWasStale: boolean;
+}
+
+export async function upgrade(dir: string, opts: UpgradeOptions): Promise<UpgradeResult> {
   const targetDir = resolve(dir);
 
   // Validate the --gitignore flag before any side effects (network check,
@@ -412,9 +422,11 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
       opts.yes ||
       (process.stdin.isTTY === true &&
         (await askUser(`Run joycraft@${cliCheck.latest} via npx now?`)));
-    if (rerun && reexecLatestUpgrade(targetDir, opts, cliCheck.latest)) return;
+    if (rerun && reexecLatestUpgrade(targetDir, opts, cliCheck.latest)) {
+      return { cliWasStale: true };
+    }
     console.log('Update and re-run in one step with: npx joycraft@latest upgrade');
-    return;
+    return { cliWasStale: true };
   }
 
   // Check if project was initialized. A project is "initialized" if it has the
@@ -430,7 +442,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   if (!readVersion(targetDir) && !hasLegacyState && !hasSkill) {
     console.log('This project has not been initialized with Joycraft.');
     console.log('Run `npx joycraft init` first.');
-    return;
+    return { cliWasStale: false };
   }
 
   // Relocate any legacy state (root .joycraft-version or the interim
@@ -569,7 +581,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
       writeVersion(targetDir, installed.version, installedHashes, gitignoreProfile);
     }
     console.log('Already up to date.');
-    return;
+    return { cliWasStale: false };
   }
 
   // Process changes
@@ -635,5 +647,6 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<void> 
   if (added > 0) parts.push(`added ${added} new`);
   if (upToDate > 0) parts.push(`${upToDate} already up to date`);
   console.log(`\nUpgrade complete: ${parts.join(', ')}.`);
+  return { cliWasStale: false };
 }
 
