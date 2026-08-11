@@ -1,0 +1,441 @@
+<meta charset="utf-8">
+<title>Decision Dossier — STE Human Output</title>
+<style>
+  /* Design tokens: light theme is the default set on :root */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+  .tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px 0 20px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  @media (max-width: 680px) { .tiers { grid-template-columns: 1fr; } }
+  .tier-col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .tier-col .tlab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+  .tier-model { font-size: 13px; font-weight: 700; padding: 4px 11px; border-radius: 6px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-role { font-size: 13.5px; color: var(--ink-2); }
+  section.decision { margin-top: 54px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 26px 30px 28px; }
+  .d-id { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  h2 { font-size: 23px; font-weight: 700; margin: 6px 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  .d-why { font-size: 15px; color: var(--ink-2); margin: 0 0 20px; max-width: 72ch; }
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .opt { border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; background: var(--ground); display: flex; flex-direction: column; gap: 8px; }
+  .opt.rec { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .opt-head { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  h3 { font-size: 15.5px; font-weight: 700; margin: 0; }
+  .tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; }
+  .pros, .cons { margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
+  .pros li::before { content: "+ "; color: var(--good-ink); font-weight: 700; }
+  .cons li::before { content: "− "; color: var(--bad-ink); font-weight: 700; }
+  .pros li, .cons li { color: var(--ink-2); margin-bottom: 3px; line-height: 1.4; }
+  .blast { margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--rule-strong); }
+  .blast .blab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; display: block; margin-bottom: 5px; }
+  .bchips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .bchip { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .bchip.warn { background: var(--warn-wash); color: var(--warn-ink); font-weight: 600; }
+  .flow { margin-top: 18px; background: var(--ground); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; overflow-x: auto; }
+  .flow .flab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .flow-line { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-width: 560px; }
+  .fnode { font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 6px; background: var(--surface); border: 1px solid var(--rule-strong); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .fnode.hi { border-color: var(--accent); color: var(--accent-ink); }
+  .fnode.gate { border-color: var(--warn-ink); color: var(--warn-ink); }
+  .farrow { color: var(--ink-3); flex: none; }
+  .unv { font-size: 11px; color: var(--warn-ink); font-weight: 600; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .manifest { margin-top: 54px; }
+  .man-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .man-head h2 { margin: 0; }
+  .man-sub { font-size: 14.5px; color: var(--ink-2); margin: 8px 0 16px; max-width: 74ch; }
+  .man-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .vchip { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; text-align: center; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .v-ok { background: var(--good-wash); color: var(--good-ink); }
+  .v-un { background: var(--warn-wash); color: var(--warn-ink); }
+  .man-row p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .man-row p strong { color: var(--ink); }
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decision Dossier · feature: ste-human-output · August 11, 2026 · rev 1</div>
+  <h1>Where the STE writing contract lives, and how hard the linter bites</h1>
+  <p class="dek">Locked by prior decisions: one house-style home with a tested pointer network, pragmatic STE only, linter vendored not depended on. Open: the ASK FIRST template edit itself, where the lint runs, its threshold, the governed surface set, and attribution placement.</p>
+  <div class="locked">
+    <span class="lock-chip">✓ One home: output-style.md (D1/D5 2026-07-27)</span>
+    <span class="lock-chip">✓ Pragmatic STE, no ASD dictionary</span>
+    <span class="lock-chip">✓ Vendor ste_lint.py, no dependency</span>
+    <span class="lock-chip">✓ Agent-facing docs stay exempt</span>
+    <span class="lock-chip open">D1–D5 open</span>
+  </div>
+</header>
+
+<section class="decision">
+  <span class="d-id">D1 · TEMPLATE EDIT (ASK FIRST BOUNDARY)</span>
+  <h2>Approve amending the shipped house-style template with an STE section?</h2>
+  <p class="d-why">AGENTS.md marks template content ASK FIRST — templates are the core product and this doc lands in every user project. The 2026-07-27 D2 decision rejected banned-phrase lists but pre-authorized this escalation "if the short rule set doesn't change behavior." Your gate-jargon report is that evidence. This question is mandatory regardless of confidence.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Approve: extend <span class="mono">output-style.md</span></h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>ONE_HOME preserved; 11 existing skill pointers deliver it with zero skill-body edits</li>
+        <li>D2's own escalation clause fires on observed evidence</li>
+        <li>Slop table derives from a versioned external standard, not invented tells</li>
+      </ul>
+      <ul class="cons">
+        <li>Every user project inherits the stricter contract on upgrade</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">src/templates/reference/output-style.md</span>
+          <span class="bchip">tests/output-style-template.test.ts</span>
+          <span class="bchip warn">all user projects on upgrade</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Decline: repo-local guidance only</h3>
+      </div>
+      <ul class="pros">
+        <li>No product change; zero user blast radius</li>
+      </ul>
+      <ul class="cons">
+        <li>Contradicts the chosen "Full: contract + linter" scope</li>
+        <li>Joycraft users keep getting gate jargon</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">CLAUDE.md (repo-local)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D2 · LINT EXECUTION POINT</span>
+  <h2>Where does the linter run in v1?</h2>
+  <p class="d-why">The deterministic half of the feature. Agent-side is a self-check the model can skip; harness-side is a hook — but harden's contract names exactly two enforcement surfaces, and a lint hook is a third.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Agent-side self-check only</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Zero new enforcement surface; works headless; ships now</li>
+        <li>python3 stays optional (manual 4-point fallback inline)</li>
+      </ul>
+      <ul class="cons">
+        <li>No hard guarantee — the model can skip the check</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">src/templates/reference/output-style.md</span>
+          <span class="bchip">src/templates/reference/ste-lint.py</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Also a harden hook on gate files</h3>
+      </div>
+      <ul class="pros">
+        <li>Deterministic — the true "ontology at the ledger"</li>
+      </ul>
+      <ul class="cons">
+        <li>Expands harden's two-surface contract; needs its own design</li>
+        <li>python3 becomes a hard dependency of every gate</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip warn">src/skills/joycraft-harden.md</span>
+          <span class="bchip">.claude/hooks/joycraft/</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>No linter; contract prose only</h3>
+      </div>
+      <ul class="pros">
+        <li>Smallest diff</li>
+      </ul>
+      <ul class="cons">
+        <li>Prose alone already under-delivered — that is why this feature exists</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">src/templates/reference/output-style.md</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flow">
+    <span class="flab">Recommended flow · gate artifact path</span>
+    <div class="flow-line">
+      <span class="fnode">agent drafts gate prose</span>
+      <span class="farrow">→</span>
+      <span class="fnode hi">ste-lint.py self-check</span>
+      <span class="farrow">→</span>
+      <span class="fnode">fix mechanical hits</span>
+      <span class="farrow">→</span>
+      <span class="fnode gate">present at gate</span>
+      <span class="unv">harden hook: deferred (backlog)</span>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D3 · VIOLATION THRESHOLD</span>
+  <h2>What does the self-check oblige the agent to fix?</h2>
+  <p class="d-why">The regex is reliable on some classes (contractions, semicolons, banned modals) and approximate on others (sentence bounds, synonym rotation). A single rule that treats them alike is either too lax or falsely precise.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Two-tier: fix-to-zero + advisory</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Unambiguous where regex is reliable, tolerant where it miscounts</li>
+      </ul>
+      <ul class="cons">
+        <li>Two rules to hold instead of one</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">output-style.md self-check section</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Single budget: ≤1 per 100 words</h3>
+      </div>
+      <ul class="pros">
+        <li>One number, easy to state</li>
+      </ul>
+      <ul class="cons">
+        <li>Individual hard violations survive under the average</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">output-style.md self-check section</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Report-only</h3>
+      </div>
+      <ul class="pros">
+        <li>Zero friction</li>
+      </ul>
+      <ul class="cons">
+        <li>Advisory reports get ignored (observed with optimize dispositions)</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">output-style.md self-check section</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D4 · GOVERNED SURFACES</span>
+  <h2>Do PR bodies and session-end summaries join the governed set in v1?</h2>
+  <p class="d-why">The doc's Scope already reads "anything a person reads to make a decision," and session-end/implement carry pointers. The question is whether v1 tests and self-checks claim those surfaces or only gate artifacts.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Yes — full human-facing set</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Review-time prose was the original complaint</li>
+        <li>No scope split inside one doc (D5 2026-07-27 worked to remove exactly that)</li>
+      </ul>
+      <ul class="cons">
+        <li>Slightly larger test blast radius</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">session-end / implement pointers</span>
+          <span class="bchip">PR body guidance</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Gate artifacts only</h3>
+      </div>
+      <ul class="pros">
+        <li>Tighter v1</li>
+      </ul>
+      <ul class="cons">
+        <li>Re-creates a two-scope split in a single-home doc</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">output-style.md Scope section</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D5 · ATTRIBUTION PLACEMENT</span>
+  <h2>Where does the vendored linter's MIT attribution live?</h2>
+  <p class="d-why">First vendored file in the repo — no precedent exists. Upstream: github.com/AminBlg/SimpleEnglish v1.2.0, MIT (license text verified 2026-08-11).</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Header + README + CHANGELOG</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Legal + discoverable; sets the vendoring precedent</li>
+      </ul>
+      <ul class="cons">
+        <li>None material</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">ste-lint.py header</span>
+          <span class="bchip">README.md</span>
+          <span class="bchip">CHANGELOG.md</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>File header only</h3>
+      </div>
+      <ul class="pros">
+        <li>Minimal diff</li>
+      </ul>
+      <ul class="cons">
+        <li>Invisible provenance for a shipped user-facing file</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">ste-lint.py header</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="manifest">
+  <div class="man-head">
+    <span class="eyebrow">Integrity</span>
+    <h2>Assumptions asserted as fact</h2>
+  </div>
+  <p class="man-sub">These load-bearing claims were NOT posed to you as questions — they are my framing's foundations. Anything labeled Unverified was not checked; this dossier is still a persuasive artifact, including this sentence.</p>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>SimpleEnglish is MIT-licensed.</strong> Read the LICENSE file from the upstream repo (MIT, Copyright 2026 AminBlg) on 2026-08-11.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>init.ts ships anything under src/templates/ verbatim.</strong> Read src/init.ts:221-226 — recursive, content-agnostic copy into docs/templates/.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>11 skills already cite output-style.md at output moments.</strong> Grepped src/skills/ — pointers present in design, decide, decompose, bugfix, implement-feature, interview, and more; placement tested by tests/output-style-pointer.test.ts.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>Adding a section to output-style.md will not break the pointer or windowed-content tests.</strong> The pointer test asserts citation placement in skills, not doc structure — but I have not read tests/output-style-template.test.ts line-by-line. Verify: run pnpm test after the edit.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>ste_lint.py behaves as documented.</strong> Read the source (132 lines, plausible), but have not executed --self-test locally yet. Verify: python3 ste-lint.py --self-test.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>python3 is available in CI for the self-test wrapper.</strong> The GitHub runner almost certainly has it, but the workflow file was not checked. Verify: read .github/workflows/, or make the test skip-when-absent.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>The STE section's stricter rules will not fight the existing 8 rules.</strong> Rule 8 ("write plainly") is compatible in spirit, but no draft of the merged doc exists yet to check for contradictions. Verify: at implementation, diff each STE rule against rules 1–8.</p></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>You will be asked D1–D5 as native forced-choice questions. Pick an option and type a one-sentence rationale as "&lt;choice&gt; because &lt;reason&gt;". If every option on a card is wrong, reject the framing — type what's right instead. "backlog because …", "discard because …", and "defer to &lt;name&gt;" are always valid answers. Answers stamp into the brief's frontmatter, Hard Constraints, and docs/context/decision-log.md.</p>
+</div>
+
+<footer>
+  <p>Dossier rev 1 · generated 2026-08-11 · feature: 2026-08-11-ste-human-output · canonical questions: docs/features/2026-08-11-ste-human-output/design.md §5</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

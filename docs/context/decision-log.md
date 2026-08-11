@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-07-31
+last_updated: 2026-08-11
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -10,6 +10,11 @@ last_updated_by: Maximilian Maksutovic
 ## Decisions
 
 | Date | Decision | Why | Alternatives Rejected | Revisit When |
+| 2026-08-11 | STE D1: the shipped house-style doc `src/templates/reference/output-style.md` gains a "Sentence mechanics (STE)" section — the escalation the 2026-07-27 D2 clause reserved | Observed gate jargon (user report 2026-08-11) is the trigger evidence D2 named; ONE_HOME plus the tested pointer network deliver the section with zero skill-body edits; the slop table derives from ASD-STE100 via SimpleEnglish v1.2.0 (MIT), not invented tells | Repo-local guidance only (users keep getting gate jargon); a second reference doc (11 new pointers + a second test family) | If user projects push back on the stricter contract after an upgrade |
+| 2026-08-11 | STE D2: ste-lint.py is maintainer-side only — vendored at `scripts/ste-lint.py`, a CI test lints Joycraft's own shipped human-facing template prose; users get manual self-check rules in output-style.md, never a script obligation | Requiring users' agents to run a python script per artifact is obtrusive and out of the spirit of a skill (human rationale, verbatim) | Shipping the linter in templates with an agent-side run step; a harden hook (expands the two-surface contract, python3 hard dependency) | If manual self-check proves insufficient in user projects — then revisit shipping the linter |
+| 2026-08-11 | STE D3: self-check is two-tier — fix-to-zero on reliable regex classes (contractions, semicolons, banned modals, Latin abbreviations, slop words), advisory on approximate ones (sentence length, synonym rotation) | Unambiguous where regex is reliable, tolerant where it miscounts | Single violations-per-100w budget (hard violations survive under the average); report-only (advisory reports get ignored) | If the two-tier rule proves too complex to hold in practice |
+| 2026-08-11 | STE D4: the STE contract governs the full human-facing set — gate artifacts, PR bodies, session-end summaries | Review-time prose was the original complaint; a gate-only split re-creates the two-scope problem output-style D5 removed | Gate artifacts only in v1 | If the larger test blast radius destabilizes the output-style test family |
+| 2026-08-11 | STE D5: vendored-linter attribution = SPDX + upstream URL/version file header + CHANGELOG line; sets the repo's first vendoring precedent | File is repo-internal after D2, so README acknowledgment is unnecessary, but provenance must survive in the script and release notes | Header only (invisible provenance); header + README + CHANGELOG (README ack moot for an unshipped file) | If a future feature ships vendored code to users — then README ack returns |
 |------|----------|-----|----------------------|-------------|
 | 2026-07-31 | Team-ready-gates D9: Linear ticket creation from PRD — backlogged | Out of this revision's scope; needs its own design pass | Bolting it onto the handoff-slot spec (scope creep) | Backlogged — see docs/backlog/2026-07-31-linear-ticket-creation.md |
 | 2026-07-31 | Team-ready-gates D8: Cursor skill discovery — backlogged | Out of this revision's scope; harness support question, not a gate question | Folding Cursor into the copilot variant unverified | Backlogged — see docs/backlog/2026-07-31-cursor-skill-discovery.md |
