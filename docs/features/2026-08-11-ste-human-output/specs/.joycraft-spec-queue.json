@@ -1,9 +1,9 @@
 {
   "feature": "2026-08-11-ste-human-output",
   "specs": [
-    { "id": 1, "file": "rewrite-output-style-as-ste.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
-    { "id": 2, "file": "vendor-ste-linter-script.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
-    { "id": 3, "file": "add-ste-lint-ci-test.md", "depends_on": [1, 2], "status": "in-review", "mode": "checkpoint" },
-    { "id": 4, "file": "restore-interview-playback-pointer.md", "depends_on": [1], "status": "in-review", "mode": "checkpoint" }
+    { "id": 1, "file": "rewrite-output-style-as-ste.md", "depends_on": [], "status": "done", "mode": "checkpoint" },
+    { "id": 2, "file": "vendor-ste-linter-script.md", "depends_on": [], "status": "done", "mode": "checkpoint" },
+    { "id": 3, "file": "add-ste-lint-ci-test.md", "depends_on": [1, 2], "status": "done", "mode": "checkpoint" },
+    { "id": 4, "file": "restore-interview-playback-pointer.md", "depends_on": [1], "status": "done", "mode": "checkpoint" }
   ]
 }

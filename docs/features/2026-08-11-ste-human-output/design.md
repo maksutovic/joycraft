@@ -7,6 +7,13 @@ feature: 2026-08-11-ste-human-output
 
 # Design: STE Human Output — writing contract + linter for gate artifacts
 
+> **Amended 2026-08-11 at the decompose gate:** D1 and D4 were amended by the
+> human after this design was written. STE is now the primary house style —
+> `output-style.md` is rewritten as one integrated STE rule set (not extended
+> with a section), and the governed surfaces include interview playback and
+> gate chat/dialogue. §2.1 and §2.6 below describe the superseded append-a-
+> section shape; trust the brief's Hard Constraints and decisions frontmatter.
+
 ## 1. Current State
 
 **Prior knowledge reused:**

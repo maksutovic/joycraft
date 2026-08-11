@@ -1,0 +1,314 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT REVIEW GATE · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. Any Joycraft gate skill (brief review, design
+  review, decompose review, research readout, tune report, optimize audit)
+  fills the content slots to render its review artifact; it MUST NOT alter the
+  structure, the class names, or the CSS below. Keeping the skeleton fixed is
+  the whole point: freeform per-gate HTML would make every review a fresh
+  hand-rolled artifact, and the human would relearn the page each time.
+
+  This template is a deliberate extension of the decision dossier's design
+  system, not a second one — the same tokens, the same type stack, the same
+  self-containment contract. The dossier keeps its own skeleton for decide;
+  this one covers every other gate.
+
+  Slots are the HTML comments below whose text begins with the slot marker
+  (the word SLOT followed by a colon and a region name). Each names a region
+  and gives filling guidance. Replace the slot comment (and any placeholder)
+  with real markup that uses ONLY the classes already defined in the style
+  block. (This contract comment intentionally does not nest a literal example
+  of the slot delimiters, because a nested comment terminator would end this
+  comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the slot regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · Keep the header's context strip container even when empty; the layout
+      copes with an empty strip, so do not remove the container.
+    · Repeat the content section (section class "sec") once per topic. Inside a
+      section, use only the pre-defined blocks: the "pillars" card grid, a
+      "tablebox" wrapping a table, the "cols" must / must-not columns, or the
+      "criteria" checklist. Do not add block types.
+    · Repeat the question card (div class "q") once per open question. If the
+      gate has NO open questions, delete the whole questions section — the
+      layout copes.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject the framing outright and say what is right
+      instead).
+    · Never present an unverified claim as settled. A gate artifact is a
+      persuasive object; say plainly which rows are grounded facts and which
+      are proposals awaiting the human's word.
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more content sections, then the optional questions section, then the
+  how-to-answer box, then footer. Do not reorder.
+  ============================================================================
+-->
+<title>Decompose Review — STE Human Output</title>
+<style>
+  /* Design tokens: light theme is the default set on :root. These are the
+     decision dossier's tokens verbatim — one design system, two skeletons. */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono, .spec-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Context strip: grounded facts as .lock-chip spans; .open marks an item that
+     is still unsettled. The container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  /* Content section. Repeat once per topic. */
+  section.sec { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .sec-head h2 { margin: 0; }
+  h2 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 18px; max-width: 74ch; }
+
+  /* Block A — pillars: a card grid for 2–4 parallel ideas. */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .pillar h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pillar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* Block B — tablebox: any table (spec lists, decomposition plans). Scrolls
+     inside its own box on narrow screens so the body never scrolls. */
+  .tablebox { margin-top: 6px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+  .tablebox table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+  .tablebox th { text-align: left; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  .tablebox td { padding: 11px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+  .tablebox tr:last-child td { border-bottom: none; }
+  .spec-name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .size { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--ink-2); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .wave { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--accent-wash); color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+
+  /* Block C — cols: the must / must-not pair. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .col .clab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .col ul { margin: 9px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .col li { color: var(--ink-2); margin-bottom: 5px; line-height: 1.4; }
+  .col.must li::before { content: "✓ "; color: var(--good-ink); font-weight: 700; }
+  .col.must-not li::before { content: "✗ "; color: var(--bad-ink); font-weight: 700; }
+
+  /* Block D — criteria: an acceptance checklist. */
+  .criteria { margin: 6px 0 0; padding: 0; list-style: none; }
+  .criteria li { position: relative; padding: 9px 0 9px 26px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-2); }
+  .criteria li:last-child { border-bottom: none; }
+  .criteria li::before { content: "□"; position: absolute; left: 2px; color: var(--ink-3); }
+  .criteria li.met::before { content: "☑"; color: var(--good-ink); }
+
+  /* Questions. One .q card per open question; amber left border. */
+  .questions { margin-top: 54px; }
+  .q { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warn-ink); border-radius: 8px; padding: 18px 22px; margin-top: 12px; }
+  .q .qnum { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .q h3 { font-size: 16.5px; font-weight: 700; margin: 6px 0 8px; }
+  .q .rec { font-size: 14.5px; color: var(--ink); margin: 0 0 6px; }
+  .q .rec strong { color: var(--accent-ink); }
+  .q .why { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 74ch; }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decompose Review · feature: ste-human-output · rev 3 · August 11, 2026 11:41</div>
+  <h1>STE becomes the house style: one rewrite, one script, one test, one repair</h1>
+  <p class="dek">D1 and D4 are amended: the style doc is rewritten with STE as its foundation, and STE governs all output a person reads from Joycraft. Your D6 choice adds spec 4 — the interview playback gate regains its style pointer inside this feature. One approval remains.</p>
+  <div class="locked">
+    <span class="lock-chip">D1 amended · full STE rewrite</span>
+    <span class="lock-chip">D2 · linter repo-side only</span>
+    <span class="lock-chip">D3 · two-tier self-check</span>
+    <span class="lock-chip">D4 amended · all human-facing output</span>
+    <span class="lock-chip">D5 · SPDX header + CHANGELOG</span>
+    <span class="lock-chip">D6 · interview repair in-feature</span>
+    <span class="lock-chip">4 specs · 2 waves</span>
+    <span class="lock-chip">zero INVENTED constraints</span>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Plan</span>
+    <h2>The spec queue</h2>
+  </div>
+  <p class="sub">Wave 1 runs specs 1 and 2 in parallel — their affected files are disjoint. Wave 2 runs specs 4 then 3 in order: both regenerate the bundle, so they must not run concurrently, and spec 3 lints the final prose last. All four are recommended as checkpoint mode (project default is batch; the size heuristic says isolated for spec 1 at L, but the rewrite is one doc plus one test — care-heavy, not context-heavy).</p>
+
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Spec</th><th>What it does</th><th>Deps</th><th>Size</th><th>Wave</th><th>Mode</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td class="spec-name">rewrite-output-style-as-ste</td><td>Rewrite <span class="mono">src/templates/reference/output-style.md</span> as one integrated STE rule set (~10 rules, the doc itself written in STE, scope = all human-facing output including dialogue); update <span class="mono">tests/output-style-template.test.ts</span> to the new structure; regenerate the bundle and sync the installed copy in the same commit.</td><td>—</td><td><span class="size">L</span></td><td><span class="wave">Wave 1</span></td><td><span class="size">checkpoint</span></td></tr>
+        <tr><td>2</td><td class="spec-name">vendor-ste-linter-script</td><td>Vendor upstream <span class="mono">ste_lint.py</span> (SimpleEnglish v1.2.0, MIT) at <span class="mono">scripts/ste-lint.py</span> with SPDX + upstream URL/version header and a CHANGELOG line.</td><td>—</td><td><span class="size">S</span></td><td><span class="wave">Wave 1</span></td><td><span class="size">checkpoint</span></td></tr>
+        <tr><td>4</td><td class="spec-name">restore-interview-playback-pointer</td><td>Add a one-line style-contract citation at the interview playback gate, beside the per-slot caps; regenerate the bundle and sync the generated and installed skill copies in the same commit (D6).</td><td>1</td><td><span class="size">S</span></td><td><span class="wave">Wave 2</span></td><td><span class="size">checkpoint</span></td></tr>
+        <tr><td>3</td><td class="spec-name">add-ste-lint-ci-test</td><td>Add <span class="mono">tests/ste-lint.test.ts</span>: run the linter's <span class="mono">--self-test</span>, then lint the shipped human-facing template prose to zero fix-to-zero-class violations, fixing prose where needed; skip legibly when python3 is absent.</td><td>1, 2</td><td><span class="size">M</span></td><td><span class="wave">Wave 2</span></td><td><span class="size">checkpoint</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Grounding</span>
+    <h2>Repo facts this plan rests on</h2>
+  </div>
+  <p class="sub">All four verified this pass by reading the tests and scripts directly — these are facts, not proposals.</p>
+
+  <div class="pillars">
+    <div class="pillar">
+      <h3>Bundle parity is enforced</h3>
+      <p>tests/bundled-files-sync.test.ts asserts src/bundled-files.ts matches src/templates/ byte-for-byte. Every spec that edits the template must run pnpm sync-skills and update docs/templates/reference/output-style.md in its own commit — no deferring sync to a terminal spec.</p>
+    </div>
+    <div class="pillar">
+      <h3>scripts/ never ships</h3>
+      <p>package.json publishes only dist/. A vendored scripts/ste-lint.py cannot reach npm consumers, which is exactly the isolation D2 requires.</p>
+    </div>
+    <div class="pillar">
+      <h3>The rewrite owns its test</h3>
+      <p>tests/output-style-template.test.ts reads only the canonical template. Amended D1 puts the test update inside the rewrite spec — new structure, retained score-scale and absolute-path bans. Rev 1's heading-collision constraint dissolved into this; zero invented constraints remain.</p>
+    </div>
+    <div class="pillar">
+      <h3>CI python is present but undeclared</h3>
+      <p>CI runs pnpm test --run on ubuntu-latest, which ships python3, but no setup-python step declares it. The test skips with a legible message when python3 is absent, per design §2.4.</p>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="col must">
+      <span class="clab">Must</span>
+      <ul>
+        <li>Regenerate bundle + sync installed copy in the same commit as any template edit</li>
+        <li>Carry SPDX + upstream URL/version/date in the linter header (D5)</li>
+        <li>Keep the two-tier semantics: fix-to-zero on reliable regex classes, advisory on approximate ones (D3)</li>
+        <li>Ship manual self-check rules only in the template — no user script obligation (D2)</li>
+        <li>Write the rewritten doc in STE, covering all human-facing output including dialogue (D1, D4 amended)</li>
+      </ul>
+    </div>
+    <div class="col must-not">
+      <span class="clab">Must not</span>
+      <ul>
+        <li>Place the linter under src/templates/ or anywhere users receive it (D2)</li>
+        <li>Create a second style doc or edit skill bodies (D1)</li>
+        <li>Drop the intent of the prior 8 rules — they merge into the STE set, they do not vanish</li>
+        <li>Add python as a declared dependency anywhere user-facing</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Provenance</span>
+    <h2>Prior knowledge reused</h2>
+  </div>
+  <p class="sub">Retrieval ran over decision-log, shipped ledger, and discoveries (terms: output-style, STE, lint, vendor, slop, gate artifact); truncated at the 5-row cap.</p>
+  <ul class="criteria">
+    <li class="met">decision-log 2026-08-11 STE D1/D4 amendments — full STE rewrite, all human-facing output; stamped from your gate answers</li>
+    <li class="met">decision-log 2026-08-11 STE D1–D5 — the five stamped decisions this decomposition executes</li>
+    <li class="met">decision-log 2026-07-27 Output-style D1/B2 — one canonical home, shipped to docs/templates/reference/</li>
+    <li class="met">decision-log 2026-07-27 Output-style D2 — the escalation clause this feature exercises</li>
+    <li class="met">decision-log 2026-07-27 Output-style D3/D5 — 11 placement-tested pointers deliver the doc; a section rides free</li>
+    <li class="met">shipped.md 2026-07-27 + 2026-07-29 — template, test families, and gate rails already on disk</li>
+  </ul>
+</section>
+
+<section class="questions">
+  <div class="sec-head">
+    <span class="eyebrow">Open</span>
+    <h2>Questions for you</h2>
+  </div>
+  <div class="q">
+    <span class="qnum">Q1</span>
+    <h3>Do the four specs, the wave plan, and checkpoint mode for all match your intent?</h3>
+    <p class="rec"><strong>Recommend:</strong> approve as presented — 4 specs, wave 1 parallel-safe, wave 2 sequential (4 then 3), all checkpoint.</p>
+    <p class="why">Spec 1 carries the full rewrite plus its test update — say the word if you want doc and test as separate specs. Spec 4 executes your D6 choice; its known hazard is that the succinct-gates queue owns the interview file's in-review specs, so a revision there before spec 4 lands means coordinating the edit. The size heuristic says isolated for an L spec; checkpoint is recommended because the rewrite is one doc plus one test.</p>
+  </div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>A yes looks like "approved" (optionally with mode overrides, e.g. "spec 1 as isolated"). A change request names the spec and what to split, merge, or rescope — the table and this artifact regenerate. Answers land in the spec files' frontmatter (modes) and the specs/README wave plan; D1/D4 amendments and D6 are already stamped from your answers. And if this framing is still wrong, reject it outright and say what is right instead — you did exactly that at rev 1, and nothing is committed until you approve.</p>
+</div>
+
+<footer>
+  <p>Produced by joycraft-decompose · feature 2026-08-11-ste-human-output · August 11, 2026 · canonical record: decompose.md; specs generate on approval · rev 3 · generated 2026-08-11T18:41:47Z</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>
