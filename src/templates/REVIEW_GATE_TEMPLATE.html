@@ -50,7 +50,7 @@
   how-to-answer box, then footer. Do not reorder.
   ============================================================================
 -->
-<!-- SLOT:title · page title text, e.g. "Decompose Review — <feature-name>" -->
+<!-- SLOT:title · page title text, for example "Decompose Review — <feature-name>" -->
 <title>Review Gate — TEMPLATE</title>
 <style>
   /* Design tokens: light theme is the default set on :root. These are the
@@ -174,7 +174,7 @@
 
 <div class="wrap">
 <header>
-  <!-- SLOT:eyebrow — kicker line, e.g. "Joycraft Decompose Review · feature: <name> · <Month DD, YYYY>".
+  <!-- SLOT:eyebrow — kicker line, for example "Joycraft Decompose Review · feature: <name> · <Month DD, YYYY>".
      End it with the generation stamp: "· rev N · <Month DD, YYYY HH:MM>". -->
   <div class="eyebrow"></div>
   <!-- SLOT:title-h1 — the headline: what this gate is presenting, in a phrase -->
@@ -185,13 +185,13 @@
        Fill with .lock-chip spans, one per grounded fact carried into this gate
        (locked decisions, detected stack, spec count). Add the .open variant for
        an item that is still unsettled. Shape: a span with class lock-chip per
-       fact; add the open class to the ones that are not settled.
+       fact. Add the open class to the ones that are not settled.
   -->
   <div class="locked"></div>
 </header>
 
 <!-- SLOT:sections — REPEAT this <section class="sec"> once per topic. Inside,
-     use ONLY the pre-defined blocks below; delete the ones this section does
+     use ONLY the pre-defined blocks below. Delete the ones this section does
      not need. Do not invent block types.
        .pillars  — card grid for 2–4 parallel ideas
        .tablebox — a table (spec / decomposition lists) that scrolls its own box
@@ -200,12 +200,12 @@
 -->
 <section class="sec">
   <div class="sec-head">
-    <!-- SLOT:section-eyebrow — short kicker, e.g. "Shape" / "Plan" / "Boundaries" -->
+    <!-- SLOT:section-eyebrow — short kicker, for example "Shape" / "Plan" / "Boundaries" -->
     <span class="eyebrow"></span>
     <!-- SLOT:section-title — the section heading -->
     <h2></h2>
   </div>
-  <!-- SLOT:section-standfirst — OPTIONAL one-paragraph orientation; delete if the blocks speak for themselves -->
+  <!-- SLOT:section-standfirst — OPTIONAL one-paragraph orientation. Delete it when the blocks speak for themselves -->
   <p class="sub"></p>
 
   <!-- SLOT:block-pillars — OPTIONAL. One .pillar per idea: an h3 name and one
@@ -244,13 +244,13 @@
     </div>
   </div>
 
-  <!-- SLOT:block-criteria — OPTIONAL acceptance checklist. One li per criterion;
-       add class "met" to a criterion already satisfied. Delete if unused. -->
+  <!-- SLOT:block-criteria — OPTIONAL acceptance checklist. One li per criterion.
+       Add class "met" to a criterion already satisfied. Delete if unused. -->
   <ul class="criteria"></ul>
 </section>
 
 <!-- SLOT:questions — OPTIONAL WHOLE SECTION. Delete it entirely when the gate
-     carries no open questions; the layout copes. When kept, REPEAT the .q card
+     carries no open questions. The layout copes. When kept, REPEAT the .q card
      once per question. Questions reaching this artifact have already been
      through the decide gate, so each card shows either the stamped answer or
      the forced choice still awaiting one.
@@ -261,13 +261,13 @@
     <h2>Questions for you</h2>
   </div>
   <div class="q">
-    <!-- SLOT:question-number — e.g. "Q1". An assigned (deferred-to-person)
-         question tags its assignee here on the same span — e.g.
+    <!-- SLOT:question-number — for example "Q1". An assigned (deferred-to-person)
+         question tags its assignee here on the same span — for example
          "Q2 · assigned: Sam" — existing classes only, no new CSS. -->
     <span class="qnum"></span>
     <!-- SLOT:question — the question itself, framed as a question -->
     <h3></h3>
-    <!-- SLOT:question-recommend — the recommendation line; lead with a bolded
+    <!-- SLOT:question-recommend — the recommendation line. Lead with a bolded
          "Recommend:" and name the option -->
     <p class="rec"></p>
     <!-- SLOT:question-why — ONE paragraph on why: the tension that makes this

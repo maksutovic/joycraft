@@ -26,8 +26,8 @@ the terminal or opens to make a decision. The governed surfaces are:
 queue JSON, YAML frontmatter, knowledge-layer rows such as the decision log and
 the shipped ledger and the anchors file, discovery stubs, and deny patterns are
 execution contracts that machines read. They are optimized for completeness and
-machine parsing, not for reading comfort. These rules would strip information
-that a later agent needs.
+machine parsing, not for reading comfort. Applied there, these rules strip
+information that a later agent needs.
 
 The scarce resource is the human channel. It carries decisions, not
 acknowledgments.
@@ -181,7 +181,7 @@ signal and not a verdict:
 2. Synonym rotation across the document
 
 Fix a tier-2 hit when the fix keeps the meaning. Keep the long sentence when a
-split would break a technical statement.
+split breaks a technical statement.
 
 The example below carves itself out of tier 1 on purpose. A "before" sample
 must show the failure.
@@ -215,5 +215,5 @@ After:
 > ```
 
 The rewrite drops the preamble, the effort narrative, and the closing offer. It
-keeps the one thing the reader could not have known, which is the hazard in
-spec 3, and it ends on the command the reader runs next.
+keeps the one thing the reader cannot know without being told, which is the
+hazard in spec 3, and it ends on the command the reader runs next.
