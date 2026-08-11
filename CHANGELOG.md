@@ -7,6 +7,34 @@ in a before → now → side-effects format, newest first.
 
 ---
 
+## Unreleased — STE Human Output
+
+The house style doc gave positive rules but no controlled language, so gate
+prose still drifted into jargon and slop, and no mechanical check held the
+shipped templates to their own contract.
+
+**Now:** `docs/templates/reference/output-style.md` is rewritten as one
+integrated Simplified Technical English (ASD-STE100, pragmatic mode) rule set —
+11 rules merging the prior 8 with STE sentence mechanics, the doc itself
+written in STE, governing all human-facing output (gate artifacts, PR bodies,
+session-end summaries, interview playback, gate dialogue). Users get a manual
+two-tier self-check (fix-to-zero on contractions, semicolons, banned modals,
+Latin abbreviations, slop words; advisory on sentence length and synonym
+rotation) — no script obligation. Maintainer-side, `scripts/ste-lint.py` is
+vendored from SimpleEnglish `evals/ste_lint.py` at v1.2.0 (MIT, commit
+`dfd0ca7`, retrieved 2026-08-11) — Python stdlib only, `--self-test` flag, ten
+comparative violation classes, not a compliance verdict — and
+`tests/ste-lint.test.ts` holds this repo's shipped template prose to zero
+fix-to-zero violations (skipping legibly without python3). The interview
+playback gate regains its one-line style citation (D6).
+
+**Side effects:** this is the repo's first vendored code, so the file carries
+an SPDX + upstream + retrieval-date header and the rule that fixes go upstream
+rather than into the copy. The script is maintainer tooling only — `scripts/`
+is absent from package.json `files`, so it reaches no npm consumer or
+scaffolded project, and no dependency was added. Gate-contract group 7 now
+permits a tone-only citation under the playback heading.
+
 ## 0.7.8 — Team-Ready Gates (2026-07-31)
 
 The gates became the team surface: PRDs drafted across many projects, shared

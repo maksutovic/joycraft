@@ -45,7 +45,7 @@ const POINTERED = [
 const EXPECTED_CITATIONS: Record<string, number> = {
   'joycraft-verify': 3,
   'joycraft-implement-feature': 3,
-  'joycraft-interview': 2,
+  'joycraft-interview': 3,
   'joycraft-session-end': 2,
 };
 

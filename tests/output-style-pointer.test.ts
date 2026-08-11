@@ -119,6 +119,25 @@ describe('output-style pointer sits at the output moment', () => {
   }
 });
 
+/**
+ * D6 (2026-08-11): interview's playback gate is governed output (D4 covers
+ * dialogue), so the delivery pointer must sit under the playback heading
+ * itself — the Hand Off citation alone leaves the gate uncited.
+ */
+describe('output-style pointer at the interview playback gate', () => {
+  it('joycraft-interview cites the doc under its playback heading', () => {
+    const content = read('joycraft-interview');
+    const occurrences = [...content.matchAll(new RegExp(escapeRe(STYLE_DOC), 'g'))];
+    const headingsFor = (index: number) =>
+      (content.slice(0, index).match(/^#{1,4} .*$/gm) ?? []).at(-1) ?? '';
+    const sited = occurrences.map((m) => headingsFor(m.index));
+    expect(
+      sited.some((h) => /play ?back/i.test(h)),
+      `no citation sits under interview's playback heading; found under ${JSON.stringify(sited)}`,
+    ).toBe(true);
+  });
+});
+
 describe('output-style pointer path correctness', () => {
   for (const name of POINTER_SKILLS) {
     it(`${name} cites the user-project path, not the authoring-time path`, () => {

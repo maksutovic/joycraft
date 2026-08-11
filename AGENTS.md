@@ -70,7 +70,8 @@ Joycraft/
 │   └── templates/          # Bundled templates (copied to docs/templates/)
 ├── scripts/
 │   ├── generate-bundled-files.mjs  # Regenerates src/*-skills/ from src/skills/
-│   └── sync-skills.mjs             # Copies generated + local skills into .claude/.agents/.pi/.github
+│   ├── sync-skills.mjs             # Copies generated + local skills into .claude/.agents/.pi/.github
+│   └── ste-lint.py                 # VENDORED STE linter (maintainer-only; tests/ste-lint.test.ts shells to it)
 ├── templates/              # Source-of-truth templates (development reference)
 ├── tests/
 │   ├── detect.test.ts

@@ -50,8 +50,7 @@
   how-to-answer box, then footer. Do not reorder.
   ============================================================================
 -->
-<!-- SLOT:title · page title text, for example "Decompose Review — <feature-name>" -->
-<title>Review Gate — TEMPLATE</title>
+<title>Decompose Review — STE Human Output</title>
 <style>
   /* Design tokens: light theme is the default set on :root. These are the
      decision dossier's tokens verbatim — one design system, two skeletons. */
@@ -174,124 +173,128 @@
 
 <div class="wrap">
 <header>
-  <!-- SLOT:eyebrow — kicker line, for example "Joycraft Decompose Review · feature: <name> · <Month DD, YYYY>".
-     End it with the generation stamp: "· rev N · <Month DD, YYYY HH:MM>". -->
-  <div class="eyebrow"></div>
-  <!-- SLOT:title-h1 — the headline: what this gate is presenting, in a phrase -->
-  <h1></h1>
-  <!-- SLOT:dek — 1–2 sentence standfirst: what this artifact is, what the human is being asked to do with it -->
-  <p class="dek"></p>
-  <!-- SLOT:context-strip — REQUIRED CONTAINER, keep even if empty.
-       Fill with .lock-chip spans, one per grounded fact carried into this gate
-       (locked decisions, detected stack, spec count). Add the .open variant for
-       an item that is still unsettled. Shape: a span with class lock-chip per
-       fact. Add the open class to the ones that are not settled.
-  -->
-  <div class="locked"></div>
+  <div class="eyebrow">Joycraft Decompose Review · feature: ste-human-output · rev 3 · August 11, 2026 11:41</div>
+  <h1>STE becomes the house style: one rewrite, one script, one test, one repair</h1>
+  <p class="dek">D1 and D4 are amended: the style doc is rewritten with STE as its foundation, and STE governs all output a person reads from Joycraft. Your D6 choice adds spec 4 — the interview playback gate regains its style pointer inside this feature. One approval remains.</p>
+  <div class="locked">
+    <span class="lock-chip">D1 amended · full STE rewrite</span>
+    <span class="lock-chip">D2 · linter repo-side only</span>
+    <span class="lock-chip">D3 · two-tier self-check</span>
+    <span class="lock-chip">D4 amended · all human-facing output</span>
+    <span class="lock-chip">D5 · SPDX header + CHANGELOG</span>
+    <span class="lock-chip">D6 · interview repair in-feature</span>
+    <span class="lock-chip">4 specs · 2 waves</span>
+    <span class="lock-chip">zero INVENTED constraints</span>
+  </div>
 </header>
 
-<!-- SLOT:sections — REPEAT this <section class="sec"> once per topic. Inside,
-     use ONLY the pre-defined blocks below. Delete the ones this section does
-     not need. Do not invent block types.
-       .pillars  — card grid for 2–4 parallel ideas
-       .tablebox — a table (spec / decomposition lists) that scrolls its own box
-       .cols     — the must / must-not pair
-       .criteria — an acceptance checklist
--->
 <section class="sec">
   <div class="sec-head">
-    <!-- SLOT:section-eyebrow — short kicker, for example "Shape" / "Plan" / "Boundaries" -->
-    <span class="eyebrow"></span>
-    <!-- SLOT:section-title — the section heading -->
-    <h2></h2>
+    <span class="eyebrow">Plan</span>
+    <h2>The spec queue</h2>
   </div>
-  <!-- SLOT:section-standfirst — OPTIONAL one-paragraph orientation. Delete it when the blocks speak for themselves -->
-  <p class="sub"></p>
+  <p class="sub">Wave 1 runs specs 1 and 2 in parallel — their affected files are disjoint. Wave 2 runs specs 4 then 3 in order: both regenerate the bundle, so they must not run concurrently, and spec 3 lints the final prose last. All four are recommended as checkpoint mode (project default is batch; the size heuristic says isolated for spec 1 at L, but the rewrite is one doc plus one test — care-heavy, not context-heavy).</p>
 
-  <!-- SLOT:block-pillars — OPTIONAL. One .pillar per idea: an h3 name and one
-       paragraph. Delete the whole .pillars grid if unused. -->
-  <div class="pillars">
-    <div class="pillar">
-      <h3></h3>
-      <p></p>
-    </div>
-  </div>
-
-  <!-- SLOT:block-table — OPTIONAL. Fill the table with one row per item. Use
-       .spec-name on the identifier cell, .size for an effort chip, .wave for a
-       wave/ordering chip. Delete the whole .tablebox if unused. -->
   <div class="tablebox">
     <table>
       <thead>
-        <tr><th></th><th></th><th></th></tr>
+        <tr><th>#</th><th>Spec</th><th>What it does</th><th>Deps</th><th>Size</th><th>Wave</th><th>Mode</th></tr>
       </thead>
       <tbody>
-        <tr><td class="spec-name"></td><td><span class="size"></span></td><td><span class="wave"></span></td></tr>
+        <tr><td>1</td><td class="spec-name">rewrite-output-style-as-ste</td><td>Rewrite <span class="mono">src/templates/reference/output-style.md</span> as one integrated STE rule set (~10 rules, the doc itself written in STE, scope = all human-facing output including dialogue); update <span class="mono">tests/output-style-template.test.ts</span> to the new structure; regenerate the bundle and sync the installed copy in the same commit.</td><td>—</td><td><span class="size">L</span></td><td><span class="wave">Wave 1</span></td><td><span class="size">checkpoint</span></td></tr>
+        <tr><td>2</td><td class="spec-name">vendor-ste-linter-script</td><td>Vendor upstream <span class="mono">ste_lint.py</span> (SimpleEnglish v1.2.0, MIT) at <span class="mono">scripts/ste-lint.py</span> with SPDX + upstream URL/version header and a CHANGELOG line.</td><td>—</td><td><span class="size">S</span></td><td><span class="wave">Wave 1</span></td><td><span class="size">checkpoint</span></td></tr>
+        <tr><td>4</td><td class="spec-name">restore-interview-playback-pointer</td><td>Add a one-line style-contract citation at the interview playback gate, beside the per-slot caps; regenerate the bundle and sync the generated and installed skill copies in the same commit (D6).</td><td>1</td><td><span class="size">S</span></td><td><span class="wave">Wave 2</span></td><td><span class="size">checkpoint</span></td></tr>
+        <tr><td>3</td><td class="spec-name">add-ste-lint-ci-test</td><td>Add <span class="mono">tests/ste-lint.test.ts</span>: run the linter's <span class="mono">--self-test</span>, then lint the shipped human-facing template prose to zero fix-to-zero-class violations, fixing prose where needed; skip legibly when python3 is absent.</td><td>1, 2</td><td><span class="size">M</span></td><td><span class="wave">Wave 2</span></td><td><span class="size">checkpoint</span></td></tr>
       </tbody>
     </table>
   </div>
+</section>
 
-  <!-- SLOT:block-cols — OPTIONAL must / must-not pair. One li per item.
-       Delete the whole .cols grid if unused. -->
-  <div class="cols">
-    <div class="col must">
-      <span class="clab">Must</span>
-      <ul></ul>
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Grounding</span>
+    <h2>Repo facts this plan rests on</h2>
+  </div>
+  <p class="sub">All four verified this pass by reading the tests and scripts directly — these are facts, not proposals.</p>
+
+  <div class="pillars">
+    <div class="pillar">
+      <h3>Bundle parity is enforced</h3>
+      <p>tests/bundled-files-sync.test.ts asserts src/bundled-files.ts matches src/templates/ byte-for-byte. Every spec that edits the template must run pnpm sync-skills and update docs/templates/reference/output-style.md in its own commit — no deferring sync to a terminal spec.</p>
     </div>
-    <div class="col must-not">
-      <span class="clab">Must not</span>
-      <ul></ul>
+    <div class="pillar">
+      <h3>scripts/ never ships</h3>
+      <p>package.json publishes only dist/. A vendored scripts/ste-lint.py cannot reach npm consumers, which is exactly the isolation D2 requires.</p>
+    </div>
+    <div class="pillar">
+      <h3>The rewrite owns its test</h3>
+      <p>tests/output-style-template.test.ts reads only the canonical template. Amended D1 puts the test update inside the rewrite spec — new structure, retained score-scale and absolute-path bans. Rev 1's heading-collision constraint dissolved into this; zero invented constraints remain.</p>
+    </div>
+    <div class="pillar">
+      <h3>CI python is present but undeclared</h3>
+      <p>CI runs pnpm test --run on ubuntu-latest, which ships python3, but no setup-python step declares it. The test skips with a legible message when python3 is absent, per design §2.4.</p>
     </div>
   </div>
 
-  <!-- SLOT:block-criteria — OPTIONAL acceptance checklist. One li per criterion.
-       Add class "met" to a criterion already satisfied. Delete if unused. -->
-  <ul class="criteria"></ul>
+  <div class="cols">
+    <div class="col must">
+      <span class="clab">Must</span>
+      <ul>
+        <li>Regenerate bundle + sync installed copy in the same commit as any template edit</li>
+        <li>Carry SPDX + upstream URL/version/date in the linter header (D5)</li>
+        <li>Keep the two-tier semantics: fix-to-zero on reliable regex classes, advisory on approximate ones (D3)</li>
+        <li>Ship manual self-check rules only in the template — no user script obligation (D2)</li>
+        <li>Write the rewritten doc in STE, covering all human-facing output including dialogue (D1, D4 amended)</li>
+      </ul>
+    </div>
+    <div class="col must-not">
+      <span class="clab">Must not</span>
+      <ul>
+        <li>Place the linter under src/templates/ or anywhere users receive it (D2)</li>
+        <li>Create a second style doc or edit skill bodies (D1)</li>
+        <li>Drop the intent of the prior 8 rules — they merge into the STE set, they do not vanish</li>
+        <li>Add python as a declared dependency anywhere user-facing</li>
+      </ul>
+    </div>
+  </div>
 </section>
 
-<!-- SLOT:questions — OPTIONAL WHOLE SECTION. Delete it entirely when the gate
-     carries no open questions. The layout copes. When kept, REPEAT the .q card
-     once per question. Questions reaching this artifact have already been
-     through the decide gate, so each card shows either the stamped answer or
-     the forced choice still awaiting one.
--->
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Provenance</span>
+    <h2>Prior knowledge reused</h2>
+  </div>
+  <p class="sub">Retrieval ran over decision-log, shipped ledger, and discoveries (terms: output-style, STE, lint, vendor, slop, gate artifact); truncated at the 5-row cap.</p>
+  <ul class="criteria">
+    <li class="met">decision-log 2026-08-11 STE D1/D4 amendments — full STE rewrite, all human-facing output; stamped from your gate answers</li>
+    <li class="met">decision-log 2026-08-11 STE D1–D5 — the five stamped decisions this decomposition executes</li>
+    <li class="met">decision-log 2026-07-27 Output-style D1/B2 — one canonical home, shipped to docs/templates/reference/</li>
+    <li class="met">decision-log 2026-07-27 Output-style D2 — the escalation clause this feature exercises</li>
+    <li class="met">decision-log 2026-07-27 Output-style D3/D5 — 11 placement-tested pointers deliver the doc; a section rides free</li>
+    <li class="met">shipped.md 2026-07-27 + 2026-07-29 — template, test families, and gate rails already on disk</li>
+  </ul>
+</section>
+
 <section class="questions">
   <div class="sec-head">
     <span class="eyebrow">Open</span>
     <h2>Questions for you</h2>
   </div>
   <div class="q">
-    <!-- SLOT:question-number — for example "Q1". An assigned (deferred-to-person)
-         question tags its assignee here on the same span — for example
-         "Q2 · assigned: Sam" — existing classes only, no new CSS. -->
-    <span class="qnum"></span>
-    <!-- SLOT:question — the question itself, framed as a question -->
-    <h3></h3>
-    <!-- SLOT:question-recommend — the recommendation line. Lead with a bolded
-         "Recommend:" and name the option -->
-    <p class="rec"></p>
-    <!-- SLOT:question-why — ONE paragraph on why: the tension that makes this
-         genuinely open, and what the recommendation rests on -->
-    <p class="why"></p>
+    <span class="qnum">Q1</span>
+    <h3>Do the four specs, the wave plan, and checkpoint mode for all match your intent?</h3>
+    <p class="rec"><strong>Recommend:</strong> approve as presented — 4 specs, wave 1 parallel-safe, wave 2 sequential (4 then 3), all checkpoint.</p>
+    <p class="why">Spec 1 carries the full rewrite plus its test update — say the word if you want doc and test as separate specs. Spec 4 executes your D6 choice; its known hazard is that the succinct-gates queue owns the interview file's in-review specs, so a revision there before spec 4 lands means coordinating the edit. The size heuristic says isolated for an L spec; checkpoint is recommended because the rewrite is one doc plus one test.</p>
   </div>
 </section>
 
 <div class="howto">
   <div class="eyebrow">How to answer</div>
-  <!-- SLOT:howto — how the human answers this gate: what a yes looks like, what
-       a change request looks like, where the answers land. MUST name the
-       reject-this-framing escape: if the framing itself is wrong, the human
-       rejects it outright and says what is right instead, rather than picking
-       from the options offered. -->
-  <p></p>
+  <p>A yes looks like "approved" (optionally with mode overrides, e.g. "spec 1 as isolated"). A change request names the spec and what to split, merge, or rescope — the table and this artifact regenerate. Answers land in the spec files' frontmatter (modes) and the specs/README wave plan; D1/D4 amendments and D6 are already stamped from your answers. And if this framing is still wrong, reject it outright and say what is right instead — you did exactly that at rev 1, and nothing is committed until you approve.</p>
 </div>
 
 <footer>
-  <!-- SLOT:footer — provenance line: which gate produced this, feature slug, date.
-       End it with the machine-readable stamp "rev N · generated <ISO timestamp>":
-       the next render of the same artifact reads N from here and increments it
-       (unparseable or missing → restart at rev 1 and note the reset). -->
-  <p></p>
+  <p>Produced by joycraft-decompose · feature 2026-08-11-ste-human-output · August 11, 2026 · canonical record: decompose.md; specs generate on approval · rev 3 · generated 2026-08-11T18:41:47Z</p>
 </footer>
 </div>
 

@@ -82,7 +82,9 @@ Territory worth covering as they talk:
 
 After the user has gotten their ideas out, play back in EXACTLY this
 fixed-slot shape — the per-slot caps are hard, and the playback is never
-narrated as prose:
+narrated as prose. Tone follows the style contract in
+`docs/templates/reference/output-style.md`; volume and placement are fixed
+by the template itself:
 
 ```
 Mission: <1 line>
