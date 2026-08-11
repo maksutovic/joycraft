@@ -4,6 +4,6 @@
     { "id": 1, "file": "rewrite-output-style-as-ste.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
     { "id": 2, "file": "vendor-ste-linter-script.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
     { "id": 3, "file": "add-ste-lint-ci-test.md", "depends_on": [1, 2], "status": "todo", "mode": "checkpoint" },
-    { "id": 4, "file": "restore-interview-playback-pointer.md", "depends_on": [1], "status": "todo", "mode": "checkpoint" }
+    { "id": 4, "file": "restore-interview-playback-pointer.md", "depends_on": [1], "status": "in-review", "mode": "checkpoint" }
   ]
 }

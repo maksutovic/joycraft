@@ -323,15 +323,21 @@ describe('group 7: interview carries the playback and question contract', () => 
     expect(content()).toContain('No per-turn cap');
   });
 
-  it('delegates no playback volume to the style pointer (pointer sits at other moments)', () => {
+  it('delegates no playback volume to the style pointer (playback citation is tone-only)', () => {
     // The pointer mechanism was the root cause of the 2026-07-29 playback
-    // wall; volume and placement now live in the inline template. The two
-    // remaining citations (hand-off tone, draft-brief guideline) are asserted
-    // by tests/style-pointer-placement.test.ts — here we only pin that none
-    // sits under the playback heading.
+    // wall; volume and placement live in the inline template. D6 (2026-08-11,
+    // ste-human-output) adds a tone-only citation at the playback gate, so a
+    // citation may sit under the playback heading ONLY if it delegates tone
+    // alone — its sentence must keep volume and placement with the template.
     const c = content();
     for (const index of occurrences(c, 'output-style.md')) {
-      expect(/play ?back/i.test(headingAt(c, index))).toBe(false);
+      if (/play ?back/i.test(headingAt(c, index))) {
+        const sentence = c.slice(Math.max(0, index - 200), index + 200);
+        expect(
+          sentence,
+          'playback citation must pin volume and placement to the inline template',
+        ).toContain('volume and placement are fixed');
+      }
     }
   });
 });
