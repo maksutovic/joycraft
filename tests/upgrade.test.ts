@@ -68,8 +68,9 @@ describe('upgrade', () => {
     const logs: string[] = [];
     const origLog = console.log;
     console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    let result: { cliWasStale: boolean };
     try {
-      await upgrade(tmpDir, { yes: false });
+      result = await upgrade(tmpDir, { yes: false });
     } finally {
       console.log = origLog;
       globalThis.fetch = origFetch;
@@ -78,6 +79,8 @@ describe('upgrade', () => {
     expect(logs.some(l => l.includes('Joycraft CLI is out of date'))).toBe(true);
     expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
     expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
+    // The guard handled messaging itself — the CLI must not print a second nudge
+    expect(result).toEqual({ cliWasStale: true });
   });
 
   it('stale CLI with --yes re-execs the latest version via npx', async () => {
@@ -98,13 +101,15 @@ describe('upgrade', () => {
     const logs: string[] = [];
     const origLog = console.log;
     console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    let result: { cliWasStale: boolean };
     try {
-      await upgrade(tmpDir, { yes: true, spawnForReexec });
+      result = await upgrade(tmpDir, { yes: true, spawnForReexec });
     } finally {
       console.log = origLog;
       globalThis.fetch = origFetch;
     }
 
+    expect(result).toEqual({ cliWasStale: true });
     expect(spawnCalls).toHaveLength(1);
     expect(spawnCalls[0].args).toContain('joycraft@999.0.0');
     expect(spawnCalls[0].args).toContain('upgrade');
@@ -132,13 +137,15 @@ describe('upgrade', () => {
     const logs: string[] = [];
     const origLog = console.log;
     console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    let result: { cliWasStale: boolean };
     try {
-      await upgrade(tmpDir, { yes: true, gitignore: 'shared', spawnForReexec });
+      result = await upgrade(tmpDir, { yes: true, gitignore: 'shared', spawnForReexec });
     } finally {
       console.log = origLog;
       globalThis.fetch = origFetch;
     }
 
+    expect(result).toEqual({ cliWasStale: true });
     expect(spawnCalls).toHaveLength(1);
     expect(spawnCalls[0].args).toContain('--gitignore');
     expect(spawnCalls[0].args).toContain('shared');
@@ -182,13 +189,15 @@ describe('upgrade', () => {
     const logs: string[] = [];
     const origLog = console.log;
     console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    let result: { cliWasStale: boolean };
     try {
-      await upgrade(tmpDir, { yes: false });
+      result = await upgrade(tmpDir, { yes: false });
     } finally {
       console.log = origLog;
     }
 
     expect(logs.some(l => l.includes('Already up to date'))).toBe(true);
+    expect(result).toEqual({ cliWasStale: false });
   });
 
   it('updates files when bundled content differs from installed', async () => {
