@@ -7,6 +7,23 @@ in a before → now → side-effects format, newest first.
 
 ---
 
+## Unreleased
+
+Gate output had no mechanical check for the STE writing contract, and the
+NEVER boundary on unnecessary dependencies ruled out fetching a linter at
+gate time.
+
+**Now:** `scripts/ste-lint.py` is vendored from SimpleEnglish `evals/ste_lint.py`
+at v1.2.0 (MIT, commit `dfd0ca7`, retrieved 2026-08-11) — 132 lines, Python
+stdlib only, with a `--self-test` flag. It counts ten mechanical violation
+classes and scores them comparatively; it is not a compliance verdict.
+
+**Side effects:** this is the repo's first vendored code, so the file carries
+an SPDX + upstream + retrieval-date header and the rule that fixes go upstream
+rather than into the copy. The script is maintainer tooling only — `scripts/`
+is absent from package.json `files`, so it reaches no npm consumer or
+scaffolded project, and no dependency was added.
+
 ## 0.7.8 — Team-Ready Gates (2026-07-31)
 
 The gates became the team surface: PRDs drafted across many projects, shared
