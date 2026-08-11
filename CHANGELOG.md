@@ -7,6 +7,17 @@ in a before → now → side-effects format, newest first.
 
 ---
 
+## Unreleased — Quiet the stale-CLI upgrade nudge
+
+A stale cached CLI that re-exec'd `joycraft@latest upgrade` (the 0.7.x
+self-update guard) still printed "Joycraft X available (you have Y)" from the
+outer stale process after the delegated run finished — reading as if the
+upgrade had failed.
+
+**Now:** `upgrade()` reports when the stale-CLI guard handled the run, and the
+CLI suppresses its post-command update nudge in that case. The guard's own
+messages are unchanged; all other commands nudge as before.
+
 ## Unreleased — STE Human Output
 
 The house style doc gave positive rules but no controlled language, so gate
