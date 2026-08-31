@@ -102,6 +102,45 @@ Shift template weight from discipline lists toward directionality:
   practice; Lauren (Cursor) — the intervention-elimination hierarchy;
   Robert C. Martin — values-not-disciplines.
 
+### 6. Recommend disabling Claude Code auto-memory in Joycraft projects
+A Joycraft project and Claude Code's auto-memory are two homes for the same
+class of fact — the ONE_HOME condition optimize exists to flag. The curated
+layer (AGENTS.md, decision log, discoveries + Reaper) is in-repo, reviewed,
+and shared; auto-memory is hidden, per-machine, unreviewed, and has the decay
+profile Theo's audit demonstrated (26/45 never read). Recommendation: in a
+Joycraft-managed project, auto-memory should be off.
+
+Verified mechanism (Claude Code docs: code.claude.com/docs/en/memory.md,
+settings-reference.md, cli-reference.md):
+
+- **Setting:** `"autoMemoryEnabled": false` (default `true`). Scopes:
+  `~/.claude/settings.json` (global), `./.claude/settings.json` (project,
+  overrides global), `./.claude/settings.local.json` (personal, highest).
+  **Per-project disable works with global left on** — this is the shape we
+  recommend; a global recommendation would overstep into users' other
+  projects.
+- **Effect:** disabling stops both writing AND session-start injection of
+  `MEMORY.md`. Existing memory dirs go dormant — no deletion required, though
+  `~/.claude/projects/<slug>/memory/` can be removed after graduating anything
+  worth keeping into `docs/context/`.
+- **Ephemeral forms:** `claude --disable-auto-memory` flag,
+  `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` env var, `/memory` in-session toggle
+  (writes the user-scope setting).
+
+Product hooks:
+- **init:** offer (ask-first, it touches user config) to write
+  `"autoMemoryEnabled": false` into the project's `.claude/settings.json`
+  alongside the other scaffolding, with a one-line explanation of why.
+- **tune:** detect auto-memory enabled + a non-empty memory dir for the
+  project and raise it as a harness finding, with a graduate-then-archive
+  step — mini-Reaper: anything durable moves to `docs/context/` via add-fact
+  routing, the rest goes dormant or is deleted with approval.
+- **docs:** README/setup guidance states the recommendation and the rationale
+  (one home, reviewed, shared) — not "memory bad" but "a Joycraft project
+  supersedes it."
+- Codex/Pi equivalents: research question — check whether those harnesses
+  have comparable auto-memory to disable (Pi reportedly ships none by design).
+
 ### Non-goals
 - No embeddings, graphs, or retrieval machinery — the critique's strongest
   empirical point (Cursor abandoning code-traversal systems) says don't.
@@ -110,8 +149,10 @@ Shift template weight from discipline lists toward directionality:
 
 ## Dependencies / sequencing
 1 and 2 compose (telemetry feeds lifecycle). 3 and 4 are skill/template
-content edits gated on Max's approval. 5 rides on any release PR. Suggested
-first feature slug: `earn-your-keep` covering workstreams 1–2.
+content edits gated on Max's approval. 5 rides on any release PR. 6 is
+approved in principle (per-project disable — Max, 2026-08-30) and splits into
+an init offer + a tune detection; it can ship independently of 1–4.
+Suggested first feature slug: `earn-your-keep` covering workstreams 1–2.
 
 ## Open questions for Max
 - Threshold for discovery staleness (60 days? releases-based?).
