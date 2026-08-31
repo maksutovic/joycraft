@@ -56,6 +56,17 @@ read 0 times across M sessions is an empirical RETIRE signal.
 - Implementation sketch: transcripts live in `~/.claude/projects/<slug>/`;
   a pure function maps transcript tool calls → per-doc read/write counts.
   No telemetry infra, no network.
+- Feasibility (researched 2026-08-30, see research doc Q1/Q2): **Claude Code:
+  trivial** — JSONL with structured `input.file_path` on Read/Write/Edit
+  `tool_use` blocks. **Pi: feasible** — typed JSONL sessions per cwd under
+  `~/.pi/agent/sessions/`. **Codex: degraded** — file ops are `exec_command`
+  shell strings in `~/.codex/sessions/`, so detection requires parsing
+  command text; ship Claude+Pi first, Codex best-effort.
+- Boundary note: `src/frontmatter.ts` already reads
+  `~/.claude/projects/<slug>/memory/` (owner resolution) — precedent that
+  runtime external reads are in-bounds; only *shipped template/skill text*
+  must avoid literal absolute paths (use a derived path, as frontmatter.ts
+  does).
 - Success metric: optimize report shows a ratio column; RETIRE recommendations
   cite it.
 
@@ -140,6 +151,12 @@ Product hooks:
   supersedes it."
 - Codex/Pi equivalents: research question — check whether those harnesses
   have comparable auto-memory to disable (Pi reportedly ships none by design).
+- Interaction (research Q8): `resolveOwner()` in `src/frontmatter.ts` caches
+  `joycraft-owner.txt` in the auto-memory dir. Disabling auto-memory leaves
+  the dir dormant-but-usable, so owner resolution survives; if tune's
+  cleanup step deletes the dir, the `git config user.name` fallback covers
+  it — but the cleanup step must not treat `joycraft-owner.txt` as a stale
+  memory.
 
 ### Non-goals
 - No embeddings, graphs, or retrieval machinery — the critique's strongest
