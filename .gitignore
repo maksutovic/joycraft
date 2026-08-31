@@ -10,3 +10,4 @@ dist/
 .build/
 src/bundled-files.ts
 docs/.joycraft/state.json
+docs/max-discussion-transcripts/
