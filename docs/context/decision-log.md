@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-08-11
+last_updated: 2026-08-31
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -10,6 +10,8 @@ last_updated_by: Maximilian Maksutovic
 ## Decisions
 
 | Date | Decision | Why | Alternatives Rejected | Revisit When |
+| 2026-08-31 | Curated-harness D2: the read-telemetry transcript scan runs at session-end (regular cadence), accumulating evidence that optimize consumes | Optimize is often a one-time invocation; session-end runs every feature, so write-never-read evidence stays current (human choice at the research gate) | Automatic inside optimize only (stale between rare runs); opt-in audit (nobody runs optional audits) | If session-end grows too heavy or the scan slows wrap-up noticeably |
+| 2026-08-31 | Curated-harness D1: ungraduated discoveries are flagged stale at 7 days from `created:` (advisory, never auto-delete) | People move fast through projects — a week is enough to show a discovery is *never* read (human choice at the research gate, overriding the 60-day recommendation) | 60 days (too slow to surface decay); release-based trigger (couples to publish cadence) | If 7 days proves noisy — flags firing on discoveries still in active use |
 | 2026-08-11 | STE D6: the interview playback gate regains a one-line style-contract citation inside this feature (dedicated spec), not later in the succinct-gates queue | Human choice at the decompose gate, overriding the defer recommendation; with D4 covering dialogue, the playback gate must carry the delivery pointer, not just the obligation | Deferring to the succinct-gates queue when its in-review specs graduate (recommended, rejected) | If the succinct-gates in-review interview specs get revised before this lands — coordinate the file edit |
 | 2026-08-11 | STE D1 amended (supersedes the same-day append shape): output-style.md is rewritten as one integrated STE rule set (~10 rules merging the prior 8 with STE mechanics), the doc itself written in STE; the template test updates in the same spec, keeping the score-scale and absolute-path bans | Human direction at the decompose gate: STE is the primary house style, not an addon section; an appended section reads as optional and leaves two competing voices in one doc | Append-a-section (the original D1 shape); keeping the 8 rules and weaving STE per-rule (STE reads as woven-in, not the foundation) | If the rewrite destabilizes the output-style test family or user projects push back after an upgrade |
 | 2026-08-11 | STE D4 amended (supersedes the same-day three-surface set): the contract governs all human-facing output — gate artifacts, PR bodies, session-end summaries, interview playback, and gate chat/dialogue | Human direction at the decompose gate: STE-styled artifacts and dialogue are the only form of conversation with the user; a surface split re-creates the two-voice problem | Written surfaces only, free-form dialogue (artifact voice and chat voice diverge) | If STE chat proves stilted in live interview sessions |

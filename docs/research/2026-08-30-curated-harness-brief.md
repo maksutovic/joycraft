@@ -53,6 +53,9 @@ read 0 times across M sessions is an empirical RETIRE signal.
 - Feed write/read ratios into `joycraft-optimize` as a new evidence label
   (e.g. `NEVER_READ`, `WRITE_HEAVY`), making Reaper dispositions defensible
   instead of judgment-only.
+- **Decided (D2, 2026-08-31):** the scan runs at **session-end** — regular
+  cadence, every feature — accumulating evidence that optimize consumes.
+  Optimize is often a one-time invocation; session-end keeps the data fresh.
 - Implementation sketch: transcripts live in `~/.claude/projects/<slug>/`;
   a pure function maps transcript tool calls → per-doc read/write counts.
   No telemetry infra, no network.
@@ -74,8 +77,10 @@ read 0 times across M sessions is an empirical RETIRE signal.
 Point-in-time state must not sit forever. Give every discovery/fact an
 implicit lifecycle: **fresh → graduated (into AGENTS.md / a check) → retired**.
 
-- `joycraft-session-end` and `joycraft-optimize` flag discoveries older than a
-  threshold (e.g. 60 days) that were never graduated.
+- `joycraft-session-end` and `joycraft-optimize` flag discoveries older than
+  **7 days** (decided D1, 2026-08-31 — people move fast through projects; a
+  week is enough to show a discovery is *never* read; advisory only, never
+  auto-delete) that were never graduated.
 - The shipped ledger is the existing graduation target for "this happened";
   AGENTS.md/harden for "this is always true"; deletion for "this was a moment".
 - Explicitly ban the three decay categories in the add-fact routing rubric:
@@ -172,6 +177,7 @@ an init offer + a tune detection; it can ship independently of 1–4.
 Suggested first feature slug: `earn-your-keep` covering workstreams 1–2.
 
 ## Open questions for Max
-- Threshold for discovery staleness (60 days? releases-based?).
-- Should read-telemetry run automatically in optimize, or as a separate
-  opt-in audit (transcript access is privacy-adjacent for team installs)?
+None — both research-gate questions resolved 2026-08-31 (decision-log
+Curated-harness D1: 7-day staleness; D2: telemetry runs at session-end,
+optimize consumes). Team-install transcript-privacy wording remains a
+design-doc concern, not an open decision.
