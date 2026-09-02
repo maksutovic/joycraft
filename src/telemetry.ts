@@ -51,6 +51,10 @@ export interface ScanOptions {
   piDir?: string;
   /** Codex transcript directory (rollout-*.jsonl). Defaults to the $HOME-derived path. */
   codexDir?: string;
+  /** Prefix session ids per harness (`claude:<id>`, `pi:<id>`, `codex:<id>`) in the result. */
+  namespaceSessions?: boolean;
+  /** Sessions to skip entirely (matched against ids as they appear in the result). */
+  excludeSessions?: ReadonlySet<string>;
 }
 
 // --- knowledge-layer filter -------------------------------------------------
@@ -393,6 +397,10 @@ interface SourceProfile {
   fidelity?: 'degraded';
   /** Codex: sessions are global, so count a file only when its session_meta cwd names this project. */
   requireCwdMatch?: boolean;
+  /** Harness namespace prepended to session ids (`claude:<id>`). */
+  prefix?: string;
+  /** Sessions (as namespaced when a prefix is set) whose files are skipped. */
+  exclude?: ReadonlySet<string>;
 }
 
 function scanFile(
@@ -437,7 +445,9 @@ function scanFile(
   }
 
   if (pending.length === 0 || !cwdMatched) return;
-  const id = sessionId ?? fallbackId;
+  const bareId = sessionId ?? fallbackId;
+  const id = source.prefix ? `${source.prefix}:${bareId}` : bareId;
+  if (source.exclude?.has(id)) return;
   acc.sessions.add(id);
   for (const { op, mandated } of pending) {
     record(acc, id, op.path, op, mandated, source.fidelity);
@@ -452,14 +462,17 @@ function scanFile(
 export async function scanTranscripts(projectDir: string, opts: ScanOptions = {}): Promise<ScanResult> {
   const acc: Accumulator = { docs: new Map(), sessions: new Set() };
 
+  const prefix = (harness: string): string | undefined => (opts.namespaceSessions ? harness : undefined);
+  const exclude = opts.excludeSessions;
+
   const claudeDir = opts.claudeDir ?? defaultClaudeTranscriptDir(projectDir);
   for (const file of listSessionFiles(claudeDir)) {
-    scanFile(acc, projectDir, file, parseClaudeSessionLine);
+    scanFile(acc, projectDir, file, parseClaudeSessionLine, { prefix: prefix('claude'), exclude });
   }
 
   const piDir = opts.piDir ?? defaultPiTranscriptDir(projectDir);
   for (const file of listSessionFiles(piDir)) {
-    scanFile(acc, projectDir, file, parsePiSessionLine);
+    scanFile(acc, projectDir, file, parsePiSessionLine, { prefix: prefix('pi'), exclude });
   }
 
   const codexDir = opts.codexDir ?? defaultCodexTranscriptDir();
@@ -468,6 +481,8 @@ export async function scanTranscripts(projectDir: string, opts: ScanOptions = {}
       forceMandated: true,
       fidelity: 'degraded',
       requireCwdMatch: true,
+      prefix: prefix('codex'),
+      exclude,
     });
   }
 

@@ -7,6 +7,7 @@ import {
   DEFAULT_GITIGNORE_PROFILE,
   type GitignoreProfile,
 } from './version.js';
+import { TELEMETRY_PATH } from './telemetry-store.js';
 
 /**
  * The harness directories the `private` profile gitignores. Tracking only
@@ -74,11 +75,15 @@ export function ensureGitignoreEntry(targetDir: string, line: string): boolean {
  * added this call.
  */
 export function applyGitignoreProfile(targetDir: string, profile: GitignoreProfile): string[] {
+  // Machine-owned files under docs/.joycraft/ — since docs/ is always tracked,
+  // both profiles must list them explicitly (telemetry.json additionally holds
+  // per-machine work patterns that must never publish).
+  const machineOwned = [STATE_PATH, TELEMETRY_PATH];
   if (profile === 'private') {
-    return ensureGitignoreEntries(targetDir, [...PRIVATE_PROFILE_IGNORES, STATE_PATH]);
+    return ensureGitignoreEntries(targetDir, [...PRIVATE_PROFILE_IGNORES, ...machineOwned]);
   }
-  // `shared`: only the hidden state file, matching long-standing behavior.
-  return ensureGitignoreEntries(targetDir, [STATE_PATH]);
+  // `shared`: only the machine-owned files, matching long-standing behavior.
+  return ensureGitignoreEntries(targetDir, machineOwned);
 }
 
 /** A resolved profile plus how it was arrived at. */

@@ -55,6 +55,22 @@ program
   });
 
 program
+  .command('telemetry')
+  .description('Scan AI-harness transcripts into knowledge-layer read telemetry')
+  .argument('[dir]', 'Target directory', '.')
+  .action(async (dir: string) => {
+    const { runTelemetryScan, formatTelemetrySummary } = await import('./telemetry-store.js');
+    const { resolve } = await import('node:path');
+    try {
+      const result = await runTelemetryScan(resolve(dir));
+      console.log(formatTelemetrySummary(result));
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : String(err));
+      process.exit(1);
+    }
+  });
+
+program
   .command('init-autofix')
   .description('Set up the Level 5 auto-fix loop with holdout scenarios')
   .argument('[dir]', 'Target directory', '.')

@@ -6,6 +6,7 @@ import { init } from '../src/init';
 import { upgrade } from '../src/upgrade';
 import { readVersion, STATE_PATH } from '../src/version';
 import { applyGitignoreProfile, PRIVATE_PROFILE_IGNORES } from '../src/gitignore';
+import { TELEMETRY_PATH } from '../src/telemetry-store';
 import { Readable } from 'node:stream';
 import { execFileSync } from 'node:child_process';
 
@@ -460,8 +461,8 @@ describe('gitignore profiles', () => {
   describe('idempotency', () => {
     it('applyGitignoreProfile adds nothing on a second call', () => {
       const first = applyGitignoreProfile(tmpDir, 'private');
-      // private now writes the harness dirs AND the hidden state file.
-      expect(first.sort()).toEqual([...PRIVATE_PROFILE_IGNORES, STATE_PATH].sort());
+      // private now writes the harness dirs AND the machine-owned docs/.joycraft files.
+      expect(first.sort()).toEqual([...PRIVATE_PROFILE_IGNORES, STATE_PATH, TELEMETRY_PATH].sort());
       const second = applyGitignoreProfile(tmpDir, 'private');
       expect(second).toEqual([]);
     });

@@ -3,7 +3,7 @@
   "specs": [
     { "id": 1, "file": "add-telemetry-scanner-core.md", "depends_on": [], "status": "in-review", "mode": "isolated" },
     { "id": 2, "file": "add-codex-telemetry-parser.md", "depends_on": [1], "status": "in-review", "mode": "batch" },
-    { "id": 3, "file": "add-telemetry-cli-and-store.md", "depends_on": [1], "status": "todo", "mode": "checkpoint" },
+    { "id": 3, "file": "add-telemetry-cli-and-store.md", "depends_on": [1], "status": "in-review", "mode": "checkpoint" },
     { "id": 4, "file": "wire-session-end-telemetry.md", "depends_on": [3], "status": "todo", "mode": "batch" },
     { "id": 5, "file": "add-optimize-telemetry-evidence.md", "depends_on": [3], "status": "todo", "mode": "checkpoint" },
     { "id": 6, "file": "add-discovery-staleness-lifecycle.md", "depends_on": [4, 5], "status": "todo", "mode": "checkpoint" },
