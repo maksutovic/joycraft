@@ -55,7 +55,7 @@ Only capture what's NOT obvious from the code or git diff:
 **Impact:** [what this means for future work]
 ```
 
-If nothing surprising happened, skip the discovery file entirely. No discovery is a good sign — the spec was accurate.
+If nothing surprising happened, skip the discovery file entirely. No discovery is a good sign — the spec was accurate. While consolidating, also flag stale discoveries per the staleness rule in `docs/reference/knowledge-lifecycle.md` — an advisory list in your report, never an auto-delete.
 
 ## 1b. Update Context Documents
 

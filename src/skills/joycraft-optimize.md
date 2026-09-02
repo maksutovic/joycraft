@@ -236,7 +236,7 @@ Where Step 2b produced counts, a RETIRE recommendation for a knowledge-layer doc
 | 60 days without resolution | Default is shrink, not extend-the-study |
 | Troubleshooting-class doc | The insurance exemption — healthy baseline is near-zero voluntary reads; never a RETIRE candidate on read counts alone |
 
-A doc younger than the 30-session/60-day probation window is not RETIRE-actionable even at zero reads. Without telemetry (`INACCESSIBLE`), RETIRE stays judgment-only and says so.
+A doc younger than the 30-session/60-day probation window is not RETIRE-actionable even at zero reads. Without telemetry (`INACCESSIBLE`), RETIRE stays judgment-only and says so. Stale discoveries surface in the same report via the staleness rule in `docs/reference/knowledge-lifecycle.md` (invoked by citation, advisory only).
 
 **Live-work exclusion (checked first, applies to both paths):** a feature folder is **never a candidate** for either path if it has any spec `in-review`, or its brief's `status:` is not terminal. Skip it silently — this is active work, not exhaust. Also skip the feature folder the current session is working in.
 

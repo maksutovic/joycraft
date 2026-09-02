@@ -49,3 +49,21 @@ Live-head docs that grow as prepend-only ledgers (`docs/context/shipped.md`, `do
 5. The manifest is **created mechanically at first rotation only** — never scaffolded preemptively for a doc that hasn't yet crossed the budget. An empty manifest for a doc with zero shards is dead machinery.
 
 This procedure applies identically to any future live-head ledger that adopts the same newest-first, prepend-only, 200-line-budget shape.
+
+## Staleness Rule (advisory flag)
+
+Point-in-time knowledge must graduate or die. This rule is defined once here and invoked from both `joycraft-session-end` (discovery consolidation) and `joycraft-optimize` (the Reaper pass) — never restated per-consumer.
+
+A discovery file or fact row is **stale-flagged** when all of these hold:
+
+1. Its `created:` date is **more than 7 days** old (a row exactly 7 days old is not flagged).
+2. Its `status:` is not terminal. A discovery already graduated into the boundary file or the shipped ledger but left in place is terminal-equivalent — note the graduation, don't flag it forever.
+3. **Additive telemetry condition** — when the telemetry store exists (`docs/.joycraft/telemetry.json`): the doc has **zero voluntary reads**. With no store, the rule still fires on age + status alone.
+
+A row with a missing `created:` is skipped and noted — never guess an age. The output is an **advisory stale list only — never auto-delete.**
+
+**Graduation targets.** Each flagged item moves to the home its shape earns: the **shipped ledger** for "this happened", the boundary file via `joycraft-harden` (as a deny pattern where checkable) for "this is always true", deletion for "this was a moment" (through the gated Delete verb above).
+
+**Validation rule.** The threshold is provisional: when more than half of 7-day flags fire on discoveries that are subsequently read, the threshold moves — retune it rather than defend it.
+
+**Honest residue.** Situational must-read content has no good home in the tier model — the dangerous-assumptions doc cannot promise it will be read at the right moment. The checkable subset converts via `joycraft-harden`; the worst of the rest promotes to L1; the remainder is documented accepted risk.
