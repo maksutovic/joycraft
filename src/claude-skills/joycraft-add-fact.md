@@ -19,7 +19,17 @@ If the user provides multiple facts at once, process each one separately through
 
 ## Step 2: Classify the Fact
 
-Route the fact to one of these 5 context documents based on its content:
+### Reject before you route
+
+A curated layer rots when it absorbs facts that decay. Check these three reject-signals FIRST — a fact matching any of them is not captured:
+
+- **Redundant with CLAUDE.md** — the fact restates a rule CLAUDE.md already carries. Example: "we never push to main."
+- **Expired shipped-state** — the fact describes a state the shipped ledger already supersedes. Example: "the retry logic is being rewritten."
+- **Point-in-time hazard** — PR numbers, "currently broken", live URLs to unshipped work. Example: "PR #412 is currently broken."
+
+Reject with a one-line reason and, where one exists, the fact's correct existing home ("already in CLAUDE.md under NEVER"). Never silently drop a fact — the human can override and capture it anyway with the ban noted.
+
+If none fire, route the fact to one of these 5 context documents based on its content:
 
 ### `docs/context/production-map.md`
 The fact is about **infrastructure, services, environments, URLs, endpoints, credentials, or what is safe/unsafe to touch**.
@@ -65,66 +75,15 @@ grep -ril '<topic keywords>' docs/context/ docs/discoveries/ docs/reference/
 ## Step 3: Ensure the Target Document Exists
 
 1. If `docs/context/` does not exist, create the directory.
-2. If the target document does not exist, create it from the template structure. Check `docs/templates/` for the matching template. If no template exists, use this minimal structure:
+2. If the target document does not exist, create it from `docs/templates/` (the matching template is the source of truth for its structure). If no template is installed, write a minimal file: an `# H1` title, a one-line `>` purpose blurb, one `##` section, and the header row of the table below — except institutional-knowledge, which is a list.
 
-For **production-map.md**:
-```markdown
-# Production Map
-
-> What's real, what's staging, what's safe to touch.
-
-## Services
-
-| Service | Environment | URL/Endpoint | Impact if Corrupted |
-|---------|-------------|-------------|-------------------|
-```
-
-For **dangerous-assumptions.md**:
-```markdown
-# Dangerous Assumptions
-
-> Things the AI agent might assume that are wrong in this project.
-
-## Assumptions
-
-| Agent Might Assume | But Actually | Impact If Wrong |
-|-------------------|-------------|----------------|
-```
-
-For **decision-log.md**:
-```markdown
-# Decision Log
-
-> Why choices were made, not just what was chosen.
-
-## Decisions
-
-| Date | Decision | Why | Alternatives Rejected | Revisit When |
-|------|----------|-----|----------------------|-------------|
-```
-
-For **institutional-knowledge.md**:
-```markdown
-# Institutional Knowledge
-
-> Unwritten rules, team conventions, and organizational context.
-
-## Team Conventions
-
-- (none yet)
-```
-
-For **troubleshooting.md**:
-```markdown
-# Troubleshooting
-
-> What to do when things go wrong for non-code reasons.
-
-## Common Failures
-
-| When This Happens | Do This | Don't Do This |
-|-------------------|---------|---------------|
-```
+| Document | Section | Columns |
+|----------|---------|---------|
+| production-map | Services | Service, Environment, URL/Endpoint, Impact if Corrupted |
+| dangerous-assumptions | Assumptions | Agent Might Assume, But Actually, Impact If Wrong |
+| decision-log | Decisions | Date, Decision, Why, Alternatives Rejected, Revisit When |
+| institutional-knowledge | Team Conventions | (list, not a table) |
+| troubleshooting | Common Failures | When This Happens, Do This, Don't Do This |
 
 ## Step 4: Read the Target Document
 
