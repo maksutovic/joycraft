@@ -1,7 +1,43 @@
+---
+decisions:
+  - id: D1
+    question: staleness window for ungraduated discoveries
+    status: clarified
+    choice: 7 days from created, advisory only
+    rationale: because people move fast through projects — a week shows a discovery is never read (stamped 2026-08-31)
+  - id: D2
+    question: when the telemetry scan runs
+    status: clarified
+    choice: at session-end; optimize consumes
+    rationale: because optimize is often a one-time invocation and session-end runs every feature (stamped 2026-08-31)
+  - id: D3
+    question: how the telemetry scanner ships and runs
+    status: clarified
+    choice: pure TS module + `joycraft telemetry` CLI subcommand, invoked via npx at session-end, graceful skip
+    rationale: because it keeps things deterministic and testable
+  - id: D4
+    question: how telemetry evidence surfaces in optimize
+    status: clarified
+    choice: exactly-seven evidence labels — NEVER_READ and WRITE_HEAVY join the five
+    rationale: because we want things as greppable as possible; the exactly-N contract is ours and greppability is its purpose
+  - id: D5
+    question: shape and placement of directional content
+    status: clarified
+    choice: one `## Product Identity` section in L1, elicit-first, zero-sum admission + behavioral check
+    rationale: because the panel was unanimous that probabilistic reads defeat directional content, and the conditions answer the A/B evidence that value-prose alone changes nothing
+  - id: D6
+    question: fate of the generated architecture tree
+    status: clarified
+    choice: check-shaped folder map — folders + one-liners, regenerated at init/upgrade, drift-diffed by tune
+    rationale: because a hand-maintained tree is a guaranteed-drift prose copy of machine-derivable truth
+---
+
 # Brief: Incorporating the memory-systems critique into Joycraft
 
 **Date:** 2026-08-30
 **Status:** Draft — for discussion / decomposition
+
+> **Design:** docs/features/2026-08-30-curated-harness/design.md
 **Source material:** `docs/max-discussion-transcripts/2026-08-30-memory-systems-critique.md`
 (local, untracked)
 **Attribution note:** The source video is by Theo Browne (t3.gg), reacting to a
@@ -169,12 +205,40 @@ Product hooks:
 - No new skill that encodes codebase facts.
 - Do not remove the knowledge layer — tier and reap it.
 
+## Hard Constraints
+
+- The telemetry scanner tags every read `mandated` or `voluntary`; only voluntary reads feed retire/keep evidence (panel requirement riding D3).
+- The scanner is a pure TS module in `src/` + CLI subcommand; skills never carry inline scan logic; session-end degrades gracefully without it (D3).
+- optimize's evidence vocabulary is exactly seven, no synonyms; `NEVER_READ` = ≥1 write and 0 voluntary reads, `WRITE_HEAVY` = ≥3:1 (D4).
+- `## Product Identity` is written elicit-first — never scaffolded as a TODO stub at init (D5).
+- Directional lines added to L1 name what they displace; the section ships small and dated with a pre-committed review at the next optimize run (D5 conditions).
+- The generated architecture section is a machine-regenerated folder map with a drift check, never a hand-maintained tree (D6).
+- Pre-committed telemetry thresholds (30-session probation, >20% survival, ~1-per-10 kill line, 60-day sunset, troubleshooting insurance exemption) are recorded in design.md §2 and are not re-litigated at decompose time.
+
 ## Dependencies / sequencing
 1 and 2 compose (telemetry feeds lifecycle). 3 and 4 are skill/template
 content edits gated on Max's approval. 5 rides on any release PR. 6 is
 approved in principle (per-project disable — Max, 2026-08-30) and splits into
 an init offer + a tune detection; it can ship independently of 1–4.
 Suggested first feature slug: `earn-your-keep` covering workstreams 1–2.
+
+## Execution Strategy
+
+Decomposed 2026-09-01 into 14 atomic specs at
+`docs/features/2026-08-30-curated-harness/specs/` (see its README for the
+spec table and per-spec modes). Wave plan:
+
+- Wave 1 (parallel-safe): specs 1 scanner-core, 7 decay-bans, 9
+  identity-generators, 12 positioning, 13 init-offer, 14 tune-finding.
+- Wave 2 (sequential): specs 2 codex-parser, 3 cli-and-store, 10
+  identity-elicitation, 11 folder-map-check.
+- Wave 3 (parallel-safe): specs 4 session-end wiring, 5 optimize evidence.
+- Wave 4: spec 6 staleness lifecycle. Wave 5: spec 8 harden-first reorder.
+
+Feature-queue mapping: specs 1–7 = `earn-your-keep` (WS1+WS2); specs 8–11 =
+WS3+WS4; spec 12 rides a release PR (WS5); specs 13–14 ship independently
+(WS6). No terminal sync spec — every skill-editing spec regenerates bundles
+and syncs installed trees in its own commit.
 
 ## Open questions for Max
 None — both research-gate questions resolved 2026-08-31 (decision-log

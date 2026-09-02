@@ -1,0 +1,264 @@
+<meta charset="utf-8">
+<title>Decompose Review — curated-harness</title>
+<style>
+  /* Design tokens: light theme is the default set on :root. These are the
+     decision dossier's tokens verbatim — one design system, two skeletons. */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono, .spec-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Context strip: grounded facts as .lock-chip spans; .open marks an item that
+     is still unsettled. The container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  /* Content section. Repeat once per topic. */
+  section.sec { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .sec-head h2 { margin: 0; }
+  h2 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 18px; max-width: 74ch; }
+
+  /* Block A — pillars: a card grid for 2–4 parallel ideas. */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .pillar h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pillar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* Block B — tablebox: any table (spec lists, decomposition plans). Scrolls
+     inside its own box on narrow screens so the body never scrolls. */
+  .tablebox { margin-top: 6px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+  .tablebox table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+  .tablebox th { text-align: left; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  .tablebox td { padding: 11px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+  .tablebox tr:last-child td { border-bottom: none; }
+  .spec-name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .size { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--ink-2); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .wave { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--accent-wash); color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+
+  /* Block C — cols: the must / must-not pair. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .col .clab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .col ul { margin: 9px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .col li { color: var(--ink-2); margin-bottom: 5px; line-height: 1.4; }
+  .col.must li::before { content: "✓ "; color: var(--good-ink); font-weight: 700; }
+  .col.must-not li::before { content: "✗ "; color: var(--bad-ink); font-weight: 700; }
+
+  /* Block D — criteria: an acceptance checklist. */
+  .criteria { margin: 6px 0 0; padding: 0; list-style: none; }
+  .criteria li { position: relative; padding: 9px 0 9px 26px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-2); }
+  .criteria li:last-child { border-bottom: none; }
+  .criteria li::before { content: "□"; position: absolute; left: 2px; color: var(--ink-3); }
+  .criteria li.met::before { content: "☑"; color: var(--good-ink); }
+
+  /* Questions. One .q card per open question; amber left border. */
+  .questions { margin-top: 54px; }
+  .q { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warn-ink); border-radius: 8px; padding: 18px 22px; margin-top: 12px; }
+  .q .qnum { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .q h3 { font-size: 16.5px; font-weight: 700; margin: 6px 0 8px; }
+  .q .rec { font-size: 14.5px; color: var(--ink); margin: 0 0 6px; }
+  .q .rec strong { color: var(--accent-ink); }
+  .q .why { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 74ch; }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decompose Review · feature: curated-harness · rev 1 · September 01, 2026 20:26</div>
+  <h1>14 atomic specs across 5 waves</h1>
+  <p class="dek">The approved curated-harness design, decomposed into an executable spec queue. Every constraint traces to a stamped decision, the design, or the brief — zero INVENTED premises. Review the breakdown, the wave plan, and the mode recommendations.</p>
+  <div class="locked">
+    <span class="lock-chip">D1 · 7-day staleness, advisory</span>
+    <span class="lock-chip">D2 · scan at session-end</span>
+    <span class="lock-chip">D3 · scanner = CLI subcommand</span>
+    <span class="lock-chip">D4 · exactly seven evidence labels</span>
+    <span class="lock-chip">D5 · Product Identity, elicit-first</span>
+    <span class="lock-chip">D6 · check-shaped folder map</span>
+    <span class="lock-chip">zero INVENTED constraints</span>
+    <span class="lock-chip open">modes await your OK</span>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Plan</span>
+    <h2>The spec queue</h2>
+  </div>
+  <p class="sub">One row per atomic spec. Deps reference spec numbers. Mode is the recommended execution mode — the project default is batch (no default line exists in CLAUDE.md), with the size heuristic applied: L → isolated, M → checkpoint, S/XS → batch.</p>
+
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Spec</th><th>Description</th><th>Deps</th><th>Size</th><th>Mode</th><th>Stream</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td class="spec-name">add-telemetry-scanner-core</td><td>Pure scanner module in src/ that parses Claude and Pi transcripts into per-doc read/write counts, every read tagged mandated or voluntary.</td><td>—</td><td><span class="size">L</span></td><td><span class="size">isolated</span></td><td><span class="wave">WS1</span></td></tr>
+        <tr><td>2</td><td class="spec-name">add-codex-telemetry-parser</td><td>Best-effort Codex exec_command string parser behind the same scanner interface, labeled degraded.</td><td>1</td><td><span class="size">S</span></td><td><span class="size">batch</span></td><td><span class="wave">WS1</span></td></tr>
+        <tr><td>3</td><td class="spec-name">add-telemetry-cli-and-store</td><td>joycraft telemetry CLI subcommand accumulating counts into gitignored docs/.joycraft/telemetry.json with a scanned-session list.</td><td>1</td><td><span class="size">M</span></td><td><span class="size">checkpoint</span></td><td><span class="wave">WS1</span></td></tr>
+        <tr><td>4</td><td class="spec-name">wire-session-end-telemetry</td><td>session-end invokes the scanner via npx and skips gracefully (INACCESSIBLE) when unavailable.</td><td>3</td><td><span class="size">S</span></td><td><span class="size">batch</span></td><td><span class="wave">WS1</span></td></tr>
+        <tr><td>5</td><td class="spec-name">add-optimize-telemetry-evidence</td><td>optimize grows to exactly seven evidence labels and Reaper RETIRE recommendations cite counts under the pre-committed thresholds.</td><td>3</td><td><span class="size">M</span></td><td><span class="size">checkpoint</span></td><td><span class="wave">WS1</span></td></tr>
+        <tr><td>6</td><td class="spec-name">add-discovery-staleness-lifecycle</td><td>The 7-day rule lands once in knowledge-lifecycle.md (+ template twin); session-end and optimize cite it, advisory only.</td><td>4, 5</td><td><span class="size">M</span></td><td><span class="size">checkpoint</span></td><td><span class="wave">WS2</span></td></tr>
+        <tr><td>7</td><td class="spec-name">add-decay-category-bans</td><td>add-fact Step 2 gains the three decay-category bans as reject-signals before classification.</td><td>—</td><td><span class="size">S</span></td><td><span class="size">batch</span></td><td><span class="wave">WS2</span></td></tr>
+        <tr><td>8</td><td class="spec-name">reorder-add-fact-harden-first</td><td>add-fact asks the harden escalation question first (absorbing Step 6); session-end Step 1b gains the same one-line gate; test pins update same-commit.</td><td>6, 7</td><td><span class="size">M</span></td><td><span class="size">checkpoint</span></td><td><span class="wave">WS3</span></td></tr>
+        <tr><td>9</td><td class="spec-name">add-product-identity-generators</td><td>Both generators gain one append-only, regex-guarded Product Identity section (Values/Glossary/Taste), written only when elicited content exists.</td><td>—</td><td><span class="size">M</span></td><td><span class="size">checkpoint</span></td><td><span class="wave">WS4</span></td></tr>
+        <tr><td>10</td><td class="spec-name">add-identity-elicitation</td><td>gather-context gains the identity elicitation questions (zero-sum admission + behavioral check); interview gains at most a pointer.</td><td>9</td><td><span class="size">S</span></td><td><span class="size">batch</span></td><td><span class="wave">WS4</span></td></tr>
+        <tr><td>11</td><td class="spec-name">add-folder-map-check</td><td>The generated architecture section becomes a filesystem-regenerated folder map drift-diffed by tune; Joycraft's own AGENTS.md tree is the first trim.</td><td>9 (file order)</td><td><span class="size">M</span></td><td><span class="size">checkpoint</span></td><td><span class="wave">WS4</span></td></tr>
+        <tr><td>12</td><td class="spec-name">add-positioning-readme</td><td>README gains the "curated harness, not a memory system" stance and the Acknowledgments section.</td><td>—</td><td><span class="size">XS</span></td><td><span class="size">batch</span></td><td><span class="wave">WS5</span></td></tr>
+        <tr><td>13</td><td class="spec-name">add-init-auto-memory-offer</td><td>init interactively offers to write autoMemoryEnabled: false into project .claude/settings.json, idempotent and guarded.</td><td>—</td><td><span class="size">S</span></td><td><span class="size">batch</span></td><td><span class="wave">WS6</span></td></tr>
+        <tr><td>14</td><td class="spec-name">add-tune-auto-memory-finding</td><td>tune gains an advisory auto-memory finding with graduate-then-archive guidance that spares joycraft-owner.txt.</td><td>—</td><td><span class="size">S</span></td><td><span class="size">batch</span></td><td><span class="wave">WS6</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Order</span>
+    <h2>Execution waves</h2>
+  </div>
+  <p class="sub">Dependency order says what can run together. Parallel-safety says what will not conflict when it does — only waves 1 and 3 have disjoint Affected Files.</p>
+
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>Wave</th><th>Specs</th><th>Parallel</th><th>Note</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="wave">1</span></td><td class="spec-name">1, 7, 9, 12, 13, 14</td><td>parallel-safe</td><td>Disjoint files. Specs 7 and 14 edit different skill files, so their regenerated trees do not collide.</td></tr>
+        <tr><td><span class="wave">2</span></td><td class="spec-name">2, 3, 10, 11</td><td>NOT parallel-safe</td><td>Specs 2 and 3 both touch the src/telemetry.ts entry point. Run sequentially.</td></tr>
+        <tr><td><span class="wave">3</span></td><td class="spec-name">4, 5</td><td>parallel-safe</td><td>session-end vs optimize — disjoint skill files and tests.</td></tr>
+        <tr><td><span class="wave">4</span></td><td class="spec-name">6</td><td>sequential</td><td>Edits both wave-3 skills plus the lifecycle doc.</td></tr>
+        <tr><td><span class="wave">5</span></td><td class="spec-name">8</td><td>sequential</td><td>Edits add-fact and session-end after specs 6 and 7 settle them.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cols">
+    <div class="col must">
+      <span class="clab">Must</span>
+      <ul>
+        <li>Every skill-editing spec regenerates bundles and syncs installed trees in its own commit (2026-05-21 discovery: no terminal sync spec).</li>
+        <li>Additions to the five over-budget skills are paid for with same-commit trims or citations (design §4).</li>
+        <li>Reads tagged mandated vs voluntary — only voluntary reads feed retire/keep evidence (D3, panel 5/6).</li>
+        <li>Any auto-memory cleanup guidance spares joycraft-owner.txt (design §2 WS6).</li>
+      </ul>
+    </div>
+    <div class="col must-not">
+      <span class="clab">Must not</span>
+      <ul>
+        <li>Reopen D1–D6 or re-litigate the pre-committed telemetry thresholds (brief Hard Constraints).</li>
+        <li>Ship literal absolute paths in skill or template text — derive at runtime (design §3).</li>
+        <li>Scaffold a Product Identity TODO stub at init (D5: elicit-first).</li>
+        <li>Commit src/bundled-files.ts or telemetry.json — both are gitignored machine artifacts.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="questions">
+  <div class="sec-head">
+    <span class="eyebrow">Open</span>
+    <h2>Questions for you</h2>
+  </div>
+  <div class="q">
+    <span class="qnum">Q1</span>
+    <h3>Does this breakdown match how you think about the feature?</h3>
+    <p class="rec"><strong>Recommend:</strong> keep the 14-spec split — one specs folder, with the design's two feature queues preserved as wave groupings (specs 1–7 = earn-your-keep, 8–11 = harden-first-directional, 12–14 = riders).</p>
+    <p class="why">The handoff asked for one specs folder under 2026-08-30-curated-harness. 14 specs is above the 3–7 guideline because the brief spans six workstreams — the wave plan keeps each queue segment at normal size.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">Q2</span>
+    <h3>Is spec 1 too big?</h3>
+    <p class="rec"><strong>Recommend:</strong> keep it whole — shared scanner types plus Claude and Pi parsers belong in one commit.</p>
+    <p class="why">Splitting by harness would put the interface and its first consumer in different specs. Codex (spec 2) already split off because it is best-effort string parsing, not structured.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">Q3</span>
+    <h3>Do the mode recommendations hold?</h3>
+    <p class="rec"><strong>Recommend:</strong> isolated for spec 1, checkpoint for the six M specs, batch for the seven S/XS specs.</p>
+    <p class="why">CLAUDE.md carries no default-mode line, so batch is the fallback default. The size heuristic drives the rest. Say the word and any spec's mode changes in both frontmatter and the queue manifest.</p>
+  </div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>A yes looks like "approved" or "approved, change spec N to mode X" — answers land in the spec frontmatter and .joycraft-spec-queue.json. A change request names the spec number and what to merge, split, or resize. If the framing itself is wrong — wrong boundaries, wrong queue shape — reject it outright and say what is right instead; the table regenerates from your framing.</p>
+</div>
+
+<footer>
+  <p>Generated by joycraft-decompose · feature 2026-08-30-curated-harness · brief docs/research/2026-08-30-curated-harness-brief.md · rev 1 · generated 2026-09-01T20:26:24-0700</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

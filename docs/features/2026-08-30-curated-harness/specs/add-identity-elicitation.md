@@ -1,5 +1,5 @@
 ---
-status: in-review
+status: done
 owner: Maximilian Maksutovic
 created: 2026-09-01
 feature: 2026-08-30-curated-harness

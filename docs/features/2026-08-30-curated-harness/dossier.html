@@ -1,0 +1,474 @@
+<meta charset="utf-8">
+<title>Decision Dossier — curated-harness</title>
+<style>
+  /* Design tokens: light theme is the default set on :root */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Locked / context strip. Use .locked with .lock-chip for a decisions-locked
+     strip (add .open for still-open items), OR .tiers with .tier-col for a
+     structured context grid. Either fills the same slot; both are optional but
+     the container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  .tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px 0 20px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  @media (max-width: 680px) { .tiers { grid-template-columns: 1fr; } }
+  .tier-col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .tier-col .tlab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+  .tier-model { font-size: 13px; font-weight: 700; padding: 4px 11px; border-radius: 6px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-role { font-size: 13.5px; color: var(--ink-2); }
+
+  section.decision { margin-top: 54px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 26px 30px 28px; }
+  .d-id { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  h2 { font-size: 23px; font-weight: 700; margin: 6px 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  .d-why { font-size: 15px; color: var(--ink-2); margin: 0 0 20px; max-width: 72ch; }
+
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .opt { border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; background: var(--ground); display: flex; flex-direction: column; gap: 8px; }
+  .opt.rec { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .opt-head { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  h3 { font-size: 15.5px; font-weight: 700; margin: 0; }
+  .tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; }
+  .pros, .cons { margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
+  .pros li::before { content: "+ "; color: var(--good-ink); font-weight: 700; }
+  .cons li::before { content: "− "; color: var(--bad-ink); font-weight: 700; }
+  .pros li, .cons li { color: var(--ink-2); margin-bottom: 3px; line-height: 1.4; }
+  .blast { margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--rule-strong); }
+  .blast .blab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; display: block; margin-bottom: 5px; }
+  .bchips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .bchip { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .bchip.warn { background: var(--warn-wash); color: var(--warn-ink); font-weight: 600; }
+
+  /* Optional per-decision flow diagram. Scrolls inside its own box on narrow
+     screens (min-width on .flow-line + overflow-x on .flow) so the body never
+     scrolls horizontally. */
+  .flow { margin-top: 18px; background: var(--ground); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; overflow-x: auto; }
+  .flow .flab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .flow-line { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-width: 560px; }
+  .fnode { font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 6px; background: var(--surface); border: 1px solid var(--rule-strong); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .fnode.hi { border-color: var(--accent); color: var(--accent-ink); }
+  .fnode.gate { border-color: var(--warn-ink); color: var(--warn-ink); }
+  .farrow { color: var(--ink-3); flex: none; }
+  .unv { font-size: 11px; color: var(--warn-ink); font-weight: 600; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+
+  .manifest { margin-top: 54px; }
+  .man-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .man-head h2 { margin: 0; }
+  .man-sub { font-size: 14.5px; color: var(--ink-2); margin: 8px 0 16px; max-width: 74ch; }
+  .man-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .vchip { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; text-align: center; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .v-ok { background: var(--good-wash); color: var(--good-ink); }
+  .v-un { background: var(--warn-wash); color: var(--warn-ink); }
+  .man-row p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .man-row p strong { color: var(--ink); }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decision Dossier · feature: curated-harness · September 1, 2026 · rev 1</div>
+  <h1>How the harness measures, escalates, and directs</h1>
+  <p class="dek">D1 (7-day staleness) and D2 (scan at session-end) are locked. Four design choices remain before decomposition: how the telemetry scanner ships, how its evidence surfaces in optimize, what shape directional content takes, and what happens to the generated architecture tree.</p>
+  <div class="locked">
+    <span class="lock-chip">✓ D1 · 7-day staleness, advisory only</span>
+    <span class="lock-chip">✓ D2 · scan at session-end, optimize consumes</span>
+    <span class="lock-chip">✓ Claude+Pi first, Codex best-effort</span>
+    <span class="lock-chip">✓ telemetry.json machine-local, gitignored</span>
+    <span class="lock-chip open">D3 open</span>
+    <span class="lock-chip open">D4 open</span>
+    <span class="lock-chip open">D5 open</span>
+    <span class="lock-chip open">D6 open</span>
+  </div>
+</header>
+
+<section class="decision">
+  <span class="d-id">D3 · SCANNER DELIVERY</span>
+  <h2>How does the telemetry scanner ship and run at session-end?</h2>
+  <p class="d-why">The scanner must parse three JSONL dialects (one of them shell-string guesswork) and aggregate counts. Skills are copied files that work without Joycraft installed, and STE D2 already ruled a user-side script obligation out of the spirit of a skill — every delivery path breaks one norm or another.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>CLI subcommand — <span class="mono">npx joycraft telemetry</span></h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Real TypeScript with unit tests — the detect.ts idiom the repo already trusts</li>
+        <li>Codex shell-string parsing is far saner in code than in skill prose</li>
+        <li>Session-end skips gracefully when unavailable (evidence: INACCESSIBLE)</li>
+      </ul>
+      <ul class="cons">
+        <li>Soft npx dependency in a skill designed to work without Joycraft installed</li>
+        <li>npx cache staleness is a known trap (0.7.10 session)</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">src/telemetry.ts (new)</span>
+          <span class="bchip">src/cli.ts</span>
+          <span class="bchip">joycraft-session-end.md</span>
+          <span class="bchip">joycraft-optimize.md</span>
+          <span class="bchip warn">npx availability at session-end</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Inline bash/jq in the skill</h3>
+      </div>
+      <ul class="pros">
+        <li>Fully self-contained — zero install, matches the copy-not-symlink rule</li>
+      </ul>
+      <ul class="cons">
+        <li>jq is not guaranteed on user machines</li>
+        <li>Untestable aggregation logic in prose — the exact failure mode we call degraded in Codex</li>
+        <li>Bloats a skill already 11 lines over budget</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-session-end.md</span>
+          <span class="bchip warn">untested shell logic × 3 harness dialects</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Shipped script installed at init</h3>
+      </div>
+      <ul class="pros">
+        <li>No npx dependency; testable in the repo</li>
+      </ul>
+      <ul class="cons">
+        <li>STE D2 precedent: a user-side script obligation is "out of the spirit of a skill"</li>
+        <li>New installed surface to sync, upgrade, and hash-track</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">new installed tree entry</span>
+          <span class="bchip">sync-skills.mjs</span>
+          <span class="bchip">upgrade.ts state hashes</span>
+          <span class="bchip warn">contradicts STE D2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flow">
+    <span class="flab">Recommended path at session-end</span>
+    <div class="flow-line">
+      <span class="fnode">session-end Step 1</span>
+      <span class="farrow">→</span>
+      <span class="fnode hi">npx joycraft telemetry</span>
+      <span class="farrow">→</span>
+      <span class="fnode">scan new session files</span>
+      <span class="farrow">→</span>
+      <span class="fnode">docs/.joycraft/telemetry.json</span>
+      <span class="farrow">→</span>
+      <span class="fnode gate">unavailable? skip, INACCESSIBLE</span>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D4 · EVIDENCE SURFACE</span>
+  <h2>How does telemetry evidence appear in optimize's report?</h2>
+  <p class="d-why">The brief sketched new evidence labels (NEVER_READ, WRITE_HEAVY), but optimize's vocabulary rule says "exactly five, no synonyms" and keeps evidence labels disjoint from dispositions. Measured counts are findings, not evidence classes — the two framings pull in opposite directions.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Read/Write column, labels unchanged</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Preserves the exactly-five contract and its tests</li>
+        <li>The ratio column is the brief's own stated success metric</li>
+        <li>VERIFIED applies cleanly when telemetry.json was read this run</li>
+      </ul>
+      <ul class="cons">
+        <li>"Never read" is a cell value, not a greppable one-word label</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-optimize.md (table shape)</span>
+          <span class="bchip">upgrade-optimize-v2.test.ts</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>New labels: NEVER_READ / WRITE_HEAVY</h3>
+      </div>
+      <ul class="pros">
+        <li>Greppable one-word verdicts, as the brief sketched</li>
+      </ul>
+      <ul class="cons">
+        <li>Breaks the exactly-five contract; vocabulary prose and tests churn</li>
+        <li>Mixes what-we-know (evidence class) with what-we-measured (a finding)</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-optimize.md (vocab rules)</span>
+          <span class="bchip warn">exactly-five contract</span>
+          <span class="bchip">upgrade-optimize-v2.test.ts</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Ratio column + per-doc stale marker rows</h3>
+      </div>
+      <ul class="pros">
+        <li>Labels intact and a scannable verdict list</li>
+      </ul>
+      <ul class="cons">
+        <li>Two report surfaces for one finding — the drift shape ONE_HOME exists to flag</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-optimize.md (two sections)</span>
+          <span class="bchip warn">duplicate finding surface</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D5 · DIRECTIONAL CONTENT SHAPE</span>
+  <h2>What shape does product identity / glossary / taste take in generated CLAUDE.md and AGENTS.md?</h2>
+  <p class="d-why">Neither generator emits directional content today. The merge machinery appends whole sections guarded by header regexes, and the two files do not share that code — every extra section multiplies regex surface in two places. Template content is the core product (ask-first).</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>One <span class="mono">## Product Identity</span> section</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Single append unit: one generator + one regex per file</li>
+        <li>Values, glossary, and taste read as one directional block</li>
+      </ul>
+      <ul class="cons">
+        <li>A user wanting only a glossary carries the sibling subsection headings</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">improve-claude-md.ts</span>
+          <span class="bchip">agents-md.ts</span>
+          <span class="bchip">gather-context.md (+questions)</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Three top-level sections</h3>
+      </div>
+      <ul class="pros">
+        <li>Independently mergeable when a user already has one (e.g. a Glossary)</li>
+      </ul>
+      <ul class="cons">
+        <li>Triples the regex surface in two unshared merge chains</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">improve-claude-md.ts ×3</span>
+          <span class="bchip">agents-md.ts ×3</span>
+          <span class="bchip warn">6 new regex guards</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Doc-layer only, behind a Context Map pointer</h3>
+      </div>
+      <ul class="pros">
+        <li>Zero merge-logic risk</li>
+      </ul>
+      <ul class="cons">
+        <li>Directional content is exactly the always-loaded kind — a pointer defeats the values-not-disciplines point</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">src/templates/context/ (new file)</span>
+          <span class="bchip warn">identity content not always loaded</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="decision">
+  <span class="d-id">D6 · ARCHITECTURE TREE</span>
+  <h2>What happens to the generated architecture section?</h2>
+  <p class="d-why">The critique calls the where-code-lives map "probably the least useful thing" and the fastest to drift, but hedges with "keep it to folders… or drop it." The generator currently scaffolds a full tree; existing user files are protected by the header-regex guard either way.</p>
+  <div class="options">
+    <div class="opt rec">
+      <div class="opt-head">
+        <h3>Slim to folders + one-line descriptions</h3>
+        <span class="tag">Recommended</span>
+      </div>
+      <ul class="pros">
+        <li>Implements the trim with zero migration — existing files untouched</li>
+        <li>Adds an agent-maintainable framing note at generation time</li>
+      </ul>
+      <ul class="cons">
+        <li>Existing installs keep their big trees until tune nudges</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">generateArchitectureSection()</span>
+          <span class="bchip">agents-md.ts stub</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Drop the section from new installs</h3>
+      </div>
+      <ul class="pros">
+        <li>Nothing left to drift</li>
+      </ul>
+      <ul class="cons">
+        <li>No evidence users don't read it; overshoots the brief's hedge</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">generateArchitectureSection() removed</span>
+          <span class="bchip warn">init/upgrade snapshot tests</span>
+        </div>
+      </div>
+    </div>
+    <div class="opt">
+      <div class="opt-head">
+        <h3>Leave generator; tune flags deep trees</h3>
+      </div>
+      <ul class="pros">
+        <li>Smallest diff</li>
+      </ul>
+      <ul class="cons">
+        <li>Keeps scaffolding the thing this feature calls fastest to drift</li>
+      </ul>
+      <div class="blast">
+        <span class="blab">Blast radius</span>
+        <div class="bchips">
+          <span class="bchip">joycraft-tune.md (+1 advisory)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="manifest">
+  <div class="man-head">
+    <span class="eyebrow">Integrity</span>
+    <h2>Assumptions asserted as fact</h2>
+  </div>
+  <p class="man-sub">These load-bearing claims were NOT posed as questions above — the four questions are one framing of what's open, and this list is what that framing rests on. Unverified means nobody checked it this run; this dossier is still a persuasive artifact, including this sentence.</p>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>Claude, Pi, and Codex transcript formats are as described.</strong> The 2026-08-30 research pass read live session files on this machine (research Q1/Q2); Claude and Pi carry structured file paths, Codex only shell strings.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>init already writes .claude/settings.json idempotently with a malformed-JSON guard.</strong> Read this session at src/init.ts:369-440 — the WS6 offer reuses this exact pattern.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>No JSONL parser exists anywhere in src/ or scripts/.</strong> Grepped this session; the scanner is greenfield and detect.ts is the pattern precedent.</p></div>
+  <div class="man-row"><span class="vchip v-ok">Verified</span>
+    <p><strong>Five of the six touched skills already exceed the 200-line budget.</strong> Counted this session (optimize 266, interview 328, tune 228, session-end 211, add-fact 207); the design's pay-for-additions rule responds to this.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>Transcript JSONL schemas stay stable across harness versions.</strong> No version guarantee was checked; the scanner must skip unparseable lines gracefully. A version-tolerance test against captured fixtures would verify current behavior, nothing guards future drift.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>Pi ships no auto-memory to disable.</strong> Reported in the brief ("reportedly"), never checked against Pi docs. Verifying is a one-line docs lookup before the WS6 tune finding hardcodes it.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>The session-end scan cost is acceptable.</strong> This machine holds 12MB of Claude transcripts but 6.2GB of Codex sessions; the scanned-session cache should bound cost, but nobody timed a first full scan. Timing one here would verify.</p></div>
+  <div class="man-row"><span class="vchip v-un">Unverified</span>
+    <p><strong>Seven days is the right staleness window.</strong> D1 is stamped as a human choice with a revisit clause ("if 7 days proves noisy") — it is a bet, not a measurement.</p></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>Each decision arrives as a forced-choice question in the session, one at a time, in the order above. Pick an option and type your answer as "&lt;choice&gt; because &lt;one-sentence reason&gt;" in the free-text field. If every option on a card is wrong, reject the framing: type what's right instead. "backlog because …", "discard because …", and "defer to &lt;name&gt;" are always valid answers. Answers stamp into the brief's decisions block, the decision log, and this feature's design doc.</p>
+</div>
+
+<footer>
+  <p>Decision dossier · feature: curated-harness · docs/features/2026-08-30-curated-harness/dossier.html · generated 2026-09-01 · revision 1</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

@@ -1,19 +1,19 @@
 {
   "feature": "2026-08-30-curated-harness",
   "specs": [
-    { "id": 1, "file": "add-telemetry-scanner-core.md", "depends_on": [], "status": "in-review", "mode": "isolated" },
-    { "id": 2, "file": "add-codex-telemetry-parser.md", "depends_on": [1], "status": "in-review", "mode": "batch" },
-    { "id": 3, "file": "add-telemetry-cli-and-store.md", "depends_on": [1], "status": "in-review", "mode": "checkpoint" },
-    { "id": 4, "file": "wire-session-end-telemetry.md", "depends_on": [3], "status": "in-review", "mode": "batch" },
-    { "id": 5, "file": "add-optimize-telemetry-evidence.md", "depends_on": [3], "status": "in-review", "mode": "checkpoint" },
-    { "id": 6, "file": "add-discovery-staleness-lifecycle.md", "depends_on": [4, 5], "status": "in-review", "mode": "checkpoint" },
-    { "id": 7, "file": "add-decay-category-bans.md", "depends_on": [], "status": "in-review", "mode": "batch" },
-    { "id": 8, "file": "reorder-add-fact-harden-first.md", "depends_on": [6, 7], "status": "in-review", "mode": "checkpoint" },
-    { "id": 9, "file": "add-product-identity-generators.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
-    { "id": 10, "file": "add-identity-elicitation.md", "depends_on": [9], "status": "in-review", "mode": "batch" },
-    { "id": 11, "file": "add-folder-map-check.md", "depends_on": [9], "status": "in-review", "mode": "checkpoint" },
-    { "id": 12, "file": "add-positioning-readme.md", "depends_on": [], "status": "in-review", "mode": "batch" },
-    { "id": 13, "file": "add-init-auto-memory-offer.md", "depends_on": [], "status": "in-review", "mode": "batch" },
-    { "id": 14, "file": "add-tune-auto-memory-finding.md", "depends_on": [], "status": "in-review", "mode": "batch" }
+    {"id": 1, "file": "add-telemetry-scanner-core.md", "depends_on": [], "status": "done", "mode": "isolated"},
+    {"id": 2, "file": "add-codex-telemetry-parser.md", "depends_on": [1], "status": "done", "mode": "batch"},
+    {"id": 3, "file": "add-telemetry-cli-and-store.md", "depends_on": [1], "status": "done", "mode": "checkpoint"},
+    {"id": 4, "file": "wire-session-end-telemetry.md", "depends_on": [3], "status": "done", "mode": "batch"},
+    {"id": 5, "file": "add-optimize-telemetry-evidence.md", "depends_on": [3], "status": "done", "mode": "checkpoint"},
+    {"id": 6, "file": "add-discovery-staleness-lifecycle.md", "depends_on": [4, 5], "status": "done", "mode": "checkpoint"},
+    {"id": 7, "file": "add-decay-category-bans.md", "depends_on": [], "status": "done", "mode": "batch"},
+    {"id": 8, "file": "reorder-add-fact-harden-first.md", "depends_on": [6, 7], "status": "done", "mode": "checkpoint"},
+    {"id": 9, "file": "add-product-identity-generators.md", "depends_on": [], "status": "done", "mode": "checkpoint"},
+    {"id": 10, "file": "add-identity-elicitation.md", "depends_on": [9], "status": "done", "mode": "batch"},
+    {"id": 11, "file": "add-folder-map-check.md", "depends_on": [9], "status": "done", "mode": "checkpoint"},
+    {"id": 12, "file": "add-positioning-readme.md", "depends_on": [], "status": "done", "mode": "batch"},
+    {"id": 13, "file": "add-init-auto-memory-offer.md", "depends_on": [], "status": "done", "mode": "batch"},
+    {"id": 14, "file": "add-tune-auto-memory-finding.md", "depends_on": [], "status": "done", "mode": "batch"}
   ]
 }
