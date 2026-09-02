@@ -3,6 +3,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
+import { Readable } from 'node:stream';
 import { init } from '../src/init';
 import { CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from '../src/bundled-files';
 import { STATE_PATH } from '../src/version';
@@ -756,6 +757,151 @@ describe('init', () => {
       await init(tmpDir, { force: false });
 
       expect(readFileSync(agentsPath, 'utf-8')).toBe(before);
+    });
+  });
+
+  /**
+   * The auto-memory offer: the in-repo curated layer is the one home for facts,
+   * so init offers to turn Claude Code's per-machine auto-memory off — for THIS
+   * project only, interactively, never silently.
+   */
+  describe('auto-memory offer', () => {
+    const SETTINGS = ['.claude', 'settings.json'];
+
+    /**
+     * Run init with a scripted stdin marked as a TTY. `answers` feeds every
+     * prompt in order: harness menu, execution-profile block, gitignore
+     * profile, then the auto-memory offer.
+     */
+    async function initInteractive(dir: string, answers: string[]): Promise<string[]> {
+      const logs: string[] = [];
+      const fakeStdin = Readable.from(answers.map((a) => `${a}\n`)) as unknown as NodeJS.ReadStream & {
+        isTTY?: boolean;
+      };
+      fakeStdin.isTTY = true;
+      const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+      Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
+      const origLog = console.log;
+      const origWrite = process.stdout.write.bind(process.stdout);
+      console.log = (...args: unknown[]) => logs.push(args.map(String).join(' '));
+      process.stdout.write = ((chunk: string | Uint8Array) => {
+        logs.push(typeof chunk === 'string' ? chunk : Buffer.from(chunk).toString('utf-8'));
+        return true;
+      }) as typeof process.stdout.write;
+      try {
+        await init(dir, { force: false });
+      } finally {
+        console.log = origLog;
+        process.stdout.write = origWrite;
+        Object.defineProperty(process, 'stdin', stdinDesc);
+      }
+      return logs;
+    }
+
+    /** Answers for one claude-only interactive init, with `tail` answering the offer. */
+    const claudeRun = (tail: string): string[] => ['claude', 'n', 'n', '', '', 'shared', tail];
+
+    it('accepting writes autoMemoryEnabled:false into the project settings.json', async () => {
+      const logs = await initInteractive(tmpDir, claudeRun('y'));
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, ...SETTINGS), 'utf-8'));
+      expect(settings.autoMemoryEnabled).toBe(false);
+      // The other guarded writes are untouched by the new one.
+      expect(settings.hooks?.SessionStart).toBeDefined();
+      expect(settings.permissions?.allow?.length).toBeGreaterThan(0);
+      // The offer explains itself before asking.
+      expect(logs.join('\n')).toMatch(/auto-memory/i);
+    });
+
+    it('preserves unrelated keys in a pre-existing settings.json when accepting', async () => {
+      mkdirSync(join(tmpDir, '.claude'), { recursive: true });
+      writeFileSync(
+        join(tmpDir, ...SETTINGS),
+        JSON.stringify({ model: 'opus', permissions: { allow: ['Bash(my-tool *)'] } }, null, 2) + '\n'
+      );
+
+      await initInteractive(tmpDir, claudeRun('y'));
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, ...SETTINGS), 'utf-8'));
+      expect(settings.autoMemoryEnabled).toBe(false);
+      expect(settings.model).toBe('opus');
+      expect(settings.permissions.allow).toContain('Bash(my-tool *)');
+    });
+
+    it('declining leaves the key absent', async () => {
+      await initInteractive(tmpDir, claudeRun('n'));
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, ...SETTINGS), 'utf-8'));
+      expect('autoMemoryEnabled' in settings).toBe(false);
+    });
+
+    it('an empty answer takes the no-change default', async () => {
+      await initInteractive(tmpDir, claudeRun(''));
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, ...SETTINGS), 'utf-8'));
+      expect('autoMemoryEnabled' in settings).toBe(false);
+    });
+
+    it('never clobbers an explicit autoMemoryEnabled:true', async () => {
+      mkdirSync(join(tmpDir, '.claude'), { recursive: true });
+      writeFileSync(
+        join(tmpDir, ...SETTINGS),
+        JSON.stringify({ autoMemoryEnabled: true }, null, 2) + '\n'
+      );
+
+      // Even an enthusiastic "yes" must not overwrite the user's explicit value.
+      await initInteractive(tmpDir, claudeRun('y'));
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, ...SETTINGS), 'utf-8'));
+      expect(settings.autoMemoryEnabled).toBe(true);
+    });
+
+    it('never clobbers an explicit autoMemoryEnabled:false', async () => {
+      mkdirSync(join(tmpDir, '.claude'), { recursive: true });
+      writeFileSync(
+        join(tmpDir, ...SETTINGS),
+        JSON.stringify({ autoMemoryEnabled: false }, null, 2) + '\n'
+      );
+
+      await initInteractive(tmpDir, claudeRun('n'));
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, ...SETTINGS), 'utf-8'));
+      expect(settings.autoMemoryEnabled).toBe(false);
+    });
+
+    it('leaves a malformed settings.json byte-identical even when accepting', async () => {
+      mkdirSync(join(tmpDir, '.claude'), { recursive: true });
+      const malformed = '{ "autoMemoryEnabled": broken';
+      writeFileSync(join(tmpDir, ...SETTINGS), malformed);
+
+      const logs = await initInteractive(tmpDir, claudeRun('y'));
+
+      expect(readFileSync(join(tmpDir, ...SETTINGS), 'utf-8')).toBe(malformed);
+      expect(logs.some((l) => l.includes('malformed'))).toBe(true);
+    });
+
+    it('skips the offer entirely without a TTY and writes nothing', async () => {
+      await init(tmpDir, { force: false });
+
+      const settings = JSON.parse(readFileSync(join(tmpDir, ...SETTINGS), 'utf-8'));
+      expect('autoMemoryEnabled' in settings).toBe(false);
+    });
+
+    it('never touches the user global settings under $HOME', async () => {
+      const fakeHome = join(tmpDir, 'fake-home');
+      mkdirSync(join(fakeHome, '.claude'), { recursive: true });
+      const globalPath = join(fakeHome, '.claude', 'settings.json');
+      writeFileSync(globalPath, '{}\n');
+      const origHome = process.env.HOME;
+      process.env.HOME = fakeHome;
+      try {
+        await initInteractive(tmpDir, claudeRun('y'));
+      } finally {
+        if (origHome === undefined) delete process.env.HOME;
+        else process.env.HOME = origHome;
+      }
+
+      expect(readFileSync(globalPath, 'utf-8')).toBe('{}\n');
     });
   });
 });
