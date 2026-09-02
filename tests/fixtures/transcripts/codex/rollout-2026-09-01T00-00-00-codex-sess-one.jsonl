@@ -1,0 +1,12 @@
+{"timestamp":"2026-09-01T00:00:01.000Z","type":"session_meta","payload":{"session_id":"codex-sess-one","id":"codex-sess-one","cwd":"/repo","originator":"Codex CLI","cli_version":"0.142.0","source":"cli"}}
+{"timestamp":"2026-09-01T00:00:02.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"cat /repo/docs/context/decision-log.md | head -50\",\"workdir\":\"/repo\",\"yield_time_ms\":10000}"}}
+{"timestamp":"2026-09-01T00:00:03.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"sed -n '1,50p' docs/context/institutional-knowledge.md\",\"workdir\":\"/repo\"}"}}
+{"timestamp":"2026-09-01T00:00:04.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"echo captured > docs/context/notes.md\",\"workdir\":\"/repo\"}"}}
+{"timestamp":"2026-09-01T00:00:05.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"grep -r term docs/\",\"workdir\":\"/repo\"}"}}
+{"timestamp":"2026-09-01T00:00:06.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"grep TODO docs/reference/knowledge-lifecycle.md\",\"workdir\":\"/repo\"}"}}
+{"timestamp":"2026-09-01T00:00:07.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"for f in $(find docs -name '*.md' 2>/dev/null); do cat \\\"$f\\\"; done\",\"workdir\":\"/repo\"}"}}
+{"timestamp":"2026-09-01T00:00:08.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"cat \\\"docs/context/decision-log.md\",\"workdir\":\"/repo\"}"}}
+this line is not json at all {{{
+{"timestamp":"2026-09-01T00:00:09.000Z","type":"response_item","payload":{"type":"function_call","name":"update_plan","arguments":"{\"plan\":[]}"}}
+{"timestamp":"2026-09-01T00:00:10.000Z","type":"response_item","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"head -20 AGENTS.md\",\"workdir\":\"/repo\"}"}}
+{"timestamp":"2026-09-01T00:00:11.000Z","type":"event_msg","payload":{"type":"token_count","info":{}}}

@@ -6,12 +6,15 @@ import {
   scanTranscripts,
   parseClaudeSessionLine,
   parsePiSessionLine,
+  parseCodexSessionLine,
   isKnowledgeLayerPath,
 } from '../src/telemetry';
 
 const fixtures = join(__dirname, 'fixtures', 'transcripts');
 const claudeDir = join(fixtures, 'claude');
 const piDir = join(fixtures, 'pi');
+const codexDir = join(fixtures, 'codex');
+const noCodex = join(fixtures, 'no-codex');
 const PROJECT = '/repo';
 
 describe('isKnowledgeLayerPath', () => {
@@ -151,9 +154,144 @@ describe('parsePiSessionLine', () => {
   });
 });
 
+function codexExec(cmd: string): string {
+  return JSON.stringify({
+    type: 'response_item',
+    payload: { type: 'function_call', name: 'exec_command', arguments: JSON.stringify({ cmd, workdir: '/repo' }) },
+  });
+}
+
+describe('parseCodexSessionLine', () => {
+  it('reports the session id from a session_meta line', () => {
+    const line = JSON.stringify({ type: 'session_meta', payload: { id: 'codex-sess-one', cwd: '/repo' } });
+    expect(parseCodexSessionLine(line)?.sessionId).toBe('codex-sess-one');
+  });
+
+  it('detects a cat of an explicit path as a read, even piped into head', () => {
+    const parsed = parseCodexSessionLine(codexExec('cat /repo/docs/context/decision-log.md | head -50'));
+    expect(parsed?.ops).toEqual([{ kind: 'read', path: '/repo/docs/context/decision-log.md' }]);
+  });
+
+  it('detects sed -n and head/tail reads with explicit path arguments', () => {
+    expect(parseCodexSessionLine(codexExec("sed -n '1,50p' docs/context/institutional-knowledge.md"))?.ops).toEqual([
+      { kind: 'read', path: 'docs/context/institutional-knowledge.md' },
+    ]);
+    expect(parseCodexSessionLine(codexExec('head -20 AGENTS.md'))?.ops).toEqual([
+      { kind: 'read', path: 'AGENTS.md' },
+    ]);
+    expect(parseCodexSessionLine(codexExec('tail -5 CLAUDE.md'))?.ops).toEqual([
+      { kind: 'read', path: 'CLAUDE.md' },
+    ]);
+  });
+
+  it('skips the grep pattern argument and reads the file argument', () => {
+    expect(parseCodexSessionLine(codexExec('grep TODO docs/reference/knowledge-lifecycle.md'))?.ops).toEqual([
+      { kind: 'read', path: 'docs/reference/knowledge-lifecycle.md' },
+    ]);
+  });
+
+  it('detects output redirects as writes', () => {
+    expect(parseCodexSessionLine(codexExec('echo captured > docs/context/notes.md'))?.ops).toEqual([
+      { kind: 'write', path: 'docs/context/notes.md' },
+    ]);
+    expect(parseCodexSessionLine(codexExec('cat a.md >> docs/context/notes.md'))?.ops).toEqual([
+      { kind: 'read', path: 'a.md' },
+      { kind: 'write', path: 'docs/context/notes.md' },
+    ]);
+  });
+
+  it('drops pipeline soup, variables, and unbalanced quotes rather than guessing', () => {
+    expect(parseCodexSessionLine(codexExec('for f in $(find docs -name "*.md"); do cat "$f"; done'))).toBeNull();
+    expect(parseCodexSessionLine(codexExec('cat "docs/context/decision-log.md'))).toBeNull();
+    expect(parseCodexSessionLine(codexExec('cat $DOC'))).toBeNull();
+  });
+
+  it('handles quoted paths with spaces without miscounting', () => {
+    const parsed = parseCodexSessionLine(codexExec("cat 'docs/context/weird name.md'"));
+    expect(parsed?.ops).toEqual([{ kind: 'read', path: 'docs/context/weird name.md' }]);
+  });
+
+  it('ignores non-exec function calls and malformed lines', () => {
+    const plan = JSON.stringify({
+      type: 'response_item',
+      payload: { type: 'function_call', name: 'update_plan', arguments: '{"plan":[]}' },
+    });
+    expect(parseCodexSessionLine(plan)).toBeNull();
+    expect(parseCodexSessionLine('this line is not json {{{')).toBeNull();
+    expect(parseCodexSessionLine(JSON.stringify({ type: 'event_msg', payload: { type: 'token_count' } }))).toBeNull();
+  });
+});
+
+describe('scanTranscripts with a codexDir', () => {
+  it('returns the shared result shape for Codex sessions', async () => {
+    const result = await scanTranscripts(PROJECT, {
+      claudeDir: join(fixtures, 'no-claude'),
+      piDir: join(fixtures, 'no-pi'),
+      codexDir,
+    });
+    expect(result.sessions).toEqual(['codex-sess-one']);
+    const dl = result.docs['docs/context/decision-log.md'];
+    expect(dl).toBeDefined();
+    expect(dl.reads).toBe(1);
+    expect(dl.mandatedReads + dl.voluntaryReads).toBe(dl.reads);
+    expect(result.docs['docs/context/notes.md'].writes).toBe(1);
+    expect(result.docs['docs/reference/knowledge-lifecycle.md'].reads).toBe(1);
+    expect(result.docs['AGENTS.md'].reads).toBe(1);
+  });
+
+  it('marks Codex-sourced counts fidelity: degraded', async () => {
+    const result = await scanTranscripts(PROJECT, {
+      claudeDir: join(fixtures, 'no-claude'),
+      piDir: join(fixtures, 'no-pi'),
+      codexDir,
+    });
+    for (const counts of Object.values(result.docs)) {
+      expect(counts.fidelity).toBe('degraded');
+    }
+  });
+
+  it('leaves Claude/Pi-sourced counts unmarked', async () => {
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
+    for (const counts of Object.values(result.docs)) {
+      expect(counts.fidelity).toBeUndefined();
+    }
+  });
+
+  it('tags Codex reads mandated — skill attribution is not available from shell strings', async () => {
+    const result = await scanTranscripts(PROJECT, {
+      claudeDir: join(fixtures, 'no-claude'),
+      piDir: join(fixtures, 'no-pi'),
+      codexDir,
+    });
+    for (const counts of Object.values(result.docs)) {
+      expect(counts.voluntaryReads).toBe(0);
+      expect(counts.mandatedReads).toBe(counts.reads);
+    }
+  });
+
+  it('drops directory targets like grep -r docs/', async () => {
+    const result = await scanTranscripts(PROJECT, {
+      claudeDir: join(fixtures, 'no-claude'),
+      piDir: join(fixtures, 'no-pi'),
+      codexDir,
+    });
+    expect(Object.keys(result.docs).every((p) => isKnowledgeLayerPath(p))).toBe(true);
+  });
+
+  it('yields an empty Codex contribution when the dir is absent', async () => {
+    const result = await scanTranscripts(PROJECT, {
+      claudeDir: join(fixtures, 'no-claude'),
+      piDir: join(fixtures, 'no-pi'),
+      codexDir: join(fixtures, 'no-codex'),
+    });
+    expect(result.docs).toEqual({});
+    expect(result.sessions).toEqual([]);
+  });
+});
+
 describe('scanTranscripts', () => {
   it('returns per-doc counts keyed by repo-relative path', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
 
     expect(result.docs['docs/context/decision-log.md']).toBeDefined();
     const dl = result.docs['docs/context/decision-log.md'];
@@ -166,7 +304,7 @@ describe('scanTranscripts', () => {
   });
 
   it('tags every read either mandated or voluntary', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
     for (const [path, counts] of Object.entries(result.docs)) {
       expect(counts.mandatedReads + counts.voluntaryReads, `untagged reads for ${path}`).toBe(
         counts.reads
@@ -177,14 +315,14 @@ describe('scanTranscripts', () => {
   });
 
   it('tags a read under an active mandating skill as mandated', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
     // add-fact mandates the context docs it overlap-greps (Pi fixture, post /skill:joycraft-add-fact).
     expect(result.docs['docs/context/institutional-knowledge.md'].mandatedReads).toBe(1);
     expect(result.docs['docs/context/institutional-knowledge.md'].voluntaryReads).toBe(0);
   });
 
   it('excludes non-knowledge-layer paths', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
     expect(result.docs['src/foo.ts']).toBeUndefined();
     expect(result.docs['src/detect.ts']).toBeUndefined();
     expect(result.docs['src/init.ts']).toBeUndefined();
@@ -192,35 +330,35 @@ describe('scanTranscripts', () => {
   });
 
   it('counts Claude Write/Edit ops as writes', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi') });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
     expect(result.docs['docs/discoveries/2026-09-01-thing.md'].writes).toBe(1);
   });
 
   it('parses Pi transcripts (edit of a bare relative path)', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir: join(fixtures, 'no-claude'), piDir });
+    const result = await scanTranscripts(PROJECT, { claudeDir: join(fixtures, 'no-claude'), piDir, codexDir: noCodex });
     expect(result.docs['CLAUDE.md'].writes).toBe(1);
   });
 
   it('normalizes absolute paths inside the project to repo-relative keys', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi') });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
     expect(result.docs['docs/context/decision-log.md']).toBeDefined();
     expect(Object.keys(result.docs).some((p) => p.startsWith('/'))).toBe(false);
   });
 
   it('ignores paths outside the project directory', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi') });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
     expect(Object.keys(result.docs).some((p) => p.includes('elsewhere'))).toBe(false);
   });
 
   it('skips malformed and truncated lines without throwing', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi') });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
     // sess-beta has a garbage line and a truncated final line; the good lines still count.
     expect(result.docs['AGENTS.md'].reads).toBe(1);
     expect(result.docs['docs/reference/knowledge-lifecycle.md'].reads).toBe(1);
   });
 
   it('records session ids and counts each session file once', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
     expect(result.sessions.sort()).toEqual(['pi-sess-one', 'sess-alpha', 'sess-beta']);
   });
 
@@ -228,6 +366,7 @@ describe('scanTranscripts', () => {
     const result = await scanTranscripts(PROJECT, {
       claudeDir: join(fixtures, 'does-not-exist'),
       piDir: join(fixtures, 'also-missing'),
+      codexDir: join(fixtures, 'also-missing-codex'),
     });
     expect(result.docs).toEqual({});
     expect(result.sessions).toEqual([]);
@@ -237,7 +376,7 @@ describe('scanTranscripts', () => {
     const originalHome = process.env.HOME;
     process.env.HOME = '/nonexistent-home-for-telemetry-test';
     try {
-      const result = await scanTranscripts(PROJECT, { claudeDir, piDir });
+      const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
       expect(Object.keys(result.docs).length).toBeGreaterThan(0);
     } finally {
       process.env.HOME = originalHome;
@@ -247,19 +386,19 @@ describe('scanTranscripts', () => {
   it('skips unreadable session files rather than throwing', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'joycraft-telemetry-'));
     writeFileSync(join(dir, 'broken.jsonl'), '  not-jsonl\n');
-    const result = await scanTranscripts(PROJECT, { claudeDir: dir, piDir: join(fixtures, 'no-pi') });
+    const result = await scanTranscripts(PROJECT, { claudeDir: dir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
     expect(result.docs).toEqual({});
   });
 
   it('counts repeated reads of the same doc but records its session once', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi') });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
     const dl = result.docs['docs/context/decision-log.md'];
     expect(dl.reads).toBe(2);
     expect(dl.sessions).toEqual(['sess-alpha']);
   });
 
   it('carries no transcript content in the result', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
     const serialized = JSON.stringify(result);
     expect(serialized).not.toContain('wrap up the session');
     expect(serialized).not.toContain('old_string');
