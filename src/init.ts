@@ -253,6 +253,7 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
       ? generateClaudeMdPointer()
       : generateCLAUDEMd(projectName, stack, existingSkills, {
           privateProfile: gitignoreProfile === 'private',
+          projectDir: targetDir,
         });
     writeFileSync(claudeMdPath, content, 'utf-8');
     result.created.push(claudeMdPath);
@@ -274,8 +275,9 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
           privateProfile: gitignoreProfile === 'private',
           multiTool: true,
           executionProfile,
+          projectDir: targetDir,
         })
-      : generateAgentsMd(projectName, stack, gitignoreProfile === 'private', executionProfile);
+      : generateAgentsMd(projectName, stack, gitignoreProfile === 'private', executionProfile, undefined, targetDir);
     writeFileSync(agentsMdPath, content, 'utf-8');
     result.created.push(agentsMdPath);
   }

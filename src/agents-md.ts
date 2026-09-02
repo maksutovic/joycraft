@@ -1,4 +1,5 @@
 import type { StackInfo } from './detect.js';
+import { renderFolderMap, ensureFolderMapSection, FOLDER_MAP_OPEN } from './folder-map.js';
 import {
   ensureExecutionProfileSection,
   renderExecutionProfileSection,
@@ -63,7 +64,12 @@ function generateDevelopmentSection(stack: StackInfo): string {
   return `## Development\n\n${generateCommandsBlock(stack)}\n\n**Deferred work → \`docs/backlog/\`.** Ideas and follow-ups surfaced mid-sprint that can't be taken on now go to \`docs/backlog/\` (one file per item) so the current spec stays focused. Promote an entry to a Feature Brief under \`docs/features/<slug>/\` when ready to build it.`;
 }
 
-function generateArchitectureSection(): string {
+function generateArchitectureSection(projectDir?: string): string {
+  // With a real directory, emit the check-shaped folder map (D6) instead of a
+  // hand-maintained tree that only drifts.
+  if (projectDir) {
+    return `## Architecture\n\n${renderFolderMap(projectDir)}`;
+  }
   return `## Architecture\n\n_TODO: Add a compact directory tree and one-paragraph summary._`;
 }
 
@@ -77,6 +83,7 @@ export function generateAgentsMd(
   privateProfile = false,
   executionProfile?: ExecutionProfile,
   identity?: ProductIdentity,
+  projectDir?: string,
 ): string {
   const frameworkNote = stack.framework ? ` (${stack.framework})` : '';
   const langLabel = stack.language === 'unknown' ? '' : ` | **Stack:** ${stack.language}${frameworkNote}`;
@@ -93,7 +100,7 @@ export function generateAgentsMd(
     generateBoundariesSection(),
     generateExternalApiSafetySection(),
     '',
-    generateArchitectureSection(),
+    generateArchitectureSection(projectDir),
     '',
     generateKeyFilesSection(),
     '',
@@ -123,20 +130,27 @@ export function improveAgentsMd(
   privateProfile = false,
   executionProfile?: ExecutionProfile,
   identity?: ProductIdentity,
+  projectDir?: string,
 ): string {
-  const sections = parseSections(existing);
+  // A folder-map block is machine-owned structure: regenerate it in place
+  // (human wording preserved) whenever we know the real directory.
+  let working = existing;
+  if (projectDir && working.includes(FOLDER_MAP_OPEN)) {
+    working = ensureFolderMapSection(working, projectDir);
+  }
+  const sections = parseSections(working);
   const additions: string[] = [];
 
   if (!hasSection(sections, /behavioral\s*boundar/i)) {
     additions.push(generateBoundariesSection());
   }
 
-  if (!/external\s*api\s*safety/i.test(existing)) {
+  if (!/external\s*api\s*safety/i.test(working)) {
     additions.push(generateExternalApiSafetySection());
   }
 
   if (!hasSection(sections, /architecture/i)) {
-    additions.push(generateArchitectureSection());
+    additions.push(generateArchitectureSection(projectDir));
   }
 
   if (!hasSection(sections, /key\s*files/i)) {
@@ -152,17 +166,17 @@ export function improveAgentsMd(
     if (identitySection) additions.push(identitySection);
   }
 
-  if (privateProfile && !existing.includes(PRIVATE_SETUP_NOTE_MARKER)) {
+  if (privateProfile && !working.includes(PRIVATE_SETUP_NOTE_MARKER)) {
     additions.push(generatePrivateSetupNote());
   }
 
   if (additions.length === 0) {
     // Sentinel-based, not heading-based: an existing profile region is opaque
     // user data and must come back byte-identical.
-    return ensureExecutionProfileSection(existing, executionProfile);
+    return ensureExecutionProfileSection(working, executionProfile);
   }
 
-  const trimmed = existing.trimEnd();
+  const trimmed = working.trimEnd();
   const merged = trimmed + '\n\n' + additions.join('\n\n') + '\n';
   return ensureExecutionProfileSection(merged, executionProfile);
 }

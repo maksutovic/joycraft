@@ -11,7 +11,7 @@
     { "id": 8, "file": "reorder-add-fact-harden-first.md", "depends_on": [6, 7], "status": "todo", "mode": "checkpoint" },
     { "id": 9, "file": "add-product-identity-generators.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
     { "id": 10, "file": "add-identity-elicitation.md", "depends_on": [9], "status": "in-review", "mode": "batch" },
-    { "id": 11, "file": "add-folder-map-check.md", "depends_on": [9], "status": "todo", "mode": "checkpoint" },
+    { "id": 11, "file": "add-folder-map-check.md", "depends_on": [9], "status": "in-review", "mode": "checkpoint" },
     { "id": 12, "file": "add-positioning-readme.md", "depends_on": [], "status": "in-review", "mode": "batch" },
     { "id": 13, "file": "add-init-auto-memory-offer.md", "depends_on": [], "status": "in-review", "mode": "batch" },
     { "id": 14, "file": "add-tune-auto-memory-finding.md", "depends_on": [], "status": "in-review", "mode": "batch" }

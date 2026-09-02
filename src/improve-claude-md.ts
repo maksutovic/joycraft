@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import type { StackInfo } from './detect.js';
+import { renderFolderMap, ensureFolderMapSection, FOLDER_MAP_OPEN } from './folder-map.js';
 import {
   ensureExecutionProfileSection,
   renderExecutionProfileSection,
@@ -207,7 +208,12 @@ _How \`/joycraft-implement\` wraps up after each spec. \`joycraft-decompose\` re
 **Deferred work → \`docs/backlog/\`.** Ideas and follow-ups you surface mid-sprint but can't take on now go to \`docs/backlog/\` (one file per item) so the current spec stays focused without losing the thread. Promote an entry to a Feature Brief under \`docs/features/<slug>/\` when you're ready to build it.`;
 }
 
-function generateArchitectureSection(): string {
+function generateArchitectureSection(projectDir?: string): string {
+  // With a real directory, emit the check-shaped folder map (D6) — a walk of
+  // the actual tree — instead of a hand-maintained prose tree that only drifts.
+  if (projectDir) {
+    return `## Architecture\n\n${renderFolderMap(projectDir)}`;
+  }
   return `## Architecture
 
 _TODO: Add a brief description of your project's architecture and key directories._`;
@@ -312,6 +318,11 @@ export function improveCLAUDEMd(
   // Areas pointer: idempotent in both directions.
   // Always strip an existing "## Areas" section first so we re-evaluate cleanly.
   let working = stripAreasSection(existing);
+  // A folder-map block is machine-owned structure: regenerate it in place
+  // (human wording preserved) whenever we know the real directory.
+  if (opts?.projectDir && working.includes(FOLDER_MAP_OPEN)) {
+    working = ensureFolderMapSection(working, opts.projectDir);
+  }
   const sections = parseSections(working);
   const additions: string[] = [];
 
@@ -324,7 +335,7 @@ export function improveCLAUDEMd(
   }
 
   if (!hasSection(sections, /architecture/i)) {
-    additions.push(generateArchitectureSection());
+    additions.push(generateArchitectureSection(opts?.projectDir));
   }
 
   if (!hasSection(sections, /key\s*files/i)) {
@@ -404,7 +415,7 @@ export function generateCLAUDEMd(
   lines.push(
     generateWorkflowSection(stack),
     '',
-    generateArchitectureSection(),
+    generateArchitectureSection(opts?.projectDir),
     '',
     generateKeyFilesSection(),
     '',

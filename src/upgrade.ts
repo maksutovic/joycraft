@@ -3,6 +3,7 @@ import { join, dirname, resolve } from 'node:path';
 import { createInterface } from 'node:readline';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { readVersion, writeVersion, hashContent, truncateHash, LEGACY_VERSION_FILE, LEGACY_CLAUDE_STATE_PATH, parseGitignoreProfile } from './version.js';
+import { ensureFolderMapSection } from './folder-map.js';
 import { applyGitignoreProfile, resolveGitignoreProfile, validateGitignoreFlag, PRIVATE_PROFILE_IGNORES, PRIVATE_UNTRACK_COMMAND } from './gitignore.js';
 import { applyGitattributes } from './gitattributes.js';
 import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, COPILOT_SKILLS } from './bundled-files.js';
@@ -510,13 +511,38 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
   const agentsMdPath = join(targetDir, 'AGENTS.md');
   if (existsSync(agentsMdPath)) {
     const existingAgents = readFileSync(agentsMdPath, 'utf-8');
-    const withProfile = ensureExecutionProfileSection(
+    let updatedAgents = ensureExecutionProfileSection(
       existingAgents,
       defaultExecutionProfile(harnesses)
     );
-    if (withProfile !== existingAgents) {
-      writeFileSync(agentsMdPath, withProfile, 'utf-8');
+    if (updatedAgents !== existingAgents) {
       console.log('  ~ AGENTS.md (added Execution Profile — run /joycraft-tune to fill it in)');
+    }
+    // Folder map (D6): regenerate the machine-owned block in place (human
+    // wording preserved), or append the section when the doc has no
+    // architecture section at all. A hand-written architecture section
+    // without markers comes back byte-identical.
+    const withMap = ensureFolderMapSection(updatedAgents, targetDir);
+    if (withMap !== updatedAgents) {
+      updatedAgents = withMap;
+      console.log('  ~ AGENTS.md (folder map regenerated from the tree)');
+    }
+    if (updatedAgents !== existingAgents) {
+      writeFileSync(agentsMdPath, updatedAgents, 'utf-8');
+    }
+  }
+
+  // Same regeneration for a full CLAUDE.md (claude-only installs); the
+  // multi-tool `@AGENTS.md` pointer file is left alone.
+  const claudeMdPath = join(targetDir, 'CLAUDE.md');
+  if (existsSync(claudeMdPath)) {
+    const existingClaude = readFileSync(claudeMdPath, 'utf-8');
+    if (!existingClaude.includes('@AGENTS.md')) {
+      const withMap = ensureFolderMapSection(existingClaude, targetDir);
+      if (withMap !== existingClaude) {
+        writeFileSync(claudeMdPath, withMap, 'utf-8');
+        console.log('  ~ CLAUDE.md (folder map regenerated from the tree)');
+      }
     }
   }
 
