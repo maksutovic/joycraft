@@ -32,6 +32,8 @@ const EVIDENCE_LABELS = [
   'INFERRED',
   'INACCESSIBLE',
   'NOT_APPLICABLE',
+  'NEVER_READ',
+  'WRITE_HEAVY',
 ];
 
 describe('joycraft-optimize v2: disposition vocabulary', () => {
@@ -48,6 +50,14 @@ describe('joycraft-optimize v2: disposition vocabulary', () => {
       expect(content()).toContain(label);
     });
   }
+
+  it('declares the evidence vocabulary as exactly seven, no synonyms', () => {
+    expect(content()).toMatch(/Evidence label vocabulary \(exactly seven, no synonyms\)/);
+  });
+
+  it('declares the disposition vocabulary as exactly six, no synonyms', () => {
+    expect(content()).toMatch(/Disposition vocabulary \(exactly six, no synonyms\)/);
+  });
 
   it('describes a disposition table with control, home file, disposition, evidence label, and reason columns', () => {
     const c = content().toLowerCase();
