@@ -33,55 +33,65 @@ Read AGENTS.md and explore the project. Score each with specific evidence:
 | Behavioral Boundaries | ALWAYS/ASK FIRST/NEVER sections (or equivalent rules under any heading). Label each rule **declared** or **verified**: verified means a matching `permissions.deny` string or `deny-patterns.txt` regex actually exists — the comment's presence alone doesn't earn it. Everything else is declared (prose only). Rules carrying a provenance comment (`<!-- origin: … probation: <model> -->`) whose `probation:` model no longer matches the current model are **probation-due** — surface them as a list; the human decides keep/retest/retire, tune never auto-retires. |
 | Skills & Hooks | `.agents/skills/` files, hooks config |
 | Documentation | `docs/` structure, templates, referenced from AGENTS.md. Reward a lean + pointered AGENTS.md. **Flag a AGENTS.md exceeding ~200 lines** — recommend extracting long sections into `docs/context/reference/` and replacing them with a `## Context Map` pointer table. This is advisory only; tune never auto-edits AGENTS.md. |
-| Knowledge Capture | `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs — existence AND real content |
+| Knowledge Capture | `docs/discoveries/`, `docs/context/*.md` fact-docs, `docs/context/reference/` long-form docs — existence AND real content. Also raise the **auto-memory finding** below when it applies. |
 | Testing & Validation | Test framework, CI pipeline, validation commands in AGENTS.md |
 
 Score 1 = absent, 3 = partially there, 5 = comprehensive. Give credit for substance over format.
 
+**Auto-memory finding (advisory, rides in the Knowledge Capture row).** Two homes
+for the same facts is the decay this harness exists to prevent. Check both halves:
+(1) **setting** — `autoMemoryEnabled` in the project's `.claude/settings.json`,
+then the global one; project overrides global, absent = enabled, unreadable or
+malformed = **unknown** (report only what you checked); (2) **content** — the
+project memory dir, derived at runtime as `$HOME` + `.claude/projects/` + the cwd
+with `/` → `-` + `/memory/` (never a literal path), holding any file other than
+`joycraft-owner.txt`. Enabled + non-empty ⇒ raise it; disabled +
+non-empty ⇒ same recommendation, softer voice (dormant content can still
+graduate, no urgency); only `joycraft-owner.txt` ⇒ no finding, nothing to graduate.
+
+The recommendation is **graduate-then-archive**: durable facts move to
+`docs/context/` through `$joycraft-add-fact` routing; the rest goes dormant,
+or is deleted only with the human's explicit approval. `joycraft-owner.txt` is
+exempt — the owner-resolution cache, never stale memory; cleanup guidance always
+spares it. `MEMORY.md` is memory content like any other file. Point at
+`npx joycraft@latest init` for the setting itself. Advisory only — tune never edits or deletes memory files. *Other harnesses:* Pi reportedly ships no auto-memory (unverified); Codex equivalent unknown.
+
 ## Step 4: Write Assessment
 
-Write to `docs$joycraft-assessment.md` AND display it. Include: scores table, detailed findings (evidence + gap + recommendation per dimension), and an upgrade plan (up to 5 actions ordered by impact).
-
+Write to `docs$joycraft-assessment.md` AND display it: scores table, findings (evidence + gap + recommendation per dimension), upgrade plan (≤5 actions by impact).
 Write the displayed assessment and every report below it to the style contract in `docs/templates/reference/output-style.md`.
 
 ### Render and open the assessment
 
 `docs$joycraft-assessment.md` is written first and stays **canonical** —
-agents read the md, never the HTML. The HTML is a render of it and never invents
-content.
+agents read the md, never the HTML. The HTML is a render of it and never invents content.
 
 1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
-   `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
-   template's structure, class names, CSS, and theme script stay
-   **byte-identical** — never generate freeform gate HTML. Assigned
-   questions render as `.q` cards too, with the assignee riding the existing
-   `.qnum` span — e.g. `Q2 · assigned: Sam` — existing classes only, no new
-   CSS classes. A gate with zero assigned questions renders no empty cards.
+   `<!-- SLOT:name — … -->` regions per each slot's inline guidance; structure,
+   class names, CSS, and theme script stay **byte-identical**.
+   Never generate freeform gate HTML. Assigned questions render as `.q` cards too, the assignee
+   riding the existing `.qnum` span (`Q2 · assigned: Sam`) — existing classes
+   only, no new CSS classes. Zero assigned questions renders no empty cards.
 2. Write it beside the report as `docs$joycraft-assessment.html`, creating
-   the directory if it doesn't exist yet. Re-running `/tune` overwrites the same
-   file; the md is the record.
-3. Stamp the render: a generation timestamp and a revision integer, riding
-   the existing eyebrow/context-strip and footer slot regions — no new markup,
-   no CSS change. Read the previous render's footer first: its revision
-   integer + 1 is this render's revision. No previous file → revision 1;
-   footer unparseable (hand-edited) → fall back to revision 1 and note the
-   reset in the footer — never fail the render. The filename never changes —
-   the revision lives inside the artifact.
+   the directory if needed. Re-running `/tune` overwrites the same file; the md
+   is the record.
+3. Stamp the render: a generation timestamp and a revision integer, in the
+   existing eyebrow/context-strip and footer slot regions — no new markup or
+   CSS. The previous render's footer revision + 1 is this one's; no previous
+   file, or an unparseable hand-edited footer, → revision 1 (note the reset in
+   the footer) — never fail the render. The filename never changes.
 4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
-   true). When it is false, skip opening silently and print the absolute path
-   instead — the setting is never a failure. Otherwise open it before asking
-   anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both
-   fail, print the absolute path and continue — headless, CI, and isolated
-   mode are a no-op here (the environment check precedes the setting), never
-   a failure.
+   true). False ⇒ skip opening silently and print the absolute path instead.
+   Otherwise open it before asking anything: `open <path>` on darwin,
+   `xdg-open <path>` otherwise. If that fails, print the absolute path and continue —
+   headless, CI, and isolated mode are a no-op here (the environment check
+   precedes the setting), never a failure.
 5. Offer — don't push — an optional extra render: "I can also publish this
    assessment as a hosted artifact for a shareable link." Only publish if the
-   human says yes; the local file remains the canonical render. If declined, no
-   retry.
+   human says yes; the local file stays canonical. If declined, no retry.
 
 At this gate, your chat message is EXACTLY this template — nothing outside it.
-The content lives in the artifact, not the chat. The scores table and the
-per-dimension findings go in the assessment — never paste them into chat.
+The content lives in the artifact: the scores table and the per-dimension findings go in the assessment, never in chat.
 
 ```markdown
 **Harness assessed: <overall level / headline gap, one line>**
@@ -94,46 +104,40 @@ Ten lines maximum. If you are about to write an eleventh line, the content
 belongs in the artifact — move it there.
 ```
 
-Keep it inline here on purpose: inline placement is load-bearing — referenced
-docs get partially read or skipped at output time (Anthropic skill-authoring
-guidance; observed live 2026-07-29).
+Keep it inline here: inline placement is load-bearing — referenced docs get
+partially read or skipped at output time (skill-authoring guidance, 2026-07-29).
 
 ## Step 5: Apply Upgrades
 
-**How to ask — the question directive.** This governs every question moment in
-this step: the execution-profile offer, the git-autonomy choice, and any Tier 3
-confirmation.
+**How to ask — the question directive.** Governs every question moment in this
+step: the execution-profile offer, git-autonomy, any Tier 3 confirmation.
 Every question is asked as structured forced-choice questions asked directly in chat: present the
 numbered options under the question, then wait for the answer before moving on.
 Never dump an unanswerable wall of open prose questions.
 Three rules ride on every question, no exceptions:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —
-  reframe it or drop it; a rubber-stamp question captures nothing. Open-ended
-  questions still qualify: offer the 2–4 most likely answers as options and let
-  free text carry anything else.
+  reframe or drop it; a rubber-stamp captures nothing. Open-ended questions
+  still qualify: offer the 2–4 likeliest answers, let free text carry the rest.
 - **The rationale rides in the free-text answer (Pattern B).** When the reason
-  matters, end the question's text with this instruction, verbatim in shape:
+  matters, end the question's text with this, verbatim in shape:
 
   > Do NOT just pick an option — use the free-text field and type your answer
   > as "<choice> because <one-sentence reason>". If every option here is wrong,
   > reject the framing: type what's right instead.
-- **"Defer to <name>" is always a valid answer.** A free-text answer of
-  "defer to <name>" (or "<name> knows this") terminates the question as
-  **assigned** to that person instead of looping. Record it in the artifact's
-  closing "Open Questions — Assigned" section — question, assignee, date, and
-  a context link; the section exists only when at least one question is
-  assigned. Then confirm the deferral in one visible chat line — who, which
-  question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the
-  artifact's Open Questions — Assigned section`). Never mutate the file
-  silently on a conversational shortcut. A defer with no name ("someone else
-  knows this") gets exactly one follow-up asking who; without a name the
-  question stays open — never an anonymous assignment. Re-deferring to a
-  different person: the latest assignment wins, and the confirmation line
-  notes the reassignment. If an assigned question is answered later in the
-  session, remove it from the assigned section, record the answer normally,
-  and confirm in one line. Assignment is not backlogging — never auto-write
-  assigned questions to `docs/backlog/`.
+- **"Defer to <name>" is always a valid answer.** A free-text "defer to <name>"
+  (or "<name> knows this") terminates the question as **assigned** instead of
+  looping. Record it in the artifact's closing "Open Questions — Assigned"
+  section — question, assignee, date, context link; the section exists only
+  when at least one question is assigned. Then confirm the deferral in one
+  visible chat line — who, which question, where it was recorded (e.g.
+  `Assigned: Q2 → Sam · recorded in the artifact's Open Questions — Assigned
+  section`) — never mutate the file silently. A defer with no name
+  gets exactly one follow-up asking who; without one the question stays open —
+  never an anonymous assignment. Latest assignment wins on a re-defer (say so).
+  An assigned question answered later leaves that section and is recorded
+  normally. Assignment is not backlogging — never auto-write assigned
+  questions to `docs/backlog/`.
 
 Apply using three tiers — do NOT ask per-item permission:
 
@@ -148,10 +152,8 @@ value in one line. Never flip it unasked.
 **Execution profile offer:** If Step 1 found no `<!-- joycraft:execution-profile -->` sentinel in AGENTS.md, offer to add one — never write it unasked.
 
 On yes, ask **four separate questions per installed harness**, each one its own
-question through the question directive above. Ask them as four questions, not
-as one paragraph: a 2026-07-31 user answered the swarm pair and was never asked
-the rest, because a single bundled prose block lets the trailing questions be
-reformatted away.
+question through the question directive above — never one bundled paragraph,
+which lets the trailing questions get reformatted away (observed 2026-07-31).
 
 - **Q1 — swarms for decompose?** Options: yes / no.
 - **Q2 — swarms for implement?** Options: yes / no.
@@ -197,16 +199,14 @@ After applying, append to `docs$joycraft-history.md` and show a consolidated upg
 
 ## Step 6: Show the Harness Maturity Roadmap
 
-Show a tailored roadmap focused on harness maturity, not autonomy. Order the next steps by the project's actual gaps from Step 3:
+Show a tailored roadmap focused on harness maturity, not autonomy, ordered by the project's actual gaps from Step 3:
 
 - **Boundaries with teeth** — ALWAYS/ASK FIRST/NEVER rules present, and the machine-checkable ones backed by deny patterns or hooks rather than prose alone. Run `$joycraft-harden` to convert eligible declared rules to verified and stamp provenance; it never auto-applies, and it also surfaces probation-due rules for review.
 - **Lean AGENTS.md** — under ~200 lines, with long reference content extracted to `docs/context/reference/` behind a Context Map pointer table
 - **Context docs with real content** — production map, dangerous assumptions, decision log actually populated, not scaffolding
 - **Healthy spec-driven loop** — features flow interview → brief → specs → implement → session-end, with discoveries captured along the way
 
-Frame it with the levels: most projects should aim to run excellently at Levels 3-4 (spec-driven development with a well-maintained harness). Mention Level 5 (spec queue, autofix, holdout scenarios) once, as an experimental north star for teams with the budget and infrastructure to maintain it — not the expected next step.
-
-**Tip:** Run `$joycraft-optimize` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.
+Frame it with the levels: most projects should aim to run excellently at Levels 3-4 (spec-driven development with a well-maintained harness). Mention Level 5 (spec queue, autofix, holdout scenarios) once, as an experimental north star for teams with the budget and infrastructure to maintain it — not the expected next step. **Tip:** Run `$joycraft-optimize` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.
 
 ## Edge Cases
 
