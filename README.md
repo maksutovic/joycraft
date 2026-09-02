@@ -15,6 +15,8 @@ cd /path/to/your/project
 npx joycraft@latest init
 ```
 
+Joycraft is a **curated harness, not a memory system**. Everything it writes is in-repo, reviewed in your PRs, and reaped when it stops earning its keep — the opposite of hidden state that accretes until it misleads. Code is the truth about how your project works; the harness holds only what code cannot say (intent, decisions and their rationale, product direction), and `/joycraft-optimize`'s Reaper pass is what keeps it honest. If your agent already keeps its own automatic memory, a Joycraft project supersedes it: the same facts get one home that your whole team can see and review.
+
 ## Contents
 
 - [Install](#install) · [Use](#use) · [Upgrade](#upgrade)
@@ -27,7 +29,7 @@ npx joycraft@latest init
 - [Migration: flat → per-feature layout](docs/guides/migration-per-feature-layout.md) — the v0.6 docs move
 - [The levels](docs/guides/levels.md) — Dan Shapiro's 5 Levels, where Joycraft aims, and the credits
 - [Security](SECURITY.md) · [Guides](#guides) · [Why Joycraft?](#why-joycraft)
-- [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md) · [License](LICENSE)
+- [Contributing](CONTRIBUTING.md) · [Acknowledgments](#acknowledgments) · [Changelog](CHANGELOG.md) · [License](LICENSE)
 
 ## Install
 
@@ -156,6 +158,17 @@ The short version:
 5. Open a PR (one approval required)
 
 Look for [`good first issue`](https://github.com/maksutovic/joycraft/labels/good%20first%20issue) labels if you're new. Areas we'd especially love help with: stack detection for new languages, skill improvements, and documentation.
+
+## Acknowledgments
+
+The curated-harness stance above was shaped by people thinking out loud about what agents should and shouldn't remember:
+
+- **Mario Zechner** (creator of [Pi](https://github.com/earendil-works/pi-coding-agent)) and **Armin Ronacher** (creator of Flask) — "code is truth" and the minimal-harness thesis: no separate memory system for knowledge the code already carries.
+- **Theo Browne** ([t3.gg](https://t3.gg)) — the write-vs-read memory audit that turned decay into something measurable, and the case for directional rather than rule-heavy AGENTS.md content.
+- **Lauren** (Cursor) — the intervention-elimination hierarchy: architecture beats lint and CI, which beat skills and rules, which beat asking a human.
+- **Robert C. Martin** — impose values, not disciplines.
+
+The levels this project aims at are Dan Shapiro's; those credits live in [The levels](docs/guides/levels.md).
 
 ## License
 
