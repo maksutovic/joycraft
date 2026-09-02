@@ -30,6 +30,62 @@ export interface ImproveOptions {
    * Only meaningful for documents that serve as AGENTS.md.
    */
   executionProfile?: ExecutionProfile;
+  /**
+   * Elicited directional content (D5). When supplied and non-empty, one
+   * `## Product Identity` section is appended — never a TODO stub, so the
+   * section only exists once gather-context/interview collected real answers.
+   */
+  identity?: ProductIdentity;
+}
+
+/**
+ * Directional content for the `## Product Identity` section. Every field is
+ * optional; only non-empty ones become subsections.
+ */
+export interface ProductIdentity {
+  values?: string[];
+  glossary?: Record<string, string>;
+  taste?: string[];
+}
+
+export const PRODUCT_IDENTITY_HEADER_PATTERN = /product\s*identity/i;
+
+function nonEmptyLines(items?: string[]): string[] {
+  return (items ?? []).map(s => s.trim()).filter(s => s.length > 0);
+}
+
+function glossaryEntries(glossary?: Record<string, string>): [string, string][] {
+  return Object.entries(glossary ?? [])
+    .map(([term, def]) => [term.trim(), def.trim()] as [string, string])
+    .filter(([term, def]) => term.length > 0 && def.length > 0);
+}
+
+/**
+ * Renders the identity section, or `null` when there is nothing to say.
+ * Dated so D5's pre-committed optimize review is self-announcing.
+ */
+export function generateProductIdentitySection(identity?: ProductIdentity): string | null {
+  if (!identity) return null;
+
+  const values = nonEmptyLines(identity.values);
+  const taste = nonEmptyLines(identity.taste);
+  const glossary = glossaryEntries(identity.glossary);
+  if (values.length === 0 && taste.length === 0 && glossary.length === 0) return null;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const parts: string[] = ['## Product Identity', '', `_Added ${today} — review at next optimize run_`];
+
+  if (values.length > 0) {
+    parts.push('', '### Values', '', ...values.map(v => `- ${v}`));
+  }
+  if (glossary.length > 0) {
+    parts.push('', '### Glossary', '', ...glossary.map(([term, def]) => `- **${term}** — ${def}`));
+  }
+  if (taste.length > 0) {
+    parts.push('', '### Taste', '', ...taste.map(t => `- ${t}`));
+  }
+
+  return parts.join('\n');
 }
 
 /**
@@ -298,6 +354,11 @@ export function improveCLAUDEMd(
     additions.push(generatePrivateSetupNote());
   }
 
+  if (!hasSection(sections, PRODUCT_IDENTITY_HEADER_PATTERN)) {
+    const identitySection = generateProductIdentitySection(opts?.identity);
+    if (identitySection) additions.push(identitySection);
+  }
+
   if (existingSkills.length > 0 && !hasSection(sections, /project\s*tools/i)) {
     additions.push(generateProjectToolsSection(existingSkills));
   }
@@ -354,6 +415,11 @@ export function generateCLAUDEMd(
     generateGettingStartedSection(opts?.multiTool ?? false),
     '',
   );
+
+  const identitySection = generateProductIdentitySection(opts?.identity);
+  if (identitySection) {
+    lines.push(identitySection, '');
+  }
 
   if (opts?.executionProfile) {
     lines.push(renderExecutionProfileSection(opts.executionProfile), '');

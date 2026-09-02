@@ -8,7 +8,10 @@ import {
   generateBoundariesSection,
   generateExternalApiSafetySection,
   generatePrivateSetupNote,
+  generateProductIdentitySection,
   PRIVATE_SETUP_NOTE_MARKER,
+  PRODUCT_IDENTITY_HEADER_PATTERN,
+  type ProductIdentity,
 } from './improve-claude-md.js';
 
 interface Section {
@@ -73,6 +76,7 @@ export function generateAgentsMd(
   stack: StackInfo,
   privateProfile = false,
   executionProfile?: ExecutionProfile,
+  identity?: ProductIdentity,
 ): string {
   const frameworkNote = stack.framework ? ` (${stack.framework})` : '';
   const langLabel = stack.language === 'unknown' ? '' : ` | **Stack:** ${stack.language}${frameworkNote}`;
@@ -97,6 +101,11 @@ export function generateAgentsMd(
     '',
   ];
 
+  const identitySection = generateProductIdentitySection(identity);
+  if (identitySection) {
+    lines.push(identitySection, '');
+  }
+
   if (executionProfile) {
     lines.push(renderExecutionProfileSection(executionProfile), '');
   }
@@ -113,6 +122,7 @@ export function improveAgentsMd(
   stack: StackInfo,
   privateProfile = false,
   executionProfile?: ExecutionProfile,
+  identity?: ProductIdentity,
 ): string {
   const sections = parseSections(existing);
   const additions: string[] = [];
@@ -135,6 +145,11 @@ export function improveAgentsMd(
 
   if (!hasSection(sections, /development/i)) {
     additions.push(generateDevelopmentSection(stack));
+  }
+
+  if (!hasSection(sections, PRODUCT_IDENTITY_HEADER_PATTERN)) {
+    const identitySection = generateProductIdentitySection(identity);
+    if (identitySection) additions.push(identitySection);
   }
 
   if (privateProfile && !existing.includes(PRIVATE_SETUP_NOTE_MARKER)) {
