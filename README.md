@@ -38,7 +38,7 @@ cd /path/to/your/project
 npx joycraft@latest init
 ```
 
-Answer two questions — which harnesses to install, and whether to commit them — and `init` does the rest: detects your stack, writes `AGENTS.md`/`CLAUDE.md` with your real build/test commands, installs the skills. Safe to re-run: it only creates missing files, never overwrites yours.
+Answer a few questions — which harnesses to install, whether to commit them, and (with Claude Code) whether to turn off auto-memory for this project — and `init` does the rest: detects your stack, writes `AGENTS.md`/`CLAUDE.md` with your real build/test commands, installs the skills. Safe to re-run: it only creates missing files, never overwrites yours.
 
 `npm install -g joycraft` if you'd rather have the command on your PATH; `npx` works without it. Every step from install to first shipped feature: [Setup walkthrough](docs/guides/setup-walkthrough.md).
 
