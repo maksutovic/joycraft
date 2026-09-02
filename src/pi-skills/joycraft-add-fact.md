@@ -5,7 +5,7 @@ description: Invoked by session-end or the human after a fact surfaces — route
 
 # Add Fact
 
-The user has a fact to capture. Your job is to classify it, route it to the correct context document, append it in the right format, and optionally add a AGENTS.md boundary rule.
+The user has a fact to capture. Your job is to escalate it to a check where one is possible, otherwise classify it, route it to the correct context document, and append it in the right format.
 
 ## Step 1: Get the Fact
 
@@ -14,6 +14,10 @@ If the user already provided the fact (e.g., `/skill:joycraft-add-fact the stagi
 If not, ask: "What fact do you want to capture?" -- then wait for their response.
 
 If the user provides multiple facts at once, process each one separately through all the steps below, then give a combined confirmation at the end.
+
+## Step 1b: Escalate to a Check First (Harden-First)
+
+Before choosing a doc, apply the intervention-elimination hierarchy: **can this fact be enforced as architecture, a deny pattern, or a CI check?** A fact that is ALWAYS/NEVER-shaped, could cause real damage if violated, and applies across all work belongs in AGENTS.md's behavioral boundaries with teeth — invoke `/skill:joycraft-harden` to convert it (rule + deny pattern stamped together) and stop; prose is the residue after checks fail, not the default destination. Advisory, never blocking: if the human declines, or harden is not installed (note it), continue to Step 2. A check-eligible fact whose *why* deserves prose can still land in the decision log per Step 2's rubric. Purely informational facts, one-time decisions, and diagnostic tips are not escalation candidates — classify them below.
 
 ## Step 2: Classify the Fact
 
@@ -67,7 +71,7 @@ grep -ril '<topic keywords>' docs/context/ docs/discoveries/ docs/reference/
 ```
 
 - **No match** — proceed to Step 3 and create/append as normal.
-- **Match found** — that's an overlap. Update the existing doc in place (per `docs/reference/knowledge-lifecycle.md`'s Update/Consolidate verbs) instead of minting a near-duplicate row or file, and say so in your confirmation message (Step 7).
+- **Match found** — that's an overlap. Update the existing doc in place (per `docs/reference/knowledge-lifecycle.md`'s Update/Consolidate verbs) instead of minting a near-duplicate row or file, and say so in your confirmation message (Step 6).
 - **Multiple conflicting matches** — surface the contradiction to the human; don't pick a winner silently (`docs/reference/knowledge-lifecycle.md`).
 
 ## Step 3: Ensure the Target Document Exists
@@ -119,23 +123,7 @@ If the file already has a frontmatter block, update the `last_updated` and `last
 
 **Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
 
-## Step 6: Evaluate AGENTS.md Boundary Rule
-
-Decide whether the fact also warrants a rule in AGENTS.md's behavioral boundaries:
-
-**Add a AGENTS.md rule if the fact:**
-- Describes something that should ALWAYS or NEVER be done
-- Could cause real damage if violated (data loss, broken deployments, security issues)
-- Is a hard constraint that applies across all work, not just a one-time note
-
-**Do NOT add a AGENTS.md rule if the fact is:**
-- Purely informational (e.g., "staging DB is at this URL")
-- A one-time decision that's already captured
-- A diagnostic tip rather than a prohibition
-
-If a rule is warranted, read AGENTS.md, find the appropriate section (ALWAYS, ASK FIRST, or NEVER under Behavioral Boundaries), and append the rule. If no Behavioral Boundaries section exists, append one.
-
-## Step 7: Confirm and Hand Off
+## Step 6: Confirm and Hand Off
 
 Report what you did in this format:
 
@@ -143,9 +131,9 @@ Report what you did in this format:
 Added to [document name]:
   [summary of what was added]
 
-[If AGENTS.md was also updated:]
-Added AGENTS.md rule:
-  [ALWAYS/ASK FIRST/NEVER]: [rule text]
+[If the fact escalated to a check in Step 1b:]
+Escalated to /skill:joycraft-harden:
+  [the rule it will stamp]
 
 [If the fact was ambiguous:]
 Routed to [chosen doc] -- move to [alternative doc] if this is more about [alternative category description].

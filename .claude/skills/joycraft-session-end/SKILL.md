@@ -59,7 +59,7 @@ If nothing surprising happened, skip the discovery file entirely. No discovery i
 
 ## 1b. Update Context Documents
 
-If `docs/context/` exists, quickly check whether this session revealed anything about:
+Escalation gate first: a fact enforceable as architecture, a deny pattern, or a CI check goes to `/joycraft-harden`, not prose (advisory — continue if declined). Then, if `docs/context/` exists, quickly check whether this session revealed anything about:
 
 - **Production risks** — did you interact with or learn about production vs staging systems? → Update `docs/context/production-map.md`
 - **Wrong assumptions** — did the agent (or you) assume something that turned out to be false? → Update `docs/context/dangerous-assumptions.md`
