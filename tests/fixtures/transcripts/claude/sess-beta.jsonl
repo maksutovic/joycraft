@@ -1,0 +1,6 @@
+{"type":"user","sessionId":"sess-beta","cwd":"/repo","message":{"role":"user","content":[{"type":"text","text":"implement the thing"}]}}
+{"type":"assistant","sessionId":"sess-beta","message":{"role":"assistant","content":[{"type":"tool_use","id":"tb_1","name":"Read","input":{"file_path":"AGENTS.md"}}]}}
+this line is not json at all
+{"type":"assistant","sessionId":"sess-beta","message":{"role":"assistant","content":[{"type":"tool_use","id":"tb_2","name":"Read","input":{"file_path":"/repo/docs/reference/knowledge-lifecycle.md"}}]}}
+{"type":"assistant","sessionId":"sess-beta","message":{"role":"assistant","content":[{"type":"tool_use","id":"tb_3","name":"Read","input":{"file_path":"/elsewhere/notes.md"}}]}}
+{"type":"assistant","sessionId":"sess-beta","message":{"role":"assistant","content":[{"type":"tool_us
