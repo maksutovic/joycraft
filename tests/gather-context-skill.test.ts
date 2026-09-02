@@ -113,6 +113,69 @@ describe('gather-context skill: project-relative paths only', () => {
   });
 });
 
+describe('gather-context skill: product identity elicitation (D5)', () => {
+  it('asks Values, Glossary, and Taste questions', () => {
+    const c = claude();
+    expect(c).toContain('Product Identity');
+    expect(c.toLowerCase()).toMatch(/\bvalues\b/);
+    expect(c.toLowerCase()).toMatch(/\bglossary\b/);
+    expect(c.toLowerCase()).toMatch(/\btaste\b/);
+  });
+
+  it('is gap-only: skips when a Product Identity section already exists', () => {
+    expect(claude().toLowerCase()).toMatch(/already has a .*product identity.*skip|product identity.*already exists.*skip|skip this step/);
+  });
+
+  it('states the zero-sum admission: each directional line names what it displaces', () => {
+    const c = claude().toLowerCase();
+    expect(c).toContain('zero-sum');
+    expect(c).toMatch(/displace/);
+    expect(c).toMatch(/deny pattern/);
+    expect(c).toMatch(/harden/);
+  });
+
+  it('states the behavioral check: 2–3 behaviors, small and dated, review at next optimize run', () => {
+    const c = claude().toLowerCase();
+    expect(c).toMatch(/2–3|2-3/);
+    expect(c).toMatch(/concrete behavior/);
+    expect(c).toMatch(/small and dated|dated/);
+    expect(c).toMatch(/next .*optimize run/);
+  });
+
+  it('never writes a stub section when the human has nothing to say', () => {
+    const c = claude().toLowerCase();
+    expect(c).toMatch(/no section and no placeholder|never write.*stub|no stub/);
+  });
+
+  it('routes rule-shaped answers toward harden, keeping taste-shaped ones', () => {
+    const c = claude().toLowerCase();
+    expect(c).toMatch(/rule-shaped|discipline rule/);
+    expect(c).toMatch(/taste-shaped/);
+  });
+});
+
+describe('interview skill: identity pointer only (ONE_HOME)', () => {
+  const INTERVIEW = join(ROOT, 'src', 'claude-skills', 'joycraft-interview.md');
+  const interview = () => readFileSync(INTERVIEW, 'utf-8');
+
+  it('references the identity block in at most one line', () => {
+    const lines = interview().split('\n').filter((l) => /product identity/i.test(l));
+    expect(lines.length).toBe(1);
+    expect(lines[0].toLowerCase()).toContain('gather-context');
+  });
+
+  it('does not duplicate the elicitation questions', () => {
+    const c = interview().toLowerCase();
+    expect(c).not.toContain('refuse to be');
+    expect(c).not.toContain('wince even when it works');
+    expect(c).not.toContain('outsiders misread');
+  });
+
+  it('stays within its pre-change line budget (pointer paid for by a trim)', () => {
+    expect(readFileSync(join(ROOT, 'src', 'skills', 'joycraft-interview.md'), 'utf-8').split('\n').length).toBeLessThanOrEqual(329);
+  });
+});
+
 describe('gather-context skill: Codex mirror parity', () => {
   it('Codex name matches Claude name', () => {
     const cn = claude().match(/name:\s*(.+)/)?.[1]?.trim();
