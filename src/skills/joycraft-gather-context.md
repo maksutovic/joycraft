@@ -32,6 +32,23 @@ From the summary, identify genuine gaps: no design-system doc? no production map
 
 **Per-doc skip guard (not all-or-nothing):** Never re-interview for a doc that already has real content. Skip each doc that's already populated individually, and interview only the empty or missing ones. If everything is already covered, say so and offer nothing.
 
+## Step 2b: Product Identity (Elicit-First, Gap-Only)
+
+If {{boundary_file}} already has a `## Product Identity` section, skip this step entirely. Otherwise offer — never force — three short identity questions alongside the gap interview:
+
+- **Values** — what makes this product special, and what should shape an agent's suggestions? ("What does this product refuse to be?")
+- **Glossary** — which words does the team use that outsiders misread?
+- **Taste** — what code makes you wince even when it works?
+
+Rules that ride on the answers (D5):
+
+- **Elicit-first, no stubs.** If the human has nothing to say, write no section and no placeholder — the section exists only when a human supplied real content.
+- **Zero-sum admission.** Every directional line added to {{boundary_file}} names the line it displaces — ideally an ALWAYS/NEVER prose rule converted to a deny pattern via {{skill_prefix}}harden.
+- **Behavioral check.** Before writing, pick 2–3 concrete behaviors the section should change. Ship small and dated, with a pre-committed review at the next {{skill_prefix}}optimize run.
+- **Rule-shaped answers aren't taste.** "Never use var" is a discipline rule — route it toward {{skill_prefix}}harden per the zero-sum admission; keep only taste-shaped answers here.
+
+Collected identity content joins the Step 4 batch as a dated `## Product Identity` section in {{boundary_file}} — Values / Glossary / Taste subsections, only the populated ones.
+
 ## Step 3: Route by Shape (Inline Test)
 
 For each thing the user wants to capture, apply this minimal shape test inline — do not defer to another skill:

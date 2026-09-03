@@ -1,0 +1,8 @@
+{"type":"user","sessionId":"sess-alpha","cwd":"/repo","message":{"role":"user","content":[{"type":"text","text":"wrap up the session"}]}}
+{"type":"assistant","sessionId":"sess-alpha","message":{"role":"assistant","content":[{"type":"tool_use","id":"tu_1","name":"Read","input":{"file_path":"/repo/docs/context/decision-log.md"}}]}}
+{"type":"assistant","sessionId":"sess-alpha","message":{"role":"assistant","content":[{"type":"tool_use","id":"tu_2","name":"Read","input":{"file_path":"/repo/src/foo.ts"}}]}}
+{"type":"assistant","sessionId":"sess-alpha","message":{"role":"assistant","content":[{"type":"tool_use","id":"tu_3","name":"Skill","input":{"skill":"joycraft-session-end","args":""}}]}}
+{"type":"assistant","sessionId":"sess-alpha","message":{"role":"assistant","content":[{"type":"text","text":"Following Step 1b."},{"type":"tool_use","id":"tu_4","name":"Read","input":{"file_path":"/repo/docs/context/decision-log.md"}}]}}
+{"type":"assistant","sessionId":"sess-alpha","message":{"role":"assistant","content":[{"type":"tool_use","id":"tu_5","name":"Edit","input":{"file_path":"/repo/docs/context/decision-log.md","old_string":"a","new_string":"b"}}]}}
+{"type":"assistant","sessionId":"sess-alpha","message":{"role":"assistant","content":[{"type":"tool_use","id":"tu_6","name":"Write","input":{"file_path":"/repo/docs/discoveries/2026-09-01-thing.md","content":"stub"}}]}}
+{"type":"assistant","sessionId":"sess-alpha","message":{"role":"assistant","content":[{"type":"tool_use","id":"tu_7","name":"Bash","input":{"command":"cat AGENTS.md"}}]}}

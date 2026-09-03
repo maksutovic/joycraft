@@ -39,12 +39,7 @@ Only capture what's NOT obvious from the code or git diff:
 - "The approach in the spec didn't work because..." — spec-vs-reality gaps
 - Key decisions made during implementation that aren't in the spec
 
-**Do NOT capture:**
-- Files changed (that's the diff)
-- What you set out to do (that's the spec)
-- Step-by-step narrative of the session (nobody re-reads these)
-
-Use this format:
+**Do NOT capture:** files changed (that's the diff), what you set out to do (that's the spec), or a step-by-step narrative of the session (nobody re-reads these). Use this format:
 
 ```markdown
 # Discoveries — [topic]
@@ -58,11 +53,11 @@ Use this format:
 **Impact:** [what this means for future work]
 ```
 
-If nothing surprising happened, skip the discovery file entirely. No discovery is a good sign — the spec was accurate.
+If nothing surprising happened, skip the discovery file entirely. No discovery is a good sign — the spec was accurate. While consolidating, also flag stale discoveries per the staleness rule in `docs/reference/knowledge-lifecycle.md` — an advisory list in your report, never an auto-delete.
 
 ## 1b. Update Context Documents
 
-If `docs/context/` exists, quickly check whether this session revealed anything about:
+Escalation gate first: a fact enforceable as architecture, a deny pattern, or a CI check goes to `$joycraft-harden`, not prose (advisory — continue if declined). Then, if `docs/context/` exists, quickly check whether this session revealed anything about:
 
 - **Production risks** — did you interact with or learn about production vs staging systems? → Update `docs/context/production-map.md`
 - **Wrong assumptions** — did the agent (or you) assume something that turned out to be false? → Update `docs/context/dangerous-assumptions.md`
@@ -104,17 +99,21 @@ For each spec in `docs/features/<slug>/specs/` (or `docs/bugfixes/<area>/` for b
 2. **Frontmatter** — edit the spec file's YAML `status:` to `done`.
 
 Rules:
-- Only graduate specs that are `in-review`. A spec still at `todo` was never started — **leave it `todo` and report it as remaining** (the feature isn't fully done; see the PR gate in step 5).
+- Only graduate specs that are `in-review`. A spec still at `todo` was never started — **leave it `todo` and report it as remaining** (the feature isn't fully done; see the PR gate in step 6).
 - Never write `done` for work nothing has validated — this validation run (step 2) is what licenses the graduation. (Once `verify-in-loop` ships, an independent verify performs the `in-review → done` transition; until then, this step does.)
 - `done` means **verified**, not **merged**. A merged PR is a git fact, never a spec status — do not invent a `merged` status or any fourth state beyond `todo`/`in-review`/`done`.
 
 If working from a Feature Brief at `docs/features/<slug>/brief.md`, also check off completed specs in the decomposition table.
 
-## 4. Commit
+## 4. Scan Read Telemetry
+
+Run `npx joycraft telemetry`. Report its one-line result and move on. When the command is unavailable or fails — no npx, package not installed, stale cache without the subcommand, offline — note that in one line and continue. A skipped scan is never a failure and must never block wrap-up; `joycraft-optimize` reports the gap as `INACCESSIBLE` evidence.
+
+## 5. Commit
 
 Commit all changes including the discovery file (if created) and spec status updates. The commit message should reference the spec if applicable.
 
-## 5. Push and PR (if autonomous git is enabled)
+## 6. Push and PR (if autonomous git is enabled)
 
 **Check AGENTS.md for "Git Autonomy" in the Behavioral Boundaries section.** If it says "STRICTLY ENFORCED" or the ALWAYS section includes "Push to feature branches immediately after every commit":
 
@@ -124,7 +123,7 @@ Commit all changes including the discovery file (if created) and spec status upd
 
 If AGENTS.md does NOT have autonomous git rules (or has "ASK FIRST" for pushing), ask the user before pushing.
 
-## 6. Report and Hand Off
+## 7. Report and Hand Off
 
 Write this report to the style contract in `docs/templates/reference/output-style.md`.
 

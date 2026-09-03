@@ -10,3 +10,5 @@ dist/
 .build/
 src/bundled-files.ts
 docs/.joycraft/state.json
+docs/.joycraft/telemetry.json
+docs/max-discussion-transcripts/

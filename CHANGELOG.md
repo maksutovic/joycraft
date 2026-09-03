@@ -7,6 +7,33 @@ in a before → now → side-effects format, newest first.
 
 ---
 
+## Unreleased — Curated Harness
+
+The knowledge layer had no read evidence: optimize's Reaper judged docs by
+judgment alone, discoveries sat forever once written, the generated
+CLAUDE.md/AGENTS.md carried a hand-maintained architecture tree that only
+drifted, and fact capture routed to prose first.
+
+**Now:** a `joycraft telemetry` subcommand scans Claude and Pi session
+transcripts (and Codex best-effort, labeled `fidelity: "degraded"`) into a
+gitignored, machine-local `docs/.joycraft/telemetry.json` — paths and counters
+only, never transcript content. `session-end` runs the scan at wrap-up and
+`optimize`'s Reaper cites the counts under pre-committed thresholds, with the
+evidence vocabulary grown to exactly seven labels. Discoveries get a 7-day
+advisory staleness rule, defined once in `knowledge-lifecycle.md` and invoked
+by citation. `add-fact` rejects three decay categories up front and escalates
+check-shaped facts to `harden` *before* doc classification. The generated
+architecture section becomes a check-shaped folder map — regenerated from the
+real tree at init/upgrade, drift-diffed by `tune` — and both generators can
+emit an elicit-first `## Product Identity` section fed by `gather-context`.
+`init` gains an interactive, guarded offer to set `autoMemoryEnabled: false`
+in the project's `.claude/settings.json`, and `tune` raises a
+graduate-then-archive auto-memory finding (always sparing `joycraft-owner.txt`).
+
+Side-effects on upgrade: an existing folder-map block is regenerated in place
+(structure from the machine, your wording preserved); a project with no
+architecture section gets the map appended. All skill copies regenerated.
+
 ## Unreleased — Quiet the stale-CLI upgrade nudge
 
 A stale cached CLI that re-exec'd `joycraft@latest upgrade` (the 0.7.x

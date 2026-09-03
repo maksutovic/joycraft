@@ -79,3 +79,67 @@ describe('areas pointer in CLAUDE.md', () => {
     expect(matches.length).toBe(1);
   });
 });
+
+describe('product identity section in CLAUDE.md', () => {
+  const identity = {
+    values: ['Ship small, dated changes'],
+    glossary: { Harness: 'The set of always-injected instruction files' },
+    taste: ['Prose over ceremony'],
+  };
+
+  it('appends one ## Product Identity section with all three subsections when content is supplied', () => {
+    const base = generateCLAUDEMd('test-project', stack);
+    const result = improveCLAUDEMd(base, stack, [], { identity });
+
+    const headers = result.match(/^## Product Identity\b/gm) ?? [];
+    expect(headers.length).toBe(1);
+    expect(result).toContain('### Values');
+    expect(result).toContain('### Glossary');
+    expect(result).toContain('### Taste');
+    expect(result).toContain('Ship small, dated changes');
+    expect(result).toContain('Harness');
+    expect(result).toContain('Prose over ceremony');
+  });
+
+  it('stamps the section with a date and a review pointer', () => {
+    const base = generateCLAUDEMd('test-project', stack);
+    const result = improveCLAUDEMd(base, stack, [], { identity });
+    expect(result).toMatch(/_Added \d{4}-\d{2}-\d{2} — review at next optimize run_/);
+  });
+
+  it('emits only the subsections that have content', () => {
+    const base = generateCLAUDEMd('test-project', stack);
+    const result = improveCLAUDEMd(base, stack, [], {
+      identity: { glossary: { Harness: 'always-injected instruction files' } },
+    });
+    expect(result).toContain('## Product Identity');
+    expect(result).toContain('### Glossary');
+    expect(result).not.toContain('### Values');
+    expect(result).not.toContain('### Taste');
+  });
+
+  it('does not append when a header already matches the product identity regex', () => {
+    const base = generateCLAUDEMd('test-project', stack) + '\n## Our Product Identity\n\nmine\n';
+    const result = improveCLAUDEMd(base, stack, [], { identity });
+    const headers = result.match(/^##.*Product Identity\b/gm) ?? [];
+    expect(headers.length).toBe(1);
+    expect(result).toContain('## Our Product Identity');
+    expect(result).not.toContain('### Values');
+  });
+
+  it('emits nothing — no section, no TODO — when no identity content is supplied', () => {
+    const base = generateCLAUDEMd('test-project', stack);
+    const result = improveCLAUDEMd(base, stack, []);
+    expect(result).not.toContain('Product Identity');
+    expect(result).not.toMatch(/TODO.*[Ii]dentity/);
+    expect(generateCLAUDEMd('test-project', stack)).not.toContain('Product Identity');
+  });
+
+  it('treats empty strings and empty arrays as no content', () => {
+    const base = generateCLAUDEMd('test-project', stack);
+    const result = improveCLAUDEMd(base, stack, [], {
+      identity: { values: ['', '  '], glossary: {}, taste: [] },
+    });
+    expect(result).not.toContain('Product Identity');
+  });
+});

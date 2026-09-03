@@ -50,45 +50,39 @@ The scenarios repo is deliberately invisible to the coding agent. This is the ho
 
 ## Architecture
 
-```
-Joycraft/
-├── src/                    # CLI + core logic (TypeScript)
-│   ├── cli.ts              # Entry point — argument parsing (init, upgrade)
-│   ├── init.ts             # Scaffold logic — dirs, files, CLAUDE.md
-│   ├── upgrade.ts          # Upgrade logic — diff, prompt, apply
-│   ├── detect.ts           # Stack detection from manifest files
-│   ├── improve-claude-md.ts # Merge Joycraft sections into existing CLAUDE.md
-│   ├── agents-md.ts        # Generate AGENTS.md for Codex
-│   ├── version.ts          # Version tracking (docs/.joycraft/state.json)
-│   ├── execution-profile.ts # Sentinel-delimited ## Execution Profile section in AGENTS.md (swarm opt-in, per-harness model/effort)
-│   ├── skills/             # CANONICAL skill sources — 22 joycraft-*.md files, edit here
-│   ├── claude-skills/      # GENERATED from src/skills/ by scripts/generate-bundled-files.mjs — never edit
-│   ├── codex-skills/       # GENERATED — Codex variants
-│   ├── pi-skills/          # GENERATED — Pi variants
-│   ├── copilot-skills/     # GENERATED — GitHub Copilot variants
-│   ├── local-skills/       # Repo-local maintainer skills — NOT bundled, never ship to npm
-│   └── templates/          # Bundled templates (copied to docs/templates/)
-├── scripts/
-│   ├── generate-bundled-files.mjs  # Regenerates src/*-skills/ from src/skills/
-│   ├── sync-skills.mjs             # Copies generated + local skills into .claude/.agents/.pi/.github
-│   └── ste-lint.py                 # VENDORED STE linter (maintainer-only; tests/ste-lint.test.ts shells to it)
-├── templates/              # Source-of-truth templates (development reference)
-├── tests/
-│   ├── detect.test.ts
-│   ├── init.test.ts
-│   ├── upgrade.test.ts
-│   ├── agents-md.test.ts
-│   └── fixtures/           # Minimal manifest files for each stack
-├── docs/
-│   ├── features/<slug>/    # Per-feature: brief.md, design.md, specs/ (+ .joycraft-spec-queue.json)
-│   ├── context/            # Knowledge layer: decision-log, shipped ledger, anchors, etc.
-│   └── discoveries/        # Session surprises worth remembering
-├── package.json
-├── tsconfig.json
-├── AGENTS.md               # You are here — shared agent instructions (CLAUDE.md imports this)
-├── CLAUDE.md               # @AGENTS.md import pointer for Claude Code
-└── README.md
-```
+<!-- joycraft:folder-map -->
+| Folder | What lives here |
+|--------|-----------------|
+| `docs/` | Documentation |
+| `keller-coders-meetups/` | Meetup notes (not part of the tool) |
+| `scripts/` | generate-bundled-files.mjs (regen src/*-skills/), sync-skills.mjs (copy into installed trees), ste-lint.py (vendored STE linter) |
+| `src/` | CLI + core logic (TypeScript); entry cli.ts, scaffold init.ts, upgrade.ts, detect.ts, improve-claude-md.ts, agents-md.ts |
+| `templates/` | Source-of-truth templates (development reference) |
+| `tests/` | Test suite + fixtures/ (real-world manifest files per stack) |
+| `docs/backlog/` | Deferred work, one file per item |
+| `docs/bugfixes/` | Per-area bugfix specs |
+| `docs/context/` | Knowledge layer — decision-log, shipped ledger, anchors, reference |
+| `docs/discoveries/` | Session surprises worth remembering |
+| `docs/features/` | Per-feature: brief.md, design.md, specs/ (+ .joycraft-spec-queue.json) |
+| `docs/guides/` | How-to guides |
+| `docs/max-discussion-transcripts/` | Discussion transcripts (gitignored content) |
+| `docs/plans/` | Planning docs |
+| `docs/reference/` | Cross-cutting reference (spec status lifecycle, knowledge lifecycle) |
+| `docs/research/` | Research notes and findings |
+| `docs/specs/` | Legacy flat specs (pre-feature-folder era) |
+| `docs/templates/` | Bundled output and reference templates |
+| `docs/vision/` | North-star vision docs (headless-joycraft) |
+| `src/arcade/` | Experimental playground |
+| `src/claude-skills/` | GENERATED from src/skills/ — never edit |
+| `src/codex-skills/` | GENERATED — Codex variants |
+| `src/copilot-skills/` | GENERATED — GitHub Copilot variants |
+| `src/local-skills/` | Repo-local maintainer skills — NOT bundled, never ship to npm |
+| `src/pi-skills/` | GENERATED — Pi variants |
+| `src/skills/` | CANONICAL skill sources — edit here |
+| `src/templates/` | Bundled templates (copied to docs/templates/) |
+
+Past multi-team scale, replace this root map with nested per-directory instruction files (`joycraft-collaborative-setup`) — never a bigger tree.
+<!-- /joycraft:folder-map -->
 
 ### Key Data Flow
 
@@ -115,6 +109,8 @@ npx joycraft init
 | File | Purpose |
 |------|---------|
 | `src/detect.ts` | Stack detection — pure function, no side effects |
+| `src/telemetry.ts` + `src/telemetry-store.ts` | Read-telemetry scanner (Claude/Pi/Codex transcripts) + gitignored store behind `joycraft telemetry` |
+| `src/folder-map.ts` | Check-shaped folder map — sentinel block regenerated at init/upgrade, drift-diffed by tune |
 | `src/init.ts` | Main scaffolding logic — the core of `npx joycraft init` |
 | `src/improve-claude-md.ts` | Merge logic for existing CLAUDE.md files — most complex logic |
 | `templates/` | Source-of-truth for all templates — changes here propagate to users via upgrade |

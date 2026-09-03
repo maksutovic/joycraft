@@ -27,7 +27,7 @@ For each control, determine:
 
 1. **Home file** — where it currently lives.
 2. **Disposition** — exactly one of the six values below.
-3. **Evidence label** — exactly one of the five values below, describing how confident this run is in the disposition.
+3. **Evidence label** — exactly one of the seven values below, describing how confident this run is in the disposition.
 4. **Reason** — one line.
 
 ### Disposition vocabulary (exactly six, no synonyms)
@@ -43,17 +43,28 @@ For each control, determine:
 
 **The Disposition cell is the bare word only** — never a hedged or qualified variant (`RETIRE-candidate`, `KEEP (note)`, `RETIRE (unconfirmed)`). Confidence and caveats belong in the Evidence label (`INFERRED` for an unconfirmed read) and the Reason column, never appended to the Disposition value. Do not reuse an Evidence-label word (`NOT_APPLICABLE`, `INACCESSIBLE`, etc.) as a Disposition — the two vocabularies are disjoint; a not-applicable/inaccessible row still needs one of the six Disposition words (usually `KEEP` with the inapplicability explained in Reason) plus the matching Evidence label.
 
-### Evidence label vocabulary (exactly five, no synonyms)
+### Evidence label vocabulary (exactly seven, no synonyms)
 
 | Label | When to use it |
 |---|---|
-| `VERIFIED` | This run actually mechanically checked the thing — ran the grep, read the file, ran the script. **Never mark VERIFIED for something this run didn't check.** No self-reported nominal. |
+| `VERIFIED` | This run actually mechanically checked the thing — ran the grep, read the file, ran the script. **Never mark VERIFIED for something this run didn't check.** No self-reported nominal. For a telemetry-backed knowledge-layer row, `VERIFIED` applies only when this run read `docs/.joycraft/telemetry.json` (Step 2b) and the doc's counts are healthy. |
 | `USER_REPORTED` | The human told you this run (or a prior session) that the control behaves a certain way; not independently checked this run |
 | `INFERRED` | Reasoned from adjacent evidence (e.g., a skill's description implies a behavior) without direct verification |
-| `INACCESSIBLE` | The file/directory needed to check this control doesn't exist or isn't reachable in this environment |
+| `INACCESSIBLE` | The file/directory needed to check this control doesn't exist or isn't reachable in this environment — including telemetry absent, unreadable, or malformed |
 | `NOT_APPLICABLE` | The check doesn't apply to this project (e.g., no `docs/context/shipped.md` yet) |
+| `NEVER_READ` | Telemetry shows ≥1 write and 0 voluntary reads for this doc |
+| `WRITE_HEAVY` | Telemetry shows a ≥3:1 writes:voluntary reads ratio for this doc |
 
 Anything not mechanically checked this run is `INFERRED` or `INACCESSIBLE` — never `VERIFIED`.
+
+## Step 2b: Read Telemetry (PROTOCOL)
+
+Read `docs/.joycraft/telemetry.json` — machine-local, gitignored, written by `/joycraft-session-end`'s scan. Shape: `{ version, scannedSessions, docs: { "<repo-relative path>": { reads, mandatedReads, voluntaryReads, writes, sessions, fidelity? } } }`.
+
+- **Absent, unreadable, or malformed** → treat as absent: every knowledge-layer row's Evidence is `INACCESSIBLE`; note the corruption in Reason and continue. Never guess counts.
+- **Read successfully** → label each knowledge-layer doc row: `NEVER_READ` or `WRITE_HEAVY` per the definitions above, else `VERIFIED` for a healthy row. **Only voluntary reads count toward retire/keep evidence** — a mandated read (the active skill's own text opened the doc) proves nothing about the doc's value.
+- **`fidelity: "degraded"`** (Codex-sourced counts, where reads default to mandated) → labels still apply; the report notes the degraded fidelity on that row.
+- **Team scale:** past ~3 contributors, machine-local counts bias toward kill. Per-user counts must merge at optimize time (aggregates, never transcripts) before telemetry evidence backs a RETIRE; until then report the counts as `INFERRED` and say so.
 
 ## Step 3: Cross-File Duplication Detection
 
@@ -87,7 +98,7 @@ If the skills directory doesn't exist (non-Joycraft project), report the taxonom
 
 ### Skill Description Budget
 
-Sum the character length of every skill's `description:` frontmatter value — these all load at session start, before any skill is invoked. Codex documents an initial skill-list budget of ~2% of context (8,000 chars when context size is unknown) and silently shortens descriptions that exceed it, which breaks skill routing. Thresholds: PASS ≤6,000 total chars, WARN >6,000 (approaching the budget), FAIL >8,000 (Codex is already truncating). On Claude Code there is no documented cutoff — report the total as always-loaded overhead.
+Sum every skill's `description:` char length — all load at session start. Codex's initial skill-list budget is ~2% of context (8,000 chars when unknown) and it silently shortens over-budget descriptions, breaking routing. Thresholds: PASS ≤6,000, WARN >6,000, FAIL >8,000. Claude Code has no documented cutoff — report the total as always-loaded overhead.
 
 ## Step 7: Audit Plugins & MCP Servers
 
@@ -153,7 +164,7 @@ Lead with the **disposition table** — one row per material control, columns: C
 
 | Control | Home File | Disposition | Evidence | Reason |
 |---|---|---|---|---|
-| [rule/skill/hook name] | [file path] | [KEEP/ONE_HOME/LOAD_LATER/MAKE_A_CHECK/PROBATION/RETIRE] | [VERIFIED/USER_REPORTED/INFERRED/INACCESSIBLE/NOT_APPLICABLE] | [one line] |
+| [rule/skill/hook name] | [file path] | [KEEP/ONE_HOME/LOAD_LATER/MAKE_A_CHECK/PROBATION/RETIRE] | [VERIFIED/USER_REPORTED/INFERRED/INACCESSIBLE/NOT_APPLICABLE/NEVER_READ/WRITE_HEAVY] | [one line] |
 
 ## Session Overhead Report
 
@@ -183,19 +194,30 @@ Lead with the **disposition table** — one row per material control, columns: C
 - [N] hook definitions ([list event names])
 
 ### Recommendations
-- [Specific, actionable items for anything over threshold or non-KEEP disposition]
-- [e.g., "CLAUDE.md is 312 lines — consider splitting reference sections into docs/"]
-- [e.g., "3 MCP servers load at boot — disable unused ones in settings.json"]
-- [e.g., "PROBATION: 2 hardened rules provisioned under a different model — re-verify via /joycraft-harden"]
+- [Specific, actionable items for anything over threshold or non-KEEP disposition — e.g. "CLAUDE.md is 312 lines — split reference sections into docs/"; "PROBATION: 2 hardened rules provisioned under a different model — re-verify via /joycraft-harden"]
 ```
 
-**Length is a symptom — duplication is the disease.** Before recommending that a long file be trimmed, check whether the same rule or guidance lives in more than one home (CLAUDE.md, a skill, a context doc). Drifting copies confuse the model more than honest length does: recommend one canonical home with pointers from the others (`ONE_HOME`), not deletion. A long file whose content is unique and load-bearing gets `KEEP` with a note.
+**Length is a symptom — duplication is the disease.** Before recommending a trim, check whether the same guidance lives in more than one home; drifting copies confuse the model more than honest length does. Recommend one canonical home with pointers (`ONE_HOME`), not deletion. Unique load-bearing content gets `KEEP` with a note.
 
 **Dispositions are advisory only.** This skill proposes; it applies nothing without the human. `RETIRE` candidates go to the Reaper pass (Step 10), not to a direct delete here.
 
 ## Step 10: The Reaper — Feature Exhaust Disposal
 
-The Reaper is the single deletion authority for feature-folder exhaust (`docs/features/<slug>/`). It runs as a distinct pass after the disposition table above — the audit's `RETIRE` rows and the undead candidates it surfaces feed this pass, but the Reaper only ever acts on **feature folders**, never on the boundary/skill/hook controls audited in Steps 1–9. There are exactly two paths. Never mix them: a folder is either shipped-and-extracted (delete) or undead-and-unextracted (archive-move only).
+The Reaper is the single deletion authority for feature-folder exhaust (`docs/features/<slug>/`). It runs after the disposition table — the audit's `RETIRE` rows feed it — but only ever acts on **feature folders**, never on the controls audited in Steps 1–9. Two paths, never mixed: a folder is either shipped-and-extracted (delete) or undead-and-unextracted (archive-move only).
+
+### Telemetry-backed RETIRE for knowledge-layer docs (PROTOCOL)
+
+Where Step 2b produced counts, a RETIRE recommendation for a knowledge-layer doc must cite the counts under these pre-committed rules — never re-litigate the thresholds here:
+
+| Rule | Verdict |
+|---|---|
+| 30 sessions or 60 days with zero voluntary reads | RETIRE candidate |
+| Voluntary reads in >20% of feature-shaped sessions — survives outright | KEEP |
+| Aggregate voluntary reads below ~1 per 10 sessions at the 30-session mark | Collapse the four non-decision-log docs into decision-log rows, L1 lines, or deletion |
+| 60 days without resolution | Default is shrink, not extend-the-study |
+| Troubleshooting-class doc | The insurance exemption — healthy baseline is near-zero voluntary reads; never a RETIRE candidate on read counts alone |
+
+A doc younger than the 30-session/60-day probation window is not RETIRE-actionable even at zero reads. Without telemetry (`INACCESSIBLE`), RETIRE stays judgment-only and says so. Stale discoveries surface in the same report via the staleness rule in `docs/reference/knowledge-lifecycle.md` (invoked by citation, advisory only).
 
 **Live-work exclusion (checked first, applies to both paths):** a feature folder is **never a candidate** for either path if it has any spec `in-review`, or its brief's `status:` is not terminal. Skip it silently — this is active work, not exhaust. Also skip the feature folder the current session is working in.
 
@@ -209,24 +231,17 @@ Eligibility requires **all three** legs to pass. Any leg failing → the folder 
    - `gh` unauthenticated or offline → the whole shipped path reports `INACCESSIBLE` and skips all deletions this run. **Never fall back to git-log inference** — squash merges make git-log guessing unreliable.
    - PR closed without merging → skip with reason "PR closed, not merged"; suggest the undead path instead.
 
-Folders that clear all three legs are batched into a **proposal list**, not applied automatically. Present the list and require **human approval per run** (a reject-framing escape must be available — "skip this run" is always a valid answer, not just per-folder accept/reject). Only on approval, remove each approved folder with `git rm -r docs/features/<slug>/` — `dossier.html` dies with its folder since nothing else references it once shipped. Deletion commits ride the **current feature branch only**; never a direct push, never on main (mains are protected). The ledger row and decision-log rows are the surviving record — the extraction already happened before eligibility, so the delete loses nothing.
+Folders clearing all three legs are batched into a **proposal list**, never applied automatically: present it and require **human approval per run** ("skip this run" is always a valid answer). Only on approval, `git rm -r docs/features/<slug>/` — `dossier.html` dies with its folder. Deletion commits ride the **current feature branch only**; never a direct push, never on main. The ledger and decision-log rows are the surviving record, so the delete loses nothing.
 
 ### Undead Path — Archive-Move (PROTOCOL)
 
-A candidate is a feature folder with **no** `.joycraft-spec-queue.json`, or a queue that is **all-`todo`** with no commits referencing the feature. These folders were never built — RF-4 found 29+ of the 47 existing feature folders in this state.
+A candidate is a feature folder with **no** `.joycraft-spec-queue.json`, or an all-`todo` queue with no commits referencing the feature — never built. Propose **per folder**, with a **one-line reason**, human-approved individually (not batched sight-unseen like the shipped path). On approval, `git mv docs/features/<slug>/ docs/archive/features/<slug>/`; if the destination already has that slug, suffix with `-2` (never overwrite).
 
-Propose **per folder**, with a **one-line reason**, human-approved individually (not batched sight-unseen like the shipped path — each undead folder needs its own justification recorded). On approval, `git mv docs/features/<slug>/ docs/archive/features/<slug>/`. If the archive destination already has that slug, suffix with `-2` (never overwrite).
-
-**The Reaper never deletes undead folders — archive-move only.** They were never extracted, so deletion would lose the only copy of whatever work exists in them. Deletion is reserved exclusively for the shipped path, where the ledger + decision-log already hold the durable record.
+**The Reaper never deletes undead folders — archive-move only.** They were never extracted, so deletion would lose the only copy of the work. Deletion is reserved for the shipped path, where the ledger + decision-log hold the durable record.
 
 ## Step 11: Further Resources
 
-End with:
-
-> For deeper token optimization, see:
-> - [Nate B Jones's token optimization techniques](https://www.youtube.com/watch?v=bDcgHzCBgmQ)
-> - [OB1 repo](https://github.com/nate-b-j/OB1) — Heavy File Ingestion skill and stupid button prompt kit
-> - [Joycraft's token discipline guide](docs/guides/token-discipline.md)
+End by pointing at [Joycraft's token discipline guide](docs/guides/token-discipline.md) for deeper token optimization.
 
 ## Edge Cases
 
@@ -240,6 +255,7 @@ End with:
 | `docs/context/shipped.md` doesn't exist yet | Layer-2 budget row: `NOT_APPLICABLE`, not a failure |
 | Non-Joycraft project (no skills dir) | Taxonomy checks: `INACCESSIBLE`, skip — v1 behavior preserved |
 | Human-door count lands at 10 | Report the overage with a demotion candidate named; never silently reclassify to pass the check |
+| `docs/.joycraft/telemetry.json` absent or malformed | Knowledge-layer rows: `INACCESSIBLE`, note the corruption — never guess counts |
 | Reaper: `gh` unauthenticated or offline | Shipped path reports `INACCESSIBLE` and skips all deletions this run — never falls back to git-log guessing |
 | Reaper: ledger row missing but brief says `reap: eligible` | Skip + flag: extraction incomplete — re-run session-end's graduation path first |
 | Reaper: PR closed without merge | Skip with reason "PR closed, not merged"; suggest undead review instead |

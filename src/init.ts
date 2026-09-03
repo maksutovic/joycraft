@@ -25,6 +25,7 @@ import { getPackageVersion } from './package-version.js';
 import { resolveHarnesses, type Harness } from './harness.js';
 import { resolveExecutionProfile } from './execution-profile.js';
 import { ensurePiExcludedFromTsconfig } from './tsconfig.js';
+import { resolveAutoMemoryOffer, AUTO_MEMORY_KEY } from './auto-memory.js';
 
 export interface InitOptions {
   force: boolean;
@@ -115,6 +116,14 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     interactive: process.stdin.isTTY === true,
     promptIntro: '\nHow should Joycraft files be tracked in git?',
   });
+
+  // Offer to disable Claude Code auto-memory for this project — one home for
+  // facts (see auto-memory.ts). Asked here with the other interactive questions;
+  // the guarded write happens with the rest of the settings.json merge below.
+  // Only meaningful when the Claude harness is being installed at all.
+  const disableAutoMemory = wants('claude')
+    ? await resolveAutoMemoryOffer(process.stdin.isTTY === true)
+    : false;
 
   // 1. Create the Joycraft-managed docs/ subdirectories that the generated
   // CLAUDE.md / AGENTS.md point at up front, so no generated pointer dangles:
@@ -244,6 +253,7 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
       ? generateClaudeMdPointer()
       : generateCLAUDEMd(projectName, stack, existingSkills, {
           privateProfile: gitignoreProfile === 'private',
+          projectDir: targetDir,
         });
     writeFileSync(claudeMdPath, content, 'utf-8');
     result.created.push(claudeMdPath);
@@ -265,8 +275,9 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
           privateProfile: gitignoreProfile === 'private',
           multiTool: true,
           executionProfile,
+          projectDir: targetDir,
         })
-      : generateAgentsMd(projectName, stack, gitignoreProfile === 'private', executionProfile);
+      : generateAgentsMd(projectName, stack, gitignoreProfile === 'private', executionProfile, undefined, targetDir);
     writeFileSync(agentsMdPath, content, 'utf-8');
     result.created.push(agentsMdPath);
   }
@@ -402,6 +413,16 @@ try {
       env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = '1';
     }
 
+    // Apply the accepted auto-memory offer. Idempotent and non-destructive by
+    // the same rule as the env write above: only set when the key is absent, so
+    // an explicit user value (true or false) is never clobbered. Project scope
+    // only — this path is `<targetDir>/.claude/settings.json`, never ~/.claude.
+    const autoMemoryMissing = !(AUTO_MEMORY_KEY in settings);
+    const writeAutoMemory = disableAutoMemory && autoMemoryMissing;
+    if (writeAutoMemory) {
+      settings[AUTO_MEMORY_KEY] = false;
+    }
+
     if (!hasJoycraftHook) {
       sessionStartHooks.push({
         matcher: '',
@@ -411,7 +432,7 @@ try {
         }],
       });
     }
-    if (!hasJoycraftHook || envMissing) {
+    if (!hasJoycraftHook || envMissing || writeAutoMemory) {
       writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
       if (!result.created.includes(settingsPath)) result.created.push(settingsPath);
     }
