@@ -2,7 +2,7 @@
 
 **What:** A CLI + Claude Code plugin that scaffolds and upgrades AI development harnesses. `npx joycraft init` installs skills, templates, boundaries, and documentation structure into any project, taking it from Level 1 to Level 4 on Dan Shapiro's 5 Levels of Vibe Coding.
 
-**Component:** npm package (CLI) + Claude Code skills | **Updated:** 2026-07-21
+**Component:** npm package (CLI) + agent skills (Claude Code, Codex, Pi, Copilot, omp) | **Updated:** 2026-09-03
 
 ---
 
@@ -111,7 +111,7 @@ npx joycraft init
 | File | Purpose |
 |------|---------|
 | `src/detect.ts` | Stack detection — pure function, no side effects |
-| `src/telemetry.ts` + `src/telemetry-store.ts` | Read-telemetry scanner (Claude/Pi/Codex transcripts) + gitignored store behind `joycraft telemetry` |
+| `src/telemetry.ts` + `src/telemetry-store.ts` | Read-telemetry scanner (Claude/Pi/omp/Codex transcripts) + gitignored store behind `joycraft telemetry` |
 | `src/folder-map.ts` | Check-shaped folder map — sentinel block regenerated at init/upgrade, drift-diffed by tune |
 | `src/init.ts` | Main scaffolding logic — the core of `npx joycraft init` |
 | `src/improve-claude-md.ts` | Merge logic for existing CLAUDE.md files — most complex logic |
