@@ -82,6 +82,16 @@ What this does to an existing setup:
   into those briefings. And a stale CLI now re-runs itself through
   `npx joycraft@<latest>` instead of telling you to update separately —
   upgrade is one command again.
+- **The harness gets read evidence (0.7.11).** A new `npx joycraft telemetry`
+  command scans Claude Code, Pi, and (best-effort) Codex transcripts into a
+  gitignored `docs/.joycraft/telemetry.json` — paths and counters only.
+  Session-end runs the scan; optimize's Reaper cites the counts instead of
+  judging docs by feel. On upgrade, the architecture section of your
+  AGENTS.md/CLAUDE.md is regenerated as a check-shaped folder map from the
+  real tree (structure from the machine, your wording preserved; a project
+  with no architecture section gets one appended), and tune diffs it for
+  drift from then on. Discoveries older than 7 days are flagged as advisory
+  stale. Nothing here touches your transcripts or commits them.
 
 **Or let your agent drive it.** Paste this prompt into Claude Code, Codex, Pi,
 or GitHub Copilot inside your project and it will run the upgrade, show you

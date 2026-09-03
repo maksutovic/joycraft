@@ -64,12 +64,18 @@ npx joycraft@latest upgrade
 
 Refreshes skills and templates for the harnesses you selected at init. Unmodified files update automatically; files you've customized show a diff and ask first (`--yes` for CI). Details and release notes: [Upgrading](docs/guides/upgrading.md).
 
+```bash
+npx joycraft@latest telemetry
+```
+
+Scans your Claude Code, Pi, and (best-effort) Codex session transcripts and records which knowledge-layer docs your agents actually read. The result is a gitignored, machine-local file at `docs/.joycraft/telemetry.json` — paths and counters only, never transcript content. `/joycraft-session-end` runs this scan for you; `/joycraft-optimize` cites the counts when it judges which docs earn their place.
+
 ## What init creates
 
 - **AGENTS.md** — behavioral boundaries (Always / Ask First / Never) plus your stack's real build/test/lint commands; the single shared instruction file when more than one tool is selected
 - **CLAUDE.md** — on a multi-tool install, [Anthropic's documented import pattern](https://code.claude.com/docs/en/memory): `@AGENTS.md` plus a `## Claude Code` section, so every tool reads one source. A Claude-only install gets the classic full CLAUDE.md
 - **22 skills** — installed to `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), `.pi/skills/` (Pi), and/or `.github/skills/` (Copilot); Pi also gets the headless pipeline runtime in `.pi/scripts/joycraft/`
-- **docs/** — `docs/context/` (production map, dangerous assumptions, decision log, institutional knowledge, troubleshooting) plus templates; feature folders and `docs/backlog/` are created lazily by the skills that write to them. Joycraft's own state hides at `docs/.joycraft/state.json` (gitignored)
+- **docs/** — `docs/context/` (production map, dangerous assumptions, decision log, institutional knowledge, troubleshooting) plus templates; feature folders and `docs/backlog/` are created lazily by the skills that write to them. Joycraft's own state hides at `docs/.joycraft/` (gitignored): `state.json` plus the read-telemetry store
 - **Agent teams enabled** — with Claude Code selected, `init` sets `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` so subagent-driven skills work out of the box (never clobbers a value you set)
 
 Re-running on an existing project is covered in [Git tracking](docs/guides/git-tracking.md#re-running-init-on-an-existing-project).
@@ -90,9 +96,9 @@ Re-running on an existing project is covered in [Git tracking](docs/guides/git-t
 | Run a feature's whole spec queue from one command | `/joycraft-implement-feature` | Fresh-context subagent per spec → fail-fast → session-end once |
 | Run specs autonomously without hand-holding | `/joycraft-implement-level5` | Experimental — autofix loop + holdout scenario testing |
 | Verify an implementation independently | `/joycraft-verify` | Read-only subagent checks work against the spec |
-| Wrap up when a feature's specs are done | `/joycraft-session-end` | Consolidate discoveries → validate → graduate specs → ledger row → push/PR |
-| Assess and mature your harness | `/joycraft-tune` | Score 7 dimensions → apply fixes → maturity roadmap |
-| Audit harness overhead and prune | `/joycraft-optimize` | Six-disposition self-audit; its Reaper pass retires shipped/abandoned feature folders |
+| Wrap up when a feature's specs are done | `/joycraft-session-end` | Consolidate discoveries → validate → graduate specs → ledger row → telemetry scan → push/PR |
+| Assess and mature your harness | `/joycraft-tune` | Score 7 dimensions → apply fixes → maturity roadmap; flags folder-map drift and auto-memory graduation |
+| Audit harness overhead and prune | `/joycraft-optimize` | Six-disposition self-audit backed by read telemetry; its Reaper pass retires shipped/abandoned feature folders |
 | Set up Joycraft for a team | `/joycraft-collaborative-setup` | Scaffold `docs/areas/`, owner conventions, a team CONTRIBUTING doc |
 
 The core loop:
