@@ -8,13 +8,19 @@ import {
   parsePiSessionLine,
   parseCodexSessionLine,
   isKnowledgeLayerPath,
+  defaultOmpTranscriptDir,
+  defaultPiTranscriptDir,
 } from '../src/telemetry';
 
 const fixtures = join(__dirname, 'fixtures', 'transcripts');
 const claudeDir = join(fixtures, 'claude');
 const piDir = join(fixtures, 'pi');
 const codexDir = join(fixtures, 'codex');
+const ompDir = join(fixtures, 'omp');
 const noCodex = join(fixtures, 'no-codex');
+const noPi = join(fixtures, 'no-pi');
+const noOmp = join(fixtures, 'no-omp');
+const noClaude = join(fixtures, 'no-claude');
 const PROJECT = '/repo';
 
 describe('isKnowledgeLayerPath', () => {
@@ -227,7 +233,7 @@ describe('scanTranscripts with a codexDir', () => {
     const result = await scanTranscripts(PROJECT, {
       claudeDir: join(fixtures, 'no-claude'),
       piDir: join(fixtures, 'no-pi'),
-      codexDir,
+      ompDir: noOmp, codexDir,
     });
     expect(result.sessions).toEqual(['codex-sess-one']);
     const dl = result.docs['docs/context/decision-log.md'];
@@ -243,7 +249,7 @@ describe('scanTranscripts with a codexDir', () => {
     const result = await scanTranscripts(PROJECT, {
       claudeDir: join(fixtures, 'no-claude'),
       piDir: join(fixtures, 'no-pi'),
-      codexDir,
+      ompDir: noOmp, codexDir,
     });
     for (const counts of Object.values(result.docs)) {
       expect(counts.fidelity).toBe('degraded');
@@ -251,7 +257,7 @@ describe('scanTranscripts with a codexDir', () => {
   });
 
   it('leaves Claude/Pi-sourced counts unmarked', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, ompDir: noOmp, codexDir: noCodex });
     for (const counts of Object.values(result.docs)) {
       expect(counts.fidelity).toBeUndefined();
     }
@@ -261,7 +267,7 @@ describe('scanTranscripts with a codexDir', () => {
     const result = await scanTranscripts(PROJECT, {
       claudeDir: join(fixtures, 'no-claude'),
       piDir: join(fixtures, 'no-pi'),
-      codexDir,
+      ompDir: noOmp, codexDir,
     });
     for (const counts of Object.values(result.docs)) {
       expect(counts.voluntaryReads).toBe(0);
@@ -273,7 +279,7 @@ describe('scanTranscripts with a codexDir', () => {
     const result = await scanTranscripts(PROJECT, {
       claudeDir: join(fixtures, 'no-claude'),
       piDir: join(fixtures, 'no-pi'),
-      codexDir,
+      ompDir: noOmp, codexDir,
     });
     expect(Object.keys(result.docs).every((p) => isKnowledgeLayerPath(p))).toBe(true);
   });
@@ -282,7 +288,7 @@ describe('scanTranscripts with a codexDir', () => {
     const result = await scanTranscripts(PROJECT, {
       claudeDir: join(fixtures, 'no-claude'),
       piDir: join(fixtures, 'no-pi'),
-      codexDir: join(fixtures, 'no-codex'),
+      ompDir: noOmp, codexDir: join(fixtures, 'no-codex'),
     });
     expect(result.docs).toEqual({});
     expect(result.sessions).toEqual([]);
@@ -291,7 +297,7 @@ describe('scanTranscripts with a codexDir', () => {
 
 describe('scanTranscripts', () => {
   it('returns per-doc counts keyed by repo-relative path', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, ompDir: noOmp, codexDir: noCodex });
 
     expect(result.docs['docs/context/decision-log.md']).toBeDefined();
     const dl = result.docs['docs/context/decision-log.md'];
@@ -304,7 +310,7 @@ describe('scanTranscripts', () => {
   });
 
   it('tags every read either mandated or voluntary', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, ompDir: noOmp, codexDir: noCodex });
     for (const [path, counts] of Object.entries(result.docs)) {
       expect(counts.mandatedReads + counts.voluntaryReads, `untagged reads for ${path}`).toBe(
         counts.reads
@@ -315,14 +321,14 @@ describe('scanTranscripts', () => {
   });
 
   it('tags a read under an active mandating skill as mandated', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, ompDir: noOmp, codexDir: noCodex });
     // add-fact mandates the context docs it overlap-greps (Pi fixture, post /skill:joycraft-add-fact).
     expect(result.docs['docs/context/institutional-knowledge.md'].mandatedReads).toBe(1);
     expect(result.docs['docs/context/institutional-knowledge.md'].voluntaryReads).toBe(0);
   });
 
   it('excludes non-knowledge-layer paths', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, ompDir: noOmp, codexDir: noCodex });
     expect(result.docs['src/foo.ts']).toBeUndefined();
     expect(result.docs['src/detect.ts']).toBeUndefined();
     expect(result.docs['src/init.ts']).toBeUndefined();
@@ -330,35 +336,35 @@ describe('scanTranscripts', () => {
   });
 
   it('counts Claude Write/Edit ops as writes', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), ompDir: noOmp, codexDir: noCodex });
     expect(result.docs['docs/discoveries/2026-09-01-thing.md'].writes).toBe(1);
   });
 
   it('parses Pi transcripts (edit of a bare relative path)', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir: join(fixtures, 'no-claude'), piDir, codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir: join(fixtures, 'no-claude'), piDir, ompDir: noOmp, codexDir: noCodex });
     expect(result.docs['CLAUDE.md'].writes).toBe(1);
   });
 
   it('normalizes absolute paths inside the project to repo-relative keys', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), ompDir: noOmp, codexDir: noCodex });
     expect(result.docs['docs/context/decision-log.md']).toBeDefined();
     expect(Object.keys(result.docs).some((p) => p.startsWith('/'))).toBe(false);
   });
 
   it('ignores paths outside the project directory', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), ompDir: noOmp, codexDir: noCodex });
     expect(Object.keys(result.docs).some((p) => p.includes('elsewhere'))).toBe(false);
   });
 
   it('skips malformed and truncated lines without throwing', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), ompDir: noOmp, codexDir: noCodex });
     // sess-beta has a garbage line and a truncated final line; the good lines still count.
     expect(result.docs['AGENTS.md'].reads).toBe(1);
     expect(result.docs['docs/reference/knowledge-lifecycle.md'].reads).toBe(1);
   });
 
   it('records session ids and counts each session file once', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, ompDir: noOmp, codexDir: noCodex });
     expect(result.sessions.sort()).toEqual(['pi-sess-one', 'sess-alpha', 'sess-beta']);
   });
 
@@ -366,7 +372,7 @@ describe('scanTranscripts', () => {
     const result = await scanTranscripts(PROJECT, {
       claudeDir: join(fixtures, 'does-not-exist'),
       piDir: join(fixtures, 'also-missing'),
-      codexDir: join(fixtures, 'also-missing-codex'),
+      ompDir: noOmp, codexDir: join(fixtures, 'also-missing-codex'),
     });
     expect(result.docs).toEqual({});
     expect(result.sessions).toEqual([]);
@@ -376,7 +382,7 @@ describe('scanTranscripts', () => {
     const originalHome = process.env.HOME;
     process.env.HOME = '/nonexistent-home-for-telemetry-test';
     try {
-      const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
+      const result = await scanTranscripts(PROJECT, { claudeDir, piDir, ompDir: noOmp, codexDir: noCodex });
       expect(Object.keys(result.docs).length).toBeGreaterThan(0);
     } finally {
       process.env.HOME = originalHome;
@@ -386,21 +392,81 @@ describe('scanTranscripts', () => {
   it('skips unreadable session files rather than throwing', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'joycraft-telemetry-'));
     writeFileSync(join(dir, 'broken.jsonl'), '  not-jsonl\n');
-    const result = await scanTranscripts(PROJECT, { claudeDir: dir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir: dir, piDir: join(fixtures, 'no-pi'), ompDir: noOmp, codexDir: noCodex });
     expect(result.docs).toEqual({});
   });
 
   it('counts repeated reads of the same doc but records its session once', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir: join(fixtures, 'no-pi'), ompDir: noOmp, codexDir: noCodex });
     const dl = result.docs['docs/context/decision-log.md'];
     expect(dl.reads).toBe(2);
     expect(dl.sessions).toEqual(['sess-alpha']);
   });
 
   it('carries no transcript content in the result', async () => {
-    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, codexDir: noCodex });
+    const result = await scanTranscripts(PROJECT, { claudeDir, piDir, ompDir: noOmp, codexDir: noCodex });
     const serialized = JSON.stringify(result);
     expect(serialized).not.toContain('wrap up the session');
     expect(serialized).not.toContain('old_string');
+  });
+});
+
+describe('omp transcripts', () => {
+  it('resolves the default dir to ~/.omp/agent/sessions/<encoded-cwd> with no dash affixes', () => {
+    const originalHome = process.env.HOME;
+    try {
+      process.env.HOME = '/tmp/fake-home';
+      const dir = defaultOmpTranscriptDir('/a/b');
+      expect(dir).toBe(join('/tmp/fake-home', '.omp', 'agent', 'sessions', '-a-b'));
+      expect(dir.endsWith('-a-b')).toBe(true);
+      expect(dir).not.toContain('--');
+    } finally {
+      process.env.HOME = originalHome;
+    }
+  });
+
+  it("does not reuse Pi's affixed directory form", () => {
+    expect(defaultOmpTranscriptDir(PROJECT)).not.toBe(defaultPiTranscriptDir(PROJECT));
+  });
+
+  it('honors an ompDir override and counts its ops', async () => {
+    const result = await scanTranscripts(PROJECT, { claudeDir: noClaude, piDir: noPi, codexDir: noCodex, ompDir });
+    expect(result.docs['docs/context/decision-log.md'].reads).toBe(1);
+    expect(result.docs['docs/context/omp-note.md'].writes).toBe(1);
+  });
+
+  it('parses omp transcripts with the Pi parser (same DocCounts shape, full fidelity)', async () => {
+    const result = await scanTranscripts(PROJECT, { claudeDir: noClaude, piDir: noPi, codexDir: noCodex, ompDir });
+    const dl = result.docs['docs/context/decision-log.md'];
+    expect(dl).toEqual({
+      reads: 1,
+      mandatedReads: 0,
+      voluntaryReads: 1,
+      writes: 0,
+      sessions: ['omp-sess-one'],
+    });
+    expect(dl.fidelity).toBeUndefined();
+  });
+
+  it('namespaces omp session ids with an omp: prefix', async () => {
+    const result = await scanTranscripts(PROJECT, {
+      claudeDir: noClaude,
+      piDir: noPi,
+      codexDir: noCodex,
+      ompDir,
+      namespaceSessions: true,
+    });
+    expect(result.sessions).toContain('omp:omp-sess-one');
+  });
+
+  it('returns an empty contribution for a missing omp dir without throwing', async () => {
+    const result = await scanTranscripts(PROJECT, {
+      claudeDir: noClaude,
+      piDir: noPi,
+      codexDir: noCodex,
+      ompDir: join(fixtures, 'missing-omp'),
+    });
+    expect(result.docs).toEqual({});
+    expect(result.sessions).toEqual([]);
   });
 });

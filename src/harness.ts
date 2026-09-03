@@ -7,11 +7,12 @@ import { createInterface } from 'node:readline';
  *   - codex   → .agents/ (OpenAI Codex)
  *   - pi      → .pi/     (Pi)
  *   - copilot → .github/ (GitHub Copilot)
+ *   - omp     → .omp/    (Oh My Pi)
  *
  * Single source of truth: the menu, the parser, and the install gates in
  * init.ts all derive from this list so a new harness can't leave a path stale.
  */
-export const HARNESSES = ['claude', 'codex', 'pi', 'copilot'] as const;
+export const HARNESSES = ['claude', 'codex', 'pi', 'copilot', 'omp'] as const;
 export type Harness = (typeof HARNESSES)[number];
 
 /** Human-readable one-liner per harness, shown in the interactive menu. */
@@ -20,6 +21,7 @@ const HARNESS_LABELS: Record<Harness, string> = {
   codex: 'OpenAI Codex (.agents/)',
   pi: 'Pi (.pi/)',
   copilot: 'GitHub Copilot (.github/)',
+  omp: 'Oh My Pi (.omp/)',
 };
 
 function isHarness(value: string): value is Harness {

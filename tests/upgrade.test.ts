@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { upgrade } from '../src/upgrade';
 import { init } from '../src/init';
 import { readVersion, writeVersion, hashContent, STATE_PATH } from '../src/version';
-import { SKILLS, TEMPLATES, CODEX_SKILLS } from '../src/bundled-files';
+import { SKILLS, TEMPLATES, CODEX_SKILLS, OMP_SKILLS } from '../src/bundled-files';
 
 const LEGACY_VERSION_FILE = '.joycraft-version';
 
@@ -493,6 +493,61 @@ describe('upgrade', () => {
     // Verify the hash matches the current file content (truncated, as stored)
     const currentContent = readFileSync(join(tmpDir, codexSkillRelPath), 'utf-8');
     expect(newVersion.files[codexSkillRelPath]).toBe(hashContent(currentContent).slice(0, 16));
+  });
+
+  describe('omp managed tree (.omp/skills/)', () => {
+    /** First bundled omp skill, as a repo-relative installed path. */
+    const ompRelPath = (): string =>
+      join('.omp', 'skills', Object.keys(OMP_SKILLS)[0].replace(/\.md$/, ''), 'SKILL.md');
+
+    it('rewrites a hand-edited .omp/skills file back to bundled content', async () => {
+      await init(tmpDir, { force: false });
+      const rel = ompRelPath();
+      const bundled = OMP_SKILLS[Object.keys(OMP_SKILLS)[0]];
+      writeFileSync(join(tmpDir, rel), 'hand-edited junk', 'utf-8');
+
+      await upgrade(tmpDir, { yes: true });
+
+      expect(readFileSync(join(tmpDir, rel), 'utf-8')).toBe(bundled);
+    });
+
+    it('leaves user files (CLAUDE.md, AGENTS.md, docs/) alone', async () => {
+      await init(tmpDir, { force: false });
+      const claudePath = join(tmpDir, 'CLAUDE.md');
+      const agentsPath = join(tmpDir, 'AGENTS.md');
+      writeFileSync(claudePath, '# my own CLAUDE.md\n', 'utf-8');
+      const agentsBefore = readFileSync(agentsPath, 'utf-8');
+      const userDoc = join(tmpDir, 'docs', 'context', 'my-notes.md');
+      writeFileSync(userDoc, '# my notes\n', 'utf-8');
+
+      await upgrade(tmpDir, { yes: true });
+
+      // CLAUDE.md keeps the user's own body. (Upgrade does append its
+      // sentinel-delimited folder map — a separate, long-standing behavior —
+      // so this asserts preservation, not byte-identity.)
+      expect(readFileSync(claudePath, 'utf-8')).toContain('# my own CLAUDE.md');
+      expect(readFileSync(agentsPath, 'utf-8')).toBe(agentsBefore);
+      expect(readFileSync(userDoc, 'utf-8')).toBe('# my notes\n');
+    });
+
+    it('adds .omp/skills on a project with pre-selection state (legacy fallback)', async () => {
+      await init(tmpDir, { force: false });
+
+      // Simulate state written before harness selection existed: no `harnesses`
+      // key, and no omp footprint at all.
+      rmSync(join(tmpDir, '.omp'), { recursive: true, force: true });
+      const statePath = join(tmpDir, STATE_PATH);
+      const state = JSON.parse(readFileSync(statePath, 'utf-8'));
+      delete state.harnesses;
+      for (const k of Object.keys(state.files)) {
+        if (k.startsWith('.omp')) delete state.files[k];
+      }
+      writeFileSync(statePath, JSON.stringify(state, null, 2) + '\n', 'utf-8');
+
+      await upgrade(tmpDir, { yes: true });
+
+      expect(existsSync(join(tmpDir, ompRelPath()))).toBe(true);
+    });
   });
 
   it('writes updated state after upgrade', async () => {

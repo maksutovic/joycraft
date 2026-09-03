@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { SKILLS, TEMPLATES, CODEX_SKILLS } from '../src/bundled-files';
+import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, OMP_SKILLS } from '../src/bundled-files';
 
 describe('bundled SKILLS', () => {
   it('includes joycraft-collaborative-setup.md', () => {
@@ -23,5 +23,43 @@ describe('bundled TEMPLATES', () => {
 describe('bundled CODEX_SKILLS', () => {
   it('is non-empty', () => {
     expect(Object.keys(CODEX_SKILLS).length).toBeGreaterThan(0);
+  });
+});
+
+describe('bundled OMP_SKILLS', () => {
+  it('has the same key count as PI_SKILLS', () => {
+    expect(Object.keys(OMP_SKILLS).length).toBe(Object.keys(PI_SKILLS).length);
+  });
+
+  /**
+   * omp's native skill provider rejects a skill whose frontmatter has no
+   * non-empty `description`, so this is a shipping gate, not a style rule.
+   *
+   * The allowance this assertion used to carry (`joycraft-implement-feature`,
+   * whose description lives in per-harness frontmatter blocks with no omp
+   * branch) was closed by the harness-block audit — the skill now has a
+   * `codex|copilot|omp` description branch. Zero exceptions from here on.
+   */
+  it('every skill carries a non-empty description: — omp rejects skills without one', () => {
+    const missing = Object.entries(OMP_SKILLS)
+      .filter(([, content]) => !/^description:[ \t]*\S.*$/m.test(content))
+      .map(([file]) => file);
+
+    expect(
+      missing,
+      'an omp skill lost its frontmatter description — omp will refuse to load it',
+    ).toEqual([]);
+  });
+
+  it('names no absolute path — generated skills are copied into user projects', () => {
+    for (const [file, content] of Object.entries(OMP_SKILLS)) {
+      expect(content, `${file} contains an absolute path`).not.toMatch(/\/Users\/|\/home\//);
+    }
+  });
+
+  it('uses omp invocation and skills dir, never .pi/skills', () => {
+    const all = Object.values(OMP_SKILLS).join('\n');
+    expect(all).toContain('/skill:joycraft-');
+    expect(all).not.toContain('.pi/skills');
   });
 });

@@ -5,7 +5,7 @@
 //   1. Product skills. `generate-bundled-files.mjs` writes the per-harness
 //      variants under `src/*-skills/`, but nothing copied them into the
 //      installed trees Joycraft dogfoods (`.claude/`, `.agents/`, `.pi/`,
-//      `.github/`). That copy was manual, which is how twelve stale copilot
+//      `.github/`, `.omp/`). That copy was manual, which is how twelve stale copilot
 //      skills shipped in 0.7.3 and why `installed-skills-sync.test.ts` exists
 //      at all. This makes the fix `pnpm sync-skills` instead of four `cp`s.
 //
@@ -15,7 +15,7 @@
 //      `bundled-files.ts` or npm. They still need per-harness transformation —
 //      a maintainer on Codex or Pi should get `.agents/skills` and `AGENTS.md`
 //      in the prose, not Claude's paths — so they run through the same
-//      `applyTemplate` engine and land in all four installed trees.
+//      `applyTemplate` engine and land in every installed tree.
 //
 // Run after `generate-bundled-files.mjs`; `pnpm build` chains both.
 
@@ -40,6 +40,7 @@ const TARGETS = /** @type {const} */ ([
   { harness: 'codex', generated: 'codex-skills', installed: join('.agents', 'skills') },
   { harness: 'pi', generated: 'pi-skills', installed: join('.pi', 'skills') },
   { harness: 'copilot', generated: 'copilot-skills', installed: join('.github', 'skills') },
+  { harness: 'omp', generated: 'omp-skills', installed: join('.omp', 'skills') },
 ]);
 
 /** Match the generator: write native line endings so Windows checkouts stay clean. */

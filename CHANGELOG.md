@@ -7,6 +7,57 @@ in a before → now → side-effects format, newest first.
 
 ---
 
+## Unreleased — omp Support
+
+Joycraft installed to four harnesses: Claude Code, Codex, Pi, and GitHub
+Copilot. A developer working in omp got nothing from `npx joycraft init`. omp
+(Oh My Pi, binary `omp`, npm package `@oh-my-pi/pi-coding-agent`) is a
+Bun-based fork of Pi with its own config directory — it does not read the
+`.pi/` tree at all, so a Pi install left it empty-handed.
+
+**Now:** omp is a fifth first-class harness. `init` offers it in the harness
+selection, skills generate into `.omp/skills/<name>/SKILL.md` in omp's own
+invocation form (`/skill:joycraft-*`, `/new` to clear), `upgrade` manages that
+tree, and the `private` gitignore profile scopes to `.omp/`. `joycraft
+telemetry` reads omp session transcripts from
+`~/.omp/agent/sessions/<encoded-cwd>/`, reusing the Pi JSONL parser, so omp
+sessions count alongside Claude, Pi, and Codex. Every skill's harness blocks
+were audited for omp rather than inherited from Pi: omp gets Pi's invocation
+syntax but the no-headless-loop runtime text that Codex and Copilot carry.
+
+**Side-effects:**
+
+- **Existing installs gain omp on upgrade.** Projects whose state predates
+  harness selection resolve to "all available" harnesses, which is now five
+  rather than four. Such a project upgrading will find a new `.omp/skills/`
+  tree. Remove it if unwanted; a recorded harness selection (any install from
+  0.6.x forward) is unaffected.
+- **The headless runtime did not ship.** omp gets skills, not Pi's
+  `joycraft-implement-loop` pipeline, and no omp deny patterns from `harden` or
+  `lockdown`. Both are captured at
+  `docs/backlog/2026-09-02-omp-headless-runtime.md` and
+  `docs/backlog/2026-09-02-cross-harness-deny-patterns.md`.
+
+**Maintainer-facing (no user impact):**
+
+- `docs/guides/platform-support.md` and `docs/guides/agent-compatibility.md`
+  both described the harness set as it stood before GitHub Copilot shipped in
+  0.7.5. Refreshed to five harnesses: install-path table, variable-lookup
+  table, generated-dirs list, block usage count, and the frontmatter-stripping
+  and boundary-file rules.
+- Two properties of the skill-transform parser are now written down, having
+  been learned the hard way during the block audit. Harness blocks are
+  **allow-lists** — adding a harness to `HARNESSES` without auditing every
+  existing block ships variants silently missing content. And harness blocks
+  **do not nest**: the parser matches an open tag to the first close tag with
+  no depth counter, so a nested block leaks its gated content into harnesses
+  meant to exclude it *and* emits raw comment markup into shipped files, in
+  every variant, with a green suite. Flatten into siblings instead. See
+  `docs/discoveries/2026-09-03-harness-blocks-do-not-nest.md`; the parser
+  itself is unchanged and still accepts nesting without complaint.
+
+---
+
 ## 0.7.11 — Curated Harness (2026-09-03)
 
 The knowledge layer had no read evidence: optimize's Reaper judged docs by

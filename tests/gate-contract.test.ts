@@ -57,8 +57,9 @@ const headingAt = (content: string, index: number) =>
  * would fail correct skills:
  *
  *  - new-feature: two gates (Phase 2 brief, Phase 4 hand-off).
- *  - research: three per-harness blocks (claude, codex|copilot, pi), one gate
- *    each; a single shared block would vanish from the other emitted variants.
+ *  - research: three per-harness blocks (claude, codex|copilot|omp, pi), one
+ *    gate each; a single shared block would vanish from the other emitted
+ *    variants.
  *
  * Pinning the exact number still catches the drift the spec's Edge Cases table
  * cares about — a copy-pasted duplicate moves the count and fails.
@@ -349,13 +350,14 @@ describe('group 7: interview carries the playback and question contract', () => 
 /**
  * Every human-facing question moment in the five gate skills must route through
  * the harness's native question UI: the AskUserQuestion tool on claude, the
- * structured chat fallback on codex/pi/copilot. Before this spec only
+ * structured chat fallback on codex/pi/copilot/omp. Before this spec only
  * `joycraft-decide` said so, and users intermittently got plain Q1/Q2/Q3 chat
  * lists — the top complaint in the 2026-07-31 team-usage feedback.
  *
  * Asserted on the *generated* trees, not just the canonical source: the whole
- * point is that the claude variant carries the tool name and the codex/pi
- * variants carry the fallback instead, which only the per-harness render shows.
+ * point is that the claude variant carries the tool name and the four
+ * non-claude variants carry the fallback instead, which only the per-harness
+ * render shows.
  */
 const QUESTION_DIRECTIVE_SKILLS = [
   'joycraft-interview',
@@ -379,7 +381,7 @@ describe('group 8: every gate skill carries the question directive', () => {
       expect(readVariant('claude', name)).toContain(QUESTION_TOOL);
     });
 
-    for (const harness of ['codex', 'pi', 'copilot']) {
+    for (const harness of ['codex', 'pi', 'copilot', 'omp']) {
       it(`${name}.md gives the ${harness} variant the chat fallback, not the tool`, () => {
         const content = readVariant(harness, name);
         expect(content, `${harness} variant must not name a claude-only tool`).not.toContain(
