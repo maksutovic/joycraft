@@ -91,6 +91,18 @@ What omp already gives us for free shapes the design. omp discovers `.claude/ski
 
 Wave 1 runs specs 1 and 4 in parallel because they touch disjoint files. Wave 2 runs specs 2 and 3 in parallel because init and upgrade do not read skill bodies. Wave 3 runs spec 5.
 
+**Wave plan (decomposed 2026-09-03 — see `specs/README.md`):**
+
+| Wave | Specs | Parallel-safe | Files each wave owns |
+|---|---|---|---|
+| 1 | 1 `add-omp-harness-core`, 4 `add-omp-telemetry-scanner` | Yes | 1: `src/harness.ts`, `scripts/`, `src/bundled-files.ts` · 4: `src/telemetry.ts`, `src/telemetry-store.ts` |
+| 2 | 2 `wire-omp-init-upgrade`, 3 `audit-harness-blocks-for-omp` | Yes | 2: `src/init.ts`, `src/upgrade.ts`, `src/gitignore.ts` · 3: `src/skills/*.md` + generated trees |
+| 3 | 5 `document-omp-support` | n/a (single) | `README.md`, `AGENTS.md`, `CHANGELOG.md` |
+
+Execution modes (human-approved 2026-09-03): specs 4, 5 → `batch`; specs 1, 2 → `checkpoint`; spec 3 → `isolated`. Spec 3 overrides the size heuristic because 68 harness-block verdicts across 22 skill files is judgment-dense work, and a wrong verdict ships a silently broken skill rather than a failing test.
+
+Specs 1 and 3 each regenerate and `pnpm sync-skills` in their own commit (AGENTS.md ALWAYS rule). Spec 5 verifies zero drift; it does not own the sync.
+
 ## Success Criteria
 
 - [ ] `node dist/cli.js init /tmp/p --harnesses omp` writes `.omp/skills/<name>/SKILL.md` for every product skill, a pointer CLAUDE.md, a full AGENTS.md, and no `.claude/`, `.pi/`, `.agents/`, or `.github/skills/` tree.

@@ -2,9 +2,9 @@
   "feature": "2026-09-02-omp-support",
   "specs": [
     { "id": 1, "file": "add-omp-harness-core.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
-    { "id": 2, "file": "wire-omp-init-upgrade.md", "depends_on": [1], "status": "todo", "mode": "checkpoint" },
-    { "id": 3, "file": "audit-harness-blocks-for-omp.md", "depends_on": [1], "status": "todo", "mode": "isolated" },
+    { "id": 2, "file": "wire-omp-init-upgrade.md", "depends_on": [1], "status": "in-review", "mode": "checkpoint" },
+    { "id": 3, "file": "audit-harness-blocks-for-omp.md", "depends_on": [1], "status": "in-review", "mode": "isolated" },
     { "id": 4, "file": "add-omp-telemetry-scanner.md", "depends_on": [], "status": "in-review", "mode": "batch" },
-    { "id": 5, "file": "document-omp-support.md", "depends_on": [1, 2, 3, 4], "status": "todo", "mode": "batch" }
+    { "id": 5, "file": "document-omp-support.md", "depends_on": [1, 2, 3, 4], "status": "in-review", "mode": "batch" }
   ]
 }
