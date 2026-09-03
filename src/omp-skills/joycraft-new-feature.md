@@ -48,6 +48,9 @@ Interview the user about what they want to build. Let them talk — your job is 
 **How to ask — the question directive.** This governs every question moment in
 this skill: the Phase 0 route choice, this interview, and the Phase 2 brief
 review.
+Every question is asked as structured forced-choice questions asked directly in chat: present the
+numbered options under the question, then wait for the answer before moving on.
+Never dump an unanswerable wall of open prose questions.
 Three rules ride on every question, no exceptions:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —

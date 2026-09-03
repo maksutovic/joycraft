@@ -65,7 +65,7 @@ When the feature's last spec is done, run the feature finisher once:
 ```bash
 {{skill_prefix}}session-end
 ```
-<!-- harness:pi -->
+<!-- harness:pi|omp -->
 
 Run {{clear}} before your next step — your artifacts are saved to files.
 <!-- /harness -->

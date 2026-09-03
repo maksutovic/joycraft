@@ -121,7 +121,7 @@ Every question goes through the AskUserQuestion tool. Never emit a plain
 Q1/Q2/Q3 list in chat and wait for the human to type answers back — the tool is
 the capture surface, chat is not.
 <!-- /harness -->
-<!-- harness:codex|pi|copilot -->
+<!-- harness:codex|pi|copilot|omp -->
 Every question is asked as structured forced-choice questions asked directly in chat: present the
 numbered options under the question, then wait for the answer before moving on.
 Never dump an unanswerable wall of open prose questions.
@@ -192,9 +192,9 @@ downstream skills read an explicit answer rather than an absence):
 
 The profile is data the user owns, not configuration Joycraft manages: **never overwrite an existing profile without asking**, and preserve whatever is between the sentinels verbatim, including hand-edits that don't match this shape. Recommend no model or tier here — routing defaults are the backlogged model-tiering feature's scope.
 
-**Private-profile note:** If `.gitignore` ignores the harness dirs (`.claude/`, `.agents/`, `.pi/` — the `private` profile), teammates who clone won't get the skill files. Ensure CLAUDE.md and AGENTS.md each carry a one-line note — append if absent, idempotent (match on the phrase "After cloning, run"): `> **Private setup:** The harness dirs (.claude/, .agents/, .pi/) are gitignored in this repo, so they aren't committed. After cloning, run \`npx joycraft@latest init\` to regenerate the skill files locally — it only creates missing files and leaves your committed \`CLAUDE.md\`, \`AGENTS.md\`, and \`docs/\` untouched (use \`--force\` only if you deliberately want to regenerate them).` Skip entirely under the `shared` profile.
+**Private-profile note:** If `.gitignore` ignores the harness dirs (`.claude/`, `.agents/`, `.pi/`, `.omp/` — the `private` profile), teammates who clone won't get the skill files. Ensure CLAUDE.md and AGENTS.md each carry a one-line note — append if absent, idempotent (match on the phrase "After cloning, run"): `> **Private setup:** The harness dirs (.claude/, .agents/, .pi/, .omp/) are gitignored in this repo, so they aren't committed. After cloning, run \`npx joycraft@latest init\` to regenerate the skill files locally — it only creates missing files and leaves your committed \`CLAUDE.md\`, \`AGENTS.md\`, and \`docs/\` untouched (use \`--force\` only if you deliberately want to regenerate them).` Skip entirely under the `shared` profile.
 
-**Already-tracked harness files (private profile):** If the project is on the `private` profile but `git ls-files` shows tracked files under `.claude/`, `.agents/`, or `.pi/`, those files were committed before the switch and the gitignore won't untrack them. Surface the copy-pasteable fix once, prominently, in your upgrade results — `git rm -r --cached .claude .agents .pi` — and note it's advisory (never run git yourself). Skip when no harness files are tracked, and skip entirely under `shared`.
+**Already-tracked harness files (private profile):** If the project is on the `private` profile but `git ls-files` shows tracked files under `.claude/`, `.agents/`, `.pi/`, or `.omp/`, those files were committed before the switch and the gitignore won't untrack them. Surface the copy-pasteable fix once, prominently, in your upgrade results — `git rm -r --cached .claude .agents .pi .omp` — and note it's advisory (never run git yourself). Skip when no harness files are tracked, and skip entirely under `shared`.
 
 **Before Tier 2, ask about git autonomy:** Cautious (ask before push/PR) or Autonomous (push + PR without asking)?
 

@@ -28,7 +28,7 @@ Every question in this skill goes through the AskUserQuestion tool. Never emit a
 plain Q1/Q2/Q3 list in chat and wait for the human to type answers back — the
 tool is the capture surface, chat is not.
 <!-- /harness -->
-<!-- harness:codex|pi|copilot -->
+<!-- harness:codex|pi|copilot|omp -->
 Every question in this skill is asked as structured forced-choice questions asked directly in chat:
 present the numbered options under the question, then wait for the answer before
 moving on. Never dump an unanswerable wall of open prose questions.

@@ -100,9 +100,11 @@ Sum every skill's `description:` char length — all load at session start. Code
 
 ## Step 7: Audit Plugins & MCP Servers
 
+1. **MCP servers** — check `~/.omp/agent/config.yml` for MCP server entries. List server names. If not found, report "no MCP config found."
 
 ## Step 8: Audit Hooks
 
+Hook auditing is not yet supported on this harness — note that and skip this step.
 
 ## Step 9: Report
 

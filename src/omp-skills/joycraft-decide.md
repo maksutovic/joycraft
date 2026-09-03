@@ -16,7 +16,7 @@ still `open`.
 Two hard rules frame everything below:
 
 - **The dossier is display-only.** All capture happens in the native question
-  flow () — never via interactive HTML, pick-strings, or
+  flow (structured forced-choice questions asked directly in chat) — never via interactive HTML, pick-strings, or
   paste-backs.
 - **Never certify your own framing as complete** (RF-KILL-3). The questions
   are YOUR framing of what's open; the assumptions manifest exists to expose
@@ -140,6 +140,9 @@ only enforces them). You are the **auditor**, not the author:
 
 ## Step 5: Ask — native UI, forced choice, typed rationale
 
+Ask directly in chat, one decision at a time, in risk order (mandatory
+boundary questions first): present the numbered options, then wait for the
+answer before asking the next question.
 Mechanics that are load-bearing:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —

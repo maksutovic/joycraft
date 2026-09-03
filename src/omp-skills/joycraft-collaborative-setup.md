@@ -137,6 +137,7 @@ If `docs/CONTRIBUTING-joycraft.md` already exists, ASK before overwriting — of
 
 ## Step 6: Trigger AGENTS.md Update
 
+Now that `docs/areas/` exists, the next `npx joycraft@latest upgrade` (or any future `npx joycraft@latest init`) will pick it up and add the **Areas pointer** to AGENTS.md automatically — that pointer tells the agent "when working on the X area, read docs/areas/X/README.md first."
 
 Tell the user:
 
@@ -154,6 +155,7 @@ Next:
 ```bash
 /skill:joycraft-new-feature
 ```
+Run /new first.
 
 Include the path to `docs/CONTRIBUTING-joycraft.md` and any newly-created area READMEs in the summary above the Handoff block.
 

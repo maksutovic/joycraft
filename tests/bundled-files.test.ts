@@ -35,18 +35,11 @@ describe('bundled OMP_SKILLS', () => {
    * omp's native skill provider rejects a skill whose frontmatter has no
    * non-empty `description`, so this is a shipping gate, not a style rule.
    *
-   * `joycraft-implement-feature` is the one known gap: its description lives in
-   * per-harness frontmatter blocks (claude / codex|copilot / pi) and no branch
-   * lists omp yet, so the omp variant renders with the key dropped entirely.
-   * Adding an omp branch means editing a canonical skill body, which is the
-   * harness-block audit's job — see
-   * `docs/features/2026-09-02-omp-support/specs/audit-harness-blocks-for-omp.md`,
-   * which tabulates this exact site. Asserting the gap's *exact* membership
-   * keeps it from widening while that spec is pending, and the audit tightens
-   * the allowance to zero.
+   * The allowance this assertion used to carry (`joycraft-implement-feature`,
+   * whose description lives in per-harness frontmatter blocks with no omp
+   * branch) was closed by the harness-block audit — the skill now has a
+   * `codex|copilot|omp` description branch. Zero exceptions from here on.
    */
-  const KNOWN_MISSING_DESCRIPTION = ['joycraft-implement-feature.md'];
-
   it('every skill carries a non-empty description: — omp rejects skills without one', () => {
     const missing = Object.entries(OMP_SKILLS)
       .filter(([, content]) => !/^description:[ \t]*\S.*$/m.test(content))
@@ -55,7 +48,7 @@ describe('bundled OMP_SKILLS', () => {
     expect(
       missing,
       'an omp skill lost its frontmatter description — omp will refuse to load it',
-    ).toEqual(KNOWN_MISSING_DESCRIPTION);
+    ).toEqual([]);
   });
 
   it('names no absolute path — generated skills are copied into user projects', () => {

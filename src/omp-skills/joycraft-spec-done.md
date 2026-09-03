@@ -58,3 +58,5 @@ When the feature's last spec is done, run the feature finisher once:
 ```bash
 /skill:joycraft-session-end
 ```
+
+Run /new before your next step — your artifacts are saved to files.

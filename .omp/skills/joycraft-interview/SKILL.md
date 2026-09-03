@@ -19,6 +19,9 @@ Let the user talk freely. Do not interrupt their flow. Do not push toward struct
 ### 2. Ask Clarifying Questions
 
 **How to ask — the question directive.**
+Every question in this skill is asked as structured forced-choice questions asked directly in chat:
+present the numbered options under the question, then wait for the answer before
+moving on. Never dump an unanswerable wall of open prose questions.
 Three rules ride on every question, no exceptions:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —

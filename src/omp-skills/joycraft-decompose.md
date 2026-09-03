@@ -345,3 +345,84 @@ Based on the dependency graph, group specs into execution waves:
 
 **Update the parent brief's Execution Strategy section** at `docs/features/<slug>/brief.md` with this wave plan, so the brief stays a useful one-stop reference for feature reviewers.
 
+## Step 7: Write the Feature-Folder README.md (Single Source of Truth for Implementers)
+
+After generating per-spec files, ALSO write a `README.md` at the spec folder root: `docs/features/<slug>/specs/README.md` (for feature work). For area-level bugfixes, the path is `docs/bugfixes/<area>/README.md`.
+
+The README is the single source of truth for *implementers*. It contains a **spec table** (one row per spec with dependencies) and the execution wave plan. Use this template:
+
+```markdown
+# <Feature Name> — Feature Specs
+
+> **Parent Brief:** `docs/features/<slug>/brief.md`
+> **Design:** `docs/features/<slug>/design.md` (when present)
+> **Research:** `docs/features/<slug>/research.md` (when present)
+> **Status:** Decomposed YYYY-MM-DD, ready for implementation
+
+## What this feature does
+
+<one paragraph summary, derived from the brief>
+
+## Specs
+
+| # | Spec | Depends On | Mode | Notes |
+|---|------|-----------|------|-------|
+| 1 | [spec-name.md](spec-name.md) | — | batch | <one-line description> |
+| 2 | [other-spec.md](other-spec.md) | 1 | checkpoint | <one-line description> |
+
+## Execution waves
+
+- Wave 1: specs ... — parallel-safe (Affected Files disjoint) | NOT parallel-safe (overlap: <files>)
+- Wave 2 (after wave 1): specs ... — sequential
+
+Parallel-safe = the wave's specs touch disjoint Affected Files, so they may run as
+concurrent subagents/worktrees. Waves without the marker run sequentially.
+
+## How to use this file
+
+Run the whole queue with `/skill:joycraft-implement-feature docs/features/<slug>/` — it executes the specs in wave order (parallel-safe waves may run as concurrent subagents; everything else runs sequentially in the driving conversation) and finishes with session-end. Or run one spec at a time with `/skill:joycraft-implement <spec-path>`; the implement skill reads this README first so it understands the spec's position in the wave plan, and continues through the queue itself. Each spec is self-contained for the actual implementation; this README provides ordering context only.
+```
+
+The brief and the README serve different audiences: the brief is for *feature reviewers* (vision, scope, decomposition decisions); the README is for *implementers* (what to run next, what depends on what).
+
+## Step 8: Hand Off
+
+Tell the user a one-line summary, then emit the canonical Handoff block.
+
+## Recommended Next Steps
+
+Next:
+```bash
+/skill:joycraft-implement-feature docs/features/<slug>/
+```
+Run /new first.
+
+Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /new. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
+
+Before filling the briefing, read the `## Execution Profile` section of AGENTS.md (between the `joycraft:execution-profile` sentinels). If swarms are enabled for **implement** on the harness you're handing to, add one **Execution:** line to the briefing, quoting that harness's profile row **verbatim** — never translate, validate, or improve the model and effort names the human wrote. If the section is missing, or swarms are off for implement, add no line and say nothing about it.
+
+```
+/skill:joycraft-implement-feature docs/features/<slug>/
+
+You are picking up the spec queue for <slug>, decomposed <date>.
+Decisions <ids> are stamped in the brief — do not reopen them.
+Start: <first-spec>.md (mode: <mode>). Order: specs/README.md.
+Execution: swarm implement — <harness> subagents <model> at effort <effort>.
+Hazard: <the one known trap, or "none known">.
+Done when: every spec in .joycraft-spec-queue.json is in-review and the suite is green.
+```
+
+Filled example:
+
+```
+/skill:joycraft-implement-feature docs/features/2026-07-29-succinct-gates/
+
+You are picking up the spec queue for 2026-07-29-succinct-gates, decomposed 2026-07-29.
+Decisions D1-D7 are stamped in the brief — do not reopen them.
+Start: write-gate-artifact-template.md (mode: checkpoint). Order: specs/README.md.
+Execution: swarm implement — claude subagents opus-5 at effort medium.
+Hazard: windowed skill tests slice fixed regions; edit src/skills/ only.
+Done when: every spec in .joycraft-spec-queue.json is in-review and the suite is green.
+```
+
+That one command runs the whole queue — wrap-up and commit after each spec, parallel subagents only for waves marked parallel-safe, session-end once at the end. To drive one spec at a time instead: `/skill:joycraft-implement docs/features/<slug>/specs/<first-spec>.md` (it wraps up and continues through the queue itself).

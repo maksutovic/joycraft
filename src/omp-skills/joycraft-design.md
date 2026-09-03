@@ -115,6 +115,9 @@ Do NOT ask vague questions like "what do you think?" Every question must have ac
 **How to ask — the question directive.** The Section 5 questions above are the
 artifact's *content*. When you put any of them to the human — at the review gate
 or any other question moment in this skill — ask them this way:
+Every question is asked as structured forced-choice questions asked directly in chat: present the
+numbered options under the question, then wait for the answer before moving on.
+Never dump an unanswerable wall of open prose questions.
 Three rules ride on every question, no exceptions:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —

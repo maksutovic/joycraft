@@ -18,6 +18,9 @@ you target. Both are installed by Joycraft's safeguard machinery (`npx joycraft@
 you append to the files it produces, you never rewrite the hook script itself, and you
 never add a new hook framework.
 
+**Note:** the enforcement surfaces live on the Claude Code side (`.claude/`). If this
+project has no `.claude/` install, harden can still classify rules and stamp provenance,
+but there is no machine-check surface to write to — say so and stop after Step 2.
 
 ## Step 2: Classify each ALWAYS/ASK FIRST/NEVER rule
 
