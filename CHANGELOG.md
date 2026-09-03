@@ -38,6 +38,24 @@ syntax but the no-headless-loop runtime text that Codex and Copilot carry.
   `docs/backlog/2026-09-02-omp-headless-runtime.md` and
   `docs/backlog/2026-09-02-cross-harness-deny-patterns.md`.
 
+**Maintainer-facing (no user impact):**
+
+- `docs/guides/platform-support.md` and `docs/guides/agent-compatibility.md`
+  both described the harness set as it stood before GitHub Copilot shipped in
+  0.7.5. Refreshed to five harnesses: install-path table, variable-lookup
+  table, generated-dirs list, block usage count, and the frontmatter-stripping
+  and boundary-file rules.
+- Two properties of the skill-transform parser are now written down, having
+  been learned the hard way during the block audit. Harness blocks are
+  **allow-lists** — adding a harness to `HARNESSES` without auditing every
+  existing block ships variants silently missing content. And harness blocks
+  **do not nest**: the parser matches an open tag to the first close tag with
+  no depth counter, so a nested block leaks its gated content into harnesses
+  meant to exclude it *and* emits raw comment markup into shipped files, in
+  every variant, with a green suite. Flatten into siblings instead. See
+  `docs/discoveries/2026-09-03-harness-blocks-do-not-nest.md`; the parser
+  itself is unchanged and still accepts nesting without complaint.
+
 ---
 
 ## 0.7.11 — Curated Harness (2026-09-03)
