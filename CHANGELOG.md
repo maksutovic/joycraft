@@ -7,7 +7,7 @@ in a before → now → side-effects format, newest first.
 
 ---
 
-## Unreleased — Curated Harness
+## 0.7.11 — Curated Harness (2026-09-03)
 
 The knowledge layer had no read evidence: optimize's Reaper judged docs by
 judgment alone, discoveries sat forever once written, the generated
@@ -34,7 +34,7 @@ Side-effects on upgrade: an existing folder-map block is regenerated in place
 (structure from the machine, your wording preserved); a project with no
 architecture section gets the map appended. All skill copies regenerated.
 
-## Unreleased — Quiet the stale-CLI upgrade nudge
+## 0.7.10 — Quiet the stale-CLI upgrade nudge (2026-08-11)
 
 A stale cached CLI that re-exec'd `joycraft@latest upgrade` (the 0.7.x
 self-update guard) still printed "Joycraft X available (you have Y)" from the
@@ -45,7 +45,7 @@ upgrade had failed.
 CLI suppresses its post-command update nudge in that case. The guard's own
 messages are unchanged; all other commands nudge as before.
 
-## Unreleased — STE Human Output
+## 0.7.9 — STE Human Output (2026-08-11)
 
 The house style doc gave positive rules but no controlled language, so gate
 prose still drifted into jargon and slop, and no mechanical check held the
