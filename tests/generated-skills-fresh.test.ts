@@ -38,6 +38,7 @@ const HARNESSES = [
   { harness: 'codex', tree: 'codex-skills' },
   { harness: 'pi', tree: 'pi-skills' },
   { harness: 'copilot', tree: 'copilot-skills' },
+  { harness: 'omp', tree: 'omp-skills' },
 ] as const;
 
 function canonicalSkills(): string[] {

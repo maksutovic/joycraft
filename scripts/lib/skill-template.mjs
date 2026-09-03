@@ -4,8 +4,9 @@
 // Three primitives:
 //   1. {{var}} substitution from a fixed 4-variable per-harness lookup.
 //   2. <!-- harness:NAME -->...<!-- /harness --> conditional blocks
-//      (NAME is `claude`, `codex`, `pi`, or pipe-list like `claude|codex`).
-//   3. Frontmatter strip: drop `instructions:` for codex and pi; keep for claude.
+//      (NAME is `claude`, `codex`, `pi`, `copilot`, `omp`, or a pipe-list like
+//      `claude|codex`).
+//   3. Frontmatter strip: drop `instructions:` for every harness but claude.
 
 const LOOKUP = {
   claude: {
@@ -33,15 +34,25 @@ const LOOKUP = {
     skills_dir: '.github/skills',
     boundary_file: 'AGENTS.md',
   },
+  // omp (Oh My Pi) is a Pi fork: same `/skill:` invocation and `/new` session
+  // boundary, different config dir. The row is deliberately independent of
+  // pi's rather than aliased — harness-block membership diverges (omp does not
+  // read `.pi/`), so the two must be separately addressable.
+  omp: {
+    skill_prefix: '/skill:joycraft-',
+    clear: '/new',
+    skills_dir: '.omp/skills',
+    boundary_file: 'AGENTS.md',
+  },
 };
 
-const STRIP_INSTRUCTIONS = { claude: false, codex: true, pi: true, copilot: true };
+const STRIP_INSTRUCTIONS = { claude: false, codex: true, pi: true, copilot: true, omp: true };
 
 /**
  * Transform a canonical skill markdown into a per-harness variant.
  *
  * @param {string} source   Canonical markdown (optional YAML frontmatter + body).
- * @param {'claude'|'codex'|'pi'|'copilot'} harness
+ * @param {'claude'|'codex'|'pi'|'copilot'|'omp'} harness
  * @param {string} [filename]  Used only in error messages.
  * @returns {string}
  */
