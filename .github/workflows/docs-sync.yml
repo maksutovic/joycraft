@@ -1,0 +1,31 @@
+# Docs-sync gate: a PR that changes product files (src/, templates/, scripts/)
+# must also change CHANGELOG.md, or say why not with a `Docs: none — <reason>`
+# line in its body. Same script the local Claude Code hook runs.
+name: Docs Sync
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  docs-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check CHANGELOG against changed files
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          printf '%s' "$PR_BODY" > /tmp/pr-body.txt
+          node scripts/check-docs-sync.mjs \
+            --base "${{ github.event.pull_request.base.sha }}" \
+            --body-file /tmp/pr-body.txt

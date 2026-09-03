@@ -16,7 +16,7 @@
 - [ ] `pnpm test --run` passes
 - [ ] `pnpm typecheck` passes
 - [ ] `pnpm build` succeeds
-- [ ] README updated (if user-facing change)
+- [ ] `/release-docs-sync` run — CHANGELOG.md entry added, README/AGENTS.md updated if they describe what changed, or a `Docs: none — <reason>` line above
 - [ ] New tests added for new functionality
 - [ ] Tested locally with `node dist/cli.js init /tmp/test-project`
 

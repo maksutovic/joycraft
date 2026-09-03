@@ -16,6 +16,7 @@
 - Test against multiple stack types (Node.js, Python, Rust, Go at minimum)
 - Push to feature branches after each commit
 - Open a PR when all specs in a feature are complete
+- Run `/release-docs-sync` before `gh pr create` — a PR that touches `src/`, `templates/`, or `scripts/` must change CHANGELOG.md or carry a `Docs: none — <reason>` line in its body; a PreToolUse hook and the Docs Sync CI check both run `scripts/check-docs-sync.mjs` and block otherwise
 - Use descriptive branch names: feature/spec-name
 
 ### ASK FIRST
@@ -55,7 +56,7 @@ The scenarios repo is deliberately invisible to the coding agent. This is the ho
 |--------|-----------------|
 | `docs/` | Documentation |
 | `keller-coders-meetups/` | Meetup notes (not part of the tool) |
-| `scripts/` | generate-bundled-files.mjs (regen src/*-skills/), sync-skills.mjs (copy into installed trees), ste-lint.py (vendored STE linter) |
+| `scripts/` | generate-bundled-files.mjs (regen src/*-skills/), sync-skills.mjs (copy into installed trees), check-docs-sync.mjs (PR docs gate), ste-lint.py (vendored STE linter) |
 | `src/` | CLI + core logic (TypeScript); entry cli.ts, scaffold init.ts, upgrade.ts, detect.ts, improve-claude-md.ts, agents-md.ts |
 | `templates/` | Source-of-truth templates (development reference) |
 | `tests/` | Test suite + fixtures/ (real-world manifest files per stack) |
