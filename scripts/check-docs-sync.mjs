@@ -64,7 +64,7 @@ function main() {
       '',
       '  Changed product files:',
       ...result.product.slice(0, 15).map((f) => `    ${f}`),
-      result.product.length > 15 ? `    … and ${result.product.length - 15} more` : '',
+      ...(result.product.length > 15 ? [`    … and ${result.product.length - 15} more`] : []),
       '',
       '  Run /release-docs-sync first. It reads the diff and decides which of',
       '  CHANGELOG.md, README.md, and AGENTS.md need an entry, then writes them.',
@@ -74,7 +74,7 @@ function main() {
       '',
       '    Docs: none — <one-line reason>',
       '',
-    ].filter((l) => l !== '').join('\n'),
+    ].join('\n'),
   );
   return 1;
 }
