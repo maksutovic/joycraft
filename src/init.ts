@@ -5,7 +5,7 @@ import { generateCLAUDEMd, generateClaudeMdPointer } from './improve-claude-md.j
 import { generateAgentsMd } from './agents-md.js';
 import { generatePermissions } from './permissions.js';
 import { installSafeguardHooks } from './safeguard.js';
-import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, COPILOT_SKILLS } from './bundled-files.js';
+import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, COPILOT_SKILLS, OMP_SKILLS } from './bundled-files.js';
 import {
   writeVersion,
   readVersion,
@@ -22,7 +22,7 @@ import {
 } from './gitignore.js';
 import { applyGitattributes } from './gitattributes.js';
 import { getPackageVersion } from './package-version.js';
-import { resolveHarnesses, type Harness } from './harness.js';
+import { HARNESSES, resolveHarnesses, type Harness } from './harness.js';
 import { resolveExecutionProfile } from './execution-profile.js';
 import { ensurePiExcludedFromTsconfig } from './tsconfig.js';
 import { resolveAutoMemoryOffer, AUTO_MEMORY_KEY } from './auto-memory.js';
@@ -94,7 +94,7 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   if (harnesses.length === 0) {
     console.log(
       '\nNo harness selected — Joycraft will not install any skills.\n' +
-      'Please run init again and select at least one harness (claude, codex, pi, copilot).'
+      `Please run init again and select at least one harness (${HARNESSES.join(', ')}).`
     );
     return;
   }
@@ -227,6 +227,23 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     }
   }
 
+  // 2h. Install the omp (Oh My Pi) harness: skills to .omp/skills/.
+  // Skills-only by design (D1/D2): omp loads the root AGENTS.md and CLAUDE.md
+  // itself, so no .omp/AGENTS.md, .omp/RULES.md, config, extension, agent, or
+  // script is written — the whole runtime port is a separate feature.
+  if (wants('omp')) {
+    const ompSkillsDir = join(targetDir, '.omp', 'skills');
+    ensureDir(ompSkillsDir);
+    // omp discovery is non-recursive, so the tree stays flat at
+    // .omp/skills/<name>/SKILL.md — same shape as every other harness.
+    for (const [filename, content] of Object.entries(OMP_SKILLS)) {
+      const skillName = filename.replace(/\.md$/, '');
+      const skillDir = join(ompSkillsDir, skillName);
+      ensureDir(skillDir);
+      writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
+    }
+  }
+
   // 3. Copy template files to docs/templates/
   const templatesDir = join(targetDir, 'docs', 'templates');
   ensureDir(templatesDir);
@@ -238,12 +255,12 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   // 4/5. Handle CLAUDE.md + AGENTS.md — only create if missing, never modify
   // existing (unless --force).
   //
-  // Multi-tool install (Codex, Pi, and/or Copilot selected): AGENTS.md is the
+  // Multi-tool install (Codex, Pi, Copilot, and/or omp selected): AGENTS.md is the
   // single shared instruction file and CLAUDE.md is Anthropic's documented import
   // pointer (`@AGENTS.md`) — Claude Code doesn't read AGENTS.md natively, and
   // two full sibling files drift. Claude-only install: classic full CLAUDE.md
   // plus the slim AGENTS.md, unchanged.
-  const multiTool = wants('codex') || wants('pi') || wants('copilot');
+  const multiTool = wants('codex') || wants('pi') || wants('copilot') || wants('omp');
   const claudeMdPath = join(targetDir, 'CLAUDE.md');
   if (existsSync(claudeMdPath) && !opts.force) {
     result.skipped.push(claudeMdPath);
@@ -321,6 +338,12 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
     for (const [filename, content] of Object.entries(COPILOT_SKILLS)) {
       const skillName = filename.replace(/\.md$/, '');
       fileHashes[join('.github', 'skills', skillName, 'SKILL.md')] = hashContent(content);
+    }
+  }
+  if (wants('omp')) {
+    for (const [filename, content] of Object.entries(OMP_SKILLS)) {
+      const skillName = filename.replace(/\.md$/, '');
+      fileHashes[join('.omp', 'skills', skillName, 'SKILL.md')] = hashContent(content);
     }
   }
   writeVersion(targetDir, getPackageVersion(), fileHashes, gitignoreProfile, harnesses);
@@ -568,6 +591,9 @@ function printSummary(result: InitResult, stack: import('./detect.js').StackInfo
   }
   if (!isPi) {
     console.log('    Pi: Skills installed to .pi/skills/. Use /skill:joycraft-* to invoke.');
+  }
+  if (harnesses.includes('omp')) {
+    console.log('    omp: Skills installed to .omp/skills/. Use /skill:joycraft-* to invoke.');
   }
   console.log('');
 }
