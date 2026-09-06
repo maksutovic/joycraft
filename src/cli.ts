@@ -41,12 +41,13 @@ program
   .command('upgrade')
   .description('Upgrade installed Joycraft templates and skills to latest')
   .argument('[dir]', 'Target directory', '.')
-  .option('--yes', 'Auto-accept all updates')
+  .option('--yes', 'Apply safe updates and preserve customizations without prompting')
   .option('--gitignore <profile>', GITIGNORE_OPTION_DESC)
   .action(async (dir: string, opts: { yes?: boolean; gitignore?: string }) => {
-    const { upgrade } = await import('./upgrade.js');
+    const { upgrade, upgradeStatusExitCode } = await import('./upgrade.js');
     try {
       const result = await upgrade(dir, { yes: opts.yes ?? false, gitignore: opts.gitignore });
+      process.exitCode = upgradeStatusExitCode(result.status);
       suppressUpdateNudge = result.cliWasStale;
     } catch (err) {
       console.error(err instanceof Error ? err.message : String(err));

@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
-import { upgrade } from '../src/upgrade';
+import { Readable } from 'node:stream';
+import { upgrade, upgradeStatusExitCode } from '../src/upgrade';
 import { init } from '../src/init';
 import { readVersion, writeVersion, hashContent, STATE_PATH } from '../src/version';
 import { SKILLS, TEMPLATES, CODEX_SKILLS, OMP_SKILLS } from '../src/bundled-files';
@@ -55,6 +56,20 @@ describe('upgrade', () => {
     expect(logs.some(l => l.includes('npx joycraft init'))).toBe(true);
   });
 
+  it('reports invalid when a skill exists without installation state', async () => {
+    await init(tmpDir, { force: false });
+
+    const skillPath = join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+    const before = readFileSync(skillPath, 'utf-8');
+    rmSync(join(tmpDir, STATE_PATH));
+
+    const result = await upgrade(tmpDir, { yes: true });
+
+    expect(result).toEqual({ cliWasStale: false, status: 'invalid' });
+    expect(readFileSync(skillPath, 'utf-8')).toBe(before);
+    expect(existsSync(join(tmpDir, STATE_PATH))).toBe(false);
+  });
+
   it('warns and exits early when CLI is stale', async () => {
     await init(tmpDir, { force: false });
 
@@ -80,7 +95,7 @@ describe('upgrade', () => {
     expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
     expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
     // The guard handled messaging itself — the CLI must not print a second nudge
-    expect(result).toEqual({ cliWasStale: true });
+    expect(result).toEqual({ cliWasStale: true, status: 'invalid' });
   });
 
   it('stale CLI with --yes re-execs the latest version via npx', async () => {
@@ -109,7 +124,7 @@ describe('upgrade', () => {
       globalThis.fetch = origFetch;
     }
 
-    expect(result).toEqual({ cliWasStale: true });
+    expect(result).toEqual({ cliWasStale: true, status: 'noop' });
     expect(spawnCalls).toHaveLength(1);
     expect(spawnCalls[0].args).toContain('joycraft@999.0.0');
     expect(spawnCalls[0].args).toContain('upgrade');
@@ -145,7 +160,7 @@ describe('upgrade', () => {
       globalThis.fetch = origFetch;
     }
 
-    expect(result).toEqual({ cliWasStale: true });
+    expect(result).toEqual({ cliWasStale: true, status: 'invalid' });
     expect(spawnCalls).toHaveLength(1);
     expect(spawnCalls[0].args).toContain('--gitignore');
     expect(spawnCalls[0].args).toContain('shared');
@@ -197,7 +212,74 @@ describe('upgrade', () => {
     }
 
     expect(logs.some(l => l.includes('Already up to date'))).toBe(true);
-    expect(result).toEqual({ cliWasStale: false });
+    expect(result).toEqual({ cliWasStale: false, status: 'noop' });
+  });
+
+  it('reconciles an old version stamp without rewriting matching managed files', async () => {
+    await init(tmpDir, { force: false });
+
+    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+    const skillPath = join(tmpDir, skillRelPath);
+    const beforeContent = readFileSync(skillPath, 'utf-8');
+    const beforeMtime = statSync(skillPath).mtimeMs;
+    const state = readVersion(tmpDir)!;
+    writeVersion(tmpDir, '0.0.1', state.files);
+
+    const result = await upgrade(tmpDir, { yes: true });
+
+    expect(result).toEqual({ cliWasStale: false, status: 'noop' });
+    expect(readVersion(tmpDir)!.version).toBe(PKG_VERSION);
+    expect(readFileSync(skillPath, 'utf-8')).toBe(beforeContent);
+    expect(statSync(skillPath).mtimeMs).toBe(beforeMtime);
+  });
+
+  it('maps update statuses to the documented command exit codes', () => {
+    expect(upgradeStatusExitCode('applied')).toBe(0);
+    expect(upgradeStatusExitCode('noop')).toBe(0);
+    expect(upgradeStatusExitCode('preserved-local-only')).toBe(0);
+    expect(upgradeStatusExitCode('invalid')).toBe(1);
+    expect(upgradeStatusExitCode('conflict')).toBe(2);
+    expect(upgradeStatusExitCode('attention')).toBe(3);
+  });
+
+  it('preserves a local-only edit with --yes without prompting', async () => {
+    await init(tmpDir, { force: false });
+
+    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+    const skillPath = join(tmpDir, skillRelPath);
+    const custom = `${SKILLS['joycraft-tune.md']}\nlocal-only edit`;
+    writeFileSync(skillPath, custom, 'utf-8');
+
+    const result = await upgrade(tmpDir, { yes: true });
+
+    expect(result).toEqual({
+      cliWasStale: false,
+      status: 'preserved-local-only',
+      preserved: [skillRelPath],
+    });
+    expect(readFileSync(skillPath, 'utf-8')).toBe(custom);
+  });
+
+  it('preserves a vendor conflict with --yes and reports it without prompting', async () => {
+    await init(tmpDir, { force: false });
+
+    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+    const skillPath = join(tmpDir, skillRelPath);
+    const custom = 'local edit that conflicts with a changed vendor file';
+    writeFileSync(skillPath, custom, 'utf-8');
+    const state = readVersion(tmpDir)!;
+    state.files[skillRelPath] = hashContent('previous vendor content');
+    writeVersion(tmpDir, '0.0.1', state.files);
+
+    const result = await upgrade(tmpDir, { yes: true });
+
+    expect(result).toEqual({
+      cliWasStale: false,
+      status: 'conflict',
+      pending: [skillRelPath],
+      preserved: [skillRelPath],
+    });
+    expect(readFileSync(skillPath, 'utf-8')).toBe(custom);
   });
 
   it('updates files when bundled content differs from installed', async () => {
@@ -227,37 +309,36 @@ describe('upgrade', () => {
     expect(logs.some(l => l.includes('Updated'))).toBe(true);
   });
 
-  it('detects user-customized files and updates with --yes', async () => {
+  it('detects user-customized files and updates after an explicit interactive accept', async () => {
     await init(tmpDir, { force: false });
 
     // User customizes a skill file
-    const skillPath = join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+    const skillPath = join(tmpDir, skillRelPath);
     writeFileSync(skillPath, 'my custom joy skill', 'utf-8');
 
-    // Also change the bundled content by writing old hash (simulating a new version)
+    // Record an older vendor base so this is a real vendor conflict that needs
+    // an explicit replacement decision.
     const versionInfo = readVersion(tmpDir)!;
-    // The recorded hash is the original bundled hash, but the file now has custom content
-    // So the file hash won't match the recorded hash → detected as customized
+    versionInfo.files[skillRelPath] = hashContent('previous vendor content');
+    writeVersion(tmpDir, '0.0.1', versionInfo.files);
 
+    const fakeStdin = Readable.from(['y\n']) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
+    fakeStdin.isTTY = true;
+    const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+    Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
     const logs: string[] = [];
     const origLog = console.log;
     console.log = (...args: unknown[]) => logs.push(args.join(' '));
     try {
-      await upgrade(tmpDir, { yes: true });
+      await upgrade(tmpDir, { yes: false });
     } finally {
       console.log = origLog;
+      Object.defineProperty(process, 'stdin', stdinDesc);
     }
 
-    // With --yes, customized files get overwritten
+    // An explicit interactive acceptance overwrites the customized file.
     const content = readFileSync(skillPath, 'utf-8');
-    // The file should remain the same since the bundled content matches the original hash
-    // Actually: current file hash != recorded hash (user customized), AND current file hash != new bundled hash
-    // So it will be categorized as "customized" — but with --yes it gets overwritten
-    // Wait — if the bundled content hasn't changed, current hash == new hash means up-to-date
-    // Let me reconsider: the bundled content IS the same as what was installed,
-    // but the user changed the file. So currentHash != newHash → it's a change.
-    // And currentHash != originalHash → it's user-customized.
-    // With --yes, it gets overwritten with the bundled content.
     expect(content).toBe(SKILLS['joycraft-tune.md']);
   });
 
@@ -500,15 +581,14 @@ describe('upgrade', () => {
     const ompRelPath = (): string =>
       join('.omp', 'skills', Object.keys(OMP_SKILLS)[0].replace(/\.md$/, ''), 'SKILL.md');
 
-    it('rewrites a hand-edited .omp/skills file back to bundled content', async () => {
+    it('preserves a hand-edited .omp/skills file with --yes', async () => {
       await init(tmpDir, { force: false });
       const rel = ompRelPath();
-      const bundled = OMP_SKILLS[Object.keys(OMP_SKILLS)[0]];
       writeFileSync(join(tmpDir, rel), 'hand-edited junk', 'utf-8');
 
       await upgrade(tmpDir, { yes: true });
 
-      expect(readFileSync(join(tmpDir, rel), 'utf-8')).toBe(bundled);
+      expect(readFileSync(join(tmpDir, rel), 'utf-8')).toBe('hand-edited junk');
     });
 
     it('leaves user files (CLAUDE.md, AGENTS.md, docs/) alone', async () => {
@@ -694,6 +774,7 @@ describe('upgrade', () => {
       // Fake stdin that yields a single "n" line, then ends.
       const { Readable } = await import('node:stream');
       const fakeStdin = Readable.from(['n\n']) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
+      fakeStdin.isTTY = true;
       const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
       Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
 
@@ -887,6 +968,7 @@ describe('upgrade', () => {
     async function declineUpgrade(): Promise<void> {
       const { Readable } = await import('node:stream');
       const fakeStdin = Readable.from(['n\n']) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
+      fakeStdin.isTTY = true;
       const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
       Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
       try {
@@ -930,7 +1012,15 @@ describe('upgrade', () => {
       state.files[skillRelPath] = hashContent(vendorBase);
       writeVersion(tmpDir, '0.0.1', state.files);
 
-      await upgrade(tmpDir, { yes: true });
+      const fakeStdin = Readable.from(['y\n']) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
+      fakeStdin.isTTY = true;
+      const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+      Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
+      try {
+        await upgrade(tmpDir, { yes: false });
+      } finally {
+        Object.defineProperty(process, 'stdin', stdinDesc);
+      }
 
       expect(readFileSync(join(tmpDir, skillRelPath), 'utf-8')).toBe(SKILLS['joycraft-tune.md']);
       expect(readVersion(tmpDir)!.files[skillRelPath]).toBe(

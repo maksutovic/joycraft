@@ -409,6 +409,40 @@ export interface UpgradeResult {
    * the upgrade the delegated run just completed.
    */
   cliWasStale: boolean;
+  /** The outcome used by the CLI to select its process exit status. */
+  status: UpgradeStatus;
+  /** Files preserved because their local-only edit is ahead of an unchanged vendor base. */
+  preserved?: string[];
+  /** Files whose customized local bytes conflict with changed vendor bytes. */
+  pending?: string[];
+}
+
+export type UpgradeStatus =
+  | 'applied'
+  | 'noop'
+  | 'preserved-local-only'
+  | 'invalid'
+  | 'conflict'
+  | 'attention';
+
+/** Translate an upgrade outcome to the public command exit-status contract. */
+export function upgradeStatusExitCode(status: UpgradeStatus): number {
+  switch (status) {
+    case 'applied':
+    case 'noop':
+    case 'preserved-local-only':
+      return 0;
+    case 'invalid':
+      return 1;
+    case 'conflict':
+      return 2;
+    case 'attention':
+      return 3;
+    default: {
+      const exhaustive: never = status;
+      throw new Error(`Unknown upgrade status: ${String(exhaustive)}`);
+    }
+  }
 }
 
 export async function upgrade(dir: string, opts: UpgradeOptions): Promise<UpgradeResult> {
@@ -431,10 +465,10 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
       (process.stdin.isTTY === true &&
         (await askUser(`Run joycraft@${cliCheck.latest} via npx now?`)));
     if (rerun && reexecLatestUpgrade(targetDir, opts, cliCheck.latest)) {
-      return { cliWasStale: true };
+      return { cliWasStale: true, status: 'noop' };
     }
     console.log('Update and re-run in one step with: npx joycraft@latest upgrade');
-    return { cliWasStale: true };
+    return { cliWasStale: true, status: 'invalid' };
   }
 
   // Check if project was initialized. A project is "initialized" if it has the
@@ -450,7 +484,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
   if (!readVersion(targetDir) && !hasLegacyState && !hasSkill) {
     console.log('This project has not been initialized with Joycraft.');
     console.log('Run `npx joycraft init` first.');
-    return { cliWasStale: false };
+    return { cliWasStale: false, status: 'invalid' };
   }
 
   // Relocate any legacy state (root .joycraft-version or the interim
@@ -458,6 +492,13 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
   // loop so the migrated recorded-original is used on this same run. No-op when
   // no legacy file exists.
   migrateLegacyVersionFile(targetDir);
+
+  // A recognizable skill directory alone cannot establish file ownership or a
+  // vendor baseline. Refuse to update until the installation state is present.
+  if (!readVersion(targetDir)) {
+    console.log('Joycraft installation state is missing or invalid.');
+    return { cliWasStale: false, status: 'invalid' };
+  }
 
   // Clean up deprecated skill directories/files from older versions
   const deprecatedRemoved = cleanupDeprecatedSkills(targetDir);
@@ -574,6 +615,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
 
   const changes: FileChange[] = [];
   let upToDate = 0;
+  const preservedLocalOnly: string[] = [];
 
   for (const [relPath, newContent] of Object.entries(managedFiles)) {
     const absPath = join(targetDir, relPath);
@@ -597,7 +639,14 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
     // installedHashes are stored truncated; truncate the fresh hash to match.
     const originalHash = installedHashes[relPath];
 
-    if (originalHash && truncateHash(currentHash) === originalHash) {
+    if (originalHash && truncateHash(newHash) === truncateHash(originalHash)) {
+      // The vendor target has not advanced. Keep the user's local-only edit
+      // without repeatedly asking whether to replace it.
+      preservedLocalOnly.push(relPath);
+      continue;
+    }
+
+    if (originalHash && truncateHash(currentHash) === truncateHash(originalHash)) {
       // User hasn't modified the file — safe to auto-update
       changes.push({ relativePath: relPath, absolutePath: absPath, newContent, kind: 'updated' });
     } else {
@@ -607,14 +656,29 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
   }
 
   if (changes.length === 0) {
-    // Persist a freshly-decided profile (prompt answer or --gitignore switch)
-    // even when no files changed, so the decision sticks. Never persist the
-    // non-interactive fallback — an undecided project must stay undecided.
-    if (resolvedProfile.decided && installed && installed.gitignoreProfile !== gitignoreProfile) {
-      writeVersion(targetDir, installed.version, installedHashes, gitignoreProfile);
+    // Reconcile the executing package version even when all managed files are
+    // already current. Preserve the baseline map and any unknown state keys.
+    if (installed) {
+      writeVersion(
+        targetDir,
+        pkgVersion,
+        installedHashes,
+        resolvedProfile.decided ? gitignoreProfile : undefined,
+      );
     }
-    console.log('Already up to date.');
-    return { cliWasStale: false };
+    const status: UpgradeStatus = preservedLocalOnly.length > 0
+      ? 'preserved-local-only'
+      : 'noop';
+    if (preservedLocalOnly.length > 0) {
+      console.log(`Preserved ${preservedLocalOnly.length} local-only customization(s).`);
+    } else {
+      console.log('Already up to date.');
+    }
+    return {
+      cliWasStale: false,
+      status,
+      ...(preservedLocalOnly.length > 0 ? { preserved: preservedLocalOnly } : {}),
+    };
   }
 
   // Process changes
@@ -622,6 +686,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
   let skipped = 0;
   let added = 0;
   const acceptedCustomized = new Set<string>();
+  const pending: string[] = [];
 
   for (const change of changes) {
     if (change.kind === 'new') {
@@ -644,10 +709,11 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
       const diffLabel = diff > 0 ? `+${diff} lines` : diff < 0 ? `${diff} lines` : 'same length';
       const label = `Customized: ${change.relativePath} (local: ${currentLines} lines, latest: ${newLines} lines, ${diffLabel})`;
 
-      if (opts.yes) {
-        writeFileSync(change.absolutePath, change.newContent, 'utf-8');
-        acceptedCustomized.add(change.relativePath);
-        updated++;
+      if (opts.yes || process.stdin.isTTY !== true) {
+        // Unattended execution accepts safe updates only. Customized files
+        // remain intact and are surfaced as unresolved conflicts.
+        pending.push(change.relativePath);
+        skipped++;
       } else {
         const accept = await askUser(`${label} — overwrite with latest?`);
         if (accept) {
@@ -656,6 +722,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
           acceptedCustomized.add(change.relativePath);
           updated++;
         } else {
+          pending.push(change.relativePath);
           skipped++;
         }
       }
@@ -689,8 +756,21 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
   const parts: string[] = [];
   if (updated > 0) parts.push(`Updated ${updated}`);
   if (skipped > 0) parts.push(`skipped ${skipped} (customized)`);
+  if (preservedLocalOnly.length > 0) parts.push(`preserved ${preservedLocalOnly.length} local-only`);
+  if (pending.length > 0) parts.push(`pending ${pending.length} conflict${pending.length === 1 ? '' : 's'}`);
   if (added > 0) parts.push(`added ${added} new`);
   if (upToDate > 0) parts.push(`${upToDate} already up to date`);
   console.log(`\nUpgrade complete: ${parts.join(', ')}.`);
-  return { cliWasStale: false };
+  const preserved = [...new Set([...preservedLocalOnly, ...pending])];
+  const status: UpgradeStatus = pending.length > 0
+    ? 'conflict'
+    : preservedLocalOnly.length > 0
+      ? 'preserved-local-only'
+      : 'applied';
+  return {
+    cliWasStale: false,
+    status,
+    ...(preserved.length > 0 ? { preserved } : {}),
+    ...(pending.length > 0 ? { pending } : {}),
+  };
 }

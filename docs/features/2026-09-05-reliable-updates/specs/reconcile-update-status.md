@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 2 of 15
 > **Dependencies:** 1 — preserve-customization-baselines.md
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 4 files / ~160 lines
 
@@ -27,9 +27,9 @@ The current `changes.length === 0` early return in `upgrade()` leaves a stale re
 
 ## Acceptance Criteria
 
-- [ ] Identical content with an older version stamp reconciles metadata without rewriting the files. [src: design §2]
-- [ ] Applied/no-op, invalid/failure, unresolved conflict, and lock/recovery attention map to exits 0, 1, 2, and 3; later transaction integration supplies the lock/recovery producer. [src: design §2]
-- [ ] Preserved local-only edits are distinct from pending vendor changes; no terminal prompt waits for input in unattended mode. [src: design §2]
+- [x] Identical content with an older version stamp reconciles metadata without rewriting the files. [src: design §2]
+- [x] Applied/no-op, invalid/failure, unresolved conflict, and lock/recovery attention map to exits 0, 1, 2, and 3; later transaction integration supplies the lock/recovery producer. [src: design §2]
+- [x] Preserved local-only edits are distinct from pending vendor changes; no terminal prompt waits for input in unattended mode. [src: design §2]
 
 ## Test Plan
 
@@ -82,3 +82,7 @@ Return structured outcome data from the update boundary and let the CLI own proc
 | No state is available | Report unsupported/invalid status through the safe public boundary; do not overwrite files. |
 | `--yes` or non-TTY execution sees a customization | Preserve it and return the appropriate noninteractive outcome without a readline prompt. |
 | Later transaction reports a held lock | CLI maps the supplied attention result to exit 3 without this spec implementing locking. |
+
+## Implementation evidence
+
+New outcome regressions failed before implementation. Focused upgrade/version tests pass (64 tests). The staged-file clean checkout passed build, 3,034 tests (one skipped), and typecheck. The pre-existing ignored dogfood state remains untouched pending safe migration; clean-checkout checks use the same tracked inputs as CI.
