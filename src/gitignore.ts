@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 import { createInterface } from 'node:readline';
 import {
@@ -28,6 +29,12 @@ import { TELEMETRY_PATH } from './telemetry-store.js';
  * the constants below, so adding a harness dir can't leave stale messages.
  */
 export const PRIVATE_PROFILE_IGNORES = ['.claude/', '.agents/', '.pi/', '.github/skills/joycraft-*/', '.omp/'];
+
+/** Project-relative homes for the schema-1 installation facts and checker. */
+export const SHARED_MANIFEST_PATH = 'docs/.joycraft/manifest.json';
+export const PRIVATE_MANIFEST_PATH = 'docs/.joycraft/local/manifest.json';
+export const CHECKER_PATH = 'docs/.joycraft/check.mjs';
+export const JOYCRAFT_LOCAL_DIR = 'docs/.joycraft/local/';
 
 /** Human-readable list of the private-profile dirs, for prompts and summaries. */
 export const PRIVATE_DIRS_DISPLAY = PRIVATE_PROFILE_IGNORES.join(', ');
@@ -63,6 +70,54 @@ export function ensureGitignoreEntry(targetDir: string, line: string): boolean {
 }
 
 /**
+ * Explain why the shared installation manifest is not visible to Git.
+ *
+ * This intentionally asks Git to resolve the effective rule instead of
+ * parsing `.gitignore` ourselves: an ignore can come from a broad directory,
+ * a wildcard, or an exclude file configured by the user. The check is
+ * read-only and uses `--no-index` so it also diagnoses an untracked manifest.
+ * A null result means the manifest is not hidden by the effective rules (or
+ * that this directory is not currently a Git worktree).
+ */
+export function sharedManifestIgnoreWarning(targetDir: string): string | null {
+  try {
+    // Git's verbose mode can print the final negation rule even when the path
+    // is effectively visible. Establish the actual status first; only then
+    // ask for the rule that explains a genuinely ignored path.
+    execFileSync(
+      'git',
+      ['check-ignore', '--no-index', '-q', '--', SHARED_MANIFEST_PATH],
+      { cwd: targetDir, stdio: ['ignore', 'ignore', 'ignore'] }
+    );
+
+    let output = '';
+    try {
+      output = execFileSync(
+        'git',
+        ['check-ignore', '--no-index', '-v', '--', SHARED_MANIFEST_PATH],
+        { cwd: targetDir, encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] }
+      ).trim();
+    } catch {
+      // The quiet check is authoritative. A verbose explanation can fail on
+      // older Git versions, so retain a useful generic diagnostic instead.
+    }
+
+    // `git check-ignore -v` prints: source:line:pattern<TAB>pathname.
+    // Preserve Git's useful source/rule text in the diagnostic, while keeping
+    // the message actionable for a shared install.
+    const rule = output.split('\t')[0] ?? output;
+    const detail = rule && !/:(?:\d+:)?!/.test(rule)
+      ? ` (${rule})`
+      : '';
+    return `Shared Joycraft manifest ${SHARED_MANIFEST_PATH} is hidden by the effective Git ignore rule${detail}. Teammates and clones may not receive the shared installation facts; remove or narrow that rule if this install should be shared.`;
+  } catch {
+    // A project can be initialized before Git is installed or before it has a
+    // worktree. The profile writer must remain usable in either case.
+    return null;
+  }
+}
+
+/**
  * Apply a gitignore profile's entries to the project's .gitignore.
  *
  * The hidden upgrade-state file (`STATE_PATH`) is tool-managed, regenerated on
@@ -81,12 +136,17 @@ export function ensureGitignoreEntry(targetDir: string, line: string): boolean {
 export function applyGitignoreProfile(targetDir: string, profile: GitignoreProfile): string[] {
   // Machine-owned files under docs/.joycraft/ — since docs/ is always tracked,
   // both profiles must list them explicitly (telemetry.json additionally holds
-  // per-machine work patterns that must never publish).
-  const machineOwned = [STATE_PATH, TELEMETRY_PATH];
+  // per-machine work patterns that must never publish). The local directory is
+  // ignored by BOTH profiles so preferences, locks, journals, caches, and
+  // private manifests never become shared installation facts.
+  const machineOwned = [STATE_PATH, TELEMETRY_PATH, JOYCRAFT_LOCAL_DIR];
   if (profile === 'private') {
-    return ensureGitignoreEntries(targetDir, [...PRIVATE_PROFILE_IGNORES, ...machineOwned]);
+    // The checker is a managed shared artifact. A private install still gets
+    // one locally, but it must not be committed with the project.
+    return ensureGitignoreEntries(targetDir, [...PRIVATE_PROFILE_IGNORES, CHECKER_PATH, ...machineOwned]);
   }
-  // `shared`: only the machine-owned files, matching long-standing behavior.
+  // `shared`: keep the manifest and checker trackable. Existing broad user
+  // rules are preserved; sharedManifestIgnoreWarning reports if they hide it.
   return ensureGitignoreEntries(targetDir, machineOwned);
 }
 

@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: isolated
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 3 of 15
 > **Dependencies:** 2 — reconcile-update-status.md
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 6 files / ~300 lines
 
@@ -37,11 +37,11 @@ Schema 1 persists `targetVersion`, `bundleIntegrity`, `harnesses`, `profile`, an
 
 ## Acceptance Criteria
 
-- [ ] Schema 1 records target version, bundle integrity, selected harnesses/profile, and per-file vendor identity/ownership using portable validated paths. [src: design §2]
-- [ ] Shared manifests survive clones; private manifests and all local settings remain local; effective ignore rules hiding a shared manifest are reported. [src: design §2]
-- [ ] Missing state infers only roots with Joycraft artifacts across all five harnesses; trusted historical/target vendor matches establish ownership, but legacy stored hashes alone do not. [src: design §2]
-- [ ] Unknown file content remains unverified; corrupt state is preserved, unknown future schemas stop mutation, and unknown legacy settings survive in a namespaced payload. [src: design §2]
-- [ ] Normalized LF vendor hashes classify text across platforms; raw byte hashes remain distinct transaction preconditions. [src: design §2]
+- [x] Schema 1 records target version, bundle integrity, selected harnesses/profile, and per-file vendor identity/ownership using portable validated paths. [src: design §2]
+- [x] Shared manifests survive clones; private manifests and all local settings remain local; effective ignore rules hiding a shared manifest are reported. [src: design §2]
+- [x] Missing state infers only roots with Joycraft artifacts across all five harnesses; trusted historical/target vendor matches establish ownership, but legacy stored hashes alone do not. [src: design §2]
+- [x] Unknown file content remains unverified; corrupt state is preserved, unknown future schemas stop mutation, and unknown legacy settings survive in a namespaced payload. [src: design §2]
+- [x] Normalized LF vendor hashes classify text across platforms; raw byte hashes remain distinct transaction preconditions. [src: design §2]
 
 ## Test Plan
 
@@ -103,3 +103,9 @@ Build a strict, exported manifest module around schema 1 and the exact profile l
 | Generic legacy directory with no Joycraft artifact | Do not infer a harness or ownership. |
 | File matches neither target nor historical vendor content | Preserve it as unknown-ownership conflict evidence. |
 | Manifest uses a newer schema | Leave bytes intact, emit a diagnostic, and refuse mutation. |
+
+## Implementation Evidence
+
+- Added schema validation, conservative historical adoption, local preference separation, and shared/private Git visibility coverage. Historical catalogue contains 149 verified 0.7.13 entries; uncovered historical content stays unknown.
+- Regression tests were observed failing before implementation/corrections and now pass, including historical baseline retention, effective Git negation rules, future-schema refusal, portable paths, and all five harnesses.
+- Exact staged clean checkout: build passed; 3,061 tests passed, one skipped; typecheck passed. The existing ignored local dogfood state remains unchanged for later migration through the new updater.

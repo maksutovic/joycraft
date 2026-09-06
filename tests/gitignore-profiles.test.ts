@@ -5,7 +5,15 @@ import { tmpdir } from 'node:os';
 import { init } from '../src/init';
 import { upgrade } from '../src/upgrade';
 import { readVersion, STATE_PATH } from '../src/version';
-import { applyGitignoreProfile, PRIVATE_PROFILE_IGNORES } from '../src/gitignore';
+import {
+  applyGitignoreProfile,
+  PRIVATE_PROFILE_IGNORES,
+  JOYCRAFT_LOCAL_DIR,
+  SHARED_MANIFEST_PATH,
+  PRIVATE_MANIFEST_PATH,
+  CHECKER_PATH,
+  sharedManifestIgnoreWarning,
+} from '../src/gitignore';
 import { TELEMETRY_PATH } from '../src/telemetry-store';
 import { Readable } from 'node:stream';
 import { execFileSync } from 'node:child_process';
@@ -29,6 +37,15 @@ function readGitignore(dir: string): string {
 
 function lines(content: string): string[] {
   return content.split('\n').map((l) => l.trim()).filter(Boolean);
+}
+
+/** Run Git against a fixture without allowing ancestor repositories to leak in. */
+function git(dir: string, ...args: string[]): void {
+  execFileSync('git', args, {
+    cwd: dir,
+    stdio: 'ignore',
+    env: { ...process.env, GIT_CEILING_DIRECTORIES: dir },
+  });
 }
 
 /**
@@ -111,6 +128,17 @@ describe('gitignore profiles', () => {
       expect(readVersion(tmpDir)?.gitignoreProfile).toBe('shared');
       expect(lines(readGitignore(tmpDir))).not.toContain('.claude/');
     });
+
+    it('keeps the shared manifest and checker trackable while ignoring local data', () => {
+      const added = applyGitignoreProfile(tmpDir, 'shared');
+
+      expect(added).toContain(JOYCRAFT_LOCAL_DIR);
+      expect(added).toContain(STATE_PATH);
+      expect(added).toContain(TELEMETRY_PATH);
+      expect(added).not.toContain(SHARED_MANIFEST_PATH);
+      expect(added).not.toContain(CHECKER_PATH);
+      expect(lines(readGitignore(tmpDir))).not.toContain(PRIVATE_MANIFEST_PATH);
+    });
   });
 
   describe('private profile', () => {
@@ -147,6 +175,18 @@ describe('gitignore profiles', () => {
       // profile.
       await init(tmpDir, { force: false, gitignore: 'private' });
       expect(lines(readGitignore(tmpDir))).toContain(STATE_PATH);
+    });
+
+    it('ignores the local manifest and checker, while leaving the shared path eligible for tracking', () => {
+      applyGitignoreProfile(tmpDir, 'private');
+      const gi = lines(readGitignore(tmpDir));
+
+      expect(gi).toContain(JOYCRAFT_LOCAL_DIR);
+      expect(gi).toContain(CHECKER_PATH);
+      expect(gi).not.toContain(SHARED_MANIFEST_PATH);
+      // The local manifest is covered by the local directory rule rather than
+      // a second, overlapping path-specific entry.
+      expect(gi).not.toContain(PRIVATE_MANIFEST_PATH);
     });
 
     it('does not warn about .claude/ being gitignored (it is the intent)', async () => {
@@ -475,10 +515,96 @@ describe('gitignore profiles', () => {
   describe('idempotency', () => {
     it('applyGitignoreProfile adds nothing on a second call', () => {
       const first = applyGitignoreProfile(tmpDir, 'private');
-      // private now writes the harness dirs AND the machine-owned docs/.joycraft files.
-      expect(first.sort()).toEqual([...PRIVATE_PROFILE_IGNORES, STATE_PATH, TELEMETRY_PATH].sort());
+      // private now writes the harness dirs, checker, local scope, and
+      // machine-owned docs/.joycraft files.
+      expect(first.sort()).toEqual([
+        ...PRIVATE_PROFILE_IGNORES,
+        CHECKER_PATH,
+        JOYCRAFT_LOCAL_DIR,
+        STATE_PATH,
+        TELEMETRY_PATH,
+      ].sort());
       const second = applyGitignoreProfile(tmpDir, 'private');
       expect(second).toEqual([]);
+    });
+
+    it('preserves the shared manifest through a real Git clone', () => {
+      const source = join(tmpDir, 'source');
+      const clone = join(tmpDir, 'clone');
+      mkdirSync(join(source, 'docs', '.joycraft'), { recursive: true });
+      applyGitignoreProfile(source, 'shared');
+      writeFileSync(join(source, SHARED_MANIFEST_PATH), '{"schemaVersion":1}\n', 'utf-8');
+      writeFileSync(join(source, CHECKER_PATH), 'export {};\n', 'utf-8');
+      git(source, 'init', '-q');
+      git(source, 'config', 'user.email', 'test@test.dev');
+      git(source, 'config', 'user.name', 'Test');
+      git(source, 'add', '.gitignore', SHARED_MANIFEST_PATH, CHECKER_PATH);
+      git(source, 'commit', '-q', '-m', 'shared installation');
+      execFileSync('git', ['clone', '-q', source, clone], { stdio: 'ignore' });
+
+      expect(existsSync(join(clone, SHARED_MANIFEST_PATH))).toBe(true);
+      expect(existsSync(join(clone, CHECKER_PATH))).toBe(true);
+      expect(() => execFileSync('git', ['check-ignore', '--no-index', '-q', '--', PRIVATE_MANIFEST_PATH], {
+        cwd: clone,
+        stdio: ['ignore', 'ignore', 'ignore'],
+      })).not.toThrow();
+    });
+
+    it('keeps a private manifest and checker local in a real Git project', () => {
+      const project = join(tmpDir, 'private');
+      mkdirSync(join(project, 'docs', '.joycraft', 'local'), { recursive: true });
+      applyGitignoreProfile(project, 'private');
+      writeFileSync(join(project, PRIVATE_MANIFEST_PATH), '{"schemaVersion":1}\n', 'utf-8');
+      writeFileSync(join(project, CHECKER_PATH), 'export {};\n', 'utf-8');
+      writeFileSync(join(project, SHARED_MANIFEST_PATH), '{"schemaVersion":1}\n', 'utf-8');
+      git(project, 'init', '-q');
+
+      for (const path of [PRIVATE_MANIFEST_PATH, CHECKER_PATH, STATE_PATH]) {
+        expect(() => execFileSync('git', ['check-ignore', '--no-index', '-q', '--', path], {
+          cwd: project,
+          stdio: ['ignore', 'ignore', 'ignore'],
+        })).not.toThrow();
+      }
+      expect(() => execFileSync('git', ['check-ignore', '--no-index', '-q', '--', SHARED_MANIFEST_PATH], {
+        cwd: project,
+        stdio: ['ignore', 'ignore', 'ignore'],
+      })).toThrow();
+    });
+
+    it('reports a broad effective ignore that hides the shared manifest', () => {
+      const source = join(tmpDir, 'warning');
+      mkdirSync(source, { recursive: true });
+      writeFileSync(join(source, '.gitignore'), 'docs/.joycraft/\n', 'utf-8');
+      git(source, 'init', '-q');
+
+      const warning = sharedManifestIgnoreWarning(source);
+      expect(warning).toContain(SHARED_MANIFEST_PATH);
+      expect(warning).toContain('docs/.joycraft/');
+      expect(warning).toContain('remove or narrow');
+    });
+
+    it('does not report a warning when the shared manifest is visible', () => {
+      const source = join(tmpDir, 'visible');
+      mkdirSync(source, { recursive: true });
+      applyGitignoreProfile(source, 'shared');
+      git(source, 'init', '-q');
+
+      expect(sharedManifestIgnoreWarning(source)).toBeNull();
+    });
+
+    it('does not mistake a negated manifest rule for an effective ignore', () => {
+      const source = join(tmpDir, 'negated');
+      mkdirSync(source, { recursive: true });
+      writeFileSync(
+        join(source, '.gitignore'),
+        'docs/.joycraft/*\n!docs/.joycraft/manifest.json\n',
+        'utf-8'
+      );
+      git(source, 'init', '-q');
+
+      // `git check-ignore -v` reports the final `!manifest` line with some
+      // Git versions even though the quiet status correctly says visible.
+      expect(sharedManifestIgnoreWarning(source)).toBeNull();
     });
 
     it('re-running init never duplicates gitignore lines', async () => {
