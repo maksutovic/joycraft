@@ -9,9 +9,11 @@ const fixtures = join(__dirname, 'fixtures', 'transcripts');
 const claudeDir = join(fixtures, 'claude');
 const piDir = join(fixtures, 'pi');
 const codexDir = join(fixtures, 'codex');
+const ompDir = join(fixtures, 'omp');
 const noPi = join(fixtures, 'no-pi');
 const noClaude = join(fixtures, 'no-claude');
 const noCodex = join(fixtures, 'no-codex');
+const noOmp = join(fixtures, 'no-omp');
 
 // The fixtures record ops against absolute /repo/... paths, so the scan must
 // think the project is /repo while the store lands in a real temp dir.
@@ -27,7 +29,7 @@ beforeEach(() => {
 
 describe('runTelemetryScan', () => {
   it('writes a store keyed by repo-relative doc path with counters', async () => {
-    const result = await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir: noCodex, storePath });
+    const result = await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir: noCodex, ompDir: noOmp, storePath });
     expect(result.status).toBe('ok');
     expect(existsSync(storePath)).toBe(true);
 
@@ -40,7 +42,7 @@ describe('runTelemetryScan', () => {
   });
 
   it('namespaces scanned-session ids per harness', async () => {
-    await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir, storePath });
+    await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir, ompDir: noOmp, storePath });
     const store = JSON.parse(readFileSync(storePath, 'utf-8'));
     expect(store.scannedSessions.sort()).toEqual([
       'claude:sess-alpha',
@@ -51,7 +53,7 @@ describe('runTelemetryScan', () => {
   });
 
   it('stores only paths, counters, and session ids — never transcript content', async () => {
-    await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir, storePath });
+    await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir, ompDir: noOmp, storePath });
     const raw = readFileSync(storePath, 'utf-8');
     expect(raw).not.toContain('wrap up the session');
     expect(raw).not.toContain('old_string');
@@ -68,10 +70,10 @@ describe('runTelemetryScan', () => {
   });
 
   it('skips already-scanned sessions on a second run (incremental)', async () => {
-    await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir, storePath });
+    await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir, ompDir: noOmp, storePath });
     const first = JSON.parse(readFileSync(storePath, 'utf-8'));
 
-    const second = await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir, storePath });
+    const second = await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir, ompDir: noOmp, storePath });
     const after = JSON.parse(readFileSync(storePath, 'utf-8'));
 
     expect(second.newSessions).toBe(0);
@@ -80,10 +82,10 @@ describe('runTelemetryScan', () => {
   });
 
   it('accumulates new sessions into existing counters', async () => {
-    await runTelemetryScan(PROJECT, { claudeDir, piDir: noPi, codexDir: noCodex, storePath });
+    await runTelemetryScan(PROJECT, { claudeDir, piDir: noPi, codexDir: noCodex, ompDir: noOmp, storePath });
     const before = JSON.parse(readFileSync(storePath, 'utf-8'));
 
-    await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir: noCodex, storePath });
+    await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir: noCodex, ompDir: noOmp, storePath });
     const after = JSON.parse(readFileSync(storePath, 'utf-8'));
 
     const dlBefore = before.docs['docs/context/decision-log.md'];
@@ -93,8 +95,8 @@ describe('runTelemetryScan', () => {
   });
 
   it('preserves fidelity: degraded on Codex-sourced docs across merges', async () => {
-    await runTelemetryScan(PROJECT, { claudeDir: noClaude, piDir: noPi, codexDir, storePath });
-    await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir: noCodex, storePath });
+    await runTelemetryScan(PROJECT, { claudeDir: noClaude, piDir: noPi, codexDir, ompDir: noOmp, storePath });
+    await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir: noCodex, ompDir: noOmp, storePath });
     const store = JSON.parse(readFileSync(storePath, 'utf-8'));
     expect(store.docs['docs/context/notes.md'].fidelity).toBe('degraded');
   });
@@ -104,6 +106,7 @@ describe('runTelemetryScan', () => {
       claudeDir: join(fixtures, 'missing-a'),
       piDir: join(fixtures, 'missing-b'),
       codexDir: join(fixtures, 'missing-c'),
+      ompDir: join(fixtures, 'missing-d'),
       storePath,
     });
     expect(result.status).toBe('nothing-to-scan');
@@ -117,15 +120,45 @@ describe('runTelemetryScan', () => {
     mkdirSync(join(projectDir, 'docs', '.joycraft'), { recursive: true });
     writeFileSync(storePath, '{ this is not json', 'utf-8');
 
-    const result = await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir: noCodex, storePath });
+    const result = await runTelemetryScan(PROJECT, { claudeDir, piDir, codexDir: noCodex, ompDir: noOmp, storePath });
     expect(result.status).toBe('ok');
     expect(result.rebuiltStore).toBe(true);
     expect(() => JSON.parse(readFileSync(storePath, 'utf-8'))).not.toThrow();
   });
 
   it('creates docs/.joycraft when missing rather than scattering files elsewhere', async () => {
-    await runTelemetryScan(PROJECT, { claudeDir, piDir: noPi, codexDir: noCodex, storePath });
+    await runTelemetryScan(PROJECT, { claudeDir, piDir: noPi, codexDir: noCodex, ompDir: noOmp, storePath });
     expect(existsSync(join(projectDir, 'docs', '.joycraft'))).toBe(true);
+  });
+});
+
+describe('runTelemetryScan with omp transcripts', () => {
+  it('threads ompDir through and records the omp:-prefixed session id', async () => {
+    const result = await runTelemetryScan(PROJECT, {
+      claudeDir: noClaude,
+      piDir: noPi,
+      codexDir: noCodex,
+      ompDir,
+      storePath,
+    });
+    expect(result.status).toBe('ok');
+    expect(result.newSessions).toBeGreaterThan(0);
+
+    const store = JSON.parse(readFileSync(storePath, 'utf-8'));
+    expect(store.scannedSessions).toContain('omp:omp-sess-one');
+    expect(store.docs['docs/context/omp-note.md'].writes).toBe(1);
+  });
+
+  it('scans an omp-only project instead of short-circuiting to nothing-to-scan', async () => {
+    const result = await runTelemetryScan(PROJECT, {
+      claudeDir: join(fixtures, 'missing-a'),
+      piDir: join(fixtures, 'missing-b'),
+      codexDir: join(fixtures, 'missing-c'),
+      ompDir,
+      storePath,
+    });
+    expect(result.status).toBe('ok');
+    expect(result.newSessions).toBe(1);
   });
 });
 

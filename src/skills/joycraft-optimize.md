@@ -119,13 +119,16 @@ Sum every skill's `description:` char length — all load at session start. Code
 <!-- harness:copilot -->
 1. **MCP servers** — check `~/.config/github-copilot/mcp.json` for MCP server entries. List server names. If not found, report "no MCP config found."
 <!-- /harness -->
+<!-- harness:omp -->
+1. **MCP servers** — check `~/.omp/agent/config.yml` for MCP server entries. List server names. If not found, report "no MCP config found."
+<!-- /harness -->
 
 ## Step 8: Audit Hooks
 
 <!-- harness:claude -->
 Read `.claude/settings.json` in the project directory. List all hook definitions under the `hooks` key — show the event name and command for each.
 <!-- /harness -->
-<!-- harness:codex|pi|copilot -->
+<!-- harness:codex|pi|copilot|omp -->
 Hook auditing is not yet supported on this harness — note that and skip this step.
 <!-- /harness -->
 

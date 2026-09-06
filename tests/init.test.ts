@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { Readable } from 'node:stream';
 import { init } from '../src/init';
-import { CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS } from '../src/bundled-files';
+import { CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, OMP_SKILLS } from '../src/bundled-files';
 import { STATE_PATH } from '../src/version';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -712,6 +712,92 @@ describe('init', () => {
       expect(piKeys.some(k => k.includes('.pi/extensions/joycraft-pipeline.ts'))).toBe(true);
       // Check Pi agents
       expect(piKeys.some(k => k.includes('.pi/agents/joycraft-researcher.md'))).toBe(true);
+    });
+  });
+
+  /**
+   * omp (Oh My Pi) is a skills-only harness: it discovers `.omp/skills/<name>/SKILL.md`
+   * natively and reads the root AGENTS.md/CLAUDE.md itself, so no runtime, no
+   * instructions file, no config lands under `.omp/`.
+   */
+  describe('omp support (.omp/skills/)', () => {
+    /**
+     * Run init with only omp selected. Harness selection is interactive-only,
+     * so this scripts stdin the same way tests/harness-selection.test.ts does:
+     * harness answer, then four blank execution-profile answers for the one
+     * selected harness, then the gitignore-profile answer. Returns stdout.
+     */
+    async function initOmpOnly(dir: string): Promise<string> {
+      const answers = ['omp', '', '', '', '', 'shared'];
+      const fakeStdin = Readable.from(answers.map((a) => `${a}\n`)) as unknown as NodeJS.ReadStream & {
+        isTTY?: boolean;
+      };
+      fakeStdin.isTTY = true;
+      const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+      Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
+      const logs: string[] = [];
+      const origLog = console.log;
+      console.log = (...args: unknown[]) => { logs.push(args.map(String).join(' ')); };
+      try {
+        await init(dir, { force: false });
+      } finally {
+        console.log = origLog;
+        Object.defineProperty(process, 'stdin', stdinDesc);
+      }
+      return logs.join('\n');
+    }
+
+    it('writes .omp/skills/<name>/SKILL.md for every bundled omp skill', async () => {
+      await initOmpOnly(tmpDir);
+
+      for (const filename of Object.keys(OMP_SKILLS)) {
+        const skillName = filename.replace(/\.md$/, '');
+        expect(existsSync(join(tmpDir, '.omp', 'skills', skillName, 'SKILL.md'))).toBe(true);
+      }
+      expect(existsSync(join(tmpDir, '.omp', 'skills', 'joycraft-decompose', 'SKILL.md'))).toBe(true);
+    });
+
+    it('creates no other harness tree on an omp-only install', async () => {
+      await initOmpOnly(tmpDir);
+
+      expect(existsSync(join(tmpDir, '.claude'))).toBe(false);
+      expect(existsSync(join(tmpDir, '.agents'))).toBe(false);
+      expect(existsSync(join(tmpDir, '.pi'))).toBe(false);
+      expect(existsSync(join(tmpDir, '.github', 'skills'))).toBe(false);
+    });
+
+    it('writes a pointer CLAUDE.md and a full AGENTS.md (omp is in multiTool)', async () => {
+      await initOmpOnly(tmpDir);
+
+      expect(readFileSync(join(tmpDir, 'CLAUDE.md'), 'utf-8')).toContain('@AGENTS.md');
+      expect(readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8')).toContain('Behavioral Boundaries');
+    });
+
+    it('records a state hash for every installed omp skill', async () => {
+      await initOmpOnly(tmpDir);
+
+      const state = JSON.parse(readFileSync(join(tmpDir, STATE_PATH), 'utf-8'));
+      const ompKeys = Object.keys(state.files).filter((k) => k.startsWith('.omp'));
+      expect(ompKeys.length).toBe(Object.keys(OMP_SKILLS).length);
+      for (const filename of Object.keys(OMP_SKILLS)) {
+        const skillName = filename.replace(/\.md$/, '');
+        expect(state.files[join('.omp', 'skills', skillName, 'SKILL.md')]).toBeTruthy();
+      }
+    });
+
+    it('writes no .omp/ file outside skills/ (D1, D2)', async () => {
+      await initOmpOnly(tmpDir);
+
+      for (const entry of ['AGENTS.md', 'RULES.md', 'config.yml', 'extensions', 'agents', 'scripts']) {
+        expect(existsSync(join(tmpDir, '.omp', entry))).toBe(false);
+      }
+    });
+
+    it('prints an omp line in the summary naming .omp/skills/ and /skill:joycraft-', async () => {
+      const out = await initOmpOnly(tmpDir);
+
+      expect(out).toContain('.omp/skills/');
+      expect(out).toContain('/skill:joycraft-');
     });
   });
 

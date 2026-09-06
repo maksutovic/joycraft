@@ -143,7 +143,7 @@ If `docs/CONTRIBUTING-joycraft.md` already exists, ASK before overwriting — of
 <!-- harness:claude -->
 Now that `docs/areas/` exists, the next `npx joycraft@latest upgrade` (or any future `npx joycraft@latest init`) will pick it up and add the **Areas pointer** to {{boundary_file}} automatically — that pointer tells Claude "when working on the X area, read docs/areas/X/README.md first."
 <!-- /harness -->
-<!-- harness:codex|pi -->
+<!-- harness:codex|pi|omp -->
 Now that `docs/areas/` exists, the next `npx joycraft@latest upgrade` (or any future `npx joycraft@latest init`) will pick it up and add the **Areas pointer** to {{boundary_file}} automatically — that pointer tells the agent "when working on the X area, read docs/areas/X/README.md first."
 <!-- /harness -->
 
@@ -166,7 +166,7 @@ Next:
 <!-- harness:claude|codex -->
 Run /clear first.
 <!-- /harness -->
-<!-- harness:pi -->
+<!-- harness:pi|omp -->
 Run /new first.
 <!-- /harness -->
 

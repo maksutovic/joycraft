@@ -21,8 +21,9 @@ Harnesses [comma-separated, or "all"] (none): claude,pi
 | Codex | `.agents/skills/` (+ `AGENTS.md`) | `$joycraft-*` |
 | Pi | `.pi/skills/` (+ pipeline runtime, see below) | `/skill:joycraft-*` |
 | GitHub Copilot | `.github/skills/` | — |
+| omp (Oh My Pi) | `.omp/skills/` | `/skill:joycraft-*` |
 
-All four get the same structured workflows, adapted for each tool's invocation model. A single-harness install carries **no footprint from the others** — pick `copilot` only and you get `.github/skills/` with no `.claude/`, `.agents/`, or `.pi/` in sight. In a non-interactive run (CI, piped, no TTY) `init` installs all available harnesses so existing scripts keep working. The shared docs (`CLAUDE.md`, `AGENTS.md`, `docs/`) are written regardless of which harnesses you pick.
+All five get the same structured workflows, adapted for each tool's invocation model. A single-harness install carries **no footprint from the others** — pick `copilot` only and you get `.github/skills/` with no `.claude/`, `.agents/`, `.pi/`, or `.omp/` in sight. In a non-interactive run (CI, piped, no TTY) `init` installs all available harnesses so existing scripts keep working. The shared docs (`CLAUDE.md`, `AGENTS.md`, `docs/`) are written regardless of which harnesses you pick.
 
 > Pick nothing at the harness prompt and `init` installs nothing — it tells you to re-run and choose at least one harness.
 

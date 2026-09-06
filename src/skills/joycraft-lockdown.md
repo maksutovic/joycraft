@@ -129,7 +129,7 @@ If the user asks you to apply the changes:
 
 **Never auto-apply. Always show the exact changes and wait for explicit approval.**
 <!-- /harness -->
-<!-- harness:codex|pi|copilot -->
+<!-- harness:codex|pi|copilot|omp -->
 The user wants to constrain agent behavior for an implementation session. Your job is to interview them about what should be off-limits, then generate AGENTS.md NEVER rules and Codex configuration deny patterns they can review and apply.
 
 ## When Is Lockdown Useful?

@@ -69,6 +69,40 @@ describe('applyTemplate — variable substitution', () => {
   });
 });
 
+describe('applyTemplate — omp harness', () => {
+  it('substitutes {{skill_prefix}} for omp', () => {
+    expect(applyTemplate('use {{skill_prefix}}foo', 'omp')).toBe('use /skill:joycraft-foo');
+  });
+
+  it('substitutes all four vars with the D8 values', () => {
+    const src = '{{skill_prefix}}x | {{clear}} | {{skills_dir}} | {{boundary_file}}';
+    expect(applyTemplate(src, 'omp')).toBe('/skill:joycraft-x | /new | .omp/skills | AGENTS.md');
+  });
+
+  it('does not throw on a full canonical-shaped source', () => {
+    const src = '---\nname: a\ndescription: try {{skill_prefix}}tune\ninstructions: 32\n---\nbody {{skills_dir}}\n';
+    expect(() => applyTemplate(src, 'omp')).not.toThrow();
+  });
+
+  it('strips instructions: from frontmatter (STRIP_INSTRUCTIONS.omp)', () => {
+    const src = '---\nname: a\ndescription: b\ninstructions: c\n---\nbody\n';
+    const out = applyTemplate(src, 'omp');
+    expect(out).not.toMatch(/^instructions:/m);
+    expect(out).toContain('description: b');
+  });
+
+  it('keeps a harness:omp block and strips it for pi', () => {
+    const src = 'A\n<!-- harness:omp -->OMPONLY<!-- /harness -->\nB';
+    expect(applyTemplate(src, 'omp')).toContain('OMPONLY');
+    expect(applyTemplate(src, 'pi')).not.toContain('OMPONLY');
+  });
+
+  it('strips a pi-only block for omp — omp is not pi', () => {
+    const src = 'A\n<!-- harness:pi -->PIONLY<!-- /harness -->\nB';
+    expect(applyTemplate(src, 'omp')).not.toContain('PIONLY');
+  });
+});
+
 describe('applyTemplate — conditional blocks', () => {
   it('keeps a single-harness block when harness matches (claude)', () => {
     const src = 'before\n<!-- harness:claude -->X<!-- /harness -->\nafter';

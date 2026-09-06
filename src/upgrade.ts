@@ -6,7 +6,7 @@ import { readVersion, writeVersion, hashContent, truncateHash, LEGACY_VERSION_FI
 import { ensureFolderMapSection } from './folder-map.js';
 import { applyGitignoreProfile, resolveGitignoreProfile, validateGitignoreFlag, PRIVATE_PROFILE_IGNORES, PRIVATE_UNTRACK_COMMAND } from './gitignore.js';
 import { applyGitattributes } from './gitattributes.js';
-import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, COPILOT_SKILLS } from './bundled-files.js';
+import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, COPILOT_SKILLS, OMP_SKILLS } from './bundled-files.js';
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
 import { HARNESSES, sanitizeHarnesses, type Harness } from './harness.js';
@@ -146,6 +146,13 @@ function getManagedFiles(harnesses: readonly Harness[]): Record<string, string> 
     for (const [name, content] of Object.entries(COPILOT_SKILLS)) {
       const skillName = name.replace(/\.md$/, '');
       files[join('.github', 'skills', skillName, 'SKILL.md')] = content;
+    }
+  }
+  if (wants('omp')) {
+    // Skills-only (D1/D2) — nothing else under .omp/ is Joycraft-managed.
+    for (const [name, content] of Object.entries(OMP_SKILLS)) {
+      const skillName = name.replace(/\.md$/, '');
+      files[join('.omp', 'skills', skillName, 'SKILL.md')] = content;
     }
   }
   return files;

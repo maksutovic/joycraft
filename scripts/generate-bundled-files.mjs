@@ -33,6 +33,7 @@ const SKILLS_DIR = join(ROOT, 'src', 'claude-skills');
 const CODEX_SKILLS_DIR = join(ROOT, 'src', 'codex-skills');
 const PI_SKILLS_DIR = join(ROOT, 'src', 'pi-skills');
 const COPILOT_SKILLS_DIR = join(ROOT, 'src', 'copilot-skills');
+const OMP_SKILLS_DIR = join(ROOT, 'src', 'omp-skills');
 const TEMPLATES_DIR = join(ROOT, 'src', 'templates');
 
 const HARNESS_TARGETS = /** @type {const} */ ([
@@ -40,6 +41,7 @@ const HARNESS_TARGETS = /** @type {const} */ ([
   ['codex', CODEX_SKILLS_DIR],
   ['pi', PI_SKILLS_DIR],
   ['copilot', COPILOT_SKILLS_DIR],
+  ['omp', OMP_SKILLS_DIR],
 ]);
 
 /** Recursively walk a directory and return all file paths */
@@ -120,6 +122,7 @@ const skills = readFlatDir(SKILLS_DIR);
 const codexSkills = readFlatDir(CODEX_SKILLS_DIR);
 const piSkills = readFlatDir(PI_SKILLS_DIR);
 const copilotSkills = readFlatDir(COPILOT_SKILLS_DIR);
+const ompSkills = readFlatDir(OMP_SKILLS_DIR);
 // Exclude the pi-* runtime trees — they ship to .pi/ via the PI_* records, not
 // to docs/templates/ (see readTreeDir doc). This is what keeps a stray
 // docs/templates/pi-extensions/joycraft-pipeline.ts out of users' TS programs.
@@ -136,10 +139,11 @@ const output = [
   formatRecord('CODEX_SKILLS', codexSkills),
   formatRecord('PI_SKILLS', piSkills),
   formatRecord('COPILOT_SKILLS', copilotSkills),
+  formatRecord('OMP_SKILLS', ompSkills),
   formatRecord('PI_SCRIPTS', piScripts),
   formatRecord('PI_EXTENSIONS', piExtensions),
   formatRecord('PI_AGENTS', piAgents),
 ].join('\n');
 
 writeFileSync(OUTPUT, output);
-console.log(`Generated ${OUTPUT} (${Object.keys(skills).length} skills, ${Object.keys(templates).length} templates, ${Object.keys(codexSkills).length} codex skills, ${Object.keys(piSkills).length} pi skills, ${Object.keys(copilotSkills).length} copilot skills)`);
+console.log(`Generated ${OUTPUT} (${Object.keys(skills).length} skills, ${Object.keys(templates).length} templates, ${Object.keys(codexSkills).length} codex skills, ${Object.keys(piSkills).length} pi skills, ${Object.keys(copilotSkills).length} copilot skills, ${Object.keys(ompSkills).length} omp skills)`);

@@ -1,0 +1,359 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT REVIEW GATE · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. Any Joycraft gate skill (brief review, design
+  review, decompose review, research readout, tune report, optimize audit)
+  fills the content slots to render its review artifact; it MUST NOT alter the
+  structure, the class names, or the CSS below. Keeping the skeleton fixed is
+  the whole point: freeform per-gate HTML would make every review a fresh
+  hand-rolled artifact, and the human would relearn the page each time.
+
+  This template is a deliberate extension of the decision dossier's design
+  system, not a second one — the same tokens, the same type stack, the same
+  self-containment contract. The dossier keeps its own skeleton for decide;
+  this one covers every other gate.
+
+  Slots are the HTML comments below whose text begins with the slot marker
+  (the word SLOT followed by a colon and a region name). Each names a region
+  and gives filling guidance. Replace the slot comment (and any placeholder)
+  with real markup that uses ONLY the classes already defined in the style
+  block. (This contract comment intentionally does not nest a literal example
+  of the slot delimiters, because a nested comment terminator would end this
+  comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the slot regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · Keep the header's context strip container even when empty; the layout
+      copes with an empty strip, so do not remove the container.
+    · Repeat the content section (section class "sec") once per topic. Inside a
+      section, use only the pre-defined blocks: the "pillars" card grid, a
+      "tablebox" wrapping a table, the "cols" must / must-not columns, or the
+      "criteria" checklist. Do not add block types.
+    · Repeat the question card (div class "q") once per open question. If the
+      gate has NO open questions, delete the whole questions section — the
+      layout copes.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject the framing outright and say what is right
+      instead).
+    · Never present an unverified claim as settled. A gate artifact is a
+      persuasive object; say plainly which rows are grounded facts and which
+      are proposals awaiting the human's word.
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more content sections, then the optional questions section, then the
+  how-to-answer box, then footer. Do not reorder.
+  ============================================================================
+-->
+<title>Brief Review — omp Support</title>
+<style>
+  /* Design tokens: light theme is the default set on :root. These are the
+     decision dossier's tokens verbatim — one design system, two skeletons. */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono, .spec-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Context strip: grounded facts as .lock-chip spans; .open marks an item that
+     is still unsettled. The container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  /* Content section. Repeat once per topic. */
+  section.sec { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .sec-head h2 { margin: 0; }
+  h2 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 18px; max-width: 74ch; }
+
+  /* Block A — pillars: a card grid for 2–4 parallel ideas. */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .pillar h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pillar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* Block B — tablebox: any table (spec lists, decomposition plans). Scrolls
+     inside its own box on narrow screens so the body never scrolls. */
+  .tablebox { margin-top: 6px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+  .tablebox table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+  .tablebox th { text-align: left; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  .tablebox td { padding: 11px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+  .tablebox tr:last-child td { border-bottom: none; }
+  .spec-name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .size { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--ink-2); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .wave { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--accent-wash); color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+
+  /* Block C — cols: the must / must-not pair. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .col .clab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .col ul { margin: 9px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .col li { color: var(--ink-2); margin-bottom: 5px; line-height: 1.4; }
+  .col.must li::before { content: "✓ "; color: var(--good-ink); font-weight: 700; }
+  .col.must-not li::before { content: "✗ "; color: var(--bad-ink); font-weight: 700; }
+
+  /* Block D — criteria: an acceptance checklist. */
+  .criteria { margin: 6px 0 0; padding: 0; list-style: none; }
+  .criteria li { position: relative; padding: 9px 0 9px 26px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-2); }
+  .criteria li:last-child { border-bottom: none; }
+  .criteria li::before { content: "□"; position: absolute; left: 2px; color: var(--ink-3); }
+  .criteria li.met::before { content: "☑"; color: var(--good-ink); }
+
+  /* Questions. One .q card per open question; amber left border. */
+  .questions { margin-top: 54px; }
+  .q { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warn-ink); border-radius: 8px; padding: 18px 22px; margin-top: 12px; }
+  .q .qnum { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .q h3 { font-size: 16.5px; font-weight: 700; margin: 6px 0 8px; }
+  .q .rec { font-size: 14.5px; color: var(--ink); margin: 0 0 6px; }
+  .q .rec strong { color: var(--accent-ink); }
+  .q .why { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 74ch; }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Brief Review · feature: omp-support · September 2, 2026 · rev 2 · September 2, 2026 23:58</div>
+  <h1>omp becomes the fifth harness: skills now, runtime later</h1>
+  <p class="dek">This brief adds Oh My Pi (<span class="mono">omp</span>) to <span class="mono">init</span>, <span class="mono">upgrade</span>, the gitignore profiles, and <span class="mono">telemetry</span>. Read the shape and the five specs, then approve, request a change, or reject the framing.</p>
+  <div class="locked">
+    <span class="lock-chip">D1 skills-only now, runtime backlogged</span>
+    <span class="lock-chip">D2 no .omp/AGENTS.md or RULES.md</span>
+    <span class="lock-chip">D3 deny patterns backlogged</span>
+    <span class="lock-chip">D4 telemetry in scope</span>
+    <span class="lock-chip">D5 omp joins the "all" fallback</span>
+    <span class="lock-chip">D6 tests mirror Copilot</span>
+    <span class="lock-chip">D7 two backlog files written</span>
+    <span class="lock-chip">D8 /skill:joycraft- · /new · .omp/skills</span>
+    <span class="lock-chip">D9 Pi syntax + no-runtime semantics</span>
+    <span class="lock-chip">omp v18.1.5 verified locally</span>
+    <span class="lock-chip">repo can1357/oh-my-pi · npm @oh-my-pi/pi-coding-agent</span>
+    <span class="lock-chip">baseline 2565 tests pass</span>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Shape</span>
+    <h2>What omp needs and what it already reads</h2>
+  </div>
+  <p class="sub">Every row here comes from the omp v18.1.5 documentation bundled in the local install (<span class="mono">omp read omp://...</span>) or from the Joycraft source. Rows marked proposal are agent choices stamped as D8 and D9.</p>
+  <div class="pillars">
+    <div class="pillar">
+      <h3>omp ignores .pi/</h3>
+      <p>omp reads none of <span class="mono">.pi/skills</span>, <span class="mono">.pi/extensions</span>, or <span class="mono">.pi/agents</span>. Its native project root is <span class="mono">.omp/</span>. Nothing Joycraft installs for Pi reaches omp. Verified in the docs.</p>
+    </div>
+    <div class="pillar">
+      <h3>omp already reads three Joycraft trees</h3>
+      <p><span class="mono">.claude/skills</span> (priority 80), <span class="mono">.agents/skills</span> (70), and <span class="mono">.github/skills</span> (30) are discovered today. A native <span class="mono">.omp/skills</span> entry wins name collisions at priority 100, so the omp-flavored copy shadows the others.</p>
+    </div>
+    <div class="pillar">
+      <h3>Root context files load as-is</h3>
+      <p>omp loads the root <span class="mono">AGENTS.md</span> and <span class="mono">CLAUDE.md</span> and expands <span class="mono">@</span> imports. D2 writes no native copy. Sticky <span class="mono">.omp/RULES.md</span> stays out of scope.</p>
+    </div>
+    <div class="pillar">
+      <h3>Invocation mirrors Pi (proposal, D8)</h3>
+      <p>Users invoke <span class="mono">/skill:&lt;name&gt;</span>. The model reads <span class="mono">skill://&lt;name&gt;</span>. <span class="mono">/new</span> starts a fresh session. The transform row copies Pi's values with <span class="mono">.omp/skills</span> as the directory.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Plan</span>
+    <h2>Five specs in three waves</h2>
+  </div>
+  <p class="sub">Wave 1 runs specs 1 and 4 together because they touch disjoint files. Wave 2 runs specs 2 and 3 together because init and upgrade do not read skill bodies. Wave 3 documents the result.</p>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>Spec</th><th>What changes</th><th>Depends on</th><th>Size</th><th>Wave</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="spec-name">add-omp-harness-core</td><td>Harness enum and labels, transform-table row, generator target <span class="mono">src/omp-skills/</span>, <span class="mono">OMP_SKILLS</span> record, sync-skills target <span class="mono">.omp/skills</span></td><td>None</td><td><span class="size">M</span></td><td><span class="wave">1</span></td></tr>
+        <tr><td class="spec-name">add-omp-telemetry-scanner</td><td>Default dir <span class="mono">~/.omp/agent/sessions/&lt;encoded-cwd&gt;/</span>, Pi line parser reused, store wiring, tests</td><td>None</td><td><span class="size">S</span></td><td><span class="wave">1</span></td></tr>
+        <tr><td class="spec-name">wire-omp-init-upgrade</td><td>Install gate and hash recording in init, omp in the <span class="mono">multiTool</span> expression, managed files in upgrade, <span class="mono">.omp/</span> in the private gitignore profile, summary line</td><td>1</td><td><span class="size">M</span></td><td><span class="wave">2</span></td></tr>
+        <tr><td class="spec-name">audit-harness-blocks-for-omp</td><td>Apply D9 to every harness block across 22 skills, fix the optimize MCP path row, add the omp parity test, update the two gate-contract tests</td><td>1</td><td><span class="size">M</span></td><td><span class="wave">2</span></td></tr>
+        <tr><td class="spec-name">document-omp-support</td><td>README harness list, AGENTS.md architecture rows, CHANGELOG entry with the D5 upgrade side effect</td><td>1, 2, 3, 4</td><td><span class="size">S</span></td><td><span class="wave">3</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Boundaries</span>
+    <h2>What every spec must respect</h2>
+  </div>
+  <div class="cols">
+    <div class="col must">
+      <span class="clab">Must</span>
+      <ul>
+        <li>Add omp to the harness enum and every per-harness gate in init, upgrade, and gitignore</li>
+        <li>Generate <span class="mono">src/omp-skills/</span> from <span class="mono">src/skills/</span>, never edit it by hand</li>
+        <li>Keep every omp skill flat at <span class="mono">.omp/skills/&lt;name&gt;/SKILL.md</span> with a non-empty description, because omp discovery is non-recursive and rejects skills without one</li>
+        <li>Include omp in the <span class="mono">multiTool</span> expression so an omp-only install writes the pointer CLAUDE.md</li>
+        <li>Commit regenerated bundles and the installed <span class="mono">.omp/skills</span> tree in the same commit as any skill edit</li>
+        <li>Touch CHANGELOG.md and name the D5 side effect: legacy-state projects gain <span class="mono">.omp/skills</span> on upgrade</li>
+      </ul>
+    </div>
+    <div class="col must-not">
+      <span class="clab">Must not</span>
+      <ul>
+        <li>Write <span class="mono">.omp/AGENTS.md</span>, <span class="mono">RULES.md</span>, <span class="mono">config.yml</span>, <span class="mono">extensions/</span>, <span class="mono">agents/</span>, or <span class="mono">scripts/</span></li>
+        <li>Add a runtime dependency</li>
+        <li>Reference an absolute path in a generated skill</li>
+        <li>Port the Pi headless runtime in this feature (backlog file written)</li>
+        <li>Add omp deny patterns to harden or lockdown (backlog file written)</li>
+        <li>Add a live <span class="mono">omp -p</span> smoke test to CI</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Hazards</span>
+    <h2>Traps the specs inherit</h2>
+  </div>
+  <div class="pillars">
+    <div class="pillar">
+      <h3>Harness blocks are allow-lists</h3>
+      <p>The 22 skills hold 68 <span class="mono">harness:</span> blocks. omp inherits none until spec 3 names it in each. Adding omp to the enum without the audit ships skills with no output-style pointer and no gate contract. Verified.</p>
+    </div>
+    <div class="pillar">
+      <h3>Pi blocks lie to omp</h3>
+      <p>Ten blocks are Pi-only and several name <span class="mono">joycraft-implement-loop</span> or a <span class="mono">.pi/</span> path. None of that exists for omp. D9 gives omp the Codex and Copilot no-runtime text for those. Verified.</p>
+    </div>
+    <div class="pillar">
+      <h3>.omp/ non-empty activates project settings</h3>
+      <p>Installing skills alone makes <span class="mono">.omp/</span> non-empty, which turns on omp's project settings layer. No settings file is written, so the layer is empty. Verified.</p>
+    </div>
+    <div class="pillar">
+      <h3>Collision warning (unverified)</h3>
+      <p>When Claude and omp are both selected, omp sees each skill twice. Native wins. omp can print a startup collision warning. This is cosmetic and was not tested live.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Done when</span>
+    <h2>Success criteria</h2>
+  </div>
+  <ul class="criteria">
+    <li>An init with only omp selected writes <span class="mono">.omp/skills/&lt;name&gt;/SKILL.md</span> for every product skill, a pointer CLAUDE.md, a full AGENTS.md, and no other harness tree</li>
+    <li>Every omp skill uses <span class="mono">/skill:joycraft-</span>, <span class="mono">/new</span>, and <span class="mono">.omp/skills</span>, and none names <span class="mono">joycraft-implement-loop</span> or a <span class="mono">.pi/</span> path</li>
+    <li>Upgrade on a project whose state lists omp rewrites a hand-edited <span class="mono">.omp/skills</span> file and leaves user files alone</li>
+    <li><span class="mono">joycraft telemetry</span> counts a session written under <span class="mono">~/.omp/agent/sessions/</span></li>
+    <li><span class="mono">pnpm test</span> and <span class="mono">pnpm typecheck</span> pass, freshness tests cover <span class="mono">src/omp-skills/</span> and <span class="mono">.omp/skills/</span></li>
+    <li>No regressions: baseline on main is 2565 tests passing, 1 skipped</li>
+  </ul>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Handoff</span>
+    <h2>Prompt for the implementing agent</h2>
+  </div>
+  <p class="sub">Paste this into a fresh coding session after approval. It is written for a cold agent with no Joycraft installed.</p>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>Line</th><th>Content</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="spec-name">Picking up</td><td>You are picking up docs/features/2026-09-02-omp-support/brief.md, written 2026-09-02.</td></tr>
+        <tr><td class="spec-name">Decisions</td><td>Decisions D1-D9 are stamped in the brief. Do not reopen them.</td></tr>
+        <tr><td class="spec-name">Start</td><td>Read docs/features/2026-05-26-pi-support/specs/README.md and the 0.7.5 Copilot entry in CHANGELOG.md, then implement spec 1 (add-omp-harness-core) by mirroring every place Copilot appears in src/harness.ts, scripts/lib/skill-template.mjs, scripts/generate-bundled-files.mjs, and scripts/sync-skills.mjs.</td></tr>
+        <tr><td class="spec-name">Hazard</td><td>Harness blocks in src/skills/*.md are allow-lists, so omp inherits nothing until spec 3 names it in each block. omp does not read .pi/, so no Pi block that mentions joycraft-implement-loop or a .pi/ path is true for omp.</td></tr>
+        <tr><td class="spec-name">Done when</td><td>pnpm test and pnpm typecheck pass, src/omp-skills/ and .omp/skills/ are committed fresh, and a temp-dir init with only omp selected produces .omp/skills plus a pointer CLAUDE.md and no other harness tree.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>A yes is one word in chat, and the next step is <span class="mono">/joycraft-decompose docs/features/2026-09-02-omp-support/brief.md</span> in a fresh session. A change request names the spec or decision and what to change, and the brief is re-rendered as rev 2. When the framing itself is wrong, reject it outright and say what is right instead. The canonical record is <span class="mono">docs/features/2026-09-02-omp-support/brief.md</span>. This page is a render of it.</p>
+</div>
+
+<footer>
+  <p>Produced by the joycraft-new-feature brief gate · feature 2026-09-02-omp-support · September 2, 2026 · rev 2 · generated 2026-09-02T23:58:00-05:00</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

@@ -349,7 +349,7 @@ Based on the dependency graph, group specs into execution waves:
 
 **Update the parent brief's Execution Strategy section** at `docs/features/<slug>/brief.md` with this wave plan, so the brief stays a useful one-stop reference for feature reviewers.
 
-<!-- harness:claude|codex -->
+<!-- harness:claude|codex|omp -->
 ## Step 7: Write the Feature-Folder README.md (Single Source of Truth for Implementers)
 
 After generating per-spec files, ALSO write a `README.md` at the spec folder root: `docs/features/<slug>/specs/README.md` (for feature work). For area-level bugfixes, the path is `docs/bugfixes/<area>/README.md`.

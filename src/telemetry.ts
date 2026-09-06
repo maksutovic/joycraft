@@ -9,6 +9,7 @@
 // shipped as literal absolute paths — the src/frontmatter.ts defaultMemoryDir idiom):
 //   Claude Code: $HOME/.claude/projects/<cwd-with-slashes-as-dashes>/*.jsonl
 //   Pi:          $HOME/.pi/agent/sessions/--<cwd-with-slashes-as-dashes>--/*.jsonl
+//   omp:         $HOME/.omp/agent/sessions/<cwd-with-slashes-as-dashes>/*.jsonl
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, isAbsolute, sep } from 'node:path';
@@ -51,7 +52,9 @@ export interface ScanOptions {
   piDir?: string;
   /** Codex transcript directory (rollout-*.jsonl). Defaults to the $HOME-derived path. */
   codexDir?: string;
-  /** Prefix session ids per harness (`claude:<id>`, `pi:<id>`, `codex:<id>`) in the result. */
+  /** omp transcript directory. Defaults to the $HOME-derived path. */
+  ompDir?: string;
+  /** Prefix session ids per harness (`claude:<id>`, `pi:<id>`, `codex:<id>`, `omp:<id>`) in the result. */
   namespaceSessions?: boolean;
   /** Sessions to skip entirely (matched against ids as they appear in the result). */
   excludeSessions?: ReadonlySet<string>;
@@ -317,6 +320,12 @@ export function defaultPiTranscriptDir(projectDir: string): string {
   return join(home, '.pi', 'agent', 'sessions', `-${encodedCwd(projectDir)}--`);
 }
 
+/** omp uses Pi's session layout but a plain encoded cwd — no `-…--` affixes. */
+export function defaultOmpTranscriptDir(projectDir: string): string {
+  const home = process.env.HOME ?? '';
+  return join(home, '.omp', 'agent', 'sessions', encodedCwd(projectDir));
+}
+
 /** Codex sessions are global (date-nested, not per-project) — the scan guards on session_meta cwd. */
 export function defaultCodexTranscriptDir(): string {
   const home = process.env.HOME ?? '';
@@ -455,7 +464,7 @@ function scanFile(
 }
 
 /**
- * Scan a project's Claude and Pi transcripts into per-document counts for the
+ * Scan a project's Claude, Pi, omp, and Codex transcripts into per-document counts for the
  * knowledge layer. Missing transcript directories yield an empty contribution;
  * malformed lines and unreadable files are skipped, never thrown.
  */
@@ -473,6 +482,12 @@ export async function scanTranscripts(projectDir: string, opts: ScanOptions = {}
   const piDir = opts.piDir ?? defaultPiTranscriptDir(projectDir);
   for (const file of listSessionFiles(piDir)) {
     scanFile(acc, projectDir, file, parsePiSessionLine, { prefix: prefix('pi'), exclude });
+  }
+
+  // omp writes the Pi JSONL family, so it reuses parsePiSessionLine verbatim.
+  const ompDir = opts.ompDir ?? defaultOmpTranscriptDir(projectDir);
+  for (const file of listSessionFiles(ompDir)) {
+    scanFile(acc, projectDir, file, parsePiSessionLine, { prefix: prefix('omp'), exclude });
   }
 
   const codexDir = opts.codexDir ?? defaultCodexTranscriptDir();

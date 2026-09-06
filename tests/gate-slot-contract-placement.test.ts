@@ -42,7 +42,8 @@ const GATED = [
 // placed outside them would vanish for the other emitted variants:
 //
 //  - new-feature: Phase 2 brief presentation + Phase 4 hand-off.
-//  - research: three harness blocks (claude, codex|copilot, pi), one gate each.
+//  - research: three harness blocks (claude, codex|copilot|omp, pi), one gate
+//    each.
 const EXPECTED_SLOTS: Record<string, number> = {
   'joycraft-new-feature': 2,
   'joycraft-research': 3,
@@ -186,7 +187,13 @@ describe('generated trees derive from canonical sources, never hand edits', () =
   //
   // Installed copies (`.claude/skills/` etc.) are deliberately NOT asserted
   // here — spec 6 (regen-and-sync) owns bringing them forward.
-  for (const tree of ['claude-skills', 'codex-skills', 'pi-skills', 'copilot-skills'] as const) {
+  for (const tree of [
+    'claude-skills',
+    'codex-skills',
+    'pi-skills',
+    'copilot-skills',
+    'omp-skills',
+  ] as const) {
     it(`src/${tree}/ slot templates match the canonical source count`, () => {
       const p = join(repoRoot, 'src', tree, 'joycraft-design.md');
       let generated: string;

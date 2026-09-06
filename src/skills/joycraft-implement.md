@@ -118,7 +118,7 @@ Check the spec's Edge Cases table. For each scenario:
 
 Otherwise (interactive session), when the spec is implemented and all its tests pass, wrap up and advance according to the spec's **execution mode**. Read the `mode:` field from the spec's frontmatter (written by `joycraft-decompose`). If the spec has **no `mode:` field**, default to **`batch`** (back-compat with pre-mode specs). If the value is unrecognized, treat it as `batch` and note the unrecognized value.
 <!-- /harness -->
-<!-- harness:claude|codex -->
+<!-- harness:claude|codex|omp -->
 When the spec is implemented and all its tests pass, wrap up and advance according to the spec's **execution mode**. Read the `mode:` field from the spec's frontmatter (written by `joycraft-decompose`). If the spec has **no `mode:` field**, default to **`batch`** (back-compat with pre-mode specs). If the value is unrecognized, treat it as `batch` and note the unrecognized value.
 <!-- /harness -->
 
@@ -131,7 +131,12 @@ When the spec is implemented and all its tests pass, wrap up and advance accordi
 | **batch** | **Status bump only**: set the spec to `in-review` in both systems (see below). No commit, no discovery stub — batch wraps once at feature end. (The bump is required: the queue treats a dependency as satisfied at `in-review`, so without it dependent specs would look blocked.) |
 | **checkpoint** / **isolated** | The full `joycraft-spec-done` wrap-up, performed by you (canonical definition: `{{skills_dir}}/joycraft-spec-done/SKILL.md`): **(1)** bump status to `in-review` in both systems, **(2)** terse 2-line discovery stub at `docs/discoveries/YYYY-MM-DD-topic.md` ONLY if something contradicted the spec — usually skip, **(3)** commit `spec: <spec-name>` (implementation + status edits + stub, nothing unrelated), **(4)** no validation re-run, no push, no PR — those belong to `joycraft-session-end`. |
 
+<!-- harness:claude|codex|pi|copilot -->
 **Both systems** means: the queue JSON (`joycraft-mark-done <spec-id> --to in-review <specs-dir>` if `.pi/scripts/joycraft/` is installed, else edit `.joycraft-spec-queue.json` directly) AND the spec file's `status:` frontmatter. Never `done` — the agent doesn't self-certify (`docs/reference/spec-status-lifecycle.md`).
+<!-- /harness -->
+<!-- harness:omp -->
+**Both systems** means: the queue JSON (edit `.joycraft-spec-queue.json` directly) AND the spec file's `status:` frontmatter. Never `done` — the agent doesn't self-certify (`docs/reference/spec-status-lifecycle.md`).
+<!-- /harness -->
 
 ### 6b. Continue the queue (batch and checkpoint)
 
@@ -148,7 +153,9 @@ A conversation cannot clear its own context, so after the wrap-up the fresh cont
 
 - **Driver (recommended):** `{{skill_prefix}}implement-feature docs/features/<slug>/` runs the remaining queue in-session, interactive, no headless loop — and gives each `isolated`-mode spec the fresh-context subagent this mode calls for.
 - **Guided-manual:** tell the human to run `{{clear}}`, then re-invoke `{{skill_prefix}}implement <next-spec>`. (Always fine, no ToS/cost surprise.)
+<!-- harness:claude|codex|pi|copilot -->
 - **Pi:** the `joycraft-implement-loop` driver automates it — a fresh `pi -p` process per spec. Nothing for you to do beyond the wrap-up; the loop advances.
+<!-- /harness -->
 - **Headless (`claude -p` / `codex exec` loop):** opt-in only. **Surface the caveat, don't bury it:** unattended headless loops draw metered, full-rate API usage and carry a ToS posture the user must **knowingly opt into** (Anthropic meters `claude -p` from a separate full-rate pool; routing subscription OAuth through third-party harnesses is prohibited). The responsible default is Pi (BYO API key / open weights). Do not silently auto-run a subscription-backed headless loop.
 
 ### 6d. Feature's last spec (any mode)

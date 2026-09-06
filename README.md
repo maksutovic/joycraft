@@ -8,7 +8,7 @@
 
 ## What is Joycraft?
 
-A CLI that installs spec-driven development into [Claude Code](https://code.claude.com/docs), [OpenAI Codex](https://openai.com/codex), [Pi](https://github.com/earendil-works/pi-coding-agent), and [GitHub Copilot](https://github.com/features/copilot): skills, behavioral boundaries, templates, and a docs structure that matures with your project.
+A CLI that installs spec-driven development into [Claude Code](https://code.claude.com/docs), [OpenAI Codex](https://openai.com/codex), [Pi](https://github.com/earendil-works/pi-coding-agent), [GitHub Copilot](https://github.com/features/copilot), and [omp](https://github.com/can1357/oh-my-pi): skills, behavioral boundaries, templates, and a docs structure that matures with your project.
 
 ```bash
 cd /path/to/your/project
@@ -23,7 +23,7 @@ Joycraft is a **curated harness, not a memory system**. Everything it writes is 
 - [Setup walkthrough](docs/guides/setup-walkthrough.md) — every step from install to first feature
 - [Which skill do I need?](#which-skill-do-i-need) — the skill table and the core loop
 - [What init creates](#what-init-creates)
-- [Platform support](docs/guides/platform-support.md) — Claude Code, Codex, Pi, Copilot, stacks, headless Pi
+- [Platform support](docs/guides/platform-support.md) — Claude Code, Codex, Pi, Copilot, omp, stacks, headless Pi
 - [Upgrading](docs/guides/upgrading.md) — `npx joycraft@latest upgrade` and what's new in 0.7
 - [Git tracking](docs/guides/git-tracking.md) — shared vs private profiles, reviewable PRs
 - [Migration: flat → per-feature layout](docs/guides/migration-per-feature-layout.md) — the v0.6 docs move
@@ -68,13 +68,13 @@ Refreshes skills and templates for the harnesses you selected at init. Unmodifie
 npx joycraft@latest telemetry
 ```
 
-Scans your Claude Code, Pi, and (best-effort) Codex session transcripts and records which knowledge-layer docs your agents actually read. The result is a gitignored, machine-local file at `docs/.joycraft/telemetry.json` — paths and counters only, never transcript content. `/joycraft-session-end` runs this scan for you; `/joycraft-optimize` cites the counts when it judges which docs earn their place.
+Scans your Claude Code, Pi, omp, and (best-effort) Codex session transcripts and records which knowledge-layer docs your agents actually read. The result is a gitignored, machine-local file at `docs/.joycraft/telemetry.json` — paths and counters only, never transcript content. `/joycraft-session-end` runs this scan for you; `/joycraft-optimize` cites the counts when it judges which docs earn their place.
 
 ## What init creates
 
 - **AGENTS.md** — behavioral boundaries (Always / Ask First / Never) plus your stack's real build/test/lint commands; the single shared instruction file when more than one tool is selected
 - **CLAUDE.md** — on a multi-tool install, [Anthropic's documented import pattern](https://code.claude.com/docs/en/memory): `@AGENTS.md` plus a `## Claude Code` section, so every tool reads one source. A Claude-only install gets the classic full CLAUDE.md
-- **22 skills** — installed to `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), `.pi/skills/` (Pi), and/or `.github/skills/` (Copilot); Pi also gets the headless pipeline runtime in `.pi/scripts/joycraft/`
+- **22 skills** — installed to `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), `.pi/skills/` (Pi), `.github/skills/` (Copilot), and/or `.omp/skills/` (omp, invoked as `/skill:joycraft-*`); Pi also gets the headless pipeline runtime in `.pi/scripts/joycraft/`
 - **docs/** — `docs/context/` (production map, dangerous assumptions, decision log, institutional knowledge, troubleshooting) plus templates; feature folders and `docs/backlog/` are created lazily by the skills that write to them. Joycraft's own state hides at `docs/.joycraft/` (gitignored): `state.json` plus the read-telemetry store
 - **Agent teams enabled** — with Claude Code selected, `init` sets `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` so subagent-driven skills work out of the box (never clobbers a value you set)
 
@@ -137,7 +137,7 @@ flowchart LR
 | [Tuning: risk interview and git autonomy](docs/guides/tuning.md) | The 2–3 minute risk interview that generates your safety boundaries |
 | [Token discipline](docs/guides/token-discipline.md) | Why file artifacts at every step make your conversation context disposable |
 | [Permission modes](docs/guides/permission-modes.md) | Why you do **not** need `--dangerously-skip-permissions` |
-| [Agent compatibility](docs/guides/agent-compatibility.md) | How CLAUDE.md and AGENTS.md stay one source across four tools |
+| [Agent compatibility](docs/guides/agent-compatibility.md) | How CLAUDE.md and AGENTS.md stay one source across every supported tool |
 | [Level 5: the autonomous loop](docs/guides/level-5-autonomy.md) | Experimental — workflows, holdout scenarios, and what it really costs |
 | [Methodology](docs/guides/methodology.md) | Why this exists: METR's slowdown finding and the teams that beat it |
 

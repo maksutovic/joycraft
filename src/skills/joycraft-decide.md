@@ -19,7 +19,7 @@ still `open`.
 Two hard rules frame everything below:
 
 - **The dossier is display-only.** All capture happens in the native question
-  flow (<!-- harness:claude -->the AskUserQuestion tool<!-- /harness --><!-- harness:codex|pi -->structured forced-choice questions asked directly in chat<!-- /harness -->) — never via interactive HTML, pick-strings, or
+  flow (<!-- harness:claude -->the AskUserQuestion tool<!-- /harness --><!-- harness:codex|pi|omp -->structured forced-choice questions asked directly in chat<!-- /harness -->) — never via interactive HTML, pick-strings, or
   paste-backs.
 - **Never certify your own framing as complete** (RF-KILL-3). The questions
   are YOUR framing of what's open; the assumptions manifest exists to expose
@@ -147,7 +147,7 @@ only enforces them). You are the **auditor**, not the author:
 Ask with the AskUserQuestion tool, one decision at a time, in risk order
 (mandatory boundary questions first).
 <!-- /harness -->
-<!-- harness:codex|pi -->
+<!-- harness:codex|pi|omp -->
 Ask directly in chat, one decision at a time, in risk order (mandatory
 boundary questions first): present the numbered options, then wait for the
 answer before asking the next question.

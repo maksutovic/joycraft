@@ -102,6 +102,7 @@ describe('gitignore profiles', () => {
       expect(gi).not.toContain('.claude/');
       expect(gi).not.toContain('.agents/');
       expect(gi).not.toContain('.pi/');
+      expect(gi).not.toContain('.omp/');
     });
 
     it('is the default when no flag and not a TTY', async () => {
@@ -113,6 +114,19 @@ describe('gitignore profiles', () => {
   });
 
   describe('private profile', () => {
+    it('lists .omp/ as a whole directory, not a joycraft-* glob', () => {
+      // Unlike .github/ (shared with Actions workflows and issue templates),
+      // .omp/ has no non-Joycraft tenancy, so the whole dir is ignored — the
+      // same shape as .claude/, .agents/, and .pi/.
+      expect(PRIVATE_PROFILE_IGNORES).toContain('.omp/');
+      expect(PRIVATE_PROFILE_IGNORES.some((e) => e.startsWith('.omp/joycraft'))).toBe(false);
+    });
+
+    it('writes .omp/ into .gitignore', async () => {
+      await init(tmpDir, { force: false, gitignore: 'private' });
+      expect(lines(readGitignore(tmpDir))).toContain('.omp/');
+    });
+
     it('gitignores harness dirs and not docs or harness docs', async () => {
       await init(tmpDir, { force: false, gitignore: 'private' });
 

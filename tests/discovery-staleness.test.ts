@@ -93,8 +93,17 @@ describe('skills invoke the rule by citation only', () => {
     expect(sessionEnd().toLowerCase()).not.toContain('zero voluntary reads');
   });
 
-  it('line budgets do not grow (session-end ≤210, optimize ≤282)', () => {
+  /**
+   * Budgets guard against *restating* the staleness rule (the bloat this
+   * describe block exists to prevent), not against the per-harness fan-out.
+   * These count the canonical sources, where every harness's blocks coexist —
+   * so optimize's ceiling rose 282 → 285 when omp gained its own MCP-path row
+   * (`~/.omp/agent/config.yml`) alongside the claude/codex/pi/copilot rows.
+   * Each *rendered* variant still carries exactly one such row. The restated-body
+   * assertion above is what actually polices duplication.
+   */
+  it('line budgets do not grow (session-end ≤210, optimize ≤285)', () => {
     expect(sessionEnd().trimEnd().split('\n').length).toBeLessThanOrEqual(210);
-    expect(optimize().trimEnd().split('\n').length).toBeLessThanOrEqual(282);
+    expect(optimize().trimEnd().split('\n').length).toBeLessThanOrEqual(285);
   });
 });

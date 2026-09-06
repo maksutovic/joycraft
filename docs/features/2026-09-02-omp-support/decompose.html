@@ -1,0 +1,355 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT REVIEW GATE · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. Any Joycraft gate skill (brief review, design
+  review, decompose review, research readout, tune report, optimize audit)
+  fills the content slots to render its review artifact; it MUST NOT alter the
+  structure, the class names, or the CSS below. Keeping the skeleton fixed is
+  the whole point: freeform per-gate HTML would make every review a fresh
+  hand-rolled artifact, and the human would relearn the page each time.
+
+  This template is a deliberate extension of the decision dossier's design
+  system, not a second one — the same tokens, the same type stack, the same
+  self-containment contract. The dossier keeps its own skeleton for decide;
+  this one covers every other gate.
+
+  Slots are the HTML comments below whose text begins with the slot marker
+  (the word SLOT followed by a colon and a region name). Each names a region
+  and gives filling guidance. Replace the slot comment (and any placeholder)
+  with real markup that uses ONLY the classes already defined in the style
+  block. (This contract comment intentionally does not nest a literal example
+  of the slot delimiters, because a nested comment terminator would end this
+  comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the slot regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · Keep the header's context strip container even when empty; the layout
+      copes with an empty strip, so do not remove the container.
+    · Repeat the content section (section class "sec") once per topic. Inside a
+      section, use only the pre-defined blocks: the "pillars" card grid, a
+      "tablebox" wrapping a table, the "cols" must / must-not columns, or the
+      "criteria" checklist. Do not add block types.
+    · Repeat the question card (div class "q") once per open question. If the
+      gate has NO open questions, delete the whole questions section — the
+      layout copes.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject the framing outright and say what is right
+      instead).
+    · Never present an unverified claim as settled. A gate artifact is a
+      persuasive object; say plainly which rows are grounded facts and which
+      are proposals awaiting the human's word.
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more content sections, then the optional questions section, then the
+  how-to-answer box, then footer. Do not reorder.
+  ============================================================================
+-->
+<!-- SLOT:title · page title text, for example "Decompose Review — <feature-name>" -->
+<title>Decompose Review — omp Support</title>
+<style>
+  /* Design tokens: light theme is the default set on :root. These are the
+     decision dossier's tokens verbatim — one design system, two skeletons. */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono, .spec-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Context strip: grounded facts as .lock-chip spans; .open marks an item that
+     is still unsettled. The container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  /* Content section. Repeat once per topic. */
+  section.sec { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .sec-head h2 { margin: 0; }
+  h2 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 18px; max-width: 74ch; }
+
+  /* Block A — pillars: a card grid for 2–4 parallel ideas. */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .pillar h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pillar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* Block B — tablebox: any table (spec lists, decomposition plans). Scrolls
+     inside its own box on narrow screens so the body never scrolls. */
+  .tablebox { margin-top: 6px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+  .tablebox table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+  .tablebox th { text-align: left; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  .tablebox td { padding: 11px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+  .tablebox tr:last-child td { border-bottom: none; }
+  .spec-name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .size { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--ink-2); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .wave { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--accent-wash); color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+
+  /* Block C — cols: the must / must-not pair. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .col .clab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .col ul { margin: 9px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .col li { color: var(--ink-2); margin-bottom: 5px; line-height: 1.4; }
+  .col.must li::before { content: "✓ "; color: var(--good-ink); font-weight: 700; }
+  .col.must-not li::before { content: "✗ "; color: var(--bad-ink); font-weight: 700; }
+
+  /* Block D — criteria: an acceptance checklist. */
+  .criteria { margin: 6px 0 0; padding: 0; list-style: none; }
+  .criteria li { position: relative; padding: 9px 0 9px 26px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-2); }
+  .criteria li:last-child { border-bottom: none; }
+  .criteria li::before { content: "□"; position: absolute; left: 2px; color: var(--ink-3); }
+  .criteria li.met::before { content: "☑"; color: var(--good-ink); }
+
+  /* Questions. One .q card per open question; amber left border. */
+  .questions { margin-top: 54px; }
+  .q { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warn-ink); border-radius: 8px; padding: 18px 22px; margin-top: 12px; }
+  .q .qnum { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .q h3 { font-size: 16.5px; font-weight: 700; margin: 6px 0 8px; }
+  .q .rec { font-size: 14.5px; color: var(--ink); margin: 0 0 6px; }
+  .q .rec strong { color: var(--accent-ink); }
+  .q .why { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 74ch; }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decompose Review · feature: omp-support · September 3, 2026 · rev 1 · September 3, 2026 00:00</div>
+  <h1>Making omp the fifth first-class harness</h1>
+  <p class="dek">Five atomic specs decomposed from the stamped brief, grouped into three waves. Decisions D1–D9 are already terminated — this gate asks only whether the units and their ordering are right before any spec file is written.</p>
+  <div class="locked">
+    <span class="lock-chip">D1–D9 terminated · 0 open</span>
+    <span class="lock-chip">D3 backlogged · file on disk</span>
+    <span class="lock-chip">5 specs · 3 waves</span>
+    <span class="lock-chip">68 harness blocks · 22 skills</span>
+    <span class="lock-chip">Baseline: 2565 pass, 1 skipped</span>
+    <span class="lock-chip">Zero INVENTED constraints</span>
+    <span class="lock-chip open">Execution modes await your OK</span>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Plan</span>
+    <h2>Five specs, three waves</h2>
+  </div>
+  <p class="sub">These are the brief’s own Decomposition rows — nothing merged, nothing split. The added judgment is spec 3’s mode override and spec 5’s rescoping to docs-plus-a-check.</p>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Spec</th><th>Description</th><th>Depends on</th><th>Size</th><th>Mode</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><span class="spec-name">add-omp-harness-core</span></td><td>Add <code>omp</code> to the harness enum, labels, transform table, and generator so <code>src/omp-skills/</code> and <code>OMP_SKILLS</code> exist and <code>sync-skills</code> fills <code>.omp/skills</code> in this repo.</td><td>—</td><td><span class="size">M</span></td><td><span class="wave">checkpoint</span></td></tr>
+        <tr><td>2</td><td><span class="spec-name">wire-omp-init-upgrade</span></td><td>Install <code>.omp/skills</code> at init with hash recording, include omp in <code>multiTool</code>, manage the tree in upgrade, add <code>.omp/</code> to the private gitignore profile, print omp in the summary.</td><td>1</td><td><span class="size">M</span></td><td><span class="wave">checkpoint</span></td></tr>
+        <tr><td>3</td><td><span class="spec-name">audit-harness-blocks-for-omp</span></td><td>Apply the D9 rule to all 68 harness blocks across the 22 skills, fix the optimize MCP path row, add the omp parity test, update the two gate-contract tests.</td><td>1</td><td><span class="size">M</span></td><td><span class="wave">isolated</span></td></tr>
+        <tr><td>4</td><td><span class="spec-name">add-omp-telemetry-scanner</span></td><td>Add the omp transcript dir default, reuse the Pi line parser, thread the dir through <code>telemetry-store.ts</code>, cover with tests.</td><td>—</td><td><span class="size">S</span></td><td><span class="wave">batch</span></td></tr>
+        <tr><td>5</td><td><span class="spec-name">document-omp-support</span></td><td>README harness list, AGENTS.md architecture row, CHANGELOG entry with the D5 side effect; assert zero generator drift.</td><td>1, 2, 3, 4</td><td><span class="size">S</span></td><td><span class="wave">batch</span></td></tr>
+      </tbody>
+    </table>
+  </div></section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Order</span>
+    <h2>Execution waves</h2>
+  </div>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>Wave</th><th>Specs</th><th>Parallel-safe?</th><th>Why</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="wave">Wave 1</span></td><td>1 and 4</td><td><strong>Parallel-safe</strong></td><td>Disjoint files: spec 1 owns <code>src/harness.ts</code>, <code>scripts/</code>, <code>src/bundled-files.ts</code>; spec 4 owns <code>src/telemetry.ts</code>, <code>src/telemetry-store.ts</code>.</td></tr>
+        <tr><td><span class="wave">Wave 2</span></td><td>2 and 3</td><td><strong>Parallel-safe</strong></td><td>Spec 2 owns <code>src/init.ts</code>, <code>src/upgrade.ts</code>, <code>src/gitignore.ts</code>; spec 3 owns <code>src/skills/*.md</code> and the generated trees. Init and upgrade never read skill bodies.</td></tr>
+        <tr><td><span class="wave">Wave 3</span></td><td>5</td><td>Single spec</td><td>Documentation gate, runs after everything.</td></tr>
+      </tbody>
+    </table>
+  </div></section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Evidence</span>
+    <h2>Why spec 3 runs isolated</h2>
+  </div>
+  <p class="sub">Spec 3 is nominally M, which the size heuristic maps to <code>checkpoint</code>. The census is the reason to override: 68 harness blocks across 22 skill files, each needing an individual D9 verdict. A wrong verdict ships a silently broken skill rather than a failing test.</p>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>Block selector</th><th>Count</th><th>D9 disposition</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>claude</code></td><td>38</td><td>Untouched — claude-only, omp never matches</td></tr>
+        <tr><td><code>pi</code></td><td>10</td><td><strong>Each needs a verdict.</strong> Pi invocation syntax is right for omp, but any block naming <code>joycraft-implement-loop</code> or a <code>.pi/</code> path is false for omp</td></tr>
+        <tr><td><code>codex|pi|copilot</code></td><td>7</td><td>Add <code>omp</code> — the no-runtime semantics are true for omp</td></tr>
+        <tr><td><code>codex|pi</code></td><td>4</td><td>Evaluate, then add <code>omp</code></td></tr>
+        <tr><td><code>codex|copilot</code></td><td>4</td><td>Evaluate, then add <code>omp</code></td></tr>
+        <tr><td><code>copilot</code></td><td>1</td><td>Evaluate</td></tr>
+        <tr><td><code>codex</code></td><td>1</td><td>Evaluate</td></tr>
+        <tr><td><strong>Total</strong></td><td><strong>68</strong></td><td><strong>30 non-claude blocks carry real decisions</strong></td></tr>
+      </tbody>
+    </table>
+  </div></section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Boundaries</span>
+    <h2>What the specs may and may not do</h2>
+  </div>
+  <div class="cols">
+    <div class="col must">
+      <span class="clab">Must</span>
+      <ul>
+        <li>Specs 1 and 3 each regenerate <em>and</em> sync in their own commit — the AGENTS.md ALWAYS rule.</li>
+        <li>Every generated omp skill carries a non-empty <code>description</code>; omp’s native provider rejects skills without one.</li>
+        <li>Every generated omp skill stays flat at <code>.omp/skills/&lt;name&gt;/SKILL.md</code> — omp discovery is non-recursive.</li>
+        <li><code>omp</code> joins the <code>multiTool</code> expression, so an omp-only install writes the pointer CLAUDE.md and a full AGENTS.md.</li>
+      </ul>
+    </div>
+    <div class="col must-not">
+      <span class="clab">Must not</span>
+      <ul>
+        <li>No <code>.omp/AGENTS.md</code>, <code>.omp/RULES.md</code>, <code>.omp/config.yml</code>, <code>.omp/extensions/</code>, <code>.omp/agents/</code>, or <code>.omp/scripts/</code> (D1, D2).</li>
+        <li>No runtime dependency — omp discovery is file-based.</li>
+        <li>No absolute paths in any generated omp skill.</li>
+        <li>Spec 5 does <em>not</em> own the sync. It is docs plus a zero-drift check.</li>
+      </ul>
+    </div>
+  </div></section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Retrieval</span>
+    <h2>Prior knowledge reused</h2>
+  </div>
+  <p class="sub">Terms: <code>omp</code>, <code>copilot</code>, <code>harness</code>, <code>telemetry</code>, <code>gitignore</code>. Read 5 files, at the cap. No retrieved decision contradicts the brief. <strong>All constraints traced — zero INVENTED.</strong></p>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>Source</th><th>Row</th><th>What it constrains</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>decision-log.md</code></td><td>2026-06-15 — harness multi-select, state moved to <code>docs/.joycraft/state.json</code></td><td>Names the migration hazard this feature re-triggers: the persisted <code>harnesses</code> list and <code>sanitizeHarnesses</code> fallback. This is D5’s mechanism — spec 2 owns it.</td></tr>
+        <tr><td><code>decision-log.md</code></td><td>2026-09-01 — Curated-harness D3: telemetry as a pure TS module + CLI subcommand</td><td>Fixes spec 4’s shape: a default-dir function with an injectable override, not skill prose.</td></tr>
+        <tr><td><code>decision-log.md</code></td><td>2026-07-31 — Team-ready-gates D1: harness-native question UI</td><td>The contract <code>gate-contract.test.ts</code> asserts. omp joins the fallback side, so spec 3 must extend that test’s harness loop.</td></tr>
+        <tr><td><code>decision-log.md</code></td><td>2026-07-31 — Team-ready-gates D8: Cursor discovery backlogged</td><td>Precedent that a new-harness question terminates as a backlog entry. Already applied to D1/D3 here.</td></tr>
+        <tr><td><code>discoveries/2026-06-15-harness-selection-state-move.md</code></td><td>whole file</td><td>The prior harness-addition session’s surprises; read for spec 2.</td></tr>
+      </tbody>
+    </table>
+  </div></section>
+
+<section class="questions">
+  <div class="sec-head">
+    <span class="eyebrow">Open</span>
+    <h2>Questions for you</h2>
+  </div>
+  <div class="q">
+    <span class="qnum">Q1</span>
+    <h3>Does this breakdown match how you think about the feature?</h3>
+    <p class="rec"><strong>Recommend:</strong> ship as-is.</p>
+    <p class="why">The five rows are the brief’s Decomposition table carried straight through. If your mental model differs, the cheapest correction is now — respecifying after spec 1 lands means regenerating trees twice.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">Q2</span>
+    <h3>Is any spec too big or too small?</h3>
+    <p class="rec"><strong>Recommend:</strong> keep spec 3 whole, but watch it.</p>
+    <p class="why">It is the largest real surface and the only one where a mistake is invisible to the suite — a block that fails to name <code>omp</code> ships an omp skill missing its gate contract, and nothing catches that unless spec 3 also writes the assertion. The natural seam would be gate skills versus execution skills, but both halves touch the same generated trees, which would cost wave 2 its parallel-safety.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">Q3</span>
+    <h3>Should any specs run in parallel?</h3>
+    <p class="rec"><strong>Recommend:</strong> yes — waves 1 and 2 as marked.</p>
+    <p class="why">Both waves are file-disjoint, verified against each spec’s Affected Files. Wave 3 is a single spec, so the question does not arise there.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">Q4</span>
+    <h3>Execution modes.</h3>
+    <p class="rec"><strong>Recommend:</strong> specs 4 and 5 batch; specs 1 and 2 checkpoint; spec 3 isolated.</p>
+    <p class="why">Your CLAUDE.md carries no <code>Default execution mode:</code> line, so the project default is <code>batch</code> and everything above it is a deliberate step up. Specs 1 and 2 are M and want atomic commits; spec 3 is the override argued in the Evidence section.</p>
+  </div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>A yes is one word — I write the five spec files, the queue manifest, and the specs README, then hand off. A change request names the row and what is wrong with it: merge two specs, split spec 3, move a spec between waves, or override any execution mode (I honor your mode verbatim, no re-argument). If the framing itself is wrong — these are not the right five units, or the feature should not be decomposed this way at all — reject it outright and say what the right shape is instead, rather than picking from what I have offered. Answers land in <code>docs/features/2026-09-02-omp-support/decompose.md</code>, which is canonical; this page is a render of it.</p>
+</div>
+
+<footer>
+  <p>Generated by the Joycraft decompose gate · feature <code>2026-09-02-omp-support</code> · canonical record: <code>docs/features/2026-09-02-omp-support/decompose.md</code> · rev 1 · generated 2026-09-03T00:00:00Z</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

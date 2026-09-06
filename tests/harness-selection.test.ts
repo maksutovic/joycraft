@@ -56,6 +56,12 @@ async function initWithAnswers(dir: string, ...answers: string[]): Promise<strin
   return logs.join('\n');
 }
 
+describe('HARNESSES roster', () => {
+  it('is the five first-class harnesses in canonical order', () => {
+    expect([...HARNESSES]).toEqual(['claude', 'codex', 'pi', 'copilot', 'omp']);
+  });
+});
+
 describe('parseHarnessSelection', () => {
   it('parses a comma list, deduping and lowercasing', () => {
     expect(parseHarnessSelection('claude,pi')).toEqual(['claude', 'pi']);
@@ -69,6 +75,16 @@ describe('parseHarnessSelection', () => {
 
   it('treats "all" as every harness', () => {
     expect(parseHarnessSelection('all')).toEqual([...HARNESSES]);
+  });
+
+  it('parses omp, including uppercase, and preserves input order', () => {
+    expect(parseHarnessSelection('omp')).toEqual(['omp']);
+    expect(parseHarnessSelection('OMP')).toEqual(['omp']);
+    expect(parseHarnessSelection('omp,pi')).toEqual(['omp', 'pi']);
+  });
+
+  it('includes omp in "all"', () => {
+    expect(parseHarnessSelection('all')).toContain('omp');
   });
 
   it('treats empty/whitespace input as an explicit none', () => {
@@ -201,6 +217,11 @@ describe('agent-teams env var', () => {
 describe('sanitizeHarnesses', () => {
   it('drops unknown tokens and dedupes, preserving canonical order', () => {
     expect(sanitizeHarnesses(['pi', 'claude', 'bogus', 'pi'])).toEqual(['claude', 'pi']);
+  });
+
+  it('round-trips omp and dedupes it', () => {
+    expect(sanitizeHarnesses(['omp'])).toEqual(['omp']);
+    expect(sanitizeHarnesses(['omp', 'omp'])).toEqual(['omp']);
   });
 
   it('returns null for non-array input (no recorded selection)', () => {

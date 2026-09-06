@@ -29,6 +29,7 @@ const TREES = [
   { generated: 'claude-skills', installed: join('.claude', 'skills'), harness: 'claude' },
   { generated: 'codex-skills', installed: join('.agents', 'skills'), harness: 'codex' },
   { generated: 'pi-skills', installed: join('.pi', 'skills'), harness: 'pi' },
+  { generated: 'omp-skills', installed: join('.omp', 'skills'), harness: 'omp' },
 ] as const;
 
 const read = (p: string) => readFileSync(p, 'utf-8');
@@ -88,4 +89,26 @@ describe('installed trees carry no skill the generator does not produce', () => 
       ).toEqual([]);
     });
   }
+});
+
+/**
+ * omp skill discovery is non-recursive: it reads `.omp/skills/<name>/SKILL.md`
+ * and never descends further. A nested subdirectory is silently invisible, so
+ * the layout is asserted rather than assumed.
+ */
+describe('.omp/skills is flat — one SKILL.md per skill dir, no nesting', () => {
+  it('every installed omp skill is exactly <name>/SKILL.md', () => {
+    const dir = join(repoRoot, '.omp', 'skills');
+    const skillDirs = readdirSync(dir, { withFileTypes: true }).filter((e) => e.isDirectory());
+    expect(skillDirs.length).toBeGreaterThan(0);
+
+    for (const entry of skillDirs) {
+      const contents = readdirSync(join(dir, entry.name), { withFileTypes: true });
+      expect(
+        contents.filter((e) => e.isDirectory()).map((e) => e.name),
+        `.omp/skills/${entry.name} has a nested subdirectory — omp discovery is non-recursive`,
+      ).toEqual([]);
+      expect(contents.map((e) => e.name)).toContain('SKILL.md');
+    }
+  });
 });

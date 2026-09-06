@@ -13,6 +13,7 @@ import {
   defaultClaudeTranscriptDir,
   defaultPiTranscriptDir,
   defaultCodexTranscriptDir,
+  defaultOmpTranscriptDir,
   type DocCounts,
 } from './telemetry.js';
 
@@ -21,7 +22,7 @@ export const TELEMETRY_PATH = 'docs/.joycraft/telemetry.json';
 
 export interface TelemetryStore {
   version: 1;
-  /** Namespaced ids (`claude:<id>`, `pi:<id>`, `codex:<id>`) of sessions already counted. */
+  /** Namespaced ids (`claude:<id>`, `pi:<id>`, `codex:<id>`, `omp:<id>`) of sessions already counted. */
   scannedSessions: string[];
   docs: Record<string, DocCounts>;
 }
@@ -30,6 +31,7 @@ export interface TelemetryScanOptions {
   claudeDir?: string;
   piDir?: string;
   codexDir?: string;
+  ompDir?: string;
   /** Store file location. Defaults to `<projectDir>/docs/.joycraft/telemetry.json`. */
   storePath?: string;
 }
@@ -111,12 +113,13 @@ export async function runTelemetryScan(
   const claudeDir = opts.claudeDir ?? defaultClaudeTranscriptDir(projectDir);
   const piDir = opts.piDir ?? defaultPiTranscriptDir(projectDir);
   const codexDir = opts.codexDir ?? defaultCodexTranscriptDir();
+  const ompDir = opts.ompDir ?? defaultOmpTranscriptDir(projectDir);
 
   const existing = loadTelemetryStore(storePath);
   const rebuiltStore = existing === null && existsSync(storePath);
   const store = existing ?? emptyStore();
 
-  if (![claudeDir, piDir, codexDir].some((dir) => existsSync(dir))) {
+  if (![claudeDir, piDir, codexDir, ompDir].some((dir) => existsSync(dir))) {
     return { status: 'nothing-to-scan', newSessions: 0, docCount: Object.keys(store.docs).length, storePath };
   }
 
@@ -124,6 +127,7 @@ export async function runTelemetryScan(
     claudeDir,
     piDir,
     codexDir,
+    ompDir,
     namespaceSessions: true,
     excludeSessions: new Set(store.scannedSessions),
   });

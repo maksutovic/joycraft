@@ -2,7 +2,7 @@
 
 **What:** A CLI + Claude Code plugin that scaffolds and upgrades AI development harnesses. `npx joycraft init` installs skills, templates, boundaries, and documentation structure into any project, taking it from Level 1 to Level 4 on Dan Shapiro's 5 Levels of Vibe Coding.
 
-**Component:** npm package (CLI) + Claude Code skills | **Updated:** 2026-07-21
+**Component:** npm package (CLI) + agent skills (Claude Code, Codex, Pi, Copilot, omp) | **Updated:** 2026-09-03
 
 ---
 
@@ -10,7 +10,7 @@
 
 ### ALWAYS
 - Run `pnpm test && pnpm typecheck` before committing (`pnpm test` already runs once and exits — `--run` is not a valid pnpm flag here and fails)
-- Run `pnpm sync-skills` after editing anything under `src/skills/` or `src/local-skills/`, and commit the regenerated + installed copies in the same commit — a stale installed tree is what shipped twelve wrong copilot skills in 0.7.3
+- Run `pnpm sync-skills` after editing anything under `src/skills/` or `src/local-skills/`, and commit the regenerated + installed copies in the same commit — the installed trees are `.claude/skills`, `.agents/skills`, `.pi/skills`, `.github/skills`, and `.omp/skills`, and a stale one is what shipped twelve wrong copilot skills in 0.7.3
 - Commit style: `verb: concise message`
 - Reference atomic specs when implementing features — each spec is in `docs/features/<slug>/specs/`
 - Test against multiple stack types (Node.js, Python, Rust, Go at minimum)
@@ -78,6 +78,7 @@ The scenarios repo is deliberately invisible to the coding agent. This is the ho
 | `src/codex-skills/` | GENERATED — Codex variants |
 | `src/copilot-skills/` | GENERATED — GitHub Copilot variants |
 | `src/local-skills/` | Repo-local maintainer skills — NOT bundled, never ship to npm |
+| `src/omp-skills/` | GENERATED — omp variants |
 | `src/pi-skills/` | GENERATED — Pi variants |
 | `src/skills/` | CANONICAL skill sources — edit here |
 | `src/templates/` | Bundled templates (copied to docs/templates/) |
@@ -110,12 +111,12 @@ npx joycraft init
 | File | Purpose |
 |------|---------|
 | `src/detect.ts` | Stack detection — pure function, no side effects |
-| `src/telemetry.ts` + `src/telemetry-store.ts` | Read-telemetry scanner (Claude/Pi/Codex transcripts) + gitignored store behind `joycraft telemetry` |
+| `src/telemetry.ts` + `src/telemetry-store.ts` | Read-telemetry scanner (Claude/Pi/omp/Codex transcripts) + gitignored store behind `joycraft telemetry` |
 | `src/folder-map.ts` | Check-shaped folder map — sentinel block regenerated at init/upgrade, drift-diffed by tune |
 | `src/init.ts` | Main scaffolding logic — the core of `npx joycraft init` |
 | `src/improve-claude-md.ts` | Merge logic for existing CLAUDE.md files — most complex logic |
 | `templates/` | Source-of-truth for all templates — changes here propagate to users via upgrade |
-| `src/skills/` | Source-of-truth for all product skills — `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/`, `src/copilot-skills/` are generated from it (never edit those directly) |
+| `src/skills/` | Source-of-truth for all product skills — `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/`, `src/copilot-skills/`, `src/omp-skills/` are generated from it (never edit those directly) |
 | `src/local-skills/` | Repo-local maintainer skills (e.g. `release-docs-sync`). Transformed per-harness into the installed trees by `scripts/sync-skills.mjs`, but never bundled — nothing here ships to users |
 | `docs/features/<slug>/specs/` | Atomic specs for building Joycraft itself (per-feature queues) |
 | `docs/briefs/2026-03-23-joysmith-cli-plugin.md` | Feature Brief — the full vision |
