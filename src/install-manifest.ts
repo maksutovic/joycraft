@@ -121,6 +121,11 @@ export function rawFileHash(content: string | Buffer): string {
   return createHash('sha256').update(content).digest('hex');
 }
 
+/** SHA-256 of the canonical JSON representation used as a transaction marker. */
+export function manifestDigest(manifest: InstallationManifest): string {
+  return rawFileHash(JSON.stringify(manifest));
+}
+
 /** SHA-256 of managed text after canonicalizing all common newline forms to LF. */
 export function normalizedVendorHash(content: string): string {
   return rawFileHash(content.replace(/\r\n?/g, '\n'));

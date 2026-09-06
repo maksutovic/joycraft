@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: isolated
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 6 of 15
 > **Dependencies:** 5 — plan-safe-updates.md
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 3 files / ~500 lines
 
@@ -27,11 +27,11 @@ Managed updates currently write files independently, so an interruption or compe
 
 ## Acceptance Criteria
 
-- [ ] `applyUpdatePlan` atomically acquires a project lock; validates paths and outside-root symlink traversal; rechecks raw preconditions; stages and validates writes before publishing the manifest last. [src: design §2]
-- [ ] The journal stores the complete plan and preimages before mutation; recovery uses manifest digests even after a crash between manifest rename and journal bookkeeping. [src: design §2]
-- [ ] An old unchanged manifest causes rollback of incomplete writes; a matching new manifest causes verification and cleanup of the committed update. [src: design §2]
-- [ ] Intervening user edits stop recovery/rollback with backups intact; another process lock is not silently removed. [src: design §2]
-- [ ] The retained last successful backup supports explicit guarded rollback; tests inject filesystem failures and interruptions at transaction phases. [src: design §2]
+- [x] `applyUpdatePlan` atomically acquires a project lock; validates paths and outside-root symlink traversal; rechecks raw preconditions; stages and validates writes before publishing the manifest last. [src: design §2]
+- [x] The journal stores the complete plan and preimages before mutation; recovery uses manifest digests even after a crash between manifest rename and journal bookkeeping. [src: design §2]
+- [x] An old unchanged manifest causes rollback of incomplete writes; a matching new manifest causes verification and cleanup of the committed update. [src: design §2]
+- [x] Intervening user edits stop recovery/rollback with backups intact; another process lock is not silently removed. [src: design §2]
+- [x] The retained last successful backup supports explicit guarded rollback; tests inject filesystem failures and interruptions at transaction phases. [src: design §2]
 
 ## Test Plan
 
@@ -85,3 +85,9 @@ Persist a complete journal and preimages before the first mutation, stage writes
 | Process stops after manifest rename | Recover using manifest digest, verify committed bytes, then clean known residue. |
 | Disk failure occurs after one staged write | Retain journal/preimages and restore only unchanged paths. |
 | Explicit rollback encounters edited current bytes | Stop with backup and conflict information intact. |
+
+## Implementation Evidence
+
+- Transactions acquire a project lock, journal lossless preimages and planned staging paths, validate destination sibling stages, recheck current bytes, and publish a distinct manifest commit marker last. Recovery preserves intervening edits, checks journal byte integrity, and retains guarded rollback records.
+- Red-first transaction/path tests plus independent production-plan coverage exercise all ten failure phases, real child-process lock ownership, same-version repair, first installation, stale plans, filesystem rename failure after a partial apply, corrupt preimages, and recovery of the newest successful backup.
+- Exact staged clean checkout: build passed; 3,168 tests passed, one skipped; typecheck passed. Ignored local dogfood state is still preserved for later migration through the public command.

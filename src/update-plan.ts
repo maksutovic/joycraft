@@ -1,5 +1,6 @@
 import {
   normalizedVendorHash,
+  manifestDigest,
   rawFileHash,
   type InstallationManifest,
   type VendorCatalogueEntry,
@@ -65,6 +66,8 @@ export interface UpdatePlan {
   conflicts: PlannedUpdateAction[];
   diagnostics: string[];
   nextManifest: InstallationManifest;
+  /** Digest of the authority read during planning; null explicitly requires a missing authority. */
+  baseManifestDigest?: string | null;
 }
 
 interface TargetGroup {
@@ -372,5 +375,5 @@ export function createUpdatePlan(input: {
     .filter((action) => action.preservedContent !== undefined && ['preserve', 'conflict', 'orphan'].includes(action.kind))
     .map((action) => ({ path: action.path, content: bytes(action.preservedContent!), reason: action.reason }));
   const conflicts = actions.filter((action) => action.kind === 'conflict');
-  return { actions, preserved, conflicts, diagnostics, nextManifest };
+  return { actions, preserved, conflicts, diagnostics, nextManifest, baseManifestDigest: manifestDigest(input.manifest) };
 }
