@@ -1,0 +1,217 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT REVIEW GATE · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. Any Joycraft gate skill (brief review, design
+  review, decompose review, research readout, tune report, optimize audit)
+  fills the content slots to render its review artifact; it MUST NOT alter the
+  structure, the class names, or the CSS below. Keeping the skeleton fixed is
+  the whole point: freeform per-gate HTML would make every review a fresh
+  hand-rolled artifact, and the human would relearn the page each time.
+
+  This template is a deliberate extension of the decision dossier's design
+  system, not a second one — the same tokens, the same type stack, the same
+  self-containment contract. The dossier keeps its own skeleton for decide;
+  this one covers every other gate.
+
+  Slots are the HTML comments below whose text begins with the slot marker
+  (the word SLOT followed by a colon and a region name). Each names a region
+  and gives filling guidance. Replace the slot comment (and any placeholder)
+  with real markup that uses ONLY the classes already defined in the style
+  block. (This contract comment intentionally does not nest a literal example
+  of the slot delimiters, because a nested comment terminator would end this
+  comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the slot regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · Keep the header's context strip container even when empty; the layout
+      copes with an empty strip, so do not remove the container.
+    · Repeat the content section (section class "sec") once per topic. Inside a
+      section, use only the pre-defined blocks: the "pillars" card grid, a
+      "tablebox" wrapping a table, the "cols" must / must-not columns, or the
+      "criteria" checklist. Do not add block types.
+    · Repeat the question card (div class "q") once per open question. If the
+      gate has NO open questions, delete the whole questions section — the
+      layout copes.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject the framing outright and say what is right
+      instead).
+    · Never present an unverified claim as settled. A gate artifact is a
+      persuasive object; say plainly which rows are grounded facts and which
+      are proposals awaiting the human's word.
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more content sections, then the optional questions section, then the
+  how-to-answer box, then footer. Do not reorder.
+  ============================================================================
+-->
+<title>Reliable Joycraft Updates — approved brief</title>
+<style>
+  /* Design tokens: light theme is the default set on :root. These are the
+     decision dossier's tokens verbatim — one design system, two skeletons. */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono, .spec-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Context strip: grounded facts as .lock-chip spans; .open marks an item that
+     is still unsettled. The container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  /* Content section. Repeat once per topic. */
+  section.sec { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .sec-head h2 { margin: 0; }
+  h2 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 18px; max-width: 74ch; }
+
+  /* Block A — pillars: a card grid for 2–4 parallel ideas. */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .pillar h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pillar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* Block B — tablebox: any table (spec lists, decomposition plans). Scrolls
+     inside its own box on narrow screens so the body never scrolls. */
+  .tablebox { margin-top: 6px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+  .tablebox table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+  .tablebox th { text-align: left; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  .tablebox td { padding: 11px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+  .tablebox tr:last-child td { border-bottom: none; }
+  .spec-name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .size { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--ink-2); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .wave { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--accent-wash); color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+
+  /* Block C — cols: the must / must-not pair. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .col .clab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .col ul { margin: 9px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .col li { color: var(--ink-2); margin-bottom: 5px; line-height: 1.4; }
+  .col.must li::before { content: "✓ "; color: var(--good-ink); font-weight: 700; }
+  .col.must-not li::before { content: "✗ "; color: var(--bad-ink); font-weight: 700; }
+
+  /* Block D — criteria: an acceptance checklist. */
+  .criteria { margin: 6px 0 0; padding: 0; list-style: none; }
+  .criteria li { position: relative; padding: 9px 0 9px 26px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-2); }
+  .criteria li:last-child { border-bottom: none; }
+  .criteria li::before { content: "□"; position: absolute; left: 2px; color: var(--ink-3); }
+  .criteria li.met::before { content: "☑"; color: var(--good-ink); }
+
+  /* Questions. One .q card per open question; amber left border. */
+  .questions { margin-top: 54px; }
+  .q { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warn-ink); border-radius: 8px; padding: 18px 22px; margin-top: 12px; }
+  .q .qnum { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .q h3 { font-size: 16.5px; font-weight: 700; margin: 6px 0 8px; }
+  .q .rec { font-size: 14.5px; color: var(--ink); margin: 0 0 6px; }
+  .q .rec strong { color: var(--accent-ink); }
+  .q .why { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 74ch; }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft brief · rev 7 · September 05, 2026</div>
+  <h1>Reliable Joycraft Updates — approved brief</h1>
+  <p class="dek">Brief approved. Automatic release promotion selected; design approved (D5).</p>
+  <div class="locked"><span class="lock-chip">Brief approved · D3</span><span class="lock-chip">Design approved · D5</span><span class="lock-chip">15 proposed specs</span><span class="lock-chip">D4 · automatic promotion approved</span></div>
+</header>
+
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Vision</h2></div><div class="pillars"><div class="pillar"><p>A user runs one command to install or update Joycraft. The command preserves local edits and reports the resulting installation accurately. Users can ask their agent to update without authorizing the removal of their customizations.</p></div></div><div class="pillars"><div class="pillar"><p>Every Joycraft skill participates in update discovery. A small local checker uses a cached result and performs a bounded network refresh when due. The agent offers a verified update once, honors postponement, and continues the requested work when offline. Automatic safe updates are an opt-in mode.</p></div></div><div class="pillars"><div class="pillar"><p>Installation, project state, skill discovery, and publishing form one lifecycle. A release becomes the recommended version after the published package passes installation checks. Shared projects retain the facts needed to update after cloning. The updater can recover from interruption and explain incomplete work.</p></div></div><div class="pillars"><div class="pillar"><p>This work repairs confirmed defects and simplifies the surrounding product. The design must avoid replacing scattered patches with another collection of independent update scripts.</p></div></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>User Stories</h2></div><ul class="criteria"><li>As a new user, I want one installation command that works without prior Joycraft state.</li><li>As an existing user, I want updates to preserve every edit I declined to replace.</li><li>As a teammate, I want a cloned installation to retain its version and selected harnesses.</li><li>As a skill user, I want timely update notices and an agent that can perform the update safely.</li><li>As a maintainer, I want verified releases and repeatable recovery when publishing or updating fails.</li></ul></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Symptom and Diagnosis</h2></div><div class="pillars"><div class="pillar"><h3>Installation incident</h3></div></div><div class="pillars"><div class="pillar"><p>Both <span class="mono">npx joycraft@latest init</span> and <span class="mono">npx joycraft@latest upgrade</span> failed with <span class="mono">ETARGET</span> before Joycraft started. npm offered <span class="mono">0.7.13</span>, then failed to resolve that version. The publication timestamp preceded the first attempt by about 15 seconds. (anchor: 100)</p></div></div><div class="pillars"><div class="pillar"><p>The Joycraft-specific cache contained an older full response and a newer compact response. Only the newer response contained <span class="mono">0.7.13</span>. The older response size matched the error log exactly: 135,174 bytes. Metadata inconsistency is the supported explanation, rather than a fault inside the init command. The original process was not replayed at its original timestamp. (anchor: 75)</p></div></div><div class="pillars"><div class="pillar"><h3>Confirmed product defects</h3></div></div><div class="tablebox"><table><thead><tr><th>ID</th><th>Defect</th><th>Root cause and evidence</th></tr></thead><tbody><tr><td>F1</td><td>Declining an overwrite loses the edit on the next upgrade.</td><td><span class="mono">src/upgrade.ts:662</span> records current customized bytes as the original baseline. <span class="mono">src/upgrade.ts:600</span> trusts that baseline on the next run. Reproduced against source and published 0.7.13. (anchor: 100)</td></tr><tr><td>F2</td><td>Shared clones lose installation identity and harness selection.</td><td><span class="mono">src/gitignore.ts:65</span> excludes state containing those facts. <span class="mono">src/upgrade.ts:440</span> falls back only to Claude skill paths. A Codex clone fixture returned uninitialized with exit 0. (anchor: 100)</td></tr><tr><td>F3</td><td>A no-op upgrade can leave the recorded version old.</td><td><span class="mono">src/upgrade.ts:609</span> returns before version reconciliation when managed bytes match. Reproduced with only the recorded version changed. (anchor: 100)</td></tr><tr><td>F4</td><td>Unattended updates can overwrite local edits or ask for unavailable input.</td><td><span class="mono">src/upgrade.ts:646</span> makes <span class="mono">--yes</span> overwrite customized files. The alternative prompt has no TTY guard. (anchor: 100)</td></tr><tr><td>F5</td><td>Automatic version checks have inconsistent reach and maintenance.</td><td><span class="mono">src/cli.ts:86</span>, <span class="mono">src/cli.ts:114</span>, <span class="mono">src/upgrade.ts:49</span>, and <span class="mono">src/init.ts:387</span> implement separate checks. Upgrade&#x27;s inventory excludes the Claude hook. (anchor: 100)</td></tr></tbody></table></div><div class="pillars"><div class="pillar"><h3>Additional lifecycle risks</h3></div></div><div class="tablebox"><table><thead><tr><th>ID</th><th>Risk</th><th>Evidence</th></tr></thead><tbody><tr><td>F6</td><td>A routine update also changes project layout and deletes old skill names.</td><td><span class="mono">src/upgrade.ts:194</span>, <span class="mono">src/upgrade.ts:375</span>, and <span class="mono">src/upgrade.ts:456</span>. Managed writes have no transaction recovery. (anchor: 100)</td></tr><tr><td>F7</td><td>Release jobs compete with writes to main.</td><td><span class="mono">.github/workflows/publish.yml:72</span> pushes a version bump to main. Run <span class="mono">33720453120</span> failed with a rejected push. No publish concurrency group exists. (anchor: 100)</td></tr><tr><td>F8</td><td>Publish completion does not establish consumer installation readiness.</td><td><span class="mono">.github/workflows/publish.yml:83</span> publishes directly to latest without a subsequent registry installation check. (anchor: 100)</td></tr></tbody></table></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Proposed Product Contract</h2></div><div class="pillars"><div class="pillar"><p>The user approved this product contract on 2026-09-05 (D3). D1 and D2 record scope and workflow. Detailed design remains subject to its own review gate.</p></div></div><div class="pillars"><div class="pillar"><h3>One update operation</h3></div></div><div class="pillars"><div class="pillar"><p>The public command is <span class="mono">npx --prefer-online joycraft@latest update</span>. <span class="mono">init</span> and <span class="mono">upgrade</span> remain supported entry points into the same planning and application engine. Existing automation gets documented compatibility behavior rather than an unexplained flag change.</p></div></div><div class="pillars"><div class="pillar"><p>The launcher resolves a specific version once. The engine applies that version without recursively resolving latest. Fresh installation, existing installation, legacy adoption, and repair share an inventory and explicit file-ownership rules. An absent state file never grants permission to replace unrelated files.</p></div></div><div class="pillars"><div class="pillar"><p>The engine reports installed version, requested version, conflicts, and incomplete work separately. A successful no-op reconciles metadata. An unavailable registry check is unknown, not proof that the installation is current.</p></div></div><div class="pillars"><div class="pillar"><h3>Preserve edits and recover updates</h3></div></div><div class="pillars"><div class="pillar"><p>Keep the original vendor baseline separate from current disk content. A declined customization remains protected on all later runs. Compare vendor baseline, current file, and target bundle. When the vendor file has not changed, avoid repeatedly requesting replacement of a local-only edit.</p></div></div><div class="pillars"><div class="pillar"><p>Plan all changes before writing. Show real diffs for conflicts. Separate unattended operation from explicit replacement of customized files. Add locking, staged writes, a recovery journal, and backups appropriate to the plan. Recovery must cover interruption between file writes and state publication.</p></div></div><div class="pillars"><div class="pillar"><p>Delete only files whose Joycraft ownership is established. Keep major docs migrations and policy changes separate from ordinary bundle refresh. Existing generic legacy names do not establish ownership by themselves.</p></div></div><div class="pillars"><div class="pillar"><h3>Installation facts survive cloning</h3></div></div><div class="pillars"><div class="pillar"><p>A versioned manifest records the selected harnesses, release, and vendor baselines. Shared installations track that manifest alongside their installed files. Local check caches and notification preferences remain local. Private installations support explicit local bootstrap.</p></div></div><div class="pillars"><div class="pillar"><p>The design must handle missing, corrupt, and legacy state. Prior buggy upgrades can already have recorded custom bytes as pristine hashes. Do not trust those hashes as sufficient ownership evidence. Where a historical baseline cannot be established, preserve the file and report a conflict.</p></div></div><div class="pillars"><div class="pillar"><h3>One checker across skills</h3></div></div><div class="pillars"><div class="pillar"><p>A locally installed checker serves CLI checks, skill entry, and supported session hooks. The canonical skill-generation path adds the common entry instruction. The checker and its adapters belong to the managed inventory, so later upgrades refresh them.</p></div></div><div class="pillars"><div class="pillar"><p>Check cached state on skill entry. Refresh the registry at most once daily by default, with a short timeout, request deduplication, and bounded error backoff. Compare the installed project release against the verified channel. Do not install the npm package just to check its version.</p></div></div><div class="pillars"><div class="pillar"><p>Default to a concise notice and an agent-run update when authorized. Honor postponement and avoid repeated notices for the same release. An opt-in automatic mode applies only a compatible, verified, conflict-free plan. Patch numbering alone does not establish compatibility.</p></div></div><div class="pillars"><div class="pillar"><p>Do not replace instructions midway through an active skill. After updating, reload or reinvoke the skill where supported. Otherwise explain the required session restart. A missing checker or an offline network must not stop the requested work.</p></div></div><div class="pillars"><div class="pillar"><p>Existing users need one bridge update before old skills can run a new entry instruction. Do not claim that the new mechanism can reach every old installation without that bridge. (anchor: 100)</p></div></div><div class="pillars"><div class="pillar"><h3>Verify releases before promotion</h3></div></div><div class="pillars"><div class="pillar"><p>Prepare the version in a release PR and publish from its immutable commit. Serialize publication and make retry behavior explicit. Treat registry lookup failure as an error, not as release <span class="mono">0.0.0</span>.</p></div></div><div class="pillars"><div class="pillar"><p>Pack once and test that artifact. Publish it under a candidate tag. Verify exact-version registry installation, fresh initialization, and upgrades before promoting latest. Account for propagation and both full and compact npm metadata caches. A fixed delay alone cannot guarantee every external cache is fresh.</p></div></div><div class="pillars"><div class="pillar"><p>Pin the release toolchain and declare a supported Node range. Cover Node 22/npm 10 from the incident while it remains supported. Product releases need not accompany docs-only merges. The design will specify the release PR trigger and retry/promotion checks.</p></div></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Hard Constraints</h2></div><ul class="criteria"><li>MUST: Use automatic promotion after verification, with a Joycraft-scoped npm write credential maintained by a Joycraft maintainer in GitHub Actions secrets; retain OIDC for publication (D4).</li></ul><ul class="criteria"><li>MUST: Preserve custom files, user documents, selected harnesses, and unknown state fields across update and recovery.</li><li>MUST: Support Node.js, Python, Rust, and Go target projects without adding Joycraft to their runtime dependencies.</li><li>MUST: Use one canonical skill source and regenerate all bundled and installed harness variants after source edits.</li><li>MUST: Keep skill checks quiet when current, postponed, offline, or unavailable. Honor the user&#x27;s notification and update policy.</li><li>MUST: Verify the actual package artifact and published installation path, not only source-level functions.</li><li>MUST: Keep the public command usable from agents, CI, and an interactive terminal. Distinguish npm&#x27;s own flags from Joycraft&#x27;s flags.</li><li>MUST: Use project-relative paths in shipped files and briefing blocks. Use supported Node facilities before proposing a dependency.</li><li>MUST: Preserve the holdout-validation boundary. Do not inspect its external repository or change dispatch behavior to expose it.</li><li>MUST NOT: Treat <span class="mono">--yes</span>, missing state, or a matching legacy name as blanket authorization to overwrite local content.</li><li>MUST NOT: Publish to npm, promote npm tags, merge a PR, or perform destructive Git operations without the required explicit authorization.</li><li>MUST NOT: Modify CLAUDE.md merge/improve logic as an incidental part of this work. Surface a concrete need separately.</li></ul></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Out of Scope</h2></div><ul class="criteria"><li>Replacing npm with a new installer service or requiring a global Joycraft installation.</li><li>Redesigning Joycraft&#x27;s feature/spec methodology or applying new document layouts during a routine update.</li><li>A new analytics service, automatic user messaging, or organization-wide update enforcement.</li><li>Automatic replacement of customized files. Explicit overwrite remains a separate, reviewed action.</li><li>Refactoring unrelated templates or skills. The skill change is the shared update entry behavior and its user-facing instructions.</li></ul></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Test Strategy</h2></div><ul class="criteria"><li><strong>Existing setup:</strong> Vitest, TypeScript checks, package bundling, and stack fixtures. The teardown ran 96 relevant existing tests successfully. (anchor: 100)</li><li><strong>Baseline repros:</strong> Published 0.7.13 reproduced F1 and F2. Source fixtures reproduced F3 and basic install/repeat-update behavior on four stacks. (anchor: 100)</li><li><strong>Test types:</strong> Pure planner tests, real-filesystem integration tests, process-level CLI tests, and tarball/registry smoke tests.</li><li><strong>Smoke budget:</strong> A focused local regression in seconds. Registry checks run in release validation with bounded retries and deadlines.</li><li><strong>User expertise:</strong> Maintainer and product owner. Present behavior, conflicts, and decisions with concrete evidence.</li><li><strong>Lockdown mode:</strong> Normal repository boundaries. Scope implementation by atomic spec rather than editing unrelated workflow content.</li></ul><div class="pillars"><div class="pillar"><p>The first tests reproduce declined-edit loss across repeated updates, not only one run. Cover version-only updates, local-only customizations, vendor changes, missing files, shared clones, legacy hooks, and poisoned historical baselines.</p></div></div><div class="pillars"><div class="pillar"><p>Exercise two concurrent updaters, interrupted writes, rollback conflicts, corrupt state, no-TTY execution, paths with spaces, and denied filesystem access. Network tests use deterministic fixtures locally. Release smoke tests cover the real npm registry and warm/cold caches.</p></div></div><div class="pillars"><div class="pillar"><p>Test each supported harness separately and relevant mixed selections. Test the declared Node range and macOS, Linux, and Windows command behavior where supported. Do not infer platform support from a passing macOS fixture.</p></div></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Decomposition</h2></div><div class="pillars"><div class="pillar"><p>This is the approved decomposition (D6). The executable queue and detailed wave plan are in <span class="mono">specs/README.md</span> and <span class="mono">specs/.joycraft-spec-queue.json</span>. Large specs use the approved isolated execution mode.</p></div></div><div class="tablebox"><table><thead><tr><th>#</th><th>Spec Name</th><th>Description</th><th>Dependencies</th><th>Est. Size</th></tr></thead><tbody><tr><td>1</td><td>preserve-customization-baselines</td><td>Preserve declined customizations across repeated upgrades.</td><td>None</td><td>S</td></tr><tr><td>2</td><td>reconcile-update-status</td><td>Report accurate outcomes and reconcile version-only updates.</td><td>1</td><td>S</td></tr><tr><td>3</td><td>preserve-installation-manifest</td><td>Persist portable installation facts and conservatively adopt legacy state.</td><td>2</td><td>L</td></tr><tr><td>4</td><td>unify-managed-inventory</td><td>Describe all install and update artifacts through one ownership-aware inventory.</td><td>3</td><td>M</td></tr><tr><td>5</td><td>plan-safe-updates</td><td>Produce a complete read-only update plan with reviewable conflicts.</td><td>4</td><td>L</td></tr><tr><td>6</td><td>recover-interrupted-updates</td><td>Apply reviewed plans with locking, recovery, and guarded rollback.</td><td>5</td><td>L</td></tr><tr><td>7</td><td>unify-update-command</td><td>Route install and upgrade aliases through the same safe update engine.</td><td>6</td><td>L</td></tr><tr><td>8</td><td>separate-project-migrations</td><td>Separate deliberate document migrations from routine bundle refresh.</td><td>7</td><td>M</td></tr><tr><td>9</td><td>implement-shared-update-checker</td><td>Provide one cached local update checker with bounded network work.</td><td>8</td><td>M</td></tr><tr><td>10</td><td>wire-skill-update-discovery</td><td>Add the shared checker entry to every generated 2026-09-06T22:33:21.914164+00:00</td><td>9</td><td>M</td></tr><tr><td>11</td><td>enable-opt-in-safe-updates</td><td>Let authorized agents apply compatible conflict-free updates at skill boundaries.</td><td>10</td><td>M</td></tr><tr><td>12</td><td>serialize-immutable-releases</td><td>Prepare reviewed release versions and retain a retry-safe candidate artifact.</td><td>None</td><td>L</td></tr><tr><td>13</td><td>verify-registry-promotion</td><td>Promote the verified candidate automatically after real installation checks.</td><td>7, 12</td><td>L</td></tr><tr><td>14</td><td>validate-upgrade-compatibility</td><td>Verify the integrated package across historical installs, stacks, harnesses, and platforms.</td><td>11, 13</td><td>M</td></tr><tr><td>15</td><td>document-and-dogfood-updates</td><td>Document the unified update path and migrate this repository with reviewed preservation.</td><td>14</td><td>M</td></tr></tbody></table></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Execution Strategy</h2></div><div class="pillars"><div class="pillar"><p>Approved mixed execution, with checkpoint/isolated modes as recorded in <span class="mono">specs/README.md</span>. The user selected GPT-5.6 Luna at high effort for implementation on 2026-09-06; spec authoring used Terra at medium.</p></div></div><ul class="criteria"><li>Wave 1: specs 1, 12 — parallel-safe: the Affected Files tables for baseline repair and release preparation are disjoint. The driving agent serializes shared documentation/status updates, full verification, commits, and pushes.</li><li>Wave 2: specs 2 — sequential.</li><li>Wave 3: specs 3 — sequential.</li><li>Wave 4: specs 4 — sequential.</li><li>Wave 5: specs 5 — sequential.</li><li>Wave 6: specs 6 — sequential.</li><li>Wave 7: specs 7 — sequential.</li><li>Wave 8: specs 8 — sequential.</li><li>Wave 9: specs 9 — sequential.</li><li>Wave 10: specs 10 — sequential.</li><li>Wave 11: specs 11 — sequential.</li><li>Wave 12: specs 13 — sequential.</li><li>Wave 13: specs 14 — sequential.</li><li>Wave 14: specs 15 — sequential.</li></ul><div class="pillars"><div class="pillar"><p>Commit and push each verified spec in order; synchronize generated 2026-09-06T22:33:21.914164+00:00</p></div></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Risks and Design Work</h2></div><div class="tablebox"><table><thead><tr><th>Risk</th><th>Required design treatment</th></tr></thead><tbody><tr><td>Old baselines can already contain custom content.</td><td>Use conservative adoption and historical vendor evidence. Never repair uncertainty by overwriting files.</td></tr><tr><td>Shared manifests and private installs need different persistence rules.</td><td>Specify exactly what is tracked, local, reproducible, and migrated.</td></tr><tr><td>State migration and recovery can disagree after a crash.</td><td>Define a schema, transaction phases, concurrency checks, and recovery precedence.</td></tr><tr><td>Changing --yes behavior affects existing automation.</td><td>Document and test alias/flag compatibility with an explicit deprecation or migration contract.</td></tr><tr><td>Harness lifecycle capabilities differ.</td><td>Verify adapters individually. Keep the local checker portable and the preamble best-effort.</td></tr><tr><td>Release publication and latest promotion have separate failures.</td><td>Define retry-safe states and never treat an already-published version as an invitation to republish it.</td></tr><tr><td>A preserved file can stay on an older vendor revision.</td><td>Report target release and per-file exceptions separately. Do not claim complete convergence.</td></tr></tbody></table></div><div class="pillars"><div class="pillar"><p>These are required design tasks, not claims that a particular solution already works. Design surfaced D4: authentication for verified npm promotion. It is recorded in the decision dossier and is not backlogged.</p></div></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Success Criteria</h2></div><ul class="criteria"><li>A fresh project and an existing installation can use the documented update command successfully.</li><li>A customization declined once survives all later updates unless replacement is explicitly authorized.</li><li>Shared clones preserve selected harnesses and reliable installation identity.</li><li>Version-only updates reconcile state without unnecessary file churn or repeated reminders.</li><li>Unattended updates preserve conflicts and report an actionable status without waiting for input.</li><li>Interrupted or concurrent updates recover without silent data loss or false completion.</li><li>Routine refresh does not implicitly reorganize user documents or delete unowned skills.</li><li>Skill entry reports a verified available update once, supports postponement, and continues offline.</li><li>An authorized agent can update and explain whether skill reload or session restart is required.</li><li>Automatic safe updates are opt-in and reject conflicts, incompatible changes, and explicit migrations.</li><li>A release passes packed-artifact and registry installation checks before latest promotion.</li><li>Repeated release execution is safe and does not race a version-bump push to main.</li><li>The four target stacks, selected harnesses, and supported runtime matrix pass acceptance checks.</li><li>This repository uses the same generated 2026-09-06T22:33:21.914164+00:00</li></ul></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>Prompt for the implementing agent</h2></div><div class="pillars"><div class="pillar"><p class="mono">You are picking up docs/features/2026-09-05-reliable-updates/brief.md, written 2026-09-05.<br>Decisions D1–D3 record scope, workflow, and brief approval. D4 is clarified: automatic promotion. D5 approves the design; D6 approves the decomposition, execution modes, and Terra medium spec-writing swarm.<br>Start: read research.md, design.md, and dossier.md, then execute the approved queue in specs/README.md order.<br>Hazard: previous upgrades can record customized bytes as pristine vendor baselines. Matching an old stored hash is not sufficient proof of ownership.<br>Done when: the reviewed specs are implemented and verified, the published-artifact validation path is covered, and a reviewable PR is prepared. Publishing and merging need separate authorization.</p></div></div></section>
+<div class="howto">
+  <div class="eyebrow">Review status</div>
+  <p>Approved through decomposition (D6). The 15 atomic specs and execution queue are in specs/README.md. You can still request a correction or reject the framing if new evidence changes the work.</p>
+</div>
+
+<footer>
+  <p>Canonical: docs/features/2026-09-05-reliable-updates/brief.md · rev 7 · generated 2026-09-06T22:33:21.914164+00:00</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

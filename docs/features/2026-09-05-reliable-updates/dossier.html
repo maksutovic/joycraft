@@ -1,0 +1,211 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT DECISION DOSSIER · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. The joycraft-decide skill fills the content slots;
+  it MUST NOT alter the structure, the class names, or the CSS below. Keeping
+  the skeleton fixed is the whole point: freeform per-feature HTML would make
+  every dossier a fresh persuasive artifact. A fixed shell narrows the
+  persuasion surface to content, where the assumptions manifest polices it.
+
+  Slots are the HTML comments below whose text starts with "SLOT:". Each names a
+  region and gives filling guidance. Replace the slot comment (and any
+  placeholder) with real markup that uses ONLY the classes already defined in
+  the style block. (This contract comment intentionally does not nest a literal
+  example of the slot delimiters, because a nested comment terminator would end
+  this comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the SLOT regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · LABEL EVERY UNVERIFIED CLAIM (RF-5). Any load-bearing claim the dossier or
+      its brief rests on that was NOT posed to the human as a question goes in
+      the assumptions manifest. Claims you have checked use the Verified chip
+      (span class "vchip v-ok"); claims you have NOT checked MUST use the
+      Unverified chip (span class "vchip v-un"). Under-labeling (calling an
+      unchecked claim Verified) is the failure this manifest exists to prevent;
+      when in doubt, mark Unverified.
+    · Repeat the decision section (section class "decision") once per open
+      decision (copy-per-decision). Delete option cards you don't need; a binary
+      decision renders two cards, no stretching. The recommended option gets
+      class "opt rec" and a Recommended tag (span class "tag").
+    · Keep the header's context strip even when empty; the layout copes with an
+      empty strip, so do not remove the container.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject BOTH options and say what's right instead).
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more decision sections, then assumptions manifest, then how-to-answer box,
+  then footer. Do not reorder.
+  ============================================================================
+-->
+<title>D4 — Release promotion</title>
+<style>
+  /* Design tokens: light theme is the default set on :root */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Locked / context strip. Use .locked with .lock-chip for a decisions-locked
+     strip (add .open for still-open items), OR .tiers with .tier-col for a
+     structured context grid. Either fills the same slot; both are optional but
+     the container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  .tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px 0 20px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  @media (max-width: 680px) { .tiers { grid-template-columns: 1fr; } }
+  .tier-col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .tier-col .tlab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; }
+  .tier-model { font-size: 13px; font-weight: 700; padding: 4px 11px; border-radius: 6px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .tier-role { font-size: 13.5px; color: var(--ink-2); }
+
+  section.decision { margin-top: 54px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 26px 30px 28px; }
+  .d-id { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  h2 { font-size: 23px; font-weight: 700; margin: 6px 0 6px; letter-spacing: -0.01em; text-wrap: balance; }
+  .d-why { font-size: 15px; color: var(--ink-2); margin: 0 0 20px; max-width: 72ch; }
+
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .opt { border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; background: var(--ground); display: flex; flex-direction: column; gap: 8px; }
+  .opt.rec { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+  .opt-head { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+  h3 { font-size: 15.5px; font-weight: 700; margin: 0; }
+  .tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--accent-wash); color: var(--accent-ink); white-space: nowrap; }
+  .pros, .cons { margin: 0; padding: 0; list-style: none; font-size: 13.5px; }
+  .pros li::before { content: "+ "; color: var(--good-ink); font-weight: 700; }
+  .cons li::before { content: "− "; color: var(--bad-ink); font-weight: 700; }
+  .pros li, .cons li { color: var(--ink-2); margin-bottom: 3px; line-height: 1.4; }
+  .blast { margin-top: auto; padding-top: 10px; border-top: 1px dashed var(--rule-strong); }
+  .blast .blab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; display: block; margin-bottom: 5px; }
+  .bchips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .bchip { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--surface-2); color: var(--ink-2); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+  .bchip.warn { background: var(--warn-wash); color: var(--warn-ink); font-weight: 600; }
+
+  /* Optional per-decision flow diagram. Scrolls inside its own box on narrow
+     screens (min-width on .flow-line + overflow-x on .flow) so the body never
+     scrolls horizontally. */
+  .flow { margin-top: 18px; background: var(--ground); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; overflow-x: auto; }
+  .flow .flab { font-size: 10.5px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .flow-line { display: flex; align-items: center; gap: 8px; margin-top: 10px; min-width: 560px; }
+  .fnode { font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 6px; background: var(--surface); border: 1px solid var(--rule-strong); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .fnode.hi { border-color: var(--accent); color: var(--accent-ink); }
+  .fnode.gate { border-color: var(--warn-ink); color: var(--warn-ink); }
+  .farrow { color: var(--ink-3); flex: none; }
+  .unv { font-size: 11px; color: var(--warn-ink); font-weight: 600; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+
+  .manifest { margin-top: 54px; }
+  .man-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .man-head h2 { margin: 0; }
+  .man-sub { font-size: 14.5px; color: var(--ink-2); margin: 8px 0 16px; max-width: 74ch; }
+  .man-row { display: grid; grid-template-columns: 110px 1fr; gap: 14px; padding: 11px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+  .vchip { font-size: 10.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 3px 9px; border-radius: 100px; text-align: center; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .v-ok { background: var(--good-wash); color: var(--good-ink); }
+  .v-un { background: var(--warn-wash); color: var(--warn-ink); }
+  .man-row p { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .man-row p strong { color: var(--ink); }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft decide · rev 3 · September 05, 2026</div>
+  <h1>How will verified releases become latest?</h1>
+  <p class="dek">The brief is approved. One authentication choice remains before the design can proceed to atomic specs.</p>
+  <div class="locked"><span class="lock-chip">Candidate checks stay required</span><span class="lock-chip">OIDC remains the publisher</span><span class="lock-chip">D4 · A approved</span></div>
+</header>
+
+<section class="decision"><span class="d-id">D4 · Promotion authentication</span><h2>Automatic promotion or a manual final step?</h2><p class="d-why">npm documents OIDC for publishing, not general authenticated commands. Moving a verified candidate to latest needs separate authentication.</p><div class="options"><div class="opt rec"><div class="opt-head"><h3>A · Automatic promotion</h3><span class="tag">Selected</span></div><ul class="pros"><li>Validated releases reach users without a routine manual promotion.</li><li>Matches the requested automation.</li></ul><ul class="cons"><li>Requires a granular npm write credential scoped to Joycraft.</li><li>Expiry, renewal, and the required 2FA policy need maintenance.</li></ul><div class="blast"><span class="blab">Affected surfaces</span><div class="bchips"><span class="bchip">publish.yml</span><span class="bchip warn">Release secret</span><span class="bchip">npm latest</span></div></div></div><div class="opt"><div class="opt-head"><h3>B · Manual promotion</h3></div><ul class="pros"><li>CI publication remains OIDC-only.</li><li>No additional npm write credential stored in CI.</li></ul><ul class="cons"><li>A maintainer authenticates and promotes every validated release.</li><li>Latest remains old until that step completes.</li></ul><div class="blast"><span class="blab">Affected surfaces</span><div class="bchips"><span class="bchip">publish.yml</span><span class="bchip warn">Maintainer action</span><span class="bchip">npm latest</span></div></div></div></div></section>
+<section class="manifest">
+  <div class="man-head">
+    <span class="eyebrow">Integrity</span>
+    <h2>Assumptions asserted as fact</h2>
+  </div>
+  <p class="man-sub">Checked facts and provisioning prerequisites are separate. No secret was read or created. No tag-only permission is assumed.</p>
+  <div class="man-row"><span class="vchip v-ok">Verified</span><p><strong>Existing publisher uses OIDC.</strong> Read .github/workflows/publish.yml.</p></div><div class="man-row"><span class="vchip v-ok">Verified</span><p><strong>OIDC covers publish operations.</strong> Current npm trusted-publishers documentation was fetched. Tag promotion is a separate operation.</p></div><div class="man-row"><span class="vchip v-ok">Verified</span><p><strong>The candidate-first brief is approved.</strong> User approval recorded as D3 in brief.md.</p></div><div class="man-row"><span class="vchip v-un">Unverified</span><p><strong>A usable promotion credential is already available.</strong> Not assumed or inspected. Provision before activation.</p></div><div class="man-row"><span class="vchip v-un">Unverified</span><p><strong>Credential scope, expiry, and 2FA permit unattended promotion.</strong> Validate during provisioning. Activation stays disabled until that succeeds.</p></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">Review status</div>
+  <p>D4 resolved on 2026-09-06: Option A. Automatic promotion using a granular npm write credential scoped to Joycraft; keep OIDC for publication. The user considers maintainer credential renewal a non-issue and accepts it for automatic promotion. A Joycraft maintainer creates and renews the token and updates the GitHub Actions secret. Credential provisioning remains a deployment prerequisite; no credential was created or read.</p>
+</div>
+
+<footer>
+  <p>joycraft-decide · canonical: docs/features/2026-09-05-reliable-updates/dossier.md · rev 3 · generated 2026-09-06T22:12:36.740647+00:00</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

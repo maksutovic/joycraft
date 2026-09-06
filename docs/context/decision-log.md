@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-09-01
+last_updated: 2026-09-06
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -10,6 +10,9 @@ last_updated_by: Maximilian Maksutovic
 ## Decisions
 
 | Date | Decision | Why | Alternatives Rejected | Revisit When |
+| 2026-09-06 | Reliable updates D6: approve 15 specs, 14 waves, checkpoint/isolated modes, and GPT-5.6 Terra medium spec-writing swarm | User approved the review and explicitly requested this model and effort | Batch-only execution; another decomposition round | Concrete implementation evidence requires a changed boundary |
+| 2026-09-06 | Reliable updates D5: approve the complete design and proceed to decomposition | User replied approve after reviewing the completed design with D4 resolved | Further design revision before decomposition | Implementation evidence contradicts an approved contract |
+| 2026-09-06 | Reliable updates D4: Automatic promotion using a granular npm write credential scoped to Joycraft; keep OIDC for publication. | The user considers maintainer credential renewal a non-issue and accepts it for automatic promotion. | Manual promotion for every release | Credential maintenance becomes burdensome or OIDC supports tag promotion |
 | 2026-09-01 | Curated-harness D6: the generated architecture section becomes a check-shaped folder map — folders + one-line descriptions regenerated from the filesystem at init/upgrade, drift-diffed by tune; growth path documented as nested per-directory files | 13-agent panel unanimous — a hand-maintained tree is a guaranteed-drift prose copy of machine-derivable ground truth; a generated-and-verified map is a check, not prose (human adopted 2026-09-01) | Slim-only without the drift check (honor system on the fastest-drifting artifact); dropping the section (a terse folder map is the one retrieval aid even the anti-memory camp endorses) | If the drift check proves noisy on repos with fast-moving folder structure |
 | 2026-09-01 | Curated-harness D5: one generated `## Product Identity` section (Values/Glossary/Taste) in the always-injected files, elicit-first (no TODO stubs), with zero-sum admission and a behavioral check before broad rollout | Panel unanimous that probabilistic reads defeat directional content on the sessions that need it; the two conditions answer A/B evidence that value-prose alone changes nothing (human adopted 2026-09-01) | Stub at init (empty values sections are themselves decay); three top-level sections (six regex guards in two unshared merge chains); doc-layer-only behind a pointer (not always-loaded) | If the behavioral check shows no behavior change — then the section does not ship broadly |
 | 2026-09-01 | Curated-harness D4: optimize's evidence vocabulary grows to exactly seven — NEVER_READ (≥1 write, 0 voluntary reads) and WRITE_HEAVY (≥3:1) join the five, same no-synonyms rule | Greppable one-word verdicts are the point; the exactly-N contract is Joycraft's own anti-drift device and greppability is its purpose ("we want things as greppable as possible" — human at the decide gate) | Read/Write ratio column with labels unchanged (verdicts not greppable); ratio column + stale marker rows (two report surfaces for one finding) | If the seven labels start growing synonyms — the no-synonyms rule is the invariant, not the number |

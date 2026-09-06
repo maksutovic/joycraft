@@ -1,0 +1,210 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT REVIEW GATE · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. Any Joycraft gate skill (brief review, design
+  review, decompose review, research readout, tune report, optimize audit)
+  fills the content slots to render its review artifact; it MUST NOT alter the
+  structure, the class names, or the CSS below. Keeping the skeleton fixed is
+  the whole point: freeform per-gate HTML would make every review a fresh
+  hand-rolled artifact, and the human would relearn the page each time.
+
+  This template is a deliberate extension of the decision dossier's design
+  system, not a second one — the same tokens, the same type stack, the same
+  self-containment contract. The dossier keeps its own skeleton for decide;
+  this one covers every other gate.
+
+  Slots are the HTML comments below whose text begins with the slot marker
+  (the word SLOT followed by a colon and a region name). Each names a region
+  and gives filling guidance. Replace the slot comment (and any placeholder)
+  with real markup that uses ONLY the classes already defined in the style
+  block. (This contract comment intentionally does not nest a literal example
+  of the slot delimiters, because a nested comment terminator would end this
+  comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the slot regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · Keep the header's context strip container even when empty; the layout
+      copes with an empty strip, so do not remove the container.
+    · Repeat the content section (section class "sec") once per topic. Inside a
+      section, use only the pre-defined blocks: the "pillars" card grid, a
+      "tablebox" wrapping a table, the "cols" must / must-not columns, or the
+      "criteria" checklist. Do not add block types.
+    · Repeat the question card (div class "q") once per open question. If the
+      gate has NO open questions, delete the whole questions section — the
+      layout copes.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject the framing outright and say what is right
+      instead).
+    · Never present an unverified claim as settled. A gate artifact is a
+      persuasive object; say plainly which rows are grounded facts and which
+      are proposals awaiting the human's word.
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more content sections, then the optional questions section, then the
+  how-to-answer box, then footer. Do not reorder.
+  ============================================================================
+-->
+<title>One safe update engine</title>
+<style>
+  /* Design tokens: light theme is the default set on :root. These are the
+     decision dossier's tokens verbatim — one design system, two skeletons. */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono, .spec-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Context strip: grounded facts as .lock-chip spans; .open marks an item that
+     is still unsettled. The container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  /* Content section. Repeat once per topic. */
+  section.sec { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .sec-head h2 { margin: 0; }
+  h2 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 18px; max-width: 74ch; }
+
+  /* Block A — pillars: a card grid for 2–4 parallel ideas. */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .pillar h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pillar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* Block B — tablebox: any table (spec lists, decomposition plans). Scrolls
+     inside its own box on narrow screens so the body never scrolls. */
+  .tablebox { margin-top: 6px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+  .tablebox table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+  .tablebox th { text-align: left; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  .tablebox td { padding: 11px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+  .tablebox tr:last-child td { border-bottom: none; }
+  .spec-name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .size { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--ink-2); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .wave { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--accent-wash); color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+
+  /* Block C — cols: the must / must-not pair. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .col .clab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .col ul { margin: 9px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .col li { color: var(--ink-2); margin-bottom: 5px; line-height: 1.4; }
+  .col.must li::before { content: "✓ "; color: var(--good-ink); font-weight: 700; }
+  .col.must-not li::before { content: "✗ "; color: var(--bad-ink); font-weight: 700; }
+
+  /* Block D — criteria: an acceptance checklist. */
+  .criteria { margin: 6px 0 0; padding: 0; list-style: none; }
+  .criteria li { position: relative; padding: 9px 0 9px 26px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-2); }
+  .criteria li:last-child { border-bottom: none; }
+  .criteria li::before { content: "□"; position: absolute; left: 2px; color: var(--ink-3); }
+  .criteria li.met::before { content: "☑"; color: var(--good-ink); }
+
+  /* Questions. One .q card per open question; amber left border. */
+  .questions { margin-top: 54px; }
+  .q { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warn-ink); border-radius: 8px; padding: 18px 22px; margin-top: 12px; }
+  .q .qnum { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .q h3 { font-size: 16.5px; font-weight: 700; margin: 6px 0 8px; }
+  .q .rec { font-size: 14.5px; color: var(--ink); margin: 0 0 6px; }
+  .q .rec strong { color: var(--accent-ink); }
+  .q .why { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 74ch; }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft design · rev 6 · September 05, 2026</div>
+  <h1>One safe update engine</h1>
+  <p class="dek">Shared installation facts, protected customizations, recoverable updates, and one checker. Verified releases promote automatically using a maintainer-managed npm credential.</p>
+  <div class="locked"><span class="lock-chip">Brief approved · D3</span><span class="lock-chip">Design approved · D5</span><span class="lock-chip">15 proposed specs</span><span class="lock-chip">D4 · automatic promotion approved</span></div>
+</header>
+
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>1. Current State</h2></div><div class="pillars"><div class="pillar"><p><strong>Prior knowledge reused:</strong> The approved brief and this conversation&#x27;s fresh source review. Historical decisions were not used to select the architecture, honoring the original fresh-start request. The decision-log format was inspected for later stamping only.</p></div></div><div class="pillars"><div class="pillar"><p>Two read-only agents examined installation state and delivery boundaries. The root agent checked source and current npm documentation. Existing evidence remains in <span class="mono">research.md</span>.</p></div></div><div class="tablebox"><table><thead><tr><th>Surface</th><th>Current interface</th><th>Design consequence</th></tr></thead><tbody><tr><td>Initial install</td><td><span class="mono">init(dir, { force, gitignore })</span>, <span class="mono">src/init.ts:78</span></td><td>Extract planning from writes. Preserve existing generators for new boundary files.</td></tr><tr><td>Upgrade</td><td><span class="mono">upgrade(dir, { yes, gitignore, spawnForReexec })</span>, <span class="mono">src/upgrade.ts:414</span></td><td>Remove embedded registry delegation and pre-plan mutations.</td></tr><tr><td>State</td><td><span class="mono">readVersion(dir)</span> / <span class="mono">writeVersion(...)</span>, <span class="mono">src/version.ts:94</span></td><td>Replace ambiguous hashes with a schema and verified per-file vendor identity.</td></tr><tr><td>Inventory</td><td><span class="mono">getManagedFiles(harnesses)</span>, <span class="mono">src/upgrade.ts:111</span></td><td>Share one inventory with init, including hook/checker assets.</td></tr><tr><td>Generation</td><td><span class="mono">applyTemplate(source, harness, filename)</span>, <span class="mono">scripts/lib/skill-template.mjs:64</span></td><td>Add one common entry instruction without changing harness substitution semantics.</td></tr><tr><td>Publish</td><td>Main-push workflow, <span class="mono">.github/workflows/publish.yml:11</span></td><td>Separate release preparation, immutable publication, and latest promotion.</td></tr></tbody></table></div><div class="pillars"><div class="pillar"><p>State combines local preferences with facts needed by teammates. Upgrade trusts stored hashes even when an earlier run recorded customized bytes. Scripts and skill bundles update through different inventories. These behaviors were read directly and reproduced where described in the research. (anchor: 100)</p></div></div><div class="pillars"><div class="pillar"><p>The release workflow already uses npm OIDC. Current npm documentation restricts that authentication to publish operations. Candidate promotion uses a different command. This introduces D4 rather than an assumption that existing authentication covers promotion. (anchor: 100)</p></div></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>2. Desired End State</h2></div><div class="pillars"><div class="pillar"><p>The contracts below are approved design choices, not claims that new code already exists. Anchors identify checked facts that constrain those choices.</p></div></div><div class="pillars"><div class="pillar"><h3>A. One engine with explicit inputs</h3></div></div><div class="tablebox"><table><thead><tr><th>Module</th><th>Responsibility</th></tr></thead><tbody><tr><td><span class="mono">src/bundle-inventory.ts</span></td><td>Describe selected vendor files, executable modes, create-once files, and owned config patches.</td></tr><tr><td><span class="mono">src/install-manifest.ts</span></td><td>Read and validate shared/private manifests, adopt legacy state, and preserve unknown fields.</td></tr><tr><td><span class="mono">src/update-plan.ts</span></td><td>Pure comparison of inventory, snapshot, manifest, and explicit options. Return actions and conflicts.</td></tr><tr><td><span class="mono">src/update-transaction.ts</span></td><td>Apply a plan under a lock, verify preconditions, journal writes, recover, and roll back.</td></tr><tr><td><span class="mono">src/update.ts</span></td><td>Orchestrate input collection, planning, presentation, and application of the selected bundle.</td></tr><tr><td><span class="mono">src/update-check.ts</span></td><td>One importable version/check policy implementation, also bundled as the local entry script.</td></tr><tr><td><span class="mono">src/release-resolver.ts</span></td><td>Resolve one exact release and integrity record for agent-led updates. Never recurse inside the engine.</td></tr></tbody></table></div><div class="pillars"><div class="pillar"><p><span class="mono">createUpdatePlan({ snapshot, manifest, inventory, options })</span> performs no I/O, prompts, or network access. <span class="mono">applyUpdatePlan(root, plan)</span> accepts the same plan that the user or automation reviewed. Both return structured results instead of printing internally.</p></div></div><div class="pillars"><div class="pillar"><p>The package already has Commander and Node filesystem/crypto APIs. Existing <span class="mono">hashContent</span> uses SHA-256. These support the proposed boundaries without a new runtime dependency. (anchor: 100)</p></div></div><div class="pillars"><div class="pillar"><p><span class="mono">update</span> applies the executing package&#x27;s bundle. The documented npx command selects latest before launch. An agent update runner resolves an exact version once and invokes that version. A global old CLI reports its bundle version honestly rather than nesting another latest lookup. An unavailable registry does not prevent an explicitly selected, locally available bundle from running.</p></div></div><div class="pillars"><div class="pillar"><h3>B. Shared facts and local preferences</h3></div></div><div class="tablebox"><table><thead><tr><th>Path</th><th>Shared profile</th><th>Private profile</th></tr></thead><tbody><tr><td><span class="mono">docs/.joycraft/manifest.json</span></td><td>Tracked installation manifest</td><td>Not created</td></tr><tr><td><span class="mono">docs/.joycraft/local/manifest.json</span></td><td>Not authoritative</td><td>Ignored installation manifest</td></tr><tr><td><span class="mono">docs/.joycraft/check.mjs</span></td><td>Tracked managed checker</td><td>Ignored managed checker</td></tr><tr><td><span class="mono">docs/.joycraft/local/</span></td><td>Ignored cache, preferences, lock, journal, backups</td><td>Same local scope</td></tr><tr><td><span class="mono">docs/.joycraft/state.json</span></td><td>Legacy input only</td><td>Legacy input only</td></tr></tbody></table></div><div class="pillars"><div class="pillar"><p>The existing ignore rule names <span class="mono">state.json</span> rather than the entire directory. New named paths can separate shared data without removing arbitrary ignore rules. Check the effective ignore result and report a broad user rule that hides the shared manifest. (anchor: 100)</p></div></div><div class="pillars"><div class="pillar"><p>Schema 1 records <span class="mono">targetVersion</span>, <span class="mono">bundleIntegrity</span>, <span class="mono">harnesses</span>, <span class="mono">profile</span>, and <span class="mono">files</span>. Each file records <span class="mono">vendorVersion</span>, <span class="mono">vendorHash</span>, <span class="mono">kind</span>, and <span class="mono">ownership: verified | unknown</span>. Config patches additionally identify their owned key or marked region. Paths use forward slashes and reject traversal or absolute paths.</p></div></div><div class="pillars"><div class="pillar"><p><span class="mono">vendorHash</span> describes normalized vendor text, never arbitrary current disk contents. A per-file vendor version can lag the target after a conflict. Status derives <span class="mono">complete</span>, <span class="mono">customized</span>, or <span class="mono">pending</span> from the manifest and current comparison. A target stamp alone never means every file converged.</p></div></div><div class="pillars"><div class="pillar"><p>Full vendor blobs are not duplicated into each project. The planner needs hashes to classify changes, and current/target bytes to show a diff. Automatic three-way text merging is not required for safe updates. Unresolved changes remain conflicts. This keeps the tracked footprint small.</p></div></div><div class="pillars"><div class="pillar"><p>Use normalized LF hashes for managed UTF-8 text and raw byte hashes for transaction preconditions. Preserve the existing newline convention for prose replacements. Executable scripts use their declared format. The generator currently emits native line endings, so byte-only shared baselines would drift across platforms. (anchor: 100)</p></div></div><div class="pillars"><div class="pillar"><p>Keep local <span class="mono">autoOpen</span>, update policy, dismissed release, and check timestamps in local settings. Preserve unknown legacy fields in a namespaced legacy payload during migration. Unknown future manifest schema versions stop mutation with a diagnostic.</p></div></div><div class="pillars"><div class="pillar"><h3>C. Conservative legacy adoption</h3></div></div><div class="pillars"><div class="pillar"><p>Detect named Joycraft skills across all five harness roots. Prefer an explicit manifest selection. Without it, infer only roots containing Joycraft artifacts. A fresh noninteractive <span class="mono">update</span> requires <span class="mono">--harnesses</span>; legacy <span class="mono">init</span> keeps its documented all-harness default with a notice.</p></div></div><div class="pillars"><div class="pillar"><p>For bridge releases, ship a compact catalogue of path/hash pairs generated 2026-09-06T22:33:21.915624+00:00</p></div></div><div class="pillars"><div class="pillar"><p>An unmatched existing file becomes an unknown-ownership conflict. Missing historical coverage degrades to preservation, not data replacement. No runtime download or execution of old package versions is required to classify an unknown file.</p></div></div><div class="pillars"><div class="pillar"><p>Stage new state before removing old state. Back up the old state and replace the known legacy checker registration in the same transaction. Corrupt state remains available for diagnosis. Shared/private profile changes move manifest authority explicitly and never untrack files in Git automatically.</p></div></div><div class="pillars"><div class="pillar"><h3>D. Comparison and application rules</h3></div></div><div class="pillars"><div class="pillar"><p>For a verified entry, B is its recorded vendor base, C is current content, and T is target content. Test equality using normalized hashes.</p></div></div><div class="tablebox"><table><thead><tr><th>Condition</th><th>Result</th></tr></thead><tbody><tr><td>C equals T</td><td>No content write. Reconcile vendor version and state.</td></tr><tr><td>C equals B and T differs</td><td>Safe replacement. Advance the base to T.</td></tr><tr><td>C differs from B and T equals B</td><td>Preserve a local-only edit without repeated prompts.</td></tr><tr><td>C and T both differ from B</td><td>Preserve C and show a current-to-target diff as a conflict.</td></tr><tr><td>C absent, verified base present</td><td>Preserve a local deletion. Restore only through explicit repair selection.</td></tr><tr><td>C absent, no previous entry</td><td>Create a new selected inventory file.</td></tr><tr><td>C present, no verified base</td><td>Adopt only an exact trusted vendor match. Otherwise preserve and report a conflict.</td></tr><tr><td>T absent, verified C equals B</td><td>Delete the owned file only. Keep unknown sibling files and nonempty directories.</td></tr><tr><td>T absent, C customized or unknown</td><td>Preserve as an orphaned customization.</td></tr></tbody></table></div><div class="pillars"><div class="pillar"><p>The inventory distinguishes vendor files from create-once user documents and owned config patches. Keep existing CLAUDE.md/AGENTS.md generation for first creation. Routine update does not rewrite existing policy prose or force docs migration.</p></div></div><div class="pillars"><div class="pillar"><p>Owned JSON patches preserve unrelated keys. A conflicting registration stays a conflict. Existing append-only helper behavior supplies defaults, but planning must calculate the patch before writing. No in-place mutation escapes the transaction.</p></div></div><div class="pillars"><div class="pillar"><p><span class="mono">--yes</span> and <span class="mono">--non-interactive</span> accept the safe plan only. Explicit <span class="mono">--replace-customized &lt;path&gt;</span> selects replacements. Legacy <span class="mono">init --force</span> remains an explicit replacement request scoped to its existing install inventory. It never broadens into recursive cleanup.</p></div></div><div class="pillars"><div class="pillar"><p>Flags are accepted consistently by aliases and documented in the next minor release. Do not retain destructive <span class="mono">upgrade --yes</span> semantics for compatibility. Exit 0 means applied/no-op with no pending conflict, 1 means failed or invalid input, 2 means unresolved conflicts, 3 means recovery or a lock needs attention. JSON includes preserved customizations separately from pending vendor updates.</p></div></div><div class="pillars"><div class="pillar"><h3>E. Recoverable writes</h3></div></div><div class="pillars"><div class="pillar"><p>Acquire a project lock atomically and record an operation ID, process identity, and manifest digest. A lock conflict does not remove the other process&#x27;s lock automatically. Validate every planned path and reject symlink traversal outside the target.</p></div></div><div class="pillars"><div class="pillar"><p>Journal the complete plan and preimages before writes. Stage replacement bytes on the destination filesystem. Recheck raw file hashes before replacement to detect intervening user edits. Rename staged files into place, then validate resulting bytes and modes. Publish the new manifest last.</p></div></div><div class="pillars"><div class="pillar"><p>A journal records before/after digests and the manifest commit marker. On restart, an unchanged old manifest means rollback incomplete writes. A matching new manifest means verify the committed state and finish cleanup. A crash between manifest rename and journal bookkeeping is resolved by the manifest digest, not the bookkeeping flag alone.</p></div></div><div class="pillars"><div class="pillar"><p>Recovery never overwrites an intervening user edit. If a path matches neither the recorded preimage nor postimage, stop and expose the backup and conflict. Automatic cleanup is limited to known transaction residue. A retained last-successful backup supports explicit rollback with the same precondition checks.</p></div></div><div class="pillars"><div class="pillar"><p>The contract covers interrupted processes and filesystem-operation failures. It does not promise recovery from disk corruption. Multi-file visibility is not atomic, so skill updates occur at a workflow boundary and verify before continuation.</p></div></div><div class="pillars"><div class="pillar"><h3>F. Cheap discovery and safe automation</h3></div></div><div class="pillars"><div class="pillar"><p>Build <span class="mono">check.mjs</span> from the shared checker module. It has no external runtime dependencies. It derives the project root from its installed location. A skill runs <span class="mono">node docs/.joycraft/check.mjs check --json</span> from the project root. Missing or failed execution continues the requested skill without a repeated bootstrap loop.</p></div></div><div class="pillars"><div class="pillar"><p>The generated 2026-09-06T22:33:21.915624+00:00</p></div></div><div class="pillars"><div class="pillar"><p>The checker consults local state first. Refresh successful metadata after 24 hours, with a three-second deadline. Use a short local refresh lock and back off after failure. Results distinguish available, current, postponed, pending-conflicts, and unknown. Stable numeric versions are compared numerically; prerelease targets are never automatically selected.</p></div></div><div class="pillars"><div class="pillar"><p>Suppress duplicate offers by release and session. A successful display is acknowledged separately from a user&#x27;s explicit postponement. A later session can offer an unacknowledged release again. Postponement suppresses that release until a newer release or an explicit check. Local update mode is <span class="mono">notify</span>, <span class="mono">auto-safe</span>, or <span class="mono">off</span>, with <span class="mono">notify</span> the default.</p></div></div><div class="pillars"><div class="pillar"><p>The checker only reports. The agent handles authorization and invokes the updater through an exact-version argument list. <span class="mono">auto-safe</span> is local standing authorization, never inherited merely by cloning a shared manifest. It requires verified release metadata, a supported manifest protocol, and a plan with no conflicts, repairs, user-config changes, or explicit migrations.</p></div></div><div class="pillars"><div class="pillar"><p>The package carries an automation compatibility descriptor tested before promotion. Do not infer compatibility from a patch increment. Downgrades and the legacy-to-new-manifest bridge require an explicit user-run update. Offline skill usage remains available.</p></div></div><div class="pillars"><div class="pillar"><p>All five harnesses use the common entry instruction. Claude&#x27;s existing SessionStart registration calls the same checker. Other native hooks are optional only after their capabilities are verified. No unverified hook API is required by this design. Updating a loaded skill requires reinvocation or a session restart where reload is unavailable.</p></div></div><div class="pillars"><div class="pillar"><h3>G. Release state machine</h3></div></div><div class="pillars"><div class="pillar"><p>Automatically maintain one release PR after product changes on main. Update it from the latest main SHA under a separate preparation lock. The PR contains an explicit version and compatibility descriptor. Docs-only changes alone do not create a package release. Human review/merge remains the existing release authorization boundary.</p></div></div><div class="pillars"><div class="pillar"><p>After that PR merges, the publishing job checks out the exact release commit and validates its version. Retain the existing <span class="mono">publish.yml</span> identity for OIDC. The workflow never pushes a version bump to main. Use a non-canceling publish concurrency group and reject promotion of an older version over a newer latest.</p></div></div><div class="pillars"><div class="pillar"><p>Build and pack once. Retain the tarball and SHA-512 digest as durable run artifacts. Validate fresh installs and prior-version updates from that tarball. Publish that file under <span class="mono">candidate</span>, without invoking directory packaging or build hooks again. Registry publication accepts a tarball and versions cannot be reused. (anchor: 100)</p></div></div><div class="pillars"><div class="pillar"><p>Query exact-version metadata and compare tarball integrity. Validate registry installation with npm 10.9.8 on Node 22.23.1 and the maintained Node 24 line. Prime both full and compact metadata caches before the candidate exists, then exercise fresh and warmed clients after publication. Include --prefer-online and a bounded isolated-cache recovery path.</p></div></div><div class="pillars"><div class="pillar"><p>Wait at least the observed five-minute metadata freshness interval before recommending the release, and require successful readiness checks. Deadline expiry leaves the candidate unpublished as latest. Time alone is not a readiness assertion. After successful promotion, verify latest from a fresh client, then create the GitHub release and tag if absent.</p></div></div><div class="pillars"><div class="pillar"><p>On retry: recover the saved tarball, match an existing package&#x27;s integrity, rerun readiness checks, and skip already-completed promotion. If provenance or integrity differs, stop. Do not rebuild a different artifact and publish the same version. Keep candidate metadata immutable enough to select by exact version, not by a mutable candidate tag.</p></div></div><div class="pillars"><div class="pillar"><p>Use Node 24.20.0, npm 11.19.0, and pnpm 10.19.0 for release preparation/publication. Keep npm 10 in consumer tests, not the OIDC publisher. npm requires at least npm 11.5.1 and Node 22.14.0 for OIDC. Node 22 and 24 are currently LTS. (anchor: 100)</p></div></div><div class="pillars"><div class="pillar"><p>Declare Node &gt;=22 for consumers, test the minimum supported APIs, and run supported-platform checks on Linux, macOS, and Windows. A runtime matrix failure blocks promotion. D4 selects a package-scoped npm credential for automatic latest promotion.</p></div></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>3. Patterns to Follow</h2></div><div class="pillars"><div class="pillar"><p>Reuse <span class="mono">HARNESSES</span> and <span class="mono">sanitizeHarnesses</span> from <span class="mono">src/harness.ts:15</span> for names and validation. Do not add a second harness list. Persist portable paths independently of OS-native filesystem paths.</p></div></div><div class="pillars"><div class="pillar"><p>Preserve the unknown-field behavior of <span class="mono">writeVersion</span>, <span class="mono">src/version.ts:136</span>, while making schema errors explicit. Keep settings resolution in one function, following <span class="mono">resolveGitignoreProfile</span>, <span class="mono">src/gitignore.ts:148</span>.</p></div></div><div class="pillars"><div class="pillar"><p>Keep pure transforms like <span class="mono">applyTemplate</span> in <span class="mono">scripts/lib/skill-template.mjs:64</span>. Generation remains canonical source → harness variants → bundle → installed trees. The checker is a compiled asset in the same inventory, not five copied implementations.</p></div></div><div class="pillars"><div class="pillar"><p>Use the existing package bundler and Node APIs. Keep npm invocation in one process adapter with validated argument arrays and a Windows test. Avoid constructing shell strings from paths or release metadata.</p></div></div><div class="pillars"><div class="pillar"><p>Test exported production functions against real filesystem snapshots. Extend the existing decline test with a second and third run. Add failure injection at journal phases. Do not mock away the state write responsible for the original regression.</p></div></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>4. Resolved Design Decisions</h2></div><div class="pillars"><div class="pillar"><p>These engineering choices were approved on 2026-09-06 (D5). D4 is resolved below by the user.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Decision R1:</strong> Track a small manifest, not duplicate vendor file bodies.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Rationale:</strong> Hashes classify ownership and divergence. Current/target bytes support review without automatic merging.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Alternative rejected:</strong> A second tracked copy of every skill and template, which expands the project footprint.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Decision R2:</strong> Preserve conflicts instead of automatically merging customized skills.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Rationale:</strong> The approved contract prioritizes explicit preservation and understandable updates.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Alternative rejected:</strong> A new merge engine and additional conflict semantics in the initial repair.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Decision R3:</strong> Safe --yes behavior is a documented next-minor change.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Rationale:</strong> Retaining a destructive automation flag defeats the requested safe agent update flow.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Alternative rejected:</strong> Different overwrite semantics for update and upgrade aliases.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Decision R4:</strong> Use one portable skill entry instruction, plus the existing Claude hook adapter.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Rationale:</strong> Current source verifies that hook path. No other hook API is required for coverage.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Alternative rejected:</strong> Blocking this feature on five native session-hook integrations.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Decision R5:</strong> Keep release PR creation automatic and promotion gated on artifact checks.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Rationale:</strong> This removes bump-push races while keeping the maintainer&#x27;s reviewed release boundary.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Alternative rejected:</strong> Auto-patching the version during every main-push publishing job.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Decision D4:</strong> Automatic promotion using a granular npm write credential scoped to Joycraft; keep OIDC for publication.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Rationale:</strong> The user considers maintainer credential renewal a non-issue and accepts it for automatic promotion.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Alternative rejected:</strong> Manual promotion on each release.</p></div></div><div class="pillars"><div class="pillar"><p><strong>Operations:</strong> A Joycraft maintainer creates and renews the token and updates the GitHub Actions secret. Validate scope, expiry, and 2FA before activation. No credential was read or provisioned.</p></div></div><div class="pillars"><div class="pillar"><h3>Build sequence and brief reconciliation</h3></div></div><div class="pillars"><div class="pillar"><p>Keep the approved 15-row order and dependency graph. The design supplies contracts to those rows rather than changing scope or counts. Decomposition can split a large row only through its stated review process.</p></div></div><div class="pillars"><div class="pillar"><p>Rows 1–2 establish regressions and status. Rows 3–8 build the state, planner, transaction, and command. Rows 9–11 connect discovery and policy. Row 12 can run independently after design approval. Rows 13–15 verify registry delivery and dogfood the integrated result.</p></div></div><div class="pillars"><div class="pillar"><p>Brief updates: recorded approval as D3, added this design link and D4&#x27;s dossier link, and updated the handoff. D4 now records automatic promotion and its maintainer-owned credential requirement. Vision, success criteria, and the 15 proposed rows are unchanged.</p></div></div></section>
+<section class="sec"><div class="sec-head"><span class="eyebrow">Review</span><h2>5. Open Questions</h2></div><div class="pillars"><div class="pillar"><p>None. D4 is clarified and the design is approved (D5).</p></div></div></section>
+<div class="howto">
+  <div class="eyebrow">Review status</div>
+  <p>Approved through decomposition (D6). The 15 atomic specs and execution queue are in specs/README.md. You can still request a correction or reject the framing if new evidence changes the work.</p>
+</div>
+
+<footer>
+  <p>Canonical: docs/features/2026-09-05-reliable-updates/design.md · rev 6 · generated 2026-09-06T22:33:21.915624+00:00</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>
