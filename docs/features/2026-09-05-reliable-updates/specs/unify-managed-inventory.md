@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 4 of 15
 > **Dependencies:** 3 — preserve-installation-manifest.md
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 5 files / ~220 lines
 
@@ -29,10 +29,10 @@ Init and upgrade currently maintain separate lists of generated artifacts, which
 
 ## Acceptance Criteria
 
-- [ ] One inventory describes selected vendor files, executable modes, create-once documents, and owned configuration patches for all five harnesses. [src: design §2]
-- [ ] Checker/hook entries have explicit managed ownership; the checker payload and adapter are activated when their later producer specs land, without shipping a broken placeholder. [src: design §2]
-- [ ] Existing policy prose and unrelated JSON keys remain outside routine replacement; new policy-file creation retains existing generators. [src: design §2]
-- [ ] Every change to generated sources regenerates and synchronizes its affected outputs in that same implementation commit. [src: design §2]
+- [x] One inventory describes selected vendor files, executable modes, create-once documents, and owned configuration patches for all five harnesses. [src: design §2]
+- [x] Checker/hook entries have explicit managed ownership; the checker payload and adapter are activated when their later producer specs land, without shipping a broken placeholder. [src: design §2]
+- [x] Existing policy prose and unrelated JSON keys remain outside routine replacement; new policy-file creation retains existing generators. [src: design §2]
+- [x] Every change to generated sources regenerates and synchronizes its affected outputs in that same implementation commit. [src: design §2]
 
 ## Test Plan
 
@@ -92,3 +92,9 @@ Define typed inventory entries with path, content source, `kind`, ownership, and
 | Existing user `AGENTS.md` or `CLAUDE.md` | Routine refresh does not replace prose; first creation keeps current generator behavior. |
 | Settings JSON has user-owned keys | Inventory exposes only owned patch keys/regions and leaves unrelated keys untouched. |
 | Checker producer absent | No placeholder executable is installed, while future ownership is declared for planner use. |
+
+## Implementation Evidence
+
+- Init and upgrade now consume one inventory for selected vendor artifacts, executable modes, and ownership declarations; existing creation/config generators remain responsible for user documents and settings. Checker/adapter declarations carry no installable placeholder.
+- New inventory test collection was red before extraction; focused inventory/init/upgrade coverage passes. The real generator/sync fixture test protects existing working behavior across all five harnesses without changing live source trees.
+- Exact staged clean checkout: build passed; 3,087 tests passed, one skipped; typecheck passed. No canonical skill source changed, so regenerated skill content is unchanged.

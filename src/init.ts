@@ -5,7 +5,7 @@ import { generateCLAUDEMd, generateClaudeMdPointer } from './improve-claude-md.j
 import { generateAgentsMd } from './agents-md.js';
 import { generatePermissions } from './permissions.js';
 import { installSafeguardHooks } from './safeguard.js';
-import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, COPILOT_SKILLS, OMP_SKILLS } from './bundled-files.js';
+import { getBundleInventory } from './bundle-inventory.js';
 import {
   writeVersion,
   readVersion,
@@ -75,6 +75,23 @@ function writeFile(path: string, content: string, force: boolean, result: InitRe
   result.created.push(path);
 }
 
+function installInventoryFiles(
+  targetDir: string,
+  entries: ReturnType<typeof getBundleInventory>,
+  force: boolean,
+  result: InitResult,
+): void {
+  for (const entry of entries) {
+    if (entry.kind !== 'vendor' || !entry.active || !entry.installable || entry.content === undefined) continue;
+    const path = join(targetDir, entry.path);
+    ensureDir(dirname(path));
+    writeFile(path, entry.content, force, result);
+    if (entry.mode !== undefined) {
+      try { chmodSync(path, entry.mode); } catch { /* non-fatal */ }
+    }
+  }
+}
+
 export async function init(dir: string, opts: InitOptions): Promise<void> {
   const targetDir = resolve(dir);
   const result: InitResult = { created: [], skipped: [], modified: [], warnings: [] };
@@ -90,6 +107,7 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   // a clean no-op — and before the gitignore prompt so we don't ask a second
   // question when there's nothing to track.
   const harnesses = await resolveHarnesses(process.stdin.isTTY === true);
+  const inventory = getBundleInventory(harnesses);
   const wants = (h: Harness): boolean => harnesses.includes(h);
   if (harnesses.length === 0) {
     console.log(
@@ -156,101 +174,10 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
       });
   }
 
-  // 2. Copy skill files to .claude/skills/<name>/SKILL.md
-  if (wants('claude')) {
-    for (const [filename, content] of Object.entries(SKILLS)) {
-      const skillName = filename.replace(/\.md$/, '');
-      const skillDir = join(skillsDir, skillName);
-      ensureDir(skillDir);
-      writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
-    }
-  }
-
-  // 2b. Copy Codex skill files to .agents/skills/<name>/SKILL.md
-  if (wants('codex')) {
-    const codexSkillsDir = join(targetDir, '.agents', 'skills');
-    for (const [filename, content] of Object.entries(CODEX_SKILLS)) {
-      const skillName = filename.replace(/\.md$/, '');
-      const skillDir = join(codexSkillsDir, skillName);
-      ensureDir(skillDir);
-      writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
-    }
-  }
-
-  // 2c–2f. Install the Pi harness: skills, runtime scripts, extension, subagents.
-  if (wants('pi')) {
-    const piSkillsDir = join(targetDir, '.pi', 'skills');
-    for (const [filename, content] of Object.entries(PI_SKILLS)) {
-      const skillName = filename.replace(/\.md$/, '');
-      const skillDir = join(piSkillsDir, skillName);
-      ensureDir(skillDir);
-      writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
-    }
-
-    const piScriptsDir = join(targetDir, '.pi', 'scripts', 'joycraft');
-    ensureDir(piScriptsDir);
-    for (const [name, content] of Object.entries(PI_SCRIPTS)) {
-      const scriptPath = join(piScriptsDir, name);
-      writeFile(scriptPath, content, opts.force, result);
-      if (name !== 'README.md') {
-        try { chmodSync(scriptPath, 0o755); } catch { /* non-fatal */ }
-      }
-    }
-
-    const piExtDir = join(targetDir, '.pi', 'extensions');
-    ensureDir(piExtDir);
-    for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
-      writeFile(join(piExtDir, name), content, opts.force, result);
-    }
-
-    const piAgentsDir = join(targetDir, '.pi', 'agents');
-    ensureDir(piAgentsDir);
-    for (const [name, content] of Object.entries(PI_AGENTS)) {
-      writeFile(join(piAgentsDir, name), content, opts.force, result);
-    }
-  }
-
-  // 2g. Install the Copilot harness: skills to .github/skills/.
-  // Copilot reads AGENTS.md directly, so no separate instructions file is needed.
-  if (wants('copilot')) {
-    const githubDir = join(targetDir, '.github');
-    ensureDir(githubDir);
-
-    // Copilot skills — same SKILL.md pattern as other harnesses.
-    const copilotSkillsDir = join(githubDir, 'skills');
-    ensureDir(copilotSkillsDir);
-    for (const [filename, content] of Object.entries(COPILOT_SKILLS)) {
-      const skillName = filename.replace(/\.md$/, '');
-      const skillDir = join(copilotSkillsDir, skillName);
-      ensureDir(skillDir);
-      writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
-    }
-  }
-
-  // 2h. Install the omp (Oh My Pi) harness: skills to .omp/skills/.
-  // Skills-only by design (D1/D2): omp loads the root AGENTS.md and CLAUDE.md
-  // itself, so no .omp/AGENTS.md, .omp/RULES.md, config, extension, agent, or
-  // script is written — the whole runtime port is a separate feature.
-  if (wants('omp')) {
-    const ompSkillsDir = join(targetDir, '.omp', 'skills');
-    ensureDir(ompSkillsDir);
-    // omp discovery is non-recursive, so the tree stays flat at
-    // .omp/skills/<name>/SKILL.md — same shape as every other harness.
-    for (const [filename, content] of Object.entries(OMP_SKILLS)) {
-      const skillName = filename.replace(/\.md$/, '');
-      const skillDir = join(ompSkillsDir, skillName);
-      ensureDir(skillDir);
-      writeFile(join(skillDir, 'SKILL.md'), content, opts.force, result);
-    }
-  }
-
-  // 3. Copy template files to docs/templates/
-  const templatesDir = join(targetDir, 'docs', 'templates');
-  ensureDir(templatesDir);
-  for (const [filename, content] of Object.entries(TEMPLATES)) {
-    ensureDir(dirname(join(templatesDir, filename)));
-    writeFile(join(templatesDir, filename), content, opts.force, result);
-  }
+  // 2/3. Install all active vendor artifacts from the canonical inventory.
+  // Create-once documents and config patches remain handled by their existing
+  // generators below; they are declarations, not replacement payloads.
+  installInventoryFiles(targetDir, inventory, opts.force, result);
 
   // 4/5. Handle CLAUDE.md + AGENTS.md — only create if missing, never modify
   // existing (unless --force).
@@ -300,50 +227,13 @@ export async function init(dir: string, opts: InitOptions): Promise<void> {
   }
 
   // 6. Write the hidden state (docs/.joycraft/state.json) with hashes of the
-  // files we actually installed. Only hash a harness's files when that harness
-  // was selected — otherwise upgrade would later see the unwritten files as
-  // missing/drifted. Templates are harness-agnostic and always installed.
+  // active vendor files from the same inventory used for installation. Inactive
+  // future declarations, create-once documents, and config patches are not
+  // replacement baselines.
   const fileHashes: Record<string, string> = {};
-  if (wants('claude')) {
-    for (const [filename, content] of Object.entries(SKILLS)) {
-      const skillName = filename.replace(/\.md$/, '');
-      fileHashes[join('.claude', 'skills', skillName, 'SKILL.md')] = hashContent(content);
-    }
-  }
-  if (wants('codex')) {
-    for (const [filename, content] of Object.entries(CODEX_SKILLS)) {
-      const skillName = filename.replace(/\.md$/, '');
-      fileHashes[join('.agents', 'skills', skillName, 'SKILL.md')] = hashContent(content);
-    }
-  }
-  for (const [filename, content] of Object.entries(TEMPLATES)) {
-    fileHashes[join('docs', 'templates', filename)] = hashContent(content);
-  }
-  if (wants('pi')) {
-    for (const [filename, content] of Object.entries(PI_SKILLS)) {
-      const skillName = filename.replace(/\.md$/, '');
-      fileHashes[join('.pi', 'skills', skillName, 'SKILL.md')] = hashContent(content);
-    }
-    for (const [name, content] of Object.entries(PI_SCRIPTS)) {
-      fileHashes[join('.pi', 'scripts', 'joycraft', name)] = hashContent(content);
-    }
-    for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
-      fileHashes[join('.pi', 'extensions', name)] = hashContent(content);
-    }
-    for (const [name, content] of Object.entries(PI_AGENTS)) {
-      fileHashes[join('.pi', 'agents', name)] = hashContent(content);
-    }
-  }
-  if (wants('copilot')) {
-    for (const [filename, content] of Object.entries(COPILOT_SKILLS)) {
-      const skillName = filename.replace(/\.md$/, '');
-      fileHashes[join('.github', 'skills', skillName, 'SKILL.md')] = hashContent(content);
-    }
-  }
-  if (wants('omp')) {
-    for (const [filename, content] of Object.entries(OMP_SKILLS)) {
-      const skillName = filename.replace(/\.md$/, '');
-      fileHashes[join('.omp', 'skills', skillName, 'SKILL.md')] = hashContent(content);
+  for (const entry of inventory) {
+    if (entry.kind === 'vendor' && entry.active && entry.installable && entry.content !== undefined) {
+      fileHashes[entry.path] = hashContent(entry.content);
     }
   }
   writeVersion(targetDir, getPackageVersion(), fileHashes, gitignoreProfile, harnesses);

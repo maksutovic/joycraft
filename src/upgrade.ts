@@ -6,7 +6,7 @@ import { readVersion, writeVersion, hashContent, truncateHash, LEGACY_VERSION_FI
 import { ensureFolderMapSection } from './folder-map.js';
 import { applyGitignoreProfile, resolveGitignoreProfile, validateGitignoreFlag, PRIVATE_PROFILE_IGNORES, PRIVATE_UNTRACK_COMMAND } from './gitignore.js';
 import { applyGitattributes } from './gitattributes.js';
-import { SKILLS, TEMPLATES, CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, COPILOT_SKILLS, OMP_SKILLS } from './bundled-files.js';
+import { getBundleInventory, type BundleInventoryEntry } from './bundle-inventory.js';
 import { getPackageVersion } from './package-version.js';
 import { planMigration, applyMigration, type MigrationPlan } from './migration.js';
 import { HARNESSES, sanitizeHarnesses, type Harness } from './harness.js';
@@ -99,6 +99,7 @@ interface FileChange {
   absolutePath: string;
   newContent: string;
   kind: 'new' | 'updated' | 'customized';
+  mode?: number;
 }
 
 /**
@@ -108,56 +109,6 @@ interface FileChange {
  * back-compat when the project predates harness selection. Templates are
  * harness-agnostic and always included.
  */
-function getManagedFiles(harnesses: readonly Harness[]): Record<string, string> {
-  const files: Record<string, string> = {};
-  const wants = (h: Harness): boolean => harnesses.includes(h);
-
-  if (wants('claude')) {
-    for (const [name, content] of Object.entries(SKILLS)) {
-      const skillName = name.replace(/\.md$/, '');
-      files[join('.claude', 'skills', skillName, 'SKILL.md')] = content;
-    }
-  }
-  for (const [name, content] of Object.entries(TEMPLATES)) {
-    files[join('docs', 'templates', name)] = content;
-  }
-  if (wants('codex')) {
-    for (const [name, content] of Object.entries(CODEX_SKILLS)) {
-      const skillName = name.replace(/\.md$/, '');
-      files[join('.agents', 'skills', skillName, 'SKILL.md')] = content;
-    }
-  }
-  if (wants('pi')) {
-    for (const [name, content] of Object.entries(PI_SKILLS)) {
-      const skillName = name.replace(/\.md$/, '');
-      files[join('.pi', 'skills', skillName, 'SKILL.md')] = content;
-    }
-    for (const [name, content] of Object.entries(PI_SCRIPTS)) {
-      files[join('.pi', 'scripts', 'joycraft', name)] = content;
-    }
-    for (const [name, content] of Object.entries(PI_EXTENSIONS)) {
-      files[join('.pi', 'extensions', name)] = content;
-    }
-    for (const [name, content] of Object.entries(PI_AGENTS)) {
-      files[join('.pi', 'agents', name)] = content;
-    }
-  }
-  if (wants('copilot')) {
-    for (const [name, content] of Object.entries(COPILOT_SKILLS)) {
-      const skillName = name.replace(/\.md$/, '');
-      files[join('.github', 'skills', skillName, 'SKILL.md')] = content;
-    }
-  }
-  if (wants('omp')) {
-    // Skills-only (D1/D2) — nothing else under .omp/ is Joycraft-managed.
-    for (const [name, content] of Object.entries(OMP_SKILLS)) {
-      const skillName = name.replace(/\.md$/, '');
-      files[join('.omp', 'skills', skillName, 'SKILL.md')] = content;
-    }
-  }
-  return files;
-}
-
 // Deprecated skill names from previous versions of Joycraft.
 // These get removed during upgrade to prevent stale slash commands.
 const DEPRECATED_SKILL_DIRS = [
@@ -315,6 +266,14 @@ function ensureScriptExecutable(absolutePath: string): void {
       // non-fatal — permissions may be restricted
     }
   }
+}
+
+function applyInventoryMode(absolutePath: string, mode: number | undefined): void {
+  if (mode !== undefined) {
+    try { chmodSync(absolutePath, mode); } catch { /* non-fatal */ }
+    return;
+  }
+  ensureScriptExecutable(absolutePath);
 }
 
 async function askUser(question: string): Promise<boolean> {
@@ -525,7 +484,13 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
   // before harness selection has no `harnesses` field → fall back to all available
   // so existing projects keep getting every harness refreshed (back-compat).
   const harnesses: readonly Harness[] = installed?.harnesses ?? HARNESSES;
-  const managedFiles = getManagedFiles(harnesses);
+  const inventory = getBundleInventory(harnesses);
+  const managedEntries = inventory.filter(
+    (entry): entry is BundleInventoryEntry & { content: string } =>
+      entry.kind === 'vendor' && entry.active && entry.installable && entry.content !== undefined,
+  );
+  const managedFiles = Object.fromEntries(managedEntries.map((entry) => [entry.path, entry.content]));
+  const managedModes = new Map(managedEntries.map((entry) => [entry.path, entry.mode]));
 
   // Resolve the project's gitignore profile.
   //   - --gitignore flag: explicit choice — the non-interactive way to set or
@@ -620,10 +585,11 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
   for (const [relPath, newContent] of Object.entries(managedFiles)) {
     const absPath = join(targetDir, relPath);
     const newHash = hashContent(newContent);
+    const mode = managedModes.get(relPath);
 
     if (!existsSync(absPath)) {
       // File doesn't exist locally — new file
-      changes.push({ relativePath: relPath, absolutePath: absPath, newContent, kind: 'new' });
+      changes.push({ relativePath: relPath, absolutePath: absPath, newContent, kind: 'new', mode });
       continue;
     }
 
@@ -648,10 +614,10 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
 
     if (originalHash && truncateHash(currentHash) === truncateHash(originalHash)) {
       // User hasn't modified the file — safe to auto-update
-      changes.push({ relativePath: relPath, absolutePath: absPath, newContent, kind: 'updated' });
+      changes.push({ relativePath: relPath, absolutePath: absPath, newContent, kind: 'updated', mode });
     } else {
       // User has customized this file (or no original hash recorded)
-      changes.push({ relativePath: relPath, absolutePath: absPath, newContent, kind: 'customized' });
+      changes.push({ relativePath: relPath, absolutePath: absPath, newContent, kind: 'customized', mode });
     }
   }
 
@@ -693,13 +659,13 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
       // New Joycraft files are always auto-added — no prompt needed
       mkdirSync(dirname(change.absolutePath), { recursive: true });
       writeFileSync(change.absolutePath, change.newContent, 'utf-8');
-      ensureScriptExecutable(change.absolutePath);
+      applyInventoryMode(change.absolutePath, change.mode);
       added++;
       console.log(`  + ${change.relativePath}`);
     } else if (change.kind === 'updated') {
       // Safe to auto-update — user hasn't touched the file
       writeFileSync(change.absolutePath, change.newContent, 'utf-8');
-      ensureScriptExecutable(change.absolutePath);
+      applyInventoryMode(change.absolutePath, change.mode);
       updated++;
     } else if (change.kind === 'customized') {
       const currentContent = readFileSync(change.absolutePath, 'utf-8');
@@ -718,7 +684,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
         const accept = await askUser(`${label} — overwrite with latest?`);
         if (accept) {
           writeFileSync(change.absolutePath, change.newContent, 'utf-8');
-          ensureScriptExecutable(change.absolutePath);
+          applyInventoryMode(change.absolutePath, change.mode);
           acceptedCustomized.add(change.relativePath);
           updated++;
         } else {

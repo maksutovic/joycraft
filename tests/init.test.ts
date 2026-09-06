@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { Readable } from 'node:stream';
 import { init } from '../src/init';
+import { getBundleInventory } from '../src/bundle-inventory';
 import { CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, OMP_SKILLS } from '../src/bundled-files';
 import { STATE_PATH } from '../src/version';
 
@@ -139,6 +140,20 @@ describe('init', () => {
       await init(tmpDir, { force: false });
       expect(existsSync(join(tmpDir, LEGACY_VERSION_FILE))).toBe(false);
       expect(existsSync(join(tmpDir, STATE_PATH))).toBe(true);
+    });
+
+    it('records every active inventory vendor artifact installed by init', async () => {
+      await init(tmpDir, { force: false });
+
+      const state = JSON.parse(readFileSync(join(tmpDir, STATE_PATH), 'utf-8')) as { files: Record<string, string> };
+      const activeVendorPaths = getBundleInventory(['claude', 'codex', 'pi', 'copilot', 'omp'])
+        .filter((entry) => entry.kind === 'vendor' && entry.active && entry.installable && entry.content !== undefined)
+        .map((entry) => entry.path);
+
+      expect(Object.keys(state.files).sort()).toEqual(activeVendorPaths.sort());
+      for (const path of activeVendorPaths) {
+        expect(existsSync(join(tmpDir, path)), `${path} was declared but not installed`).toBe(true);
+      }
     });
 
     it('gitignores the hidden state file (creating .gitignore if absent)', async () => {
