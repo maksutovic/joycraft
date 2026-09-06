@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: isolated
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 5 of 15
 > **Dependencies:** 4 — unify-managed-inventory.md
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 2 files / ~350 lines
 
@@ -45,11 +45,11 @@ For a verified entry, **B** is its recorded vendor base, **C** is current conten
 
 ## Acceptance Criteria
 
-- [ ] `createUpdatePlan` takes snapshot, manifest, inventory, and options with no filesystem writes, network requests, or prompts. [src: design §2]
-- [ ] All nine comparison cases in design section 2D distinguish reconciliation, safe replacement, local-only edit, conflict, local deletion, creation, trusted adoption, owned deletion, and orphaned customization. [src: design §2]
-- [ ] Conflicts include real current-to-target diffs and preserved bytes; missing state and generic legacy names never authorize replacement or deletion. [src: design §2]
-- [ ] Safe unattended selection excludes customized replacement; explicit replacement/repair selections are represented in the returned plan. [src: design §2]
-- [ ] Owned JSON/marked-region patches preserve unrelated content and are calculated before any application. [src: design §2]
+- [x] `createUpdatePlan` takes snapshot, manifest, inventory, and options with no filesystem writes, network requests, or prompts. [src: design §2]
+- [x] All nine comparison cases in design section 2D distinguish reconciliation, safe replacement, local-only edit, conflict, local deletion, creation, trusted adoption, owned deletion, and orphaned customization. [src: design §2]
+- [x] Conflicts include real current-to-target diffs and preserved bytes; missing state and generic legacy names never authorize replacement or deletion. [src: design §2]
+- [x] Safe unattended selection excludes customized replacement; explicit replacement/repair selections are represented in the returned plan. [src: design §2]
+- [x] Owned JSON/marked-region patches preserve unrelated content and are calculated before any application. [src: design §2]
 
 ## Test Plan
 
@@ -102,3 +102,9 @@ Model snapshots as explicit data, with normalized vendor comparisons separated f
 | Target no longer includes a customized file | Preserve it as an orphaned customization. |
 | Text differs only by line endings | Compare normalized vendor hashes while preserving the current newline convention for a prose replacement. |
 | JSON registration conflicts with user content | Return a conflict; do not calculate a destructive patch. |
+
+## Implementation Evidence
+
+- Pure planner classifies vendor base/current/target content before any writes and returns concrete selected actions, preserved content, conflicts/diffs, raw preconditions, modes, and the next manifest. Owned JSON and marked-region helpers preserve surrounding user data; ambiguous multiple selectors on one path are refused conservatively.
+- Red-first planner/helper tests plus independent regression tests cover inactive sibling declarations, malformed settings, create-once protection, local deletion, and repeatable CRLF region patches. Forty focused tests pass.
+- Exact staged clean checkout: build passed; 3,127 tests passed, one skipped; typecheck passed. Existing ignored local dogfood state remains unchanged until the new command can migrate it safely.
