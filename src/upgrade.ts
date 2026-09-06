@@ -621,6 +621,7 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
   let updated = 0;
   let skipped = 0;
   let added = 0;
+  const acceptedCustomized = new Set<string>();
 
   for (const change of changes) {
     if (change.kind === 'new') {
@@ -645,12 +646,14 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
 
       if (opts.yes) {
         writeFileSync(change.absolutePath, change.newContent, 'utf-8');
+        acceptedCustomized.add(change.relativePath);
         updated++;
       } else {
         const accept = await askUser(`${label} — overwrite with latest?`);
         if (accept) {
           writeFileSync(change.absolutePath, change.newContent, 'utf-8');
           ensureScriptExecutable(change.absolutePath);
+          acceptedCustomized.add(change.relativePath);
           updated++;
         } else {
           skipped++;
@@ -659,15 +662,24 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
     }
   }
 
-  // Write new version file with updated hashes
-  const newHashes: Record<string, string> = {};
-  for (const [relPath, content] of Object.entries(managedFiles)) {
-    const absPath = join(targetDir, relPath);
-    if (existsSync(absPath)) {
-      const current = readFileSync(absPath, 'utf-8');
-      newHashes[relPath] = hashContent(current);
+  // Write new version file with baseline hashes. A baseline is vendor state,
+  // not a snapshot of whatever bytes happen to be on disk after this run.
+  // Start with the previous state so a declined customization keeps its
+  // recorded vendor base (or stays absent when ownership is unknown).
+  const baselineUpdates: Record<string, string> = {};
+  for (const change of changes) {
+    if (change.kind === 'new' || change.kind === 'updated') {
+      baselineUpdates[change.relativePath] = hashContent(change.newContent);
     }
   }
+  // Customized files are only advanced after an explicit replacement.
+  for (const relPath of acceptedCustomized) {
+    const targetContent = managedFiles[relPath];
+    if (targetContent !== undefined) {
+      baselineUpdates[relPath] = hashContent(targetContent);
+    }
+  }
+  const newHashes = { ...installedHashes, ...baselineUpdates };
   // Record the profile only when this run actually decided it; writeVersion
   // preserves an already-persisted profile when the argument is omitted, and an
   // undecided project stays undecided (so the one-time prompt can still fire).
@@ -682,4 +694,3 @@ export async function upgrade(dir: string, opts: UpgradeOptions): Promise<Upgrad
   console.log(`\nUpgrade complete: ${parts.join(', ')}.`);
   return { cliWasStale: false };
 }
-

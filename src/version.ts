@@ -58,6 +58,12 @@ export function parseGitignoreProfile(value: unknown): GitignoreProfile | null {
 
 export interface VersionInfo {
   version: string;
+  /**
+   * The last recorded vendor baseline for each managed file. These values are
+   * deliberately independent from the bytes currently on disk: when a user
+   * declines a customized replacement, the previous value remains the
+   * comparison base. An absent entry means vendor ownership is unknown.
+   */
   files: Record<string, string>;
   /**
    * The gitignore profile chosen at init/upgrade. Absent on state written by

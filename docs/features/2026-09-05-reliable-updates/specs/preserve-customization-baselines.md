@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 1 of 15
 > **Dependencies:** None
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 3 files / ~120 lines
 
@@ -27,9 +27,9 @@ Replace the current post-upgrade hash rebuild in `upgrade()` with baseline-aware
 
 ## Acceptance Criteria
 
-- [ ] After declining replacement, the second and third upgrade preserve the same custom bytes without treating them as pristine vendor content. [src: design §2]
-- [ ] Accepting a replacement records the target vendor hash; declining preserves a known vendor base or unknown ownership rather than hashing the customization. [src: design §2]
-- [ ] Regression tests exercise the actual upgrade and persisted state on a real temporary filesystem. [src: design §3]
+- [x] After declining replacement, the second and third upgrade preserve the same custom bytes without treating them as pristine vendor content. [src: design §2]
+- [x] Accepting a replacement records the target vendor hash; declining preserves a known vendor base or unknown ownership rather than hashing the customization. [src: design §2]
+- [x] Regression tests exercise the actual upgrade and persisted state on a real temporary filesystem. [src: design §3]
 
 ## Test Plan
 
@@ -81,3 +81,7 @@ Keep the comparison source of truth separate from current content: carry forward
 | Target equals the stored vendor base | Keep the local-only edit without another replacement prompt. |
 | User accepts after earlier declines | Replace bytes and advance the recorded base to the target vendor hash. |
 | Managed file is missing | Leave deletion handling to later planner work; do not invent a current-content baseline. |
+
+## Implementation evidence
+
+The repeated-decline regression failed before the fix. Focused upgrade/version tests pass (59 tests). A clean validation copy of tracked and task files passed build, 3,029 tests (one skipped), and typecheck. The working checkout has a pre-existing ignored state version mismatch (0.7.11 versus package 0.7.13); that local state was preserved and is excluded from clean-checkout validation, as it is in CI.

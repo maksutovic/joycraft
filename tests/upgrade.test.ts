@@ -882,6 +882,80 @@ describe('upgrade', () => {
       expect(readFileSync(agentsPath, 'utf-8')).toBe(before);
     });
   });
+
+  describe('customization baselines', () => {
+    async function declineUpgrade(): Promise<void> {
+      const { Readable } = await import('node:stream');
+      const fakeStdin = Readable.from(['n\n']) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
+      const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
+      Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
+      try {
+        await upgrade(tmpDir, { yes: false });
+      } finally {
+        Object.defineProperty(process, 'stdin', stdinDesc);
+      }
+    }
+
+    it('preserves declined custom bytes and the vendor baseline across repeated upgrades', async () => {
+      await init(tmpDir, { force: false });
+
+      const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+      const vendorBase = 'the previously installed vendor content';
+      const custom = 'the user customization must survive every decline';
+      writeFileSync(join(tmpDir, skillRelPath), custom, 'utf-8');
+
+      const state = readVersion(tmpDir)!;
+      state.files[skillRelPath] = hashContent(vendorBase);
+      writeVersion(tmpDir, '0.0.1', state.files);
+
+      // The first run records the decline. The second and third runs are the
+      // regression: they must still compare against vendorBase, never custom.
+      for (let run = 0; run < 3; run++) {
+        await declineUpgrade();
+        expect(readFileSync(join(tmpDir, skillRelPath), 'utf-8')).toBe(custom);
+        expect(readVersion(tmpDir)!.files[skillRelPath]).toBe(
+          hashContent(vendorBase).slice(0, 16),
+        );
+      }
+    });
+
+    it('records the target vendor hash after accepting a customized replacement', async () => {
+      await init(tmpDir, { force: false });
+
+      const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+      const vendorBase = 'the previously installed vendor content';
+      writeFileSync(join(tmpDir, skillRelPath), 'the user customization', 'utf-8');
+
+      const state = readVersion(tmpDir)!;
+      state.files[skillRelPath] = hashContent(vendorBase);
+      writeVersion(tmpDir, '0.0.1', state.files);
+
+      await upgrade(tmpDir, { yes: true });
+
+      expect(readFileSync(join(tmpDir, skillRelPath), 'utf-8')).toBe(SKILLS['joycraft-tune.md']);
+      expect(readVersion(tmpDir)!.files[skillRelPath]).toBe(
+        hashContent(SKILLS['joycraft-tune.md']).slice(0, 16),
+      );
+    });
+
+    it('keeps an unverifiable customized file without inventing a baseline', async () => {
+      await init(tmpDir, { force: false });
+
+      const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+      writeFileSync(join(tmpDir, skillRelPath), 'custom content with unknown ownership', 'utf-8');
+
+      const state = readVersion(tmpDir)!;
+      delete state.files[skillRelPath];
+      writeVersion(tmpDir, '0.0.1', state.files);
+
+      await declineUpgrade();
+
+      expect(readFileSync(join(tmpDir, skillRelPath), 'utf-8')).toBe(
+        'custom content with unknown ownership',
+      );
+      expect(readVersion(tmpDir)!.files[skillRelPath]).toBeUndefined();
+    });
+  });
 });
 
 describe('version', () => {
