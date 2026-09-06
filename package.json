@@ -12,7 +12,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "node scripts/generate-bundled-files.mjs && node scripts/sync-skills.mjs && tsup",
+    "build": "node scripts/generate-bundled-files.mjs && node scripts/sync-skills.mjs && tsup && node scripts/release-preparation.mjs emit-descriptor",
     "sync-skills": "node scripts/generate-bundled-files.mjs && node scripts/sync-skills.mjs",
     "test": "vitest",
     "typecheck": "tsc --noEmit",

@@ -102,7 +102,7 @@
       "id": 12,
       "file": "serialize-immutable-releases.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "isolated"
     },
     {

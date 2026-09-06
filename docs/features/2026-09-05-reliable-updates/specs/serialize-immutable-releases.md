@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: isolated
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 12 of 15
 > **Dependencies:** None
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 4–6 files / ~350 lines
 
@@ -45,11 +45,11 @@ The current workflow can race while pushing an automatic version bump to `main`,
 
 ## Acceptance Criteria
 
-- [ ] Product changes maintain one release PR under a preparation lock; docs-only changes do not create releases and publication never pushes a version bump to main. [src: design §2]
-- [ ] Publishing selects the immutable release merge SHA, retains the `publish.yml` OIDC identity, and uses non-canceling publication concurrency. [src: design §2]
-- [ ] Build/pack once and retain the tarball plus SHA-512 digest as durable artifacts; retry reuses the artifact and rejects integrity/provenance mismatch rather than rebuilding a different package at the same version. [src: design §2]
-- [ ] Pin the approved release toolchain (Node 24.20.0, npm 11.19.0, pnpm 10.19.0); registry lookup errors fail instead of implying version 0.0.0. [src: design §2]
-- [ ] Candidate publication accepts the tested tarball; latest promotion remains disabled until spec 13 readiness and authentication gates are integrated. [src: design §2]
+- [x] Product changes maintain one release PR under a preparation lock; docs-only changes do not create releases and publication never pushes a version bump to main. [src: design §2]
+- [x] Publishing selects the immutable release merge SHA, retains the `publish.yml` OIDC identity, and uses non-canceling publication concurrency. [src: design §2]
+- [x] Build/pack once and retain the tarball plus SHA-512 digest as durable artifacts; retry reuses the artifact and rejects integrity/provenance mismatch rather than rebuilding a different package at the same version. [src: design §2]
+- [x] Pin the approved release toolchain (Node 24.20.0, npm 11.19.0, pnpm 10.19.0); registry lookup errors fail instead of implying version 0.0.0. [src: design §2]
+- [x] Candidate publication accepts the tested tarball; latest promotion remains disabled until spec 13 readiness and authentication gates are integrated. [src: design §2]
 
 ## Test Plan
 
@@ -131,3 +131,9 @@ Reject the current alternative of bumping `package.json` and pushing it back to 
 | Existing candidate retry | Reuse the retained exact-version tarball after identity validation. |
 | Missing or altered artifact | Stop before publish with a provenance/integrity diagnostic. |
 | Existing package version | Reuse the verified matching candidate without republishing; stop if integrity/provenance differs. |
+
+## Implementation Evidence
+
+- Release preparation now uses one branch, durable prepared/released baselines, reserved versions, and narrowly scoped version-only merge conflict handling. Candidate publication packs the immutable merge SHA once and retries only the retained matching tarball.
+- Focused production helper and real Git/pack regressions: 20 passed. Disabling the version-conflict resolver in a temporary validation checkout reproduces the merge failure.
+- Exact staged clean checkout: build passed; 3,081 tests passed, one skipped; typecheck passed. Workflow syntax checks passed. No actual release, tag promotion, secret change, or merge occurred. Latest promotion remains absent until the later readiness gate.
