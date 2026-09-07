@@ -1,6 +1,6 @@
 # Publish the exact reviewed merge artifact to npm's candidate channel.
-# Latest promotion is a separate, gated workflow owned by a later spec.
-name: Publish candidate to npm
+# Promote only after exact-artifact consumer and compatibility checks.
+name: Verify and publish npm release
 
 on:
   pull_request:
@@ -33,7 +33,59 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  prewarm:
+    name: Prewarm ${{ matrix.node }} / npm ${{ matrix.npm }} metadata caches
+    if: (github.event_name == 'workflow_dispatch' && inputs.artifact_run_id != '') || (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release/joycraft')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - node: 22.23.1
+            npm: 10.9.8
+          - node: 24.20.0
+            npm: 11.19.0
+    steps:
+      - name: Checkout immutable release merge
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 1
+      - name: Setup consumer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Pin consumer npm
+        run: npm install --global npm@${{ matrix.npm }}
+      - name: Prime full and compact registry metadata
+        if: inputs.artifact_run_id == '' && github.run_attempt == 1
+        run: |
+          CACHE_ROOT="release-caches/${{ matrix.node }}"
+          mkdir -p "$CACHE_ROOT/warmed-full" "$CACHE_ROOT/warmed-compact"
+          node scripts/release-verification.mjs prime --package joycraft --cache "$CACHE_ROOT/warmed-full" --metadata-mode full
+          node scripts/release-verification.mjs prime --package joycraft --cache "$CACHE_ROOT/warmed-compact" --metadata-mode compact
+      - name: Upload prepublication cache for this runtime lane
+        if: inputs.artifact_run_id == '' && github.run_attempt == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: joycraft-release-cache-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}-${{ matrix.node }}
+          path: release-caches/${{ matrix.node }}
+          if-no-files-found: error
+          retention-days: 90
+      - name: Verify original prepublication cache is retained for retry
+        if: inputs.artifact_run_id != '' || github.run_attempt > 1
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: joycraft-release-cache-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}-${{ matrix.node }}
+          path: release-caches/${{ matrix.node }}
+          github-token: ${{ github.token }}
+
   publish:
+    needs: prewarm
     if: (github.event_name == 'workflow_dispatch' && inputs.artifact_run_id != '') || (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release/joycraft')
     runs-on: ubuntu-latest
     environment: production
@@ -133,6 +185,30 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+      - name: Retain previous package for consumer update verification
+        if: success()
+        env:
+          PACKAGE: joycraft
+        run: |
+          mkdir -p release-previous
+          npm pack "$PACKAGE@latest" --json --ignore-scripts --pack-destination release-previous > release-previous/pack.json
+          node -e "const fs=require('fs'); const path=require('path'); const record=JSON.parse(fs.readFileSync('release-previous/pack.json','utf8'))[0]; if(!record?.filename) throw new Error('previous package was not retained'); fs.writeFileSync('release-previous/tarball.txt',path.resolve('release-previous',record.filename));"
+
+      - name: Verify retained artifact with fresh init and previous-version update
+        if: success()
+        env:
+          RELEASE_SHA: ${{ steps.release.outputs.release_sha }}
+          RELEASE_VERSION: ${{ steps.release.outputs.release_version }}
+        run: |
+          PREVIOUS=$(node -p "require('fs').readFileSync('release-previous/tarball.txt','utf8').trim()")
+          node scripts/release-verification.mjs verify-consumers \
+            --manifest release-artifact/release-artifact.json \
+            --release-sha "$RELEASE_SHA" \
+            --version "$RELEASE_VERSION" \
+            --package joycraft \
+            --previous-tarball "$PREVIOUS" \
+            --root release-consumers
+
       - name: Publish exactly the retained tarball to candidate
         env:
           TARBALL: ${{ steps.artifact.outputs.tarball }}
@@ -159,3 +235,124 @@ jobs:
             exit 0
           fi
           npm publish "$TARBALL" --access public --tag candidate
+
+  consumer-matrix:
+    name: Consumer readiness · Node ${{ matrix.node }} / npm ${{ matrix.npm }}
+    needs: publish
+    if: needs.publish.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - node: 22.23.1
+            npm: 10.9.8
+          - node: 24.20.0
+            npm: 11.19.0
+    steps:
+      - name: Checkout immutable release merge
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Pin consumer npm
+        run: npm install --global npm@${{ matrix.npm }}
+      - name: Download retained candidate artifact
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: ${{ inputs.artifact_name || format('joycraft-release-{0}', inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha) }}
+          path: release-artifact
+          github-token: ${{ github.token }}
+      - name: Restore warmed metadata caches
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: joycraft-release-cache-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}-${{ matrix.node }}
+          path: release-caches/${{ matrix.node }}
+          github-token: ${{ github.token }}
+      - name: Verify exact candidate metadata and registry readiness
+        run: |
+          VERSION=$(node -p "JSON.parse(require('fs').readFileSync('release-artifact/release-artifact.json','utf8')).version")
+          INTEGRITY=$(node -p "JSON.parse(require('fs').readFileSync('release-artifact/release-artifact.json','utf8')).integrity")
+          node scripts/release-verification.mjs readiness \
+            --package joycraft \
+            --version "$VERSION" \
+            --integrity "$INTEGRITY" \
+            --manifest release-artifact/release-artifact.json \
+            --node "${{ matrix.node }}" \
+            --npm "${{ matrix.npm }}" \
+            --cache-root release-caches \
+            --consumer-root registry-consumers \
+            --min-freshness-ms 300000 \
+            --deadline-ms 900000
+
+  promote:
+    name: Promote verified candidate and create GitHub release
+    needs: [publish, consumer-matrix]
+    if: needs.publish.result == 'success' && needs.consumer-matrix.result == 'success'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout immutable release merge
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+      - name: Pin promotion npm
+        run: npm install --global npm@11.19.0
+      - name: Download retained release evidence
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: ${{ inputs.artifact_name || format('joycraft-release-{0}', inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha) }}
+          path: release-artifact
+          github-token: ${{ github.token }}
+      - name: Download required compatibility report
+        uses: actions/download-artifact@v4
+        with:
+          name: joycraft-required-validation-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}
+          path: required-validation
+          github-token: ${{ github.token }}
+      - name: Restore original caches for the final readiness check
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: joycraft-release-cache-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}-24.20.0
+          path: release-caches/24.20.0
+          github-token: ${{ github.token }}
+      - name: Validate required matrix report and promote
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOYCRAFT_NPM_PROMOTION_TOKEN: ${{ secrets.JOYCRAFT_NPM_PROMOTION_TOKEN }}
+          JOYCRAFT_NPM_PROMOTION_TOKEN_EXPIRES_AT: ${{ secrets.JOYCRAFT_NPM_PROMOTION_TOKEN_EXPIRES_AT }}
+          REQUIRED_REPORT: required-validation/report.json
+          RELEASE_SHA: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha }}
+        run: |
+          test -f "$REQUIRED_REPORT" || { echo 'Required validation report path is unreadable; latest remains unchanged.' >&2; exit 1; }
+          test -f .github/release-required-checks.json || { echo 'Required validation matrix configuration is missing; latest remains unchanged.' >&2; exit 1; }
+          RELEASE_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('release-artifact/release-artifact.json','utf8')).version")
+          node scripts/release-promotion.mjs promote \
+            --manifest release-artifact/release-artifact.json \
+            --package joycraft \
+            --required-report "$REQUIRED_REPORT" \
+            --release-sha "$RELEASE_SHA" \
+            --version "$RELEASE_VERSION" \
+            --cache-root release-caches \
+            --node 24.20.0 \
+            --npm 11.19.0 \
+            --required-checks-file .github/release-required-checks.json

@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: isolated
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 13 of 15
 > **Dependencies:** 7 — unify-update-command.md, 12 — serialize-immutable-releases.md
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 3–5 files / ~350 lines
 
@@ -45,12 +45,12 @@ A successful source build does not prove that npm clients can install the publis
 
 ## Acceptance Criteria
 
-- [ ] Test fresh installs and previous-version updates from the retained tarball before publication; verify exact registry-version integrity after candidate publication. [src: design §2]
-- [ ] Warm full and compact metadata caches before candidate publication and test both warmed and cold clients with npm 10.9.8/Node 22.23.1 and the maintained Node 24 line. [src: design §2]
-- [ ] Wait at least the observed five-minute freshness interval and require actual readiness success; bounded deadline failure leaves latest unchanged. [src: design §2]
-- [ ] Promote automatically using the Joycraft-scoped credential only after readiness; missing/expired credentials fail clearly and do not bypass verification. [src: D4]
-- [ ] Retries rerun readiness, skip completed steps, and never downgrade latest; verify latest from a fresh client before creating the GitHub tag/release. [src: design §2]
-- [ ] Exercise `--prefer-online` and bounded isolated-cache recovery; deterministic local fixtures test failures without publishing during development. [src: design §2]
+- [x] Test fresh installs and previous-version updates from the retained tarball before publication; verify exact registry-version integrity after candidate publication. [src: design §2]
+- [x] Warm full and compact metadata caches before candidate publication and test both warmed and cold clients with npm 10.9.8/Node 22.23.1 and the maintained Node 24 line. [src: design §2]
+- [x] Wait at least the observed five-minute freshness interval and require actual readiness success; bounded deadline failure leaves latest unchanged. [src: design §2]
+- [x] Promote automatically using the Joycraft-scoped credential only after readiness; missing/expired credentials fail clearly and do not bypass verification. [src: D4]
+- [x] Retries rerun readiness, skip completed steps, and never downgrade latest; verify latest from a fresh client before creating the GitHub tag/release. [src: design §2]
+- [x] Exercise `--prefer-online` and bounded isolated-cache recovery; deterministic local fixtures test failures without publishing during development. [src: design §2]
 
 ## Test Plan
 
@@ -140,3 +140,11 @@ Reject a timer-only promotion job: the incident showed client metadata freshness
 | Scoped credential is absent or expired | Fail after reporting the credential gate; never fall back to OIDC for promotion. |
 | Retry finds newer `latest` | Refuse downgrade and skip tag/release creation. |
 | GitHub tag already exists after verified promotion | Treat the tag/release step as idempotent after fresh latest verification. |
+
+## Implementation Evidence
+
+- Retained artifact consumers execute fresh init and prior-version init followed by candidate update; actual CLI failure blocks verification.
+- Local HTTP registry tests exercise real npm full and compact metadata requests across prepublication warm caches, exact candidate installs, and fresh latest installation identity checks. Node 22.23.1/npm 10.9.8 and Node 24.20.0/npm 11.19.0 are separate workflow lanes with retained prepublication caches.
+- Readiness enforces the five-minute floor and bounded deadlines. Promotion validates exact artifact/report/descriptor identity, rereads latest, preserves scoped credential isolation, and gates GitHub tags/releases on verified consumer results. Retry uses retained artifacts and original caches.
+- Required compatibility evidence is fail-closed; spec 14 supplies its producer and workflow wiring. No publication, tag, promotion, or credential provisioning ran during implementation.
+- Exact staged checkout: build passed, 3,213 tests passed (one skipped), and type checking passed. Workflow YAML/dependency/credential boundary checks passed.
