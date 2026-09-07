@@ -9,6 +9,8 @@ claim that a release has shipped.
 
 ## Unreleased — Restore automatic releases
 
+- Fix release upgrade verification for 0.7.13, whose init command predates the non-interactive flag.
+
 Merging to main once again starts an automatic npm release. The additional manual
 release PR and separate promotion-token requirement have been removed. CI still
 verifies the exact retained package with fresh install/update checks and the full

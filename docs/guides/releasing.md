@@ -51,3 +51,7 @@ The older preparation and candidate-promotion helpers remain tested utilities;
 they are not on the automatic production path. Post-publication cold/warmed
 registry-cache readiness is no longer a promotion gate. Fresh install/update and
 packaged compatibility checks run before the single OIDC publish to `latest`.
+
+### Legacy upgrade fixture
+
+The previous package is initialized with plain `init`, which supports 0.7.13. The temporary consumer contains only generated files, so the candidate update explicitly replaces its legacy `.claude/hooks/joycraft-version-check.mjs`. Real projects retain the default ownership-conflict guard and require explicit review for that replacement.
