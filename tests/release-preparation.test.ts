@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -424,46 +424,29 @@ describe('release preparation', () => {
 
 describe('production workflow contracts', () => {
   const publish = readFileSync(join(ROOT, '.github/workflows/publish.yml'), 'utf8');
-  const prepare = readFileSync(join(ROOT, '.github/workflows/release-prepare.yml'), 'utf8');
-  const helper = readFileSync(join(ROOT, 'scripts/release-preparation.mjs'), 'utf8');
 
-  it('checks out the immutable release SHA and retains OIDC with non-canceling publication concurrency', () => {
-    expect(publish).toMatch(/ref:\s*\$\{\{\s*inputs\.release_sha\s*\|\|\s*github\.event\.pull_request\.merge_commit_sha\s*\}\}/);
-    expect(publish).toMatch(/publish:\s*\n[\s\S]*environment:\s*production/);
+  it('releases main pushes automatically without a release PR', () => {
+    expect(publish).toMatch(/on:\s*\n\s+push:\s*\n\s+branches: \[main\]/);
+    expect(publish).not.toContain('pull_request');
+    expect(publish).not.toContain('release/joycraft');
+    expect(publish).toContain('node scripts/automatic-release.mjs');
+    expect(publish).toContain("github.event_name == 'push'");
+    expect(existsSync(join(ROOT, '.github/workflows/release-prepare.yml'))).toBe(false);
+  });
+
+  it('retains immutable source, OIDC, serialized publication, and packaged verification', () => {
+    expect(publish).toContain('ref: ${{ inputs.release_sha || github.sha }}');
     expect(publish).toContain('id-token: write');
     expect(publish).toContain('verify-commit');
     expect(publish).toMatch(/concurrency:[\s\S]*cancel-in-progress:\s*false/);
     expect(publish).toContain('node-version: 24.20.0');
     expect(publish).toContain('npm@11.19.0');
     expect(publish).toContain('version: 10.19.0');
-    expect(publish).toContain("github.event_name == 'workflow_dispatch' && inputs.artifact_run_id != ''");
-    expect(publish).toContain('release version does not match the checked-out immutable commit');
     expect(publish).toContain('steps.artifact.outputs.tarball');
-    expect(publish).not.toContain('release-artifact/joycraft-${{ steps.release.outputs.release_version }}.tgz');
-  });
-
-  it('serializes release preparation and keeps the main branch immutable', () => {
-    expect(prepare).toMatch(/concurrency:[\s\S]*group:[^\n]*release-preparation/);
-    expect(prepare).toMatch(/concurrency:[\s\S]*cancel-in-progress:\s*false/);
-    expect(prepare).toContain('node-version: 24.20.0');
-    expect(prepare).toContain('npm@11.19.0');
-    expect(prepare).toContain('version: 10.19.0');
-    expect(prepare).not.toMatch(/git push origin main/);
-    expect(prepare).not.toContain('npm version');
-    expect(prepare).toContain('prepare-branch');
-    expect(prepare).toContain('sync-pr');
-    expect(prepare).toContain('resolve-baseline');
-    expect(prepare).toContain('has-unprepared-product');
-    expect(prepare).toContain("product-state.json");
-    expect(prepare).toContain('--skip-release-preparation');
-    expect(helper).toContain("['pr', 'create'");
-    expect(helper).toContain("['pr', 'edit'");
-  });
-
-  it('keeps latest promotion out of candidate publication', () => {
-    expect(publish).toContain('--tag candidate');
-    expect(publish).not.toMatch(/npm\s+dist-tag\s+add[\s\S]*latest/);
-    expect(publish).not.toContain('--latest');
-    expect(publish).toContain("github.event.pull_request.head.ref == 'release/joycraft'");
+    expect(publish).toContain('uses: ./.github/workflows/test.yml');
+    expect(publish).toContain('--tag latest');
+    expect(publish).toContain('needs: [pack, compatibility]');
+    expect(publish).not.toContain('JOYCRAFT_NPM_PROMOTION_TOKEN');
+    expect(publish).not.toContain('git push origin main');
   });
 });

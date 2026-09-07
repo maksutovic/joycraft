@@ -1,13 +1,18 @@
 # Changelog
 
-Joycraft releases are prepared in a reviewed release PR, verified from its
-immutable merge commit, and promoted only after the candidate passes the
-consumer checks. This file records the releases that changed how Joycraft
-works, in a before → now → side-effects format, newest first. An Unreleased
-entry describes work in progress; it does not assign a version or claim that a
-release has shipped.
+Joycraft releases automatically after merges to main. CI verifies the retained
+package before publishing through npm Trusted Publishing. This file records the
+releases that changed how Joycraft works, newest first. Unreleased entries do not
+claim that a release has shipped.
 
 ---
+
+## Unreleased — Restore automatic releases
+
+Merging to main once again starts an automatic npm release. The additional manual
+release PR and separate promotion-token requirement have been removed. CI still
+verifies the exact retained package with fresh install/update checks and the full
+required compatibility matrix before publishing it to `latest` through OIDC.
 
 ## Unreleased — Reliable updates
 

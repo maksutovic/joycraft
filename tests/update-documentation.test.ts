@@ -16,8 +16,6 @@ import {
   postponeUpdate,
   readUpdatePolicy,
 } from '../src/update-check';
-import { validatePromotionCredential } from '../scripts/release-promotion.mjs';
-import { DEFAULT_CACHE_MODES, MIN_FRESHNESS_MS } from '../scripts/release-verification.mjs';
 
 const repo = dirname(dirname(fileURLToPath(import.meta.url)));
 const read = (path: string) => readFileSync(join(repo, path), 'utf8');
@@ -99,39 +97,19 @@ describe('reliable update documentation contract', () => {
     expect(docs).toMatch(/migration[\s\S]{0,100}separate/i);
   });
 
-  it('documents the maintainer credential boundary and recovery for its real expiry diagnostic', () => {
+  it('documents automatic OIDC releases and retained-artifact recovery', () => {
     const docs = read('docs/guides/releasing.md');
     const requiredChecks = JSON.parse(read('.github/release-required-checks.json')) as { requiredChecks: string[] };
-    const diagnostic = (() => {
-      try {
-        validatePromotionCredential({
-          env: {
-            JOYCRAFT_NPM_PROMOTION_TOKEN: 'fixture-secret',
-            JOYCRAFT_NPM_PROMOTION_TOKEN_EXPIRES_AT: '2020-01-01T00:00:00Z',
-          },
-          now: () => new Date('2026-01-01T00:00:00Z'),
-        });
-        return '';
-      } catch (error) {
-        return error instanceof Error ? error.message : String(error);
-      }
-    })();
-    expect(diagnostic).toMatch(/JOYCRAFT_NPM_PROMOTION_TOKEN is expired; candidate promotion is blocked/);
-    expect(docs).toContain('JOYCRAFT_NPM_PROMOTION_TOKEN');
-    expect(docs).toContain('JOYCRAFT_NPM_PROMOTION_TOKEN_EXPIRES_AT');
     expect(requiredChecks.requiredChecks).toHaveLength(196);
-    expect(DEFAULT_CACHE_MODES).toEqual(['cold', 'warmed-full', 'warmed-compact']);
-    expect(MIN_FRESHNESS_MS).toBe(300_000);
-    expect(docs).toContain('196 checks');
-    expect(docs).toContain('warmed-full');
-    expect(docs).toContain('warmed-compact');
-    expect(docs).toContain('300000');
-    expect(docs).toMatch(/maintainer[\s\S]{0,180}(create|own|renew|rotate)/i);
-    expect(docs).toMatch(/scoped[\s\S]{0,100}(write|package)/i);
-    expect(docs).toMatch(/expired[\s\S]{0,220}(renew|rotate|rerun|retry)/i);
-    expect(docs).toMatch(/candidate[\s\S]{0,220}(verify|readiness|promotion)/i);
-    expect(docs).toMatch(/same.*tarball|retained.*tarball/i);
-    expect(docs).not.toContain('fixture-secret');
+    expect(docs).toContain('Every push to `main`');
+    expect(docs).toContain('there is no second release PR');
+    expect(docs).toContain('GitHub OIDC');
+    expect(docs).toContain('No separate npm');
+    expect(docs).toContain('required packaged compatibility matrix');
+    expect(docs).toContain('same SHA, version, and');
+    expect(docs).toContain('artifact_run_id');
+    expect(docs).toContain('moving the tag backward');
+    expect(docs).toContain('no longer a promotion gate');
   });
 
   it('keeps linked public guides aligned with the unified updater and explicit migrations', () => {

@@ -90,8 +90,8 @@ describe('required compatibility validation', () => {
     expect(workflow).toContain('node scripts/validate-package.mjs');
     expect(workflow).toContain('node scripts/release-validation.mjs aggregate');
     expect(publish).toContain('uses: ./.github/workflows/test.yml');
-    expect(publish).toMatch(/promote:[\s\S]*needs:\s*\[publish, consumer-matrix, compatibility\]/);
-    expect(publish).toContain('joycraft-required-validation-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}');
+    expect(publish).toMatch(/publish:[\s\S]*needs:\s*\[pack, compatibility\]/);
+    expect(publish).toContain('joycraft-required-validation-${{ inputs.release_sha || github.sha }}');
     expect(workflow).toContain('run: pnpm test');
     for (const lane of REQUIRED_RUNTIME_LANES) {
       expect(workflow).toContain(`- os: ${lane.os}\n            runner: ${lane.runner}\n            node: ${lane.node}`);

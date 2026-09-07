@@ -41,6 +41,12 @@
 
 ---
 
+## Release behavior
+
+Main merges automatically release to npm after required packaged checks. Do not
+introduce a second release PR, manual promotion approval, or new credential gate
+without Max’s explicit approval. See `docs/guides/releasing.md`.
+
 ## External Validation
 
 This project uses holdout scenario tests in a separate private repo (`joycraft-scenarios`).
@@ -115,7 +121,7 @@ Joycraft skill entry
 | `src/update.ts` + `src/update-plan.ts` + `src/update-transaction.ts` | One executing bundle, conservative per-file planning, atomic apply and guarded recovery |
 | `src/install-manifest.ts` | Shared/private installation authority and conservative legacy bridge |
 | `src/update-check.ts` + `src/auto-safe-update.ts` | Local discovery policy, quiet checks, and verified automatic-update gates |
-| `scripts/release-preparation.mjs` + `scripts/release-verification.mjs` + `scripts/release-promotion.mjs` | Reviewed release PR, retained tarball, consumer verification, and gated promotion |
+| `scripts/release-preparation.mjs` + `scripts/release-verification.mjs` + `scripts/release-promotion.mjs` | Retained tarball, consumer verification, and legacy release utilities; production entry is `scripts/automatic-release.mjs` |
 | `src/improve-claude-md.ts` | Merge logic for existing CLAUDE.md files — most complex logic |
 | `templates/` | Source-of-truth for all templates — changes here propagate to users via upgrade |
 | `src/skills/` | Source-of-truth for all product skills — `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/`, `src/copilot-skills/`, `src/omp-skills/` are generated from it (never edit those directly) |
