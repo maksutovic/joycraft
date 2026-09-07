@@ -7,6 +7,14 @@ claim that a release has shipped.
 
 ---
 
+## Unreleased — Recover publication verification
+
+A successful npm publication no longer fails verification after one stale `latest`
+lookup. The workflow polls registry metadata within a five-minute deadline and
+reports the expected and observed state. It still stops on conflicting package
+identity or a newer release. Retrying a failed publish job reuses the retained
+tarball and a validated compatibility report from the successful producer attempt.
+
 ## Unreleased — Restore automatic releases
 
 - Fix release upgrade verification for 0.7.13, whose init command predates the non-interactive flag.

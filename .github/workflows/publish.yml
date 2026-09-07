@@ -186,8 +186,9 @@ jobs:
       - name: Download required compatibility report
         uses: actions/download-artifact@v4
         with:
-          name: joycraft-required-validation-${{ inputs.release_sha || github.sha }}-${{ github.run_attempt }}
+          pattern: joycraft-required-validation-${{ inputs.release_sha || github.sha }}-*
           path: required-validation
+          merge-multiple: false
           github-token: ${{ github.token }}
       - name: Validate exact artifact and required report
         id: artifact
@@ -198,11 +199,10 @@ jobs:
           node --input-type=module <<'JS'
           import { appendFileSync, readFileSync } from 'node:fs';
           import { resolveRetainedArtifact } from './scripts/release-preparation.mjs';
-          import { validateRequiredValidationReport } from './scripts/release-verification.mjs';
+          import { resolveRequiredValidationReport } from './scripts/release-report.mjs';
           const artifact = await resolveRetainedArtifact({ manifestPath: 'release-artifact/release-artifact.json', expected: { releaseSha: process.env.RELEASE_SHA, version: process.env.RELEASE_VERSION || undefined, packageName: 'joycraft' } });
-          const report = JSON.parse(readFileSync('required-validation/report.json', 'utf8'));
           const checks = JSON.parse(readFileSync('.github/release-required-checks.json', 'utf8'));
-          validateRequiredValidationReport(report, { releaseSha: artifact.releaseSha, version: artifact.version, integrity: artifact.integrity, requiredChecks: checks.requiredChecks });
+          resolveRequiredValidationReport({ root: 'required-validation', expected: artifact, requiredChecks: checks.requiredChecks });
           appendFileSync(process.env.GITHUB_OUTPUT, `tarball=${artifact.tarball}\nversion=${artifact.version}\n`);
           JS
       - name: Publish verified tarball to latest using OIDC
@@ -211,7 +211,7 @@ jobs:
           VERSION: ${{ steps.artifact.outputs.version }}
         run: |
           STATUS=0
-          EXISTING=$(npm view "joycraft@$VERSION" dist.integrity --json 2>registry-error.txt) || STATUS=$?
+          EXISTING=$(npm view "joycraft@$VERSION" dist.integrity --json --prefer-online 2>registry-error.txt) || STATUS=$?
           if [[ "$STATUS" != 0 ]]; then
             if ! grep -qiE 'E404|404 Not Found|not found' registry-error.txt; then
               cat registry-error.txt >&2
@@ -226,8 +226,7 @@ jobs:
           else
             npm publish "$TARBALL" --access public --tag latest
           fi
-          LATEST=$(npm view joycraft dist-tags.latest)
-          [[ "$LATEST" == "$VERSION" ]] || { echo 'Publication is not reflected in latest; inspect registry before retrying' >&2; exit 1; }
+          node scripts/verify-publication.mjs --manifest release-artifact/release-artifact.json
       - name: Create GitHub release for the published source
         env:
           GH_TOKEN: ${{ github.token }}
