@@ -61,6 +61,13 @@ export interface UpdateCheckOptions {
   installedVersion?: string;
 }
 
+/** Resolve the stable identity used to suppress duplicate notices in one session. */
+export function resolveCheckSessionId(explicit?: string): string {
+  return explicit
+    ?? process.env.JOYCRAFT_SESSION_ID
+    ?? `parent-${process.ppid}`;
+}
+
 export interface ResolveStatusInput {
   installedVersion?: string;
   availableVersion?: string;
@@ -342,7 +349,7 @@ export function resolveUpdateStatus(input: ResolveStatusInput): ResolvedStatus {
 export async function checkForUpdate(root: string, options: UpdateCheckOptions = {}): Promise<CheckResult> {
   const now = timestamp(options);
   const explicit = options.explicit === true;
-  const sessionId = options.sessionId ?? process.env.JOYCRAFT_SESSION_ID ?? `process-${process.pid}`;
+  const sessionId = resolveCheckSessionId(options.sessionId);
   const settingsResult = readSettings(root);
   const settings = settingsResult.settings;
   const localPolicy = policy(settings?.updatePolicy ?? settings?.policy);

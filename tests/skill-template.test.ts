@@ -225,6 +225,29 @@ describe('applyTemplate — frontmatter', () => {
   });
 });
 
+describe('applyTemplate — generated skill entry', () => {
+  it('inserts the common checker once while preserving transformed frontmatter', () => {
+    const source = '---\nname: a\ndescription: see {{boundary_file}}\ninstructions: c\n---\n# Body\n\nDo the work.\n';
+    for (const harness of ['claude', 'codex', 'pi', 'copilot', 'omp'] as const) {
+      const baseline = applyTemplate(source, harness, 'probe.md');
+      const generated = applyTemplate(source, harness, 'probe.md', { includeUpdateCheck: true });
+      const baselineFrontmatter = baseline.match(/^---\n[\s\S]*?---\n/)?.[0];
+      const generatedFrontmatter = generated.match(/^---\n[\s\S]*?---\n/)?.[0];
+      expect(generatedFrontmatter).toBe(baselineFrontmatter);
+      expect(generated.match(/node docs\/\.joycraft\/check\.mjs check --json/g)).toHaveLength(1);
+      expect(generated.indexOf('node docs/.joycraft/check.mjs check --json')).toBeLessThan(generated.indexOf('# Body'));
+      expect(generated).toContain('continue the requested skill');
+      expect(generated).toContain('reinvoke the skill or restart the session');
+    }
+  });
+
+  it('leaves generic transforms unchanged unless generation opts in', () => {
+    const source = '# Body\n';
+    expect(applyTemplate(source, 'claude')).toBe(source);
+    expect(applyTemplate(source, 'claude')).not.toContain('check.mjs');
+  });
+});
+
 describe('applyTemplate — purity', () => {
   it('source module imports no fs/path/process/network modules', () => {
     const modPath = join(__dirname, '..', 'scripts', 'lib', 'skill-template.mjs');

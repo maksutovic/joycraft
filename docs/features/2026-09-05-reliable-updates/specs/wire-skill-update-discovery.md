@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 10 of 15
 > **Dependencies:** 9 — implement-shared-update-checker.md
-> **Status:** Ready
+> **Status:** In Review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 8–12 files plus generated copies / ~250 lines
 
@@ -27,11 +27,11 @@ The current update notices are scattered among the CLI, upgrade path, and a Clau
 
 ## Acceptance Criteria
 
-- [ ] All five generated harness variants invoke the checker once through a short common entry instruction without changing skill frontmatter. [src: design §2]
-- [ ] Missing/failed checker execution continues the skill without repeated bootstrap attempts; current/postponed/offline checks stay quiet. [src: design §2]
-- [ ] The verified Claude SessionStart adapter invokes the same checker and belongs to the managed inventory; no unverified native hook is added. [src: design §2]
-- [ ] Updates occur at a workflow boundary and explain skill reinvocation or session restart; every source edit synchronizes all generated and installed copies in its own commit. [src: design §2]
-- [ ] Position-sensitive tests still check the intended semantic sections after the common entry is inserted. [src: design §2]
+- [x] All five generated harness variants invoke the checker once through a short common entry instruction without changing skill frontmatter. [src: design §2]
+- [x] Missing/failed checker execution continues the skill without repeated bootstrap attempts; current/postponed/offline checks stay quiet. [src: design §2]
+- [x] The verified Claude SessionStart adapter invokes the same checker and belongs to the managed inventory; no unverified native hook is added. [src: design §2]
+- [x] Updates occur at a workflow boundary and explain skill reinvocation or session restart; every source edit synchronizes all generated and installed copies in its own commit. [src: design §2]
+- [x] Position-sensitive tests still check the intended semantic sections after the common entry is inserted. [src: design §2]
 
 ## Test Plan
 
@@ -98,3 +98,7 @@ Reject adding five harness-specific native hooks. Their capabilities have not be
 | Existing Claude settings contain other SessionStart hooks | Preserve them and add or replace only the managed Joycraft adapter registration. |
 | A source skill is changed | The same commit regenerates all five source trees and syncs all five installed harness trees. |
 | Non-Claude harness supports an undocumented hook format | Do not create a hook registration based on inference. |
+
+## Implementation Evidence
+
+All 110 canonical skill/harness combinations preserve their existing transformed frontmatter and body with one common entry. The managed Claude adapter delegates to the shared checker, bounds stdin, and shares its documented session identity with later commands. Installed-script subprocess tests cover quiet failures, explicit acknowledgement, separate postponement, and session suppression. All five generated and installed trees were synchronized. Build, type checking, and the full staged suite passed: 3,356 tests, one skipped.

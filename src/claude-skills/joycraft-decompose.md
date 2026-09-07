@@ -4,6 +4,8 @@ entry: human
 description: Break a feature brief into atomic specs — small, testable, independently executable units
 instructions: 32
 ---
+At skill entry, run `node docs/.joycraft/check.mjs check --json --session <session-id>` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing, fails, or returns display: false (including current, postponed, off, or unknown), continue the requested skill quietly; never retry setup. Offer an update only when display: true, then record the offer with `node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>`. Apply approved updates after this skill finishes, then reinvoke the skill or restart the session to load changed instructions.
+
 
 # Decompose Feature into Atomic Specs
 

@@ -2,6 +2,8 @@
 name: joycraft-implement-level5
 description: Invoked by tune's roadmap or the human opting into Level 5 — set up the autofix loop, holdout scenario testing, and scenario evolution from specs
 ---
+At skill entry, run `node docs/.joycraft/check.mjs check --json --session <session-id>` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing, fails, or returns display: false (including current, postponed, off, or unknown), continue the requested skill quietly; never retry setup. Offer an update only when display: true, then record the offer with `node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>`. Apply approved updates after this skill finishes, then reinvoke the skill or restart the session to load changed instructions.
+
 
 # Implement Level 5 — Autonomous Development Loop
 

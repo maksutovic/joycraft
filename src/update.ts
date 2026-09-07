@@ -443,62 +443,6 @@ function selectedHarnessIgnoreWarning(root: string, harnesses: readonly Harness[
   return warnings;
 }
 
-function legacyCheckerRetirement(root: string): PlannedUpdateAction | undefined {
-  const relative = '.claude/settings.json';
-  if (!regularFile(root, relative)) return undefined;
-  const absolute = join(root, ...relative.split('/'));
-  const stat = lstatSync(absolute);
-  let parsed: unknown;
-  const current = readFileSync(absolute);
-  try {
-    parsed = JSON.parse(current.toString('utf8'));
-  } catch {
-    return undefined;
-  }
-  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return undefined;
-  const settings = parsed as Record<string, unknown>;
-  const hooks = settings.hooks;
-  if (!hooks || typeof hooks !== 'object' || Array.isArray(hooks)) return undefined;
-  const sessionStart = (hooks as Record<string, unknown>).SessionStart;
-  if (!Array.isArray(sessionStart)) return undefined;
-  const checker = 'node .claude/hooks/joycraft-version-check.mjs';
-  let found = false;
-  const nextSessionStart = sessionStart.flatMap((entry) => {
-    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return [entry];
-    const record = entry as Record<string, unknown>;
-    if (!Array.isArray(record.hooks)) return [entry];
-    const nextHooks = record.hooks.filter((hook) => {
-      const command = hook && typeof hook === 'object' && !Array.isArray(hook)
-        ? (hook as Record<string, unknown>).command
-        : undefined;
-      if (command === checker) {
-        found = true;
-        return false;
-      }
-      return true;
-    });
-    return nextHooks.length ? [{ ...record, hooks: nextHooks }] : [];
-  });
-  if (!found) return undefined;
-  const nextSettings = { ...settings, hooks: { ...(hooks as Record<string, unknown>), SessionStart: nextSessionStart } };
-  const nextText = JSON.stringify(nextSettings, null, 2) + (current.toString('utf8').endsWith('\n') ? '\n' : '');
-  const action: PlannedUpdateAction = {
-    path: relative,
-    kind: 'replace',
-    selected: true,
-    reason: 'Retire the exact legacy Joycraft version checker registration while preserving unrelated settings.',
-    content: nextText,
-    preservedContent: current,
-    diff: undefined,
-    rawPrecondition: rawFileHash(current),
-    rawTargetHash: rawFileHash(nextText),
-    mode: stat.mode & 0o7777,
-    currentPresent: true,
-    targetPresent: true,
-  };
-  return action;
-}
-
 function transactionStatus(plan: UpdatePlan, result: TransactionResult, authorityTransition = false, localOperations = false): UpdateStatus {
   if (result.status === 'attention') return 'attention';
   if (result.status === 'failed') return 'failed';
@@ -600,7 +544,6 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
   }
 
   const stack = await detectStack(root);
-  const checkerRetirement = harnesses.includes('claude') ? legacyCheckerRetirement(root) : undefined;
   const canonicalInventory = !bundle.inventory
     || (baseEntries.some((entry) => entry.path === 'CLAUDE.md' && entry.kind === 'create-once')
       && baseEntries.some((entry) => entry.path.startsWith('docs/templates/')));
@@ -620,9 +563,8 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
     configureClaude: options.legacyInit === true,
     force: options.legacyInit === true && options.force === true,
   });
-  const entries = materialized.entries.filter((entry) => checkerRetirement === undefined || entry.path !== '.claude/settings.json');
-  const setupPatches = materialized.setup.patchOperations
-    .filter((operation) => checkerRetirement === undefined || operation.path !== '.claude/settings.json');
+  const entries = materialized.entries;
+  const setupPatches = materialized.setup.patchOperations;
   let profileActions: PlannedUpdateAction[];
   try {
     for (const directory of materialized.setup.directories) resolveUpdatePath(root, directory);
@@ -674,7 +616,6 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
       : diagnostic
   )));
   for (const operation of setupPatches) plan.actions.push(setupPatchAction(operation));
-  if (checkerRetirement) plan.actions.push(checkerRetirement);
   plan.actions.push(...profileActions);
   // The authority digest must describe the bytes read from disk. The planner's
   // manifest is intentionally cloned with the requested harness/profile before

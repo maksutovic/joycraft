@@ -11,6 +11,7 @@ export {
   checkForUpdate,
   compareStableVersions,
   postponeUpdate,
+  resolveCheckSessionId,
   resolveUpdateStatus,
 } from './update-check.js';
 export type {

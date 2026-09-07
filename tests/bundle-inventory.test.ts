@@ -31,15 +31,15 @@ describe('getBundleInventory', () => {
     expect(patches.every((entry) => entry.ownedKey || entry.ownedRegion)).toBe(true);
   });
 
-  it('declares the checker payload and legacy adapter ownership', () => {
+  it('declares the checker payload and active Claude adapter ownership', () => {
     const entries = getBundleInventory(['claude']);
-    const deferred = entries.filter((entry) =>
+    const checkerEntries = entries.filter((entry) =>
       entry.path === 'docs/.joycraft/check.mjs' || entry.path === '.claude/hooks/joycraft-version-check.mjs',
     );
-    expect(deferred).toHaveLength(2);
-    expect(deferred.every((entry) => entry.ownership === 'managed')).toBe(true);
-    expect(deferred.find((entry) => entry.path === 'docs/.joycraft/check.mjs')).toEqual(expect.objectContaining({ active: true, installable: true, executable: true }));
-    expect(deferred.find((entry) => entry.path === '.claude/hooks/joycraft-version-check.mjs')).toEqual(expect.objectContaining({ active: false, installable: false }));
+    expect(checkerEntries).toHaveLength(2);
+    expect(checkerEntries.every((entry) => entry.ownership === 'managed')).toBe(true);
+    expect(checkerEntries.find((entry) => entry.path === 'docs/.joycraft/check.mjs')).toEqual(expect.objectContaining({ active: true, installable: true, executable: true }));
+    expect(checkerEntries.find((entry) => entry.path === '.claude/hooks/joycraft-version-check.mjs')).toEqual(expect.objectContaining({ active: true, installable: true, executable: true }));
   });
 
   it('marks executable runtime scripts with their install mode', () => {

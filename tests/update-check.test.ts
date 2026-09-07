@@ -210,4 +210,28 @@ describe('shared update checker', () => {
       expect(result).toEqual(expect.objectContaining({ status: expect.any(String), installedVersion: '0.7.13' }));
     } finally { rmSync(root, { recursive: true, force: true }); }
   });
+
+  it('acknowledges a displayed wrapper notice for the stable session', () => {
+    const root = project();
+    try {
+      manifest(root, '0.7.13');
+      mkdirSync(join(root, 'docs/.joycraft/local'), { recursive: true });
+      writeFileSync(join(root, CHECK_CACHE_PATH), JSON.stringify({
+        schemaVersion: 1,
+        fetchedAt: Date.now(),
+        version: '9.9.9',
+      }));
+      const script = join(root, 'docs/.joycraft/check.mjs');
+      writeFileSync(script, readFileSync(join(process.cwd(), 'src/check.mjs'), 'utf8'));
+      const env = { ...process.env, JOYCRAFT_SESSION_ID: 'wrapper-session', JOYCRAFT_CHECK_FETCH: '0' };
+      const first = execFileSync(process.execPath, [script, 'check'], { encoding: 'utf8', env });
+      expect(first).toContain('Joycraft 9.9.9 available');
+      expect(JSON.parse(readFileSync(join(root, CHECK_SETTINGS_PATH), 'utf8'))).toEqual(expect.objectContaining({
+        acknowledgedRelease: '9.9.9',
+        acknowledgedSession: 'wrapper-session',
+      }));
+      const second = execFileSync(process.execPath, [script, 'check'], { encoding: 'utf8', env });
+      expect(second).toBe('');
+    } finally { rmSync(root, { recursive: true, force: true }); }
+  });
 });

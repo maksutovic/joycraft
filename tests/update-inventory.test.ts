@@ -134,7 +134,7 @@ describe('materializeFreshInstallInventory', () => {
     expect(forced.entries[0].content).toContain('# ' + root.split('/').pop());
   });
 
-  it('creates fresh Claude settings with generated policy and no absent checker', () => {
+  it('creates fresh Claude settings with generated policy and the shared checker adapter', () => {
     const root = project();
     const result = materializeFreshInstallInventory({
       root,
@@ -153,7 +153,10 @@ describe('materializeFreshInstallInventory', () => {
     expect(parsed.autoMemoryEnabled).toBe(false);
     expect(parsed.permissions).toEqual(generatePermissions(stack));
     expect(parsed.hooks.PreToolUse[0].hooks[0].command).toBe('.claude/hooks/joycraft/block-dangerous.sh');
-    expect(JSON.stringify(parsed)).not.toContain('joycraft-version-check.mjs');
+    expect(parsed.hooks.SessionStart).toEqual([{
+      matcher: '',
+      hooks: [{ type: 'command', command: 'node .claude/hooks/joycraft-version-check.mjs' }],
+    }]);
     expect(JSON.stringify(parsed)).not.toContain(generateHookScript());
   });
 

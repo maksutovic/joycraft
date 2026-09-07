@@ -177,13 +177,19 @@ program
   .argument('[dir]', 'Target directory', '.')
   .option('--json', 'Print a structured JSON result')
   .option('--explicit', 'Bypass local acknowledgement and postponement')
-  .action(async (dir: string, opts: { json?: boolean; explicit?: boolean }) => {
+  .option('--session <id>', 'Reuse one conversation identity for update notices')
+  .action(async (dir: string, opts: { json?: boolean; explicit?: boolean; session?: string }) => {
     const { resolve } = await import('node:path');
-    const { checkForUpdate } = await import('./update-check.js');
+    const { acknowledgeUpdate, checkForUpdate, resolveCheckSessionId } = await import('./update-check.js');
     try {
-      const result = await checkForUpdate(resolve(dir), { explicit: opts.explicit === true });
+      const root = resolve(dir);
+      const session = resolveCheckSessionId(opts.session);
+      const result = await checkForUpdate(root, { explicit: opts.explicit === true, sessionId: session });
       if (opts.json) console.log(JSON.stringify(result));
-      else if (result.display && result.availableVersion) console.log(`Joycraft ${result.availableVersion} available (you have ${result.installedVersion ?? 'unknown'}). Run: npx joycraft@${result.availableVersion} update`);
+      else if (result.display && result.availableVersion) {
+        console.log(`Joycraft ${result.availableVersion} available (you have ${result.installedVersion ?? 'unknown'}). Run: npx joycraft@${result.availableVersion} update`);
+        acknowledgeUpdate(root, { release: result.availableVersion, session });
+      }
     } catch {
       // A check must never block the caller's requested work.
     }
@@ -207,9 +213,14 @@ program
   .description('Check if a newer version of Joycraft is available')
   .action(async () => {
     try {
-      const { checkForUpdate } = await import('./update-check.js');
-      const result = await checkForUpdate(process.cwd(), { explicit: true });
-      if (result.display && result.availableVersion) console.log(`Joycraft ${result.availableVersion} available (you have ${result.installedVersion ?? 'unknown'}). Run: npx joycraft@${result.availableVersion} update`);
+      const { acknowledgeUpdate, checkForUpdate, resolveCheckSessionId } = await import('./update-check.js');
+      const root = process.cwd();
+      const session = resolveCheckSessionId();
+      const result = await checkForUpdate(root, { explicit: true, sessionId: session });
+      if (result.display && result.availableVersion) {
+        console.log(`Joycraft ${result.availableVersion} available (you have ${result.installedVersion ?? 'unknown'}). Run: npx joycraft@${result.availableVersion} update`);
+        acknowledgeUpdate(root, { release: result.availableVersion, session });
+      }
     } catch {
       // Silent — don't block session start
     }

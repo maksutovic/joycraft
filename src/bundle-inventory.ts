@@ -12,6 +12,7 @@ import {
 } from './bundled-files.js';
 import { HARNESSES, sanitizeHarnesses, type Harness } from './harness.js';
 import { generateDenyPatternsFile, generateHookScript } from './safeguard.js';
+import { generateClaudeSessionStartAdapter } from './claude-session-start.js';
 
 export type BundleEntryKind = 'vendor' | 'create-once' | 'config-patch';
 export type BundleEntryHarness = Harness | 'shared';
@@ -128,9 +129,7 @@ export function getBundleInventory(selection: readonly Harness[] | unknown = HAR
     entries.push(
       vendor('.claude/hooks/joycraft/block-dangerous.sh', 'claude', generateHookScript(), { executable: true, mode: 0o755 }),
       vendor('.claude/hooks/joycraft/deny-patterns.txt', 'claude', generateDenyPatternsFile(), { executable: false }),
-      // This legacy adapter remains declared for ownership; spec 10 wires its
-      // delegating payload and SessionStart registration.
-      deferred('.claude/hooks/joycraft-version-check.mjs', 'claude', 'joycraft-checker-adapter'),
+      vendor('.claude/hooks/joycraft-version-check.mjs', 'claude', generateClaudeSessionStartAdapter(), { executable: true, mode: 0o755 }),
       patch('.claude/settings.json', 'claude', undefined, 'hooks.SessionStart[command=node .claude/hooks/joycraft-version-check.mjs]'),
       patch('.claude/settings.json', 'claude', undefined, 'hooks.PreToolUse[command=.claude/hooks/joycraft/block-dangerous.sh]'),
       patch('.claude/settings.json', 'claude', 'env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS'),

@@ -408,14 +408,13 @@ describe('init', () => {
       // Custom hook preserved
       expect(settings.hooks.PreToolUse).toBeDefined();
       expect(settings.hooks.PreToolUse[0].hooks[0].command).toBe('echo "custom pre-tool hook"');
-      // The legacy latest-version checker is no longer installed; the shared
-      // checker producer owns that registration in a later spec.
+      // The shared checker adapter is registered while unrelated hooks stay intact.
       const sessionStart = settings.hooks.SessionStart ?? [];
-      const legacyChecker = sessionStart.find((h: Record<string, unknown>) => {
+      const checker = sessionStart.find((h: Record<string, unknown>) => {
         const innerHooks = h.hooks as Array<Record<string, unknown>> | undefined;
         return innerHooks?.some(ih => ih.command === 'node .claude/hooks/joycraft-version-check.mjs');
       });
-      expect(legacyChecker).toBeUndefined();
+      expect(checker).toBeDefined();
     });
 
     it('warns and skips merge when settings.json is malformed', async () => {

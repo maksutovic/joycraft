@@ -57,7 +57,7 @@ describe.each(HARNESSES)('$harness generated skills are fresh', ({ harness, tree
   for (const file of files) {
     it(`${basename(file, '.md')} matches a fresh transform`, () => {
       const source = readFileSync(join(CANONICAL_DIR, file), 'utf-8');
-      const expected = applyTemplate(source, harness, file);
+      const expected = applyTemplate(source, harness, file, { includeUpdateCheck: true });
       const committed = readFileSync(join(repoRoot, 'src', tree, file), 'utf-8');
 
       // The generator writes native line endings; normalize so this test is

@@ -86,6 +86,7 @@ const CLAUDE_SETTINGS = '.claude/settings.json';
 const TS_CONFIG = 'tsconfig.json';
 const KNOWN_GENERATED_DOCUMENTS = new Set(['CLAUDE.md', 'AGENTS.md']);
 const SAFE_GUARD_HOOK = '.claude/hooks/joycraft/block-dangerous.sh';
+const UPDATE_CHECK_HOOK = 'node .claude/hooks/joycraft-version-check.mjs';
 
 function regularFile(root: string, relative: string): boolean {
   try {
@@ -203,6 +204,10 @@ function freshSettingsEntry(input: FreshInventoryInput): BundleInventoryEntry | 
   const settings: Record<string, unknown> = {
     env: { CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: '1' },
     hooks: {
+      SessionStart: [{
+        matcher: '',
+        hooks: [{ type: 'command', command: UPDATE_CHECK_HOOK }],
+      }],
       PreToolUse: [{
         matcher: 'Bash',
         hooks: [{ type: 'command', command: SAFE_GUARD_HOOK }],
@@ -276,6 +281,18 @@ function safeguardHookPresent(value: unknown): boolean {
   });
 }
 
+function updateCheckHookPresent(value: unknown): boolean {
+  if (!Array.isArray(value)) return false;
+  return value.some((record) => {
+    if (!record || typeof record !== 'object' || Array.isArray(record)) return false;
+    const hooks = (record as Record<string, unknown>).hooks;
+    return Array.isArray(hooks) && hooks.some((hook) =>
+      hook && typeof hook === 'object' && !Array.isArray(hook)
+      && (hook as Record<string, unknown>).command === UPDATE_CHECK_HOOK,
+    );
+  });
+}
+
 function mergeOwnedSettings(
   raw: string,
   input: FreshInventoryInput,
@@ -342,6 +359,18 @@ function mergeOwnedSettings(
     }
     if (!safeguardHookPresent(preToolUse)) {
       preToolUse.push({ matcher: 'Bash', hooks: [{ type: 'command', command: SAFE_GUARD_HOOK }] });
+      changed = true;
+    }
+
+    const sessionStart = hooks.SessionStart === undefined
+      ? (hooks.SessionStart = [], hooks.SessionStart as unknown[])
+      : hooks.SessionStart;
+    if (!Array.isArray(sessionStart)) {
+      diagnostics.push('settings.json has a non-array hooks.SessionStart value; preserving it without generated setup changes.');
+      return undefined;
+    }
+    if (!updateCheckHookPresent(sessionStart)) {
+      sessionStart.push({ matcher: '', hooks: [{ type: 'command', command: UPDATE_CHECK_HOOK }] });
       changed = true;
     }
   }

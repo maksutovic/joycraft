@@ -8,6 +8,12 @@ export const CHECK_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 export const CHECK_DEFAULT_DEADLINE_MS = 3_000;
 export const CHECK_MAX_BACKOFF_MS = 60 * 60 * 1000;
 export const CHECK_LOCK_TTL_MS = 10_000;
+/** Resolve the stable identity used to suppress duplicate notices in one session. */
+export function resolveCheckSessionId(explicit) {
+    return explicit
+        ?? process.env.JOYCRAFT_SESSION_ID
+        ?? `parent-${process.ppid}`;
+}
 const STABLE_VERSION = /^(\d+)\.(\d+)\.(\d+)$/;
 const REGISTRY_URL = 'https://registry.npmjs.org/joycraft/latest';
 function object(value) {
@@ -307,7 +313,7 @@ export function resolveUpdateStatus(input) {
 export async function checkForUpdate(root, options = {}) {
     const now = timestamp(options);
     const explicit = options.explicit === true;
-    const sessionId = options.sessionId ?? process.env.JOYCRAFT_SESSION_ID ?? `process-${process.pid}`;
+    const sessionId = resolveCheckSessionId(options.sessionId);
     const settingsResult = readSettings(root);
     const settings = settingsResult.settings;
     const localPolicy = policy(settings?.updatePolicy ?? settings?.policy);
@@ -387,8 +393,20 @@ import { dirname as __dirname, join as __join } from 'node:path';
 const __checkerFile = __fileURLToPath(import.meta.url);
 const __checkerRoot = __join(__dirname(__dirname(__checkerFile)), '..');
 const __checkerArgs = process.argv.slice(2);
+const __sessionIndex = __checkerArgs.indexOf('--session');
+const __checkerSession = resolveCheckSessionId(__sessionIndex < 0 ? undefined : __checkerArgs[__sessionIndex + 1]);
 if (__checkerArgs[0] === 'check') {
-  const __checkerResult = await checkForUpdate(__checkerRoot, { explicit: __checkerArgs.includes('--explicit'), sessionId: process.env.JOYCRAFT_SESSION_ID, ...(process.env.JOYCRAFT_CHECK_FETCH === '0' ? { fetchLatest: async () => { throw new Error('Registry access disabled for this check.'); } } : {}) });
-  if (__checkerArgs.includes('--json')) console.log(JSON.stringify(__checkerResult));
-  else if (__checkerResult.display && __checkerResult.availableVersion) console.log(`Joycraft ${__checkerResult.availableVersion} available (you have ${__checkerResult.installedVersion ?? 'unknown'}).`);
+  const result = await checkForUpdate(__checkerRoot, {
+    explicit: __checkerArgs.includes('--explicit'), sessionId: __checkerSession,
+    ...(process.env.JOYCRAFT_CHECK_FETCH === '0' ? { fetchLatest: async () => { throw new Error('Registry access disabled for this check.'); } } : {}),
+  });
+  if (__checkerArgs.includes('--json')) console.log(JSON.stringify(result));
+  else if (result.display && result.availableVersion) {
+    console.log('Joycraft ' + result.availableVersion + ' available (you have ' + (result.installedVersion ?? 'unknown') + '). Finish the active skill, then run the update and restart or reinvoke the skill.');
+    acknowledgeUpdate(__checkerRoot, { release: result.availableVersion, session: __checkerSession });
+  }
+} else if (__checkerArgs[0] === 'acknowledge') {
+  console.log(JSON.stringify({ acknowledged: acknowledgeUpdate(__checkerRoot, { release: __checkerArgs[1], session: __checkerSession }) }));
+} else if (__checkerArgs[0] === 'postpone') {
+  console.log(JSON.stringify({ postponed: postponeUpdate(__checkerRoot, __checkerArgs[1]) }));
 }

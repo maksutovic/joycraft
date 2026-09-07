@@ -2,6 +2,8 @@
 name: joycraft-optimize
 description: Invoked by tune's roadmap or the human directly — semantic self-audit of harness overhead; per control it assigns a disposition (KEEP/ONE_HOME/LOAD_LATER/MAKE_A_CHECK/PROBATION/RETIRE) and an evidence label, advisory only
 ---
+At skill entry, run `node docs/.joycraft/check.mjs check --json --session <session-id>` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing, fails, or returns display: false (including current, postponed, off, or unknown), continue the requested skill quietly; never retry setup. Offer an update only when display: true, then record the offer with `node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>`. Apply approved updates after this skill finishes, then reinvoke the skill or restart the session to load changed instructions.
+
 
 # Optimize — Semantic Self-Audit
 

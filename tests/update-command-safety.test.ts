@@ -89,7 +89,7 @@ describe('update command authority and outcome safety', () => {
     expect(Buffer.from(backup['docs/.joycraft/state.json'], 'base64').toString('utf8')).toBe(legacyText);
     expect(readFileSync(join(root, manifestPath('shared')), 'utf8')).not.toContain('keep-me');
   });
-  it('retires only the known legacy checker registration and rolls it back with legacy state', async () => {
+  it('preserves the managed checker registration and unrelated hooks during legacy migration', async () => {
     const root = project();
     const skill = '.claude/skills/joycraft-tune/SKILL.md';
     put(root, skill, 'old\n');
@@ -105,10 +105,7 @@ describe('update command authority and outcome safety', () => {
     expect(result.exitCode).toBe(0);
     const current = JSON.parse(readFileSync(join(root, '.claude/settings.json'), 'utf8'));
     expect(current.customSetting).toBe(true);
-    expect(current.hooks.SessionStart).toEqual([
-      { matcher: '', hooks: [{ type: 'command', command: 'echo keep' }] },
-      settings.hooks.SessionStart[1],
-    ]);
+    expect(current.hooks.SessionStart).toEqual(settings.hooks.SessionStart);
     expect((await update(root, { recovery: 'rollback' })).exitCode).toBe(0);
     expect(readFileSync(join(root, '.claude/settings.json'), 'utf8')).toBe(settingsText);
     expect(readFileSync(join(root, 'docs/.joycraft/state.json'), 'utf8')).toBe(state);
