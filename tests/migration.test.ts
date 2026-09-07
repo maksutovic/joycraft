@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { mkdirSync, writeFileSync, existsSync, rmSync, readFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, existsSync, rmSync, readFileSync, symlinkSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { planMigration, applyMigration } from '../src/migration';
+import { planMigration, applyMigration, runMigration, formatMigrationPlan } from '../src/migration';
 
 function createTmpDir(): string {
   const dir = join(tmpdir(), `joycraft-migration-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
@@ -150,5 +150,80 @@ describe('applyMigration', () => {
     expect(result.applied).toBeGreaterThan(0);
     expect(existsSync(join(dir, 'docs', 'features', '2026-03-23-foo', 'specs', 'a.md'))).toBe(true);
     expect(existsSync(join(dir, 'docs', 'features', '2026-03-23-foo', 'specs', 'sub', 'b.md'))).toBe(true);
+  });
+
+  it('preserves a collision unless the destination is explicitly selected for replacement', () => {
+    write(join(dir, 'docs', 'briefs', 'foo.md'), '# source');
+    write(join(dir, 'docs', 'features', 'foo', 'brief.md'), '# user document');
+
+    const plan = planMigration(dir);
+    const skipped = plan.skipped?.find((move) => move.kind === 'brief');
+    expect(skipped).toBeDefined();
+
+    const preserved = applyMigration(plan);
+    expect(preserved.status).toBe('complete');
+    expect(preserved.preserved).toContain(skipped!.to);
+    expect(readFileSync(skipped!.to, 'utf8')).toBe('# user document');
+
+    const replaced = applyMigration(plan, { replaceCollisions: [skipped!.to] });
+    expect(replaced.status).toBe('complete');
+    expect(replaced.replaced).toContain(skipped!.to);
+    expect(readFileSync(skipped!.to, 'utf8')).toBe('# source');
+    expect(existsSync(join(dir, 'docs', 'briefs', 'foo.md'))).toBe(false);
+  });
+
+  it('reports incomplete work when one selected move fails', () => {
+    write(join(dir, 'docs', 'briefs', 'foo.md'), '# foo');
+    const plan = planMigration(dir);
+    const missing = { from: join(dir, 'docs', 'briefs', 'missing.md'), to: join(dir, 'docs', 'features', 'missing', 'brief.md'), kind: 'brief' as const };
+    const result = applyMigration({ ...plan, moves: [...plan.moves, missing] });
+    expect(result.status).toBe('incomplete');
+    expect(result.applied).toBe(1);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0].move).toEqual(missing);
+  });
+
+  it('rejects a migration path that traverses a symlink', () => {
+    write(join(dir, 'docs', 'briefs', 'foo.md'), '# foo');
+    mkdirSync(join(dir, 'outside'), { recursive: true });
+    try {
+      // Symlink support is available on the Unix CI hosts. If it is not
+      // available, the path-safety behavior is covered by update-path tests.
+      const link = join(dir, 'docs', 'features');
+      symlinkSync(join(dir, 'outside'), link, 'dir');
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code === 'EPERM' || code === 'EACCES' || code === 'ENOTSUP') return;
+      throw error;
+    }
+    const plan = planMigration(dir);
+    const result = applyMigration(plan);
+    expect(result.status).toBe('incomplete');
+    expect(result.errors.some((entry) => /symlink/i.test(entry.error))).toBe(true);
+  });
+});
+
+describe('runMigration explicit operation', () => {
+  let dir: string;
+
+  beforeEach(() => {
+    dir = createTmpDir();
+  });
+
+  afterEach(() => {
+    rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('returns a reviewable plan and applies only established document moves by default', () => {
+    write(join(dir, 'docs', 'briefs', '2026-01-01-accounts.md'), '# accounts');
+    write(join(dir, 'docs', 'specs', 'unknown-area', 'notes.md'), '# leave me');
+
+    const result = runMigration(dir);
+    expect(result.plan.moves.some((move) => move.kind === 'brief')).toBe(true);
+    expect(result.plan.moves.some((move) => move.kind === 'bugfix-dir')).toBe(false);
+    expect(result.preserved.some((path) => path.endsWith('docs/specs/unknown-area'))).toBe(true);
+    expect(existsSync(join(dir, 'docs', 'features', '2026-01-01-accounts', 'brief.md'))).toBe(true);
+    expect(existsSync(join(dir, 'docs', 'specs', 'unknown-area', 'notes.md'))).toBe(true);
+    expect(formatMigrationPlan(result.plan)).toMatch(/accounts/);
   });
 });

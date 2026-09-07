@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { PRIVATE_DIRS_DISPLAY } from './gitignore.js';
+import { applyMigration, formatMigrationPlan, formatMigrationOutcome, runMigration } from './migration.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
@@ -119,6 +120,36 @@ program
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       if (opts.json) console.log(JSON.stringify({ status: 'failed', exitCode: 1, applied: [], preserved: [], conflicts: [], diagnostics: [message] }));
+      else console.error(message);
+      process.exitCode = 1;
+    }
+  });
+
+program
+  .command('migrate')
+  .description('Preview or explicitly apply the flat-docs to per-feature migration')
+  .argument('[dir]', 'Target directory', '.')
+  .option('--apply', 'Apply the displayed migration plan')
+  .option('--replace-collision <paths...>', 'Replace these existing destination paths explicitly')
+  .option('--include-unknown <paths...>', 'Explicitly establish ownership for orphan spec directories')
+  .option('--json', 'Print a structured JSON outcome')
+  .action((dir: string, opts: { apply?: boolean; replaceCollision?: string[]; includeUnknown?: string[]; json?: boolean }) => {
+    try {
+      const preview = runMigration(dir, { dryRun: true, includeUnknown: opts.includeUnknown });
+      if (!opts.apply) {
+        if (opts.json) console.log(JSON.stringify({ status: 'preview', exitCode: 0, plan: preview.plan }));
+        else console.log(formatMigrationPlan(preview.plan));
+        return;
+      }
+      // Render the same plan that will be applied.
+      if (!opts.json) console.log(formatMigrationPlan(preview.plan));
+      const applied = applyMigration(preview.plan, { replaceCollisions: opts.replaceCollision });
+      const result = { ...applied, plan: preview.plan };
+      console.log(formatMigrationOutcome(result, opts.json === true, false));
+      process.exitCode = result.status === 'complete' ? 0 : 1;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (opts.json) console.log(JSON.stringify({ status: 'incomplete', exitCode: 1, applied: 0, skipped: 0, replaced: [], preserved: [], errors: [message] }));
       else console.error(message);
       process.exitCode = 1;
     }

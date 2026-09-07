@@ -71,3 +71,40 @@ describe('real CLI update outcomes', () => {
     expect(output.applied).toEqual([]);
   });
 });
+
+describe('real CLI explicit migrations', () => {
+  it('previews the same conservative moves that apply executes, without touching files during preview', () => {
+    const name = 'migration preview with spaces';
+    const { root, output: preview } = run(name, ['migrate', '.', '--json'], (root) => {
+      mkdirSync(join(root, 'docs/briefs'), { recursive: true });
+      writeFileSync(join(root, 'docs/briefs/accounts.md'), '# accounts');
+      mkdirSync(join(root, 'docs/specs/unknown-area'), { recursive: true });
+      writeFileSync(join(root, 'docs/specs/unknown-area/custom.md'), 'user notes');
+      writeFileSync(join(root, 'CLAUDE.md'), 'my policy\r\n');
+    });
+    expect(preview.status).toBe('preview');
+    expect(preview.plan.moves.map((move: { kind: string }) => move.kind)).toEqual(['brief']);
+    expect(readFileSync(join(root, 'docs/briefs/accounts.md'), 'utf8')).toBe('# accounts');
+    expect(existsSync(join(root, 'docs/features'))).toBe(false);
+    const { output: applied, code } = run(name, ['migrate', '.', '--apply', '--json']);
+    expect(code).toBe(0);
+    expect(applied.plan.moves).toEqual(preview.plan.moves);
+    expect(readFileSync(join(root, 'docs/features/accounts/brief.md'), 'utf8')).toBe('# accounts');
+    expect(readFileSync(join(root, 'docs/specs/unknown-area/custom.md'), 'utf8')).toBe('user notes');
+    expect(readFileSync(join(root, 'CLAUDE.md'), 'utf8')).toBe('my policy\r\n');
+  });
+
+  it('preserves a colliding destination until the explicit replacement flag selects it', () => {
+    const name = 'migration collision';
+    const { root, output } = run(name, ['migrate', '--apply', '--json'], (root) => {
+      for (const path of ['docs/briefs', 'docs/features/accounts']) mkdirSync(join(root, path), { recursive: true });
+      writeFileSync(join(root, 'docs/briefs/accounts.md'), 'source');
+      writeFileSync(join(root, 'docs/features/accounts/brief.md'), 'custom destination');
+    });
+    expect(output.applied).toBe(0);
+    expect(readFileSync(join(root, 'docs/features/accounts/brief.md'), 'utf8')).toBe('custom destination');
+    const { output: replaced } = run(name, ['migrate', '--apply', '--json', '--replace-collision', 'docs/features/accounts/brief.md']);
+    expect(replaced.applied).toBe(1);
+    expect(readFileSync(join(root, 'docs/features/accounts/brief.md'), 'utf8')).toBe('source');
+  });
+});

@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 8 of 15
 > **Dependencies:** 7 — unify-update-command.md
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 4 files / ~300 lines
 
@@ -27,10 +27,10 @@ Current upgrade behavior runs a forced flat-to-feature document migration and re
 
 ## Acceptance Criteria
 
-- [ ] Routine refresh performs no implicit document reorganization and does not delete unowned generic legacy skills. [src: design §2]
-- [ ] Explicit migrations present their planned changes and preserve user files unless replacement was explicitly selected. [src: design §2]
-- [ ] Failures are reported as incomplete work rather than success based on a tolerated fraction of errors; routine updates continue to use the transaction boundary. [src: design §2]
-- [ ] CLAUDE.md merge/improve logic remains outside this work. [src: design §2]
+- [x] Routine refresh performs no implicit document reorganization and does not delete unowned generic legacy skills. [src: design §2]
+- [x] Explicit migrations present their planned changes and preserve user files unless replacement was explicitly selected. [src: design §2]
+- [x] Failures are reported as incomplete work rather than success based on a tolerated fraction of errors; routine updates continue to use the transaction boundary. [src: design §2]
+- [x] CLAUDE.md merge/improve logic remains outside this work. [src: design §2]
 
 ## Test Plan
 
@@ -85,3 +85,10 @@ Retain the existing plan-then-apply migration shape, but put it behind an explic
 | One selected move fails | Report incomplete work with applied/skipped/error detail; do not claim success. |
 | No migration candidates exist | Return a successful no-op plan without touching documents. |
 | Existing `CLAUDE.md` contains user text | Migration leaves it byte-for-byte unchanged. |
+
+## Implementation Evidence
+
+- Explicit `migrate` previews the same selected plan that `--apply` executes. Unowned directories and collisions remain preserved without their separate explicit selections.
+- Migration errors report incomplete work; interrupted replacement content and original destination backups remain available with recovery paths. Routine updates do not invoke document migration or CLAUDE.md improvement.
+- Focused migration, safety, legacy, and real CLI tests: 31 passing. Compiled-CLI smoke also preserved an unowned generic skill, flat documents, and customized policy bytes during routine update.
+- Exact staged checkout: build passed, 3,187 tests passed (one skipped), and type checking passed.
