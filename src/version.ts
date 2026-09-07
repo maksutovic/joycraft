@@ -18,7 +18,7 @@ import { CHECK_SETTINGS_PATH } from './update-check.js';
  * `.joycraft-version` (see LEGACY_VERSION_FILE) and the later
  * `.claude/.joycraft/state.json` (see LEGACY_CLAUDE_STATE_PATH).
  */
-export const STATE_PATH = join('docs', '.joycraft', 'state.json');
+export const STATE_PATH = 'docs/.joycraft/state.json';
 
 /** Project-local preferences introduced with the installation manifest. */
 export const LOCAL_SETTINGS_PATH = CHECK_SETTINGS_PATH;
@@ -31,7 +31,7 @@ export const LEGACY_VERSION_FILE = '.joycraft-version';
  * harness-neutral `docs/` home. Kept only so `upgrade` can migrate it (and so a
  * Codex/Pi-only re-init stops leaving a stray `.claude/` behind).
  */
-export const LEGACY_CLAUDE_STATE_PATH = join('.claude', '.joycraft', 'state.json');
+export const LEGACY_CLAUDE_STATE_PATH = '.claude/.joycraft/state.json';
 
 /**
  * Length we truncate stored hashes to. Full SHA-256 is 64 hex chars; 16 hex

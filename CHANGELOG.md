@@ -11,6 +11,8 @@ release has shipped.
 
 ## Unreleased — Reliable updates
 
+Windows installs and updates now flush transaction files through writable handles. Compatibility failures retain the CLI diagnostic, and all platform lanes finish even when another lane fails.
+
 Before this update path, `init` and `upgrade` had separate behavior and npm's
 own stale metadata could fail before Joycraft started. A declined customization
 could be mistaken for a new vendor baseline, automatic checks had scattered

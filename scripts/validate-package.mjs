@@ -235,7 +235,8 @@ function failedCheck({ os, node, stack, selection }, error) {
     stack,
     selection,
     status: 'failed',
-    error: error instanceof Error ? error.message : String(error),
+    error: [error instanceof Error ? error.message : String(error), error?.stdout, error?.stderr]
+      .filter(value => typeof value === 'string' && value.trim()).join('\n'),
   };
 }
 

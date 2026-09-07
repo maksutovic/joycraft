@@ -30,7 +30,7 @@ function hostOs(): string {
   return process.platform === 'linux' ? 'ubuntu' : process.platform === 'darwin' ? 'macos' : 'windows';
 }
 
-function noopManifest(root: string): string {
+function noopManifest(root: string, body = "process.exit(0);"): string {
   const fixture = join(root, 'noop-package');
   mkdirSync(join(fixture, 'dist'), { recursive: true });
   const version = '9.9.9';
@@ -40,7 +40,7 @@ function noopManifest(root: string): string {
   writeFileSync(join(fixture, 'dist', 'joycraft-release.json'), JSON.stringify({
     schemaVersion: 1, releaseVersion: version, manifestSchemas: [1], autoSafeEligible: false,
   }) + '\n');
-  writeFileSync(join(fixture, 'dist', 'cli.cjs'), '#!/usr/bin/env node\nprocess.exit(0);\n');
+  writeFileSync(join(fixture, 'dist', 'cli.cjs'), `#!/usr/bin/env node\n${body}\n`);
   const [{ filename }] = JSON.parse(execFileSync('npm', ['pack', '--ignore-scripts', '--json'], { cwd: fixture, encoding: 'utf8' }));
   const tarball = join(fixture, filename);
   const bytes = readFileSync(tarball);
@@ -130,4 +130,16 @@ describe('package compatibility contract', () => {
     expect(readFileSync(join(workspace, 'package.json'), 'utf8')).toBe(sentinel);
     expect(readFileSync(join(workspace, '.consumer/package.json'), 'utf8')).toBe(sentinel);
   }, 60_000);
+  it('retains structured CLI errors when the packaged process exits unsuccessfully', async () => {
+    const root = artifactRoot();
+    const result = await runPackageAcceptance({
+      manifestPath: noopManifest(root, 'console.log(JSON.stringify({status:"failed", errors:["Cannot sync directory"]})); process.exit(1);'),
+      os: hostOs(), node: process.versions.node,
+      output: join(root, 'failed-report.json'), root: join(root, 'consumer'),
+    });
+    expect(result.complete).toBe(false);
+    expect(result.checks).toHaveLength(28);
+    expect(result.checks.every((check) => check.error.includes('Cannot sync directory'))).toBe(true);
+  }, 60_000);
+
 });

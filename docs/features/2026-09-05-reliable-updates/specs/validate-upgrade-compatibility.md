@@ -122,3 +122,9 @@ Reject testing only `src/` imports: that bypasses the package boundary, bundled 
 ## Implementation Evidence
 
 The retained npm artifact is installed into an isolated consumer and exercised through its actual CLI across four stacks and seven harness selections. JSON outcomes, installed files, persisted selections, repeat-update bytes, and unchanged project manifests are checked; a no-op executable fails every cell. Seven OS/Node lanes produce 196 independently required outcomes tied to the release SHA, version, and tarball integrity. The producer feeds the promotion consumer, which rejects missing, failed, or mismatched evidence. Existing state/transaction regression coverage remains, with an added real denied-write recovery test. The reviewed automation descriptor survives packing while preparation resets the next release to false. Build, type checking, and the full staged suite passed: 3,419 tests, one skipped. Cross-platform execution is required in CI; the local packaged matrix passed on macOS.
+
+## Windows CI follow-up — 2026-09-07
+
+The first Windows lane exposed a transaction durability defect: file buffers were flushed through a read-only handle. Durable writes now flush the same writable handle used to write the data, before restoring the requested mode. A regression test enforces Windows flush access requirements. Compatibility reports retain failed CLI output, and matrix lanes finish independently so one platform failure cannot cancel other required evidence.
+
+Legacy state paths also remain slash-separated on Windows so migration operations and ignore entries accept them. A Windows-path regression exercises the production manifest path validator.

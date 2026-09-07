@@ -1,4 +1,22 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+const flushAccess = vi.hoisted(() => ({ enforce: false, flags: new Map<number, unknown>() }));
+vi.mock('node:fs', async (importOriginal) => {
+  const fs = await importOriginal<typeof import('node:fs')>();
+  return { ...fs,
+    openSync: (...args: Parameters<typeof fs.openSync>) => {
+      const fd = fs.openSync(...args);
+      flushAccess.flags.set(fd, args[1]);
+      return fd;
+    },
+    fsyncSync: (fd: number) => {
+      if (flushAccess.enforce && flushAccess.flags.get(fd) === 'r') {
+        throw Object.assign(new Error('EPERM: fsync requires a writable Windows handle'), { code: 'EPERM' });
+      }
+      return fs.fsyncSync(fd);
+    },
+  };
+});
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -65,6 +83,21 @@ function seed(root: string, oldContent = 'old\n'): void {
 }
 
 describe('update transactions', () => {
+  it('commits when flushing requires write access as on Windows', () => {
+    const root = project();
+    try {
+      seed(root);
+      flushAccess.enforce = true;
+      const result = applyUpdatePlan(root, plan('old\n', 'new\n'));
+      expect(result.status).toBe('applied');
+      expect(readFileSync(join(root, filePath), 'utf8')).toBe('new\n');
+    } finally {
+      flushAccess.enforce = false;
+      flushAccess.flags.clear();
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it('applies reviewed writes and publishes the manifest after file verification', () => {
     const root = project();
     try {

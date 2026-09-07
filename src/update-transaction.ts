@@ -248,10 +248,13 @@ function ensureDirectory(root: string, relativePath: string): string {
 
 function durableWrite(path: string, data: Buffer | string, mode?: number): void {
   mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, data);
+  // Windows requires write access on the handle used to flush file buffers.
+  const fd = openSync(path, 'w');
+  try {
+    writeFileSync(fd, data);
+    fsyncSync(fd);
+  } finally { closeFd(fd); }
   if (mode !== undefined) chmodSync(path, mode);
-  const fd = openSync(path, 'r');
-  try { fsyncSync(fd); } finally { closeFd(fd); }
 }
 
 function closeFd(fd: number): void {
