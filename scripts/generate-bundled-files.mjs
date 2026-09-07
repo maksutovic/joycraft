@@ -5,11 +5,24 @@ import {
   readFileSync,
   writeFileSync,
   statSync,
+  existsSync,
 } from 'node:fs';
 import { join, relative } from 'node:path';
 import { EOL } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { applyTemplate } from './lib/skill-template.mjs';
+let transpileModule;
+let ModuleKind;
+let ScriptTarget;
+try {
+  const typescript = await import('typescript');
+  transpileModule = typescript.transpileModule;
+  ModuleKind = typescript.ModuleKind;
+  ScriptTarget = typescript.ScriptTarget;
+} catch {
+  // The sync test intentionally copies this generator without node_modules.
+  // A checked-in checker artifact remains usable as a fallback there.
+}
 
 /**
  * Convert LF line endings to the OS-native format (CRLF on Windows).
@@ -103,6 +116,31 @@ const PI_SCRIPTS_DIR = join(ROOT, 'src', 'templates', 'pi-scripts');
 const PI_EXTENSIONS_DIR = join(ROOT, 'src', 'templates', 'pi-extensions');
 const PI_AGENTS_DIR = join(ROOT, 'src', 'templates', 'pi-agents');
 
+/**
+ * Compile the shared checker into the self-contained script installed in each
+ * target project. Only Node builtins remain as imports in this output; the
+ * package's TypeScript compiler is a build-time dependency and is not needed
+ * by consumers running docs/.joycraft/check.mjs.
+ */
+function generateChecker() {
+  const sourcePath = join(ROOT, 'src', 'update-check.ts');
+  if (!existsSync(sourcePath)) return '';
+  const source = readFileSync(sourcePath, 'utf-8');
+  if (!transpileModule) {
+    const fallbackPath = join(ROOT, 'src', 'check.mjs');
+    return existsSync(fallbackPath) ? readFileSync(fallbackPath, 'utf-8') : '';
+  }
+  const compiled = transpileModule(source, {
+    compilerOptions: { module: ModuleKind.ES2022, target: ScriptTarget.ES2022, removeComments: false },
+    fileName: 'update-check.ts',
+  }).outputText;
+  const wrapper = `\nimport { fileURLToPath as __fileURLToPath } from 'node:url';\nimport { dirname as __dirname, join as __join } from 'node:path';\nconst __checkerFile = __fileURLToPath(import.meta.url);\nconst __checkerRoot = __join(__dirname(__dirname(__checkerFile)), '..');\nconst __checkerArgs = process.argv.slice(2);\nif (__checkerArgs[0] === 'check') {\n  const __checkerResult = await checkForUpdate(__checkerRoot, { explicit: __checkerArgs.includes('--explicit'), sessionId: process.env.JOYCRAFT_SESSION_ID, ...(process.env.JOYCRAFT_CHECK_FETCH === '0' ? { fetchLatest: async () => { throw new Error('Registry access disabled for this check.'); } } : {}) });\n  if (__checkerArgs.includes('--json')) console.log(JSON.stringify(__checkerResult));\n  else if (__checkerResult.display && __checkerResult.availableVersion) console.log(\`Joycraft \${__checkerResult.availableVersion} available (you have \${__checkerResult.installedVersion ?? 'unknown'}).\`);\n}\n`;
+  return `${compiled}${wrapper}`;
+}
+
+const checkerSource = generateChecker();
+writeFileSync(join(ROOT, 'src', 'check.mjs'), checkerSource);
+
 // 1. Canonical-skills pipeline: read src/skills/, render each canonical file
 //    into the three per-harness dirs. Tolerate an empty (or absent) src/skills/
 //    — the rest of the pipeline then re-reads the per-harness dirs from disk,
@@ -143,6 +181,7 @@ const output = [
   formatRecord('PI_SCRIPTS', piScripts),
   formatRecord('PI_EXTENSIONS', piExtensions),
   formatRecord('PI_AGENTS', piAgents),
+  `export const CHECKER_SOURCE: string = ${JSON.stringify(checkerSource)};\n`,
 ].join('\n');
 
 writeFileSync(OUTPUT, output);

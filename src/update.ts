@@ -681,6 +681,9 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
   // planning, so its synthetic digest cannot be used for transaction authority.
   plan.baseManifestDigest = existingManifest ? manifestDigest(existingManifest) : null;
   const selected = pathsForOutcome(plan);
+  // Baselines can intentionally lag after a preserved local-only edit. Record
+  // actual unresolved vendor changes so discovery does not mistake that for a conflict.
+  plan.nextManifest.pendingConflicts = selected.conflicts;
   const authorityTransition: AuthorityTransition | undefined = authority.sourceProfile && existingManifest
     ? {
         oldAuthority: {

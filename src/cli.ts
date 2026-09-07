@@ -172,6 +172,24 @@ program
   });
 
 program
+  .command('check')
+  .description('Check for a newer Joycraft release using local cached state')
+  .argument('[dir]', 'Target directory', '.')
+  .option('--json', 'Print a structured JSON result')
+  .option('--explicit', 'Bypass local acknowledgement and postponement')
+  .action(async (dir: string, opts: { json?: boolean; explicit?: boolean }) => {
+    const { resolve } = await import('node:path');
+    const { checkForUpdate } = await import('./update-check.js');
+    try {
+      const result = await checkForUpdate(resolve(dir), { explicit: opts.explicit === true });
+      if (opts.json) console.log(JSON.stringify(result));
+      else if (result.display && result.availableVersion) console.log(`Joycraft ${result.availableVersion} available (you have ${result.installedVersion ?? 'unknown'}). Run: npx joycraft@${result.availableVersion} update`);
+    } catch {
+      // A check must never block the caller's requested work.
+    }
+  });
+
+program
   .command('init-autofix')
   .description('Set up the Level 5 auto-fix loop with holdout scenarios')
   .argument('[dir]', 'Target directory', '.')
@@ -189,24 +207,9 @@ program
   .description('Check if a newer version of Joycraft is available')
   .action(async () => {
     try {
-      const { readFileSync, existsSync } = await import('node:fs');
-      const { join } = await import('node:path');
-      const { STATE_PATH, LEGACY_VERSION_FILE, LEGACY_CLAUDE_STATE_PATH } = await import('./version.js');
-      // Prefer the current state; fall back through the legacy locations for
-      // projects not yet upgraded (upgrade relocates them): the interim
-      // .claude/.joycraft/state.json, then the original repo-root file.
-      const candidates = [STATE_PATH, LEGACY_CLAUDE_STATE_PATH, LEGACY_VERSION_FILE];
-      const statePath =
-        candidates.map((p) => join(process.cwd(), p)).find((p) => existsSync(p)) ??
-        join(process.cwd(), STATE_PATH);
-      const data = JSON.parse(readFileSync(statePath, 'utf-8'));
-      const res = await fetch('https://registry.npmjs.org/joycraft/latest', { signal: AbortSignal.timeout(3000) });
-      if (res.ok) {
-        const latest = ((await res.json()) as { version: string }).version;
-        if (data.version !== latest) {
-          console.log(`Joycraft ${latest} available (you have ${data.version}). Run: npx joycraft@latest upgrade`);
-        }
-      }
+      const { checkForUpdate } = await import('./update-check.js');
+      const result = await checkForUpdate(process.cwd(), { explicit: true });
+      if (result.display && result.availableVersion) console.log(`Joycraft ${result.availableVersion} available (you have ${result.installedVersion ?? 'unknown'}). Run: npx joycraft@${result.availableVersion} update`);
     } catch {
       // Silent — don't block session start
     }

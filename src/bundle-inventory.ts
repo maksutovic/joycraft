@@ -8,6 +8,7 @@ import {
   PI_SKILLS,
   SKILLS,
   TEMPLATES,
+  CHECKER_SOURCE,
 } from './bundled-files.js';
 import { HARNESSES, sanitizeHarnesses, type Harness } from './harness.js';
 import { generateDenyPatternsFile, generateHookScript } from './safeguard.js';
@@ -119,9 +120,7 @@ export function getBundleInventory(selection: readonly Harness[] | unknown = HAR
     ...Object.entries(TEMPLATES).map(([path, content]) => vendor(`docs/templates/${path}`, 'shared', content)),
     createOnce('CLAUDE.md'),
     createOnce('AGENTS.md'),
-    // The checker is declared now so future planner/update work has one stable
-    // path. Its producer lands in a later spec; no empty executable is shipped.
-    deferred('docs/.joycraft/check.mjs', 'shared', 'joycraft-checker'),
+    vendor('docs/.joycraft/check.mjs', 'shared', CHECKER_SOURCE, { executable: true, mode: 0o755 }),
   ];
 
   if (wants('claude')) {
@@ -129,8 +128,8 @@ export function getBundleInventory(selection: readonly Harness[] | unknown = HAR
     entries.push(
       vendor('.claude/hooks/joycraft/block-dangerous.sh', 'claude', generateHookScript(), { executable: true, mode: 0o755 }),
       vendor('.claude/hooks/joycraft/deny-patterns.txt', 'claude', generateDenyPatternsFile(), { executable: false }),
-      // This legacy adapter remains declared for ownership, but is not refreshed
-      // until the shared checker producer supplies its verified payload.
+      // This legacy adapter remains declared for ownership; spec 10 wires its
+      // delegating payload and SessionStart registration.
       deferred('.claude/hooks/joycraft-version-check.mjs', 'claude', 'joycraft-checker-adapter'),
       patch('.claude/settings.json', 'claude', undefined, 'hooks.SessionStart[command=node .claude/hooks/joycraft-version-check.mjs]'),
       patch('.claude/settings.json', 'claude', undefined, 'hooks.PreToolUse[command=.claude/hooks/joycraft/block-dangerous.sh]'),

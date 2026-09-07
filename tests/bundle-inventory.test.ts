@@ -31,15 +31,15 @@ describe('getBundleInventory', () => {
     expect(patches.every((entry) => entry.ownedKey || entry.ownedRegion)).toBe(true);
   });
 
-  it('declares checker and adapter ownership without returning placeholder payloads', () => {
+  it('declares the checker payload and legacy adapter ownership', () => {
     const entries = getBundleInventory(['claude']);
     const deferred = entries.filter((entry) =>
       entry.path === 'docs/.joycraft/check.mjs' || entry.path === '.claude/hooks/joycraft-version-check.mjs',
     );
     expect(deferred).toHaveLength(2);
     expect(deferred.every((entry) => entry.ownership === 'managed')).toBe(true);
-    expect(deferred.every((entry) => entry.active === false && entry.installable === false)).toBe(true);
-    expect(deferred.every((entry) => entry.content === undefined)).toBe(true);
+    expect(deferred.find((entry) => entry.path === 'docs/.joycraft/check.mjs')).toEqual(expect.objectContaining({ active: true, installable: true, executable: true }));
+    expect(deferred.find((entry) => entry.path === '.claude/hooks/joycraft-version-check.mjs')).toEqual(expect.objectContaining({ active: false, installable: false }));
   });
 
   it('marks executable runtime scripts with their install mode', () => {

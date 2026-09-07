@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 9 of 15
 > **Dependencies:** 8 — separate-project-migrations.md
-> **Status:** Ready
+> **Status:** In Review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 6–9 files / ~350 lines
 
@@ -42,11 +42,11 @@ Joycraft currently performs separate, inconsistent registry checks in the CLI, u
 
 ## Acceptance Criteria
 
-- [ ] Bundle a dependency-free `docs/.joycraft/check.mjs` from the shared implementation; derive its root from installation location and support `check --json`. [src: design §2]
-- [ ] Successful metadata refresh has a 24-hour lifetime and a three-second deadline, with a local refresh lock and bounded failure backoff. [src: design §2]
-- [ ] Report available, current, postponed, pending-conflicts, and unknown distinctly; compare numeric stable versions and never automatically select prereleases. [src: design §2]
-- [ ] Display acknowledgement differs from postponement; suppress repeated offers per release/session and honor explicit checks and newer releases. [src: design §2]
-- [ ] Notify is the default local policy; off and auto-safe settings stay local; offline or failed checks do not block skill work. [src: design §2]
+- [x] Bundle a dependency-free `docs/.joycraft/check.mjs` from the shared implementation; derive its root from installation location and support `check --json`. [src: design §2]
+- [x] Successful metadata refresh has a 24-hour lifetime and a three-second deadline, with a local refresh lock and bounded failure backoff. [src: design §2]
+- [x] Report available, current, postponed, pending-conflicts, and unknown distinctly; compare numeric stable versions and never automatically select prereleases. [src: design §2]
+- [x] Display acknowledgement differs from postponement; suppress repeated offers per release/session and honor explicit checks and newer releases. [src: design §2]
+- [x] Notify is the default local policy; off and auto-safe settings stay local; offline or failed checks do not block skill work. [src: design §2]
 
 ## Test Plan
 
@@ -112,3 +112,7 @@ Reject retaining the existing independent CLI, upgrade, and hook fetch snippets:
 | Cached release is postponed and npm reports the same version | Remain postponed until an explicit check or a newer release. |
 | Candidate is `1.2.3-beta.1`, malformed, or lower than installed | Do not select it automatically; return an appropriate non-available/unknown result. |
 | Cache or local settings contain unknown future fields | Preserve them when updating local checker fields. |
+
+## Implementation Evidence
+
+Shared checker, installed executable, and CLI share cache, policy, status, and acknowledgement semantics. Focused regressions cover generated-script root discovery, deadline and offline behavior, live/replaced lock ownership, malformed state preservation, disabled checks, and pending conflicts from actual updates. Build, type checking, and the full staged-checkout suite passed: 3,237 tests, one skipped.
