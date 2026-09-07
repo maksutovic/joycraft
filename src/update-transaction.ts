@@ -30,6 +30,7 @@ import {
 import { resolveUpdatePath } from './update-paths.js';
 import type { PlannedUpdateAction, SnapshotContent, UpdatePlan } from './update-plan.js';
 import type { GitignoreProfile } from './version.js';
+import { LEGACY_CLAUDE_STATE_PATH, LEGACY_VERSION_FILE, STATE_PATH } from './version.js';
 
 const LOCAL_DIR = 'docs/.joycraft/local';
 const LOCK_RELATIVE = `${LOCAL_DIR}/update.lock`;
@@ -57,9 +58,44 @@ export interface TransactionPhaseInfo {
 export interface TransactionOptions {
   profile?: GitignoreProfile;
   operationId?: string;
+  /**
+   * Move manifest authority as part of this transaction. The source and
+   * destination are explicit so a profile change cannot accidentally publish
+   * to the destination while leaving the source authoritative.
+   */
+  authorityTransition?: AuthorityTransition;
+  /** Narrow, planner-owned writes for legacy migration and local preferences. */
+  localOperations?: readonly LocalTransactionOperation[];
   /** Throw after the selected real phase, leaving the journal for recovery. */
   failureAt?: TransactionPhase;
   onPhase?: (phase: TransactionPhase, info: TransactionPhaseInfo) => void;
+}
+
+export interface AuthorityReference {
+  profile: GitignoreProfile;
+  /** Optional while callers use the canonical profile path. */
+  path?: string;
+  /** Digest expected at this authority before the transaction starts. */
+  digest?: string | null;
+  /** Optional raw preimage supplied by the planner. */
+  raw?: SnapshotContent;
+}
+
+/** The old and new manifest authorities for a shared/private profile switch. */
+export interface AuthorityTransition {
+  oldAuthority: AuthorityReference;
+  newAuthority: AuthorityReference;
+}
+
+export type LocalTransactionOperationKind = 'write' | 'delete';
+
+export interface LocalTransactionOperation {
+  path: string;
+  kind: LocalTransactionOperationKind;
+  content?: SnapshotContent;
+  currentPresent: boolean;
+  rawPrecondition?: string;
+  mode?: number;
 }
 
 export interface TransactionResult {
@@ -91,6 +127,20 @@ interface JournalOperation {
   after: Image;
   stageRelative?: string;
   backupRelative?: string;
+  /** Manifest authority operations are validated against journal authorities. */
+  authority?: boolean;
+  /** Planner-approved state/preferences migration operation. */
+  localMigration?: boolean;
+}
+
+interface JournalAuthority {
+  profile: GitignoreProfile;
+  path: string;
+  /** Digest of the authority bytes in this journal (old preimage or new commit). */
+  digest: string | null;
+  bytes?: EncodedBytes;
+  /** Digest required at the destination before publishing (normally null). */
+  preconditionDigest?: string | null;
 }
 
 interface TransactionJournal {
@@ -105,6 +155,8 @@ interface TransactionJournal {
   plan: unknown;
   operations: JournalOperation[];
   backupRelative: string;
+  oldAuthority?: JournalAuthority;
+  newAuthority?: JournalAuthority;
 }
 
 interface SuccessfulBackup {
@@ -117,6 +169,8 @@ interface SuccessfulBackup {
   newManifest: EncodedBytes;
   operations: JournalOperation[];
   backupRelative: string;
+  oldAuthority?: JournalAuthority;
+  newAuthority?: JournalAuthority;
 }
 
 interface LockHandle {
@@ -280,6 +334,12 @@ function unlock(handle: LockHandle): void {
 }
 
 function profileFor(plan: UpdatePlan, options: TransactionOptions): GitignoreProfile {
+  if (options.authorityTransition) {
+    if (options.authorityTransition.newAuthority.profile !== plan.nextManifest.profile) {
+      throw new Error(`Transaction profile '${options.authorityTransition.newAuthority.profile}' does not match manifest profile '${plan.nextManifest.profile}'.`);
+    }
+    return options.authorityTransition.newAuthority.profile;
+  }
   if (options.profile && options.profile !== plan.nextManifest.profile) {
     throw new Error(`Transaction profile '${options.profile}' does not match manifest profile '${plan.nextManifest.profile}'.`);
   }
@@ -288,7 +348,11 @@ function profileFor(plan: UpdatePlan, options: TransactionOptions): GitignorePro
 
 function isControlPath(relativePath: string, profile: GitignoreProfile): boolean {
   const controls = [
-    manifestPath(profile),
+    // Both authority locations are transaction control paths regardless of
+    // the destination profile. A private transaction must not be able to
+    // smuggle a write to the tracked shared authority through its plan.
+    manifestPath('shared'),
+    manifestPath('private'),
     LOCAL_DIR,
     LOCK_RELATIVE,
     JOURNAL_RELATIVE,
@@ -299,11 +363,147 @@ function isControlPath(relativePath: string, profile: GitignoreProfile): boolean
   return controls.some((control) => relativePath === control || relativePath.startsWith(`${control}/`));
 }
 
+// These are the only project-local state files that the update planner may
+// migrate. In particular, callers cannot turn localOperations into a control
+// path escape by supplying an arbitrary path beneath docs/.joycraft/local.
+const APPROVED_LOCAL_MIGRATION_PATHS = new Set([
+  STATE_PATH,
+  LEGACY_VERSION_FILE,
+  LEGACY_CLAUDE_STATE_PATH,
+  `${LOCAL_DIR}/settings.json`,
+  `${LOCAL_DIR}/preferences.json`,
+  `${LOCAL_DIR}/legacy-state-backup.json`,
+]);
+
+function validateLocalMigrationPath(root: string, relativePath: string): void {
+  localPath(root, relativePath);
+  if (!APPROVED_LOCAL_MIGRATION_PATHS.has(relativePath)) {
+    throw new Error(`Local migration action is not allowlisted: '${relativePath}'.`);
+  }
+}
+
 function validateManagedPath(root: string, relativePath: string, profile: GitignoreProfile): void {
   localPath(root, relativePath);
   if (isControlPath(relativePath, profile)) {
     throw new Error(`Update action cannot target Joycraft transaction state: '${relativePath}'.`);
   }
+}
+
+function operationFromInput(
+  input: {
+    path: string;
+    kind: 'write' | 'delete';
+    content?: SnapshotContent;
+    currentPresent: boolean;
+    rawPrecondition?: string;
+    mode?: number;
+  },
+  root: string,
+): JournalOperation {
+  const path = localPath(root, input.path);
+  let current: Buffer | undefined;
+  let mode: number | undefined;
+  try {
+    const stat = lstatSync(path);
+    if (!stat.isFile()) throw new Error(`Planned update path is not a regular file: '${input.path}'.`);
+    current = readFileSync(path);
+    mode = stat.mode & 0o7777;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+  }
+  if (input.currentPresent !== (current !== undefined)) {
+    throw new TransactionConflictError(`Raw precondition failed for '${input.path}'.`, input.path);
+  }
+  if (input.rawPrecondition !== undefined && rawFileHash(current ?? Buffer.alloc(0)) !== input.rawPrecondition) {
+    if (!(current === undefined && input.rawPrecondition === '')) {
+      throw new TransactionConflictError(`Raw precondition failed for '${input.path}'.`, input.path);
+    }
+  }
+  if (input.kind === 'delete') {
+    return { path: input.path, kind: 'delete', before: imageOf(current, mode), after: { present: false }, localMigration: true };
+  }
+  if (input.content === undefined) throw new Error(`Selected local migration has no content: '${input.path}'.`);
+  const target = bytes(input.content);
+  return {
+    path: input.path,
+    kind: 'write',
+    before: imageOf(current, mode),
+    after: imageOf(target, input.mode ?? mode ?? 0o644),
+    localMigration: true,
+  };
+}
+
+function authorityPath(root: string, reference: AuthorityReference): string {
+  const expected = manifestPath(reference.profile);
+  if (reference.path !== undefined && reference.path !== expected) {
+    throw new Error(`Authority path '${reference.path}' does not match profile '${reference.profile}'.`);
+  }
+  return localPath(root, expected);
+}
+
+function digestOfAuthorityInfo(info: ReturnType<typeof readInstallationManifestInfo>): string | null {
+  return info.manifest ? manifestDigest(info.manifest) : null;
+}
+
+function validateAuthorityReference(
+  root: string,
+  reference: AuthorityReference,
+  info: ReturnType<typeof readInstallationManifestInfo>,
+  label: string,
+): void {
+  authorityPath(root, reference);
+  if (info.status !== 'valid' && info.status !== 'missing') {
+    throw new TransactionConflictError(`Cannot transition while the ${label} authority is ${info.status}.`, manifestPath(reference.profile));
+  }
+  const actual = digestOfAuthorityInfo(info);
+  if (reference.digest !== undefined && reference.digest !== actual) {
+    throw new TransactionConflictError(`${label} manifest authority changed after planning.`, manifestPath(reference.profile));
+  }
+  if (reference.raw !== undefined) {
+    const raw = info.raw;
+    if (raw === undefined || raw !== (Buffer.isBuffer(reference.raw) ? reference.raw.toString('utf8') : reference.raw)) {
+      throw new TransactionConflictError(`${label} manifest authority bytes changed after planning.`, manifestPath(reference.profile));
+    }
+  }
+}
+
+function authorityReferenceForTransition(
+  root: string,
+  transition: AuthorityTransition,
+): { old: AuthorityReference; next: AuthorityReference; oldInfo: ReturnType<typeof readInstallationManifestInfo>; nextInfo: ReturnType<typeof readInstallationManifestInfo> } {
+  if (transition.oldAuthority.profile === transition.newAuthority.profile) {
+    throw new Error('Authority transition requires distinct shared and private profiles.');
+  }
+  authorityPath(root, transition.oldAuthority);
+  authorityPath(root, transition.newAuthority);
+  const oldInfo = readInstallationManifestInfo(root, transition.oldAuthority.profile);
+  const nextInfo = readInstallationManifestInfo(root, transition.newAuthority.profile);
+  validateAuthorityReference(root, transition.oldAuthority, oldInfo, 'old');
+  // A destination authority is never silently replaced. The destination
+  // precondition may explicitly describe absence, but any existing authority
+  // is still a conflict that preserves its bytes.
+  if (nextInfo.status !== 'missing') {
+    throw new TransactionConflictError('The target manifest authority already exists; preserving it.', manifestPath(transition.newAuthority.profile));
+  }
+  if (transition.newAuthority.digest !== undefined && transition.newAuthority.digest !== null) {
+    throw new TransactionConflictError('The target manifest authority precondition must be missing.', manifestPath(transition.newAuthority.profile));
+  }
+  return { old: transition.oldAuthority, next: transition.newAuthority, oldInfo, nextInfo };
+}
+
+function authorityOperation(
+  root: string,
+  path: string,
+  kind: 'write' | 'delete',
+  content?: Buffer,
+  before?: Image,
+): JournalOperation {
+  const current = currentImage(root, path);
+  const expected = before ?? current;
+  if (!sameImage(current, expected)) throw new TransactionConflictError(`Raw precondition failed for '${path}'.`, path);
+  if (kind === 'delete') return { path, kind, before: expected, after: { present: false }, authority: true };
+  if (!content) throw new Error(`Authority write has no manifest bytes: '${path}'.`);
+  return { path, kind, before: expected, after: imageOf(content, 0o644), authority: true };
 }
 
 function siblingStagePath(relativePath: string, operationId: string, index: number): string {
@@ -439,6 +639,8 @@ function successfulFromJournal(journal: TransactionJournal): SuccessfulBackup {
     newManifest: journal.newManifest,
     operations: journal.operations,
     backupRelative: journal.backupRelative,
+    ...(journal.oldAuthority ? { oldAuthority: journal.oldAuthority } : {}),
+    ...(journal.newAuthority ? { newAuthority: journal.newAuthority } : {}),
   };
 }
 
@@ -457,6 +659,7 @@ function attention(message: string, operationId?: string, journalPath?: string):
 export function applyUpdatePlan(root: string, plan: UpdatePlan, options: TransactionOptions = {}): TransactionResult {
   const operationId = options.operationId ?? randomUUID();
   const profile = profileFor(plan, options);
+  let transitionAuthorities: ReturnType<typeof authorityReferenceForTransition> | null = null;
   // Validate every authority and transaction-state path before any selected
   // project file can be changed. The manifest reader itself intentionally
   // remains diagnostic, so this boundary must reject a symlinked authority.
@@ -469,20 +672,34 @@ export function applyUpdatePlan(root: string, plan: UpdatePlan, options: Transac
   if (existsSync(journalPath)) {
     return attention('An interrupted update is awaiting recovery; recover it before applying a new plan.', operationId, journalPath);
   }
+  if (options.authorityTransition) {
+    try {
+      transitionAuthorities = authorityReferenceForTransition(root, options.authorityTransition);
+    } catch (error) {
+      if (error instanceof TransactionConflictError) {
+        return { status: 'conflict', operationId, journalPath, diagnostics: [error.message], conflicts: error.conflictPath ? [error.conflictPath] : [] };
+      }
+      throw error;
+    }
+    localPath(root, manifestPath(transitionAuthorities.old.profile));
+  }
   // Validate all managed paths before taking the lock or creating local state.
   for (const action of plan.actions) if (action.selected) validateManagedPath(root, action.path, profile);
-  const manifestInfo = readInstallationManifestInfo(root, profile);
+  for (const operation of options.localOperations ?? []) validateLocalMigrationPath(root, operation.path);
+  const manifestProfile = transitionAuthorities?.old.profile ?? profile;
+  const manifestInfo = readInstallationManifestInfo(root, manifestProfile);
   if (manifestInfo.status !== 'valid' && manifestInfo.status !== 'missing') {
     return attention(`Cannot apply update while the ${manifestInfo.status} installation manifest needs attention.`);
   }
   const currentManifest = manifestInfo.manifest;
   const currentDigest = currentManifest ? manifestDigest(currentManifest) : null;
-  if (plan.baseManifestDigest !== undefined && plan.baseManifestDigest !== currentDigest) {
-    return { status: 'conflict', operationId, journalPath, diagnostics: ['The installation manifest changed after this plan was created; re-plan before applying.'], conflicts: [manifestPath(profile)] };
+  const expectedBaseDigest = transitionAuthorities?.old.digest ?? plan.baseManifestDigest;
+  if (expectedBaseDigest !== undefined && expectedBaseDigest !== currentDigest) {
+    return { status: 'conflict', operationId, journalPath, diagnostics: ['The installation manifest changed after this plan was created; re-plan before applying.'], conflicts: [manifestPath(manifestProfile)] };
   }
   const markedNext = withTransactionMarker(plan.nextManifest, operationId);
   if (!validateManifest(markedNext)) throw new Error('Refusing to publish an invalid transaction manifest.');
-  if (currentManifest && manifestDigest(withoutTransactionMarker(markedNext)) === manifestDigest(withoutTransactionMarker(currentManifest))
+  if (!transitionAuthorities && !(options.localOperations?.length) && currentManifest && manifestDigest(withoutTransactionMarker(markedNext)) === manifestDigest(withoutTransactionMarker(currentManifest))
     && plan.actions.every((action) => !action.selected || action.kind === 'reconcile' || action.kind === 'adopt')) {
     try {
       for (const action of plan.actions) validateMetadataPrecondition(action, root);
@@ -499,10 +716,19 @@ export function applyUpdatePlan(root: string, plan: UpdatePlan, options: Transac
     hitPhase(options, 'lock-acquired', info);
     if (existsSync(journalPath)) return attention('An interrupted update appeared while acquiring the project lock; recover it before applying a new plan.', operationId, journalPath);
     // Re-read after lock acquisition to close the plan-to-lock race.
-    const lockedInfo = readInstallationManifestInfo(root, profile);
+    const lockedInfo = readInstallationManifestInfo(root, manifestProfile);
     if (lockedInfo.status !== 'valid' && lockedInfo.status !== 'missing') return attention(`Cannot apply update while the ${lockedInfo.status} installation manifest needs attention.`, operationId, journalPath);
     const lockedDigest = lockedInfo.manifest ? manifestDigest(lockedInfo.manifest) : null;
-    if (plan.baseManifestDigest !== undefined && plan.baseManifestDigest !== lockedDigest) return { status: 'conflict', operationId, journalPath, diagnostics: ['The installation manifest changed while the update lock was acquired; re-plan before applying.'], conflicts: [manifestPath(profile)] };
+    if (expectedBaseDigest !== undefined && expectedBaseDigest !== lockedDigest) return { status: 'conflict', operationId, journalPath, diagnostics: ['The installation manifest changed while the update lock was acquired; re-plan before applying.'], conflicts: [manifestPath(manifestProfile)] };
+    if (transitionAuthorities) {
+      try {
+        const lockedAuthorities = authorityReferenceForTransition(root, options.authorityTransition!);
+        transitionAuthorities = lockedAuthorities;
+      } catch (error) {
+        if (error instanceof TransactionConflictError) return { status: 'conflict', operationId, journalPath, diagnostics: [error.message], conflicts: error.conflictPath ? [error.conflictPath] : [] };
+        return attention(String(error), operationId, journalPath);
+      }
+    }
     try {
       for (const action of plan.actions) validateMetadataPrecondition(action, root);
     } catch (error) {
@@ -513,6 +739,15 @@ export function applyUpdatePlan(root: string, plan: UpdatePlan, options: Transac
     let operations: JournalOperation[];
     try {
       operations = plan.actions.map((action) => operationFor(action, root)).filter((item): item is JournalOperation => item !== null);
+      for (const migration of options.localOperations ?? []) operations.push(operationFromInput(migration, root));
+      if (transitionAuthorities) {
+        const oldPath = manifestPath(transitionAuthorities.old.profile);
+        const nextPath = manifestPath(transitionAuthorities.next.profile);
+        const oldImage = currentImage(root, oldPath);
+        const nextImage = currentImage(root, nextPath);
+        operations.push(authorityOperation(root, oldPath, 'delete', undefined, oldImage));
+        operations.push(authorityOperation(root, nextPath, 'write', manifestBytes(markedNext), nextImage));
+      }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const match = message.match(/'([^']+)'/);
@@ -536,11 +771,26 @@ export function applyUpdatePlan(root: string, plan: UpdatePlan, options: Transac
       phase: 'lock-acquired',
       oldManifestDigest: lockedInfo.manifest ? manifestDigest(lockedInfo.manifest) : null,
       newManifestDigest: manifestDigest(markedNext),
-      ...(lockedInfo.raw ? { oldManifest: { encoding: 'base64', data: Buffer.from(lockedInfo.raw).toString('base64') } } : {}),
+      ...(!transitionAuthorities && lockedInfo.raw ? { oldManifest: { encoding: 'base64', data: Buffer.from(lockedInfo.raw).toString('base64') } } : {}),
       newManifest: { encoding: 'base64', data: manifestBytes(markedNext).toString('base64') },
       plan: encode(plan),
       operations,
       backupRelative,
+      ...(transitionAuthorities ? {
+        oldAuthority: {
+          profile: transitionAuthorities.old.profile,
+          path: manifestPath(transitionAuthorities.old.profile),
+          digest: lockedInfo.manifest ? manifestDigest(lockedInfo.manifest) : null,
+          ...(lockedInfo.raw ? { bytes: { encoding: 'base64' as const, data: Buffer.from(lockedInfo.raw).toString('base64') } } : {}),
+        },
+        newAuthority: {
+          profile: transitionAuthorities.next.profile,
+          path: manifestPath(transitionAuthorities.next.profile),
+          digest: manifestDigest(markedNext),
+          preconditionDigest: transitionAuthorities.nextInfo.manifest ? manifestDigest(transitionAuthorities.nextInfo.manifest) : null,
+          bytes: { encoding: 'base64' as const, data: manifestBytes(markedNext).toString('base64') },
+        },
+      } : {}),
     };
     journal.phase = 'journal-written';
     writeJournal(root, journal);
@@ -581,7 +831,9 @@ export function applyUpdatePlan(root: string, plan: UpdatePlan, options: Transac
       localPath(root, operation.path);
       const current = currentImage(root, operation.path);
       if (!sameImage(current, operation.before)) throw new Error(`Raw precondition failed immediately before writing '${operation.path}'.`);
-      if (operation.kind === 'delete') unlinkSync(target);
+      if (operation.kind === 'delete') {
+        if (current.present) unlinkSync(target);
+      }
       else fs.renameSync(localPath(root, operation.stageRelative!), target);
     }
     journal.phase = 'files-applied';
@@ -596,19 +848,29 @@ export function applyUpdatePlan(root: string, plan: UpdatePlan, options: Transac
 
     // The plan's manifest and metadata preconditions remain authoritative until
     // the last publication step. A late edit leaves the journal recoverable.
-    const beforeManifest = readInstallationManifestInfo(root, profile);
-    if (beforeManifest.status !== 'valid' && beforeManifest.status !== 'missing') throw new TransactionConflictError('Installation manifest changed before publication.', manifestPath(profile));
+    const beforeManifest = readInstallationManifestInfo(root, manifestProfile);
+    if (!transitionAuthorities && beforeManifest.status !== 'valid' && beforeManifest.status !== 'missing') throw new TransactionConflictError('Installation manifest changed before publication.', manifestPath(manifestProfile));
     const beforeDigest = beforeManifest.manifest ? manifestDigest(beforeManifest.manifest) : null;
-    if (beforeDigest !== journal.oldManifestDigest) throw new TransactionConflictError('Installation manifest changed before publication.', manifestPath(profile));
+    if (!transitionAuthorities && beforeDigest !== journal.oldManifestDigest) throw new TransactionConflictError('Installation manifest changed before publication.', manifestPath(manifestProfile));
+    if (transitionAuthorities) {
+      const oldAfter = readInstallationManifestInfo(root, transitionAuthorities.old.profile);
+      const nextAfter = readInstallationManifestInfo(root, transitionAuthorities.next.profile);
+      if (oldAfter.status !== 'missing' || nextAfter.status !== 'valid' || !nextAfter.manifest
+        || manifestDigest(nextAfter.manifest) !== journal.newManifestDigest) {
+        throw new TransactionConflictError('Manifest authority changed before transition commit.', manifestPath(transitionAuthorities.next.profile));
+      }
+    }
     for (const action of plan.actions) validateMetadataPrecondition(action, root);
     for (const operation of operations) if (!sameImage(currentImage(root, operation.path), operation.after)) throw new TransactionConflictError(`Published bytes changed before manifest publication for '${operation.path}'.`, operation.path);
 
-    const manifestRel = manifestPath(profile);
-    const manifestAbs = localPath(root, manifestRel);
-    const manifestTemp = localPath(root, `${manifestRel}.tmp-${operationId}`);
-    durableWrite(manifestTemp, manifestBytes(markedNext));
-    parseInstallationManifest(readFileSync(manifestTemp, 'utf8'));
-    fs.renameSync(manifestTemp, manifestAbs);
+    if (!transitionAuthorities) {
+      const manifestRel = manifestPath(profile);
+      const manifestAbs = localPath(root, manifestRel);
+      const manifestTemp = localPath(root, `${manifestRel}.tmp-${operationId}`);
+      durableWrite(manifestTemp, manifestBytes(markedNext));
+      parseInstallationManifest(readFileSync(manifestTemp, 'utf8'));
+      fs.renameSync(manifestTemp, manifestAbs);
+    }
     // Record rollback material before exposing the manifest-renamed phase. If
     // the process stops immediately after the rename, recovery can still
     // retain the same backup for an explicit guarded rollback.
@@ -661,6 +923,34 @@ function validateJournalImage(image: Image): void {
   }
 }
 
+function validateJournalAuthority(root: string, authority: JournalAuthority, label: string): void {
+  if (!authority || (authority.profile !== 'shared' && authority.profile !== 'private')
+    || authority.path !== manifestPath(authority.profile)
+    || (authority.digest !== null && !/^[0-9a-f]{64}$/i.test(authority.digest))) {
+    throw new Error(`Invalid ${label} manifest authority descriptor.`);
+  }
+  authorityPath(root, authority);
+  if (authority.bytes) {
+    const parsed = parseInstallationManifest(verifiedJournalBytes(authority.bytes).toString('utf8'));
+    if (manifestDigest(parsed) !== authority.digest || parsed.profile !== authority.profile) {
+      throw new Error(`Invalid ${label} manifest authority digest.`);
+    }
+  } else if (authority.digest !== null) {
+    throw new Error(`Missing ${label} manifest authority preimage.`);
+  }
+  if (authority.preconditionDigest !== undefined
+    && authority.preconditionDigest !== null
+    && !/^[0-9a-f]{64}$/i.test(authority.preconditionDigest)) {
+    throw new Error(`Invalid ${label} authority precondition digest.`);
+  }
+}
+
+function authorityImageMatches(image: Image, authority: JournalAuthority): boolean {
+  if (authority.digest === null) return !image.present;
+  if (!image.present || !image.bytes || !authority.bytes) return false;
+  return rawFileHash(imageBytes(image)!) === rawFileHash(verifiedJournalBytes(authority.bytes));
+}
+
 function validateJournal(root: string, journal: TransactionJournal): void {
   if (journal.schemaVersion !== 1 || !/^[A-Za-z0-9_-]+$/.test(journal.operationId) || !Array.isArray(journal.operations)) {
     throw new Error('Invalid update journal identity.');
@@ -673,15 +963,46 @@ function validateJournal(root: string, journal: TransactionJournal): void {
   if (journal.oldManifest) {
     const previous = parseInstallationManifest(verifiedJournalBytes(journal.oldManifest).toString('utf8'));
     if (manifestDigest(previous) !== journal.oldManifestDigest || previous.profile !== journal.profile) throw new Error('Journal manifest preimage digest is invalid.');
-  } else if (journal.oldManifestDigest !== null) throw new Error('Journal is missing its manifest preimage.');
+  } else if (journal.oldManifestDigest !== null && !journal.oldAuthority) throw new Error('Journal is missing its manifest preimage.');
   if (journal.backupRelative !== `${BACKUPS_RELATIVE}/${journal.operationId}`) throw new Error('Update journal backup path is not transaction-owned.');
   localPath(root, journal.backupRelative);
+  if ((journal.oldAuthority === undefined) !== (journal.newAuthority === undefined)) {
+    throw new Error('Update journal must contain both authority descriptors.');
+  }
+  if (journal.oldAuthority && journal.newAuthority) {
+    validateJournalAuthority(root, journal.oldAuthority, 'old');
+    validateJournalAuthority(root, journal.newAuthority, 'new');
+    if (journal.oldAuthority.profile === journal.newAuthority.profile || journal.oldAuthority.path === journal.newAuthority.path) {
+      throw new Error('Update journal authority descriptors must be distinct.');
+    }
+    if (journal.newAuthority.digest !== journal.newManifestDigest) throw new Error('New authority digest does not match the transaction manifest.');
+    const authorityOperations = journal.operations.filter((operation) => operation.authority);
+    const oldDeletes = authorityOperations.filter((operation) => operation.path === journal.oldAuthority!.path && operation.kind === 'delete');
+    const newWrites = authorityOperations.filter((operation) => operation.path === journal.newAuthority!.path && operation.kind === 'write');
+    if (authorityOperations.length !== 2 || oldDeletes.length !== 1 || newWrites.length !== 1
+      || !authorityImageMatches(oldDeletes[0].before, journal.oldAuthority)
+      || oldDeletes[0].after.present
+      || newWrites[0].before.present
+      || !authorityImageMatches(newWrites[0].after, journal.newAuthority)) {
+      throw new Error('Update journal authority operations do not match their recorded transition.');
+    }
+  } else if (journal.operations.some((operation) => operation.authority)) {
+    throw new Error('Update journal contains authority operations without an authority transition.');
+  }
   for (let index = 0; index < journal.operations.length; index += 1) {
     const operation = journal.operations[index];
     if (operation.kind !== 'write' && operation.kind !== 'delete') throw new Error('Invalid journal operation kind.');
     validateJournalImage(operation.before);
     validateJournalImage(operation.after);
-    validateManagedPath(root, operation.path, journal.profile);
+    if (operation.authority) {
+      if (!journal.oldAuthority || !journal.newAuthority || (operation.path !== journal.oldAuthority.path && operation.path !== journal.newAuthority.path)) {
+        throw new Error('Update journal authority operation is not transaction-owned.');
+      }
+    } else if (operation.localMigration) {
+      validateLocalMigrationPath(root, operation.path);
+    } else {
+      validateManagedPath(root, operation.path, journal.profile);
+    }
     const expectedStage = operation.kind === 'write' ? siblingStagePath(operation.path, journal.operationId, index) : undefined;
     const stageRequired = ['staged', 'files-applied', 'files-verified', 'manifest-renamed', 'journal-bookkept', 'cleanup', 'complete'].includes(journal.phase);
     if ((stageRequired && operation.stageRelative !== expectedStage) || (operation.stageRelative !== undefined && operation.stageRelative !== expectedStage)) throw new Error('Update journal staging path is not transaction-owned.');
@@ -691,6 +1012,29 @@ function validateJournal(root: string, journal: TransactionJournal): void {
 
 function recoveryResult(status: TransactionResult['status'], journal: TransactionJournal, conflicts: string[] = [], diagnostics: string[] = []): TransactionResult {
   return { status, operationId: journal.operationId, journalPath: JOURNAL_RELATIVE, diagnostics, conflicts };
+}
+
+function transitionAuthorityState(root: string, journal: TransactionJournal): { oldState: boolean; newState: boolean } | TransactionResult {
+  if (!journal.oldAuthority || !journal.newAuthority) return { oldState: false, newState: false };
+  const oldInfo = readInstallationManifestInfo(root, journal.oldAuthority.profile);
+  const newInfo = readInstallationManifestInfo(root, journal.newAuthority.profile);
+  if (oldInfo.status !== 'valid' && oldInfo.status !== 'missing') {
+    return recoveryResult('attention', journal, [], [`Cannot recover while the old manifest authority is ${oldInfo.status}.`]);
+  }
+  if (newInfo.status !== 'valid' && newInfo.status !== 'missing') {
+    return recoveryResult('attention', journal, [], [`Cannot recover while the new manifest authority is ${newInfo.status}.`]);
+  }
+  const oldDigest = digestOfAuthorityInfo(oldInfo);
+  const newDigest = digestOfAuthorityInfo(newInfo);
+  const oldMatches = oldDigest === journal.oldAuthority.digest;
+  const newMatches = newDigest === journal.newAuthority.digest;
+  // The old authority is deleted before the new one is renamed. Missing both
+  // therefore means an interrupted pre-commit interval and must roll back.
+  if (oldMatches && newMatches) return recoveryResult('attention', journal, [journal.oldAuthority.path, journal.newAuthority.path], ['Both manifest authorities are present; transition state is ambiguous.']);
+  if (newMatches && !oldInfo.manifest) return { oldState: false, newState: true };
+  if (oldMatches && !newInfo.manifest) return { oldState: true, newState: false };
+  if (!oldInfo.manifest && !newInfo.manifest) return { oldState: true, newState: false };
+  return recoveryResult('attention', journal, [journal.oldAuthority.path, journal.newAuthority.path], ['Manifest authority matches neither the interrupted preimage nor its commit marker.']);
 }
 
 /** Recover the one known interrupted transaction, preserving any user edits. */
@@ -714,12 +1058,21 @@ export function recoverInterruptedUpdate(root: string, options: TransactionOptio
     }
     journal = decodeJournal(lockedJournalRaw);
     validateJournal(root, journal);
-    const info = readInstallationManifestInfo(root, journal.profile);
-    if (info.status !== 'valid' && info.status !== 'missing') return recoveryResult('attention', journal, [], [`Cannot recover while the ${info.status} installation manifest needs attention.`]);
-    const digest = info.manifest ? manifestDigest(info.manifest) : null;
-    const oldState = digest === journal.oldManifestDigest;
-    const newState = digest === journal.newManifestDigest;
-    if (!oldState && !newState) return recoveryResult('attention', journal, [], ['Current manifest matches neither the interrupted update preimage nor its commit marker.']);
+    const authorityState = transitionAuthorityState(root, journal);
+    if ('status' in authorityState) return authorityState;
+    let oldState: boolean;
+    let newState: boolean;
+    if (journal.oldAuthority && journal.newAuthority) {
+      oldState = authorityState.oldState;
+      newState = authorityState.newState;
+    } else {
+      const info = readInstallationManifestInfo(root, journal.profile);
+      if (info.status !== 'valid' && info.status !== 'missing') return recoveryResult('attention', journal, [], [`Cannot recover while the ${info.status} installation manifest needs attention.`]);
+      const digest = info.manifest ? manifestDigest(info.manifest) : null;
+      oldState = digest === journal.oldManifestDigest;
+      newState = digest === journal.newManifestDigest;
+      if (!oldState && !newState) return recoveryResult('attention', journal, [], ['Current manifest matches neither the interrupted update preimage nor its commit marker.']);
+    }
     const conflicts: string[] = [];
     for (const operation of journal.operations) {
       const current = currentImage(root, operation.path);
@@ -737,7 +1090,11 @@ export function recoverInterruptedUpdate(root: string, options: TransactionOptio
       if (sameImage(current, operation.before)) continue;
       writeImage(root, operation.path, operation.before);
     }
-    if (journal.oldManifest) {
+    if (journal.oldAuthority && journal.newAuthority) {
+      // Authority preimages are ordinary journal operations. Reversing them
+      // above deletes the new authority and restores the old one in a
+      // recoverable order; no second manifest write is needed here.
+    } else if (journal.oldManifest) {
       const oldManifest = Buffer.from(journal.oldManifest.data, 'base64');
       const manifestRel = manifestPath(journal.profile);
       const temp = localPath(root, `${manifestRel}.recovery-${journal.operationId}`);
@@ -781,21 +1138,35 @@ export function rollbackLastSuccessfulUpdate(root: string, options: TransactionO
     }
     backup = lockedBackup;
     validateJournal(root, backup as unknown as TransactionJournal);
-    const info = readInstallationManifestInfo(root, backup.profile);
-    if (info.status !== 'valid' || !info.manifest || manifestDigest(info.manifest) !== backup.newManifestDigest) {
-      return { status: 'conflict', operationId: backup.operationId, diagnostics: ['Current manifest no longer matches the successful update; rollback is guarded.'], conflicts: [manifestPath(backup.profile)] };
+    if (backup.oldAuthority && backup.newAuthority) {
+      const oldInfo = readInstallationManifestInfo(root, backup.oldAuthority.profile);
+      const newInfo = readInstallationManifestInfo(root, backup.newAuthority.profile);
+      if (oldInfo.status !== 'missing' || newInfo.status !== 'valid' || !newInfo.manifest || manifestDigest(newInfo.manifest) !== backup.newManifestDigest) {
+        return { status: 'conflict', operationId: backup.operationId, diagnostics: ['Current manifest authority no longer matches the successful update; rollback is guarded.'], conflicts: [manifestPath(backup.newAuthority.profile)] };
+      }
+    } else {
+      const info = readInstallationManifestInfo(root, backup.profile);
+      if (info.status !== 'valid' || !info.manifest || manifestDigest(info.manifest) !== backup.newManifestDigest) {
+        return { status: 'conflict', operationId: backup.operationId, diagnostics: ['Current manifest no longer matches the successful update; rollback is guarded.'], conflicts: [manifestPath(backup.profile)] };
+      }
     }
     const conflicts: string[] = [];
     for (const operation of backup.operations) if (!sameImage(currentImage(root, operation.path), operation.after)) conflicts.push(operation.path);
     if (conflicts.length) return { status: 'conflict', operationId: backup.operationId, diagnostics: ['Current files changed after the successful update; rollback left them untouched.'], conflicts };
     for (const operation of [...backup.operations].reverse()) writeImage(root, operation.path, operation.before);
-    const manifestRel = manifestPath(backup.profile);
-    if (backup.oldManifest) {
+    if (backup.oldAuthority && backup.newAuthority) {
+      // Manifest authority is restored by the journaled authority operations
+      // above. Their reverse order also prevents a window with two owners.
+    } else if (backup.oldManifest) {
+      const manifestRel = manifestPath(backup.profile);
       const temp = localPath(root, `${manifestRel}.rollback-${backup.operationId}`);
       durableWrite(temp, Buffer.from(backup.oldManifest.data, 'base64'));
       parseInstallationManifest(readFileSync(temp, 'utf8'));
       fs.renameSync(temp, localPath(root, manifestRel));
-    } else if (existsSync(localPath(root, manifestRel))) unlinkSync(localPath(root, manifestRel));
+    } else {
+      const manifestRel = manifestPath(backup.profile);
+      if (existsSync(localPath(root, manifestRel))) unlinkSync(localPath(root, manifestRel));
+    }
     hitPhase(options, 'complete', { operationId: backup.operationId, journalPath: descriptorPath });
     return { status: 'rolled-back', operationId: backup.operationId, backupPath: localPath(root, backup.backupRelative), diagnostics: [], conflicts: [] };
   } finally {

@@ -1,1086 +1,324 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync, statSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
-import { Readable } from 'node:stream';
-import { upgrade, upgradeStatusExitCode } from '../src/upgrade';
+
 import { init } from '../src/init';
-import { readVersion, writeVersion, hashContent, STATE_PATH } from '../src/version';
-import { SKILLS, TEMPLATES, CODEX_SKILLS, OMP_SKILLS } from '../src/bundled-files';
+import { upgrade } from '../src/upgrade';
+import { getBundleInventory } from '../src/bundle-inventory';
+import { updateStatusExitCode } from '../src/update';
+import { manifestPath, normalizedVendorHash, type InstallationManifest } from '../src/install-manifest';
+import type { Harness } from '../src/harness';
 
-const LEGACY_VERSION_FILE = '.joycraft-version';
+const ALL_HARNESSES = ['claude', 'codex', 'pi', 'copilot', 'omp'] as const;
+const CODEX_HARNESSES = ['codex'] as const;
+const fullInventory = getBundleInventory(ALL_HARNESSES);
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const PKG_VERSION = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8')).version;
-
-function createTmpDir(): string {
-  const dir = join(tmpdir(), `joycraft-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-  mkdirSync(dir, { recursive: true });
-  return dir;
+function project(): string {
+  return mkdtempSync(join(tmpdir(), 'joycraft-upgrade-'));
 }
 
-function cleanup(dir: string): void {
-  rmSync(dir, { recursive: true, force: true });
+function cleanup(root: string): void {
+  rmSync(root, { recursive: true, force: true });
 }
 
-describe('upgrade', () => {
-  let tmpDir: string;
+function bundle(inventory = fullInventory, version = '9.9.9') {
+  return { version, integrity: '', inventory };
+}
 
-  beforeEach(() => {
-    tmpDir = createTmpDir();
-    // Hermetic: never hit the live npm registry — an unmocked staleness check
-    // aborts every upgrade whenever the published version differs from local.
-    const origFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ version: '0.0.0' }),
-    }) as unknown as typeof fetch;
-    return () => {
-      globalThis.fetch = origFetch;
-      cleanup(tmpDir);
-    };
+async function initialize(
+  root: string,
+  inventory = fullInventory,
+  version = '1.0.0',
+  harnesses: readonly Harness[] = ALL_HARNESSES,
+) {
+  return init(root, {
+    nonInteractive: true,
+    yes: true,
+    harnesses,
+    bundle: bundle(inventory, version),
   });
+}
 
-  it('shows error when project is not initialized', async () => {
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+async function runUpgrade(root: string, inventory = fullInventory, options: Record<string, unknown> = {}) {
+  return upgrade(root, {
+    nonInteractive: true,
+    yes: true,
+    bundle: bundle(inventory),
+    ...options,
+  });
+}
+
+function entry(inventory: typeof fullInventory, pathSuffix: string) {
+  const found = inventory.find((candidate) => candidate.path.endsWith(pathSuffix));
+  if (!found) throw new Error(`Missing inventory entry: ${pathSuffix}`);
+  return found;
+}
+
+function put(root: string, relative: string, content: string): void {
+  const absolute = join(root, relative);
+  mkdirSync(dirname(absolute), { recursive: true });
+  writeFileSync(absolute, content, 'utf8');
+}
+
+function readManifest(root: string, profile: 'shared' | 'private' = 'shared'): InstallationManifest {
+  return JSON.parse(readFileSync(join(root, manifestPath(profile)), 'utf8')) as InstallationManifest;
+}
+
+describe('upgrade alias through the shared update engine', () => {
+  it('reports invalid for a fresh unattended upgrade without harness selection', async () => {
+    const root = project();
     try {
-      await upgrade(tmpDir, { yes: false });
+      const result = await upgrade(root, { nonInteractive: true, yes: true, bundle: bundle() });
+      expect(result.status).toBe('invalid');
+      expect(result.exitCode).toBe(1);
+      expect(result.diagnostics.join(' ')).toMatch(/harness/i);
+      expect(existsSync(join(root, manifestPath('shared')))).toBe(false);
     } finally {
-      console.log = origLog;
+      cleanup(root);
     }
-
-    expect(logs.some(l => l.includes('not been initialized'))).toBe(true);
-    expect(logs.some(l => l.includes('npx joycraft init'))).toBe(true);
   });
 
-  it('reports invalid when a skill exists without installation state', async () => {
-    await init(tmpDir, { force: false });
-
-    const skillPath = join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-    const before = readFileSync(skillPath, 'utf-8');
-    rmSync(join(tmpDir, STATE_PATH));
-
-    const result = await upgrade(tmpDir, { yes: true });
-
-    expect(result).toEqual({ cliWasStale: false, status: 'invalid' });
-    expect(readFileSync(skillPath, 'utf-8')).toBe(before);
-    expect(existsSync(join(tmpDir, STATE_PATH))).toBe(false);
-  });
-
-  it('warns and exits early when CLI is stale', async () => {
-    await init(tmpDir, { force: false });
-
-    // Mock fetch to return a newer version than the current CLI
-    const origFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ version: '999.0.0' }),
-    }) as unknown as typeof fetch;
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    let result: { cliWasStale: boolean };
+  it('reconciles an old manifest version without rewriting matching managed files', async () => {
+    const root = project();
     try {
-      result = await upgrade(tmpDir, { yes: false });
-    } finally {
-      console.log = origLog;
-      globalThis.fetch = origFetch;
-    }
+      expect((await initialize(root)).status).toBe('applied');
+      const skill = entry(fullInventory, 'joycraft-tune/SKILL.md');
+      const skillPath = join(root, skill.path);
+      const beforeContent = readFileSync(skillPath, 'utf8');
+      const beforeMtime = statSync(skillPath).mtimeMs;
+      const manifest = readManifest(root);
+      manifest.targetVersion = '0.0.1';
+      writeFileSync(join(root, manifestPath('shared')), JSON.stringify(manifest, null, 2) + '\n');
 
-    expect(logs.some(l => l.includes('Joycraft CLI is out of date'))).toBe(true);
-    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
-    expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
-    // The guard handled messaging itself — the CLI must not print a second nudge
-    expect(result).toEqual({ cliWasStale: true, status: 'invalid' });
+      const result = await runUpgrade(root);
+
+      expect(result.status).toBe('noop');
+      expect(result.exitCode).toBe(0);
+      expect(readManifest(root).targetVersion).toBe('9.9.9');
+      expect(readFileSync(skillPath, 'utf8')).toBe(beforeContent);
+      expect(statSync(skillPath).mtimeMs).toBe(beforeMtime);
+    } finally {
+      cleanup(root);
+    }
   });
 
-  it('stale CLI with --yes re-execs the latest version via npx', async () => {
-    await init(tmpDir, { force: false });
+  it('maps the shared outcome statuses to the documented exit codes', () => {
+    expect(updateStatusExitCode('applied')).toBe(0);
+    expect(updateStatusExitCode('noop')).toBe(0);
+    expect(updateStatusExitCode('preserved')).toBe(0);
+    expect(updateStatusExitCode('invalid')).toBe(1);
+    expect(updateStatusExitCode('failed')).toBe(1);
+    expect(updateStatusExitCode('conflict')).toBe(2);
+    expect(updateStatusExitCode('attention')).toBe(3);
+  });
 
-    const origFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ version: '999.0.0' }),
-    }) as unknown as typeof fetch;
-
-    const spawnCalls: { cmd: string; args: string[] }[] = [];
-    const spawnForReexec = ((cmd: string, args: string[]) => {
-      spawnCalls.push({ cmd, args });
-      return { status: 0 };
-    }) as never;
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    let result: { cliWasStale: boolean };
+  it('preserves a local-only customization in safe --yes mode without prompting', async () => {
+    const root = project();
     try {
-      result = await upgrade(tmpDir, { yes: true, spawnForReexec });
-    } finally {
-      console.log = origLog;
-      globalThis.fetch = origFetch;
-    }
+      await initialize(root);
+      const skill = entry(fullInventory, 'joycraft-tune/SKILL.md');
+      const custom = `${readFileSync(join(root, skill.path), 'utf8')}\nlocal-only edit\n`;
+      writeFileSync(join(root, skill.path), custom);
 
-    expect(result).toEqual({ cliWasStale: true, status: 'noop' });
-    expect(spawnCalls).toHaveLength(1);
-    expect(spawnCalls[0].args).toContain('joycraft@999.0.0');
-    expect(spawnCalls[0].args).toContain('upgrade');
-    expect(spawnCalls[0].args).toContain('--yes');
-    // The re-exec ran the upgrade; the manual fallback line must not appear
-    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(false);
-    expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
+      const result = await runUpgrade(root);
+
+      expect(result.status).toBe('preserved');
+      expect(result.exitCode).toBe(0);
+      expect(result.preserved).toContain(skill.path);
+      expect(result.conflicts).toEqual([]);
+      expect(readFileSync(join(root, skill.path), 'utf8')).toBe(custom);
+    } finally {
+      cleanup(root);
+    }
   });
 
-  it('stale CLI re-exec forwards --gitignore and falls back on spawn failure', async () => {
-    await init(tmpDir, { force: false });
-
-    const origFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ version: '999.0.0' }),
-    }) as unknown as typeof fetch;
-
-    const spawnCalls: { cmd: string; args: string[] }[] = [];
-    const spawnForReexec = ((cmd: string, args: string[]) => {
-      spawnCalls.push({ cmd, args });
-      return { status: null, error: new Error('npx not found') };
-    }) as never;
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    let result: { cliWasStale: boolean };
+  it('preserves vendor conflicts under --yes and replaces only explicitly selected paths', async () => {
+    const root = project();
     try {
-      result = await upgrade(tmpDir, { yes: true, gitignore: 'shared', spawnForReexec });
-    } finally {
-      console.log = origLog;
-      globalThis.fetch = origFetch;
-    }
+      const oldInventory = fullInventory;
+      const changedInventory = oldInventory.map((candidate) => candidate.path.endsWith('joycraft-tune/SKILL.md')
+        ? { ...candidate, content: `${candidate.content ?? ''}\nvendor update\n` }
+        : candidate);
+      await initialize(root, oldInventory, '1.0.0');
+      const skill = entry(changedInventory, 'joycraft-tune/SKILL.md');
+      const custom = 'local edit that conflicts with a vendor update\n';
+      writeFileSync(join(root, skill.path), custom);
 
-    expect(result).toEqual({ cliWasStale: true, status: 'invalid' });
-    expect(spawnCalls).toHaveLength(1);
-    expect(spawnCalls[0].args).toContain('--gitignore');
-    expect(spawnCalls[0].args).toContain('shared');
-    // Spawn failed → fall back to the manual instruction, never diff stale files
-    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
-    expect(logs.some(l => l.includes('Already up to date'))).toBe(false);
+      const conflict = await runUpgrade(root, changedInventory);
+      expect(conflict.status).toBe('conflict');
+      expect(conflict.exitCode).toBe(2);
+      expect(conflict.conflicts).toContain(skill.path);
+      expect(conflict.preserved).toContain(skill.path);
+      expect(readFileSync(join(root, skill.path), 'utf8')).toBe(custom);
+
+      const replaced = await runUpgrade(root, changedInventory, { replaceCustomized: [skill.path] });
+      expect(replaced.status).toBe('applied');
+      expect(replaced.exitCode).toBe(0);
+      expect(readFileSync(join(root, skill.path), 'utf8')).toBe(skill.content);
+      expect(readManifest(root).files[skill.path]?.vendorHash).toBe(normalizedVendorHash(skill.content!));
+    } finally {
+      cleanup(root);
+    }
   });
 
-  it('stale CLI without --yes in a non-interactive session does not spawn', async () => {
-    await init(tmpDir, { force: false });
-
-    const origFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ version: '999.0.0' }),
-    }) as unknown as typeof fetch;
-
-    const spawnCalls: unknown[] = [];
-    const spawnForReexec = ((cmd: string, args: string[]) => {
-      spawnCalls.push([cmd, args]);
-      return { status: 0 };
-    }) as never;
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
+  it('keeps declined custom bytes and the recorded vendor baseline across repeated upgrades', async () => {
+    const root = project();
     try {
-      await upgrade(tmpDir, { yes: false, spawnForReexec });
-    } finally {
-      console.log = origLog;
-      globalThis.fetch = origFetch;
-    }
-
-    expect(spawnCalls).toHaveLength(0);
-    expect(logs.some(l => l.includes('npx joycraft@latest upgrade'))).toBe(true);
-  });
-
-  it('reports already up to date when nothing changed', async () => {
-    await init(tmpDir, { force: false });
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    let result: { cliWasStale: boolean };
-    try {
-      result = await upgrade(tmpDir, { yes: false });
-    } finally {
-      console.log = origLog;
-    }
-
-    expect(logs.some(l => l.includes('Already up to date'))).toBe(true);
-    expect(result).toEqual({ cliWasStale: false, status: 'noop' });
-  });
-
-  it('reconciles an old version stamp without rewriting matching managed files', async () => {
-    await init(tmpDir, { force: false });
-
-    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-    const skillPath = join(tmpDir, skillRelPath);
-    const beforeContent = readFileSync(skillPath, 'utf-8');
-    const beforeMtime = statSync(skillPath).mtimeMs;
-    const state = readVersion(tmpDir)!;
-    writeVersion(tmpDir, '0.0.1', state.files);
-
-    const result = await upgrade(tmpDir, { yes: true });
-
-    expect(result).toEqual({ cliWasStale: false, status: 'noop' });
-    expect(readVersion(tmpDir)!.version).toBe(PKG_VERSION);
-    expect(readFileSync(skillPath, 'utf-8')).toBe(beforeContent);
-    expect(statSync(skillPath).mtimeMs).toBe(beforeMtime);
-  });
-
-  it('maps update statuses to the documented command exit codes', () => {
-    expect(upgradeStatusExitCode('applied')).toBe(0);
-    expect(upgradeStatusExitCode('noop')).toBe(0);
-    expect(upgradeStatusExitCode('preserved-local-only')).toBe(0);
-    expect(upgradeStatusExitCode('invalid')).toBe(1);
-    expect(upgradeStatusExitCode('conflict')).toBe(2);
-    expect(upgradeStatusExitCode('attention')).toBe(3);
-  });
-
-  it('preserves a local-only edit with --yes without prompting', async () => {
-    await init(tmpDir, { force: false });
-
-    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-    const skillPath = join(tmpDir, skillRelPath);
-    const custom = `${SKILLS['joycraft-tune.md']}\nlocal-only edit`;
-    writeFileSync(skillPath, custom, 'utf-8');
-
-    const result = await upgrade(tmpDir, { yes: true });
-
-    expect(result).toEqual({
-      cliWasStale: false,
-      status: 'preserved-local-only',
-      preserved: [skillRelPath],
-    });
-    expect(readFileSync(skillPath, 'utf-8')).toBe(custom);
-  });
-
-  it('preserves a vendor conflict with --yes and reports it without prompting', async () => {
-    await init(tmpDir, { force: false });
-
-    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-    const skillPath = join(tmpDir, skillRelPath);
-    const custom = 'local edit that conflicts with a changed vendor file';
-    writeFileSync(skillPath, custom, 'utf-8');
-    const state = readVersion(tmpDir)!;
-    state.files[skillRelPath] = hashContent('previous vendor content');
-    writeVersion(tmpDir, '0.0.1', state.files);
-
-    const result = await upgrade(tmpDir, { yes: true });
-
-    expect(result).toEqual({
-      cliWasStale: false,
-      status: 'conflict',
-      pending: [skillRelPath],
-      preserved: [skillRelPath],
-    });
-    expect(readFileSync(skillPath, 'utf-8')).toBe(custom);
-  });
-
-  it('updates files when bundled content differs from installed', async () => {
-    await init(tmpDir, { force: false });
-
-    // Simulate that the installed version had different content by changing the recorded hash
-    const versionInfo = readVersion(tmpDir)!;
-    const skillPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-    // Write a different version of the file that matches the old hash (unmodified by user)
-    const oldContent = 'old bundled content';
-    writeFileSync(join(tmpDir, skillPath), oldContent, 'utf-8');
-    versionInfo.files[skillPath] = hashContent(oldContent);
-    writeVersion(tmpDir, '0.0.1', versionInfo.files);
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    try {
-      await upgrade(tmpDir, { yes: true });
-    } finally {
-      console.log = origLog;
-    }
-
-    // The file should now contain the latest bundled content
-    const updated = readFileSync(join(tmpDir, skillPath), 'utf-8');
-    expect(updated).toBe(SKILLS['joycraft-tune.md']);
-    expect(logs.some(l => l.includes('Updated'))).toBe(true);
-  });
-
-  it('detects user-customized files and updates after an explicit interactive accept', async () => {
-    await init(tmpDir, { force: false });
-
-    // User customizes a skill file
-    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-    const skillPath = join(tmpDir, skillRelPath);
-    writeFileSync(skillPath, 'my custom joy skill', 'utf-8');
-
-    // Record an older vendor base so this is a real vendor conflict that needs
-    // an explicit replacement decision.
-    const versionInfo = readVersion(tmpDir)!;
-    versionInfo.files[skillRelPath] = hashContent('previous vendor content');
-    writeVersion(tmpDir, '0.0.1', versionInfo.files);
-
-    const fakeStdin = Readable.from(['y\n']) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
-    fakeStdin.isTTY = true;
-    const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
-    Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    try {
-      await upgrade(tmpDir, { yes: false });
-    } finally {
-      console.log = origLog;
-      Object.defineProperty(process, 'stdin', stdinDesc);
-    }
-
-    // An explicit interactive acceptance overwrites the customized file.
-    const content = readFileSync(skillPath, 'utf-8');
-    expect(content).toBe(SKILLS['joycraft-tune.md']);
-  });
-
-  it('auto-adds new files without prompting', async () => {
-    await init(tmpDir, { force: false });
-
-    // Remove a template file to simulate it being new in a future version
-    const templatePath = join(tmpDir, 'docs', 'templates', 'context', 'production-map.md');
-    rmSync(templatePath);
-
-    const versionInfo = readVersion(tmpDir)!;
-    delete versionInfo.files[join('docs', 'templates', 'context', 'production-map.md')];
-    writeVersion(tmpDir, versionInfo.version, versionInfo.files);
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    try {
-      // No --yes flag — new files should still be auto-added
-      await upgrade(tmpDir, { yes: false });
-    } finally {
-      console.log = origLog;
-    }
-
-    expect(existsSync(templatePath)).toBe(true);
-    expect(logs.some(l => l.includes('added 1 new'))).toBe(true);
-  });
-
-  it('adds new files that did not exist before with --yes', async () => {
-    await init(tmpDir, { force: false });
-
-    // Remove a template file to simulate it being new in a future version
-    const templatePath = join(tmpDir, 'docs', 'templates', 'context', 'production-map.md');
-    rmSync(templatePath);
-
-    // Also remove it from the version hashes
-    const versionInfo = readVersion(tmpDir)!;
-    delete versionInfo.files[join('docs', 'templates', 'context', 'production-map.md')];
-    writeVersion(tmpDir, versionInfo.version, versionInfo.files);
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    try {
-      await upgrade(tmpDir, { yes: true });
-    } finally {
-      console.log = origLog;
-    }
-
-    expect(existsSync(templatePath)).toBe(true);
-    expect(logs.some(l => l.includes('added 1 new'))).toBe(true);
-  });
-
-  it('adds docs/templates/output/README.md to a project that predates it', async () => {
-    await init(tmpDir, { force: false });
-
-    // Simulate a project installed before the output-template convention existed.
-    const readmeRel = join('docs', 'templates', 'output', 'README.md');
-    const readmePath = join(tmpDir, readmeRel);
-    rmSync(readmePath);
-
-    const versionInfo = readVersion(tmpDir)!;
-    delete versionInfo.files[readmeRel];
-    writeVersion(tmpDir, versionInfo.version, versionInfo.files);
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    try {
-      await upgrade(tmpDir, { yes: true });
-    } finally {
-      console.log = origLog;
-    }
-
-    expect(existsSync(readmePath)).toBe(true);
-  });
-
-  it('adds docs/templates/REVIEW_GATE_TEMPLATE.html to a project that predates it', async () => {
-    await init(tmpDir, { force: false });
-
-    // Simulate a project installed before the review-gate template shipped.
-    const templateRel = join('docs', 'templates', 'REVIEW_GATE_TEMPLATE.html');
-    const templatePath = join(tmpDir, templateRel);
-    rmSync(templatePath);
-
-    const versionInfo = readVersion(tmpDir)!;
-    delete versionInfo.files[templateRel];
-    writeVersion(tmpDir, versionInfo.version, versionInfo.files);
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    try {
-      await upgrade(tmpDir, { yes: true });
-    } finally {
-      console.log = origLog;
-    }
-
-    expect(existsSync(templatePath)).toBe(true);
-  });
-
-  it('never overwrites a user template living beside the README', async () => {
-    await init(tmpDir, { force: false });
-
-    const userTemplate = join(tmpDir, 'docs', 'templates', 'output', 'prd.md');
-    writeFileSync(userTemplate, '# Acme PRD\n', 'utf-8');
-
-    const origLog = console.log;
-    console.log = () => {};
-    try {
-      await upgrade(tmpDir, { yes: true });
-    } finally {
-      console.log = origLog;
-    }
-
-    // The directory is scaffolded, not managed: nothing Joycraft ships is keyed
-    // to prd.md, so upgrade has no reason to touch it — assert it doesn't.
-    expect(readFileSync(userTemplate, 'utf-8')).toBe('# Acme PRD\n');
-  });
-
-  it('removes deprecated skill directories during upgrade', async () => {
-    await init(tmpDir, { force: false });
-
-    // Simulate old skill directories that should be cleaned up
-    const deprecatedSkills = ['tune', 'joy', 'joysmith', 'joysmith-assess', 'joysmith-upgrade', 'tune-assess', 'tune-upgrade', 'interview', 'new-feature', 'decompose', 'session-end'];
-    for (const name of deprecatedSkills) {
-      const dir = join(tmpDir, '.claude', 'skills', name);
-      mkdirSync(dir, { recursive: true });
-      writeFileSync(join(dir, 'SKILL.md'), `old ${name} skill`, 'utf-8');
-    }
-
-    // Also create a flat .md file (pre-directory format)
-    writeFileSync(join(tmpDir, '.claude', 'skills', 'joysmith.md'), 'flat file', 'utf-8');
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    try {
-      await upgrade(tmpDir, { yes: true });
-    } finally {
-      console.log = origLog;
-    }
-
-    // All deprecated directories should be removed
-    for (const name of deprecatedSkills) {
-      expect(existsSync(join(tmpDir, '.claude', 'skills', name))).toBe(false);
-    }
-    // Flat file should be removed
-    expect(existsSync(join(tmpDir, '.claude', 'skills', 'joysmith.md'))).toBe(false);
-
-    // Current skills should still exist
-    expect(existsSync(join(tmpDir, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'))).toBe(true);
-
-    // Should report what was cleaned up
-    expect(logs.some(l => l.includes('Removed') && l.includes('deprecated'))).toBe(true);
-  });
-
-  it('does not remove non-joycraft skill directories during upgrade', async () => {
-    await init(tmpDir, { force: false });
-
-    // Create a user's custom skill
-    const customDir = join(tmpDir, '.claude', 'skills', 'my-custom-skill');
-    mkdirSync(customDir, { recursive: true });
-    writeFileSync(join(customDir, 'SKILL.md'), 'my custom skill', 'utf-8');
-
-    await upgrade(tmpDir, { yes: true });
-
-    // Custom skill should be untouched
-    expect(existsSync(join(customDir, 'SKILL.md'))).toBe(true);
-    expect(readFileSync(join(customDir, 'SKILL.md'), 'utf-8')).toBe('my custom skill');
-  });
-
-  it('installs Codex skills in .agents/skills/ after upgrade', async () => {
-    await init(tmpDir, { force: false });
-
-    // Verify that .agents/skills/ files exist after init + upgrade
-    await upgrade(tmpDir, { yes: true });
-
-    for (const name of Object.keys(CODEX_SKILLS)) {
-      const skillName = name.replace(/\.md$/, '');
-      const skillPath = join(tmpDir, '.agents', 'skills', skillName, 'SKILL.md');
-      expect(existsSync(skillPath)).toBe(true);
-      expect(readFileSync(skillPath, 'utf-8')).toBe(CODEX_SKILLS[name]);
-    }
-  });
-
-  it('auto-adds new Codex skills not in old project', async () => {
-    await init(tmpDir, { force: false });
-
-    // Remove a Codex skill to simulate it being new in a future version
-    const firstSkillName = Object.keys(CODEX_SKILLS)[0].replace(/\.md$/, '');
-    const codexSkillPath = join(tmpDir, '.agents', 'skills', firstSkillName, 'SKILL.md');
-    const codexSkillRelPath = join('.agents', 'skills', firstSkillName, 'SKILL.md');
-    rmSync(join(tmpDir, '.agents', 'skills', firstSkillName), { recursive: true, force: true });
-
-    // Remove from version hashes
-    const versionInfo = readVersion(tmpDir)!;
-    delete versionInfo.files[codexSkillRelPath];
-    writeVersion(tmpDir, versionInfo.version, versionInfo.files);
-
-    const logs: string[] = [];
-    const origLog = console.log;
-    console.log = (...args: unknown[]) => logs.push(args.join(' '));
-    try {
-      await upgrade(tmpDir, { yes: false });
-    } finally {
-      console.log = origLog;
-    }
-
-    // New Codex skill should be auto-installed without prompting
-    expect(existsSync(codexSkillPath)).toBe(true);
-    expect(logs.some(l => l.includes('added') && l.includes('new'))).toBe(true);
-  });
-
-  it('includes .agents/skills/ hashes in .joycraft-version after upgrade', async () => {
-    await init(tmpDir, { force: false });
-
-    // Simulate old version to trigger an upgrade
-    const versionInfo = readVersion(tmpDir)!;
-    const firstSkillName = Object.keys(CODEX_SKILLS)[0].replace(/\.md$/, '');
-    const codexSkillRelPath = join('.agents', 'skills', firstSkillName, 'SKILL.md');
-    const oldContent = 'old codex content';
-    writeFileSync(join(tmpDir, codexSkillRelPath), oldContent, 'utf-8');
-    versionInfo.files[codexSkillRelPath] = hashContent(oldContent);
-    writeVersion(tmpDir, '0.0.1', versionInfo.files);
-
-    await upgrade(tmpDir, { yes: true });
-
-    const newVersion = readVersion(tmpDir)!;
-    // Check that .agents/skills/ paths have hashes
-    const agentsPaths = Object.keys(newVersion.files).filter(p => p.startsWith(join('.agents', 'skills')));
-    expect(agentsPaths.length).toBeGreaterThan(0);
-    // Verify the hash matches the current file content (truncated, as stored)
-    const currentContent = readFileSync(join(tmpDir, codexSkillRelPath), 'utf-8');
-    expect(newVersion.files[codexSkillRelPath]).toBe(hashContent(currentContent).slice(0, 16));
-  });
-
-  describe('omp managed tree (.omp/skills/)', () => {
-    /** First bundled omp skill, as a repo-relative installed path. */
-    const ompRelPath = (): string =>
-      join('.omp', 'skills', Object.keys(OMP_SKILLS)[0].replace(/\.md$/, ''), 'SKILL.md');
-
-    it('preserves a hand-edited .omp/skills file with --yes', async () => {
-      await init(tmpDir, { force: false });
-      const rel = ompRelPath();
-      writeFileSync(join(tmpDir, rel), 'hand-edited junk', 'utf-8');
-
-      await upgrade(tmpDir, { yes: true });
-
-      expect(readFileSync(join(tmpDir, rel), 'utf-8')).toBe('hand-edited junk');
-    });
-
-    it('leaves user files (CLAUDE.md, AGENTS.md, docs/) alone', async () => {
-      await init(tmpDir, { force: false });
-      const claudePath = join(tmpDir, 'CLAUDE.md');
-      const agentsPath = join(tmpDir, 'AGENTS.md');
-      writeFileSync(claudePath, '# my own CLAUDE.md\n', 'utf-8');
-      const agentsBefore = readFileSync(agentsPath, 'utf-8');
-      const userDoc = join(tmpDir, 'docs', 'context', 'my-notes.md');
-      writeFileSync(userDoc, '# my notes\n', 'utf-8');
-
-      await upgrade(tmpDir, { yes: true });
-
-      // CLAUDE.md keeps the user's own body. (Upgrade does append its
-      // sentinel-delimited folder map — a separate, long-standing behavior —
-      // so this asserts preservation, not byte-identity.)
-      expect(readFileSync(claudePath, 'utf-8')).toContain('# my own CLAUDE.md');
-      expect(readFileSync(agentsPath, 'utf-8')).toBe(agentsBefore);
-      expect(readFileSync(userDoc, 'utf-8')).toBe('# my notes\n');
-    });
-
-    it('adds .omp/skills on a project with pre-selection state (legacy fallback)', async () => {
-      await init(tmpDir, { force: false });
-
-      // Simulate state written before harness selection existed: no `harnesses`
-      // key, and no omp footprint at all.
-      rmSync(join(tmpDir, '.omp'), { recursive: true, force: true });
-      const statePath = join(tmpDir, STATE_PATH);
-      const state = JSON.parse(readFileSync(statePath, 'utf-8'));
-      delete state.harnesses;
-      for (const k of Object.keys(state.files)) {
-        if (k.startsWith('.omp')) delete state.files[k];
-      }
-      writeFileSync(statePath, JSON.stringify(state, null, 2) + '\n', 'utf-8');
-
-      await upgrade(tmpDir, { yes: true });
-
-      expect(existsSync(join(tmpDir, ompRelPath()))).toBe(true);
-    });
-  });
-
-  it('writes updated state after upgrade', async () => {
-    await init(tmpDir, { force: false });
-
-    // Simulate old version
-    const versionInfo = readVersion(tmpDir)!;
-    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-    const oldContent = 'old content';
-    writeFileSync(join(tmpDir, skillRelPath), oldContent, 'utf-8');
-    versionInfo.files[skillRelPath] = hashContent(oldContent);
-    writeVersion(tmpDir, '0.0.1', versionInfo.files);
-
-    await upgrade(tmpDir, { yes: true });
-
-    const newVersion = readVersion(tmpDir)!;
-    expect(newVersion.version).toBe(PKG_VERSION);
-    // The hash should now match the current file content (truncated, as stored)
-    const currentContent = readFileSync(join(tmpDir, skillRelPath), 'utf-8');
-    expect(newVersion.files[skillRelPath]).toBe(hashContent(currentContent).slice(0, 16));
-  });
-
-  describe('version-state relocation + migration', () => {
-    it('init produces no root .joycraft-version and writes the hidden state', async () => {
-      await init(tmpDir, { force: false });
-      expect(existsSync(join(tmpDir, LEGACY_VERSION_FILE))).toBe(false);
-      expect(existsSync(join(tmpDir, STATE_PATH))).toBe(true);
-    });
-
-    it('migrates a legacy root .joycraft-version to the hidden state and deletes the root file', async () => {
-      await init(tmpDir, { force: false });
-
-      // Simulate a project inited by an OLD Joycraft: state at the root, in the
-      // legacy full-length-hash shape, and no hidden state present.
-      const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-      const installedContent = readFileSync(join(tmpDir, skillRelPath), 'utf-8');
-      const legacyState = {
-        version: '0.1.0',
-        files: { [skillRelPath]: hashContent(installedContent) }, // full 64-char
-      };
-      rmSync(join(tmpDir, STATE_PATH));
-      writeFileSync(join(tmpDir, LEGACY_VERSION_FILE), JSON.stringify(legacyState, null, 2) + '\n', 'utf-8');
-
-      await upgrade(tmpDir, { yes: true });
-
-      // Root file gone, hidden state present.
-      expect(existsSync(join(tmpDir, LEGACY_VERSION_FILE))).toBe(false);
-      expect(existsSync(join(tmpDir, STATE_PATH))).toBe(true);
-      // Gitignore now carries the state path.
-      const gitignore = readFileSync(join(tmpDir, '.gitignore'), 'utf-8');
-      expect(gitignore).toContain(STATE_PATH);
-    });
-
-    it('migrates the interim .claude/.joycraft state to docs/ and clears the stray .claude/', async () => {
-      // Simulate a Codex-only project from the interim version: skills live in
-      // .agents/, state at the now-legacy .claude/.joycraft/state.json, and the
-      // only thing in .claude/ is that state. After upgrade, state must be at
-      // docs/.joycraft/ and .claude/ must be gone entirely (zero Claude footprint).
-      const codexSkillRel = join('.agents', 'skills', 'joycraft-tune', 'SKILL.md');
-      mkdirSync(dirname(join(tmpDir, codexSkillRel)), { recursive: true });
-      writeFileSync(join(tmpDir, codexSkillRel), 'tune', 'utf-8');
-
-      const legacyClaudeState = join(tmpDir, '.claude', '.joycraft', 'state.json');
-      mkdirSync(dirname(legacyClaudeState), { recursive: true });
-      writeFileSync(
-        legacyClaudeState,
-        JSON.stringify({ version: '0.1.0', files: {}, gitignoreProfile: 'shared', harnesses: ['codex'] }) + '\n',
-        'utf-8'
-      );
-
-      await upgrade(tmpDir, { yes: true });
-
-      // Relocated to docs/, legacy claude-nested state gone, .claude/ removed.
-      expect(existsSync(join(tmpDir, STATE_PATH))).toBe(true);
-      expect(existsSync(legacyClaudeState)).toBe(false);
-      expect(existsSync(join(tmpDir, '.claude'))).toBe(false);
-      // The persisted profile and harness selection survive the relocation.
-      const migrated = readVersion(tmpDir)!;
-      expect(migrated.gitignoreProfile).toBe('shared');
-      expect(migrated.harnesses).toEqual(['codex']);
-    });
-
-    it('legacy migration is a silent no-op when no root file exists', async () => {
-      await init(tmpDir, { force: false });
-      // Fresh install: no legacy root file. Upgrade should not create one.
-      await upgrade(tmpDir, { yes: true });
-      expect(existsSync(join(tmpDir, LEGACY_VERSION_FILE))).toBe(false);
-      expect(existsSync(join(tmpDir, STATE_PATH))).toBe(true);
-    });
-
-    it('3-way preserved: untouched file auto-updates silently (no prompt)', async () => {
-      await init(tmpDir, { force: false });
-
-      const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-      // The recorded-original reflects "old bundled content" and the on-disk file
-      // is byte-identical to it (user has NOT touched it). New bundle differs.
-      const oldContent = 'old bundled content — untouched by the user';
-      writeFileSync(join(tmpDir, skillRelPath), oldContent, 'utf-8');
-      const state = readVersion(tmpDir)!;
-      state.files[skillRelPath] = hashContent(oldContent); // writeVersion truncates
-      writeVersion(tmpDir, '0.0.1', state.files);
-
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...args: unknown[]) => logs.push(args.join(' '));
-      try {
-        // No --yes: an untouched file must update WITHOUT any prompt.
-        await upgrade(tmpDir, { yes: false });
-      } finally {
-        console.log = origLog;
-      }
-
-      // Auto-updated to the latest bundled content.
-      expect(readFileSync(join(tmpDir, skillRelPath), 'utf-8')).toBe(SKILLS['joycraft-tune.md']);
-      const all = logs.join('\n');
-      expect(all).toContain('Updated');
-      // It was NOT reported as customized.
-      expect(all.toLowerCase()).not.toContain('customized');
-    });
-
-    it('3-way preserved: user-modified file is reported customized and prompts (declining keeps it)', async () => {
-      await init(tmpDir, { force: false });
-
-      const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-      const custom = 'MY HAND-EDITED SKILL';
-      // On-disk content differs from the recorded-original (user customized it).
-      writeFileSync(join(tmpDir, skillRelPath), custom, 'utf-8');
-      const state = readVersion(tmpDir)!;
-      state.files[skillRelPath] = hashContent('the pristine original bundled content');
-      writeVersion(tmpDir, '0.0.1', state.files);
-
-      // Drive the readline prompt at the stdin/stdout boundary so yes:false does
-      // not hang. We capture the question written to stdout (the "Customized:"
-      // label) and answer "n" via a fake stdin, exercising the decline branch.
-      const asked: string[] = [];
-      const origStdoutWrite = process.stdout.write.bind(process.stdout);
-      (process.stdout as { write: unknown }).write = ((chunk: unknown, ...rest: unknown[]) => {
-        if (typeof chunk === 'string' && chunk.includes('overwrite with latest?')) {
-          asked.push(chunk);
-        }
-        return (origStdoutWrite as (...a: unknown[]) => boolean)(chunk, ...rest);
-      }) as typeof process.stdout.write;
-
-      // Fake stdin that yields a single "n" line, then ends.
-      const { Readable } = await import('node:stream');
-      const fakeStdin = Readable.from(['n\n']) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
-      fakeStdin.isTTY = true;
-      const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
-      Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
-
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...args: unknown[]) => logs.push(args.join(' '));
-      try {
-        await upgrade(tmpDir, { yes: false });
-      } finally {
-        console.log = origLog;
-        (process.stdout as { write: unknown }).write = origStdoutWrite;
-        Object.defineProperty(process, 'stdin', stdinDesc);
-      }
-
-      // It prompted, and the prompt named the file as Customized.
-      const askedAll = asked.join('\n');
-      expect(askedAll).toContain('Customized:');
-      expect(askedAll).toContain(skillRelPath);
-      // Declined → the user's content is preserved (NOT silently overwritten).
-      expect(readFileSync(join(tmpDir, skillRelPath), 'utf-8')).toBe(custom);
-      // Summary reflects a skip.
-      expect(logs.join('\n')).toContain('skipped');
-    });
-  });
-
-  describe('forced migration (flat → per-feature)', () => {
-    it('detects flat layout and migrates briefs/research/designs', async () => {
-      await init(tmpDir, { force: false });
-      // Pre-create flat layout artifacts
-      mkdirSync(join(tmpDir, 'docs', 'briefs'), { recursive: true });
-      writeFileSync(join(tmpDir, 'docs', 'briefs', '2026-04-01-foo.md'), '# foo brief', 'utf-8');
-      mkdirSync(join(tmpDir, 'docs', 'research'), { recursive: true });
-      writeFileSync(join(tmpDir, 'docs', 'research', '2026-04-01-foo.md'), '# foo research', 'utf-8');
-
-      await upgrade(tmpDir, { yes: true });
-
-      expect(existsSync(join(tmpDir, 'docs', 'features', '2026-04-01-foo', 'brief.md'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'features', '2026-04-01-foo', 'research.md'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'briefs', '2026-04-01-foo.md'))).toBe(false);
-    });
-
-    it('does not prompt and does not hang (forced)', async () => {
-      await init(tmpDir, { force: false });
-      mkdirSync(join(tmpDir, 'docs', 'briefs'), { recursive: true });
-      writeFileSync(join(tmpDir, 'docs', 'briefs', 'foo.md'), '# foo', 'utf-8');
-
-      // Run upgrade with yes:false — migration should still happen without prompting
-      await upgrade(tmpDir, { yes: false });
-
-      expect(existsSync(join(tmpDir, 'docs', 'features', 'foo', 'brief.md'))).toBe(true);
-    });
-
-    it('prints a summary of moves before applying', async () => {
-      await init(tmpDir, { force: false });
-      mkdirSync(join(tmpDir, 'docs', 'briefs'), { recursive: true });
-      writeFileSync(join(tmpDir, 'docs', 'briefs', 'foo.md'), '# foo', 'utf-8');
-
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...args: unknown[]) => logs.push(args.join(' '));
-      try {
-        await upgrade(tmpDir, { yes: true });
-      } finally {
-        console.log = origLog;
-      }
-
-      const all = logs.join('\n');
-      expect(all).toContain('docs/briefs/foo.md');
-      expect(all).toContain('docs/features/foo/brief.md');
-    });
-
-    it('migrates orphan (bugfix-area) spec dirs into docs/bugfixes/', async () => {
-      await init(tmpDir, { force: false });
-      mkdirSync(join(tmpDir, 'docs', 'specs', 'random-bugfix'), { recursive: true });
-      writeFileSync(join(tmpDir, 'docs', 'specs', 'random-bugfix', 'foo.md'), '# spec', 'utf-8');
-
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...args: unknown[]) => logs.push(args.join(' '));
-      try {
-        await upgrade(tmpDir, { yes: true });
-      } finally {
-        console.log = origLog;
-      }
-
-      const all = logs.join('\n');
-      expect(all).toContain('random-bugfix');
-      expect(all).toMatch(/Migrating bugfix areas/i);
-      expect(all.toLowerCase()).not.toContain('left in place');
-      // The area was physically moved, not left behind.
-      expect(existsSync(join(tmpDir, 'docs', 'bugfixes', 'random-bugfix', 'foo.md'))).toBe(true);
-      expect(existsSync(join(tmpDir, 'docs', 'specs', 'random-bugfix'))).toBe(false);
-    });
-
-    it('banner mentions README and git status after applying', async () => {
-      await init(tmpDir, { force: false });
-      mkdirSync(join(tmpDir, 'docs', 'briefs'), { recursive: true });
-      writeFileSync(join(tmpDir, 'docs', 'briefs', 'foo.md'), '# foo', 'utf-8');
-
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...args: unknown[]) => logs.push(args.join(' '));
-      try {
-        await upgrade(tmpDir, { yes: true });
-      } finally {
-        console.log = origLog;
-      }
-
-      const all = logs.join('\n');
-      expect(all.toLowerCase()).toContain('readme');
-      expect(all).toContain('git status');
-    });
-
-    it('is silent when no flat layout is present', async () => {
-      await init(tmpDir, { force: false });
-
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...args: unknown[]) => logs.push(args.join(' '));
-      try {
-        await upgrade(tmpDir, { yes: true });
-      } finally {
-        console.log = origLog;
-      }
-
-      const all = logs.join('\n');
-      expect(all.toLowerCase()).not.toContain('migration');
-      expect(all).not.toContain('docs/features/');
-    });
-  });
-
-  it('upgrade refreshes the version stamp from a stale 0.1.0', async () => {
-    await init(tmpDir, { force: false });
-
-    // Manually overwrite the version stamp to look like an older install
-    const versionInfo = readVersion(tmpDir)!;
-    writeVersion(tmpDir, '0.1.0', versionInfo.files);
-
-    // Force a content change so upgrade does work
-    const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-    const stale = readVersion(tmpDir)!;
-    const oldContent = 'old content';
-    writeFileSync(join(tmpDir, skillRelPath), oldContent, 'utf-8');
-    stale.files[skillRelPath] = hashContent(oldContent);
-    writeVersion(tmpDir, '0.1.0', stale.files);
-
-    await upgrade(tmpDir, { yes: true });
-
-    const after = readVersion(tmpDir)!;
-    expect(after.version).toBe(PKG_VERSION);
-    if (PKG_VERSION !== '0.1.0') {
-      expect(after.version).not.toBe('0.1.0');
-    }
-  });
-
-  describe('execution profile', () => {
-    const OPEN = '<!-- joycraft:execution-profile -->';
-
-    it('inserts the section into an AGENTS.md that has no profile', async () => {
-      await init(tmpDir, { force: false });
-      const agentsPath = join(tmpDir, 'AGENTS.md');
-      // Simulate a project that predates the profile: strip the section.
-      const stripped = readFileSync(agentsPath, 'utf-8')
-        .replace(/\n## Execution Profile[\s\S]*?<!-- \/joycraft:execution-profile -->\n/, '\n');
-      writeFileSync(agentsPath, stripped, 'utf-8');
-      expect(stripped).not.toContain(OPEN);
-
-      await upgrade(tmpDir, { yes: true });
-
-      const agents = readFileSync(agentsPath, 'utf-8');
-      expect(agents).toContain(OPEN);
-      expect(agents).toContain('Swarms: decompose no · implement no');
-    });
-
-    it('leaves an existing profile byte-identical', async () => {
-      await init(tmpDir, { force: false });
-      const agentsPath = join(tmpDir, 'AGENTS.md');
-      const before = readFileSync(agentsPath, 'utf-8').replace(
-        'Swarms: decompose no · implement no',
-        'Swarms: decompose yes · implement yes · hand-edited',
-      );
-      writeFileSync(agentsPath, before, 'utf-8');
-
-      await upgrade(tmpDir, { yes: true });
-
-      expect(readFileSync(agentsPath, 'utf-8')).toBe(before);
-    });
-  });
-
-  describe('customization baselines', () => {
-    async function declineUpgrade(): Promise<void> {
-      const { Readable } = await import('node:stream');
-      const fakeStdin = Readable.from(['n\n']) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
-      fakeStdin.isTTY = true;
-      const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
-      Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
-      try {
-        await upgrade(tmpDir, { yes: false });
-      } finally {
-        Object.defineProperty(process, 'stdin', stdinDesc);
-      }
-    }
-
-    it('preserves declined custom bytes and the vendor baseline across repeated upgrades', async () => {
-      await init(tmpDir, { force: false });
-
-      const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-      const vendorBase = 'the previously installed vendor content';
-      const custom = 'the user customization must survive every decline';
-      writeFileSync(join(tmpDir, skillRelPath), custom, 'utf-8');
-
-      const state = readVersion(tmpDir)!;
-      state.files[skillRelPath] = hashContent(vendorBase);
-      writeVersion(tmpDir, '0.0.1', state.files);
-
-      // The first run records the decline. The second and third runs are the
-      // regression: they must still compare against vendorBase, never custom.
-      for (let run = 0; run < 3; run++) {
-        await declineUpgrade();
-        expect(readFileSync(join(tmpDir, skillRelPath), 'utf-8')).toBe(custom);
-        expect(readVersion(tmpDir)!.files[skillRelPath]).toBe(
-          hashContent(vendorBase).slice(0, 16),
+      const oldInventory = fullInventory;
+      const changedInventory = oldInventory.map((candidate) => candidate.path.endsWith('joycraft-tune/SKILL.md')
+        ? { ...candidate, content: `${candidate.content ?? ''}\nvendor update\n` }
+        : candidate);
+      await initialize(root, oldInventory, '1.0.0');
+      const skill = entry(changedInventory, 'joycraft-tune/SKILL.md');
+      const custom = 'the user customization must survive every conflict\n';
+      writeFileSync(join(root, skill.path), custom);
+
+      for (let run = 0; run < 3; run += 1) {
+        const result = await runUpgrade(root, changedInventory);
+        expect(result.status).toBe('conflict');
+        expect(readFileSync(join(root, skill.path), 'utf8')).toBe(custom);
+        expect(readManifest(root).files[skill.path]?.vendorHash).toBe(
+          normalizedVendorHash(oldInventory.find((candidate) => candidate.path === skill.path)!.content!),
         );
       }
-    });
+    } finally {
+      cleanup(root);
+    }
+  });
 
-    it('records the target vendor hash after accepting a customized replacement', async () => {
-      await init(tmpDir, { force: false });
+  it('does not invent a vendor baseline for customized bytes with unknown ownership', async () => {
+    const root = project();
+    try {
+      const oldInventory = fullInventory;
+      const changedInventory = oldInventory.map((candidate) => candidate.path.endsWith('joycraft-tune/SKILL.md')
+        ? { ...candidate, content: `${candidate.content ?? ''}\nvendor update\n` }
+        : candidate);
+      await initialize(root, oldInventory, '1.0.0');
+      const skill = entry(changedInventory, 'joycraft-tune/SKILL.md');
+      const manifest = readManifest(root);
+      delete manifest.files[skill.path];
+      writeFileSync(join(root, manifestPath('shared')), JSON.stringify(manifest, null, 2) + '\n');
+      const custom = 'custom content with unknown ownership\n';
+      writeFileSync(join(root, skill.path), custom);
 
-      const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-      const vendorBase = 'the previously installed vendor content';
-      writeFileSync(join(tmpDir, skillRelPath), 'the user customization', 'utf-8');
+      const result = await runUpgrade(root, changedInventory);
 
-      const state = readVersion(tmpDir)!;
-      state.files[skillRelPath] = hashContent(vendorBase);
-      writeVersion(tmpDir, '0.0.1', state.files);
+      expect(result.status).toBe('conflict');
+      expect(readFileSync(join(root, skill.path), 'utf8')).toBe(custom);
+      expect(readManifest(root).files[skill.path]).toBeUndefined();
+    } finally {
+      cleanup(root);
+    }
+  });
 
-      const fakeStdin = Readable.from(['y\n']) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
-      fakeStdin.isTTY = true;
-      const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
-      Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
-      try {
-        await upgrade(tmpDir, { yes: false });
-      } finally {
-        Object.defineProperty(process, 'stdin', stdinDesc);
+  it('auto-adds a new inventory file without prompting', async () => {
+    const root = project();
+    try {
+      const initial = [entry(fullInventory, 'joycraft-tune/SKILL.md')];
+      const expanded = [
+        ...initial,
+        entry(fullInventory, 'joycraft-setup/SKILL.md'),
+      ];
+      await initialize(root, initial, '1.0.0');
+      rmSync(join(root, expanded[1].path), { force: true });
+
+      const result = await runUpgrade(root, expanded);
+
+      expect(result.status).toBe('applied');
+      expect(result.applied).toContain(expanded[1].path);
+      expect(readFileSync(join(root, expanded[1].path), 'utf8')).toBe(expanded[1].content);
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  it('leaves a user template beside managed templates untouched', async () => {
+    const root = project();
+    try {
+      await initialize(root);
+      const customPath = 'docs/templates/context/my-project-template.md';
+      put(root, customPath, '# user template\n');
+      const result = await runUpgrade(root);
+
+      expect(result.exitCode).toBe(0);
+      expect(readFileSync(join(root, customPath), 'utf8')).toBe('# user template\n');
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  it('does not remove non-Joycraft skill directories', async () => {
+    const root = project();
+    try {
+      await initialize(root);
+      const customPath = '.claude/skills/my-custom-skill/SKILL.md';
+      put(root, customPath, 'my custom skill\n');
+      await runUpgrade(root);
+
+      expect(existsSync(join(root, customPath))).toBe(true);
+      expect(readFileSync(join(root, customPath), 'utf8')).toBe('my custom skill\n');
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  it('installs only the selected harness and expands it when requested', async () => {
+    const root = project();
+    try {
+      const codexInventory = getBundleInventory(CODEX_HARNESSES);
+      const initial = await initialize(root, codexInventory, '1.0.0', CODEX_HARNESSES);
+      expect(initial.harnesses).toEqual(['codex']);
+      expect(existsSync(join(root, '.agents'))).toBe(true);
+      expect(existsSync(join(root, '.claude'))).toBe(false);
+
+      const expandedInventory = getBundleInventory(['codex', 'pi']);
+      const result = await runUpgrade(root, expandedInventory, { harnesses: ['codex', 'pi'] });
+
+      expect(result.exitCode).toBe(0);
+      expect(existsSync(join(root, '.pi'))).toBe(true);
+      expect(readManifest(root).harnesses).toEqual(['codex', 'pi']);
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  it('preserves user files outside the inventory across an upgrade', async () => {
+    const root = project();
+    try {
+      await initialize(root);
+      const files = {
+        'CLAUDE.md': '# User instructions\n',
+        'AGENTS.md': '# Team instructions\n',
+        'docs/notes.md': 'user notes\n',
+      };
+      for (const [path, content] of Object.entries(files)) put(root, path, content);
+      await runUpgrade(root);
+
+      for (const [path, content] of Object.entries(files)) {
+        expect(readFileSync(join(root, path), 'utf8')).toBe(content);
       }
-
-      expect(readFileSync(join(tmpDir, skillRelPath), 'utf-8')).toBe(SKILLS['joycraft-tune.md']);
-      expect(readVersion(tmpDir)!.files[skillRelPath]).toBe(
-        hashContent(SKILLS['joycraft-tune.md']).slice(0, 16),
-      );
-    });
-
-    it('keeps an unverifiable customized file without inventing a baseline', async () => {
-      await init(tmpDir, { force: false });
-
-      const skillRelPath = join('.claude', 'skills', 'joycraft-tune', 'SKILL.md');
-      writeFileSync(join(tmpDir, skillRelPath), 'custom content with unknown ownership', 'utf-8');
-
-      const state = readVersion(tmpDir)!;
-      delete state.files[skillRelPath];
-      writeVersion(tmpDir, '0.0.1', state.files);
-
-      await declineUpgrade();
-
-      expect(readFileSync(join(tmpDir, skillRelPath), 'utf-8')).toBe(
-        'custom content with unknown ownership',
-      );
-      expect(readVersion(tmpDir)!.files[skillRelPath]).toBeUndefined();
-    });
-  });
-});
-
-describe('version', () => {
-  let tmpDir: string;
-
-  beforeEach(() => {
-    tmpDir = createTmpDir();
-    return () => cleanup(tmpDir);
+    } finally {
+      cleanup(root);
+    }
   });
 
-  it('returns null when no version file exists', () => {
-    expect(readVersion(tmpDir)).toBeNull();
-  });
+  it('writes the executing bundle version after applying a changed vendor file', async () => {
+    const root = project();
+    try {
+      const oldInventory = fullInventory;
+      const changedInventory = oldInventory.map((candidate) => candidate.path.endsWith('joycraft-tune/SKILL.md')
+        ? { ...candidate, content: `${candidate.content ?? ''}\nvendor update\n` }
+        : candidate);
+      await initialize(root, oldInventory, '0.1.0');
+      const skill = entry(changedInventory, 'joycraft-tune/SKILL.md');
+      const result = await runUpgrade(root, changedInventory);
 
-  it('writes and reads version info at the hidden state path', () => {
-    const files = { 'a.md': hashContent('hello') };
-    writeVersion(tmpDir, '1.0.0', files);
-
-    // State lives at the hidden nested path, not the repo root.
-    expect(existsSync(join(tmpDir, STATE_PATH))).toBe(true);
-    expect(existsSync(join(tmpDir, LEGACY_VERSION_FILE))).toBe(false);
-
-    const info = readVersion(tmpDir);
-    expect(info).not.toBeNull();
-    expect(info!.version).toBe('1.0.0');
-    // Stored truncated to 16 chars.
-    expect(info!.files['a.md']).toBe(hashContent('hello').slice(0, 16));
-  });
-
-  it('hashContent produces consistent SHA-256 hashes', () => {
-    const h1 = hashContent('test');
-    const h2 = hashContent('test');
-    const h3 = hashContent('different');
-    expect(h1).toBe(h2);
-    expect(h1).not.toBe(h3);
-    expect(h1).toHaveLength(64); // SHA-256 hex (full, pre-truncation)
+      expect(result.status).toBe('applied');
+      expect(readManifest(root).targetVersion).toBe('9.9.9');
+      expect(readFileSync(join(root, skill.path), 'utf8')).toBe(skill.content);
+    } finally {
+      cleanup(root);
+    }
   });
 });

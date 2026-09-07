@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { mkdirSync, writeFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { planMigration, applyMigration } from '../src/migration';
@@ -78,8 +78,8 @@ describe('bugfix move application + guards', () => {
   });
 });
 
-describe('upgrade preview text for bugfix migration', () => {
-  it('previews under "Migrating bugfix areas" and no longer says "Left in place"', async () => {
+describe('routine upgrade leaves bugfix migration explicit', () => {
+  it('preserves old spec locations and does not announce an implicit migration', async () => {
     await init(dir, { force: false });
     write(join(dir, 'docs', 'specs', 'auth', 'fix-login.md'), '# spec');
 
@@ -92,9 +92,8 @@ describe('upgrade preview text for bugfix migration', () => {
       console.log = origLog;
     }
     const joined = logs.join('\n');
-    expect(joined).toMatch(/Migrating bugfix areas/i);
-    expect(joined).not.toContain('Left in place — area-level specs');
-    // The move actually happened (no interactive gate).
-    expect(existsSync(join(dir, 'docs', 'bugfixes', 'auth', 'fix-login.md'))).toBe(true);
+    expect(joined).not.toMatch(/Migrating bugfix areas/i);
+    expect(readFileSync(join(dir, 'docs', 'specs', 'auth', 'fix-login.md'), 'utf8')).toBe('# spec');
+    expect(existsSync(join(dir, 'docs', 'bugfixes', 'auth', 'fix-login.md'))).toBe(false);
   });
 });

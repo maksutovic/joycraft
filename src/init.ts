@@ -1,489 +1,224 @@
-import { mkdirSync, existsSync, writeFileSync, readFileSync, readdirSync, statSync, chmodSync } from 'node:fs';
-import { join, basename, resolve, dirname } from 'node:path';
-import { detectStack } from './detect.js';
-import { generateCLAUDEMd, generateClaudeMdPointer } from './improve-claude-md.js';
-import { generateAgentsMd } from './agents-md.js';
-import { generatePermissions } from './permissions.js';
-import { installSafeguardHooks } from './safeguard.js';
+import { existsSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+
 import { getBundleInventory } from './bundle-inventory.js';
+import { resolveAutoMemoryOffer } from './auto-memory.js';
+import { resolveExecutionProfile, type ExecutionProfile } from './execution-profile.js';
+import { HARNESSES, parseHarnessSelection, resolveHarnesses, sanitizeHarnesses, type Harness } from './harness.js';
+import { readInstallationManifestInfo } from './install-manifest.js';
+import { PRIVATE_DIRS_DISPLAY, resolveGitignoreProfile } from './gitignore.js';
+import { formatUpdateOutcome, update, type ExecutingBundle, type UpdateOutcome } from './update.js';
 import {
-  writeVersion,
-  readVersion,
-  hashContent,
+  LEGACY_CLAUDE_STATE_PATH,
+  LEGACY_VERSION_FILE,
   STATE_PATH,
-  DEFAULT_GITIGNORE_PROFILE,
+  parseGitignoreProfile,
   type GitignoreProfile,
 } from './version.js';
-import {
-  applyGitignoreProfile,
-  resolveGitignoreProfile,
-  PRIVATE_DIRS_DISPLAY,
-  PRIVATE_UNTRACK_COMMAND,
-} from './gitignore.js';
-import { applyGitattributes } from './gitattributes.js';
-import { getPackageVersion } from './package-version.js';
-import { HARNESSES, resolveHarnesses, type Harness } from './harness.js';
-import { resolveExecutionProfile } from './execution-profile.js';
-import { ensurePiExcludedFromTsconfig } from './tsconfig.js';
-import { resolveAutoMemoryOffer, AUTO_MEMORY_KEY } from './auto-memory.js';
 
+/** Options retained by the legacy init entry point and forwarded to update. */
 export interface InitOptions {
-  force: boolean;
-  /** Raw --gitignore value from the CLI, if provided. Validated in init(). */
+  force?: boolean;
   gitignore?: string;
+  harnesses?: readonly Harness[] | string;
+  yes?: boolean;
+  nonInteractive?: boolean;
+  replaceCustomized?: readonly string[];
+  json?: boolean;
+  bundle?: ExecutingBundle;
+  /** Captured by the init boundary and written by the shared update engine. */
+  executionProfile?: ExecutionProfile;
+  /** Captured by the init boundary and written by the shared update engine. */
+  disableAutoMemory?: boolean;
 }
 
-interface InitResult {
-  created: string[];
-  skipped: string[];
-  modified: string[];
-  warnings: string[];
+interface RecordedInitChoices {
+  present: boolean;
+  harnesses?: Harness[];
+  profile?: GitignoreProfile;
+}
+
+const RECORDED_STATE_PATHS = [STATE_PATH, LEGACY_CLAUDE_STATE_PATH, LEGACY_VERSION_FILE];
+
+function readRecordedInitChoices(root: string): RecordedInitChoices {
+  const choices: RecordedInitChoices = { present: false };
+
+  // A valid new manifest is the strongest source for both choices. Reading both
+  // authorities also makes a corrupt/duplicate installation stay non-interactive
+  // so init cannot mask the attention outcome returned by update().
+  for (const profile of ['shared', 'private'] as const) {
+    const info = readInstallationManifestInfo(root, profile);
+    if (info.status !== 'missing') choices.present = true;
+    if (info.manifest) {
+      choices.harnesses ??= [...info.manifest.harnesses];
+      choices.profile ??= info.manifest.profile;
+    }
+  }
+
+  for (const relative of RECORDED_STATE_PATHS) {
+    const path = join(root, ...relative.split('/'));
+    if (!existsSync(path)) continue;
+    choices.present = true;
+    try {
+      const parsed = JSON.parse(readFileSync(path, 'utf8')) as Record<string, unknown>;
+      if (!choices.harnesses && Array.isArray(parsed.harnesses)) {
+        choices.harnesses = sanitizeHarnesses(parsed.harnesses) ?? undefined;
+      }
+      choices.profile ??= parseGitignoreProfile(parsed.gitignoreProfile) ?? undefined;
+    } catch {
+      // update() owns malformed-state diagnosis and preservation; this read is
+      // only a prompt gate and must never turn a parse error into a write.
+    }
+  }
+
+  // Legacy installs can predate state selection entirely. Recognizing one of
+  // the actual harness artifacts is enough to treat a rerun as established.
+  if (!choices.present) {
+    const inventory = getBundleInventory(HARNESSES);
+    choices.present = inventory.some((entry) => (
+      entry.harness !== 'shared'
+      && entry.content !== undefined
+      && existsSync(join(root, ...entry.path.split('/')))
+    ));
+  }
+  return choices;
+}
+
+function canPrompt(options: InitOptions): boolean {
+  return process.stdin.isTTY === true
+    && options.yes !== true
+    && options.nonInteractive !== true
+    && options.json !== true;
+}
+
+function isEmptySelection(value: InitOptions['harnesses']): boolean {
+  if (Array.isArray(value)) return value.length === 0;
+  return typeof value === 'string' && parseHarnessSelection(value)?.length === 0;
+}
+
+function noHarnessOutcome(result: UpdateOutcome): UpdateOutcome {
+  return {
+    ...result,
+    status: 'noop',
+    exitCode: 0,
+    harnesses: [],
+    applied: [],
+    preserved: [],
+    conflicts: [],
+    diagnostics: [
+      'No harness selected — Joycraft will not install any skills.',
+      `Please run init again and select at least one harness (${HARNESSES.join(', ')}).`,
+    ],
+  };
 }
 
 /**
- * Stub README for docs/backlog/. It documents the convention (deferred work
- * captured mid-sprint, one file per item) and keeps the otherwise-empty
- * directory present in git so the CLAUDE.md / AGENTS.md backlog pointer never
- * dangles. Skills append real entries beside it on user confirmation.
+ * Capture fresh-init choices, then hand all filesystem work to update().
+ * Existing installations reuse their recorded authority and harnesses without
+ * reopening the interactive interview on every ordinary rerun.
  */
-const BACKLOG_README = `# Backlog
+export async function init(dir: string, options: InitOptions = {}): Promise<UpdateOutcome> {
+  const root = resolve(dir);
+  const recorded = readRecordedInitChoices(root);
+  const prompting = canPrompt(options) && !recorded.present;
 
-Deferred work lives here — ideas and follow-ups you surface mid-sprint but
-can't take on in the current feature. Capturing them keeps the current spec
-focused without losing the thread.
-
-- One file per item: \`docs/backlog/YYYY-MM-DD-<short-name>.md\`.
-- Joycraft skills (\`/joycraft-interview\`, \`/joycraft-new-feature\`,
-  \`/joycraft-design\`) offer to write entries here — always with your
-  confirmation, never automatically.
-- Promote an item by turning it into a Feature Brief under
-  \`docs/features/<slug>/\` when you're ready to build it.
-`;
-
-function ensureDir(dir: string): void {
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-}
-
-function writeFile(path: string, content: string, force: boolean, result: InitResult): void {
-  if (existsSync(path) && !force) {
-    result.skipped.push(path);
-    return;
-  }
-  writeFileSync(path, content, 'utf-8');
-  result.created.push(path);
-}
-
-function installInventoryFiles(
-  targetDir: string,
-  entries: ReturnType<typeof getBundleInventory>,
-  force: boolean,
-  result: InitResult,
-): void {
-  for (const entry of entries) {
-    if (entry.kind !== 'vendor' || !entry.active || !entry.installable || entry.content === undefined) continue;
-    const path = join(targetDir, entry.path);
-    ensureDir(dirname(path));
-    writeFile(path, entry.content, force, result);
-    if (entry.mode !== undefined) {
-      try { chmodSync(path, entry.mode); } catch { /* non-fatal */ }
-    }
-  }
-}
-
-export async function init(dir: string, opts: InitOptions): Promise<void> {
-  const targetDir = resolve(dir);
-  const result: InitResult = { created: [], skipped: [], modified: [], warnings: [] };
-
-  // Detect stack
-  const stack = await detectStack(targetDir);
-
-  // Pi detection — check if project uses Pi coding agent
-  const isPi = existsSync(join(targetDir, '.pi'));
-
-  // Resolve which harnesses to install (interactive multi-select; non-interactive
-  // installs all available). Done before any scaffolding so a "none" selection is
-  // a clean no-op — and before the gitignore prompt so we don't ask a second
-  // question when there's nothing to track.
-  const harnesses = await resolveHarnesses(process.stdin.isTTY === true);
-  const inventory = getBundleInventory(harnesses);
-  const wants = (h: Harness): boolean => harnesses.includes(h);
-  if (harnesses.length === 0) {
-    console.log(
-      '\nNo harness selected — Joycraft will not install any skills.\n' +
-      `Please run init again and select at least one harness (${HARNESSES.join(', ')}).`
-    );
-    return;
+  let harnesses = options.harnesses;
+  if (prompting && harnesses === undefined) {
+    harnesses = await resolveHarnesses(true);
+  } else if (!prompting && harnesses === undefined && recorded.harnesses !== undefined) {
+    // An empty recorded selection is meaningful too: preserve it as the
+    // user's deliberate no-op rather than falling through to legacyInit's
+    // all-harness compatibility default.
+    harnesses = [...recorded.harnesses];
   }
 
-  // Capture the Execution Profile (D6) for the harnesses just selected — swarm
-  // opt-in and free-text model/effort per harness. Interactive asks;
-  // non-interactive takes the explicit-no default so a scripted run never
-  // blocks. It is written into AGENTS.md below (its one and only home).
-  const executionProfile = await resolveExecutionProfile(harnesses, process.stdin.isTTY === true);
-
-  // Resolve the gitignore profile up front (flag → persisted → prompt → default)
-  // so it governs both the .gitignore writes and the "teammates won't get skills"
-  // warning below. Unlike upgrade, init persists even the non-interactive
-  // default: init creates the state fresh, and `shared` is the documented
-  // default for a first run.
-  const { profile: gitignoreProfile } = await resolveGitignoreProfile({
-    flag: opts.gitignore,
-    persisted: readVersion(targetDir)?.gitignoreProfile,
-    interactive: process.stdin.isTTY === true,
-    promptIntro: '\nHow should Joycraft files be tracked in git?',
-  });
-
-  // Offer to disable Claude Code auto-memory for this project — one home for
-  // facts (see auto-memory.ts). Asked here with the other interactive questions;
-  // the guarded write happens with the rest of the settings.json merge below.
-  // Only meaningful when the Claude harness is being installed at all.
-  const disableAutoMemory = wants('claude')
-    ? await resolveAutoMemoryOffer(process.stdin.isTTY === true)
-    : false;
-
-  // 1. Create the Joycraft-managed docs/ subdirectories that the generated
-  // CLAUDE.md / AGENTS.md point at up front, so no generated pointer dangles:
-  //   - context/ — the project context layer (gather-context populates it)
-  //   - backlog/ — where deferred work is captured mid-sprint; CLAUDE.md and
-  //                AGENTS.md both reference it, so it must exist after init even
-  //                before a skill writes its first entry. A README stub explains
-  //                the convention and keeps the otherwise-empty dir in git.
-  // Everything else (briefs/specs/discoveries/decisions/contracts/features/...)
-  // stays lazy-created by the skills that write to them. Solo-first: minimal
-  // preemptive ceremony, but never a dangling pointer.
-  ensureDir(join(targetDir, 'docs', 'context'));
-  ensureDir(join(targetDir, 'docs', 'backlog'));
-  writeFile(join(targetDir, 'docs', 'backlog', 'README.md'), BACKLOG_README, opts.force, result);
-
-  // 1b. Scan for existing non-Joycraft skills before copying ours (claude only).
-  const skillsDir = join(targetDir, '.claude', 'skills');
-  let existingSkills: string[] = [];
-  if (wants('claude') && existsSync(skillsDir)) {
-    existingSkills = readdirSync(skillsDir)
-      .filter(name => {
-        if (name.startsWith('joycraft-')) return false;
-        if (name.startsWith('.')) return false;
-        const fullPath = join(skillsDir, name);
-        try {
-          return statSync(fullPath).isDirectory();
-        } catch {
-          return false;
-        }
-      });
-  }
-
-  // 2/3. Install all active vendor artifacts from the canonical inventory.
-  // Create-once documents and config patches remain handled by their existing
-  // generators below; they are declarations, not replacement payloads.
-  installInventoryFiles(targetDir, inventory, opts.force, result);
-
-  // 4/5. Handle CLAUDE.md + AGENTS.md — only create if missing, never modify
-  // existing (unless --force).
-  //
-  // Multi-tool install (Codex, Pi, Copilot, and/or omp selected): AGENTS.md is the
-  // single shared instruction file and CLAUDE.md is Anthropic's documented import
-  // pointer (`@AGENTS.md`) — Claude Code doesn't read AGENTS.md natively, and
-  // two full sibling files drift. Claude-only install: classic full CLAUDE.md
-  // plus the slim AGENTS.md, unchanged.
-  const multiTool = wants('codex') || wants('pi') || wants('copilot') || wants('omp');
-  const claudeMdPath = join(targetDir, 'CLAUDE.md');
-  if (existsSync(claudeMdPath) && !opts.force) {
-    result.skipped.push(claudeMdPath);
-  } else {
-    const projectName = basename(targetDir);
-    const content = multiTool
-      ? generateClaudeMdPointer()
-      : generateCLAUDEMd(projectName, stack, existingSkills, {
-          privateProfile: gitignoreProfile === 'private',
-          projectDir: targetDir,
-        });
-    writeFileSync(claudeMdPath, content, 'utf-8');
-    result.created.push(claudeMdPath);
-  }
-
-  const agentsMdPath = join(targetDir, 'AGENTS.md');
-  if (existsSync(agentsMdPath) && !opts.force) {
-    // An existing AGENTS.md is never touched by init — not even to insert the
-    // Execution Profile. Init's contract is create-if-missing (NEVER overwrite
-    // user files without --force), and a user's AGENTS.md is theirs. The
-    // insert-if-absent path belongs to `joycraft upgrade` (and the interactive
-    // offer to `/joycraft-tune`), which is where users opt into Joycraft
-    // editing files they already own.
-    result.skipped.push(agentsMdPath);
-  } else {
-    const projectName = basename(targetDir);
-    const content = multiTool
-      ? generateCLAUDEMd(projectName, stack, existingSkills, {
-          privateProfile: gitignoreProfile === 'private',
-          multiTool: true,
-          executionProfile,
-          projectDir: targetDir,
-        })
-      : generateAgentsMd(projectName, stack, gitignoreProfile === 'private', executionProfile, undefined, targetDir);
-    writeFileSync(agentsMdPath, content, 'utf-8');
-    result.created.push(agentsMdPath);
-  }
-
-  // 6. Write the hidden state (docs/.joycraft/state.json) with hashes of the
-  // active vendor files from the same inventory used for installation. Inactive
-  // future declarations, create-once documents, and config patches are not
-  // replacement baselines.
-  const fileHashes: Record<string, string> = {};
-  for (const entry of inventory) {
-    if (entry.kind === 'vendor' && entry.active && entry.installable && entry.content !== undefined) {
-      fileHashes[entry.path] = hashContent(entry.content);
-    }
-  }
-  writeVersion(targetDir, getPackageVersion(), fileHashes, gitignoreProfile, harnesses);
-
-  // 6b. Apply the chosen gitignore profile.
-  //   - shared:  ignore only the hidden upgrade-state file (npm-lockfile-style;
-  //              tool-managed state that should never land in commits).
-  //   - private: ignore .claude/, .agents/, .pi/ — track only CLAUDE.md,
-  //              AGENTS.md, docs/.
-  // Append-only + create-if-absent + idempotent (never clobbers existing entries).
-  applyGitignoreProfile(targetDir, gitignoreProfile);
-
-  // 6b'. Mark workflow-exhaust docs (features, bugfixes, discoveries,
-  // templates) linguist-generated so GitHub collapses them in PR review.
-  // Same append-only/idempotent contract as the .gitignore writes; durable
-  // knowledge (CLAUDE.md, docs/context/) stays visible.
-  applyGitattributes(targetDir);
-
-  // 6c. Pi only: keep the installed `.pi/extensions/*.ts` runtime out of the
-  // user's TypeScript program. It imports a Pi-only package the project doesn't
-  // depend on, so a default `**​/*.ts` toolchain (e.g. create-next-app) would
-  // fail `tsc`/build on it. Surgically add `.pi` to tsconfig exclude, idempotent,
-  // and report transparently (never silently rewrites — see tsconfig.ts).
-  if (wants('pi')) {
-    const outcome = ensurePiExcludedFromTsconfig(targetDir);
-    if (outcome.status === 'added') {
-      result.modified.push(outcome.path);
-      result.warnings.push(
-        'Added ".pi" to tsconfig.json "exclude" so the Pi extension stays out of your TypeScript build.'
-      );
-    } else if (outcome.status === 'skipped') {
-      result.warnings.push(outcome.reason);
-    }
-  }
-
-  // Steps 7–9 configure the Claude Code harness (.claude/hooks + settings.json).
-  // Skip entirely when claude isn't a selected harness — a codex/pi-only install
-  // must not create a .claude/ tree.
-  if (wants('claude')) {
-  // 7. Install version check hook
-  const hooksDir = join(targetDir, '.claude', 'hooks');
-  ensureDir(hooksDir);
-  const hookScript = `// Joycraft version check — runs on Claude Code session start
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-try {
-  const data = JSON.parse(readFileSync(join(process.cwd(), '${STATE_PATH.split(/[\\/]/).join("', '")}'), 'utf-8'));
-  const res = await fetch('https://registry.npmjs.org/joycraft/latest', { signal: AbortSignal.timeout(3000) });
-  if (res.ok) {
-    const latest = (await res.json()).version;
-    if (data.version !== latest) console.log('Joycraft ' + latest + ' available (you have ' + data.version + '). Run: npx joycraft@latest upgrade');
-  }
-} catch {}
-`;
-  writeFile(join(hooksDir, 'joycraft-version-check.mjs'), hookScript, opts.force, result);
-
-  // Update .claude/settings.json with SessionStart hook
-  const settingsPath = join(targetDir, '.claude', 'settings.json');
-  let settings: Record<string, unknown> = {};
-  let settingsMalformed = false;
-  if (existsSync(settingsPath)) {
-    try {
-      settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
-    } catch {
-      settingsMalformed = true;
-      result.warnings.push(
-        'settings.json exists but is malformed — skipping settings merge to protect your config.\n' +
-        '    Fix the JSON in .claude/settings.json and re-run init.'
-      );
-    }
-  }
-  if (!settingsMalformed) {
-    if (!settings.hooks) settings.hooks = {};
-    const hooksConfig = settings.hooks as Record<string, unknown>;
-    if (!hooksConfig.SessionStart) hooksConfig.SessionStart = [];
-    const sessionStartHooks = hooksConfig.SessionStart as Array<Record<string, unknown>>;
-    const hasJoycraftHook = sessionStartHooks.some(h => {
-      const innerHooks = h.hooks as Array<Record<string, unknown>> | undefined;
-      return innerHooks?.some(ih => typeof ih.command === 'string' && ih.command.includes('joycraft'));
+  // An empty answer is an intentional clean no-op. Calling update with the
+  // empty selection keeps the shared validation/delegation boundary in charge;
+  // update returns before it can create or modify any project file.
+  if (isEmptySelection(harnesses)) {
+    const result = await update(root, {
+      legacyInit: true,
+      force: options.force ?? false,
+      harnesses,
+      yes: options.yes,
+      nonInteractive: options.nonInteractive,
+      replaceCustomized: options.replaceCustomized,
+      bundle: options.bundle,
     });
-
-    // Enable Claude Code agent teams (experimental) so skills like
-    // /joycraft-research can fan out to subagents without the user having to
-    // hand-edit settings.json. Idempotent: only set when absent — never clobber
-    // an explicit user value.
-    if (!settings.env) settings.env = {};
-    const env = settings.env as Record<string, unknown>;
-    const envMissing = !('CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS' in env);
-    if (envMissing) {
-      env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS = '1';
-    }
-
-    // Apply the accepted auto-memory offer. Idempotent and non-destructive by
-    // the same rule as the env write above: only set when the key is absent, so
-    // an explicit user value (true or false) is never clobbered. Project scope
-    // only — this path is `<targetDir>/.claude/settings.json`, never ~/.claude.
-    const autoMemoryMissing = !(AUTO_MEMORY_KEY in settings);
-    const writeAutoMemory = disableAutoMemory && autoMemoryMissing;
-    if (writeAutoMemory) {
-      settings[AUTO_MEMORY_KEY] = false;
-    }
-
-    if (!hasJoycraftHook) {
-      sessionStartHooks.push({
-        matcher: '',
-        hooks: [{
-          type: 'command',
-          command: 'node .claude/hooks/joycraft-version-check.mjs',
-        }],
-      });
-    }
-    if (!hasJoycraftHook || envMissing || writeAutoMemory) {
-      writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
-      if (!result.created.includes(settingsPath)) result.created.push(settingsPath);
-    }
-
-    // 8. Generate and merge permission rules into settings.json
-    const permissions = generatePermissions(stack);
-    // Re-read settings in case it was just created by hook step
-    if (existsSync(settingsPath)) {
-      try {
-        settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
-      } catch {
-        result.warnings.push(
-          'settings.json became unreadable after hook merge — skipping permissions merge.\n' +
-          '    Fix the JSON in .claude/settings.json and re-run init.'
-        );
-        settingsMalformed = true;
-      }
-    }
-    if (!settingsMalformed) {
-      if (!settings.permissions) settings.permissions = {};
-      const perms = settings.permissions as Record<string, string[]>;
-      if (!perms.allow) perms.allow = [];
-      if (!perms.deny) perms.deny = [];
-      for (const rule of permissions.allow) {
-        if (!perms.allow.includes(rule)) perms.allow.push(rule);
-      }
-      for (const rule of permissions.deny) {
-        if (!perms.deny.includes(rule)) perms.deny.push(rule);
-      }
-      writeFileSync(settingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
-    }
+    return result.status === 'invalid' ? noHarnessOutcome(result) : result;
   }
 
-  // 9. Install safeguard hooks (PreToolUse deny-pattern blocking)
-  const hookResult = installSafeguardHooks(targetDir, [], opts.force, settingsMalformed);
-  result.created.push(...hookResult.created);
-  result.skipped.push(...hookResult.skipped);
-  } // end if (wants('claude'))
+  const selectedForProfile = typeof harnesses === 'string'
+    ? parseHarnessSelection(harnesses)
+    : harnesses === undefined
+      ? recorded.harnesses
+      : sanitizeHarnesses(harnesses);
+  const profileHarnesses = selectedForProfile ?? [...HARNESSES];
 
-  // 10. Check .gitignore for .claude/ exclusion.
-  // Only a concern under the `shared` profile, where the intent is to commit
-  // skills so teammates get them. Under `private`, ignoring .claude/ is the
-  // user's deliberate choice — surfacing a warning there would be wrong.
-  if (gitignoreProfile === 'shared' && wants('claude')) {
-    const gitignorePath = join(targetDir, '.gitignore');
-    if (existsSync(gitignorePath)) {
-      const gitignore = readFileSync(gitignorePath, 'utf-8');
-      if (/^\.claude\/?$/m.test(gitignore) || /^\.claude\/\*$/m.test(gitignore)) {
-        result.warnings.push(
-          '.claude/ is in your .gitignore — teammates won\'t get Joycraft skills.\n' +
-          '    Add this line to .gitignore to fix: !.claude/skills/'
-        );
-      }
-    }
+  let executionProfile = options.executionProfile;
+  if (prompting && executionProfile === undefined) {
+    executionProfile = await resolveExecutionProfile(profileHarnesses, true);
   }
 
-  // 11. Print summary
-  printSummary(result, stack, existingSkills, isPi, gitignoreProfile, harnesses);
+  let gitignore = options.gitignore;
+  if (prompting && gitignore === undefined) {
+    const resolved = await resolveGitignoreProfile({
+      persisted: recorded.profile,
+      interactive: true,
+      promptIntro: '\nHow should Joycraft files be tracked in git?',
+    });
+    gitignore = resolved.profile;
+  } else if (gitignore === undefined && recorded.profile !== undefined) {
+    // Legacy state does not participate in update()'s authority lookup, so
+    // forward its recorded profile explicitly during migration.
+    gitignore = recorded.profile;
+  }
+
+  let disableAutoMemory = options.disableAutoMemory;
+  if (prompting && disableAutoMemory === undefined && profileHarnesses.includes('claude')) {
+    disableAutoMemory = await resolveAutoMemoryOffer(true);
+  }
+
+  return update(root, {
+    legacyInit: true,
+    force: options.force ?? false,
+    harnesses,
+    yes: options.yes,
+    nonInteractive: options.nonInteractive,
+    replaceCustomized: options.replaceCustomized,
+    bundle: options.bundle,
+    executionProfile,
+    disableAutoMemory,
+    gitignore,
+  });
 }
 
-function printSummary(result: InitResult, stack: import('./detect.js').StackInfo, existingSkills: string[] = [], isPi: boolean = false, gitignoreProfile: GitignoreProfile = DEFAULT_GITIGNORE_PROFILE, harnesses: Harness[] = []): void {
-  console.log('\nJoycraft initialized!\n');
-
-  if (harnesses.length > 0) {
-    console.log(`  Installed harnesses: ${harnesses.join(', ')}`);
+/**
+ * Human-facing init summary. The initializer itself remains side-effect free
+ * at the output boundary and returns the same structured result as update;
+ * Commander calls this formatter after the transaction completes.
+ */
+export function formatInitOutcome(result: UpdateOutcome, json = false): string {
+  if (json) return formatUpdateOutcome(result, true);
+  const lines = [formatUpdateOutcome(result, false)];
+  if (result.harnesses?.length) lines.push(`  Installed harnesses: ${result.harnesses.join(', ')}`);
+  if (result.profile === 'private') {
+    lines.push(`  Gitignore profile: private (${PRIVATE_DIRS_DISPLAY} are gitignored — only CLAUDE.md, AGENTS.md, docs/ are tracked)`);
+  } else if (result.profile) {
+    lines.push('  Gitignore profile: shared (skills and docs are tracked for your team)');
   }
-
-  if (stack.language !== 'unknown') {
-    const fw = stack.framework ? ` + ${stack.framework}` : '';
-    console.log(`  Detected stack: ${stack.language}${fw} (${stack.packageManager})`);
+  if (result.existingSkills?.length) {
+    lines.push(`  Found existing skills: ${result.existingSkills.join(', ')}. These are preserved — Joycraft is additive.`);
+  }
+  lines.push('  Next steps:');
+  lines.push('    1. Run Claude Code and try /joycraft-setup — the first-run door that sets up and assesses your project');
+  lines.push('    2. Try /joycraft-new-feature to start building with the spec-driven workflow');
+  lines.push('       (feature artifacts are written to docs/features/<slug>/ as you go)');
+  if (result.profile === 'private') {
+    lines.push('    3. Commit CLAUDE.md, AGENTS.md, and docs/ — harness directories stay local (gitignored)');
   } else {
-    console.log('  Detected stack: unknown (no recognized manifest found)');
+    lines.push('    3. Commit .claude/skills/ and docs/ so your team gets the same workflow');
   }
-
-  if (isPi) {
-    console.log('  Detected agent: Pi');
-  }
-
-  if (gitignoreProfile === 'private') {
-    console.log(`  Gitignore profile: private (${PRIVATE_DIRS_DISPLAY} are gitignored — only CLAUDE.md, AGENTS.md, docs/ are tracked)`);
-  } else {
-    console.log('  Gitignore profile: shared (skills and docs are tracked for your team)');
-  }
-
-  if (result.created.length > 0) {
-    console.log(`\n  Created ${result.created.length} file(s):`);
-    for (const f of result.created) {
-      console.log(`    + ${f}`);
-    }
-  }
-
-  if (result.modified.length > 0) {
-    console.log(`\n  Modified ${result.modified.length} file(s):`);
-    for (const f of result.modified) {
-      console.log(`    ~ ${f}`);
-    }
-  }
-
-  if (result.skipped.length > 0) {
-    console.log(`\n  Skipped ${result.skipped.length} file(s) (already exist, use --force to overwrite):`);
-    for (const f of result.skipped) {
-      console.log(`    - ${f}`);
-    }
-  }
-
-  if (result.warnings.length > 0) {
-    console.log('\n  Warnings:');
-    for (const w of result.warnings) {
-      console.log(`    ⚠ ${w}`);
-    }
-  }
-
-  if (existingSkills.length > 0) {
-    console.log(`\n  Found existing skills: ${existingSkills.join(', ')}. These are preserved — Joycraft is additive.`);
-  }
-
-  const hasExistingClaude = result.skipped.some(f => f.endsWith('CLAUDE.md'));
-
-  console.log('\n  Next steps:');
-  console.log('    1. Run Claude Code and try /joycraft-setup — the first-run door that sets up and assesses your project');
-  if (hasExistingClaude) {
-    console.log('       (it routes to /joycraft-tune to assess and improve your existing CLAUDE.md)');
-  } else {
-    console.log('       (then review and customize the generated CLAUDE.md for your project)');
-  }
-  console.log('    2. Try /joycraft-new-feature to start building with the spec-driven workflow');
-  console.log('       (feature artifacts are written to docs/features/<slug>/ as you go)');
-  if (gitignoreProfile === 'private') {
-    console.log(`    3. Commit CLAUDE.md, AGENTS.md, and docs/ — ${PRIVATE_DIRS_DISPLAY} stay local (gitignored)`);
-    console.log(`       (if any harness files were already committed, run: ${PRIVATE_UNTRACK_COMMAND})`);
-  } else {
-    console.log('    3. Commit .claude/skills/ and docs/ so your team gets the same workflow');
-  }
-  if (!isPi) {
-    console.log('    Pi: Skills installed to .pi/skills/. Use /skill:joycraft-* to invoke.');
-  }
-  if (harnesses.includes('omp')) {
-    console.log('    omp: Skills installed to .omp/skills/. Use /skill:joycraft-* to invoke.');
-  }
-  console.log('');
+  if (result.harnesses?.includes('omp')) lines.push('    omp: Skills installed to .omp/skills/. Use /skill:joycraft-* to invoke.');
+  return lines.join('\n');
 }

@@ -22,9 +22,13 @@ export interface UpdateSnapshot {
 export interface UpdatePlanOptions {
   targetVersion?: string;
   bundleIntegrity?: string;
+  /** Authority digest supplied by the orchestration boundary. `null` means no authority existed. */
+  baseManifestDigest?: string | null;
   /** Safe unattended mode selects only actions that cannot overwrite user edits. */
   safeUnattended?: boolean;
   replaceCustomized?: readonly string[];
+  /** Init --force may explicitly replace known create-once/vendor paths. */
+  forceCustomized?: readonly string[];
   repair?: readonly string[];
   /** Optional trusted historical vendor hashes used for bridge adoption. */
   catalogue?: readonly VendorCatalogueEntry[];
@@ -57,6 +61,8 @@ export interface PlannedUpdateAction {
   targetPresent: boolean;
   /** For config patches, identifies the fragments calculated in content. */
   patch?: { ownedKey?: string; ownedRegion?: string };
+  /** A preserved known document that needs no user-facing action or status. */
+  nonActionable?: boolean;
 }
 
 export interface UpdatePlan {
@@ -212,7 +218,7 @@ export function createUpdatePlan(input: {
     knownPaths.add(entry.path);
     // Create-once documents and inactive/non-installable declarations carry
     // ownership metadata only. They must never become a write target here.
-    if (entry.kind === 'create-once' || !entry.active || !entry.installable || (entry.kind === 'vendor' && entry.content === undefined)) continue;
+    if ((entry.kind === 'create-once' && entry.content === undefined) || !entry.active || !entry.installable || (entry.kind === 'vendor' && entry.content === undefined)) continue;
     let group = groups.get(entry.path);
     if (!group) {
       group = { path: entry.path, entries: [], invalidDefinition: false };
@@ -307,18 +313,33 @@ export function createUpdatePlan(input: {
     if (currentContent === undefined) {
       if (verified) { kind = 'preserve'; reason = 'Local deletion is preserved; repair requires explicit selection.'; }
       else if (old) { kind = 'preserve'; reason = 'Prior ownership is unverified; preserve the local deletion.'; }
-      else { kind = first.kind === 'vendor' ? 'create' : 'preserve'; reason = first.kind === 'vendor' ? 'New selected vendor file.' : 'Config patch has no current file.'; }
+      else {
+        kind = first.kind === 'vendor' || (first.kind === 'create-once' && first.content !== undefined) ? 'create' : 'preserve';
+        reason = kind === 'create' ? 'New selected file.' : 'Config patch has no current file.';
+      }
+    } else if (old?.kind === 'create-once' && !explicitReplacement(options, group.path)) {
+      kind = 'preserve'; reason = 'Create-once document is user-owned after its first creation; preserve local content.';
     } else if (currentEqualsTarget) {
       kind = old && verified ? 'reconcile' : 'adopt';
       reason = kind === 'reconcile' ? 'Current bytes already equal target; reconcile manifest metadata.' : 'Exact trusted target match establishes vendor ownership.';
     } else if (currentEqualsBase) {
       kind = 'replace'; reason = 'Current bytes equal the verified vendor base; safe replacement.';
+    } else if ((options.forceCustomized ?? []).includes(group.path)) {
+      kind = 'replace'; reason = 'Scoped init force selected this known customized path.';
     } else if (targetEqualsBase) {
       kind = 'preserve'; reason = 'Vendor target is unchanged; preserve the local-only edit.';
     } else if (verified) {
       kind = 'conflict'; reason = 'Current customization and target vendor content both differ from the verified base.';
     } else {
       kind = 'conflict'; reason = 'Ownership is unverified; preserve current content until trusted evidence or explicit review.';
+    }
+    // A local-only edit is normally preserved because the vendor target has
+    // not changed. An explicit replacement path is the user's reviewed
+    // authorization to replace those bytes as well; keep the ordinary
+    // conflict shape for both-changed files so review metadata remains clear.
+    if (kind === 'preserve' && explicitReplacement(options, group.path) && currentContent !== undefined && target !== undefined) {
+      kind = 'replace';
+      reason = 'Explicit replacement selected for this customized path.';
     }
     const action = actionBase(group.path, kind, reason, currentContent, target, first.mode);
     if (target !== undefined && ['replace', 'create', 'adopt', 'conflict'].includes(kind)) action.content = bytes(target);
@@ -345,7 +366,18 @@ export function createUpdatePlan(input: {
       continue;
     }
     if (old.kind !== 'vendor') {
-      const action = actionBase(path, 'preserve', 'Target no longer declares a patch/document; preserve the whole user file.', currentContent, undefined, undefined);
+      const unchangedCreateOnce = old.kind === 'create-once' && old.vendorHash !== '' && normalized(currentContent) === old.vendorHash;
+      const action = actionBase(
+        path,
+        'preserve',
+        unchangedCreateOnce
+          ? 'Create-once document is unchanged; leave the existing file in place.'
+          : 'Target no longer declares a patch/document; preserve the whole user file.',
+        currentContent,
+        undefined,
+        undefined,
+      );
+      if (unchangedCreateOnce) action.nonActionable = true;
       action.selected = false;
       add(action);
       continue;
@@ -375,5 +407,14 @@ export function createUpdatePlan(input: {
     .filter((action) => action.preservedContent !== undefined && ['preserve', 'conflict', 'orphan'].includes(action.kind))
     .map((action) => ({ path: action.path, content: bytes(action.preservedContent!), reason: action.reason }));
   const conflicts = actions.filter((action) => action.kind === 'conflict');
-  return { actions, preserved, conflicts, diagnostics, nextManifest, baseManifestDigest: manifestDigest(input.manifest) };
+  return {
+    actions,
+    preserved,
+    conflicts,
+    diagnostics,
+    nextManifest,
+    baseManifestDigest: options.baseManifestDigest !== undefined
+      ? options.baseManifestDigest
+      : manifestDigest(input.manifest),
+  };
 }

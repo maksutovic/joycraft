@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: isolated
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 7 of 15
 > **Dependencies:** 6 — recover-interrupted-updates.md
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 6 files / ~600 lines
 
@@ -47,12 +47,12 @@ The public command returns structured applied, preserved-customization, and pend
 
 ## Acceptance Criteria
 
-- [ ] `update`, `init`, and `upgrade` share planning/application while applying the executing package bundle without nested latest resolution. [src: design §2]
-- [ ] Fresh unattended update requires harness selection; legacy init retains its all-harness default with a notice. [src: design §2]
-- [ ] `--yes` and `--non-interactive` apply safe actions only; `--replace-customized` selects explicit paths; init `--force` remains scoped to its existing inventory. [src: design §2]
-- [ ] JSON reports applied/preserved/conflict outcomes with the design exit codes; unavailable registry access does not block an explicitly selected local bundle. [src: design §2]
-- [ ] The exact-release runner validates version/integrity metadata once and invokes npm with argument arrays, including paths with spaces and Windows behavior. [src: design §2]
-- [ ] Legacy state backup and known checker-registration replacement participate in the transaction; a profile change moves manifest authority without automatically untracking files. [src: design §2]
+- [x] `update`, `init`, and `upgrade` share planning/application while applying the executing package bundle without nested latest resolution. [src: design §2]
+- [x] Fresh unattended update requires harness selection; legacy init retains its all-harness default with a notice. [src: design §2]
+- [x] `--yes` and `--non-interactive` apply safe actions only; `--replace-customized` selects explicit paths; init `--force` remains scoped to its existing inventory. [src: design §2]
+- [x] JSON reports applied/preserved/conflict outcomes with the design exit codes; unavailable registry access does not block an explicitly selected local bundle. [src: design §2]
+- [x] The exact-release runner validates version/integrity metadata once and invokes npm with argument arrays, including paths with spaces and Windows behavior. [src: design §2]
+- [x] Legacy state backup and known checker-registration replacement participate in the transaction; a profile change moves manifest authority without automatically untracking files. [src: design §2]
 
 ## Test Plan
 
@@ -111,3 +111,12 @@ Make `update` the orchestration layer above the inventory/planner/transaction wo
 | `--replace-customized` lists one path | Select only that matching customized action; retain conflicts for other paths. |
 | Package path contains spaces | Pass it as one npm argument without shell interpolation. |
 | Shared-to-private profile switch | Move manifest authority in the transaction but do not run Git untracking. |
+
+
+## Implementation Evidence
+
+- `update`, `init`, and `upgrade` now share executing-bundle planning and transactions. Fresh setup keeps its generators, interactive choices, harness defaults, safeguards, and guidance; routine refresh preserves customization and create-once documents. The duplicated upgrade engine and nested latest re-execution are removed.
+- Exact-release resolution validates metadata and uses argument arrays, including a real Windows npm JavaScript-launcher fixture. CLI subprocess tests verify JSON output, exit codes, alias routing, and absence of extra registry requests.
+- Independent red-first regressions cover authority ambiguity, profile moves, lossless legacy-state/local-preference migration, known checker retirement, guarded rollback, configuration symlinks, and explicit replacement. Git profile edits participate in the same transaction.
+- Exact staged clean checkout: build passed; 3,179 tests passed, one skipped; typecheck passed. Node.js, Python, Rust, and Go initialization coverage is retained. Ignored local dogfood state remains preserved for the later public-command migration.
+- Durable filesystem fixtures required bounded worker concurrency and an event-loop yield between init cases; the final suite passes with the existing per-test timeout and no internal worker errors.

@@ -1,627 +1,330 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import { execFileSync } from 'node:child_process';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+
 import { init } from '../src/init';
-import { upgrade } from '../src/upgrade';
-import { readVersion, STATE_PATH } from '../src/version';
+import { update, updateStatusExitCode } from '../src/update';
 import {
   applyGitignoreProfile,
-  PRIVATE_PROFILE_IGNORES,
-  JOYCRAFT_LOCAL_DIR,
-  SHARED_MANIFEST_PATH,
-  PRIVATE_MANIFEST_PATH,
   CHECKER_PATH,
+  JOYCRAFT_LOCAL_DIR,
+  PRIVATE_MANIFEST_PATH,
+  PRIVATE_PROFILE_IGNORES,
+  SHARED_MANIFEST_PATH,
   sharedManifestIgnoreWarning,
 } from '../src/gitignore';
+import { readInstallationManifest, writeInstallationManifest, type InstallationManifest } from '../src/install-manifest';
+import { HARNESSES } from '../src/harness';
+import { STATE_PATH } from '../src/version';
 import { TELEMETRY_PATH } from '../src/telemetry-store';
-import { Readable } from 'node:stream';
-import { execFileSync } from 'node:child_process';
 
-const LEGACY_VERSION_FILE = '.joycraft-version';
-
-function createTmpDir(): string {
-  const dir = join(tmpdir(), `joycraft-gitignore-${Date.now()}-${Math.random().toString(36).slice(2)}`);
-  mkdirSync(dir, { recursive: true });
-  return dir;
+function project(): string {
+  return mkdtempSync(join(tmpdir(), 'joycraft-gitignore-'));
 }
 
-function cleanup(dir: string): void {
-  rmSync(dir, { recursive: true, force: true });
+function cleanup(root: string): void {
+  rmSync(root, { recursive: true, force: true });
 }
 
-function readGitignore(dir: string): string {
-  const p = join(dir, '.gitignore');
-  return existsSync(p) ? readFileSync(p, 'utf-8') : '';
+function lines(root: string): string[] {
+  const path = join(root, '.gitignore');
+  return existsSync(path) ? readFileSync(path, 'utf8').split('\n').map((line) => line.trim()).filter(Boolean) : [];
 }
 
-function lines(content: string): string[] {
-  return content.split('\n').map((l) => l.trim()).filter(Boolean);
-}
-
-/** Run Git against a fixture without allowing ancestor repositories to leak in. */
-function git(dir: string, ...args: string[]): void {
-  execFileSync('git', args, {
-    cwd: dir,
-    stdio: 'ignore',
-    env: { ...process.env, GIT_CEILING_DIRECTORIES: dir },
+function git(root: string, ...args: string[]): string {
+  return execFileSync('git', args, {
+    cwd: root,
+    encoding: 'utf8',
+    env: { ...process.env, GIT_CEILING_DIRECTORIES: root },
   });
 }
 
-/**
- * Make `dir` look like a project inited before the gitignore-profile feature:
- * strip the gitignoreProfile field from state.json directly. (writeVersion
- * deliberately preserves an existing profile when the arg is omitted, so the
- * strip must edit the file, not go through the API.)
- */
-function stripSavedProfile(dir: string): void {
-  const statePath = join(dir, STATE_PATH);
-  const state = JSON.parse(readFileSync(statePath, 'utf-8'));
-  delete state.gitignoreProfile;
-  writeFileSync(statePath, JSON.stringify(state, null, 2) + '\n', 'utf-8');
-  if (readVersion(dir)?.gitignoreProfile !== undefined) {
-    throw new Error('test setup: expected no saved profile after strip');
-  }
+function emptyBundle() {
+  return { version: '0.7.13', integrity: '', inventory: [] as const };
 }
 
-/**
- * Run upgrade with the interactive prompt simulated: isTTY true + a fake stdin
- * that supplies `answers` line by line (more than one exercises the re-ask on
- * invalid input). Mirrors the stdin/stdout-boundary pattern in
- * tests/upgrade.test.ts. Returns captured console.log output.
- *
- * yes is false here on purpose: --yes promises a fully unattended run, so it
- * suppresses the profile prompt these tests exist to exercise.
- */
-async function upgradeWithAnswer(dir: string, ...answers: string[]): Promise<string> {
-  const fakeStdin = Readable.from(answers.map((a) => `${a}\n`)) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
-  fakeStdin.isTTY = true;
-  const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
-  Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
-
-  const logs: string[] = [];
-  const origLog = console.log;
-  console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
-  try {
-    await upgrade(dir, { yes: false });
-  } finally {
-    console.log = origLog;
-    Object.defineProperty(process, 'stdin', stdinDesc);
-  }
-  return logs.join('\n');
+function manifest(profile: 'shared' | 'private'): InstallationManifest {
+  return {
+    schemaVersion: 1,
+    targetVersion: '0.7.13',
+    bundleIntegrity: '',
+    harnesses: ['claude'],
+    profile,
+    files: {},
+  };
 }
 
-describe('gitignore profiles', () => {
-  let tmpDir: string;
+function prepareNoopProject(root: string): void {
+  mkdirSync(join(root, 'docs', 'backlog'), { recursive: true });
+  writeFileSync(join(root, 'docs', 'backlog', 'README.md'), '# backlog\n');
+  mkdirSync(join(root, '.claude'), { recursive: true });
+  writeFileSync(join(root, '.claude', 'settings.json'), '{}\n');
+}
 
-  beforeEach(() => {
-    tmpDir = createTmpDir();
-    // Stub the npm-registry staleness check: a published version newer than the
-    // local package would make upgrade() bail before the code under test runs,
-    // and test results must not depend on registry state or network.
-    const origFetch = globalThis.fetch;
-    globalThis.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({ version: '0.0.0' }),
-    }) as unknown as typeof fetch;
-    return () => {
-      globalThis.fetch = origFetch;
-      cleanup(tmpDir);
-    };
-  });
-
-  describe('shared profile (default)', () => {
-    it('gitignores only the hidden state file, not the harness dirs', async () => {
-      await init(tmpDir, { force: false, gitignore: 'shared' });
-
-      const gi = lines(readGitignore(tmpDir));
-      expect(gi).toContain(STATE_PATH);
-      expect(gi).not.toContain('.claude/');
-      expect(gi).not.toContain('.agents/');
-      expect(gi).not.toContain('.pi/');
-      expect(gi).not.toContain('.omp/');
-    });
-
-    it('is the default when no flag and not a TTY', async () => {
-      // vitest runs with stdin.isTTY undefined → falsy → no prompt → default shared
-      await init(tmpDir, { force: false });
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('shared');
-      expect(lines(readGitignore(tmpDir))).not.toContain('.claude/');
-    });
-
-    it('keeps the shared manifest and checker trackable while ignoring local data', () => {
-      const added = applyGitignoreProfile(tmpDir, 'shared');
-
-      expect(added).toContain(JOYCRAFT_LOCAL_DIR);
+describe('gitignore profiles through the unified update path', () => {
+  it('shared profile tracks the shared manifest and checker while ignoring local state', () => {
+    const root = project();
+    try {
+      const added = applyGitignoreProfile(root, 'shared');
       expect(added).toContain(STATE_PATH);
       expect(added).toContain(TELEMETRY_PATH);
+      expect(added).toContain(JOYCRAFT_LOCAL_DIR);
       expect(added).not.toContain(SHARED_MANIFEST_PATH);
       expect(added).not.toContain(CHECKER_PATH);
-      expect(lines(readGitignore(tmpDir))).not.toContain(PRIVATE_MANIFEST_PATH);
-    });
+      expect(lines(root)).not.toContain(PRIVATE_MANIFEST_PATH);
+    } finally {
+      cleanup(root);
+    }
   });
 
-  describe('private profile', () => {
-    it('lists .omp/ as a whole directory, not a joycraft-* glob', () => {
-      // Unlike .github/ (shared with Actions workflows and issue templates),
-      // .omp/ has no non-Joycraft tenancy, so the whole dir is ignored — the
-      // same shape as .claude/, .agents/, and .pi/.
-      expect(PRIVATE_PROFILE_IGNORES).toContain('.omp/');
-      expect(PRIVATE_PROFILE_IGNORES.some((e) => e.startsWith('.omp/joycraft'))).toBe(false);
-    });
-
-    it('writes .omp/ into .gitignore', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      expect(lines(readGitignore(tmpDir))).toContain('.omp/');
-    });
-
-    it('gitignores harness dirs and not docs or harness docs', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-
-      const gi = lines(readGitignore(tmpDir));
-      for (const entry of PRIVATE_PROFILE_IGNORES) {
-        expect(gi).toContain(entry);
-      }
-      // CLAUDE.md, AGENTS.md, the docs/ tree must never be ignored wholesale
-      expect(gi).not.toContain('CLAUDE.md');
-      expect(gi).not.toContain('AGENTS.md');
-      expect(gi).not.toContain('docs/');
-    });
-
-    it('also gitignores the hidden state file (it now lives in tracked docs/)', async () => {
-      // STATE_PATH moved from .claude/.joycraft/ to docs/.joycraft/. Under
-      // private the harness-dir ignores no longer cover it transitively, so it
-      // must be listed explicitly — the state file is never committed, either
-      // profile.
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      expect(lines(readGitignore(tmpDir))).toContain(STATE_PATH);
-    });
-
-    it('ignores the local manifest and checker, while leaving the shared path eligible for tracking', () => {
-      applyGitignoreProfile(tmpDir, 'private');
-      const gi = lines(readGitignore(tmpDir));
-
-      expect(gi).toContain(JOYCRAFT_LOCAL_DIR);
-      expect(gi).toContain(CHECKER_PATH);
-      expect(gi).not.toContain(SHARED_MANIFEST_PATH);
-      // The local manifest is covered by the local directory rule rather than
-      // a second, overlapping path-specific entry.
-      expect(gi).not.toContain(PRIVATE_MANIFEST_PATH);
-    });
-
-    it('does not warn about .claude/ being gitignored (it is the intent)', async () => {
-      // Pre-seed a .gitignore that already ignores .claude/ — under shared this
-      // triggers the "teammates won't get skills" warning; under private it must not.
-      writeFileSync(join(tmpDir, '.gitignore'), '.claude/\n', 'utf-8');
-
-      const logs: string[] = [];
-      const orig = console.log;
-      console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
-      try {
-        await init(tmpDir, { force: false, gitignore: 'private' });
-      } finally {
-        console.log = orig;
-      }
-      const output = logs.join('\n');
-      expect(output).not.toContain("teammates won't get Joycraft skills");
-    });
-
-    it('still warns under shared when .claude/ is pre-gitignored', async () => {
-      writeFileSync(join(tmpDir, '.gitignore'), '.claude/\n', 'utf-8');
-
-      const logs: string[] = [];
-      const orig = console.log;
-      console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
-      try {
-        await init(tmpDir, { force: false, gitignore: 'shared' });
-      } finally {
-        console.log = orig;
-      }
-      expect(logs.join('\n')).toContain("teammates won't get Joycraft skills");
-    });
+  it('private profile ignores harnesses, local manifest, checker, and state without ignoring docs', () => {
+    const root = project();
+    try {
+      const added = applyGitignoreProfile(root, 'private');
+      for (const entry of PRIVATE_PROFILE_IGNORES) expect(added).toContain(entry);
+      expect(added).toContain(JOYCRAFT_LOCAL_DIR);
+      expect(added).toContain(CHECKER_PATH);
+      expect(lines(root)).toContain(STATE_PATH);
+      expect(lines(root)).not.toContain('docs/');
+      expect(lines(root)).not.toContain(SHARED_MANIFEST_PATH);
+    } finally {
+      cleanup(root);
+    }
   });
 
-  describe('persistence', () => {
-    it('persists the chosen profile in state.json', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-    });
-
-    it('re-init without a flag reuses the persisted profile', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      // Second init, no flag, non-TTY → must reuse 'private', not fall back to shared
-      await init(tmpDir, { force: true });
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-      expect(lines(readGitignore(tmpDir))).toContain('.claude/');
-    });
-
-    it('upgrade re-applies the persisted private profile without prompting', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      // Wipe the .gitignore to prove upgrade re-applies the entries
-      writeFileSync(join(tmpDir, '.gitignore'), '', 'utf-8');
-
-      await upgrade(tmpDir, { yes: true });
-
-      const gi = lines(readGitignore(tmpDir));
-      for (const entry of PRIVATE_PROFILE_IGNORES) {
-        expect(gi).toContain(entry);
-      }
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-    });
+  it('is append-only and preserves unrelated ignore rules', () => {
+    const root = project();
+    try {
+      writeFileSync(join(root, '.gitignore'), 'node_modules/\ndist/\n');
+      const first = applyGitignoreProfile(root, 'private');
+      expect(lines(root)).toEqual(expect.arrayContaining(['node_modules/', 'dist/', '.claude/']));
+      expect(applyGitignoreProfile(root, 'private')).toEqual([]);
+      expect(first.length).toBeGreaterThan(0);
+    } finally {
+      cleanup(root);
+    }
   });
 
-  describe('upgrade prompt when undecided', () => {
-    it('asks on upgrade when no profile was ever saved (TTY), then persists the answer', async () => {
-      await init(tmpDir, { force: false, gitignore: 'shared' });
-      stripSavedProfile(tmpDir); // simulate a pre-feature project
-
-      const output = await upgradeWithAnswer(tmpDir, 'private');
-
-      // It prompted...
-      expect(output).toContain('how much of the harness is tracked in git');
-      // ...applied the chosen profile...
-      expect(lines(readGitignore(tmpDir))).toContain('.claude/');
-      // ...and persisted it so it never asks again.
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-    });
-
-    it('empty answer defaults to shared and persists', async () => {
-      await init(tmpDir, { force: false, gitignore: 'shared' });
-      stripSavedProfile(tmpDir);
-
-      await upgradeWithAnswer(tmpDir, '');
-
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('shared');
-      expect(lines(readGitignore(tmpDir))).not.toContain('.claude/');
-    });
-
-    it('does NOT prompt when a profile is already saved', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      // Saved profile present → upgrade must stay silent even with a fake TTY stdin.
-      const output = await upgradeWithAnswer(tmpDir, 'shared');
-
-      expect(output).not.toContain('how much of the harness is tracked in git');
-      // The saved 'private' is honored, NOT overridden by the unread "shared" answer.
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-    });
-
-    it('non-interactive (no TTY) undecided upgrade defaults to shared without prompting', async () => {
-      await init(tmpDir, { force: false, gitignore: 'shared' });
-      stripSavedProfile(tmpDir);
-
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
-      try {
-        // vitest's process.stdin.isTTY is undefined → non-interactive path
-        await upgrade(tmpDir, { yes: true });
-      } finally {
-        console.log = origLog;
-      }
-
-      expect(logs.join('\n')).not.toContain('how much of the harness is tracked in git');
-      expect(lines(readGitignore(tmpDir))).not.toContain('.claude/');
-      // Stays undecided so a later interactive upgrade can still ask.
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBeUndefined();
-    });
-
-    it('persists a freshly-chosen profile even when no files changed', async () => {
-      // Up-to-date project (init just ran) with the profile stripped → the
-      // "Already up to date" early return must still save the prompted choice.
-      await init(tmpDir, { force: false, gitignore: 'shared' });
-      stripSavedProfile(tmpDir);
-
-      const output = await upgradeWithAnswer(tmpDir, 'private');
-
-      expect(output).toContain('Already up to date');
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-      // Re-run upgrade: now decided, so it must NOT ask again.
-      const second = await upgradeWithAnswer(tmpDir, 'shared');
-      expect(second).not.toContain('how much of the harness is tracked in git');
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-    });
-
-    it('--yes suppresses the prompt even on a TTY and leaves the project undecided', async () => {
-      await init(tmpDir, { force: false, gitignore: 'shared' });
-      stripSavedProfile(tmpDir);
-
-      // TTY present, but --yes promises an unattended run: no prompt may fire.
-      // Empty stdin means a prompt would hang — finishing at all proves no read.
-      const fakeStdin = Readable.from([]) as unknown as NodeJS.ReadStream & { isTTY?: boolean };
-      fakeStdin.isTTY = true;
-      const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
-      Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
-
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
-      try {
-        await upgrade(tmpDir, { yes: true });
-      } finally {
-        console.log = origLog;
-        Object.defineProperty(process, 'stdin', stdinDesc);
-      }
-
-      expect(logs.join('\n')).not.toContain('how much of the harness is tracked in git');
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBeUndefined();
-    });
-
-    it('re-asks on an unrecognized answer instead of silently defaulting to shared', async () => {
-      await init(tmpDir, { force: false, gitignore: 'shared' });
-      stripSavedProfile(tmpDir);
-
-      // First answer is a typo; the prompt must reject it and accept the retry.
-      const output = await upgradeWithAnswer(tmpDir, 'priv', 'private');
-
-      expect(output).toContain("Unrecognized answer 'priv'");
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-      expect(lines(readGitignore(tmpDir))).toContain('.claude/');
-    });
+  it('reports a broad effective ignore hiding the shared manifest', () => {
+    const root = project();
+    try {
+      writeFileSync(join(root, '.gitignore'), 'docs/.joycraft/\n');
+      git(root, 'init', '-q');
+      const warning = sharedManifestIgnoreWarning(root);
+      expect(warning).toContain(SHARED_MANIFEST_PATH);
+      expect(warning).toContain('docs/.joycraft/');
+    } finally {
+      cleanup(root);
+    }
   });
 
-  describe('upgrade --gitignore flag', () => {
-    it('switches a decided project to private non-interactively', async () => {
-      await init(tmpDir, { force: false, gitignore: 'shared' });
-
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
-      try {
-        // No TTY, no prompt — the flag alone must decide and persist.
-        await upgrade(tmpDir, { yes: true, gitignore: 'private' });
-      } finally {
-        console.log = origLog;
-      }
-
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-      const gi = lines(readGitignore(tmpDir));
-      for (const entry of PRIVATE_PROFILE_IGNORES) {
-        expect(gi).toContain(entry);
-      }
-      // Switching to private prints the untrack reminder (never runs git itself).
-      expect(logs.join('\n')).toContain('git rm -r --cached');
-    });
-
-    it('decides an undecided project from the flag without a TTY', async () => {
-      await init(tmpDir, { force: false, gitignore: 'shared' });
-      stripSavedProfile(tmpDir);
-
-      await upgrade(tmpDir, { yes: true, gitignore: 'shared' });
-
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('shared');
-    });
-
-    it('rejects an unknown flag value before touching anything', async () => {
-      await init(tmpDir, { force: false, gitignore: 'shared' });
-      const before = readFileSync(join(tmpDir, STATE_PATH), 'utf-8');
-
-      await expect(upgrade(tmpDir, { yes: true, gitignore: 'bogus' }))
-        .rejects.toThrow(/Unknown gitignore profile 'bogus'/);
-
-      expect(readFileSync(join(tmpDir, STATE_PATH), 'utf-8')).toBe(before);
-    });
+  it('does not report a warning when a negated manifest rule is visible', () => {
+    const root = project();
+    try {
+      writeFileSync(join(root, '.gitignore'), 'docs/.joycraft/*\n!docs/.joycraft/manifest.json\n');
+      git(root, 'init', '-q');
+      expect(sharedManifestIgnoreWarning(root)).toBeNull();
+    } finally {
+      cleanup(root);
+    }
   });
 
-  describe('untrack hint on a re-run already on private (Task #16)', () => {
-    // Pin git's repo discovery to `dir` so a tmp-dir ancestor that happens to be
-    // a git repo can't leak into ls-files — keeps the test deterministic.
-    function git(dir: string, ...args: string[]): void {
-      execFileSync('git', args, {
-        cwd: dir,
-        stdio: 'ignore',
-        env: { ...process.env, GIT_CEILING_DIRECTORIES: dir },
+  it('requires explicit harnesses for fresh unattended update but retains init all-harness compatibility', async () => {
+    const root = project();
+    try {
+      const fresh = await update(root, { nonInteractive: true, bundle: emptyBundle() });
+      expect(fresh.status).toBe('invalid');
+      expect(fresh.exitCode).toBe(1);
+      expect(fresh.diagnostics.join('\n')).toContain('explicit harness selection');
+
+      const initialized = await init(root, { nonInteractive: true, bundle: emptyBundle() });
+      expect(initialized.harnesses).toEqual([...HARNESSES]);
+      expect(initialized.profile).toBe('shared');
+      expect(readInstallationManifest(root, 'shared')?.harnesses).toEqual([...HARNESSES]);
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  it('reuses the canonical private manifest profile without consulting legacy state', async () => {
+    const root = project();
+    try {
+      prepareNoopProject(root);
+      writeInstallationManifest(root, manifest('private'));
+      expect(readInstallationManifest(root, 'private')?.profile).toBe('private');
+      const result = await update(root, { nonInteractive: true, bundle: emptyBundle() });
+      expect(result.profile).toBe('private');
+      expect(lines(root)).toContain('.claude/');
+      expect(result.exitCode).toBe(0);
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  it('switches manifest authority without running Git untracking', async () => {
+    const root = project();
+    try {
+      prepareNoopProject(root);
+      writeInstallationManifest(root, manifest('shared'));
+      applyGitignoreProfile(root, 'shared');
+      git(root, 'init', '-q');
+      git(root, 'config', 'user.email', 'test@test.dev');
+      git(root, 'config', 'user.name', 'Test');
+      git(root, 'add', SHARED_MANIFEST_PATH, '.gitignore');
+      git(root, 'commit', '-q', '-m', 'shared authority');
+
+      const result = await update(root, { nonInteractive: true, gitignore: 'private', bundle: emptyBundle() });
+      expect(result.exitCode).toBe(0);
+      expect(readInstallationManifest(root, 'private')?.profile).toBe('private');
+      expect(readInstallationManifest(root, 'shared')).toBeNull();
+      // Moving authority does not rewrite Git's index or untrack files; a
+      // later explicit cleanup remains the user's decision.
+      expect(git(root, 'ls-files', SHARED_MANIFEST_PATH).trim()).toBe(SHARED_MANIFEST_PATH);
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  it('does not untrack already tracked harness files on private profile setup', () => {
+    const root = project();
+    try {
+      mkdirSync(join(root, '.claude', 'skills', 'joycraft-tune'), { recursive: true });
+      writeFileSync(join(root, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'), 'custom\n');
+      applyGitignoreProfile(root, 'private');
+      git(root, 'init', '-q');
+      git(root, 'config', 'user.email', 'test@test.dev');
+      git(root, 'config', 'user.name', 'Test');
+      git(root, 'add', '-f', '.claude/skills/joycraft-tune/SKILL.md');
+      git(root, 'commit', '-q', '-m', 'preexisting tracked harness');
+      expect(git(root, 'ls-files', '.claude/skills/joycraft-tune/SKILL.md').trim()).toBe('.claude/skills/joycraft-tune/SKILL.md');
+      applyGitignoreProfile(root, 'private');
+      expect(git(root, 'ls-files', '.claude/skills/joycraft-tune/SKILL.md').trim()).toBe('.claude/skills/joycraft-tune/SKILL.md');
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  it('returns exit code 1 for an invalid profile before changing project files', async () => {
+    const root = project();
+    try {
+      const result = await update(root, { nonInteractive: true, gitignore: 'bogus', bundle: emptyBundle() });
+      expect(result.status).toBe('invalid');
+      expect(result.exitCode).toBe(updateStatusExitCode('invalid'));
+      expect(lines(root)).toEqual([]);
+      expect(existsSync(join(root, SHARED_MANIFEST_PATH))).toBe(false);
+    } finally {
+      cleanup(root);
+    }
+  });
+
+  it('accepts padded and case-insensitive profile input through update', async () => {
+    const root = project();
+    try {
+      const result = await update(root, {
+        nonInteractive: true,
+        harnesses: 'claude',
+        gitignore: '  PRIVATE  ',
+        bundle: emptyBundle(),
       });
+      expect(result.profile).toBe('private');
+      expect(result.exitCode).toBe(0);
+      expect(lines(root)).toContain('.claude/');
+    } finally {
+      cleanup(root);
     }
+  });
+});
 
-    async function captureUpgrade(dir: string): Promise<string> {
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...a: unknown[]) => { logs.push(a.join(' ')); };
-      try {
-        await upgrade(dir, { yes: true });
-      } finally {
-        console.log = origLog;
-      }
-      return logs.join('\n');
+describe('low-level profile contracts retained during command unification', () => {
+  it('keeps .omp as a whole private-profile directory rather than a joycraft glob', () => {
+    expect(PRIVATE_PROFILE_IGNORES).toContain('.omp/');
+    expect(PRIVATE_PROFILE_IGNORES.some((entry) => entry.startsWith('.omp/joycraft'))).toBe(false);
+  });
+
+  it('keeps private profile reruns quiet and idempotent', () => {
+    const root = project();
+    try {
+      const first = applyGitignoreProfile(root, 'private');
+      expect(first).toContain('.claude/');
+      expect(applyGitignoreProfile(root, 'private')).toEqual([]);
+    } finally {
+      cleanup(root);
     }
-
-    it('surfaces the untrack hint when harness files are still tracked', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      git(tmpDir, 'init', '-q');
-      git(tmpDir, 'config', 'user.email', 'test@test.dev');
-      git(tmpDir, 'config', 'user.name', 'Test');
-      // Force-add a harness file despite .gitignore, then commit — simulates a
-      // file committed before the switch to private.
-      git(tmpDir, 'add', '-f', '.claude/skills/joycraft-tune/SKILL.md');
-      git(tmpDir, 'commit', '-q', '-m', 'committed harness file before switch');
-
-      const output = await captureUpgrade(tmpDir);
-      expect(output).toContain('git rm -r --cached');
-      expect(output).toContain('still tracked');
-    });
-
-    it('stays quiet on a re-run when no harness files are tracked', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      git(tmpDir, 'init', '-q');
-      git(tmpDir, 'config', 'user.email', 'test@test.dev');
-      git(tmpDir, 'config', 'user.name', 'Test');
-      // Commit only a tracked doc — gitignore keeps harness dirs out.
-      git(tmpDir, 'add', 'CLAUDE.md');
-      git(tmpDir, 'commit', '-q', '-m', 'docs only');
-
-      const output = await captureUpgrade(tmpDir);
-      expect(output).not.toContain('git rm -r --cached');
-    });
   });
 
-  describe('legacy state migration interplay', () => {
-    it('migrating a legacy root .joycraft-version preserves a saved private profile', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      // Simulate a stray legacy root file coexisting with profile-bearing state
-      // (e.g. restored from an old commit). Migration must not clobber the profile.
-      const state = readVersion(tmpDir)!;
-      writeFileSync(
-        join(tmpDir, LEGACY_VERSION_FILE),
-        JSON.stringify({ version: state.version, files: state.files }, null, 2) + '\n',
-        'utf-8'
-      );
-
-      await upgrade(tmpDir, { yes: true });
-
-      expect(existsSync(join(tmpDir, LEGACY_VERSION_FILE))).toBe(false);
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-    });
-
-    it('legacy migration under private gitignores both the harness dirs and the state file', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      const state = readVersion(tmpDir)!;
-      writeFileSync(
-        join(tmpDir, LEGACY_VERSION_FILE),
-        JSON.stringify({ version: state.version, files: state.files }, null, 2) + '\n',
-        'utf-8'
-      );
-      // Wipe .gitignore so only this upgrade run's writes are observed.
-      writeFileSync(join(tmpDir, '.gitignore'), '', 'utf-8');
-
-      await upgrade(tmpDir, { yes: true });
-
-      const gi = lines(readGitignore(tmpDir));
-      expect(gi).toContain('.claude/');
-      // The state file now lives in tracked docs/, so the harness-dir ignores no
-      // longer cover it — it must be listed explicitly under private too.
-      expect(gi).toContain(STATE_PATH);
-    });
+  it('does not warn for a private harness ignore that leaves shared authority visible', () => {
+    const root = project();
+    try {
+      writeFileSync(join(root, '.gitignore'), '.claude/\n');
+      git(root, 'init', '-q');
+      expect(sharedManifestIgnoreWarning(root)).toBeNull();
+    } finally {
+      cleanup(root);
+    }
   });
 
-  describe('validation', () => {
-    it('rejects an unknown profile value', async () => {
-      await expect(init(tmpDir, { force: false, gitignore: 'bogus' }))
-        .rejects.toThrow(/Unknown gitignore profile 'bogus'/);
-    });
-
-    it('does not scaffold when the profile is invalid', async () => {
-      await init(tmpDir, { force: false, gitignore: 'nope' }).catch(() => {});
-      // Profile is resolved before any scaffolding, so nothing should be written
-      expect(existsSync(join(tmpDir, 'CLAUDE.md'))).toBe(false);
-      expect(existsSync(join(tmpDir, '.claude'))).toBe(false);
-    });
-
-    it('accepts case-insensitive and padded values', async () => {
-      await init(tmpDir, { force: false, gitignore: '  PRIVATE  ' });
-      expect(readVersion(tmpDir)?.gitignoreProfile).toBe('private');
-    });
-  });
-
-  describe('idempotency', () => {
-    it('applyGitignoreProfile adds nothing on a second call', () => {
-      const first = applyGitignoreProfile(tmpDir, 'private');
-      // private now writes the harness dirs, checker, local scope, and
-      // machine-owned docs/.joycraft files.
-      expect(first.sort()).toEqual([
-        ...PRIVATE_PROFILE_IGNORES,
-        CHECKER_PATH,
-        JOYCRAFT_LOCAL_DIR,
-        STATE_PATH,
-        TELEMETRY_PATH,
-      ].sort());
-      const second = applyGitignoreProfile(tmpDir, 'private');
-      expect(second).toEqual([]);
-    });
-
-    it('preserves the shared manifest through a real Git clone', () => {
-      const source = join(tmpDir, 'source');
-      const clone = join(tmpDir, 'clone');
+  it('preserves a shared manifest and checker through a real Git clone', () => {
+    const source = project();
+    const clone = join(source, 'clone');
+    try {
       mkdirSync(join(source, 'docs', '.joycraft'), { recursive: true });
       applyGitignoreProfile(source, 'shared');
-      writeFileSync(join(source, SHARED_MANIFEST_PATH), '{"schemaVersion":1}\n', 'utf-8');
-      writeFileSync(join(source, CHECKER_PATH), 'export {};\n', 'utf-8');
+      writeFileSync(join(source, SHARED_MANIFEST_PATH), JSON.stringify(manifest('shared')) + '\n');
+      writeFileSync(join(source, CHECKER_PATH), 'export {};\n');
       git(source, 'init', '-q');
       git(source, 'config', 'user.email', 'test@test.dev');
       git(source, 'config', 'user.name', 'Test');
       git(source, 'add', '.gitignore', SHARED_MANIFEST_PATH, CHECKER_PATH);
       git(source, 'commit', '-q', '-m', 'shared installation');
-      execFileSync('git', ['clone', '-q', source, clone], { stdio: 'ignore' });
-
+      git(source, 'clone', '-q', source, clone);
       expect(existsSync(join(clone, SHARED_MANIFEST_PATH))).toBe(true);
       expect(existsSync(join(clone, CHECKER_PATH))).toBe(true);
-      expect(() => execFileSync('git', ['check-ignore', '--no-index', '-q', '--', PRIVATE_MANIFEST_PATH], {
-        cwd: clone,
-        stdio: ['ignore', 'ignore', 'ignore'],
-      })).not.toThrow();
-    });
+      expect(readInstallationManifest(clone, 'shared')?.profile).toBe('shared');
+    } finally {
+      cleanup(source);
+    }
+  });
 
-    it('keeps a private manifest and checker local in a real Git project', () => {
-      const project = join(tmpDir, 'private');
-      mkdirSync(join(project, 'docs', '.joycraft', 'local'), { recursive: true });
-      applyGitignoreProfile(project, 'private');
-      writeFileSync(join(project, PRIVATE_MANIFEST_PATH), '{"schemaVersion":1}\n', 'utf-8');
-      writeFileSync(join(project, CHECKER_PATH), 'export {};\n', 'utf-8');
-      writeFileSync(join(project, SHARED_MANIFEST_PATH), '{"schemaVersion":1}\n', 'utf-8');
-      git(project, 'init', '-q');
-
+  it('keeps private local artifacts ignored while leaving shared authority visible', () => {
+    const root = project();
+    try {
+      mkdirSync(join(root, 'docs', '.joycraft', 'local'), { recursive: true });
+      applyGitignoreProfile(root, 'private');
+      writeFileSync(join(root, PRIVATE_MANIFEST_PATH), '{}\n');
+      writeFileSync(join(root, CHECKER_PATH), 'export {};\n');
+      writeFileSync(join(root, SHARED_MANIFEST_PATH), '{}\n');
+      git(root, 'init', '-q');
       for (const path of [PRIVATE_MANIFEST_PATH, CHECKER_PATH, STATE_PATH]) {
-        expect(() => execFileSync('git', ['check-ignore', '--no-index', '-q', '--', path], {
-          cwd: project,
-          stdio: ['ignore', 'ignore', 'ignore'],
-        })).not.toThrow();
+        expect(() => git(root, 'check-ignore', '--no-index', '-q', '--', path)).not.toThrow();
       }
-      expect(() => execFileSync('git', ['check-ignore', '--no-index', '-q', '--', SHARED_MANIFEST_PATH], {
-        cwd: project,
-        stdio: ['ignore', 'ignore', 'ignore'],
-      })).toThrow();
-    });
+      expect(() => git(root, 'check-ignore', '--no-index', '-q', '--', SHARED_MANIFEST_PATH)).toThrow();
+    } finally {
+      cleanup(root);
+    }
+  });
 
-    it('reports a broad effective ignore that hides the shared manifest', () => {
-      const source = join(tmpDir, 'warning');
-      mkdirSync(source, { recursive: true });
-      writeFileSync(join(source, '.gitignore'), 'docs/.joycraft/\n', 'utf-8');
-      git(source, 'init', '-q');
+  it('switches private authority back to shared without changing tracked files', async () => {
+    const root = project();
+    try {
+      prepareNoopProject(root);
+      writeInstallationManifest(root, manifest('private'));
+      applyGitignoreProfile(root, 'private');
+      mkdirSync(join(root, '.claude', 'skills', 'joycraft-tune'), { recursive: true });
+      writeFileSync(join(root, '.claude', 'skills', 'joycraft-tune', 'SKILL.md'), 'tracked\n');
+      git(root, 'init', '-q');
+      git(root, 'config', 'user.email', 'test@test.dev');
+      git(root, 'config', 'user.name', 'Test');
+      git(root, 'add', '-f', '.claude/skills/joycraft-tune/SKILL.md');
+      git(root, 'commit', '-q', '-m', 'tracked harness');
 
-      const warning = sharedManifestIgnoreWarning(source);
-      expect(warning).toContain(SHARED_MANIFEST_PATH);
-      expect(warning).toContain('docs/.joycraft/');
-      expect(warning).toContain('remove or narrow');
-    });
-
-    it('does not report a warning when the shared manifest is visible', () => {
-      const source = join(tmpDir, 'visible');
-      mkdirSync(source, { recursive: true });
-      applyGitignoreProfile(source, 'shared');
-      git(source, 'init', '-q');
-
-      expect(sharedManifestIgnoreWarning(source)).toBeNull();
-    });
-
-    it('does not mistake a negated manifest rule for an effective ignore', () => {
-      const source = join(tmpDir, 'negated');
-      mkdirSync(source, { recursive: true });
-      writeFileSync(
-        join(source, '.gitignore'),
-        'docs/.joycraft/*\n!docs/.joycraft/manifest.json\n',
-        'utf-8'
-      );
-      git(source, 'init', '-q');
-
-      // `git check-ignore -v` reports the final `!manifest` line with some
-      // Git versions even though the quiet status correctly says visible.
-      expect(sharedManifestIgnoreWarning(source)).toBeNull();
-    });
-
-    it('re-running init never duplicates gitignore lines', async () => {
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      await init(tmpDir, { force: true });
-      const gi = lines(readGitignore(tmpDir));
-      const claudeCount = gi.filter((l) => l === '.claude/').length;
-      expect(claudeCount).toBe(1);
-    });
-
-    it('preserves pre-existing unrelated gitignore lines', async () => {
-      writeFileSync(join(tmpDir, '.gitignore'), 'node_modules/\ndist/\n', 'utf-8');
-      await init(tmpDir, { force: false, gitignore: 'private' });
-      const gi = lines(readGitignore(tmpDir));
-      expect(gi).toContain('node_modules/');
-      expect(gi).toContain('dist/');
-      expect(gi).toContain('.claude/');
-    });
+      const result = await update(root, { nonInteractive: true, gitignore: 'shared', bundle: emptyBundle() });
+      expect(result.exitCode).toBe(0);
+      expect(readInstallationManifest(root, 'shared')?.profile).toBe('shared');
+      expect(git(root, 'ls-files', '.claude/skills/joycraft-tune/SKILL.md').trim()).toBe('.claude/skills/joycraft-tune/SKILL.md');
+    } finally {
+      cleanup(root);
+    }
   });
 });

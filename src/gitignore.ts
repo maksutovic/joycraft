@@ -42,6 +42,28 @@ export const PRIVATE_DIRS_DISPLAY = PRIVATE_PROFILE_IGNORES.join(', ');
 /** Copy-pasteable command to untrack already-committed harness files. */
 export const PRIVATE_UNTRACK_COMMAND = `git rm -r --cached ${PRIVATE_PROFILE_IGNORES.map((d) => d.replace(/\/$/, '')).join(' ')}`;
 
+export interface GitignorePlan {
+  content: string;
+  added: string[];
+}
+
+function appendGitignoreEntries(current: string, entries: readonly string[]): GitignorePlan {
+  const present = new Set(current.split('\n').map((line) => line.trim()));
+  const missing = entries.filter((entry) => !present.has(entry.trim()));
+  if (missing.length === 0) return { content: current, added: [] };
+  const separator = current.length > 0 && !current.endsWith('\n') ? '\n' : '';
+  return { content: current + separator + missing.join('\n') + '\n', added: missing };
+}
+
+/** Plan the append-only profile changes without reading or writing the filesystem. */
+export function planGitignoreProfile(current: string, profile: GitignoreProfile): GitignorePlan {
+  const machineOwned = [STATE_PATH, TELEMETRY_PATH, JOYCRAFT_LOCAL_DIR];
+  const entries = profile === 'private'
+    ? [...PRIVATE_PROFILE_IGNORES, CHECKER_PATH, ...machineOwned]
+    : machineOwned;
+  return appendGitignoreEntries(current, entries);
+}
+
 /**
  * Append-only, create-if-absent, idempotent .gitignore writer.
  *
@@ -54,14 +76,9 @@ export const PRIVATE_UNTRACK_COMMAND = `git rm -r --cached ${PRIVATE_PROFILE_IGN
 export function ensureGitignoreEntries(targetDir: string, entries: string[]): string[] {
   const gitignorePath = join(targetDir, '.gitignore');
   const current = existsSync(gitignorePath) ? readFileSync(gitignorePath, 'utf-8') : '';
-  const present = new Set(current.split('\n').map((l) => l.trim()));
-  const missing = entries.filter((e) => !present.has(e.trim()));
-  if (missing.length === 0) return [];
-
-  // Append on their own lines, tolerating a file that may or may not end in \n.
-  const sep = current.length > 0 && !current.endsWith('\n') ? '\n' : '';
-  writeFileSync(gitignorePath, current + sep + missing.join('\n') + '\n', 'utf-8');
-  return missing;
+  const planned = appendGitignoreEntries(current, entries);
+  if (planned.added.length > 0) writeFileSync(gitignorePath, planned.content, 'utf-8');
+  return planned.added;
 }
 
 /** Single-entry convenience wrapper around ensureGitignoreEntries. */
@@ -134,20 +151,11 @@ export function sharedManifestIgnoreWarning(targetDir: string): string | null {
  * added this call.
  */
 export function applyGitignoreProfile(targetDir: string, profile: GitignoreProfile): string[] {
-  // Machine-owned files under docs/.joycraft/ — since docs/ is always tracked,
-  // both profiles must list them explicitly (telemetry.json additionally holds
-  // per-machine work patterns that must never publish). The local directory is
-  // ignored by BOTH profiles so preferences, locks, journals, caches, and
-  // private manifests never become shared installation facts.
-  const machineOwned = [STATE_PATH, TELEMETRY_PATH, JOYCRAFT_LOCAL_DIR];
-  if (profile === 'private') {
-    // The checker is a managed shared artifact. A private install still gets
-    // one locally, but it must not be committed with the project.
-    return ensureGitignoreEntries(targetDir, [...PRIVATE_PROFILE_IGNORES, CHECKER_PATH, ...machineOwned]);
-  }
-  // `shared`: keep the manifest and checker trackable. Existing broad user
-  // rules are preserved; sharedManifestIgnoreWarning reports if they hide it.
-  return ensureGitignoreEntries(targetDir, machineOwned);
+  const gitignorePath = join(targetDir, '.gitignore');
+  const current = existsSync(gitignorePath) ? readFileSync(gitignorePath, 'utf-8') : '';
+  const planned = planGitignoreProfile(current, profile);
+  if (planned.added.length > 0) writeFileSync(gitignorePath, planned.content, 'utf-8');
+  return planned.added;
 }
 
 /** A resolved profile plus how it was arrived at. */

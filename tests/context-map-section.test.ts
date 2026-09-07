@@ -7,7 +7,7 @@ import {
   improveCLAUDEMd,
   generateCLAUDEMd,
 } from '../src/improve-claude-md';
-import { init } from '../src/init';
+import { formatInitOutcome, init } from '../src/init';
 import type { StackInfo } from '../src/detect';
 
 const STACK: StackInfo = {
@@ -93,12 +93,13 @@ describe('init printed next-steps lead with /joycraft-setup', () => {
     const logs: string[] = [];
     const origLog = console.log;
     console.log = (...args: unknown[]) => logs.push(args.join(' '));
+    let result: Awaited<ReturnType<typeof init>>;
     try {
-      await init(dir, { force: false });
+      result = await init(dir, { force: false });
     } finally {
       console.log = origLog;
     }
-    const joined = logs.join('\n');
+    const joined = `${logs.join('\n')}\n${formatInitOutcome(result)}`;
     // Scope to the "Next steps:" section — the created-files list above it also names skills.
     const nextSteps = joined.slice(joined.indexOf('Next steps:'));
     const firstCmd = nextSteps.match(/\/joycraft-(setup|tune|new-feature|interview|decompose|implement|session-end)\b/);

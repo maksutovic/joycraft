@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { Readable } from 'node:stream';
 import { init } from '../src/init';
 import { upgrade } from '../src/upgrade';
-import { readVersion } from '../src/version';
+import { readInstallationManifest } from '../src/install-manifest';
 import { parseHarnessSelection, resolveHarnesses, sanitizeHarnesses, HARNESSES } from '../src/harness';
 
 function createTmpDir(): string {
@@ -34,7 +34,10 @@ function readSettings(dir: string): Record<string, unknown> {
  * answers (= accept every default) so each caller's trailing gitignore answer
  * still lands on the gitignore prompt.
  */
-async function initWithAnswers(dir: string, ...answers: string[]): Promise<string> {
+async function initWithAnswers(
+  dir: string,
+  ...answers: string[]
+): Promise<Awaited<ReturnType<typeof init>>> {
   const [harnessAnswer, ...rest] = answers;
   const selected = parseHarnessSelection(harnessAnswer ?? '') ?? [];
   const profileBlanks = Array<string>(selected.length * 4).fill('');
@@ -44,16 +47,13 @@ async function initWithAnswers(dir: string, ...answers: string[]): Promise<strin
   const stdinDesc = Object.getOwnPropertyDescriptor(process, 'stdin')!;
   Object.defineProperty(process, 'stdin', { value: fakeStdin, configurable: true });
 
-  const logs: string[] = [];
-  const origLog = console.log;
-  console.log = (...args: unknown[]) => { logs.push(args.join(' ')); };
+  let result: Awaited<ReturnType<typeof init>>;
   try {
-    await init(dir, { force: false });
+    result = await init(dir, { force: false });
   } finally {
-    console.log = origLog;
     Object.defineProperty(process, 'stdin', stdinDesc);
   }
-  return logs.join('\n');
+  return result;
 }
 
 describe('HARNESSES roster', () => {
@@ -113,6 +113,7 @@ describe('init harness gating', () => {
       expect(existsSync(join(dir, '.agents', 'skills'))).toBe(true);
       expect(existsSync(join(dir, '.pi', 'skills'))).toBe(true);
       expect(existsSync(join(dir, '.github', 'skills'))).toBe(true);
+      expect(existsSync(join(dir, '.omp', 'skills'))).toBe(true);
     } finally {
       cleanup(dir);
     }
@@ -127,6 +128,7 @@ describe('init harness gating', () => {
       expect(existsSync(join(dir, '.pi', 'skills'))).toBe(true);
       expect(existsSync(join(dir, '.agents'))).toBe(false);
       expect(existsSync(join(dir, '.github'))).toBe(false);
+      expect(existsSync(join(dir, '.omp'))).toBe(false);
     } finally {
       cleanup(dir);
     }
@@ -135,14 +137,17 @@ describe('init harness gating', () => {
   it('installs nothing and prints the run-again message when none selected', async () => {
     const dir = createTmpDir();
     try {
-      const out = await initWithAnswers(dir, '');
-      expect(out).toMatch(/No harness selected/i);
-      expect(out).toMatch(/run init again/i);
+      const result = await initWithAnswers(dir, '');
+      expect(result.status).toBe('noop');
+      expect(result.exitCode).toBe(0);
+      expect(result.diagnostics.join(' ')).toMatch(/No harness selected/i);
+      expect(result.diagnostics.join(' ')).toMatch(/run init again/i);
       // Nothing scaffolded — not even shared docs.
       expect(existsSync(join(dir, '.claude'))).toBe(false);
       expect(existsSync(join(dir, '.agents'))).toBe(false);
       expect(existsSync(join(dir, '.pi'))).toBe(false);
       expect(existsSync(join(dir, '.github'))).toBe(false);
+      expect(existsSync(join(dir, '.omp'))).toBe(false);
       expect(existsSync(join(dir, 'CLAUDE.md'))).toBe(false);
       expect(existsSync(join(dir, 'docs'))).toBe(false);
     } finally {
@@ -159,8 +164,9 @@ describe('init harness gating', () => {
       expect(existsSync(join(dir, '.claude'))).toBe(false);
       expect(existsSync(join(dir, '.pi'))).toBe(false);
       expect(existsSync(join(dir, '.github'))).toBe(false);
-      // State lives in the harness-neutral docs/ home, not under any harness dir.
-      expect(existsSync(join(dir, 'docs', '.joycraft', 'state.json'))).toBe(true);
+      expect(existsSync(join(dir, '.omp'))).toBe(false);
+      // The shared installation manifest lives in the harness-neutral docs/ home.
+      expect(existsSync(join(dir, 'docs', '.joycraft', 'manifest.json'))).toBe(true);
       // Shared docs are harness-agnostic and still generated.
       expect(existsSync(join(dir, 'CLAUDE.md'))).toBe(true);
       expect(existsSync(join(dir, 'AGENTS.md'))).toBe(true);
@@ -178,6 +184,7 @@ describe('init harness gating', () => {
       expect(existsSync(join(dir, '.claude'))).toBe(false);
       expect(existsSync(join(dir, '.agents'))).toBe(false);
       expect(existsSync(join(dir, '.pi'))).toBe(false);
+      expect(existsSync(join(dir, '.omp'))).toBe(false);
       // Shared docs still generated.
       expect(existsSync(join(dir, 'CLAUDE.md'))).toBe(true);
       expect(existsSync(join(dir, 'AGENTS.md'))).toBe(true);
@@ -230,12 +237,12 @@ describe('sanitizeHarnesses', () => {
   });
 });
 
-describe('harness selection persists to state', () => {
-  it('records the interactively chosen harnesses in state.json', async () => {
+describe('harness selection persists to the installation manifest', () => {
+  it('records the interactively chosen harnesses in the shared manifest', async () => {
     const dir = createTmpDir();
     try {
       await initWithAnswers(dir, 'claude,pi', 'shared');
-      expect(readVersion(dir)?.harnesses).toEqual(['claude', 'pi']);
+      expect(readInstallationManifest(dir, 'shared')?.harnesses).toEqual(['claude', 'pi']);
     } finally {
       cleanup(dir);
     }
@@ -245,7 +252,7 @@ describe('harness selection persists to state', () => {
     const dir = createTmpDir();
     try {
       await init(dir, { force: false });
-      expect(readVersion(dir)?.harnesses).toEqual([...HARNESSES]);
+      expect(readInstallationManifest(dir, 'shared')?.harnesses).toEqual([...HARNESSES]);
     } finally {
       cleanup(dir);
     }
@@ -270,8 +277,15 @@ describe('upgrade respects persisted harness selection', () => {
       writeFileSync(join(dir, '.agents', 'skills', 'joycraft-tune', 'SKILL.md'), 'tune');
       mkdirSync(join(dir, 'docs', '.joycraft'), { recursive: true });
       writeFileSync(
-        join(dir, 'docs', '.joycraft', 'state.json'),
-        JSON.stringify({ version: '0.0.1', files: {}, gitignoreProfile: 'shared', harnesses: ['codex'] })
+        join(dir, 'docs', '.joycraft', 'manifest.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          targetVersion: '0.0.1',
+          bundleIntegrity: '',
+          profile: 'shared',
+          harnesses: ['codex'],
+          files: {},
+        })
       );
       await withRegistryStub(() => upgrade(dir, { yes: true }));
       expect(existsSync(join(dir, '.claude'))).toBe(false);
@@ -279,13 +293,13 @@ describe('upgrade respects persisted harness selection', () => {
       expect(existsSync(join(dir, '.github'))).toBe(false);
       expect(existsSync(join(dir, '.agents', 'skills'))).toBe(true);
       // Selection survives the upgrade.
-      expect(readVersion(dir)?.harnesses).toEqual(['codex']);
+      expect(readInstallationManifest(dir, 'shared')?.harnesses).toEqual(['codex']);
     } finally {
       cleanup(dir);
     }
   });
 
-  it('refreshes all available when state predates harness selection (no harnesses field)', async () => {
+  it('infers only harness roots containing Joycraft artifacts when legacy state has no selection', async () => {
     const dir = createTmpDir();
     try {
       mkdirSync(join(dir, '.claude', 'skills', 'joycraft-tune'), { recursive: true });
@@ -297,9 +311,10 @@ describe('upgrade respects persisted harness selection', () => {
       );
       await withRegistryStub(() => upgrade(dir, { yes: true }));
       expect(existsSync(join(dir, '.claude', 'skills'))).toBe(true);
-      expect(existsSync(join(dir, '.agents', 'skills'))).toBe(true);
-      expect(existsSync(join(dir, '.pi', 'skills'))).toBe(true);
-      expect(existsSync(join(dir, '.github', 'skills'))).toBe(true);
+      expect(existsSync(join(dir, '.agents'))).toBe(false);
+      expect(existsSync(join(dir, '.pi'))).toBe(false);
+      expect(existsSync(join(dir, '.github'))).toBe(false);
+      expect(readInstallationManifest(dir, 'shared')?.harnesses).toEqual(['claude']);
     } finally {
       cleanup(dir);
     }

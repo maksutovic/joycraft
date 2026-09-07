@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { init } from '../src/init';
 import { generateCLAUDEMd } from '../src/improve-claude-md';
-import { STATE_PATH } from '../src/version';
+import { manifestPath } from '../src/install-manifest';
 import type { StackInfo } from '../src/detect';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -60,14 +60,14 @@ describe('wire-and-bundle (spec 9)', () => {
       expect((statSync(loop).mode & 0o111) !== 0).toBe(true);
     });
 
-    it('records the new files in the hidden state so upgrade can detect them', async () => {
+    it('records the new files in the installation manifest so upgrade can detect them', async () => {
       tmp = mkdtempSync(join(tmpdir(), 'joycraft-wire-'));
       await init(tmp, { force: false });
-      const version = JSON.parse(read(join(tmp, STATE_PATH)));
+      const version = JSON.parse(read(join(tmp, manifestPath('shared'))));
       const keys = Object.keys(version.files);
-      expect(keys).toContain(join('.pi', 'skills', 'joycraft-spec-done', 'SKILL.md'));
-      expect(keys).toContain(join('.claude', 'skills', 'joycraft-spec-done', 'SKILL.md'));
-      expect(keys).toContain(join('.pi', 'scripts', 'joycraft', 'joycraft-implement-loop'));
+      expect(keys).toContain('.pi/skills/joycraft-spec-done/SKILL.md');
+      expect(keys).toContain('.claude/skills/joycraft-spec-done/SKILL.md');
+      expect(keys).toContain('.pi/scripts/joycraft/joycraft-implement-loop');
     });
   });
 
