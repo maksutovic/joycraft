@@ -101,6 +101,9 @@ describe('release verification', () => {
     const adapter = createNpmVerificationAdapter({
       run: async (command: string, args: string[], options: any) => {
         calls.push({ command, args, options });
+        if (args.includes(`--package=${join(root, 'prior.tgz')}`) && args.includes('--non-interactive')) {
+          throw new Error("legacy CLI: unknown option '--non-interactive'");
+        }
         return { stdout: '', stderr: '' };
       },
     });
@@ -115,6 +118,8 @@ describe('release verification', () => {
     expect(result.freshInstall).toBe(true);
     expect(result.previousVersionUpdate).toBe(true);
     expect(calls).toHaveLength(6);
+    expect(calls[3].args.slice(-1)).toEqual(['init']);
+    expect(calls[5].args.slice(-4)).toEqual(['update', '--non-interactive', '--replace-customized', '.claude/hooks/joycraft-version-check.mjs']);
     expect(calls.every(call => call.args.includes('--prefer-online'))).toBe(true);
     expect(calls.every(call => call.args.includes('--cache'))).toBe(true);
     expect(calls.some(call => call.args.includes(join(root, 'prior.tgz')))).toBe(true);
