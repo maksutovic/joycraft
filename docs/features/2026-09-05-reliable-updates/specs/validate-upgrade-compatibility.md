@@ -128,3 +128,5 @@ The retained npm artifact is installed into an isolated consumer and exercised t
 The first Windows lane exposed a transaction durability defect: file buffers were flushed through a read-only handle. Durable writes now flush the same writable handle used to write the data, before restoring the requested mode. A regression test enforces Windows flush access requirements. Compatibility reports retain failed CLI output, and matrix lanes finish independently so one platform failure cannot cancel other required evidence.
 
 Legacy state paths also remain slash-separated on Windows so migration operations and ignore entries accept them. A Windows-path regression exercises the production manifest path validator.
+
+A subsequent Windows run reached staging and exposed Unix-only permission equality. Transaction image comparisons now check the representable writable bit on Windows, preserving exact mode comparisons on Unix and exact content hashes everywhere. Regressions cover regular, executable, and read-only target modes.

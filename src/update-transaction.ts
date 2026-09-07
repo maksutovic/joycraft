@@ -582,7 +582,12 @@ function sameImage(left: Image, right: Image): boolean {
   const leftBytes = imageBytes(left);
   const rightBytes = imageBytes(right);
   return !!leftBytes && !!rightBytes && rawFileHash(leftBytes) === rawFileHash(rightBytes)
-    && (right.mode === undefined || left.mode === right.mode);
+    && (right.mode === undefined || (left.mode !== undefined && (
+      // Windows chmod exposes writability, not Unix owner/group/execute bits.
+      process.platform === 'win32'
+        ? (left.mode & 0o200) === (right.mode & 0o200)
+        : left.mode === right.mode
+    )));
 }
 
 function writeImage(root: string, relativePath: string, image: Image): void {

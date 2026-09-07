@@ -1,9 +1,23 @@
 import { describe, expect, it, vi } from 'vitest';
 
-const flushAccess = vi.hoisted(() => ({ enforce: false, flags: new Map<number, unknown>() }));
+const flushAccess = vi.hoisted(() => ({ enforce: false, windowsModes: false, flags: new Map<number, unknown>() }));
 vi.mock('node:fs', async (importOriginal) => {
   const fs = await importOriginal<typeof import('node:fs')>();
   return { ...fs,
+    statSync: (...args: Parameters<typeof fs.statSync>) => {
+      const stat = fs.statSync(...args);
+      if (flushAccess.windowsModes && typeof stat.mode === 'number') {
+        stat.mode = (stat.mode & ~0o7777) | ((stat.mode & 0o200) ? 0o666 : 0o444);
+      }
+      return stat;
+    },
+    lstatSync: (...args: Parameters<typeof fs.lstatSync>) => {
+      const stat = fs.lstatSync(...args);
+      if (flushAccess.windowsModes && stat && typeof stat.mode === 'number') {
+        stat.mode = (stat.mode & ~0o7777) | ((stat.mode & 0o200) ? 0o666 : 0o444);
+      }
+      return stat;
+    },
     openSync: (...args: Parameters<typeof fs.openSync>) => {
       const fd = fs.openSync(...args);
       flushAccess.flags.set(fd, args[1]);
@@ -83,6 +97,25 @@ function seed(root: string, oldContent = 'old\n'): void {
 }
 
 describe('update transactions', () => {
+  it.each([0o644, 0o755, 0o444])('accepts Windows permission representation for mode %i', (mode) => {
+    const root = project();
+    const platform = Object.getOwnPropertyDescriptor(process, 'platform')!;
+    try {
+      seed(root);
+      flushAccess.windowsModes = true;
+      Object.defineProperty(process, 'platform', { value: 'win32', configurable: true });
+      const update = plan('old\n', 'new\n');
+      update.actions[0].mode = mode;
+      const result = applyUpdatePlan(root, update);
+      expect(result.status).toBe('applied');
+      expect(readFileSync(join(root, filePath), 'utf8')).toBe('new\n');
+    } finally {
+      Object.defineProperty(process, 'platform', platform);
+      flushAccess.windowsModes = false;
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
   it('commits when flushing requires write access as on Windows', () => {
     const root = project();
     try {
