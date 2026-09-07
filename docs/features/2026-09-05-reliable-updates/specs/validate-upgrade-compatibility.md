@@ -1,5 +1,5 @@
 ---
-status: in-review
+status: done
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 14 of 15
 > **Dependencies:** 11 — enable-opt-in-safe-updates.md, 13 — verify-registry-promotion.md
-> **Status:** In review
+> **Status:** Done
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 4–7 files / ~300 lines
 

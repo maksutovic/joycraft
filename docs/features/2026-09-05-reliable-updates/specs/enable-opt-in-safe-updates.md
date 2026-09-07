@@ -1,5 +1,5 @@
 ---
-status: in-review
+status: done
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 11 of 15
 > **Dependencies:** 10 — wire-skill-update-discovery.md
-> **Status:** In Review
+> **Status:** Done
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 6–10 files plus generated copies / ~300 lines
 

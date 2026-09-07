@@ -4,7 +4,7 @@
 > **Design:** `docs/features/2026-09-05-reliable-updates/design.md`
 > **Research:** `docs/features/2026-09-05-reliable-updates/research.md`
 > **Decomposition:** `docs/features/2026-09-05-reliable-updates/decompose.md`
-> **Status:** Decomposed 2026-09-06, ready for implementation
+> **Status:** Implemented and locally verified 2026-09-06; cross-platform execution remains a PR CI gate
 > **Approval:** D1–D6 clarified; scope, design, dependencies, waves, and execution modes approved.
 
 ## What this feature does

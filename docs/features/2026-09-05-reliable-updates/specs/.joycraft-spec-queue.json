@@ -5,7 +5,7 @@
       "id": 1,
       "file": "preserve-customization-baselines.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -14,7 +14,7 @@
       "depends_on": [
         1
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -23,7 +23,7 @@
       "depends_on": [
         2
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "isolated"
     },
     {
@@ -32,7 +32,7 @@
       "depends_on": [
         3
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -41,7 +41,7 @@
       "depends_on": [
         4
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "isolated"
     },
     {
@@ -50,7 +50,7 @@
       "depends_on": [
         5
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "isolated"
     },
     {
@@ -59,7 +59,7 @@
       "depends_on": [
         6
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "isolated"
     },
     {
@@ -68,7 +68,7 @@
       "depends_on": [
         7
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -77,7 +77,7 @@
       "depends_on": [
         8
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -86,7 +86,7 @@
       "depends_on": [
         9
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -95,14 +95,14 @@
       "depends_on": [
         10
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
       "id": 12,
       "file": "serialize-immutable-releases.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "isolated"
     },
     {
@@ -112,7 +112,7 @@
         7,
         12
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "isolated"
     },
     {
@@ -122,7 +122,7 @@
         11,
         13
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -131,7 +131,7 @@
       "depends_on": [
         14
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     }
   ]

@@ -1,5 +1,5 @@
 ---
-status: in-review
+status: done
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 15 of 15
 > **Dependencies:** 14 — validate-upgrade-compatibility.md
-> **Status:** In review
+> **Status:** Done
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 5–8 files / ~250 lines
 

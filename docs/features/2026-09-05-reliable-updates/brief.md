@@ -182,21 +182,21 @@ This is the approved decomposition (D6). The executable queue and detailed wave 
 
 | # | Spec Name | Description | Dependencies | Est. Size |
 |---|-----------|-------------|--------------|-----------|
-| 1 | preserve-customization-baselines | Preserve declined customizations across repeated upgrades. | None | S |
-| 2 | reconcile-update-status | Report accurate outcomes and reconcile version-only updates. | 1 | S |
-| 3 | preserve-installation-manifest | Persist portable installation facts and conservatively adopt legacy state. | 2 | L |
-| 4 | unify-managed-inventory | Describe all install and update artifacts through one ownership-aware inventory. | 3 | M |
-| 5 | plan-safe-updates | Produce a complete read-only update plan with reviewable conflicts. | 4 | L |
-| 6 | recover-interrupted-updates | Apply reviewed plans with locking, recovery, and guarded rollback. | 5 | L |
-| 7 | unify-update-command | Route install and upgrade aliases through the same safe update engine. | 6 | L |
-| 8 | separate-project-migrations | Separate deliberate document migrations from routine bundle refresh. | 7 | M |
-| 9 | implement-shared-update-checker | Provide one cached local update checker with bounded network work. | 8 | M |
-| 10 | wire-skill-update-discovery | Add the shared checker entry to every generated skill and the existing Claude hook. | 9 | M |
-| 11 | enable-opt-in-safe-updates | Let authorized agents apply compatible conflict-free updates at skill boundaries. | 10 | M |
-| 12 | serialize-immutable-releases | Prepare reviewed release versions and retain a retry-safe candidate artifact. | None | L |
-| 13 | verify-registry-promotion | Promote the verified candidate automatically after real installation checks. | 7, 12 | L |
-| 14 | validate-upgrade-compatibility | Verify the integrated package across historical installs, stacks, harnesses, and platforms. | 11, 13 | M |
-| 15 | document-and-dogfood-updates | Document the unified update path and migrate this repository with reviewed preservation. | 14 | M |
+| 1 | [x] preserve-customization-baselines | Preserve declined customizations across repeated upgrades. | None | S |
+| 2 | [x] reconcile-update-status | Report accurate outcomes and reconcile version-only updates. | 1 | S |
+| 3 | [x] preserve-installation-manifest | Persist portable installation facts and conservatively adopt legacy state. | 2 | L |
+| 4 | [x] unify-managed-inventory | Describe all install and update artifacts through one ownership-aware inventory. | 3 | M |
+| 5 | [x] plan-safe-updates | Produce a complete read-only update plan with reviewable conflicts. | 4 | L |
+| 6 | [x] recover-interrupted-updates | Apply reviewed plans with locking, recovery, and guarded rollback. | 5 | L |
+| 7 | [x] unify-update-command | Route install and upgrade aliases through the same safe update engine. | 6 | L |
+| 8 | [x] separate-project-migrations | Separate deliberate document migrations from routine bundle refresh. | 7 | M |
+| 9 | [x] implement-shared-update-checker | Provide one cached local update checker with bounded network work. | 8 | M |
+| 10 | [x] wire-skill-update-discovery | Add the shared checker entry to every generated skill and the existing Claude hook. | 9 | M |
+| 11 | [x] enable-opt-in-safe-updates | Let authorized agents apply compatible conflict-free updates at skill boundaries. | 10 | M |
+| 12 | [x] serialize-immutable-releases | Prepare reviewed release versions and retain a retry-safe candidate artifact. | None | L |
+| 13 | [x] verify-registry-promotion | Promote the verified candidate automatically after real installation checks. | 7, 12 | L |
+| 14 | [x] validate-upgrade-compatibility | Verify the integrated package across historical installs, stacks, harnesses, and platforms. | 11, 13 | M |
+| 15 | [x] document-and-dogfood-updates | Document the unified update path and migrate this repository with reviewed preservation. | 14 | M |
 
 ## Execution Strategy
 
@@ -259,3 +259,7 @@ Start: read research.md, design.md, and dossier.md, then execute the approved qu
 Hazard: previous upgrades can record customized bytes as pristine vendor baselines. Matching an old stored hash is not sufficient proof of ownership.
 Done when: the reviewed specs are implemented and verified, the published-artifact validation path is covered, and a reviewable PR is prepared. Publishing and merging need separate authorization.
 ```
+
+## Implementation completion — 2026-09-06
+
+All 15 specifications are implemented and locally verified. The final suite passed 3,438 tests with one skipped; build and type checking passed, independent reviews completed, and generated skill files showed zero drift. The repository was migrated through the production updater with its customized deny rule preserved. The seven-lane compatibility workflow must still pass in PR CI; live npm publication and promotion were not performed.
