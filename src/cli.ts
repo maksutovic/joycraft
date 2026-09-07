@@ -29,6 +29,8 @@ program
   .option('--json', 'Print a structured JSON outcome')
   .option('--recover', 'Recover the interrupted update transaction')
   .option('--rollback', 'Rollback the last successful update')
+  .option('--preview', 'Show planned changes without applying them')
+  .option('--auto-safe', 'Require local opt-in and verified automatic-update safety')
   .action(async (dir: string, opts: {
     harnesses?: string;
     yes?: boolean;
@@ -38,9 +40,31 @@ program
     json?: boolean;
     recover?: boolean;
     rollback?: boolean;
+    preview?: boolean;
+    autoSafe?: boolean;
   }) => {
     const { update, formatUpdateOutcome } = await import('./update.js');
     try {
+      let verifiedArtifact;
+      if (opts.autoSafe) {
+        if (opts.recover || opts.rollback || opts.replaceCustomized?.length || opts.gitignore || opts.harnesses) {
+          throw new Error('Automatic updates cannot include recovery, configuration, or customization choices.');
+        }
+        const { readUpdatePolicy } = await import('./update-check.js');
+        if (readUpdatePolicy(dir) !== 'auto-safe') throw new Error('Automatic updates require the explicitly configured local auto-safe policy.');
+        const { readInstallationManifestInfo } = await import('./install-manifest.js');
+        const authorities = ['shared', 'private'].map(profile => readInstallationManifestInfo(dir, profile as 'shared' | 'private'));
+        if (authorities.filter(info => info.status !== 'missing').length !== 1 || !authorities.some(info => info.status === 'valid')) {
+          throw new Error('Automatic updates require one valid existing installation manifest; run an explicit update first.');
+        }
+        const { resolveExactRelease } = await import('./release-resolver.js');
+        const { fetchVerifiedReleaseArtifact } = await import('./release-artifact.js');
+        // The agent selected this exact candidate before invoking its CLI.
+        // Verify its artifact once; the update engine never resolves latest.
+        const resolution = await resolveExactRelease({ version: pkg.version });
+        if (!resolution.ok) throw new Error(resolution.error);
+        verifiedArtifact = await fetchVerifiedReleaseArtifact(resolution.release);
+      }
       const result = await update(dir, {
         harnesses: opts.harnesses,
         yes: opts.yes ?? false,
@@ -48,8 +72,15 @@ program
         replaceCustomized: opts.replaceCustomized,
         gitignore: opts.gitignore,
         recovery: opts.recover ? 'recover' : opts.rollback ? 'rollback' : undefined,
+        preview: opts.preview,
+        automatic: opts.autoSafe,
+        verifiedArtifact,
       });
-      console.log(formatUpdateOutcome(result, opts.json === true));
+      if (opts.preview) {
+        const actions = result.plan?.actions.map(({ path, kind, selected, reason }) => ({ path, kind, selected, reason })) ?? [];
+        if (opts.json) console.log(JSON.stringify({ ...JSON.parse(formatUpdateOutcome(result, true)), preview: true, actions }));
+        else console.log(['Preview only; no files changed.', ...actions.map(action => `${action.selected ? 'Planned' : 'Preserved'}: ${action.kind} ${action.path}`), ...result.diagnostics].join('\n'));
+      } else console.log(formatUpdateOutcome(result, opts.json === true));
       process.exitCode = result.exitCode;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);

@@ -11,9 +11,15 @@ export {
   checkForUpdate,
   compareStableVersions,
   postponeUpdate,
+  readUpdatePolicy,
   resolveCheckSessionId,
   resolveUpdateStatus,
+  setUpdatePolicy,
 } from './update-check.js';
+export { evaluateAutoSafeEligibility } from './auto-safe-update.js';
+export type { AutoSafeEligibility, AutoSafeEligibilityInput } from './auto-safe-update.js';
+export { fetchVerifiedReleaseArtifact, isVerifiedReleaseArtifact, parseReleaseDescriptor, verifyReleaseArtifact } from './release-artifact.js';
+export type { ReleaseDescriptor, VerifiedReleaseArtifact, FetchVerifiedReleaseArtifactOptions } from './release-artifact.js';
 export type {
   CheckMetadata,
   CheckPolicy,

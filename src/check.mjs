@@ -14,7 +14,7 @@ export function resolveCheckSessionId(explicit) {
         ?? process.env.JOYCRAFT_SESSION_ID
         ?? `parent-${process.ppid}`;
 }
-const STABLE_VERSION = /^(\d+)\.(\d+)\.(\d+)$/;
+const STABLE_VERSION = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 const REGISTRY_URL = 'https://registry.npmjs.org/joycraft/latest';
 function object(value) {
     return value && typeof value === 'object' && !Array.isArray(value) ? value : undefined;
@@ -115,6 +115,18 @@ function readSettings(root) {
         && (settings.acknowledgedSession === undefined || typeof settings.acknowledgedSession === 'string')
         && (settings.postponedRelease === undefined || typeof settings.postponedRelease === 'string'));
     return { settings, valid: result.valid && validSettings };
+}
+/** Read the same validated, project-local policy used by discovery without network work. */
+export function readUpdatePolicy(root) {
+    const { settings, valid } = readSettings(root);
+    return valid ? policy(settings?.updatePolicy ?? settings?.policy) : 'notify';
+}
+/** A deliberate local preference change; shared installation state is never an authorization source. */
+export function setUpdatePolicy(root, value) {
+    if (!['notify', 'auto-safe', 'off'].includes(value))
+        return false;
+    const { settings, valid } = readSettings(root);
+    return valid && writeLocalJson(root, CHECK_SETTINGS_PATH, { updatePolicy: value }, settings);
 }
 function readManifest(root) {
     const paths = ['docs/.joycraft/manifest.json', 'docs/.joycraft/local/manifest.json'];
@@ -308,7 +320,7 @@ export function resolveUpdateStatus(input) {
     const dismissed = !input.explicit && (input.postponedRelease === input.availableVersion || (input.acknowledgedRelease === input.availableVersion && input.acknowledgedSession === input.sessionId));
     if (dismissed && input.postponedRelease === input.availableVersion)
         return { status: 'postponed', display: false, diagnostics };
-    return { status: 'available', display: (policyValue === 'notify' || input.explicit === true) && !dismissed, diagnostics };
+    return { status: 'available', display: (policyValue === 'notify' || input.explicit === true) && !dismissed, diagnostics, ...(policyValue === 'auto-safe' && !dismissed ? { autoSafeCandidate: true } : {}) };
 }
 export async function checkForUpdate(root, options = {}) {
     const now = timestamp(options);
@@ -369,7 +381,16 @@ export async function checkForUpdate(root, options = {}) {
         sessionId,
         diagnostics,
     });
-    return { status: resolved.status, installedVersion, availableVersion: currentCache?.version, policy: localPolicy, display: resolved.display, explicit, fromCache, diagnostics: resolved.diagnostics, conflicts: manifest.conflicts };
+    return {
+        status: resolved.status, installedVersion, availableVersion: currentCache?.version, policy: localPolicy,
+        display: resolved.display, explicit, fromCache, diagnostics: resolved.diagnostics, conflicts: manifest.conflicts,
+        ...(resolved.autoSafeCandidate && currentCache ? {
+            automaticUpdate: {
+                verificationRequired: true,
+                command: ['npm', 'exec', '--yes', '--', `joycraft@${currentCache.version}`, 'update', '--auto-safe', '--non-interactive', '--json'],
+            },
+        } : {}),
+    };
 }
 export function acknowledgeUpdate(root, input) {
     if (!validVersion(input.release) || !input.session)
@@ -409,4 +430,8 @@ if (__checkerArgs[0] === 'check') {
   console.log(JSON.stringify({ acknowledged: acknowledgeUpdate(__checkerRoot, { release: __checkerArgs[1], session: __checkerSession }) }));
 } else if (__checkerArgs[0] === 'postpone') {
   console.log(JSON.stringify({ postponed: postponeUpdate(__checkerRoot, __checkerArgs[1]) }));
+} else if (__checkerArgs[0] === 'policy') {
+  const updated = setUpdatePolicy(__checkerRoot, __checkerArgs[1]);
+  console.log(JSON.stringify({ updated, policy: readUpdatePolicy(__checkerRoot) }));
+  if (!updated) process.exitCode = 1;
 }

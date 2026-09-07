@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 11 of 15
 > **Dependencies:** 10 — wire-skill-update-discovery.md
-> **Status:** Ready
+> **Status:** In Review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 6–10 files plus generated copies / ~300 lines
 
@@ -42,11 +42,11 @@ An unattended update that assumes a patch is safe can overwrite local work, appl
 
 ## Acceptance Criteria
 
-- [ ] Only an explicitly configured local auto-safe policy grants standing authorization; cloning a shared manifest does not enable it. [src: design §2]
-- [ ] The checker reports eligibility while the agent invokes the exact-version updater; it does not silently execute updates itself. [src: design §2]
-- [ ] Automatic application requires verified release compatibility metadata, supported manifest protocol, and no conflicts, repairs, user-config changes, or migrations. [src: design §2]
-- [ ] Prereleases, downgrades, and legacy bridge adoption require explicit user-run updates; patch numbering alone does not establish compatibility. [src: design §2]
-- [ ] An active skill is reinvoked or the user is told to restart where reload is unavailable; no mid-skill instruction replacement. [src: design §2]
+- [x] Only an explicitly configured local auto-safe policy grants standing authorization; cloning a shared manifest does not enable it. [src: design §2]
+- [x] The checker reports eligibility while the agent invokes the exact-version updater; it does not silently execute updates itself. [src: design §2]
+- [x] Automatic application requires verified release compatibility metadata, supported manifest protocol, and no conflicts, repairs, user-config changes, or migrations. [src: design §2]
+- [x] Prereleases, downgrades, and legacy bridge adoption require explicit user-run updates; patch numbering alone does not establish compatibility. [src: design §2]
+- [x] An active skill is reinvoked or the user is told to restart where reload is unavailable; no mid-skill instruction replacement. [src: design §2]
 
 ## Test Plan
 
@@ -136,3 +136,7 @@ Reject automatic application based only on a newer stable patch version. Version
 | A plan contains a repair, config patch, migration, or conflict | Do not apply automatically; preserve the plan for reviewed manual execution. |
 | Exact-version runner fails before or during invocation | Report the outcome through the existing update result path; do not retry with `latest` or mutate checker policy. |
 | Active skill cannot reload files | Finish the current work, then tell the user to start a new session or reinvoke the skill after the update. |
+
+## Implementation Evidence
+
+The local checker schedules only an exact candidate command at a workflow boundary. Candidate execution verifies complete tarball bytes and its packaged compatibility descriptor before the transaction gate; verification is an opaque proof, not a caller flag. Automatic mode rejects unsupported versions/protocols, conflicts, repairs, configuration changes, migrations, and missing local authorization. The actual packed and installed CLI successfully updates a historical fixture and rejects descriptor drift without changing the owned skill. All five generated and installed trees were synchronized. Build, type checking, and the full staged suite passed: 3,409 tests, one skipped.

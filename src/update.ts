@@ -5,7 +5,8 @@ import {
   readFileSync,
 } from 'node:fs';
 import { execFileSync } from 'node:child_process';
-import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { join, resolve, dirname } from 'node:path';
 
 import { detectStack } from './detect.js';
 import { getBundleInventory, type BundleInventoryEntry } from './bundle-inventory.js';
@@ -43,12 +44,19 @@ import { planGitattributes } from './gitattributes.js';
 import { resolveUpdatePath } from './update-paths.js';
 import { defaultExecutionProfile, type ExecutionProfile } from './execution-profile.js';
 import { materializeFreshInstallInventory, type InventoryPatchOperation } from './update-inventory.js';
+import {
+  evaluateAutoSafeEligibility,
+} from './auto-safe-update.js';
+import { readUpdatePolicy } from './update-check.js';
+import type { ReleaseDescriptor, VerifiedReleaseArtifact } from './release-artifact.js';
 
 /** A bundle already selected by the launcher or supplied by a local test/artifact. */
 export interface ExecutingBundle {
   version: string;
   /** Canonical outer-package SHA-512 integrity. Empty means unknown for a local bundle. */
   integrity?: string;
+  /** Parsed descriptor shipped with the bundle that is actually executing. */
+  descriptor?: ReleaseDescriptor;
   /** Inventory from the executing package. Supplying it avoids any package lookup. */
   inventory?: readonly BundleInventoryEntry[];
 }
@@ -77,6 +85,12 @@ export interface UpdateOptions {
   executionProfile?: ExecutionProfile;
   /** Optional project-local auto-memory choice captured by init. */
   disableAutoMemory?: boolean;
+  /** Return the complete read-only plan without applying it. */
+  preview?: boolean;
+  /** Apply only after the complete automatic safety gate passes. */
+  automatic?: boolean;
+  /** Verifier-issued proof for the exact candidate artifact. */
+  verifiedArtifact?: VerifiedReleaseArtifact;
 }
 
 export type UpdateStatus =
@@ -225,7 +239,13 @@ function snapshotFor(root: string, paths: Iterable<string>): UpdateSnapshot {
 function executingBundle(options: UpdateOptions): ExecutingBundle {
   const supplied = options.bundle;
   if (supplied) return { ...supplied, integrity: supplied.integrity ?? '' };
-  return { version: getPackageVersion(), integrity: '' };
+  let descriptor: ReleaseDescriptor | undefined;
+  try {
+    descriptor = JSON.parse(readFileSync(join(dirname(fileURLToPath(import.meta.url)), 'joycraft-release.json'), 'utf8')) as ReleaseDescriptor;
+  } catch {
+    descriptor = undefined;
+  }
+  return { version: getPackageVersion(), integrity: '', descriptor };
 }
 
 function legacyStateExists(root: string): boolean {
@@ -472,6 +492,24 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
   if (!/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(bundle.version)) {
     return outcome('invalid', { diagnostics: [`Invalid executing bundle version '${bundle.version}'.`] });
   }
+  // Automatic mode is a narrow agent boundary. Reject explicit setup,
+  // recovery, and repair choices before those branches can perform work.
+  if (options.automatic && (
+    options.recovery !== undefined
+    || options.legacyInit === true
+    || options.force === true
+    || (options.replaceCustomized?.length ?? 0) > 0
+    || (options.repair?.length ?? 0) > 0
+    || options.executionProfile !== undefined
+    || options.disableAutoMemory !== undefined
+    || options.gitignore !== undefined
+    || options.harnesses !== undefined
+  )) {
+    return outcome('invalid', { diagnostics: ['Automatic updates cannot include recovery, setup, repair, replacement, migration, or profile options.'] });
+  }
+  if (options.preview && options.recovery !== undefined) {
+    return outcome('invalid', { diagnostics: ['A preview cannot run a recovery or rollback operation.'] });
+  }
   if (options.force && !options.legacyInit) {
     return outcome('invalid', { diagnostics: ['--force is supported only by the init alias.'] });
   }
@@ -636,6 +674,63 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
       }
     : undefined;
   const localOperations = legacyMigrationOperations(root, localSettings);
+  if (options.automatic) {
+    const eligibility = evaluateAutoSafeEligibility({
+      policy: readUpdatePolicy(root),
+      candidate: options.verifiedArtifact,
+      executingVersion: bundle.version,
+      executingIntegrity: bundle.integrity || undefined,
+      executingDescriptor: bundle.descriptor,
+      manifestSchema: manifest.schemaVersion,
+      plan,
+      existingManifest,
+      replaceCustomized,
+      repair: options.repair,
+      migration: localOperations.length > 0,
+      legacyBridge: !existingManifest && legacyProject,
+      setupChanges: setupPatches.length > 0,
+      // Profile bookkeeping is project configuration. An idempotent profile
+      // has no action; any append belongs to an explicit reviewed update.
+      profileChanges: profileActions.some((action) => action.selected),
+      localOperations: localOperations.length > 0,
+      authorityTransition: authorityTransition !== undefined,
+    });
+    if (!eligibility.eligible) {
+      return outcome(selected.conflicts.length > 0 ? 'conflict' : 'invalid', {
+        targetVersion: bundle.version,
+        profile: authority.profile,
+        harnesses,
+        preserved: selected.preserved,
+        conflicts: selected.conflicts,
+        diagnostics: [...plan.diagnostics, ...eligibility.diagnostics],
+        plan,
+        localSettings,
+        registry: 'unknown',
+      });
+    }
+    // Verification supplies the outer package digest; a package cannot embed
+    // its own tarball digest without introducing a circular hash.
+    plan.nextManifest.bundleIntegrity = options.verifiedArtifact!.release.integrity;
+  }
+  if (options.preview) {
+    const previewStatus: UpdateStatus = selected.conflicts.length > 0
+      ? 'conflict'
+      : selected.preserved.length > 0 && selected.applied.length === 0
+        ? 'preserved'
+        : selected.applied.length > 0 ? 'applied' : 'noop';
+    return outcome(previewStatus, {
+      targetVersion: bundle.version,
+      profile: authority.profile,
+      harnesses,
+      applied: [],
+      preserved: selected.preserved,
+      conflicts: selected.conflicts,
+      diagnostics: plan.diagnostics,
+      plan,
+      localSettings,
+      registry: 'unknown',
+    });
+  }
   let transaction: TransactionResult;
   try {
     transaction = applyUpdatePlan(root, plan, {
@@ -719,6 +814,7 @@ export function formatUpdateOutcome(result: UpdateOutcome, json = false): string
       diagnostics: result.diagnostics,
       registry: result.registry,
       existingSkills: result.existingSkills,
+      plan: result.plan,
       transaction: result.transaction,
     });
   }

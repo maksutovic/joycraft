@@ -46,7 +46,7 @@ const clock = (value: number) => () => value;
 describe('shared update checker', () => {
   it('compares numeric stable versions and rejects prereleases', () => {
     expect(compareStableVersions('1.10.0', '1.9.99')).toBeGreaterThan(0);
-    expect(compareStableVersions('01.2.3', '1.2.3')).toBe(0);
+    expect(compareStableVersions('01.2.3', '1.2.3')).toBeNull();
     expect(compareStableVersions('1.2.3-beta.1', '1.2.3')).toBeNull();
   });
 

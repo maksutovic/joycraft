@@ -50,6 +50,8 @@ export interface CheckResult {
   fromCache: boolean;
   diagnostics: string[];
   conflicts: string[];
+  /** An agent may attempt this only at a workflow boundary; the candidate still enforces every safety gate. */
+  automaticUpdate?: { verificationRequired: true; command: string[] };
 }
 
 export interface UpdateCheckOptions {
@@ -86,11 +88,12 @@ export interface ResolvedStatus {
   status: CheckStatus;
   display: boolean;
   diagnostics: string[];
+  autoSafeCandidate?: boolean;
 }
 
 interface JsonObject { [key: string]: unknown }
 
-const STABLE_VERSION = /^(\d+)\.(\d+)\.(\d+)$/;
+const STABLE_VERSION = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 const REGISTRY_URL = 'https://registry.npmjs.org/joycraft/latest';
 
 function object(value: unknown): JsonObject | undefined {
@@ -182,6 +185,19 @@ function readSettings(root: string): { settings?: JsonObject; valid: boolean } {
     && (settings.acknowledgedSession === undefined || typeof settings.acknowledgedSession === 'string')
     && (settings.postponedRelease === undefined || typeof settings.postponedRelease === 'string'));
   return { settings, valid: result.valid && validSettings };
+}
+
+/** Read the same validated, project-local policy used by discovery without network work. */
+export function readUpdatePolicy(root: string): CheckPolicy {
+  const { settings, valid } = readSettings(root);
+  return valid ? policy(settings?.updatePolicy ?? settings?.policy) : 'notify';
+}
+
+/** A deliberate local preference change; shared installation state is never an authorization source. */
+export function setUpdatePolicy(root: string, value: CheckPolicy): boolean {
+  if (!['notify', 'auto-safe', 'off'].includes(value)) return false;
+  const { settings, valid } = readSettings(root);
+  return valid && writeLocalJson(root, CHECK_SETTINGS_PATH, { updatePolicy: value }, settings);
 }
 
 function readManifest(root: string): { version?: string; pending: boolean; conflicts: string[]; valid: boolean; diagnostics: string[] } {
@@ -343,7 +359,7 @@ export function resolveUpdateStatus(input: ResolveStatusInput): ResolvedStatus {
   if (comparison <= 0) return { status: 'current', display: false, diagnostics };
   const dismissed = !input.explicit && (input.postponedRelease === input.availableVersion || (input.acknowledgedRelease === input.availableVersion && input.acknowledgedSession === input.sessionId));
   if (dismissed && input.postponedRelease === input.availableVersion) return { status: 'postponed', display: false, diagnostics };
-  return { status: 'available', display: (policyValue === 'notify' || input.explicit === true) && !dismissed, diagnostics };
+  return { status: 'available', display: (policyValue === 'notify' || input.explicit === true) && !dismissed, diagnostics, ...(policyValue === 'auto-safe' && !dismissed ? { autoSafeCandidate: true } : {}) };
 }
 
 export async function checkForUpdate(root: string, options: UpdateCheckOptions = {}): Promise<CheckResult> {
@@ -397,7 +413,16 @@ export async function checkForUpdate(root: string, options: UpdateCheckOptions =
     sessionId,
     diagnostics,
   });
-  return { status: resolved.status, installedVersion, availableVersion: currentCache?.version, policy: localPolicy, display: resolved.display, explicit, fromCache, diagnostics: resolved.diagnostics, conflicts: manifest.conflicts };
+  return {
+    status: resolved.status, installedVersion, availableVersion: currentCache?.version, policy: localPolicy,
+    display: resolved.display, explicit, fromCache, diagnostics: resolved.diagnostics, conflicts: manifest.conflicts,
+    ...(resolved.autoSafeCandidate && currentCache ? {
+      automaticUpdate: {
+        verificationRequired: true as const,
+        command: ['npm', 'exec', '--yes', '--', `joycraft@${currentCache.version}`, 'update', '--auto-safe', '--non-interactive', '--json'],
+      },
+    } : {}),
+  };
 }
 
 export function acknowledgeUpdate(root: string, input: { release: string; session: string }): boolean {

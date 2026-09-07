@@ -156,6 +156,10 @@ if (__checkerArgs[0] === 'check') {
   console.log(JSON.stringify({ acknowledged: acknowledgeUpdate(__checkerRoot, { release: __checkerArgs[1], session: __checkerSession }) }));
 } else if (__checkerArgs[0] === 'postpone') {
   console.log(JSON.stringify({ postponed: postponeUpdate(__checkerRoot, __checkerArgs[1]) }));
+} else if (__checkerArgs[0] === 'policy') {
+  const updated = setUpdatePolicy(__checkerRoot, __checkerArgs[1]);
+  console.log(JSON.stringify({ updated, policy: readUpdatePolicy(__checkerRoot) }));
+  if (!updated) process.exitCode = 1;
 }
 `;
   return `${compiled}${wrapper}`;

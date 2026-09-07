@@ -1,6 +1,14 @@
 import { spawnSync } from 'node:child_process';
-import { statSync } from 'node:fs';
+import { mkdtempSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
+import { tmpdir } from 'node:os';
+
+import {
+  fetchVerifiedReleaseArtifact,
+  isVerifiedReleaseArtifact,
+  type FetchVerifiedReleaseArtifactOptions,
+  type VerifiedReleaseArtifact,
+} from './release-artifact.js';
 
 /** The npm metadata fields needed to run one exact package release. */
 export interface ReleaseVersionMetadata {
@@ -101,6 +109,20 @@ export interface RunExactReleaseFailure {
 }
 
 export type RunExactReleaseResult = RunExactReleaseSuccess | RunExactReleaseFailure;
+
+export interface RunVerifiedExactReleaseOptions extends Omit<RunExactReleaseOptions, 'release' | 'localBundle'> {
+  /** Verifier-issued artifact; caller booleans cannot satisfy this boundary. */
+  artifact: VerifiedReleaseArtifact;
+  /** Keep a copy at this path instead of using a temporary retained bundle. */
+  retainTarballPath?: string;
+  /** Add the automatic update gate flags to the exact command. */
+  autoSafe?: boolean;
+}
+
+export interface ResolveAndRunExactReleaseOptions extends Omit<RunVerifiedExactReleaseOptions, 'artifact'>, ResolveExactReleaseOptions, FetchVerifiedReleaseArtifactOptions {
+  /** Additional arguments after the updater command. */
+  commandArgs?: readonly string[];
+}
 
 const DEFAULT_REGISTRY = 'https://registry.npmjs.org';
 const DEFAULT_TIMEOUT_MS = 3_000;
@@ -381,6 +403,43 @@ export function runExactRelease(options: RunExactReleaseOptions): RunExactReleas
       return { ok: false, status: processResult.status, command, args, error: processResult.signal ? `npm exec terminated by ${processResult.signal}.` : `npm exec exited with status ${String(processResult.status)}.` };
     }
     return { ok: true, status: 0, command, args };
+  } catch (error) {
+    return runFailure(error);
+  }
+}
+
+/** Execute the exact bytes held by a verifier-issued artifact at a workflow boundary. */
+export function runVerifiedExactRelease(options: RunVerifiedExactReleaseOptions): RunExactReleaseResult {
+  if (!isVerifiedReleaseArtifact(options.artifact)) return runFailure(new Error('A verified release artifact is required.'));
+  const directory = options.retainTarballPath === undefined
+    ? mkdtempSync(join(tmpdir(), 'joycraft-verified-release-'))
+    : undefined;
+  const bundlePath = options.retainTarballPath ?? join(directory!, 'package.tgz');
+  try {
+    writeFileSync(bundlePath, options.artifact.tarball, { flag: options.retainTarballPath === undefined ? 'w' : 'wx', mode: 0o600 });
+    const commandArgs = [...(options.commandArgs ?? ['update'])];
+    if (options.autoSafe !== false) {
+      for (const flag of ['--auto-safe', '--non-interactive', '--json']) if (!commandArgs.includes(flag)) commandArgs.push(flag);
+    }
+    return runExactRelease({
+      ...options,
+      localBundle: bundlePath,
+      commandArgs,
+    });
+  } catch (error) {
+    return runFailure(error);
+  } finally {
+    if (directory !== undefined) rmSync(directory, { recursive: true, force: true });
+  }
+}
+
+/** Resolve one exact version, download and verify its artifact, then execute it once. */
+export async function resolveAndRunExactRelease(options: ResolveAndRunExactReleaseOptions = {}): Promise<RunExactReleaseResult> {
+  const resolution = await resolveExactRelease(options);
+  if (!resolution.ok) return runFailure(new Error(resolution.error));
+  try {
+    const artifact = await fetchVerifiedReleaseArtifact(resolution.release, options);
+    return runVerifiedExactRelease({ ...options, artifact });
   } catch (error) {
     return runFailure(error);
   }
