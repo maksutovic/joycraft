@@ -1,0 +1,956 @@
+{
+  "schemaVersion": 1,
+  "targetVersion": "0.7.13",
+  "bundleIntegrity": "",
+  "harnesses": [
+    "claude",
+    "codex",
+    "pi",
+    "copilot",
+    "omp"
+  ],
+  "profile": "shared",
+  "files": {
+    "docs/templates/CONTRIBUTING-joycraft-template.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "e204c6a68168784133481cddd14cda80719a25c0b889f6ce96bb229f2657dee0",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/DECISION_DOSSIER_TEMPLATE.html": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "2547d26dcc6eacb559e98418334d8ef9faa9b9aed98f5a62fd5fe29dd2621d9e",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/REVIEW_GATE_TEMPLATE.html": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "8a6087d778e9b0549a76b11207afde00260d9a1516e02b4b39b81aa8f71ab98e",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/anchors.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "6d2d1655715e55c4d9773cb822dabbac3593189a8078affe08f6da46ce983d2a",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/dangerous-assumptions.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "3a284c31bf6b11a47d9b6a0ac3280835c04e816c6001ca7b5bb38c144f30f1e0",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/decision-log.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "2cba6fe33e7ec97141fc2aaa7765d60de5bc5be84dfb56042e11287718cfaf9d",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/institutional-knowledge.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "b2087bcbf493864a54e1eb463803d0df3b2594757db2b61c26b1c9b017e5ce78",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/production-map.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "d6cee1d5335deac40d9a2e56b2fc27bc2122eef77f6cf77c015e34d6e24ead07",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/reference/backend.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "25e2ccb9970be0cef7d0a587af8a0e7aa4d4261c48e0aa090209b83eca0a2c14",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/reference/design-system.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "d6fea157017f70429b2f8af54dbf609c24892a95c08b787211d01b6cdbe9de7f",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/reference/frontend-methodology.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "d555c5c29d49caacba2cd3ab6d39a600fc23afeb5aafe0fe5a8868c2d99acaad",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/reference/reference-doc.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "e04f93e74041b4b3e74dbdcfc67f01ffd54070fe90d4a22d4226ba2b8fdb9460",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/reference/testing.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "c4994726c1246cfc07a14fc8aedbec8bc4ef6a7f17f7ba7db7d5bfb9f0c471ef",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/context/troubleshooting.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "08256329808b2d51c45ec23ac7b3efd163dacea172cb491bf57cfdf54cdb35f1",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/examples/example-brief.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "9c3a3f36aaf9779936bfc980edb66c0bacee001ca0fe33ba53d676da4487855f",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/examples/example-spec.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "a7279dcb57e68fa0996d14ddd60b6b1a1194d188db87e35a6e24ee05986d2bfd",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/reference/knowledge-lifecycle.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "f696671dae7d3bb9a99279b933eb0b3a52195bddf91e778f633bb840f99943ee",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/reference/output-style.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "6d122b22fc358e017eb936ed0505d33bca34c48090262b2b5e3fb0ce922a23b1",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/reference/spec-status-lifecycle.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "8accc0acee84301f98a2124b675bb9916bfe3174072fc96409d8d7cc6cec54f0",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/scenarios/README.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "137780df224ca45c402c66861e12d7a9c34b7435e82a89924fd7be363b5389dc",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/scenarios/example-scenario.test.ts.template": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ca55be6f7a0f11bda7cc51aa5f8ba93ea363d1e6ada67c48287010c7e4a6e559",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/scenarios/package.json": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "9c1bf58f3cd555bc2c805bf9910eed0eb8768adc3b3cbd74906fbf8f57f0e9fc",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/scenarios/prompts/scenario-agent.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "f37ed346807ce667473af9db227ed7d5f043c97b01bc97fb1887696346f476c6",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/scenarios/workflows/generate.yml": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "bc2cc231148eb5d7224b5a7e5e982fc85f6aac7166baea1ea6a377b8ecad5a56",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/scenarios/workflows/run.yml": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "c50fa2d0ba201eba842ba87f140d0531e86d43339e17bcfc4ced0600e2e6869c",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/workflows/autofix.yml": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "d3900967afe005a8ebd524f7a18a7e06b40ec73db01c921b76c6429abc36fe3f",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/workflows/scenarios-dispatch.yml": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ca325380f86f834c54d5290f4b8cff4064ae3fb5be31b51ded1ad44aa10d306f",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/workflows/scenarios-rerun.yml": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "7bffeac1e8f49bdef2d6978c2df21c51d896befde02d5fb6b2bf3d6db12e6301",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/workflows/spec-dispatch.yml": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "44fed6ef0edf25f0c3d7caffadbf20a480bb2e31c9ad182b864438e193bd2ad0",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "CLAUDE.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "",
+      "kind": "create-once",
+      "ownership": "unknown"
+    },
+    "AGENTS.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "",
+      "kind": "create-once",
+      "ownership": "unknown"
+    },
+    ".claude/skills/joycraft-add-context/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "422d7a90d925c078131abacb8b879f011eca41e8a957c01e12c607978fa9f311",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-add-fact/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "b841673c45fcd626abdd274f0de62f6c8d83ad6cba49ccc49fa67685569be74d",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-bugfix/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "3e4b31920091f2c6b57b86d414720f036d07ea47a42507735c92f310d29f585c",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-collaborative-setup/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "6cbfd209846cabe2cb3aa98ab412c51cac297f81383b3719bc121272376e2dca",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-decide/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "7acb7508a75b472635ed651d2c9891a281961d8d0e1c591ac32587a55e47f572",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-decompose/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "16c1f1f7162d1eff36c5be5cc47b2aa4bde62abb63153f65607e690dc7dd4583",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-design/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "7a49aa9a967c7fd4208701db47dd4d3388bd43300f4e17dac5c98110c0d8b5c2",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-gather-context/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "0c7fbae801a26e37d861da81d5f729771717361b19c6627e68c4a74fe96d9746",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-harden/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "21974dea7172fbbabc9c281d411facc4a6a7480f7b3b1c1ea4b29006ecf00843",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-implement-feature/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "dc514d4f2fb414b7b5740a07385f4a537d29371cb585e421f53466c7d9b432a9",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-implement-level5/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "db070acbd2f6f60d50a13e7e63aa9fd245379b491a81a1fe25a7c735568d9552",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-implement/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "58f8097e0b82bb140ae9e2628b544d3b20b0837643c24c7e6dee75e2c227d598",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-interview/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "4f3217517a3be64a089b4def7124c0f97f8db10560e45a742142bcd7a8519fcd",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-lockdown/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "35ed61fe3fa8bf70a36e05232b8083431c36594dd56e69a716648d29588fbb71",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-new-feature/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "fd3e2f3ffcb97cecd7e998b4e932e1283dde6f72f45f1902aae20f851ec23630",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-optimize/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "42050916e99ca10f1d720ebd761e161f9d0cfd0ba84a4802c03436e783e65fc6",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-research/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "cf309582f921cad4db0a4c75c2436e02399a39c373378566e404449e1aa2460c",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-session-end/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "8ff62c9cd634c4d68191ff3eb24a868c8f15e1324680526c6dd062f749cceb25",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-setup/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "6b2eb9056d963762385312f2bf7fe1dd18fe2cc2520056585a3adfc30978d53a",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-spec-done/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "4cf646f86a8ab5e1245843342f750aea1573c637e75fe90a95f496368970c10c",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-tune/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "7956c129712ae48a680cb8ee072a63593dc53ac0656baed4d391fe8fedd5c294",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/skills/joycraft-verify/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "b0f7dd11c6c0913687b2b9ffc49c5b99589515e1896694b3571ca6ea2f6fed2e",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/hooks/joycraft/block-dangerous.sh": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "804a8cf8a03fc3fa44ced1b81e6c71b5c953d0561e2f871a9f83fb5bb37e34ef",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/hooks/joycraft/deny-patterns.txt": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "90a835dc97522d05c232a44de6c89dae3a9d679ec5a1eacf3ad46862441bb84e",
+      "kind": "vendor",
+      "ownership": "unknown"
+    },
+    ".claude/hooks/joycraft-version-check.mjs": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "6bb3f624676067f66bd2b31dba5551f4af65164267abc449cb2fe7cc8771fb31",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".claude/settings.json": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "",
+      "kind": "config-patch",
+      "ownership": "unknown",
+      "ownedKey": "autoMemoryEnabled"
+    },
+    ".agents/skills/joycraft-add-context/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "3552459f82bae9592c4a39d0e79755199eef7ec70d0277da513151b807704d9c",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-add-fact/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "5ea873c4b23e3343a27a5e7d3b7bf1fa68eeb6643085150b1d9185f6df714c0a",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-bugfix/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "035ee49dd48a5122fe5d34dfeb1d6e2de68b244fd24e9a8ed6349351725c311d",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-collaborative-setup/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "2461307868cd5a2dd5393cddd81edb95c213ea595ed8b6e1c65157432f39e64f",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-decide/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "9e01a048ec30d9982281bed2d66af8ceceb714eafdf1006ba27a1ce57277b569",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-decompose/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "0f02cb2615a35257e3f9b660b0426d98a0528c05ba09d96e5dc07fc7481be447",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-design/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "dd6931eefdd515ba174cb0eb71ccf92b31538479075195a0e06fe08d75e2fdc8",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-gather-context/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "18b228d0c63fea402a498bcba179c6536471ac40df08107d871932572764ee7b",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-harden/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "03215b96db25b9c22c73dbc337af09c0f0773ab8bab185d417afdcc68f8d47c8",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-implement-feature/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "b1ed63f1ba856702179a99fc6ae79b501eeed1a056870da54d8667b4039fb953",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-implement-level5/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "1409cc994f0b4a04e7bc517759aeed767a925e69592ea088b5151825020a913b",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-implement/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "3f1402f33d880861370d933be46efee8a53ea18ca8549f60d5e45b04738c78e7",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-interview/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "e19870b9c1356a11a4a9c85fd17f01b25837e56d85f3938282cfdb9712455856",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-lockdown/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "0ac193acb9d2a3e8720c1fd344eaf4bcd5918174fad502c55f0dd6e8219beed1",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-new-feature/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "baed27584bd48b6155b736fc55ebfe61a5218917d7a726bfc7f2584b2d6424c1",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-optimize/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "54b7557ee411ffb2f47adc4c7aa05a8c4559956cd7fd8b54215c686ffb983adb",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-research/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "a4ab3eed85ae567956fea6c8adea2f6ec3685306619e141d3c9759109004e8c0",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-session-end/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "cbbe16935bcf4aa580a8e72839571d0910a9a79455c09f20672c30f28b6cb695",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-setup/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "1a3ad70a42ba6c15fb3dccd115656e04823aecb196de2092b3755fc62c56b5cd",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-spec-done/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "35dc99b7feaa220929548f50fc96d88ff62b17af4e81666cf5f8cf1d2e09497c",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-tune/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "9c54e8bc558d7c782b16836c2c9b5d40835e19bcfcf4792ca1c13e34437d3137",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".agents/skills/joycraft-verify/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "3dd8dbf143143092e2dcd5dedf9a6690af86e20cfb6695b1f9beb0e8816e2cdf",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-add-context/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "3d1a3fa78813c50e7ecbc27dc5687200bcf1497e0a16633bceb11301c862ef1e",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-add-fact/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "29b59ec0709ef983ee1540ba54d31f4a9ce8d799fbbd2ab2755a00f9d65434a7",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-bugfix/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "45e73578c69bf3ed21238e73a7fdbf0f9fd75011da26a38d2b8a543d9da89a64",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-collaborative-setup/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "53b4ce246a434d193562a76251aa2652f16fd73b6fe6f6b0a01d6e18dadf5aef",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-decide/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "f65f76163f8273125ddeaafde0a20f340826d9dccc98702e328e92801ab79056",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-decompose/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "68153b6959105a564952f28eb0440711cb366c662848af6e27a0ad819ecbce82",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-design/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "2308f5f3748744db39cb3d1d1397273d61823a856cb63a4277e0220e019c23a2",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-gather-context/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "80dcc2d4e355fd84370a63daa6e30544a2ab1130038c49129ba3680311533468",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-harden/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "03215b96db25b9c22c73dbc337af09c0f0773ab8bab185d417afdcc68f8d47c8",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-implement-feature/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "be6224f2551d77d51c4fc8f9866104cea80b9e94e2a194963fdac4a98c6444a5",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-implement-level5/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "cb224a2328ed7784f27a4f9270165fc6f8055719c9310d0bde2663e726468444",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-implement/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "c22d084b70b4326cd8a30a6543ce17a63bbbf1792984e3250e1c9374c3b64be0",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-interview/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ff5dbc40bea55e857f085c2473d75be9f683b1940e07128525ae6aeaee0a80b4",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-lockdown/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "e29dc5430e1709a37e5141fa0029206c54b62a7ad51c94d29c80ce1168872a2c",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-new-feature/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ce25fecbc9d93bf234e2fb5efa36926be1b709cd4665440f917ebf1c88f879ad",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-optimize/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "0b9ee4aec4e73b6eaa1869ac912a3c5aa46b856875ddcab1799b041299abb390",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-research/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "38191bb51d505f0bb0f89cc086a4d8d8eb08ecdcbf88f93a9eff70b53a8e6331",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-session-end/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "18c9948869727d416bdcec653ed60da8e815140aedc7974e6e25c556bdd499c9",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-setup/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ad6d2ad75e358f8b3535f6ed6e04f9e30122a9cfbc2042bfae2786129fd356dd",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-spec-done/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "0fee49af8ae9d58c63c106495cb86c1c0800044977e5b8942e77f522a95e1876",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-tune/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ae4ce8182ca28a80a382735ea7385dcefdd8c687c4fe9d96f7baad8148608535",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/skills/joycraft-verify/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "d299792d21212978e943c69cf93610e984bd44fc15aeaf8073003194e5101cfe",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/scripts/joycraft/README.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "40659c6e6a986be27a0d8f785cae7e2c7ff0262c57fc3e69e281697bd51cdecc",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/scripts/joycraft/joycraft-implement-loop": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "999203536df774e88b4821001ec70cf36669eba99788cb17062f8cf9ac818aa7",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/scripts/joycraft/joycraft-mark-done": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "2a62b21779dde88b49580a35d4f18a65caeb1fac69abd65c4c932abdb67391ff",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/scripts/joycraft/joycraft-next-spec": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "018b0ebb5347e681ee094201277cf93992f79cbed489f4fc308f27eb67193327",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/scripts/joycraft/joycraft-session-end": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "134d0d6403a5c2178e1c8d3c03098e0f6c828a11091a9962ac63b399aa9f1b69",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/scripts/joycraft/joycraft-spec-status": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "005551b6e16a70a10702f798f1367fd7c540c462bf3354ffd1b0de9766418a7e",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/extensions/joycraft-pipeline.ts": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ef5468ee36fd6c5c7358153b498c5b6b383e9f5be4138751e0e695c8468b02a8",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/agents/joycraft-researcher.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "70051be1f163572f6925ebc46c0e39d5114ecb72695c82328a78e8a0d40d47a8",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".pi/agents/joycraft-verifier.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "23839a8cb03a10042907c1fa130adf4ad71b8aa070aed08d7281fa8da50c4049",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-add-context/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "bcd9dfeea6696b1d8c46fefb91748e98f65562391b73aec02217bad19cf9064a",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-add-fact/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "73780708477a99aa72a9faa2edf7883d2de2816dc422fafecb1d5b573d399fbc",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-bugfix/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "fbc89b6e13fe3d8674b25a777586539789b115dc53b000888b28c4aca6033d77",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-collaborative-setup/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "01582b65a0ca8c7977be4167e504ad33960cb63be22d48989d978c65ae85efe6",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-decide/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "d8c69e8483d9546b43b23f8839f612cfff53de42dbdb13086d716fce38127efd",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-decompose/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "816e0329004001315ee0eb35b0042083b3ac83262e67298a1c667e2ae46fa915",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-design/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "89f2012e1e55b4c2eb2428254bd71afed0fbdc1935686b7590cc4b03a5fdf292",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-gather-context/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "8ed3263a3b277f14e6ddfcd747e6c20792763146b9ad12e625f114a9c53cd4ec",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-harden/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "0e5a12b087e590a5522f2d2635dc49a4dc9a0eeb903309a49b16e68296005dd7",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-implement-feature/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "28fad474d2219bfdc2574927cbac1655ccdd9900b0a749ea72ffd269190c957c",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-implement-level5/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "3d1b772ef7c7883b258bb8849b87decec94bf8e915ddf81ec46cf01be693060d",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-implement/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "224b238bc596507a138af5c0872904e2a34a0e2f6ab137ce03800dc5ff1a8c7b",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-interview/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "123fc27c112c939c0ab0d12f574d331c22bcf48ca1e6f00b8fb4bc310fef2c3d",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-lockdown/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "c8984e19a6e2103ef10ebf6771aa5f2538ada430d74048651a84ea155b15edff",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-new-feature/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "e206eaaeab02be57a611a080b4345575b1c3e1b50fb220e3162a4c0830fc2570",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-optimize/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "010d9a97e2f9d188ee6bb5501ee2fb4d38f36a96c74832fdae363e27f0783c43",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-research/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "28f7021dcefa01db167c6334f904cba15186b4860bf5db4fefe5bf8a4ebb5cb3",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-session-end/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "a380a3f5a32d1748caa6efc9f184fbac63076aaf93664777fcdf14f175e5923d",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-setup/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "216a39a4deb5ec40db80056975f39c9b63be9c339b6e979a083074d56bf081e1",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-spec-done/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ed5482818c0bcff7d105c0feadc32b949e7d8e031ea86ce6cf5b9aa1727667e4",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-tune/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "123fc60e3f58e53b87fe62b2bccd91a77f346fed4bcda5c1a432aae1e1feb0de",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".github/skills/joycraft-verify/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "6e5bccac5a820d811af25ed3b4bb5d7a779ef74dc88209c912fdd1c2f3e432ae",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-add-context/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "3d1a3fa78813c50e7ecbc27dc5687200bcf1497e0a16633bceb11301c862ef1e",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-add-fact/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "29b59ec0709ef983ee1540ba54d31f4a9ce8d799fbbd2ab2755a00f9d65434a7",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-bugfix/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "45e73578c69bf3ed21238e73a7fdbf0f9fd75011da26a38d2b8a543d9da89a64",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-collaborative-setup/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "53b4ce246a434d193562a76251aa2652f16fd73b6fe6f6b0a01d6e18dadf5aef",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-decide/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "f65f76163f8273125ddeaafde0a20f340826d9dccc98702e328e92801ab79056",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-decompose/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "73d20caa10c063d8beda9be7eb104fe60f5b2fb58f01a25cc2f3eaac2dbd174f",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-design/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "2308f5f3748744db39cb3d1d1397273d61823a856cb63a4277e0220e019c23a2",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-gather-context/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "80dcc2d4e355fd84370a63daa6e30544a2ab1130038c49129ba3680311533468",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-harden/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "03215b96db25b9c22c73dbc337af09c0f0773ab8bab185d417afdcc68f8d47c8",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-implement-feature/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "5aa8fb0089e1101b8a508f4fbefdb9543f180bebe2b732b23fb98cc0c7ce2a74",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-implement-level5/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "cb224a2328ed7784f27a4f9270165fc6f8055719c9310d0bde2663e726468444",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-implement/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "3e4a8960cf0310ea47b55a90aaf77626a677d08dfbd3719dbcbfa8eba52fb6e4",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-interview/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ff5dbc40bea55e857f085c2473d75be9f683b1940e07128525ae6aeaee0a80b4",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-lockdown/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "e29dc5430e1709a37e5141fa0029206c54b62a7ad51c94d29c80ce1168872a2c",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-new-feature/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ce25fecbc9d93bf234e2fb5efa36926be1b709cd4665440f917ebf1c88f879ad",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-optimize/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "5f017b022cdc1ee3275be7a3651a8659b23c3cb722bd1f7e49c80054e0a923ed",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-research/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "d4ea66f26e02f9cab16448eb7db04e285ab43e57b7211ff3aa44d354e80d0953",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-session-end/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "18c9948869727d416bdcec653ed60da8e815140aedc7974e6e25c556bdd499c9",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-setup/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "ad6d2ad75e358f8b3535f6ed6e04f9e30122a9cfbc2042bfae2786129fd356dd",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-spec-done/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "6a3fbbcfdd08c77593b03c444c211496f407bddcbde89256015c1a662337dd65",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-tune/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "466635cdddbcb464fddddd6bd385be32614465d3417ff76d4e862ce147cfc4a9",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    ".omp/skills/joycraft-verify/SKILL.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "f5dbcebb65f1af1c1d2f93445907f4b53f9f6fc5db2b137c1c0bccce9ede71c5",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/output/README.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "e6a4e51f42e2085545ec514cad65e39e93663fd6b5b07708ca6ba97f3f00048d",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/.joycraft/check.mjs": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "711a731296f392656f869fe9264f88d4c3717a0e63f1e121f0e00ca6dacbfb89",
+      "kind": "vendor",
+      "ownership": "verified"
+    }
+  },
+  "pendingConflicts": [
+    ".claude/hooks/joycraft/deny-patterns.txt"
+  ],
+  "__joycraftTransactionId": "c22e90e6-32d4-4d45-b049-7dd52863ec6c"
+}

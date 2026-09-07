@@ -9,34 +9,38 @@ Starting in v0.6, Joycraft organizes feature artifacts into per-feature folders:
 - `docs/designs/<slug>.md` → `docs/features/<slug>/design.md`
 - `docs/specs/<feature>/` → `docs/features/<slug>/specs/` (when `<feature>` matches a brief slug)
 
-`npx joycraft upgrade` performs this migration automatically and forcefully on the first
-post-upgrade run — no Y/N prompt. The CLI prints a summary of every move before applying it.
-Spec directories under `docs/specs/` whose name doesn't match any brief slug (area-level specs
-like bugfix folders) are left in place.
+Routine `update`/`upgrade` runs do not move project documents. Preview this
+migration explicitly, then apply the reviewed plan:
 
-## What you'll see on the first post-upgrade run
-
-```
-Joycraft is migrating your docs/ to the new per-feature layout:
-
-  2026-04-01-auth-redesign/
-    docs/briefs/2026-04-01-auth-redesign.md → docs/features/2026-04-01-auth-redesign/brief.md
-    docs/research/2026-04-01-auth-redesign.md → docs/features/2026-04-01-auth-redesign/research.md
-
-  Left in place — area-level specs (e.g., bugfix areas):
-    docs/specs/login-bugfix/
-
-Migration complete. See the README section "Migration: Flat → Per-Feature Layout"
-for context on what changed and why. If your project is a git repo, run
-`git status` to inspect the moves before committing.
+```bash
+npx joycraft@latest migrate
+npx joycraft@latest migrate --apply
 ```
 
-## Why forced (not opt-in)
+The preview lists every move. Existing destinations are preserved as
+collisions; use `--replace-collision <paths...>` only for destinations you
+reviewed. Spec directories under `docs/specs/` whose name doesn't match any
+brief slug (area-level specs like bugfix folders) stay preserved unless you
+explicitly select them with `--include-unknown <paths...>`.
+
+## What you'll see in the migration preview
+
+```
+Joycraft migration plan:
+  docs/briefs/2026-04-01-auth-redesign.md → docs/features/2026-04-01-auth-redesign/brief.md
+  docs/research/2026-04-01-auth-redesign.md → docs/features/2026-04-01-auth-redesign/research.md
+  Preserve unowned document: docs/specs/login-bugfix/ (candidate: docs/bugfixes/login-bugfix/)
+```
+
+The preview is read-only. After reviewing it, add `--apply`; inspect
+`git status` before committing the moves.
+
+## Why it is explicit
 
 All doc-producing skills (`joycraft-new-feature`, `joycraft-research`, `joycraft-design`,
-`joycraft-decompose`, etc.) write to the new per-feature paths. Supporting both layouts
-indefinitely would mean every skill carries dual-path branches; the forced migration keeps
-the convention single and skills small.
+`joycraft-decompose`, etc.) write to the new per-feature paths. Keeping document
+migration separate from routine updates makes file moves reviewable and avoids
+silently changing project content during a bundle refresh.
 
 ## Recovering / customizing
 
@@ -45,5 +49,6 @@ after the migration, you can `git mv` files anywhere — Joycraft only depends o
 `docs/features/<slug>/` shape for skills it ships, not on every doc living there. Git
 history follows files via `git log --follow`.
 
-If a brief and its destination already exist (re-running upgrade after a partial migration),
-the move is skipped and reported. The migration is idempotent.
+If a brief and its destination already exist, the destination is skipped and
+reported. Use `--replace-collision` for a deliberate replacement. The migration
+is idempotent when collisions are left preserved.

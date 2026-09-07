@@ -2,6 +2,8 @@
 name: joycraft-tune
 description: Assess and upgrade your project's AI development harness — score 7 dimensions, apply fixes, show a harness maturity roadmap
 ---
+At skill entry, run `node docs/.joycraft/check.mjs check --json --session <session-id>` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing or fails, continue the requested skill quietly without retrying setup. Offer updates only for display: true; current, postponed, off, and unknown stay quiet. If automaticUpdate is present, finish this skill, then run its exact command once from the project root: the candidate must verify every safety gate before applying. Other updates require approval. After an offer or automatic attempt, record it with `node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>`. Apply updates only at this workflow boundary; after success, reinvoke the skill or restart the session to load changed instructions.
+
 
 # Tune — Project Harness Assessment & Upgrade
 
@@ -82,7 +84,7 @@ agents read the md, never the HTML. The HTML is a render of it and never invents
    CSS. The previous render's footer revision + 1 is this one's; no previous
    file, or an unparseable hand-edited footer, → revision 1 (note the reset in
    the footer) — never fail the render. The filename never changes.
-4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
+4. Check `autoOpen` in `docs/.joycraft/local/settings.json` (missing file or key =
    true). False ⇒ skip opening silently and print the absolute path instead.
    Otherwise open it before asking anything: `open <path>` on darwin,
    `xdg-open <path>` otherwise. If that fails, print the absolute path and continue —
@@ -146,9 +148,9 @@ Apply using three tiers — do NOT ask per-item permission:
 
 **Auto-open toggle:** gate renders open automatically by default. Offer —
 through the question directive above — to flip `autoOpen` in
-`docs/.joycraft/state.json` (missing file or key = true); on an answer, write
-the key preserving every other key in the file, and confirm the new value in
-one line. Never flip it unasked.
+`docs/.joycraft/local/settings.json` (missing file or key = true); on an answer,
+write the key there preserving every other local setting, and confirm the new
+value in one line. Never flip it unasked.
 
 **Execution profile offer:** If Step 1 found no `<!-- joycraft:execution-profile -->` sentinel in AGENTS.md, offer to add one — never write it unasked.
 

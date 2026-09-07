@@ -1,7 +1,8 @@
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, lstatSync, realpathSync, renameSync, unlinkSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { createHash } from 'node:crypto';
 import { sanitizeHarnesses, type Harness } from './harness.js';
+import { CHECK_SETTINGS_PATH } from './update-check.js';
 
 /**
  * Project-relative path to Joycraft's upgrade-state file.
@@ -17,7 +18,10 @@ import { sanitizeHarnesses, type Harness } from './harness.js';
  * `.joycraft-version` (see LEGACY_VERSION_FILE) and the later
  * `.claude/.joycraft/state.json` (see LEGACY_CLAUDE_STATE_PATH).
  */
-export const STATE_PATH = join('docs', '.joycraft', 'state.json');
+export const STATE_PATH = 'docs/.joycraft/state.json';
+
+/** Project-local preferences introduced with the installation manifest. */
+export const LOCAL_SETTINGS_PATH = CHECK_SETTINGS_PATH;
 
 /** The original repo-root state path. Kept only so `upgrade` can migrate it. */
 export const LEGACY_VERSION_FILE = '.joycraft-version';
@@ -27,7 +31,7 @@ export const LEGACY_VERSION_FILE = '.joycraft-version';
  * harness-neutral `docs/` home. Kept only so `upgrade` can migrate it (and so a
  * Codex/Pi-only re-init stops leaving a stray `.claude/` behind).
  */
-export const LEGACY_CLAUDE_STATE_PATH = join('.claude', '.joycraft', 'state.json');
+export const LEGACY_CLAUDE_STATE_PATH = '.claude/.joycraft/state.json';
 
 /**
  * Length we truncate stored hashes to. Full SHA-256 is 64 hex chars; 16 hex
@@ -58,6 +62,12 @@ export function parseGitignoreProfile(value: unknown): GitignoreProfile | null {
 
 export interface VersionInfo {
   version: string;
+  /**
+   * The last recorded vendor baseline for each managed file. These values are
+   * deliberately independent from the bytes currently on disk: when a user
+   * declines a customized replacement, the previous value remains the
+   * comparison base. An absent entry means vendor ownership is unknown.
+   */
   files: Record<string, string>;
   /**
    * The gitignore profile chosen at init/upgrade. Absent on state written by
@@ -173,12 +183,116 @@ export function writeVersion(
 }
 
 /**
- * The persisted auto-open setting for gate HTML renders. Missing state file or
- * missing/invalid key both mean true — auto-open was unconditional before the
- * setting existed, and that stays the default.
+ * The persisted auto-open setting for gate HTML renders. Missing local settings
+ * or a missing/invalid key means true; legacy state is consulted only when the
+ * local settings file has not been created yet.
  */
+export interface LocalSettings {
+  autoOpen?: boolean;
+  [key: string]: unknown;
+}
+
+/**
+ * Resolve the local settings path while rejecting symlinked descendants.
+ * The project root itself may be a symlink, matching the checker path policy.
+ */
+interface LocalSettingsPathState {
+  path: string;
+  present: boolean;
+  safe: boolean;
+}
+
+function localSettingsPathState(dir: string): LocalSettingsPathState | undefined {
+  let current: string;
+  try {
+    current = realpathSync(dir);
+    if (!lstatSync(current).isDirectory()) return undefined;
+  } catch {
+    return undefined;
+  }
+
+  const parts = LOCAL_SETTINGS_PATH.split('/');
+  const destination = join(current, ...parts);
+  for (const [index, part] of parts.entries()) {
+    current = join(current, part);
+    try {
+      const stat = lstatSync(current);
+      if (stat.isSymbolicLink() || (index < parts.length - 1 && !stat.isDirectory())) {
+        return { path: destination, present: true, safe: false };
+      }
+      if (index === parts.length - 1) return { path: destination, present: true, safe: stat.isFile() };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') return { path: destination, present: false, safe: true };
+      return { path: destination, present: true, safe: false };
+    }
+  }
+  return { path: destination, present: false, safe: true };
+}
+
+function readLocalSettings(dir: string): LocalSettings | undefined {
+  const state = localSettingsPathState(dir);
+  if (!state || !state.safe || !state.present) return undefined;
+  try {
+    const value: unknown = JSON.parse(readFileSync(state.path, 'utf-8'));
+    return value && typeof value === 'object' && !Array.isArray(value)
+      ? value as LocalSettings
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Read auto-open from local settings, falling back to legacy state for migration. */
 export function getAutoOpen(dir: string): boolean {
+  const localState = localSettingsPathState(dir);
+  // An unsafe or malformed local settings file must not silently authorize a
+  // legacy preference; the safe default is the same as a missing key.
+  if (localState && (!localState.safe || localState.present)) {
+    const local = readLocalSettings(dir);
+    return typeof local?.autoOpen === 'boolean' ? local.autoOpen : true;
+  }
   return readVersion(dir)?.autoOpen ?? true;
+}
+
+/**
+ * Persist auto-open in local settings while preserving every other local key.
+ * A malformed or symlinked settings path is left untouched and reports failure.
+ */
+export function writeAutoOpen(dir: string, autoOpen: boolean): boolean {
+  const localState = localSettingsPathState(dir);
+  if (!localState || !localState.safe) return false;
+  const path = localState.path;
+
+  let existing: LocalSettings = {};
+  if (localState.present) {
+    try {
+      if (!lstatSync(path).isFile()) return false;
+      const value: unknown = JSON.parse(readFileSync(path, 'utf-8'));
+      if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+      existing = value as LocalSettings;
+    } catch {
+      return false;
+    }
+  }
+
+  const parent = dirname(path);
+  const temporary = `${path}.tmp-${process.pid}-${Date.now()}`;
+  try {
+    mkdirSync(parent, { recursive: true });
+    // Recheck after creating parents so a concurrent replacement cannot turn
+    // this into a write through a symlink.
+    const rechecked = localSettingsPathState(dir);
+    if (!rechecked || !rechecked.safe || rechecked.path !== path) return false;
+    writeFileSync(temporary, JSON.stringify({ ...existing, autoOpen }, null, 2) + '\n', {
+      encoding: 'utf-8',
+      flag: 'wx',
+    });
+    renameSync(temporary, path);
+    return true;
+  } catch {
+    try { unlinkSync(temporary); } catch { /* best effort cleanup */ }
+    return false;
+  }
 }
 
 /**

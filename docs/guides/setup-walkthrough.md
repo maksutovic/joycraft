@@ -26,28 +26,35 @@ root, not inside a subpackage.
 ## 3. Initialize
 
 ```bash
-npx joycraft@latest init
+npx joycraft@latest update
 ```
 
-`init` asks two questions and then writes files:
+`init` remains a supported fresh-install alias for existing scripts:
+`npx joycraft@latest init`.
 
-1. **Which harnesses?** — `claude`, `codex`, `pi`, `copilot`, any combination,
+`update` gathers your choices before writing files:
+
+1. **Which harnesses?** — `claude`, `codex`, `pi`, `copilot`, `omp`, any combination,
    or `all`. Only the harnesses you pick get installed; the others leave no
    footprint. See [Platform support](platform-support.md).
-2. **Shared or private git tracking?** — whether the harness directories are
+2. **Execution profile?** — whether to use swarms and which model and effort each harness uses.
+3. **Shared or private git tracking?** — whether the harness directories are
    committed or gitignored. See [Git tracking](git-tracking.md).
+4. **Claude auto-memory?** — when Claude is selected, choose whether to disable its automatic memory for this project.
 
-Then it detects your stack and creates `AGENTS.md`, `CLAUDE.md`, the skills for
-your chosen harnesses, `docs/context/`, and the templates. It only creates
-*missing* files — an existing `CLAUDE.md` is never regenerated without
-`--force`.
+Then it detects your stack and plans `AGENTS.md`, `CLAUDE.md`, the skills for
+your chosen harnesses, `docs/context/`, and the templates. On a fresh project
+it creates the missing files. On an existing project it updates unmodified
+Joycraft files and preserves customized files for review; `--yes` does not
+grant blanket overwrite permission.
 
-Non-interactive runs (CI, piped input, no TTY) install every available harness
-so existing scripts keep working.
+For an unattended fresh project, select harnesses explicitly, for example
+`npx joycraft@latest update --harnesses codex --non-interactive`. Existing
+projects use their recorded harness selection.
 
 ## 4. Open your AI tool and tune the harness
 
-Inside Claude Code (or Codex / Pi / Copilot), run:
+Inside Claude Code (or Codex / Pi / Copilot / omp), run:
 
 ```
 /joycraft-tune
@@ -104,20 +111,23 @@ PR.
 ## 9. Keep it current
 
 ```bash
-npx joycraft@latest upgrade
+npx joycraft@latest update
 ```
 
-Refreshes the skills and templates you installed without clobbering your
-customizations. See [Upgrading](upgrading.md).
+Refreshes the skills and templates you installed while preserving
+customizations. See [Installing and updating](upgrading.md).
 
 ## Where things live afterwards
 
 | Path | What it holds |
 |------|---------------|
 | `AGENTS.md` / `CLAUDE.md` | Behavioral boundaries and project instructions |
-| `.claude/skills/`, `.agents/skills/`, `.pi/skills/`, `.github/skills/` | The installed skills for your chosen harnesses |
+| `.claude/skills/`, `.agents/skills/`, `.pi/skills/`, `.github/skills/`, `.omp/skills/` | The installed skills for your chosen harnesses |
 | `docs/context/` | Durable project knowledge every skill reads |
 | `docs/features/<slug>/` | Briefs, research, design, and specs per feature |
 | `docs/discoveries/` | Session surprises worth remembering |
 | `docs/templates/` | Spec, brief, and workflow templates |
-| `docs/.joycraft/state.json` | Hidden upgrade state (gitignored) |
+| `docs/.joycraft/manifest.json` | Shared installation identity and vendor baselines |
+| `docs/.joycraft/local/manifest.json` | Private installation identity and vendor baselines |
+| `docs/.joycraft/state.json` | Legacy state, backed up and retired during the bridge update |
+| `docs/.joycraft/local/` | Gitignored checker settings, cache, and transaction-local state |

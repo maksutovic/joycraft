@@ -13,7 +13,7 @@ cd joycraft
 pnpm install
 
 # Run the test suite
-pnpm test --run
+pnpm test
 
 # Type check
 pnpm typecheck
@@ -21,8 +21,8 @@ pnpm typecheck
 # Build
 pnpm build
 
-# Test locally (simulate npx joycraft init)
-pnpm build && node dist/cli.js init /tmp/test-project
+# Test locally (simulate npx joycraft update)
+pnpm build && node dist/cli.js update /tmp/test-project --harnesses codex --non-interactive
 ```
 
 ## Development Workflow
@@ -62,15 +62,16 @@ Look for issues labeled [`good first issue`](https://github.com/maksutovic/joycr
 ```
 src/
   cli.ts              # CLI entry point (commander)
-  init.ts             # npx joycraft init
+  update.ts           # unified npx joycraft update engine
+  init.ts             # npx joycraft init compatibility alias
   init-autofix.ts     # npx joycraft init-autofix
-  upgrade.ts          # npx joycraft upgrade
+  upgrade.ts          # npx joycraft upgrade compatibility alias
   detect.ts           # Stack detection (pure function)
   improve-claude-md.ts # CLAUDE.md section generation
   agents-md.ts        # AGENTS.md generation
   permissions.ts      # .claude/settings.json permission rules
   safeguard.ts        # PreToolUse deny-pattern hooks
-  version.ts          # .claude/.joycraft/state.json version tracking
+  version.ts          # project-relative version and installation-state paths
   bundled-files.ts    # All skills + templates as embedded strings (generated)
   skills/             # Canonical skill markdown files (source of truth)
   claude-skills/      # Per-harness variant for Claude Code (generated from src/skills/)
@@ -110,14 +111,14 @@ Commit the canonical file, all three regenerated per-harness files, and `src/bun
 Then verify:
 
 ```bash
-pnpm test --run && pnpm typecheck
+pnpm test && pnpm typecheck
 ```
 
 ## Pull Request Process
 
 1. **Fork the repo** and create a branch from `main`
 2. **Write tests first** — we follow TDD for all new functionality
-3. **Run the full check:** `pnpm test --run && pnpm typecheck && pnpm build`
+3. **Run the full check:** `pnpm test && pnpm typecheck && pnpm build`
 4. **Open a PR** — fill out the template, describe what and why
 5. **One approval required** — main is branch-protected
 

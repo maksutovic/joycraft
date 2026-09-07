@@ -2,6 +2,8 @@
 name: joycraft-collaborative-setup
 description: Set up Joycraft for a team — scaffold per-area folders, owner conventions, and a team-facing CONTRIBUTING doc. Run once when adopting Joycraft on a multi-dev project.
 ---
+At skill entry, run `node docs/.joycraft/check.mjs check --json --session <session-id>` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing or fails, continue the requested skill quietly without retrying setup. Offer updates only for display: true; current, postponed, off, and unknown stay quiet. If automaticUpdate is present, finish this skill, then run its exact command once from the project root: the candidate must verify every safety gate before applying. Other updates require approval. After an offer or automatic attempt, record it with `node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>`. Apply updates only at this workflow boundary; after success, reinvoke the skill or restart the session to load changed instructions.
+
 
 # Collaborative Setup
 

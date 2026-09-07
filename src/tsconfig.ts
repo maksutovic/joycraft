@@ -29,6 +29,12 @@ export type TsconfigExcludeOutcome =
   | { status: 'no-tsconfig' }
   | { status: 'skipped'; reason: string };
 
+/** Read-only result used by update planning before a transaction writes bytes. */
+export type TsconfigExcludePlan =
+  | { status: 'added'; content: string }
+  | { status: 'already-present' }
+  | { status: 'skipped'; reason: string };
+
 const PI_EXCLUDE = '.pi';
 
 /** Strip // and /* *​/ comments for analysis only (never for the written output). */
@@ -113,9 +119,28 @@ export function ensurePiExcludedFromTsconfig(targetDir: string): TsconfigExclude
     return { status: 'skipped', reason: 'tsconfig.json could not be read' };
   }
 
-  if (alreadyExcludesPi(rawText)) {
+  const planned = planPiExcludedFromTsconfig(rawText);
+  if (planned.status === 'already-present') {
     return { status: 'already-present', path };
   }
+
+  if (planned.status === 'skipped') return planned;
+
+  try {
+    writeFileSync(path, planned.content, 'utf-8');
+  } catch {
+    return { status: 'skipped', reason: 'tsconfig.json could not be written' };
+  }
+  return { status: 'added', path };
+}
+
+/**
+ * Calculate the minimal `.pi` exclusion without touching the filesystem.
+ * The returned bytes are suitable for a transaction operation with a raw
+ * precondition supplied by the caller.
+ */
+export function planPiExcludedFromTsconfig(rawText: string): TsconfigExcludePlan {
+  if (alreadyExcludesPi(rawText)) return { status: 'already-present' };
 
   const updated = insertPiExclude(rawText);
   if (updated === null || updated === rawText) {
@@ -127,7 +152,7 @@ export function ensurePiExcludedFromTsconfig(targetDir: string): TsconfigExclude
   }
 
   // Sanity gate: the edited text must still parse (after comment-stripping) and
-  // must now actually exclude .pi. If either fails, do NOT write — bail and warn.
+  // must now actually exclude .pi. If either fails, return no bytes.
   if (!alreadyExcludesPi(updated)) {
     return {
       status: 'skipped',
@@ -135,11 +160,5 @@ export function ensurePiExcludedFromTsconfig(targetDir: string): TsconfigExclude
         'tsconfig.json edit could not be verified — add ".pi" to its "exclude" array manually',
     };
   }
-
-  try {
-    writeFileSync(path, updated, 'utf-8');
-  } catch {
-    return { status: 'skipped', reason: 'tsconfig.json could not be written' };
-  }
-  return { status: 'added', path };
+  return { status: 'added', content: updated };
 }

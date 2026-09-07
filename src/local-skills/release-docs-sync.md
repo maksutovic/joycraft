@@ -7,7 +7,7 @@ description: Joycraft maintainers only — before opening a PR, check whether th
 
 **This is a repo-local skill.** It is not part of the Joycraft product and does not ship to npm — it lives in `src/local-skills/` and exists only to maintain Joycraft's own documentation. Do not reference it from any skill under `src/skills/`.
 
-Joycraft auto-publishes on every merge to `main`, patch-bumping when the version wasn't set manually. Nothing in that pipeline touches prose. Docs therefore drift silently: by 0.7.4 the CHANGELOG still stopped at 0.7.1, and `{{boundary_file}}`'s architecture map never learned that `src/copilot-skills/` existed.
+Joycraft prepares a reviewed release PR from eligible merges to `main`. Its retained package reaches `latest` only after candidate verification and promotion. That pipeline does not write explanatory prose. Docs therefore drift silently: by 0.7.4 the CHANGELOG still stopped at 0.7.1, and `{{boundary_file}}`'s architecture map never learned that `src/copilot-skills/` existed.
 
 Run this **before opening a PR**, while you still know what changed and why. After merge the version is already cut and the context is gone.
 
@@ -39,7 +39,7 @@ Add an entry when the branch changes what a user experiences:
 
 Skip when the change is internal: refactors, test-only work, generated-file regeneration, CI, or docs.
 
-Match the existing format — `## <version> — <Title> (<date>)`, newest first, written as before → now → side-effects. Prose, not a bullet dump of commits. If the version isn't cut yet (it won't be — publish bumps on merge), use the version this PR will produce and say so in the PR body.
+Match the existing format — `## <version> — <Title> (<date>)`, newest first, written as before → now → side-effects. Prose, not a bullet dump of commits. If the version is not cut yet, use an Unreleased entry. The reviewed release PR selects the version; do not invent a version for the feature PR.
 
 ### {{boundary_file}}
 

@@ -3,6 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { PRIVATE_DIRS_DISPLAY } from './gitignore.js';
+import { applyMigration, formatMigrationPlan, formatMigrationOutcome, runMigration } from './migration.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
@@ -11,29 +12,121 @@ const GITIGNORE_OPTION_DESC = `Gitignore profile: 'shared' (commit skills) or 'p
 
 const program = new Command();
 
-// Set by the upgrade action when the stale-CLI guard already delegated to (or
-// pointed the user at) the latest version — the postAction nudge would only
-// contradict the upgrade that just ran.
-let suppressUpdateNudge = false;
-
 program
   .name('joycraft')
   .description('Scaffold and upgrade AI development harnesses')
   .version(pkg.version, '-v, --version');
 
 program
+  .command('update')
+  .description('Safely install or update Joycraft in a project')
+  .argument('[dir]', 'Target directory', '.')
+  .option('--harnesses <list>', 'Harnesses to install (comma or space separated)')
+  .option('--yes', 'Apply safe updates without prompting')
+  .option('--non-interactive', 'Never prompt; apply safe actions only')
+  .option('--replace-customized <paths...>', 'Explicitly replace these customized paths')
+  .option('--repair <paths...>', 'Explicitly restore these missing managed files')
+  .option('--gitignore <profile>', GITIGNORE_OPTION_DESC)
+  .option('--json', 'Print a structured JSON outcome')
+  .option('--recover', 'Recover the interrupted update transaction')
+  .option('--rollback', 'Rollback the last successful update')
+  .option('--preview', 'Show planned changes without applying them')
+  .option('--auto-safe', 'Require local opt-in and verified automatic-update safety')
+  .action(async (dir: string, opts: {
+    harnesses?: string;
+    yes?: boolean;
+    nonInteractive?: boolean;
+    replaceCustomized?: string[];
+    repair?: string[];
+    gitignore?: string;
+    json?: boolean;
+    recover?: boolean;
+    rollback?: boolean;
+    preview?: boolean;
+    autoSafe?: boolean;
+  }) => {
+    const { update, formatUpdateOutcome } = await import('./update.js');
+    try {
+      let verifiedArtifact;
+      if (opts.autoSafe) {
+        if (opts.recover || opts.rollback || opts.repair?.length || opts.replaceCustomized?.length || opts.gitignore || opts.harnesses) {
+          throw new Error('Automatic updates cannot include recovery, configuration, or customization choices.');
+        }
+        const { readUpdatePolicy } = await import('./update-check.js');
+        if (readUpdatePolicy(dir) !== 'auto-safe') throw new Error('Automatic updates require the explicitly configured local auto-safe policy.');
+        const { readInstallationManifestInfo } = await import('./install-manifest.js');
+        const authorities = ['shared', 'private'].map(profile => readInstallationManifestInfo(dir, profile as 'shared' | 'private'));
+        if (authorities.filter(info => info.status !== 'missing').length !== 1 || !authorities.some(info => info.status === 'valid')) {
+          throw new Error('Automatic updates require one valid existing installation manifest; run an explicit update first.');
+        }
+        const { resolveExactRelease } = await import('./release-resolver.js');
+        const { fetchVerifiedReleaseArtifact } = await import('./release-artifact.js');
+        // The agent selected this exact candidate before invoking its CLI.
+        // Verify its artifact once; the update engine never resolves latest.
+        const resolution = await resolveExactRelease({ version: pkg.version });
+        if (!resolution.ok) throw new Error(resolution.error);
+        verifiedArtifact = await fetchVerifiedReleaseArtifact(resolution.release);
+      }
+      const result = await update(dir, {
+        harnesses: opts.harnesses,
+        yes: opts.yes ?? false,
+        nonInteractive: opts.nonInteractive ?? false,
+        replaceCustomized: opts.replaceCustomized,
+        repair: opts.repair,
+        gitignore: opts.gitignore,
+        recovery: opts.recover ? 'recover' : opts.rollback ? 'rollback' : undefined,
+        preview: opts.preview,
+        json: opts.json,
+        automatic: opts.autoSafe,
+        verifiedArtifact,
+      });
+      if (opts.preview) {
+        const actions = result.plan?.actions.map(({ path, kind, selected, reason }) => ({ path, kind, selected, reason })) ?? [];
+        if (opts.json) console.log(JSON.stringify({ ...JSON.parse(formatUpdateOutcome(result, true)), preview: true, actions }));
+        else console.log(['Preview only; no files changed.', ...actions.map(action => `${action.selected ? 'Planned' : 'Preserved'}: ${action.kind} ${action.path}`), ...result.diagnostics].join('\n'));
+      } else console.log(formatUpdateOutcome(result, opts.json === true));
+      process.exitCode = result.exitCode;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (opts.json) console.log(JSON.stringify({ status: 'failed', exitCode: 1, applied: [], preserved: [], conflicts: [], diagnostics: [message] }));
+      else console.error(message);
+      process.exitCode = 1;
+    }
+  });
+
+program
   .command('init')
   .description('Scaffold the Joycraft harness into the current project')
   .argument('[dir]', 'Target directory', '.')
   .option('--force', 'Overwrite existing files')
+  .option('--harnesses <list>', 'Harnesses to install (comma or space separated)')
+  .option('--yes', 'Apply safe updates without prompting')
+  .option('--non-interactive', 'Never prompt; apply safe actions only')
+  .option('--replace-customized <paths...>', 'Explicitly replace these customized paths')
   .option('--gitignore <profile>', GITIGNORE_OPTION_DESC)
-  .action(async (dir: string, opts: { force?: boolean; gitignore?: string }) => {
-    const { init } = await import('./init.js');
+  .option('--json', 'Print a structured JSON outcome')
+  .action(async (dir: string, opts: { force?: boolean; harnesses?: string; yes?: boolean; nonInteractive?: boolean; replaceCustomized?: string[]; gitignore?: string; json?: boolean }) => {
+    const { init, formatInitOutcome } = await import('./init.js');
     try {
-      await init(dir, { force: opts.force ?? false, gitignore: opts.gitignore });
+      const result = await init(dir, {
+        force: opts.force ?? false,
+        harnesses: opts.harnesses,
+        yes: opts.yes ?? false,
+        nonInteractive: opts.nonInteractive ?? false,
+        replaceCustomized: opts.replaceCustomized,
+        gitignore: opts.gitignore,
+        json: opts.json,
+      });
+      if (result) {
+        console.log(formatInitOutcome(result, opts.json === true));
+        if (!opts.json && opts.harnesses === undefined && process.stdin.isTTY !== true) console.log('  Compatibility: init selected all harnesses for this non-interactive run.');
+      }
+      if (result) process.exitCode = result.exitCode;
     } catch (err) {
-      console.error(err instanceof Error ? err.message : String(err));
-      process.exit(1);
+      const message = err instanceof Error ? err.message : String(err);
+      if (opts.json) console.log(JSON.stringify({ status: 'failed', exitCode: 1, applied: [], preserved: [], conflicts: [], diagnostics: [message] }));
+      else console.error(message);
+      process.exitCode = 1;
     }
   });
 
@@ -41,16 +134,59 @@ program
   .command('upgrade')
   .description('Upgrade installed Joycraft templates and skills to latest')
   .argument('[dir]', 'Target directory', '.')
-  .option('--yes', 'Auto-accept all updates')
+  .option('--yes', 'Apply safe updates and preserve customizations without prompting')
+  .option('--non-interactive', 'Never prompt; apply safe actions only')
+  .option('--harnesses <list>', 'Harnesses to update (comma or space separated)')
+  .option('--replace-customized <paths...>', 'Explicitly replace these customized paths')
   .option('--gitignore <profile>', GITIGNORE_OPTION_DESC)
-  .action(async (dir: string, opts: { yes?: boolean; gitignore?: string }) => {
+  .option('--json', 'Print a structured JSON outcome')
+  .action(async (dir: string, opts: { yes?: boolean; nonInteractive?: boolean; harnesses?: string; replaceCustomized?: string[]; gitignore?: string; json?: boolean }) => {
     const { upgrade } = await import('./upgrade.js');
     try {
-      const result = await upgrade(dir, { yes: opts.yes ?? false, gitignore: opts.gitignore });
-      suppressUpdateNudge = result.cliWasStale;
+      const result = await upgrade(dir, { yes: opts.yes ?? false, nonInteractive: opts.nonInteractive ?? false, harnesses: opts.harnesses, replaceCustomized: opts.replaceCustomized, gitignore: opts.gitignore, json: opts.json });
+      if (!opts.json) {
+        const { formatUpdateOutcome } = await import('./update.js');
+        console.log(formatUpdateOutcome(result, false));
+      } else {
+        const { formatUpdateOutcome } = await import('./update.js');
+        console.log(formatUpdateOutcome(result, true));
+      }
+      process.exitCode = result.exitCode;
     } catch (err) {
-      console.error(err instanceof Error ? err.message : String(err));
-      process.exit(1);
+      const message = err instanceof Error ? err.message : String(err);
+      if (opts.json) console.log(JSON.stringify({ status: 'failed', exitCode: 1, applied: [], preserved: [], conflicts: [], diagnostics: [message] }));
+      else console.error(message);
+      process.exitCode = 1;
+    }
+  });
+
+program
+  .command('migrate')
+  .description('Preview or explicitly apply the flat-docs to per-feature migration')
+  .argument('[dir]', 'Target directory', '.')
+  .option('--apply', 'Apply the displayed migration plan')
+  .option('--replace-collision <paths...>', 'Replace these existing destination paths explicitly')
+  .option('--include-unknown <paths...>', 'Explicitly establish ownership for orphan spec directories')
+  .option('--json', 'Print a structured JSON outcome')
+  .action((dir: string, opts: { apply?: boolean; replaceCollision?: string[]; includeUnknown?: string[]; json?: boolean }) => {
+    try {
+      const preview = runMigration(dir, { dryRun: true, includeUnknown: opts.includeUnknown });
+      if (!opts.apply) {
+        if (opts.json) console.log(JSON.stringify({ status: 'preview', exitCode: 0, plan: preview.plan }));
+        else console.log(formatMigrationPlan(preview.plan));
+        return;
+      }
+      // Render the same plan that will be applied.
+      if (!opts.json) console.log(formatMigrationPlan(preview.plan));
+      const applied = applyMigration(preview.plan, { replaceCollisions: opts.replaceCollision });
+      const result = { ...applied, plan: preview.plan };
+      console.log(formatMigrationOutcome(result, opts.json === true, false));
+      process.exitCode = result.status === 'complete' ? 0 : 1;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (opts.json) console.log(JSON.stringify({ status: 'incomplete', exitCode: 1, applied: 0, skipped: 0, replaced: [], preserved: [], errors: [message] }));
+      else console.error(message);
+      process.exitCode = 1;
     }
   });
 
@@ -67,6 +203,30 @@ program
     } catch (err) {
       console.error(err instanceof Error ? err.message : String(err));
       process.exit(1);
+    }
+  });
+
+program
+  .command('check')
+  .description('Check for a newer Joycraft release using local cached state')
+  .argument('[dir]', 'Target directory', '.')
+  .option('--json', 'Print a structured JSON result')
+  .option('--explicit', 'Bypass local acknowledgement and postponement')
+  .option('--session <id>', 'Reuse one conversation identity for update notices')
+  .action(async (dir: string, opts: { json?: boolean; explicit?: boolean; session?: string }) => {
+    const { resolve } = await import('node:path');
+    const { acknowledgeUpdate, checkForUpdate, resolveCheckSessionId } = await import('./update-check.js');
+    try {
+      const root = resolve(dir);
+      const session = resolveCheckSessionId(opts.session);
+      const result = await checkForUpdate(root, { explicit: opts.explicit === true, sessionId: session });
+      if (opts.json) console.log(JSON.stringify(result));
+      else if (result.display && result.availableVersion) {
+        console.log(`Joycraft ${result.availableVersion} available (you have ${result.installedVersion ?? 'unknown'}). Run: npx joycraft@${result.availableVersion} update`);
+        acknowledgeUpdate(root, { release: result.availableVersion, session });
+      }
+    } catch {
+      // A check must never block the caller's requested work.
     }
   });
 
@@ -88,55 +248,18 @@ program
   .description('Check if a newer version of Joycraft is available')
   .action(async () => {
     try {
-      const { readFileSync, existsSync } = await import('node:fs');
-      const { join } = await import('node:path');
-      const { STATE_PATH, LEGACY_VERSION_FILE, LEGACY_CLAUDE_STATE_PATH } = await import('./version.js');
-      // Prefer the current state; fall back through the legacy locations for
-      // projects not yet upgraded (upgrade relocates them): the interim
-      // .claude/.joycraft/state.json, then the original repo-root file.
-      const candidates = [STATE_PATH, LEGACY_CLAUDE_STATE_PATH, LEGACY_VERSION_FILE];
-      const statePath =
-        candidates.map((p) => join(process.cwd(), p)).find((p) => existsSync(p)) ??
-        join(process.cwd(), STATE_PATH);
-      const data = JSON.parse(readFileSync(statePath, 'utf-8'));
-      const res = await fetch('https://registry.npmjs.org/joycraft/latest', { signal: AbortSignal.timeout(3000) });
-      if (res.ok) {
-        const latest = ((await res.json()) as { version: string }).version;
-        if (data.version !== latest) {
-          console.log(`Joycraft ${latest} available (you have ${data.version}). Run: npx joycraft@latest upgrade`);
-        }
+      const { acknowledgeUpdate, checkForUpdate, resolveCheckSessionId } = await import('./update-check.js');
+      const root = process.cwd();
+      const session = resolveCheckSessionId();
+      const result = await checkForUpdate(root, { explicit: true, sessionId: session });
+      if (result.display && result.availableVersion) {
+        console.log(`Joycraft ${result.availableVersion} available (you have ${result.installedVersion ?? 'unknown'}). Run: npx joycraft@${result.availableVersion} update`);
+        acknowledgeUpdate(root, { release: result.availableVersion, session });
       }
     } catch {
       // Silent — don't block session start
     }
   });
-
-// Start update check immediately so it runs in parallel with the command
-const updateCheckPromise = (async (): Promise<string | null> => {
-  try {
-    const res = await fetch('https://registry.npmjs.org/joycraft/latest', {
-      signal: AbortSignal.timeout(3000)
-    });
-    if (res.ok) {
-      const latest = ((await res.json()) as { version: string }).version;
-      if (latest !== pkg.version) {
-        return `\nJoycraft ${latest} available (you have ${pkg.version}). Run: npx joycraft@latest upgrade`;
-      }
-    }
-  } catch {
-    // Silent — don't block or error on network issues
-  }
-  return null;
-})();
-
-// Print update nudge after every command
-program.hook('postAction', async () => {
-  if (suppressUpdateNudge) return;
-  const message = await updateCheckPromise;
-  if (message) {
-    console.log(message);
-  }
-});
 
 // Show help when no arguments provided
 if (process.argv.length <= 2) {

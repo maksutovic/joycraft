@@ -22,6 +22,21 @@ export const GITATTRIBUTES_ENTRIES = [
   'docs/templates/** linguist-generated=true',
 ];
 
+export interface GitattributesPlan {
+  content: string;
+  added: string[];
+}
+
+/** Plan append-only generated-file attributes without filesystem access. */
+export function planGitattributes(current: string): GitattributesPlan {
+  const present = new Set(current.split('\n').map((line) => line.trim()));
+  const missing = GITATTRIBUTES_ENTRIES.filter((entry) => !present.has(entry.trim()));
+  if (missing.length === 0) return { content: current, added: [] };
+  const lines = present.has(GITATTRIBUTES_COMMENT) ? missing : [GITATTRIBUTES_COMMENT, ...missing];
+  const separator = current.length > 0 && !current.endsWith('\n') ? '\n' : '';
+  return { content: current + separator + lines.join('\n') + '\n', added: missing };
+}
+
 /**
  * Append-only, create-if-absent, idempotent .gitattributes writer — the same
  * contract as ensureGitignoreEntries: never rewrites, reorders, or removes
@@ -33,12 +48,7 @@ export const GITATTRIBUTES_ENTRIES = [
 export function applyGitattributes(targetDir: string): string[] {
   const gitattributesPath = join(targetDir, '.gitattributes');
   const current = existsSync(gitattributesPath) ? readFileSync(gitattributesPath, 'utf-8') : '';
-  const present = new Set(current.split('\n').map((l) => l.trim()));
-  const missing = GITATTRIBUTES_ENTRIES.filter((e) => !present.has(e.trim()));
-  if (missing.length === 0) return [];
-
-  const lines = present.has(GITATTRIBUTES_COMMENT) ? missing : [GITATTRIBUTES_COMMENT, ...missing];
-  const sep = current.length > 0 && !current.endsWith('\n') ? '\n' : '';
-  writeFileSync(gitattributesPath, current + sep + lines.join('\n') + '\n', 'utf-8');
-  return missing;
+  const planned = planGitattributes(current);
+  if (planned.added.length > 0) writeFileSync(gitattributesPath, planned.content, 'utf-8');
+  return planned.added;
 }

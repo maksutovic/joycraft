@@ -1,12 +1,17 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { setImmediate } from 'node:timers/promises';
 import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tmpdir } from 'node:os';
 import { Readable } from 'node:stream';
-import { init } from '../src/init';
+import { formatInitOutcome, init } from '../src/init';
+import { getBundleInventory } from '../src/bundle-inventory';
 import { CODEX_SKILLS, PI_SKILLS, PI_SCRIPTS, PI_EXTENSIONS, PI_AGENTS, OMP_SKILLS } from '../src/bundled-files';
+import { manifestPath, type InstallationManifest } from '../src/install-manifest';
 import { STATE_PATH } from '../src/version';
+
+const SHARED_MANIFEST_PATH = manifestPath('shared');
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const LEGACY_VERSION_FILE = '.joycraft-version';
@@ -23,6 +28,9 @@ function cleanup(dir: string): void {
 
 describe('init', () => {
   let tmpDir: string;
+
+  // Durable filesystem fixtures must let worker IPC flush between tests.
+  afterEach(async () => { await setImmediate(); });
 
   beforeEach(() => {
     tmpDir = createTmpDir();
@@ -44,7 +52,7 @@ describe('init', () => {
       // pointer). Everything else stays lazy-created by skills.
       expect(contents).toEqual(['backlog', 'context', 'templates']);
       // State lives in the harness-neutral docs/.joycraft/ home.
-      expect(existsSync(join(docsDir, '.joycraft', 'state.json'))).toBe(true);
+      expect(existsSync(join(docsDir, '.joycraft', 'manifest.json'))).toBe(true);
 
       // backlog/ ships a README stub explaining the convention.
       expect(existsSync(join(docsDir, 'backlog', 'README.md'))).toBe(true);
@@ -112,33 +120,43 @@ describe('init', () => {
     });
 
     it('summary mentions docs/features/<slug>/ as the feature destination', async () => {
-      const logs: string[] = [];
-      const origLog = console.log;
-      console.log = (...args: unknown[]) => logs.push(args.join(' '));
-      try {
-        await init(tmpDir, { force: false });
-      } finally {
-        console.log = origLog;
-      }
-      const joined = logs.join('\n');
+      const result = await init(tmpDir, { force: false });
+      const joined = formatInitOutcome(result);
       expect(joined).toContain('docs/features/');
     });
 
-    it('writes the real CLI version to the hidden state file', async () => {
+    it('writes the real CLI version to the shared installation manifest', async () => {
       await init(tmpDir, { force: false });
-      const versionFile = JSON.parse(readFileSync(join(tmpDir, STATE_PATH), 'utf-8'));
+      const versionFile = JSON.parse(readFileSync(join(tmpDir, SHARED_MANIFEST_PATH), 'utf-8')) as InstallationManifest;
       const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
-      expect(versionFile.version).toBe(pkg.version);
+      expect(versionFile.targetVersion).toBe(pkg.version);
       // Sanity: it's not the deprecated hardcoded value (unless package.json actually has 0.1.0)
       if (pkg.version !== '0.1.0') {
-        expect(versionFile.version).not.toBe('0.1.0');
+        expect(versionFile.targetVersion).not.toBe('0.1.0');
       }
     });
 
-    it('writes NO version-state file at the repo root', async () => {
+    it('writes NO legacy version-state file at the repo root', async () => {
       await init(tmpDir, { force: false });
       expect(existsSync(join(tmpDir, LEGACY_VERSION_FILE))).toBe(false);
-      expect(existsSync(join(tmpDir, STATE_PATH))).toBe(true);
+      expect(existsSync(join(tmpDir, SHARED_MANIFEST_PATH))).toBe(true);
+    });
+
+    it('records every active inventory vendor artifact installed by init', async () => {
+      await init(tmpDir, { force: false });
+
+      const manifest = JSON.parse(readFileSync(join(tmpDir, SHARED_MANIFEST_PATH), 'utf-8')) as InstallationManifest;
+      const activeVendorPaths = getBundleInventory(['claude', 'codex', 'pi', 'copilot', 'omp'])
+        .filter((entry) => entry.kind === 'vendor' && entry.active && entry.installable && entry.content !== undefined)
+        .map((entry) => entry.path);
+
+      const recordedVendorPaths = Object.entries(manifest.files)
+        .filter(([, file]) => file.kind === 'vendor')
+        .map(([path]) => path);
+      expect(recordedVendorPaths.sort()).toEqual(activeVendorPaths.sort());
+      for (const path of activeVendorPaths) {
+        expect(existsSync(join(tmpDir, path)), `${path} was declared but not installed`).toBe(true);
+      }
     });
 
     it('gitignores the hidden state file (creating .gitignore if absent)', async () => {
@@ -303,13 +321,15 @@ describe('init', () => {
       const origLog = console.log;
       console.log = (...args: unknown[]) => logs.push(args.join(' '));
       try {
-        await init(tmpDir, { force: false });
+        const result = await init(tmpDir, { force: false });
+        logs.push(formatInitOutcome(result));
       } finally {
         console.log = origLog;
       }
 
-      expect(logs.some(l => l.includes('.gitignore'))).toBe(true);
-      expect(logs.some(l => l.includes('!.claude/skills/'))).toBe(true);
+      const output = logs.join('\n');
+      expect(output).toMatch(/gitignore/i);
+      expect(output).toMatch(/remove|narrow|visibility|manifest|tracked/i);
     });
   });
 
@@ -388,13 +408,13 @@ describe('init', () => {
       // Custom hook preserved
       expect(settings.hooks.PreToolUse).toBeDefined();
       expect(settings.hooks.PreToolUse[0].hooks[0].command).toBe('echo "custom pre-tool hook"');
-      // Joycraft hook added
-      expect(settings.hooks.SessionStart).toBeDefined();
-      const joycraftHook = settings.hooks.SessionStart.find((h: Record<string, unknown>) => {
+      // The shared checker adapter is registered while unrelated hooks stay intact.
+      const sessionStart = settings.hooks.SessionStart ?? [];
+      const checker = sessionStart.find((h: Record<string, unknown>) => {
         const innerHooks = h.hooks as Array<Record<string, unknown>> | undefined;
-        return innerHooks?.some(ih => typeof ih.command === 'string' && (ih.command as string).includes('joycraft'));
+        return innerHooks?.some(ih => ih.command === 'node .claude/hooks/joycraft-version-check.mjs');
       });
-      expect(joycraftHook).toBeDefined();
+      expect(checker).toBeDefined();
     });
 
     it('warns and skips merge when settings.json is malformed', async () => {
@@ -406,7 +426,8 @@ describe('init', () => {
       const origLog = console.log;
       console.log = (...args: unknown[]) => logs.push(args.join(' '));
       try {
-        await init(tmpDir, { force: false });
+        const result = await init(tmpDir, { force: false });
+        logs.push(formatInitOutcome(result));
       } finally {
         console.log = origLog;
       }
@@ -472,14 +493,18 @@ describe('init', () => {
       const logs: string[] = [];
       const origLog = console.log;
       console.log = (...args: unknown[]) => logs.push(args.join(' '));
+      let result: Awaited<ReturnType<typeof init>>;
       try {
-        await init(tmpDir, { force: false });
+        result = await init(tmpDir, { force: false });
       } finally {
         console.log = origLog;
       }
+      logs.push(formatInitOutcome(result));
 
-      expect(logs.some(l => l.includes('Found existing skills') && l.includes('my-tool'))).toBe(true);
-      expect(logs.some(l => l.includes('Joycraft is additive'))).toBe(true);
+      const output = logs.join('\n');
+      expect(output).toContain('Found existing skills');
+      expect(output).toContain('my-tool');
+      expect(output).toContain('Joycraft is additive');
     });
 
     it('ignores joycraft-prefixed directories when scanning for existing skills', async () => {
@@ -554,11 +579,11 @@ describe('init', () => {
       expect(skill).toBe('custom content');
     });
 
-    it('includes .agents/skills/ hashes in the hidden state', async () => {
+    it('includes .agents/skills/ entries in the shared installation manifest', async () => {
       await init(tmpDir, { force: false });
 
-      const version = JSON.parse(readFileSync(join(tmpDir, STATE_PATH), 'utf-8'));
-      const agentsKeys = Object.keys(version.files).filter(k => k.startsWith('.agents'));
+      const manifest = JSON.parse(readFileSync(join(tmpDir, SHARED_MANIFEST_PATH), 'utf-8')) as InstallationManifest;
+      const agentsKeys = Object.keys(manifest.files).filter(k => k.startsWith('.agents'));
       // One .agents/skills/<name>/SKILL.md per bundled Codex skill — derive so the
       // count tracks the skill set instead of going stale on each new skill.
       expect(agentsKeys.length).toBe(Object.keys(CODEX_SKILLS).length);
@@ -698,11 +723,11 @@ describe('init', () => {
       expect(content).not.toBe('modified');
     });
 
-    it('includes Pi files in the hidden state hashes', async () => {
+    it('includes Pi files in the shared installation manifest', async () => {
       await init(tmpDir, { force: false });
 
-      const version = JSON.parse(readFileSync(join(tmpDir, STATE_PATH), 'utf-8'));
-      const piKeys = Object.keys(version.files).filter(k => k.startsWith('.pi'));
+      const manifest = JSON.parse(readFileSync(join(tmpDir, SHARED_MANIFEST_PATH), 'utf-8')) as InstallationManifest;
+      const piKeys = Object.keys(manifest.files).filter(k => k.startsWith('.pi'));
 
       // Check Pi skills
       expect(piKeys.some(k => k.includes('.pi/skills/joycraft-tune/SKILL.md'))).toBe(true);
@@ -738,13 +763,14 @@ describe('init', () => {
       const logs: string[] = [];
       const origLog = console.log;
       console.log = (...args: unknown[]) => { logs.push(args.map(String).join(' ')); };
+      let result: Awaited<ReturnType<typeof init>>;
       try {
-        await init(dir, { force: false });
+        result = await init(dir, { force: false });
       } finally {
         console.log = origLog;
         Object.defineProperty(process, 'stdin', stdinDesc);
       }
-      return logs.join('\n');
+      return `${logs.join('\n')}\n${formatInitOutcome(result)}`;
     }
 
     it('writes .omp/skills/<name>/SKILL.md for every bundled omp skill', async () => {
@@ -773,15 +799,15 @@ describe('init', () => {
       expect(readFileSync(join(tmpDir, 'AGENTS.md'), 'utf-8')).toContain('Behavioral Boundaries');
     });
 
-    it('records a state hash for every installed omp skill', async () => {
+    it('records every installed omp skill in the shared installation manifest', async () => {
       await initOmpOnly(tmpDir);
 
-      const state = JSON.parse(readFileSync(join(tmpDir, STATE_PATH), 'utf-8'));
-      const ompKeys = Object.keys(state.files).filter((k) => k.startsWith('.omp'));
+      const manifest = JSON.parse(readFileSync(join(tmpDir, SHARED_MANIFEST_PATH), 'utf-8')) as InstallationManifest;
+      const ompKeys = Object.keys(manifest.files).filter((k) => k.startsWith('.omp'));
       expect(ompKeys.length).toBe(Object.keys(OMP_SKILLS).length);
       for (const filename of Object.keys(OMP_SKILLS)) {
         const skillName = filename.replace(/\.md$/, '');
-        expect(state.files[join('.omp', 'skills', skillName, 'SKILL.md')]).toBeTruthy();
+        expect(manifest.files[join('.omp', 'skills', skillName, 'SKILL.md')]).toBeTruthy();
       }
     });
 
@@ -874,13 +900,15 @@ describe('init', () => {
         logs.push(typeof chunk === 'string' ? chunk : Buffer.from(chunk).toString('utf-8'));
         return true;
       }) as typeof process.stdout.write;
+      let result: Awaited<ReturnType<typeof init>>;
       try {
-        await init(dir, { force: false });
+        result = await init(dir, { force: false });
       } finally {
         console.log = origLog;
         process.stdout.write = origWrite;
         Object.defineProperty(process, 'stdin', stdinDesc);
       }
+      logs.push(formatInitOutcome(result));
       return logs;
     }
 
@@ -893,7 +921,7 @@ describe('init', () => {
       const settings = JSON.parse(readFileSync(join(tmpDir, ...SETTINGS), 'utf-8'));
       expect(settings.autoMemoryEnabled).toBe(false);
       // The other guarded writes are untouched by the new one.
-      expect(settings.hooks?.SessionStart).toBeDefined();
+      expect(settings.hooks?.PreToolUse).toBeDefined();
       expect(settings.permissions?.allow?.length).toBeGreaterThan(0);
       // The offer explains itself before asking.
       expect(logs.join('\n')).toMatch(/auto-memory/i);

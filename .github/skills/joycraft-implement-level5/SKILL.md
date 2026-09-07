@@ -2,6 +2,8 @@
 name: joycraft-implement-level5
 description: Invoked by tune's roadmap or the human opting into Level 5 — set up the autofix loop, holdout scenario testing, and scenario evolution from specs
 ---
+At skill entry, run `node docs/.joycraft/check.mjs check --json --session <session-id>` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing or fails, continue the requested skill quietly without retrying setup. Offer updates only for display: true; current, postponed, off, and unknown stay quiet. If automaticUpdate is present, finish this skill, then run its exact command once from the project root: the candidate must verify every safety gate before applying. Other updates require approval. After an offer or automatic attempt, record it with `node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>`. Apply updates only at this workflow boundary; after success, reinvoke the skill or restart the session to load changed instructions.
+
 
 # Implement Level 5 — Autonomous Development Loop
 
@@ -11,7 +13,7 @@ You are guiding the user through setting up Level 5: the autonomous feedback loo
 
 Check prerequisites:
 
-1. **Project must be initialized.** Look for `docs/.joycraft/state.json` (older installs may still have it at the legacy `.claude/.joycraft/state.json` or a `.joycraft-version` at the repo root). If none exist, tell the user to run `npx joycraft@latest init` first.
+1. **Project must be initialized.** Look for `docs/.joycraft/manifest.json` or `docs/.joycraft/local/manifest.json`. Older installs may still have state at `docs/.joycraft/state.json`, `.claude/.joycraft/state.json`, or `.joycraft-version` at the repo root. If none exist, tell the user to run `npx joycraft@latest init` first.
 2. **Project should be at Level 4.** Check `docs/joycraft-assessment.md` if it exists. If the project hasn't been assessed yet, suggest running `/joycraft-tune` first. But don't block — the user may know they're ready.
 3. **Git repo with GitHub remote.** This setup requires GitHub Actions. Check for `.git/` and a GitHub remote.
 

@@ -4,7 +4,7 @@
 
 ## Platform support
 
-Joycraft supports **Claude Code**, **OpenAI Codex**, **Pi**, and **GitHub Copilot** out of the box. When you run `npx joycraft@latest init`, it opens with a quick picker — choose any combination, and only the harnesses you select get installed:
+Joycraft supports **Claude Code**, **OpenAI Codex**, **Pi**, **GitHub Copilot**, and **omp** out of the box. When you run `npx joycraft@latest update`, it opens with a quick picker — choose any combination, and only the harnesses you select get installed:
 
 ```
 Which AI harnesses should Joycraft install?
@@ -12,6 +12,7 @@ Which AI harnesses should Joycraft install?
   codex   — OpenAI Codex (.agents/)
   pi      — Pi (.pi/)
   copilot — GitHub Copilot (.github/)
+  omp     — omp (.omp/)
 Harnesses [comma-separated, or "all"] (none): claude,pi
 ```
 

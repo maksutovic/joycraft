@@ -54,9 +54,10 @@ const STRIP_INSTRUCTIONS = { claude: false, codex: true, pi: true, copilot: true
  * @param {string} source   Canonical markdown (optional YAML frontmatter + body).
  * @param {'claude'|'codex'|'pi'|'copilot'|'omp'} harness
  * @param {string} [filename]  Used only in error messages.
+ * @param {{includeUpdateCheck?: boolean}} [options]  Generation-only entry behavior.
  * @returns {string}
  */
-export function applyTemplate(source, harness, filename) {
+export function applyTemplate(source, harness, filename, options = {}) {
   const vars = LOOKUP[harness];
   if (!vars) throw new Error(`unknown harness: ${harness}`);
 
@@ -87,11 +88,20 @@ export function applyTemplate(source, harness, filename) {
 
   // 4. Substitute {{var}}.
   const afterVars = substituteVars(afterBlocks, vars, filename);
+  const renderedBody = options.includeUpdateCheck
+    ? `${COMMON_UPDATE_ENTRY}\n\n${afterVars}`
+    : afterVars;
 
   // 5. Reassemble.
-  if (transformedFm === null) return afterVars;
-  return `---\n${transformedFm}---\n${afterVars}`;
+  if (transformedFm === null) return renderedBody;
+  return `---\n${transformedFm}---\n${renderedBody}`;
 }
+
+// This is deliberately inserted only by the canonical product-skill
+// generation call. Keeping the default transform unchanged preserves generic
+// template consumers and their existing frontmatter/position semantics.
+const COMMON_UPDATE_ENTRY = `At skill entry, run \`node docs/.joycraft/check.mjs check --json --session <session-id>\` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing or fails, continue the requested skill quietly without retrying setup. Offer updates only for display: true; current, postponed, off, and unknown stay quiet. If automaticUpdate is present, finish this skill, then run its exact command once from the project root: the candidate must verify every safety gate before applying. Other updates require approval. After an offer or automatic attempt, record it with \`node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>\`. Apply updates only at this workflow boundary; after success, reinvoke the skill or restart the session to load changed instructions.`;
+
 
 // ---------- frontmatter ----------
 

@@ -170,15 +170,17 @@ describe('autoOpen state (stamp-gate-artifacts)', () => {
   it('preserves unknown keys when rewriting state.json (D12)', () => {
     fresh();
     mkdirSync(join(dir, 'docs', '.joycraft'), { recursive: true });
+    const vendorBaseline = hashContent('vendor baseline');
     writeFileSync(
       statePath(),
-      JSON.stringify({ version: '1.0.0', files: {}, futureKey: { nested: 1 } }),
+      JSON.stringify({ version: '1.0.0', files: { 'managed.md': vendorBaseline }, futureKey: { nested: 1 } }),
     );
-    writeVersion(dir, '1.0.1', {}, undefined, undefined, false);
+    writeVersion(dir, '1.0.1', { 'managed.md': vendorBaseline }, undefined, undefined, false);
     const raw = JSON.parse(readFileSync(statePath(), 'utf-8'));
     expect(raw.futureKey).toEqual({ nested: 1 });
     expect(raw.version).toBe('1.0.1');
     expect(raw.autoOpen).toBe(false);
+    expect(raw.files['managed.md']).toBe(vendorBaseline.slice(0, 16));
     cleanup();
   });
 });

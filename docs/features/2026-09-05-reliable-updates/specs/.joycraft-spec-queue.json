@@ -1,0 +1,138 @@
+{
+  "feature": "2026-09-05-reliable-updates",
+  "specs": [
+    {
+      "id": 1,
+      "file": "preserve-customization-baselines.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 2,
+      "file": "reconcile-update-status.md",
+      "depends_on": [
+        1
+      ],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 3,
+      "file": "preserve-installation-manifest.md",
+      "depends_on": [
+        2
+      ],
+      "status": "done",
+      "mode": "isolated"
+    },
+    {
+      "id": 4,
+      "file": "unify-managed-inventory.md",
+      "depends_on": [
+        3
+      ],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 5,
+      "file": "plan-safe-updates.md",
+      "depends_on": [
+        4
+      ],
+      "status": "done",
+      "mode": "isolated"
+    },
+    {
+      "id": 6,
+      "file": "recover-interrupted-updates.md",
+      "depends_on": [
+        5
+      ],
+      "status": "done",
+      "mode": "isolated"
+    },
+    {
+      "id": 7,
+      "file": "unify-update-command.md",
+      "depends_on": [
+        6
+      ],
+      "status": "done",
+      "mode": "isolated"
+    },
+    {
+      "id": 8,
+      "file": "separate-project-migrations.md",
+      "depends_on": [
+        7
+      ],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 9,
+      "file": "implement-shared-update-checker.md",
+      "depends_on": [
+        8
+      ],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 10,
+      "file": "wire-skill-update-discovery.md",
+      "depends_on": [
+        9
+      ],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 11,
+      "file": "enable-opt-in-safe-updates.md",
+      "depends_on": [
+        10
+      ],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 12,
+      "file": "serialize-immutable-releases.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "isolated"
+    },
+    {
+      "id": 13,
+      "file": "verify-registry-promotion.md",
+      "depends_on": [
+        7,
+        12
+      ],
+      "status": "done",
+      "mode": "isolated"
+    },
+    {
+      "id": 14,
+      "file": "validate-upgrade-compatibility.md",
+      "depends_on": [
+        11,
+        13
+      ],
+      "status": "done",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 15,
+      "file": "document-and-dogfood-updates.md",
+      "depends_on": [
+        14
+      ],
+      "status": "done",
+      "mode": "checkpoint"
+    }
+  ]
+}

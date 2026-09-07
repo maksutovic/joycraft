@@ -1,114 +1,372 @@
-# Publish to npm via Trusted Publishing (OIDC)
-#
-# No NPM_TOKEN needed — npm verifies this workflow cryptographically
-# via OpenID Connect. Provenance attestations are automatic.
-#
-# Every merge to main auto-bumps the patch version if no manual bump
-# was made, then publishes, tags, and creates a GitHub Release.
-
-name: Publish to npm
+# Publish the exact reviewed merge artifact to npm's candidate channel.
+# Promote only after exact-artifact consumer and compatibility checks.
+name: Verify and publish npm release
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      release_sha:
+        description: 'Immutable release merge commit SHA'
+        required: true
+        type: string
+      version:
+        description: 'Exact package version in the reviewed commit'
+        required: true
+        type: string
+      artifact_run_id:
+        description: 'Prior run ID whose retained artifact should be retried'
+        required: false
+        type: string
+      artifact_name:
+        description: 'Retained artifact name for a retry'
+        required: false
+        type: string
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+concurrency:
+  group: publish-candidate-joycraft
+  cancel-in-progress: false
+
 jobs:
-  publish:
+  prewarm:
+    name: Prewarm ${{ matrix.node }} / npm ${{ matrix.npm }} metadata caches
+    if: (github.event_name == 'workflow_dispatch' && inputs.artifact_run_id != '') || (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release/joycraft')
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      id-token: write
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - node: 22.23.1
+            npm: 10.9.8
+          - node: 24.20.0
+            npm: 11.19.0
     steps:
-      - name: Checkout
+      - name: Checkout immutable release merge
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.RELEASE_TOKEN }}
+          ref: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 1
+      - name: Setup consumer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Pin consumer npm
+        run: npm install --global npm@${{ matrix.npm }}
+      - name: Prime full and compact registry metadata
+        if: inputs.artifact_run_id == '' && github.run_attempt == 1
+        run: |
+          CACHE_ROOT="release-caches/${{ matrix.node }}"
+          mkdir -p "$CACHE_ROOT/warmed-full" "$CACHE_ROOT/warmed-compact"
+          node scripts/release-verification.mjs prime --package joycraft --cache "$CACHE_ROOT/warmed-full" --metadata-mode full
+          node scripts/release-verification.mjs prime --package joycraft --cache "$CACHE_ROOT/warmed-compact" --metadata-mode compact
+      - name: Upload prepublication cache for this runtime lane
+        if: inputs.artifact_run_id == '' && github.run_attempt == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: joycraft-release-cache-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}-${{ matrix.node }}
+          path: release-caches/${{ matrix.node }}
+          if-no-files-found: error
+          retention-days: 90
+      - name: Verify original prepublication cache is retained for retry
+        if: inputs.artifact_run_id != '' || github.run_attempt > 1
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: joycraft-release-cache-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}-${{ matrix.node }}
+          path: release-caches/${{ matrix.node }}
+          github-token: ${{ github.token }}
+
+  publish:
+    needs: prewarm
+    if: (github.event_name == 'workflow_dispatch' && inputs.artifact_run_id != '') || (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'release/joycraft')
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout immutable release merge
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+
+      - name: Resolve immutable inputs
+        id: release
+        shell: bash
+        env:
+          INPUT_SHA: ${{ inputs.release_sha }}
+          INPUT_VERSION: ${{ inputs.version }}
+          EVENT_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          RELEASE_SHA="${INPUT_SHA:-${EVENT_MERGE_SHA:-$GITHUB_SHA}}"
+          CHECKED_OUT_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version")
+          RELEASE_VERSION="${INPUT_VERSION:-$CHECKED_OUT_VERSION}"
+          [[ "$RELEASE_SHA" =~ ^[0-9a-f]{40}$ ]] || { echo 'release SHA must be a full immutable commit SHA' >&2; exit 1; }
+          [[ "$RELEASE_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'release version must be stable semver' >&2; exit 1; }
+          [[ "$RELEASE_VERSION" == "$CHECKED_OUT_VERSION" ]] || { echo 'release version does not match the checked-out immutable commit' >&2; exit 1; }
+          echo "release_sha=$RELEASE_SHA" >> "$GITHUB_OUTPUT"
+          echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Verify immutable release is merged into main
+        env:
+          RELEASE_SHA: ${{ steps.release.outputs.release_sha }}
+        run: node scripts/release-preparation.mjs verify-commit --release-sha "$RELEASE_SHA"
+
+      - name: Download retained artifact for retry
+        if: inputs.artifact_run_id != '' || github.run_attempt > 1
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: ${{ inputs.artifact_name || format('joycraft-release-{0}', inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha) }}
+          path: release-artifact
+          github-token: ${{ github.token }}
+
+      - name: Validate retained artifact before npm commands
+        if: inputs.artifact_run_id != '' || github.run_attempt > 1
+        env:
+          RELEASE_SHA: ${{ steps.release.outputs.release_sha }}
+          RELEASE_VERSION: ${{ steps.release.outputs.release_version }}
+        run: node scripts/release-preparation.mjs validate-retained --manifest release-artifact/release-artifact.json --release-sha "$RELEASE_SHA" --version "$RELEASE_VERSION" --package-name joycraft
 
       - name: Setup pnpm
+        if: inputs.artifact_run_id == '' && github.run_attempt == 1
         uses: pnpm/action-setup@v4
+        with:
+          version: 10.19.0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: latest
-          registry-url: https://registry.npmjs.org
-          cache: pnpm
+          node-version: 24.20.0
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: Pin npm
+        run: npm install --global npm@11.19.0
 
-      - name: Build
-        run: pnpm build
-
-      - name: Test
-        run: pnpm test --run
-
-      - name: Type check
-        run: pnpm typecheck
-
-      - name: Bump version if needed
-        id: version
+      - name: Install and verify reviewed release
+        if: inputs.artifact_run_id == '' && github.run_attempt == 1
         run: |
-          LOCAL=$(node -e "import fs from 'fs'; const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8')); process.stdout.write(pkg.version);" --input-type=module)
-          REMOTE=$(npm view joycraft version 2>/dev/null || echo "0.0.0")
-          if [ "$LOCAL" = "$REMOTE" ]; then
-            echo "Version unchanged ($LOCAL), auto-bumping patch..."
-            npm version patch --no-git-tag-version
-            LOCAL=$(node -e "import fs from 'fs'; const pkg = JSON.parse(fs.readFileSync('./package.json', 'utf-8')); process.stdout.write(pkg.version);" --input-type=module)
-            echo "bumped=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Version already bumped: $REMOTE -> $LOCAL"
-            echo "bumped=false" >> "$GITHUB_OUTPUT"
-          fi
-          echo "version=$LOCAL" >> "$GITHUB_OUTPUT"
+          pnpm install --frozen-lockfile
+          pnpm build
+          pnpm test
+          pnpm typecheck
 
-      # NOTE: the old `.joycraft-version` root file was relocated to the hidden,
-      # gitignored `.claude/.joycraft/state.json` and is no longer tracked, so
-      # there is nothing to sync or commit beyond package.json. The version of
-      # record lives solely in package.json.
-      - name: Commit and push version bump
-        if: steps.version.outputs.bumped == 'true'
+      - name: Pack once and retain integrity manifest
+        if: inputs.artifact_run_id == '' && github.run_attempt == 1
         env:
-          VERSION: ${{ steps.version.outputs.version }}
+          RELEASE_SHA: ${{ steps.release.outputs.release_sha }}
+          RELEASE_VERSION: ${{ steps.release.outputs.release_version }}
+        run: node scripts/release-preparation.mjs pack --artifact-dir release-artifact --release-sha "$RELEASE_SHA" --expected-version "$RELEASE_VERSION"
+
+      - name: Resolve validated retained tarball
+        id: artifact
+        if: success()
+        shell: bash
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json
-          git commit -m "release: v$VERSION [skip ci]"
-          git push origin main
+          TARBALL=$(node -e "const fs=require('fs'); const path=require('path'); const dir=path.resolve('release-artifact'); const m=JSON.parse(fs.readFileSync(path.join(dir,'release-artifact.json'),'utf8')); if (!m.tarball || path.basename(m.tarball)!==m.tarball || !m.tarball.endsWith('.tgz')) throw new Error('unsafe retained tarball filename'); process.stdout.write(path.join(dir,m.tarball));")
+          [[ -f "$TARBALL" ]] || { echo 'retained tarball is missing' >&2; exit 1; }
+          echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
 
-      - name: Publish to npm
-        run: npm publish --access public
+      - name: Upload durable release artifact
+        if: inputs.artifact_run_id == '' && github.run_attempt == 1
+        uses: actions/upload-artifact@v4
+        with:
+          name: joycraft-release-${{ steps.release.outputs.release_sha }}
+          path: release-artifact
+          if-no-files-found: error
+          retention-days: 90
 
-      - name: Create git tag
+      - name: Retain previous package for consumer update verification
+        if: success()
         env:
-          VERSION: ${{ steps.version.outputs.version }}
+          PACKAGE: joycraft
         run: |
-          # Identity is needed for annotated tags. The "Commit and push version
-          # bump" step sets it too, but only runs on auto-bump — set it here
-          # unconditionally so manual version bumps still produce a tag.
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null 2>&1; then
-            echo "Tag v$VERSION already exists on origin — skipping."
-          else
-            git tag -a "v$VERSION" -m "v$VERSION"
-            git push origin "v$VERSION"
-          fi
+          mkdir -p release-previous
+          npm pack "$PACKAGE@latest" --json --ignore-scripts --pack-destination release-previous > release-previous/pack.json
+          node -e "const fs=require('fs'); const path=require('path'); const record=JSON.parse(fs.readFileSync('release-previous/pack.json','utf8'))[0]; if(!record?.filename) throw new Error('previous package was not retained'); fs.writeFileSync('release-previous/tarball.txt',path.resolve('release-previous',record.filename));"
 
-      - name: Create GitHub Release
+      - name: Verify retained artifact with fresh init and previous-version update
+        if: success()
+        env:
+          RELEASE_SHA: ${{ steps.release.outputs.release_sha }}
+          RELEASE_VERSION: ${{ steps.release.outputs.release_version }}
+        run: |
+          PREVIOUS=$(node -p "require('fs').readFileSync('release-previous/tarball.txt','utf8').trim()")
+          node scripts/release-verification.mjs verify-consumers \
+            --manifest release-artifact/release-artifact.json \
+            --release-sha "$RELEASE_SHA" \
+            --version "$RELEASE_VERSION" \
+            --package joycraft \
+            --previous-tarball "$PREVIOUS" \
+            --root release-consumers
+
+      - name: Publish exactly the retained tarball to candidate
+        env:
+          TARBALL: ${{ steps.artifact.outputs.tarball }}
+          PACKAGE: joycraft
+          VERSION: ${{ steps.release.outputs.release_version }}
+        shell: bash
+        run: |
+          # A retry must never republish the same version. A matching registry
+          # integrity is already complete; a differing one is a hard stop.
+          STATUS=0
+          EXISTING=$(npm view "$PACKAGE@$VERSION" dist.integrity --json 2>registry-error.txt) || STATUS=$?
+          if [[ "$STATUS" != 0 ]]; then
+            if ! grep -qiE 'E404|404 Not Found|not found' registry-error.txt; then
+              cat registry-error.txt >&2
+              exit "$STATUS"
+            fi
+            EXISTING=''
+          fi
+          RETAINED=$(node -p "JSON.parse(require('fs').readFileSync('release-artifact/release-artifact.json', 'utf8')).integrity")
+          EXISTING=$(node -e "const value=process.argv[1]; try { const parsed=JSON.parse(value); process.stdout.write(parsed === null ? '' : String(parsed)); } catch { process.stdout.write(value.trim().replace(/^\"|\"$/g, '')); }" "$EXISTING")
+          if [[ -n "$EXISTING" ]]; then
+            [[ "$EXISTING" == "$RETAINED" ]] || { echo 'Registry candidate integrity differs from retained artifact.' >&2; exit 1; }
+            echo 'Candidate already contains the retained artifact; skipping publish.'
+            exit 0
+          fi
+          npm publish "$TARBALL" --access public --tag candidate
+
+  compatibility:
+    name: Required packaged compatibility matrix
+    needs: publish
+    if: needs.publish.result == 'success'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/test.yml
+    with:
+      release_sha: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}
+      artifact_name: ${{ inputs.artifact_name || format('joycraft-release-{0}', inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha) }}
+      artifact_run_id: ${{ inputs.artifact_run_id || github.run_id }}
+    secrets: inherit
+
+  consumer-matrix:
+    name: Consumer readiness · Node ${{ matrix.node }} / npm ${{ matrix.npm }}
+    needs: publish
+    if: needs.publish.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - node: 22.23.1
+            npm: 10.9.8
+          - node: 24.20.0
+            npm: 11.19.0
+    steps:
+      - name: Checkout immutable release merge
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Pin consumer npm
+        run: npm install --global npm@${{ matrix.npm }}
+      - name: Download retained candidate artifact
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: ${{ inputs.artifact_name || format('joycraft-release-{0}', inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha) }}
+          path: release-artifact
+          github-token: ${{ github.token }}
+      - name: Restore warmed metadata caches
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: joycraft-release-cache-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}-${{ matrix.node }}
+          path: release-caches/${{ matrix.node }}
+          github-token: ${{ github.token }}
+      - name: Verify exact candidate metadata and registry readiness
+        run: |
+          VERSION=$(node -p "JSON.parse(require('fs').readFileSync('release-artifact/release-artifact.json','utf8')).version")
+          INTEGRITY=$(node -p "JSON.parse(require('fs').readFileSync('release-artifact/release-artifact.json','utf8')).integrity")
+          node scripts/release-verification.mjs readiness \
+            --package joycraft \
+            --version "$VERSION" \
+            --integrity "$INTEGRITY" \
+            --manifest release-artifact/release-artifact.json \
+            --node "${{ matrix.node }}" \
+            --npm "${{ matrix.npm }}" \
+            --cache-root release-caches \
+            --consumer-root registry-consumers \
+            --min-freshness-ms 300000 \
+            --deadline-ms 900000
+
+  promote:
+    name: Promote verified candidate and create GitHub release
+    needs: [publish, consumer-matrix, compatibility]
+    if: needs.publish.result == 'success' && needs.consumer-matrix.result == 'success' && needs.compatibility.result == 'success'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Checkout immutable release merge
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+      - name: Pin promotion npm
+        run: npm install --global npm@11.19.0
+      - name: Download retained release evidence
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: ${{ inputs.artifact_name || format('joycraft-release-{0}', inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha) }}
+          path: release-artifact
+          github-token: ${{ github.token }}
+      - name: Download required compatibility report
+        uses: actions/download-artifact@v4
+        with:
+          name: joycraft-required-validation-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}-${{ github.run_attempt }}
+          path: required-validation
+          github-token: ${{ github.token }}
+      - name: Restore original caches for the final readiness check
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: joycraft-release-cache-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}-24.20.0
+          path: release-caches/24.20.0
+          github-token: ${{ github.token }}
+      - name: Validate required matrix report and promote
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ steps.version.outputs.version }}
+          JOYCRAFT_NPM_PROMOTION_TOKEN: ${{ secrets.JOYCRAFT_NPM_PROMOTION_TOKEN }}
+          JOYCRAFT_NPM_PROMOTION_TOKEN_EXPIRES_AT: ${{ secrets.JOYCRAFT_NPM_PROMOTION_TOKEN_EXPIRES_AT }}
+          REQUIRED_REPORT: required-validation/report.json
+          RELEASE_SHA: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha }}
         run: |
-          if gh release view "v$VERSION" >/dev/null 2>&1; then
-            echo "Release v$VERSION already exists — skipping."
-          else
-            gh release create "v$VERSION" \
-              --title "v$VERSION" \
-              --generate-notes \
-              --latest
-          fi
+          test -f "$REQUIRED_REPORT" || { echo 'Required validation report path is unreadable; latest remains unchanged.' >&2; exit 1; }
+          test -f .github/release-required-checks.json || { echo 'Required validation matrix configuration is missing; latest remains unchanged.' >&2; exit 1; }
+          RELEASE_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('release-artifact/release-artifact.json','utf8')).version")
+          node scripts/release-promotion.mjs promote \
+            --manifest release-artifact/release-artifact.json \
+            --package joycraft \
+            --required-report "$REQUIRED_REPORT" \
+            --release-sha "$RELEASE_SHA" \
+            --version "$RELEASE_VERSION" \
+            --cache-root release-caches \
+            --node 24.20.0 \
+            --npm 11.19.0 \
+            --required-checks-file .github/release-required-checks.json

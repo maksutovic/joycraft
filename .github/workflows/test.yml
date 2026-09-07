@@ -2,6 +2,20 @@
 name: Test
 
 on:
+  workflow_call:
+    inputs:
+      release_sha:
+        required: false
+        type: string
+        default: ''
+      artifact_name:
+        required: false
+        type: string
+        default: ''
+      artifact_run_id:
+        required: false
+        type: string
+        default: ''
   pull_request:
     branches: [main]
   push:
@@ -10,9 +24,14 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
+    if: inputs.artifact_name == ''
     # Hard wall so a hung test fails in minutes, not the ~6h GitHub default.
     # A healthy run is ~30s; 10m is generous headroom.
     timeout-minutes: 10
@@ -35,8 +54,165 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Pack retained validation artifact
+        env:
+          RELEASE_SHA: ${{ github.sha }}
+        run: node scripts/release-preparation.mjs pack --artifact-dir release-artifact --release-sha "$RELEASE_SHA" --expected-version "$(node -p "JSON.parse(require('fs').readFileSync('package.json','utf8')).version")" --package-name joycraft
+
+      - name: Upload retained validation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: joycraft-validation-artifact-${{ github.sha }}-${{ github.run_attempt }}
+          path: release-artifact
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Test
-        run: pnpm test --run
+        run: pnpm test
 
       - name: Type check
         run: pnpm typecheck
+
+  compatibility:
+    name: Compatibility · ${{ matrix.os }} / Node ${{ matrix.node }}
+    needs: test
+    if: always() && (needs.test.result == 'success' || inputs.artifact_name != '')
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu
+            runner: ubuntu-latest
+            node: 22.23.1
+          - os: ubuntu
+            runner: ubuntu-latest
+            node: 24.20.0
+          - os: ubuntu
+            runner: ubuntu-latest
+            node: 22.0.0
+          - os: macos
+            runner: macos-latest
+            node: 22.23.1
+          - os: macos
+            runner: macos-latest
+            node: 24.20.0
+          - os: windows
+            runner: windows-latest
+            node: 22.23.1
+          - os: windows
+            runner: windows-latest
+            node: 24.20.0
+    steps:
+      - name: Checkout immutable validation source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+          fetch-depth: 1
+
+      - name: Setup consumer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Download retained candidate artifact
+        if: inputs.artifact_name != ''
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: ${{ inputs.artifact_name }}
+          path: release-artifact
+          github-token: ${{ github.token }}
+
+      - name: Download local validation artifact
+        if: inputs.artifact_name == ''
+        uses: actions/download-artifact@v4
+        with:
+          name: joycraft-validation-artifact-${{ github.sha }}-${{ github.run_attempt }}
+          path: release-artifact
+
+      - name: Run packaged compatibility matrix cell
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha || github.sha }}
+        run: |
+          mkdir -p reports
+          node scripts/validate-package.mjs \
+            --manifest release-artifact/release-artifact.json \
+            --os '${{ matrix.os }}' \
+            --node '${{ matrix.node }}' \
+            --output "reports/report-${{ matrix.os }}-${{ matrix.node }}.json"
+
+      - name: Upload required compatibility cell report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: joycraft-required-validation-cell-${{ inputs.release_sha || github.sha }}-${{ matrix.os }}-${{ matrix.node }}-${{ github.run_attempt }}
+          path: reports/report-${{ matrix.os }}-${{ matrix.node }}.json
+          if-no-files-found: error
+          retention-days: 90
+
+  required-validation:
+    name: Required compatibility report
+    needs: compatibility
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout immutable validation source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+          fetch-depth: 1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.1
+
+      - name: Download retained candidate artifact
+        if: inputs.artifact_name != ''
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.artifact_run_id || github.run_id }}
+          name: ${{ inputs.artifact_name }}
+          path: release-artifact
+          github-token: ${{ github.token }}
+
+      - name: Download local validation artifact
+        if: inputs.artifact_name == ''
+        uses: actions/download-artifact@v4
+        with:
+          name: joycraft-validation-artifact-${{ github.sha }}-${{ github.run_attempt }}
+          path: release-artifact
+
+      - name: Download all compatibility cell reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: joycraft-required-validation-cell-${{ inputs.release_sha || github.sha }}-*-${{ github.run_attempt }}
+          path: required-validation/cells
+          merge-multiple: true
+          github-token: ${{ github.token }}
+
+      - name: Aggregate independently configured required checks
+        shell: bash
+        env:
+          RELEASE_SHA: ${{ inputs.release_sha || github.sha }}
+        run: |
+          VERSION=$(node -p "JSON.parse(require('fs').readFileSync('release-artifact/release-artifact.json','utf8')).version")
+          INTEGRITY=$(node -p "JSON.parse(require('fs').readFileSync('release-artifact/release-artifact.json','utf8')).integrity")
+          node scripts/release-validation.mjs aggregate \
+            --reports-dir required-validation/cells \
+            --output required-validation/report.json \
+            --required-checks-file .github/release-required-checks.json \
+            --release-sha "$RELEASE_SHA" \
+            --version "$VERSION" \
+            --integrity "$INTEGRITY"
+
+      - name: Upload immutable required validation report
+        uses: actions/upload-artifact@v4
+        with:
+          name: joycraft-required-validation-${{ inputs.release_sha || github.sha }}-${{ github.run_attempt }}
+          path: required-validation/report.json
+          if-no-files-found: error
+          retention-days: 90

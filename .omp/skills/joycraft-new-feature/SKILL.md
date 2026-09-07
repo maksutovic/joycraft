@@ -2,6 +2,8 @@
 name: joycraft-new-feature
 description: Guided feature development — interview the user, produce a Feature Brief, then decompose into atomic specs
 ---
+At skill entry, run `node docs/.joycraft/check.mjs check --json --session <session-id>` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing or fails, continue the requested skill quietly without retrying setup. Offer updates only for display: true; current, postponed, off, and unknown stay quiet. If automaticUpdate is present, finish this skill, then run its exact command once from the project root: the candidate must verify every safety gate before applying. Other updates require approval. After an offer or automatic attempt, record it with `node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>`. Apply updates only at this workflow boundary; after success, reinvoke the skill or restart the session to load changed instructions.
+
 
 # New Feature Workflow
 
@@ -251,7 +253,7 @@ read the md, never the HTML. The HTML is a render of it and never invents conten
    footer unparseable (hand-edited) → fall back to revision 1 and note the
    reset in the footer — never fail the render. The filename never changes —
    the revision lives inside the artifact.
-4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
+4. Check `autoOpen` in `docs/.joycraft/local/settings.json` (missing file or key =
    true). When it is false, skip opening silently and print the absolute path
    instead — the setting is never a failure. Otherwise open it before asking
    anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both
