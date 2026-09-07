@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { Readable } from 'node:stream';
 import { init } from '../src/init';
+import { update } from '../src/update';
 import { readInstallationManifest } from '../src/install-manifest';
 import { STATE_PATH } from '../src/version';
 
@@ -90,6 +91,53 @@ describe('init selection boundary', () => {
       expect(result.diagnostics.join(' ')).toMatch(/No harness selected.*run init again/i);
       expect(existsSync(join(root, 'docs'))).toBe(false);
       expect(existsSync(join(root, 'AGENTS.md'))).toBe(false);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('uses the same fresh interactive boundary for canonical update', async () => {
+    const root = project();
+    try {
+      const result = await withAnswers(
+        ['codex', '', '', '', '', 'shared'],
+        () => update(root),
+      );
+
+      expect(result.status).toBe('applied');
+      expect(result.harnesses).toEqual(['codex']);
+      expect(existsSync(join(root, '.agents', 'skills'))).toBe(true);
+      expect(existsSync(join(root, '.claude'))).toBe(false);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('does not interview for recovery of a fresh interrupted installation', async () => {
+    const root = project();
+    try {
+      const result = await withAnswers([], () => update(root, { recovery: 'recover' }));
+      expect(result.status).toBe('invalid');
+      expect(existsSync(join(root, '.agents'))).toBe(false);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it('returns a preview without mutating a fresh project', async () => {
+    const root = project();
+    try {
+      const result = await update(root, {
+        preview: true,
+        harnesses: ['codex'],
+        gitignore: 'shared',
+        executionProfile: { entries: [{ harness: 'codex', swarmDecompose: false, swarmImplement: false, model: 'session default', effort: 'session default' }] },
+      });
+
+      expect(result.status).toBe('applied');
+      expect(result.plan).toBeDefined();
+      expect(existsSync(join(root, 'docs'))).toBe(false);
+      expect(existsSync(join(root, '.agents'))).toBe(false);
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

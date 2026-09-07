@@ -18,6 +18,14 @@ export const DEFAULT_RUNTIME_LANES = Object.freeze([
 ]);
 export const DEFAULT_CACHE_MODES = Object.freeze(['cold', 'warmed-full', 'warmed-compact']);
 
+// Readiness evidence is deliberately process-local and opaque.  A JSON object
+// that merely resembles verifier output must never authorize a mutation.
+const VERIFIED_READINESS = new WeakSet();
+
+export function isVerifiedRegistryReadiness(value) {
+  return Boolean(value && typeof value === 'object' && VERIFIED_READINESS.has(value));
+}
+
 function validSha512Integrity(value) {
   if (typeof value !== 'string' || !/^sha512-[A-Za-z0-9+/]+={0,2}$/.test(value)) return false;
   const encoded = value.slice('sha512-'.length);
@@ -205,10 +213,20 @@ function npmInvocation() {
   return { command: process.execPath, prefix: [candidates[0]] };
 }
 
-function optionsFor(cwd, cacheDir) {
-  const env = { ...process.env };
+function optionsFor(cwd, cacheDir, baseEnv = process.env) {
+  const env = { ...baseEnv };
   if (cacheDir) env.npm_config_cache = cacheDir;
   return { cwd: resolve(cwd), env };
+}
+
+function sanitizedVerificationEnv(value = process.env) {
+  const env = { ...value };
+  delete env.JOYCRAFT_NPM_PROMOTION_TOKEN;
+  delete env.JOYCRAFT_NPM_PROMOTION_TOKEN_EXPIRES_AT;
+  delete env.NPM_TOKEN;
+  delete env.npm_config_userconfig;
+  delete env.NPM_CONFIG_USERCONFIG;
+  return env;
 }
 
 async function assertRuntimeLane({ node, npm } = {}) {
@@ -223,7 +241,8 @@ async function assertRuntimeLane({ node, npm } = {}) {
 }
 
 /** Adapter for all release-consumer npm calls; tests can replace only run. */
-export function createNpmVerificationAdapter({ run = defaultRun } = {}) {
+export function createNpmVerificationAdapter({ run = defaultRun, env = process.env } = {}) {
+  const verificationEnv = sanitizedVerificationEnv(env);
   const invoke = run === defaultRun ? async (command, args, options) => {
     const npm = npmInvocation();
     return run(npm.command, [...npm.prefix, ...args], options);
@@ -233,7 +252,7 @@ export function createNpmVerificationAdapter({ run = defaultRun } = {}) {
       const args = ['view', `${packageName}@${version}`, '--json'];
       if (preferOnline) args.push('--prefer-online');
       if (cacheDir) args.push('--cache', cacheDir);
-      const result = await invoke('npm', args, optionsFor(cwd, cacheDir));
+      const result = await invoke('npm', args, optionsFor(cwd, cacheDir, verificationEnv));
       return parseOutput(result);
     },
     async primeMetadata({ packageName, version, cacheDir, metadataMode = 'full', cwd = process.cwd() }) {
@@ -243,12 +262,12 @@ export function createNpmVerificationAdapter({ run = defaultRun } = {}) {
         ? ['exec', '--yes', `--package=${packageName}${version ? `@${version}` : ''}`, '--prefer-online']
         : ['view', `${packageName}${version ? `@${version}` : ''}`, '--json', '--prefer-online'];
       if (cacheDir) args.push('--cache', cacheDir);
-      if (metadataMode !== 'compact') return invoke('npm', args, optionsFor(cwd, cacheDir));
+      if (metadataMode !== 'compact') return invoke('npm', args, optionsFor(cwd, cacheDir, verificationEnv));
       args.push('--', 'node', '--version');
       const isolatedCwd = mkdtempSync(join(tmpdir(), 'joycraft-compact-consumer-'));
       writeFileSync(join(isolatedCwd, 'package.json'), `${JSON.stringify({ name: `${packageName}-cache-probe`, private: true })}\n`, 'utf8');
       try {
-        return await invoke('npm', args, optionsFor(isolatedCwd, cacheDir));
+        return await invoke('npm', args, optionsFor(isolatedCwd, cacheDir, verificationEnv));
       } finally {
         rmSync(isolatedCwd, { recursive: true, force: true });
       }
@@ -257,14 +276,14 @@ export function createNpmVerificationAdapter({ run = defaultRun } = {}) {
       const args = ['install', spec, '--ignore-scripts', '--no-audit', '--no-fund'];
       if (preferOnline) args.push('--prefer-online');
       if (cacheDir) args.push('--cache', cacheDir);
-      return invoke('npm', args, { ...optionsFor(cwd, cacheDir), env: { ...optionsFor(cwd, cacheDir).env, JOYCRAFT_ATTEMPT: String(attempt) } });
+      return invoke('npm', args, { ...optionsFor(cwd, cacheDir, verificationEnv), env: { ...optionsFor(cwd, cacheDir, verificationEnv).env, JOYCRAFT_ATTEMPT: String(attempt) } });
     },
     async exec({ spec, command, args = [], cwd, cacheDir, preferOnline = true }) {
       const commandArgs = ['exec', '--yes', `--package=${spec}`];
       if (cacheDir) commandArgs.push('--cache', cacheDir);
       if (preferOnline) commandArgs.push('--prefer-online');
       commandArgs.push('--', command, ...args);
-      return invoke('npm', commandArgs, optionsFor(cwd, cacheDir));
+      return invoke('npm', commandArgs, optionsFor(cwd, cacheDir, verificationEnv));
     },
   };
 }
@@ -418,7 +437,32 @@ export async function runRegistryReadiness({
     }
     return { ready: checks.length === plan.verify.length && checks.every(item => item.ok), checks };
   };
-  return waitForRegistryReadiness({ check, ...pollOptions });
+  const result = await waitForRegistryReadiness({ check, ...pollOptions });
+  if (!result.ready) return result;
+  const checks = result.evidence?.checks;
+  const plannedIds = plan.verify.map(lane => lane.id);
+  const complete = Array.isArray(checks)
+    && checks.length === plannedIds.length
+    && checks.every(item => item?.ok === true && item?.consumer === true)
+    && new Set(checks.map(item => item.id)).size === plannedIds.length
+    && plannedIds.every(id => checks.some(item => item.id === id));
+  const elapsed = Number(result.checkedAt) - Number(result.startedAt);
+  if (!complete || !Number.isFinite(elapsed) || elapsed < MIN_FRESHNESS_MS) {
+    return { ...result, ready: false, reason: 'Registry readiness evidence is incomplete or stale' };
+  }
+  const proof = Object.freeze({
+    ...result,
+    packageName,
+    version,
+    integrity,
+    descriptor: Object.freeze(JSON.parse(JSON.stringify(descriptor))),
+    evidence: Object.freeze({
+      ...result.evidence,
+      checks: Object.freeze(result.evidence.checks.map(check => Object.freeze({ ...check }))),
+    }),
+  });
+  VERIFIED_READINESS.add(proof);
+  return proof;
 }
 
 async function main() {
@@ -497,4 +541,5 @@ async function main() {
   throw new Error('Usage: release-verification.mjs <plan|prime|readiness|verify-consumers|verify-registry-consumer>');
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) main().catch(error => { console.error(error.message); process.exitCode = 1; });
+const entrypoint = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).href : '';
+if (import.meta.url === entrypoint) main().catch(error => { console.error(error.message); process.exitCode = 1; });

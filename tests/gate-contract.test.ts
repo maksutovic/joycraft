@@ -775,7 +775,7 @@ describe('group 13: gate artifacts are stamped and auto-open is a setting', () =
     it(`${name}.md checks autoOpen before opening, defaulting to true`, () => {
       const collapsed = read(name).replace(/\s+/g, ' ');
       expect(collapsed).toContain('`autoOpen`');
-      expect(collapsed).toContain('docs/.joycraft/state.json');
+      expect(collapsed).toContain('docs/.joycraft/local/settings.json');
       expect(collapsed).toContain('missing file or key = true');
     });
   }

@@ -221,7 +221,7 @@ read the md, never the HTML. The HTML is a render of it and never invents conten
    footer unparseable (hand-edited) → fall back to revision 1 and note the
    reset in the footer — never fail the render. The filename never changes —
    the revision lives inside the artifact.
-4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
+4. Check `autoOpen` in `docs/.joycraft/local/settings.json` (missing file or key =
    true). When it is false, skip opening silently and print the absolute path
    instead — the setting is never a failure. Otherwise open it before asking
    anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both

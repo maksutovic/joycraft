@@ -9,20 +9,25 @@ gets the same skills and workflow. Some teams prefer to keep the harness local
 and track only the docs. Choose a profile at init time:
 
 ```bash
-npx joycraft@latest init --gitignore=shared    # default — commit .claude/, .agents/, .pi/, .github/
-npx joycraft@latest init --gitignore=private   # gitignore them; track only CLAUDE.md, AGENTS.md, docs/
+npx joycraft@latest update --gitignore=shared    # default — commit .claude/, .agents/, .pi/, .github/
+npx joycraft@latest update --gitignore=private   # gitignore them; track only CLAUDE.md, AGENTS.md, docs/
 ```
 
 Run interactively without the flag and `init` asks (right after the harness
-picker). The choice is saved, so `npx joycraft@latest upgrade` re-applies it
-automatically. To switch an existing project later (or decide from CI), pass the
-same flag to upgrade: `npx joycraft@latest upgrade --gitignore=private`. `.gitignore`
+picker). The choice is saved in the installation manifest, so
+`npx joycraft@latest update` re-applies it automatically. To switch an existing
+project later (or decide from CI), pass the same flag to update:
+`npx joycraft@latest update --gitignore=private`. `.gitignore`
 edits are append-only — Joycraft never rewrites or removes your existing lines.
+
+The shared installation manifest is `docs/.joycraft/manifest.json`; the private
+manifest is `docs/.joycraft/local/manifest.json`. The checker cache, policy,
+and other local state live under `docs/.joycraft/local/`.
 
 | Profile | Tracked in git | Gitignored |
 |---------|----------------|------------|
-| `shared` (default) | `CLAUDE.md`, `AGENTS.md`, `docs/`, `.claude/skills/`, `.agents/`, `.pi/`, `.github/skills/` | hidden upgrade state only (`docs/.joycraft/state.json`) |
-| `private` | `CLAUDE.md`, `AGENTS.md`, `docs/` | `.claude/`, `.agents/`, `.pi/`, `.github/skills/joycraft-*/` |
+| `shared` (default) | `CLAUDE.md`, `AGENTS.md`, `docs/`, `.claude/skills/`, `.agents/`, `.pi/`, `.github/skills/`, `docs/.joycraft/manifest.json` | local checker settings/cache, transaction state, and `docs/.joycraft/state.json` |
+| `private` | `CLAUDE.md`, `AGENTS.md`, `docs/` except its local Joycraft state | `.claude/`, `.agents/`, `.pi/`, `.github/skills/joycraft-*/`, `.omp/`, `docs/.joycraft/local/` |
 
 > Switching an existing project to `private` only updates `.gitignore`. If
 > harness files were already committed, untrack them with
@@ -31,12 +36,20 @@ edits are append-only — Joycraft never rewrites or removes your existing lines
 >
 > Under `private`, the harness dirs aren't committed — so a teammate who clones
 > the repo gets `CLAUDE.md`/`AGENTS.md` but no skills until they run
-> `npx joycraft@latest init` to regenerate them locally. Joycraft adds a one-line
+> `npx joycraft@latest update --harnesses <selection>` to regenerate them locally. Joycraft adds a one-line
 > reminder to your generated `CLAUDE.md` and `AGENTS.md` for exactly this reason.
 
 ## Re-running init on an existing project
 
-**`init` only creates *missing* files.** It is safe to run on a project that already has Joycraft (or a hand-tuned `CLAUDE.md`): an existing `CLAUDE.md`, `AGENTS.md`, template, or skill file is **skipped, never regenerated** — your customizations are left untouched. Only `--force` overwrites existing files. The run summary lists what it skipped (`Skipped N file(s) (already exist, use --force to overwrite)`) so you can see exactly what was preserved. This makes `init` the right command to **fill in a private-profile clone**: a teammate who clones a `private` repo gets the committed `CLAUDE.md`/`AGENTS.md`/`docs/` but not the gitignored harness dirs — running `npx joycraft@latest init` regenerates the missing skill files locally and leaves the committed files alone.
+`update` is the normal command for an existing project. It updates unmodified
+Joycraft files and preserves customized files as reviewable conflicts. The
+`init` alias is also safe on an existing project: it fills missing managed files
+and uses the same preservation checks. `--force` is accepted only by the init
+alias and is scoped to known setup inventory paths; use
+`--replace-customized <paths...>` for an explicit reviewed replacement. This
+makes `init` useful for a private-profile clone: a teammate gets the committed
+`CLAUDE.md`/`AGENTS.md`/`docs/` and can regenerate the missing harness files
+locally while the committed files remain protected.
 
 ## Reviewable PRs: workflow docs are collapsed
 
@@ -44,7 +57,7 @@ Joycraft's docs are two kinds of content. Durable knowledge — `CLAUDE.md`,
 `AGENTS.md`, `docs/context/` — steers every future agent run and deserves review
 eyes. Workflow exhaust — feature briefs and specs, discoveries, installed
 templates — is historical by the time a PR is opened (the spec was reviewed in
-conversation when it was written). To keep PRs reviewable, `init` and `upgrade`
+conversation when it was written). To keep PRs reviewable, `init` and `update`
 write a `.gitattributes` marking the exhaust paths `linguist-generated=true`:
 
 ```gitattributes

@@ -1,8 +1,8 @@
 # Joycraft
 
-**What:** A CLI + Claude Code plugin that scaffolds and upgrades AI development harnesses. `npx joycraft init` installs skills, templates, boundaries, and documentation structure into any project, taking it from Level 1 to Level 4 on Dan Shapiro's 5 Levels of Vibe Coding.
+**What:** A CLI + Claude Code plugin that scaffolds and upgrades AI development harnesses. `npx joycraft@latest update` installs skills, templates, boundaries, and documentation structure into any project, taking it from Level 1 to Level 4 on Dan Shapiro's 5 Levels of Vibe Coding.
 
-**Component:** npm package (CLI) + agent skills (Claude Code, Codex, Pi, Copilot, omp) | **Updated:** 2026-09-03
+**Component:** npm package (CLI) + agent skills (Claude Code, Codex, Pi, Copilot, omp) | **Updated:** 2026-09-06
 
 ---
 
@@ -89,19 +89,17 @@ Past multi-team scale, replace this root map with nested per-directory instructi
 ### Key Data Flow
 
 ```
-npx joycraft init
-  → detectStack() reads manifest files → StackInfo
-  → scaffold dirs (docs/context, docs/features, docs/discoveries, etc.)
-  → copy skills → .claude/skills/
-  → copy templates → docs/templates/
-  → generate/improve CLAUDE.md with StackInfo commands
-  → generate AGENTS.md
-  → print summary + next steps
+npx joycraft@latest update
+  → choose or reuse harnesses and shared/private profile
+  → read installation manifest (or conservatively bridge legacy state)
+  → compare vendor baseline, current bytes, and executing bundle
+  → preview or apply selected safe actions in one recoverable transaction
+  → publish manifest last; preserve local settings and customized files
 
-/tune (inside Claude Code)
-  → read CLAUDE.md, check dirs, check skills
-  → score 7 dimensions
-  → route: scaffold | assess + upgrade | ready
+Joycraft skill entry
+  → installed checker reads local policy and cached version
+  → offer one update per conversation when appropriate
+  → finish active skill before an approved or eligible automatic update
 ```
 
 ---
@@ -113,7 +111,11 @@ npx joycraft init
 | `src/detect.ts` | Stack detection — pure function, no side effects |
 | `src/telemetry.ts` + `src/telemetry-store.ts` | Read-telemetry scanner (Claude/Pi/omp/Codex transcripts) + gitignored store behind `joycraft telemetry` |
 | `src/folder-map.ts` | Check-shaped folder map — sentinel block regenerated at init/upgrade, drift-diffed by tune |
-| `src/init.ts` | Main scaffolding logic — the core of `npx joycraft init` |
+| `src/init.ts` + `src/upgrade.ts` | Compatibility entry points that delegate to the unified updater |
+| `src/update.ts` + `src/update-plan.ts` + `src/update-transaction.ts` | One executing bundle, conservative per-file planning, atomic apply and guarded recovery |
+| `src/install-manifest.ts` | Shared/private installation authority and conservative legacy bridge |
+| `src/update-check.ts` + `src/auto-safe-update.ts` | Local discovery policy, quiet checks, and verified automatic-update gates |
+| `scripts/release-preparation.mjs` + `scripts/release-verification.mjs` + `scripts/release-promotion.mjs` | Reviewed release PR, retained tarball, consumer verification, and gated promotion |
 | `src/improve-claude-md.ts` | Merge logic for existing CLAUDE.md files — most complex logic |
 | `templates/` | Source-of-truth for all templates — changes here propagate to users via upgrade |
 | `src/skills/` | Source-of-truth for all product skills — `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/`, `src/copilot-skills/`, `src/omp-skills/` are generated from it (never edit those directly) |
@@ -137,7 +139,7 @@ pnpm build
 
 ### Test
 ```bash
-pnpm test --run
+pnpm test
 ```
 
 ### Type Check

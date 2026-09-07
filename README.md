@@ -12,19 +12,23 @@ A CLI that installs spec-driven development into [Claude Code](https://code.clau
 
 ```bash
 cd /path/to/your/project
-npx joycraft@latest init
+npx joycraft@latest update
 ```
+
+Existing scripts may use the equivalent alias `npx joycraft@latest init` for a
+fresh install.
 
 Joycraft is a **curated harness, not a memory system**. Everything it writes is in-repo, reviewed in your PRs, and reaped when it stops earning its keep — the opposite of hidden state that accretes until it misleads. Code is the truth about how your project works; the harness holds only what code cannot say (intent, decisions and their rationale, product direction), and `/joycraft-optimize`'s Reaper pass is what keeps it honest. If your agent already keeps its own automatic memory, a Joycraft project supersedes it: the same facts get one home that your whole team can see and review.
 
 ## Contents
 
-- [Install](#install) · [Use](#use) · [Upgrade](#upgrade)
+- [Install](#install) · [Use](#use) · [Upgrade](#upgrade-and-update)
 - [Setup walkthrough](docs/guides/setup-walkthrough.md) — every step from install to first feature
 - [Which skill do I need?](#which-skill-do-i-need) — the skill table and the core loop
 - [What init creates](#what-init-creates)
 - [Platform support](docs/guides/platform-support.md) — Claude Code, Codex, Pi, Copilot, omp, stacks, headless Pi
-- [Upgrading](docs/guides/upgrading.md) — `npx joycraft@latest upgrade` and what's new in 0.7
+- [Upgrading](docs/guides/upgrading.md) — the unified install/update command and recovery paths
+- [Releasing](docs/guides/releasing.md) — candidate verification, promotion, and retry recovery
 - [Git tracking](docs/guides/git-tracking.md) — shared vs private profiles, reviewable PRs
 - [Migration: flat → per-feature layout](docs/guides/migration-per-feature-layout.md) — the v0.6 docs move
 - [The levels](docs/guides/levels.md) — Dan Shapiro's 5 Levels, where Joycraft aims, and the credits
@@ -35,10 +39,10 @@ Joycraft is a **curated harness, not a memory system**. Everything it writes is 
 
 ```bash
 cd /path/to/your/project
-npx joycraft@latest init
+npx joycraft@latest update
 ```
 
-Answer a few questions — which harnesses to install, whether to commit them, and (with Claude Code) whether to turn off auto-memory for this project — and `init` does the rest: detects your stack, writes `AGENTS.md`/`CLAUDE.md` with your real build/test commands, installs the skills. Safe to re-run: it only creates missing files, never overwrites yours.
+Answer a few questions — which harnesses to install, whether to commit them, and (with Claude Code) whether to turn off auto-memory for this project — and `update` does the rest: detects your stack, writes `AGENTS.md`/`CLAUDE.md` with your real build/test commands, installs the skills. On later runs, unmodified vendor files refresh while customizations are preserved for review.
 
 `npm install -g joycraft` if you'd rather have the command on your PATH; `npx` works without it. Every step from install to first shipped feature: [Setup walkthrough](docs/guides/setup-walkthrough.md).
 
@@ -56,13 +60,23 @@ Inside your AI tool, drive everything with slash commands:
 
 Brainstorming first? `/joycraft-interview`. Fixing a bug? `/joycraft-bugfix`. The full table is at [Which skill do I need?](#which-skill-do-i-need); invocation syntax per tool is in [Platform support](docs/guides/platform-support.md).
 
-## Upgrade
+## Upgrade and update
 
 ```bash
-npx joycraft@latest upgrade
+npx joycraft@latest update
 ```
 
-Refreshes skills and templates for the harnesses you selected at init. Unmodified files update automatically; files you've customized show a diff and ask first (`--yes` for CI). Details and release notes: [Upgrading](docs/guides/upgrading.md).
+Run this from the project root. In a fresh interactive project it asks which harnesses to install. In CI or another unattended fresh project, provide an explicit selection, for example `--harnesses codex --non-interactive`. On an existing project it reads the shared or private installation manifest and preserves the selected harnesses, local content, unrelated configuration, and unknown state fields. `--yes` applies safe changes while preserving customized files; it is not blanket permission to overwrite them. Use `--preview` to review the actual plan, `--replace-customized <paths...>` for reviewed replacements, and `--repair <paths...>` for explicitly restoring missing managed files. Details, policies, bridge behavior, and exit codes are in [Upgrading](docs/guides/upgrading.md).
+
+`init` and `upgrade` remain supported aliases into the same update engine. `init` is the friendly fresh-install entry point; `upgrade` keeps older automation working. If npm fails with `ETARGET` before Joycraft starts, retry with an online npm metadata refresh:
+
+```bash
+npm --prefer-online exec --yes -- joycraft@latest update
+```
+
+The launcher resolves one exact candidate. The executing bundle does not silently resolve `latest` again. After a successful update, reinvoke the active skill or restart the agent session so it loads the new instructions.
+
+Update checks are local to each project. The default `notify` policy keeps a 24-hour cache, uses a short bounded request, and stays quiet when offline or unavailable. `auto-safe` is an explicit local opt-in and still requires the reviewed candidate descriptor and every safety gate; `off` disables notices. See [Upgrading](docs/guides/upgrading.md#update-checks-and-policies).
 
 ```bash
 npx joycraft@latest telemetry
@@ -75,7 +89,7 @@ Scans your Claude Code, Pi, omp, and (best-effort) Codex session transcripts and
 - **AGENTS.md** — behavioral boundaries (Always / Ask First / Never) plus your stack's real build/test/lint commands; the single shared instruction file when more than one tool is selected
 - **CLAUDE.md** — on a multi-tool install, [Anthropic's documented import pattern](https://code.claude.com/docs/en/memory): `@AGENTS.md` plus a `## Claude Code` section, so every tool reads one source. A Claude-only install gets the classic full CLAUDE.md
 - **22 skills** — installed to `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), `.pi/skills/` (Pi), `.github/skills/` (Copilot), and/or `.omp/skills/` (omp, invoked as `/skill:joycraft-*`); Pi also gets the headless pipeline runtime in `.pi/scripts/joycraft/`
-- **docs/** — `docs/context/` (production map, dangerous assumptions, decision log, institutional knowledge, troubleshooting) plus templates; feature folders and `docs/backlog/` are created lazily by the skills that write to them. Joycraft's own state hides at `docs/.joycraft/` (gitignored): `state.json` plus the read-telemetry store
+- **docs/** — `docs/context/` (production map, dangerous assumptions, decision log, institutional knowledge, troubleshooting) plus templates; feature folders and `docs/backlog/` are created lazily by the skills that write to them. Joycraft records shared installation identity in `docs/.joycraft/manifest.json` and the shared checker in `docs/.joycraft/check.mjs`. Private manifests, personal preferences, and caches stay in the gitignored `docs/.joycraft/local/` directory. Read telemetry stays local too
 - **Agent teams enabled** — with Claude Code selected, `init` sets `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` so subagent-driven skills work out of the box (never clobbers a value you set)
 
 Re-running on an existing project is covered in [Git tracking](docs/guides/git-tracking.md#re-running-init-on-an-existing-project).
@@ -158,9 +172,9 @@ Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for the full g
 The short version:
 
 1. Fork, branch from `main`
-2. `pnpm install && pnpm test --run` to verify your setup
+2. `pnpm install && pnpm test` to verify your setup
 3. Write tests first, then implement
-4. `pnpm test --run && pnpm typecheck && pnpm build`
+4. `pnpm test && pnpm typecheck && pnpm build`
 5. Open a PR (one approval required)
 
 Look for [`good first issue`](https://github.com/maksutovic/joycraft/labels/good%20first%20issue) labels if you're new. Areas we'd especially love help with: stack detection for new languages, skill improvements, and documentation.

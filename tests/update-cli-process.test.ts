@@ -38,11 +38,25 @@ function run(name: string, args: string[], setup?: (root: string) => void) {
 }
 
 describe('real CLI update outcomes', () => {
+  it('repairs a deliberately missing owned file only when explicitly selected', () => {
+    const args = ['update', '.', '--harnesses', 'codex', '--non-interactive', '--json'];
+    const { root } = run('explicit repair', args);
+    const path = '.agents/skills/joycraft-tune/SKILL.md';
+    const original = readFileSync(join(root, path));
+    rmSync(join(root, path));
+    run('explicit repair', args);
+    expect(existsSync(join(root, path))).toBe(false);
+    const repaired = run('explicit repair', [...args, '--repair', path]);
+    expect(repaired.code).toBe(0);
+    expect(repaired.output.applied).toContain(path);
+    expect(readFileSync(join(root, path))).toEqual(original);
+  });
   for (const alias of ['update', 'init', 'upgrade']) {
     it(`${alias} prints one JSON outcome and uses its executing bundle without registry resolution`, () => {
       const { code, output } = run(alias, [alias, '.', '--harnesses', 'codex', '--non-interactive', '--json']);
       expect(code).toBe(0);
       expect(output.status).toBe('applied');
+      expect(output.installedVersion).toBe(output.targetVersion);
       expect(output.applied).toContain('.agents/skills/joycraft-tune/SKILL.md');
     });
   }

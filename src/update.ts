@@ -29,7 +29,7 @@ import {
   type LocalTransactionOperation,
 } from './update-transaction.js';
 import { getPackageVersion } from './package-version.js';
-import { HARNESSES, parseHarnessSelection, sanitizeHarnesses, type Harness } from './harness.js';
+import { HARNESSES, parseHarnessSelection, resolveHarnesses, sanitizeHarnesses, type Harness } from './harness.js';
 import {
   DEFAULT_GITIGNORE_PROFILE,
   LEGACY_CLAUDE_STATE_PATH,
@@ -42,7 +42,9 @@ import {
 import { planGitignoreProfile, sharedManifestIgnoreWarning } from './gitignore.js';
 import { planGitattributes } from './gitattributes.js';
 import { resolveUpdatePath } from './update-paths.js';
-import { defaultExecutionProfile, type ExecutionProfile } from './execution-profile.js';
+import { resolveAutoMemoryOffer } from './auto-memory.js';
+import { defaultExecutionProfile, resolveExecutionProfile, type ExecutionProfile } from './execution-profile.js';
+import { resolveGitignoreProfile } from './gitignore.js';
 import { materializeFreshInstallInventory, type InventoryPatchOperation } from './update-inventory.js';
 import {
   evaluateAutoSafeEligibility,
@@ -336,6 +338,115 @@ function hasRecognizedHarness(root: string): boolean {
   return recognizedHarnesses(root).length > 0;
 }
 
+interface RecordedSelection {
+  present: boolean;
+  harnesses?: Harness[];
+  profile?: GitignoreProfile;
+}
+
+const RECORDED_SELECTION_PATHS = [STATE_PATH, LEGACY_CLAUDE_STATE_PATH, LEGACY_VERSION_FILE];
+
+/** Read only the facts needed to decide whether a fresh interview is needed. */
+function readRecordedSelection(root: string): RecordedSelection {
+  const recorded: RecordedSelection = { present: false };
+  for (const profile of ['shared', 'private'] as const) {
+    const info = readInstallationManifestInfo(root, profile);
+    if (info.status !== 'missing') recorded.present = true;
+    if (info.manifest) {
+      recorded.harnesses ??= [...info.manifest.harnesses];
+      recorded.profile ??= info.manifest.profile;
+    }
+  }
+  for (const relative of RECORDED_SELECTION_PATHS) {
+    const path = join(root, ...relative.split('/'));
+    if (!existsSync(path)) continue;
+    recorded.present = true;
+    try {
+      const parsed = JSON.parse(readFileSync(path, 'utf8')) as Record<string, unknown>;
+      if (!recorded.harnesses && Array.isArray(parsed.harnesses)) {
+        recorded.harnesses = sanitizeHarnesses(parsed.harnesses) ?? undefined;
+      }
+      recorded.profile ??= parseGitignoreProfile(parsed.gitignoreProfile) ?? undefined;
+    } catch {
+      // update() performs the authoritative malformed-state diagnosis later.
+    }
+  }
+  if (!recorded.present) recorded.present = hasRecognizedHarness(root);
+  return recorded;
+}
+
+function emptyHarnessSelection(value: UpdateOptions['harnesses']): boolean {
+  if (Array.isArray(value)) return value.length === 0;
+  return typeof value === 'string' && parseHarnessSelection(value)?.length === 0;
+}
+
+function invalidExplicitHarnessSelection(value: UpdateOptions['harnesses']): boolean {
+  if (typeof value === 'string') return parseHarnessSelection(value) === null;
+  if (value === undefined) return false;
+  return value.some((entry) => (
+    typeof entry !== 'string'
+    || !HARNESSES.includes(entry.trim().toLowerCase() as Harness)
+  ));
+}
+
+interface InteractiveSelectionResult {
+  options: UpdateOptions;
+  emptySelection: boolean;
+}
+
+/**
+ * Shared init/update boundary. It only captures choices; update() remains the
+ * sole owner of snapshotting, planning, and filesystem mutation.
+ */
+async function resolveInteractiveInitOptions(root: string, input: UpdateOptions): Promise<InteractiveSelectionResult> {
+  const recorded = readRecordedSelection(root);
+  const prompting = process.stdin.isTTY === true
+    && input.yes !== true
+    && input.nonInteractive !== true
+    && input.json !== true
+    && input.recovery === undefined
+    && input.automatic !== true
+    && !recorded.present;
+  let options = { ...input };
+
+  if (prompting && options.harnesses === undefined) {
+    options.harnesses = await resolveHarnesses(true);
+  } else if (!prompting && options.harnesses === undefined && recorded.harnesses !== undefined) {
+    options.harnesses = [...recorded.harnesses];
+  }
+  if (emptyHarnessSelection(options.harnesses)) {
+    return { options, emptySelection: true };
+  }
+  if (invalidExplicitHarnessSelection(options.harnesses)) {
+    return { options, emptySelection: false };
+  }
+
+  const selected = typeof options.harnesses === 'string'
+    ? parseHarnessSelection(options.harnesses)
+    : options.harnesses === undefined
+      ? recorded.harnesses
+      : sanitizeHarnesses(options.harnesses);
+  const profileHarnesses = selected ?? [...HARNESSES];
+  if (prompting && options.executionProfile === undefined) {
+    options.executionProfile = await resolveExecutionProfile(profileHarnesses, true);
+  }
+  if (prompting && options.gitignore === undefined) {
+    options.gitignore = (await resolveGitignoreProfile({
+      persisted: recorded.profile,
+      interactive: true,
+      promptIntro: '\nHow should Joycraft files be tracked in git?',
+    })).profile;
+  } else if (options.gitignore === undefined && recorded.profile !== undefined) {
+    // Legacy state has no manifest authority for profileFromAuthorities() to
+    // discover, so carry its recorded choice through migration explicitly.
+    options.gitignore = recorded.profile;
+  }
+  if (prompting && options.disableAutoMemory === undefined && profileHarnesses.includes('claude')) {
+    options.disableAutoMemory = await resolveAutoMemoryOffer(true);
+  }
+  return { options, emptySelection: false };
+}
+
 function chosenHarnesses(root: string, options: UpdateOptions, manifest: InstallationManifest | undefined): Harness[] | null {
   const explicit = parseSelection(options.harnesses);
   if (explicit !== null) return explicit;
@@ -520,6 +631,19 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
       return outcome('invalid', { diagnostics: [error instanceof Error ? error.message : String(error)] });
     }
   }
+  const interactiveSelection = await resolveInteractiveInitOptions(root, options);
+  options = interactiveSelection.options;
+  if (interactiveSelection.emptySelection) {
+    return outcome('noop', {
+      targetVersion: bundle.version,
+      harnesses: [],
+      diagnostics: [
+        'No harness selected — Joycraft will not install any skills.',
+        `Please run init again and select at least one harness (${HARNESSES.join(', ')}).`,
+      ],
+      registry: 'unknown',
+    });
+  }
   const requestedProfile = options.gitignore;
   const authority = profileFromAuthorities(root, requestedProfile);
   if (authority.diagnostic) {
@@ -562,14 +686,12 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
   const baseEntries = bundle.inventory ? [...bundle.inventory] : getBundleInventory(harnesses);
   let manifest: InstallationManifest;
   let localSettings: LocalInstallationSettings | undefined;
-  let adoptionConflicts: string[] = [];
   if (existingManifest) {
     manifest = { ...existingManifest, harnesses: [...harnesses], profile: authority.profile };
   } else if (legacyProject) {
     const adopted = localSettingsFromAdoption(root, baseEntries, bundle, authority.profile);
     manifest = { ...adopted.manifest, harnesses: [...harnesses], profile: authority.profile };
     localSettings = adopted.localSettings;
-    adoptionConflicts = adopted.conflicts;
   } else {
     manifest = {
       schemaVersion: 1,
@@ -784,12 +906,14 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
   }
   return outcome(status, {
     targetVersion: bundle.version,
-    installedVersion: existingManifest?.targetVersion,
+    installedVersion: transaction.status === 'applied' || transaction.status === 'noop'
+      ? plan.nextManifest.targetVersion
+      : existingManifest?.targetVersion,
     profile: authority.profile,
     harnesses,
     applied: actualApplied,
     preserved: selected.preserved,
-    conflicts: [...new Set([...selected.conflicts, ...adoptionConflicts, ...transaction.conflicts])],
+    conflicts: [...new Set([...selected.conflicts, ...transaction.conflicts])],
     diagnostics,
     transaction,
     plan,

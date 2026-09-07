@@ -84,7 +84,7 @@ agents read the md, never the HTML. The HTML is a render of it and never invents
    CSS. The previous render's footer revision + 1 is this one's; no previous
    file, or an unparseable hand-edited footer, → revision 1 (note the reset in
    the footer) — never fail the render. The filename never changes.
-4. Check `autoOpen` in `docs/.joycraft/state.json` (missing file or key =
+4. Check `autoOpen` in `docs/.joycraft/local/settings.json` (missing file or key =
    true). False ⇒ skip opening silently and print the absolute path instead.
    Otherwise open it before asking anything: `open <path>` on darwin,
    `xdg-open <path>` otherwise. If that fails, print the absolute path and continue —
@@ -148,9 +148,9 @@ Apply using three tiers — do NOT ask per-item permission:
 
 **Auto-open toggle:** gate renders open automatically by default. Offer —
 through the question directive above — to flip `autoOpen` in
-`docs/.joycraft/state.json` (missing file or key = true); on an answer, write
-the key preserving every other key in the file, and confirm the new value in
-one line. Never flip it unasked.
+`docs/.joycraft/local/settings.json` (missing file or key = true); on an answer,
+write the key there preserving every other local setting, and confirm the new
+value in one line. Never flip it unasked.
 
 **Execution profile offer:** If Step 1 found no `<!-- joycraft:execution-profile -->` sentinel in AGENTS.md, offer to add one — never write it unasked.
 

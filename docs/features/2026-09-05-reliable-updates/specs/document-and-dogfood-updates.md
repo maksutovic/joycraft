@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 15 of 15
 > **Dependencies:** 14 — validate-upgrade-compatibility.md
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 5–8 files / ~250 lines
 
@@ -27,10 +27,10 @@ Users and maintainers need one accurate path for updates and release recovery, a
 
 ## Acceptance Criteria
 
-- [ ] Document one install/update command, `--prefer-online` recovery, the legacy bridge, safe flag behavior, exit codes, update policies, and reinvocation/restart guidance. [src: brief "Success Criteria"]
-- [ ] Document credential ownership/renewal, candidate verification, retry and promotion failure recovery without storing secret values. [src: D4]
-- [ ] Apply the same reviewed update mechanism to this repository while preserving local content; do not claim old installations discover updates before their bridge update. [src: brief "Success Criteria"]
-- [ ] Run generators as a zero-drift verification, not deferred synchronization; complete build, tests, type checks, independent verification, and release-docs review before PR preparation. [src: brief "Test Strategy"]
+- [x] Document one install/update command, `--prefer-online` recovery, the legacy bridge, safe flag behavior, exit codes, update policies, and reinvocation/restart guidance. [src: brief "Success Criteria"]
+- [x] Document credential ownership/renewal, candidate verification, retry and promotion failure recovery without storing secret values. [src: D4]
+- [x] Apply the same reviewed update mechanism to this repository while preserving local content; do not claim old installations discover updates before their bridge update. [src: brief "Success Criteria"]
+- [x] Run generators as a zero-drift verification, not deferred synchronization; complete build, tests, type checks, independent verification, and release-docs review before PR preparation. [src: brief "Test Strategy"]
 
 ## Test Plan
 
@@ -91,3 +91,7 @@ Reject manual edits to local Joycraft state: that would bypass the planner, tran
 | Scoped promotion credential expires | Maintainer guide explains renewal and rerun; no secret is printed or stored. |
 | Dogfood plan finds a customization | The plan preserves it and reports the pending/conflict status. |
 | Generator changes an installed copy | Treat this as drift to resolve before PR preparation. |
+
+## Implementation evidence
+
+The final local run passed 3,438 tests (one skipped) across 145 files, plus type checking and build. Independent reviewers checked the update engine, discovery/release gates, and compatibility/documentation. Regeneration left all 226 generated and installed skill files unchanged. The production updater migrated this repository, preserved the custom deny-pattern file, and a repeat applied no changes. Cross-platform runtime execution remains a PR CI gate; no npm publication or real tag promotion was performed.

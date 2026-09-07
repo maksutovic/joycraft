@@ -1,9 +1,49 @@
 # Changelog
 
-Joycraft auto-publishes to npm on every merge to `main` (a patch bump if the
-version wasn't changed manually), so many small versions exist between the
-entries here. This file records the releases that changed how Joycraft *works*,
-in a before → now → side-effects format, newest first.
+Joycraft releases are prepared in a reviewed release PR, verified from its
+immutable merge commit, and promoted only after the candidate passes the
+consumer checks. This file records the releases that changed how Joycraft
+works, in a before → now → side-effects format, newest first. An Unreleased
+entry describes work in progress; it does not assign a version or claim that a
+release has shipped.
+
+---
+
+## Unreleased — Reliable updates
+
+Before this update path, `init` and `upgrade` had separate behavior and npm's
+own stale metadata could fail before Joycraft started. A declined customization
+could be mistaken for a new vendor baseline, automatic checks had scattered
+policy, and a release could reach `latest` before a fresh consumer proved that
+the published bytes installed correctly.
+
+Now `npx joycraft@latest update` is the single public install and update path.
+`init` and `upgrade` remain aliases. A fresh interactive run selects harnesses;
+an unattended fresh run names them with `--harnesses`. The planner preserves
+custom files, unknown state, selected harnesses, and unrelated project content.
+`--preview`, `--recover`, `--rollback`, `--replace-customized`, `--repair`, `--json`, and
+stable exit codes make review and recovery explicit. `--yes` applies safe
+actions and never becomes blanket permission to replace a customized file.
+
+Update checks use project-local settings and cache state. `notify`, `auto-safe`,
+and `off` are explicit policies; the cache is bounded to 24 hours and offline
+or unavailable checks stay quiet. Acknowledgement is per conversation, while
+postponement is a separate release-wide choice. `auto-safe` remains a local
+opt-in and requires an exact reviewed descriptor plus every safety gate. After
+an update, the active skill is reinvoked or the agent session is restarted so
+the new instructions load. Old installations need one manual bridge update
+before their old skills can discover this mechanism. Manual documentation
+migrations remain separate operations.
+
+Maintainers now publish one retained tarball under npm's `candidate` tag from
+the reviewed immutable SHA. The workflow keeps OIDC for candidate publication,
+uses a Joycraft-scoped write credential only for promotion to `latest`, and
+creates the GitHub release after fresh verification. Retries reuse the retained
+tarball and rerun readiness; they never rebuild or republish a different copy.
+
+Side effects: consumers may see a preserved conflict with exit code `2` and
+must review it explicitly. Docs-only changes do not cut a package version.
+See [Installing and updating](docs/guides/upgrading.md) and [Releasing](docs/guides/releasing.md).
 
 ---
 

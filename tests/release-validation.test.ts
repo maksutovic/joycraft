@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { readFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import {
   COMPATIBILITY_STACKS,
   HARNESS_SELECTIONS,
@@ -9,12 +10,36 @@ import {
   createRequiredChecksConfig,
 } from '../scripts/release-validation.mjs';
 import { createPromotionProcessAdapter, promoteVerifiedRelease } from '../scripts/release-promotion.mjs';
+import { createReadinessPlan, MIN_FRESHNESS_MS, runRegistryReadiness } from '../scripts/release-verification.mjs';
 
 const identity = {
   releaseSha: 'a'.repeat(40),
   version: '1.2.3',
   integrity: `sha512-${Buffer.alloc(64).toString('base64')}`,
 };
+
+async function verifiedReadiness({ packageName, version, integrity, descriptor }: {
+  packageName: string; version: string; integrity: string; descriptor: object;
+}) {
+  const cacheRoot = mkdtempSync('/tmp/joycraft-validation-cache-');
+  const consumerRoot = mkdtempSync('/tmp/joycraft-validation-consumer-');
+  const plan = createReadinessPlan({ packageName, version, runtimeLanes: [{ node: '24.20.0', npm: '11.19.0' }] });
+  return runRegistryReadiness({
+    packageName, version, integrity, descriptor, plan, cacheRoot, consumerRoot,
+    adapter: {
+      viewExactMetadata: async () => ({ name: packageName, version, dist: { integrity } }),
+      install: async ({ cwd }: { cwd: string }) => {
+        const packageDir = join(cwd, 'node_modules', packageName);
+        mkdirSync(join(packageDir, 'dist'), { recursive: true });
+        writeFileSync(join(packageDir, 'package.json'), JSON.stringify({ name: packageName, version }));
+        writeFileSync(join(cwd, 'package-lock.json'), JSON.stringify({ packages: { [`node_modules/${packageName}`]: { integrity } } }));
+        writeFileSync(join(packageDir, 'dist', 'joycraft-release.json'), JSON.stringify(descriptor));
+      },
+    },
+    startedAt: 0, now: () => MIN_FRESHNESS_MS, sleep: async () => {},
+    minFreshnessMs: MIN_FRESHNESS_MS, deadlineMs: MIN_FRESHNESS_MS + 1,
+  });
+}
 
 describe('required compatibility validation', () => {
   it('defines the approved seven runtime lanes and 28 checks per lane', () => {
@@ -96,19 +121,19 @@ describe('required compatibility validation', () => {
     });
     adapter.verifyFreshLatest = async () => true;
     await expect(promoteVerifiedRelease({
-      expected, report, requiredChecks, registryReady: true, credential: { token: 'test' },
+      expected, report, requiredChecks, readinessCheck: () => verifiedReadiness({ packageName: expected.packageName, version: expected.version, integrity: expected.integrity, descriptor: expected.descriptor }), credential: { token: 'test' },
       completedSteps: ['promotion', 'release'], adapter,
     })).resolves.toEqual(expect.objectContaining({ promoted: true, version: identity.version }));
     await expect(promoteVerifiedRelease({
-      expected, report: { ...report, checks: report.checks.slice(1) }, requiredChecks, registryReady: true,
+      expected, report: { ...report, checks: report.checks.slice(1) }, requiredChecks, readinessCheck: () => verifiedReadiness({ packageName: expected.packageName, version: expected.version, integrity: expected.integrity, descriptor: expected.descriptor }),
       credential: { token: 'test' }, adapter,
     })).rejects.toThrow(/validation/i);
     await expect(promoteVerifiedRelease({
-      expected, report: { ...report, checks: report.checks.map((check, index) => index === 0 ? { ...check, status: 'failed' } : check) }, requiredChecks, registryReady: true,
+      expected, report: { ...report, checks: report.checks.map((check, index) => index === 0 ? { ...check, status: 'failed' } : check) }, requiredChecks, readinessCheck: () => verifiedReadiness({ packageName: expected.packageName, version: expected.version, integrity: expected.integrity, descriptor: expected.descriptor }),
       credential: { token: 'test' }, adapter,
     })).rejects.toThrow(/failed/i);
     await expect(promoteVerifiedRelease({
-      expected, report: { ...report, integrity: 'sha512-other' }, requiredChecks, registryReady: true,
+      expected, report: { ...report, integrity: 'sha512-other' }, requiredChecks, readinessCheck: () => verifiedReadiness({ packageName: expected.packageName, version: expected.version, integrity: expected.integrity, descriptor: expected.descriptor }),
       credential: { token: 'test' }, adapter,
     })).rejects.toThrow(/integrity/i);
   });

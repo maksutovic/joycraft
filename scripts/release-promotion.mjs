@@ -5,12 +5,13 @@ import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
 
-import { createNpmVerificationAdapter, createReadinessPlan, DEFAULT_READINESS_DEADLINE_MS, MIN_FRESHNESS_MS, runRegistryReadiness, validateRequiredValidationReport } from './release-verification.mjs';
+import { createNpmVerificationAdapter, createReadinessPlan, DEFAULT_READINESS_DEADLINE_MS, isVerifiedRegistryReadiness, MIN_FRESHNESS_MS, runRegistryReadiness, validateRequiredValidationReport } from './release-verification.mjs';
 import { resolveRetainedArtifact } from './release-preparation.mjs';
 
 const execFileAsync = promisify(execFile);
 const PROMOTION_TOKEN_NAME = 'JOYCRAFT_NPM_PROMOTION_TOKEN';
 const PROMOTION_EXPIRY_NAME = 'JOYCRAFT_NPM_PROMOTION_TOKEN_EXPIRES_AT';
+const CONSUMED_READINESS = new WeakSet();
 
 function stableVersion(value) {
   return typeof value === 'string' && /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(value);
@@ -127,7 +128,7 @@ function timestamp(value) {
 }
 
 /** Validate all immutable evidence before any mutation is possible. */
-export function validatePromotionInputs({ expected, report, registryReady, requiredChecks } = {}) {
+export function validatePromotionInputs({ packageName = 'joycraft', expected, report, registryReady, requiredChecks } = {}) {
   artifactIdentity(expected);
   validateRequiredValidationReport(report, {
     releaseSha: expected.releaseSha,
@@ -135,21 +136,30 @@ export function validatePromotionInputs({ expected, report, registryReady, requi
     integrity: expected.integrity,
     requiredChecks: Array.isArray(requiredChecks) ? requiredChecks : [],
   });
-  if (registryReady !== true && registryReady?.ready !== true) {
-    throw new Error('Registry readiness has not succeeded; latest remains unchanged');
+  if (!isVerifiedRegistryReadiness(registryReady) || registryReady.ready !== true) {
+    throw new Error('Registry readiness must be issued by the production verifier; latest remains unchanged');
   }
-  if (registryReady?.checkedAt !== undefined && registryReady?.startedAt !== undefined) {
-    const elapsed = timestamp(registryReady.checkedAt) - timestamp(registryReady.startedAt);
-    if (!Number.isFinite(elapsed) || elapsed < MIN_FRESHNESS_MS) {
-      throw new Error('Registry readiness freshness interval has not elapsed; latest remains unchanged');
-    }
+  if (registryReady.packageName !== packageName
+    || registryReady.version !== expected.version
+    || registryReady.integrity !== expected.integrity) {
+    throw new Error('Registry readiness identity does not match the packed artifact; latest remains unchanged');
   }
-  const evidenceChecks = registryReady?.evidence?.checks;
-  if (Array.isArray(evidenceChecks) && evidenceChecks.length > 0 && evidenceChecks.some(check => check?.consumer !== true)) {
+  const startedAt = timestamp(registryReady.startedAt);
+  const checkedAt = timestamp(registryReady.checkedAt);
+  const elapsed = checkedAt - startedAt;
+  if (!Number.isFinite(startedAt) || !Number.isFinite(checkedAt) || elapsed < MIN_FRESHNESS_MS) {
+    throw new Error('Registry readiness freshness interval has not elapsed; latest remains unchanged');
+  }
+  const evidenceChecks = registryReady.evidence?.checks;
+  if (!Array.isArray(evidenceChecks) || evidenceChecks.length === 0
+    || evidenceChecks.some(check => check?.ok !== true || check?.consumer !== true)
+    || new Set(evidenceChecks.map(check => check?.id)).size !== evidenceChecks.length
+    || !['cold', 'warmed-full', 'warmed-compact'].every(mode => evidenceChecks.some(check => check?.cacheMode === mode))) {
     throw new Error('Registry readiness lacks verified installed descriptor evidence; latest remains unchanged');
   }
   const descriptor = registryDescriptor(registryReady);
-  if (descriptor !== undefined) validateDescriptorIdentity(descriptor, expected.version, 'Registry');
+  if (descriptor === undefined) throw new Error('Registry readiness descriptor evidence is missing; latest remains unchanged');
+  validateDescriptorIdentity(descriptor, expected.version, 'Registry');
   if (report.descriptor !== undefined) {
     validateDescriptorIdentity(report.descriptor, expected.version, 'Validation report');
     if (JSON.stringify(report.descriptor) !== JSON.stringify(expected.descriptor)) {
@@ -189,7 +199,7 @@ export function createPromotionPlan({
   releaseExists = false,
 } = {}) {
   const name = packageNameForCommand(packageName);
-  validatePromotionInputs({ expected, report, registryReady, requiredChecks });
+  validatePromotionInputs({ packageName: name, expected, report, registryReady, requiredChecks });
   if (releaseSha !== undefined && releaseSha !== expected.releaseSha) {
     throw new Error('Promotion release SHA does not match the retained artifact');
   }
@@ -422,6 +432,9 @@ export async function promoteVerifiedRelease({
   readinessCheck,
 } = {}) {
   const name = packageNameForCommand(packageName);
+  if (typeof readinessCheck !== 'function') {
+    throw new Error('A production readiness verifier callback is required; candidate promotion is blocked');
+  }
   const credentialInfo = validatePromotionCredential({
     env: process.env,
     now,
@@ -430,8 +443,12 @@ export async function promoteVerifiedRelease({
   });
   // This callback is deliberately evaluated on every invocation, including a
   // retry that marks promotion complete.
-  const readiness = typeof readinessCheck === 'function' ? await readinessCheck() : registryReady;
-  validatePromotionInputs({ expected, report, registryReady: readiness, requiredChecks });
+  const readiness = await readinessCheck();
+  validatePromotionInputs({ packageName: name, expected, report, registryReady: readiness, requiredChecks });
+  if (CONSUMED_READINESS.has(readiness)) {
+    throw new Error('Registry readiness evidence was already consumed; a retry must issue fresh verifier evidence');
+  }
+  CONSUMED_READINESS.add(readiness);
   const completed = normalizedSteps(completedSteps);
   const readOptions = { env: safeEnv(process.env) };
   if (typeof adapter.viewLatest !== 'function') {
@@ -527,7 +544,7 @@ export async function promoteVerifiedRelease({
     releaseCreated,
     releaseExists: releaseStatus.releaseExists || releaseCreated || completed.has('release'),
     credential: credentialInfo.tokenName,
-    readinessRerun: typeof readinessCheck === 'function',
+    readinessRerun: true,
   };
 }
 
@@ -561,9 +578,7 @@ async function main() {
     const requiredChecks = Array.isArray(configured) ? configured : configured?.requiredChecks;
     if (!Array.isArray(requiredChecks) || requiredChecks.length === 0) throw new Error('Independently configured required checks are missing');
     const adapter = createPromotionProcessAdapter();
-    const verificationAdapter = createNpmVerificationAdapter({
-      run: (command, commandArgs, options = {}) => defaultRun(command, commandArgs, { ...options, env: safeEnv(options.env) }),
-    });
+    const verificationAdapter = createNpmVerificationAdapter({ env: safeEnv(process.env) });
     const nodeLane = readOption(args, '--node') ?? process.versions.node;
     const npmLane = readOption(args, '--npm');
     if (!/^\d+\.\d+\.\d+$/.test(nodeLane) || nodeLane !== process.versions.node) {
@@ -587,8 +602,7 @@ async function main() {
       requiredChecks,
       adapter,
       repository: process.env.GITHUB_REPOSITORY,
-      readinessCheck: async () => ({
-        ...(await runRegistryReadiness({
+      readinessCheck: async () => runRegistryReadiness({
           packageName,
           version: retained.version,
           integrity: retained.integrity,
@@ -598,9 +612,7 @@ async function main() {
           cacheRoot: readOption(args, '--cache-root'),
           minFreshnessMs: Number(readOption(args, '--min-freshness-ms') ?? MIN_FRESHNESS_MS),
           deadlineMs: Number(readOption(args, '--deadline-ms') ?? DEFAULT_READINESS_DEADLINE_MS),
-        })),
-        descriptor: retained.descriptor,
-      }),
+        }),
     });
     console.log(JSON.stringify({ ...result, retained: { packageName: retained.packageName, version: retained.version, releaseSha: retained.releaseSha, integrity: retained.integrity } }, null, 2));
     return;

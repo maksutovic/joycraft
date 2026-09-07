@@ -25,6 +25,7 @@ program
   .option('--yes', 'Apply safe updates without prompting')
   .option('--non-interactive', 'Never prompt; apply safe actions only')
   .option('--replace-customized <paths...>', 'Explicitly replace these customized paths')
+  .option('--repair <paths...>', 'Explicitly restore these missing managed files')
   .option('--gitignore <profile>', GITIGNORE_OPTION_DESC)
   .option('--json', 'Print a structured JSON outcome')
   .option('--recover', 'Recover the interrupted update transaction')
@@ -36,6 +37,7 @@ program
     yes?: boolean;
     nonInteractive?: boolean;
     replaceCustomized?: string[];
+    repair?: string[];
     gitignore?: string;
     json?: boolean;
     recover?: boolean;
@@ -47,7 +49,7 @@ program
     try {
       let verifiedArtifact;
       if (opts.autoSafe) {
-        if (opts.recover || opts.rollback || opts.replaceCustomized?.length || opts.gitignore || opts.harnesses) {
+        if (opts.recover || opts.rollback || opts.repair?.length || opts.replaceCustomized?.length || opts.gitignore || opts.harnesses) {
           throw new Error('Automatic updates cannot include recovery, configuration, or customization choices.');
         }
         const { readUpdatePolicy } = await import('./update-check.js');
@@ -70,9 +72,11 @@ program
         yes: opts.yes ?? false,
         nonInteractive: opts.nonInteractive ?? false,
         replaceCustomized: opts.replaceCustomized,
+        repair: opts.repair,
         gitignore: opts.gitignore,
         recovery: opts.recover ? 'recover' : opts.rollback ? 'rollback' : undefined,
         preview: opts.preview,
+        json: opts.json,
         automatic: opts.autoSafe,
         verifiedArtifact,
       });
