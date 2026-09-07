@@ -51,6 +51,8 @@ describe('automatic and preview CLI boundaries', () => {
     const { root, status, output } = run('preview with spaces', ['--preview', '--harnesses', 'codex', '--non-interactive']);
     expect(status).toBe(0);
     expect(output.preview).toBe(true);
+    expect(output).not.toHaveProperty('plan');
+    expect(output.actions.every((action: Record<string, unknown>) => Object.keys(action).every(key => ['path', 'kind', 'selected', 'reason'].includes(key)))).toBe(true);
     expect(output.actions.some((action: { path: string }) => action.path === '.agents/skills/joycraft-tune/SKILL.md')).toBe(true);
     expect(readdirSync(root)).toEqual([]);
   });

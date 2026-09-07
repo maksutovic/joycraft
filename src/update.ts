@@ -814,7 +814,6 @@ export function formatUpdateOutcome(result: UpdateOutcome, json = false): string
       diagnostics: result.diagnostics,
       registry: result.registry,
       existingSkills: result.existingSkills,
-      plan: result.plan,
       transaction: result.transaction,
     });
   }

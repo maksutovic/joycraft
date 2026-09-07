@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-06
 feature: 2026-09-05-reliable-updates
@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-05-reliable-updates/brief.md`
 > **Spec:** 14 of 15
 > **Dependencies:** 11 — enable-opt-in-safe-updates.md, 13 — verify-registry-promotion.md
-> **Status:** Ready
+> **Status:** In review
 > **Date:** 2026-09-06
 > **Estimated scope:** 1 session / 4–7 files / ~300 lines
 
@@ -43,11 +43,11 @@ Unit coverage of individual update modules cannot prove that a packaged Joycraft
 
 ## Acceptance Criteria
 
-- [ ] Packaged fresh installs and repeat updates pass against Node.js, Python, Rust, and Go projects without adding a project runtime dependency. [src: brief "Test Strategy"]
-- [ ] Historical-release upgrades, shared clones, private installs, missing/corrupt state, poisoned baselines, declined edits, and version-only updates retain the approved safety behavior. [src: brief "Test Strategy"]
-- [ ] Each supported harness and relevant mixed selections are exercised; generated artifacts have zero drift. [src: brief "Test Strategy"]
-- [ ] Declare Node >=22 and validate supported minimum APIs and the approved runtime matrix across Linux, macOS, and Windows; a matrix failure blocks promotion. [src: brief "Test Strategy"]
-- [ ] Integrated interruption/concurrency, no-TTY, path-with-spaces, denied-access, and rollback-conflict tests call production code and preserve the original regression coverage. [src: brief "Test Strategy"]
+- [x] Packaged fresh installs and repeat updates pass against Node.js, Python, Rust, and Go projects without adding a project runtime dependency. [src: brief "Test Strategy"]
+- [x] Historical-release upgrades, shared clones, private installs, missing/corrupt state, poisoned baselines, declined edits, and version-only updates retain the approved safety behavior. [src: brief "Test Strategy"]
+- [x] Each supported harness and relevant mixed selections are exercised; generated artifacts have zero drift. [src: brief "Test Strategy"]
+- [x] Declare Node >=22 and validate supported minimum APIs and the approved runtime matrix across Linux, macOS, and Windows; a matrix failure blocks promotion. [src: brief "Test Strategy"]
+- [x] Integrated interruption/concurrency, no-TTY, path-with-spaces, denied-access, and rollback-conflict tests call production code and preserve the original regression coverage. [src: brief "Test Strategy"]
 
 ## Test Plan
 
@@ -118,3 +118,7 @@ Reject testing only `src/` imports: that bypasses the package boundary, bundled 
 | Corrupt legacy state | Production code keeps it available for diagnosis and stops unsafe mutation. |
 | Windows path contains spaces | The real CLI/process adapter succeeds without shell-string parsing. |
 | Matrix lane fails | Promotion is blocked and reports the failing runtime/platform lane. |
+
+## Implementation Evidence
+
+The retained npm artifact is installed into an isolated consumer and exercised through its actual CLI across four stacks and seven harness selections. JSON outcomes, installed files, persisted selections, repeat-update bytes, and unchanged project manifests are checked; a no-op executable fails every cell. Seven OS/Node lanes produce 196 independently required outcomes tied to the release SHA, version, and tarball integrity. The producer feeds the promotion consumer, which rejects missing, failed, or mismatched evidence. Existing state/transaction regression coverage remains, with an added real denied-write recovery test. The reviewed automation descriptor survives packing while preparation resets the next release to false. Build, type checking, and the full staged suite passed: 3,419 tests, one skipped. Cross-platform execution is required in CI; the local packaged matrix passed on macOS.

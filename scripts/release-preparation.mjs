@@ -67,8 +67,8 @@ function validateDescriptorShape(descriptor) {
   if (descriptor?.schemaVersion !== 1
     || typeof descriptor.releaseVersion !== 'string'
     || JSON.stringify(descriptor.manifestSchemas) !== '[1]'
-    || descriptor.autoSafeEligible !== false) {
-    throw new Error('Release descriptor must be schema 1 with manifestSchemas [1] and autoSafeEligible false');
+    || typeof descriptor.autoSafeEligible !== 'boolean') {
+    throw new Error('Release descriptor must be schema 1 with manifestSchemas [1] and boolean autoSafeEligible');
   }
 }
 

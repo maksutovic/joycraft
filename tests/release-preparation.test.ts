@@ -330,6 +330,23 @@ describe('release preparation', () => {
     await expect(packReleaseArtifact({ cwd, artifactDir: join(cwd, 'retained'), releaseSha: 'reviewed-sha' })).rejects.toThrow(/missing dist/i);
   });
 
+  it('retains a reviewed automation declaration but does not carry it into the next release', async () => {
+    const cwd = fixturePackage('1.2.3');
+    try {
+      const descriptorPath = join(cwd, 'src/joycraft-release.json');
+      mkdirSync(join(cwd, 'src'), { recursive: true });
+      const descriptor = JSON.parse(readFileSync(join(cwd, 'dist/joycraft-release.json'), 'utf8'));
+      descriptor.autoSafeEligible = true;
+      writeFileSync(descriptorPath, JSON.stringify(descriptor));
+      expect(emitReleaseDescriptor({ cwd }).descriptor.autoSafeEligible).toBe(true);
+      const packed = await packReleaseArtifact({ cwd, artifactDir: join(cwd, 'retained'), releaseSha: 'reviewed-sha' });
+      const retained = await resolveRetainedArtifact({ manifestPath: packed.manifestPath, expected: { releaseSha: 'reviewed-sha', version: '1.2.3', packageName: 'release-fixture' } });
+      expect(retained.descriptor.autoSafeEligible).toBe(true);
+      prepareReleaseFiles({ cwd, version: '1.2.4' });
+      expect(JSON.parse(readFileSync(descriptorPath, 'utf8')).autoSafeEligible).toBe(false);
+    } finally { rmSync(cwd, { recursive: true, force: true }); }
+  });
+
   it('publishes the retained tarball with argument-array candidate semantics', async () => {
     const calls: Array<{ command: string; args: string[] }> = [];
     const npm = createNpmProcessAdapter({

@@ -236,6 +236,20 @@ jobs:
           fi
           npm publish "$TARBALL" --access public --tag candidate
 
+  compatibility:
+    name: Required packaged compatibility matrix
+    needs: publish
+    if: needs.publish.result == 'success'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/test.yml
+    with:
+      release_sha: ${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}
+      artifact_name: ${{ inputs.artifact_name || format('joycraft-release-{0}', inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha) }}
+      artifact_run_id: ${{ inputs.artifact_run_id || github.run_id }}
+    secrets: inherit
+
   consumer-matrix:
     name: Consumer readiness · Node ${{ matrix.node }} / npm ${{ matrix.npm }}
     needs: publish
@@ -296,8 +310,8 @@ jobs:
 
   promote:
     name: Promote verified candidate and create GitHub release
-    needs: [publish, consumer-matrix]
-    if: needs.publish.result == 'success' && needs.consumer-matrix.result == 'success'
+    needs: [publish, consumer-matrix, compatibility]
+    if: needs.publish.result == 'success' && needs.consumer-matrix.result == 'success' && needs.compatibility.result == 'success'
     runs-on: ubuntu-latest
     environment: production
     permissions:
@@ -325,7 +339,7 @@ jobs:
       - name: Download required compatibility report
         uses: actions/download-artifact@v4
         with:
-          name: joycraft-required-validation-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}
+          name: joycraft-required-validation-${{ inputs.release_sha || github.event.pull_request.merge_commit_sha || github.sha }}-${{ github.run_attempt }}
           path: required-validation
           github-token: ${{ github.token }}
       - name: Restore original caches for the final readiness check
