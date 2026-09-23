@@ -1,0 +1,62 @@
+# Harness evals. Copy this file into .github/workflows/ by hand to turn it on.
+# No Joycraft command installs it.
+#
+# It runs docs/templates/evals/check.sh on a schedule and whenever a change
+# touches a harness file: memory files, skills, or hooks.
+#
+# Required secret: ANTHROPIC_API_KEY, so the claude CLI can run in CI.
+# Each run spends model budget. Tune the schedule and the task runs to fit.
+
+name: Agent Evals
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  push:
+    paths:
+      - 'CLAUDE.md'
+      - 'AGENTS.md'
+      - '.claude/**'
+      - '.agents/skills/**'
+      - '.pi/skills/**'
+      - '.github/skills/**'
+      - '.omp/skills/**'
+      - '.claude/hooks/**'
+      - 'docs/templates/evals/**'
+  pull_request:
+    paths:
+      - 'CLAUDE.md'
+      - 'AGENTS.md'
+      - '.claude/**'
+      - '.agents/skills/**'
+      - '.pi/skills/**'
+      - '.github/skills/**'
+      - '.omp/skills/**'
+      - '.claude/hooks/**'
+      - 'docs/templates/evals/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install the claude CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Check jq
+        run: jq --version
+
+      - name: Run harness evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: sh docs/templates/evals/check.sh

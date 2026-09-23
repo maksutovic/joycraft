@@ -111,6 +111,7 @@ Write a bug fix spec to `docs/bugfixes/<area>/bugfix-name.md`. Use the relevant 
 **Area README:** When creating (or adding to) a `docs/bugfixes/<area>/` folder, also lazy-create/update a `docs/bugfixes/<area>/README.md` index — a one-line-per-bug table (`| Bug | Spec | Status | Date |`) so areas that accumulate many bugs stay navigable. Append a row for the new bugfix.
 
 **Why:** Even bug fixes deserve a spec. It forces clarity on what "fixed" means, ensures test-first discipline, and creates a traceable record of the fix.
+**Seed an eval:** turn the reproduction case into a harness eval too — how is in `docs/templates/evals/README.md`.
 
 The spec file MUST start with YAML frontmatter — the 4-field personal schema (the `area:` field carries the area name, used informally to indicate "what folder this lives under"):
 

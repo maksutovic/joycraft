@@ -169,3 +169,25 @@ describe('governance hook recipes', () => {
     expect(patches.some((entry) => String(entry.ownedKey ?? entry.ownedRegion).includes('docs/templates/hooks'))).toBe(false);
   });
 });
+
+const EVALS_SCAFFOLD_PATHS = [
+  'docs/templates/evals/README.md',
+  'docs/templates/evals/example-task.json',
+  'docs/templates/evals/check.sh',
+  'docs/templates/evals/agent-evals.yml',
+];
+
+describe('evals scaffold', () => {
+  it('ships the four scaffold files as shared vendor entries for a claude selection', () => {
+    const byPath = new Map(getBundleInventory(['claude']).map((entry) => [entry.path, entry]));
+    for (const path of EVALS_SCAFFOLD_PATHS) {
+      expect(byPath.get(path), path).toEqual(expect.objectContaining({ kind: 'vendor', harness: 'shared' }));
+    }
+  });
+
+  it('puts nothing under .github/workflows/', () => {
+    for (const entry of getBundleInventory(['claude', 'codex', 'pi', 'copilot', 'omp'])) {
+      expect(entry.path.startsWith('.github/workflows/'), entry.path).toBe(false);
+    }
+  });
+});

@@ -211,7 +211,7 @@
     },
     ".claude/skills/joycraft-bugfix/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "3e4b31920091f2c6b57b86d414720f036d07ea47a42507735c92f310d29f585c",
+      "vendorHash": "fc3bc5745c6c99529b26e5fcc4f50e6dbe46969b5b8cd7d04c19030711002a60",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -368,7 +368,7 @@
     },
     ".agents/skills/joycraft-bugfix/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "035ee49dd48a5122fe5d34dfeb1d6e2de68b244fd24e9a8ed6349351725c311d",
+      "vendorHash": "723ce9c9ec86171a15b9429c5195ed0717d48628197c73b9e7ac2d391907cbd8",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -500,7 +500,7 @@
     },
     ".pi/skills/joycraft-bugfix/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "45e73578c69bf3ed21238e73a7fdbf0f9fd75011da26a38d2b8a543d9da89a64",
+      "vendorHash": "fb8dabff55f559d1ba5181263891d351203f60d157fcde7e1093cca8d9ca841b",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -686,7 +686,7 @@
     },
     ".github/skills/joycraft-bugfix/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "fbc89b6e13fe3d8674b25a777586539789b115dc53b000888b28c4aca6033d77",
+      "vendorHash": "3cbfa6f867a55981c6ed50335e937adda90fed7b4f186ebbc630bf06c3aec77d",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -818,7 +818,7 @@
     },
     ".omp/skills/joycraft-bugfix/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "45e73578c69bf3ed21238e73a7fdbf0f9fd75011da26a38d2b8a543d9da89a64",
+      "vendorHash": "fb8dabff55f559d1ba5181263891d351203f60d157fcde7e1093cca8d9ca841b",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -995,10 +995,34 @@
       "vendorHash": "226c6dc279a490ddc040f41ba11ab9146d3dbf3e9624c5162080e216a5a30889",
       "kind": "vendor",
       "ownership": "verified"
+    },
+    "docs/templates/evals/README.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "d75c82bcc30316296835d9fe2023fdb4714ac35a906143b5c0444dd7cae32e76",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/evals/agent-evals.yml": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "b0e4043627315f3d053397e0795f61760bbf465a58dfee4aef1db59b2a9113ec",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/evals/check.sh": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "4da0f28da3bcd498bdbd2a13aac1ce9e565f94e2de3a35da9f69a1d78615d804",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/evals/example-task.json": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "1898f9cb144e7202f81b51a2d608a15a52287e1bfcaf3d78de2e37fc4cd60425",
+      "kind": "vendor",
+      "ownership": "verified"
     }
   },
   "pendingConflicts": [
     ".claude/hooks/joycraft/deny-patterns.txt"
   ],
-  "__joycraftTransactionId": "08602a76-0969-4673-be83-e6bd24de6ba7"
+  "__joycraftTransactionId": "8006ce0d-396e-45fe-8977-dd411948b032"
 }

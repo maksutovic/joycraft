@@ -164,3 +164,17 @@ describe('governance hook recipes install', () => {
   });
 });
 
+describe('evals scaffold install', () => {
+  it('an update writes the four scaffold files and creates no .github/workflows/ directory', async () => {
+    const root = project();
+    try {
+      await update(root, { nonInteractive: true, harnesses: ['claude', 'codex', 'pi', 'copilot', 'omp'] });
+      for (const file of ['README.md', 'example-task.json', 'check.sh', 'agent-evals.yml']) {
+        expect(existsSync(join(root, 'docs', 'templates', 'evals', file)), file).toBe(true);
+      }
+      expect(existsSync(join(root, '.github', 'workflows'))).toBe(false);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+});

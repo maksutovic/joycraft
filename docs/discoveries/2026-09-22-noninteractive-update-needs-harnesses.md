@@ -1,0 +1,2 @@
+Spec ship-evals-in-ci-recipe's Test Plan used `update(tmp, { nonInteractive: true })`, but on a fresh project with no harness selection that call installs nothing, so the scaffold never lands.
+Integration tests of a fresh install must pass `harnesses: [...]` explicitly; also, `src/bundled-files.ts` is gitignored, so the spec's "commit the regenerated bundled-files.ts" criterion is satisfied by regeneration alone.

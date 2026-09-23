@@ -1,0 +1,13 @@
+{
+  "_comment": "Sample content. Replace this task with one recorded from your own project, then add one file per task beside it.",
+  "id": "example-test-command",
+  "prompt": "Read this project's CLAUDE.md or AGENTS.md. Reply with the exact command that runs the test suite, and nothing else.",
+  "fixture": ".",
+  "runs": 3,
+  "assertions": [
+    { "type": "output_matches", "value": "test" },
+    { "type": "output_not_contains", "value": "I don't know" },
+    { "type": "file_exists", "value": "CLAUDE.md" }
+  ],
+  "pass_gate": 0.67
+}
