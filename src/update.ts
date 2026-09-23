@@ -270,9 +270,18 @@ function legacyHarnesses(root: string): Harness[] | undefined {
   return undefined;
 }
 
+/**
+ * True when an entry belongs to a harness's own tree. A harness-gated template
+ * under docs/templates/ carries a harness owner but is shared documentation,
+ * so it never identifies which harness a project uses.
+ */
+function harnessTreeEntry(entry: BundleInventoryEntry, harness: Harness): boolean {
+  return entry.harness === harness && entry.content !== undefined && !entry.path.startsWith('docs/templates/');
+}
+
 function recognizedHarnesses(root: string): Harness[] {
   const inventory = getBundleInventory(HARNESSES);
-  return HARNESSES.filter((harness) => inventory.some((entry) => entry.harness === harness && entry.content !== undefined && regularFile(root, entry.path)));
+  return HARNESSES.filter((harness) => inventory.some((entry) => harnessTreeEntry(entry, harness) && regularFile(root, entry.path)));
 }
 
 function legacyMigrationOperations(root: string, localSettings?: LocalInstallationSettings): LocalTransactionOperation[] {
@@ -539,7 +548,7 @@ function profileBookkeepingActions(root: string, profile: GitignoreProfile): Pla
 function selectedHarnessIgnoreWarning(root: string, harnesses: readonly Harness[]): string[] {
   const warnings: string[] = [];
   for (const harness of harnesses) {
-    const candidate = getBundleInventory([harness]).find((entry) => entry.harness === harness && entry.content !== undefined)?.path;
+    const candidate = getBundleInventory([harness]).find((entry) => harnessTreeEntry(entry, harness))?.path;
     if (!candidate) continue;
     const top = candidate.split('/')[0];
     let localBroadIgnore = false;

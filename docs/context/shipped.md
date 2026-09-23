@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-09-01
+last_updated: 2026-09-22
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -9,6 +9,7 @@ last_updated_by: Maximilian Maksutovic
 
 | Date | Feature | What shipped | Where (paths) | PR | Owner |
 |------|---------|--------------|----------------|----|-------|
+| 2026-09-22 | 2026-09-22-fable-native-sdlc-harness | Claude Fable 5.1 model-profile reference doc (10 named blocks) gated to claude/pi/omp, one Context Map pointer row inserted through the merge logic, `docs/intent/` inbox + interview intent write and triage mode + new-feature/bugfix intent consumption, four unregistered hook recipes, inert evals-in-CI scaffold, optimize `MODEL_SUPERSEDED` evidence label, citations in five skills, dogfooded on this repo | `src/templates/reference/`, `src/templates/intent/`, `src/templates/hooks/`, `src/templates/evals/`, `src/model-profile.ts`, `src/bundle-inventory.ts`, `src/update-inventory.ts`, `src/improve-claude-md.ts`, `src/skills/` (interview, new-feature, bugfix, optimize, tune, implement, implement-feature, session-end), `docs/intent/` | #78 | Maximilian Maksutovic |
 | 2026-09-01 | 2026-08-30-curated-harness | Read-telemetry for the knowledge layer (`joycraft telemetry` CLI + scanner with mandated/voluntary tagging, Codex degraded), 7-day discovery staleness rule (one home), harden-first add-fact + decay-category bans, elicit-first Product Identity + check-shaped folder map in generators, README positioning, per-project auto-memory offer (init) + tune finding | `src/telemetry.ts`, `src/telemetry-store.ts`, `src/folder-map.ts`, `src/auto-memory.ts`, `src/cli.ts`, `src/init.ts`, `src/upgrade.ts`, `src/improve-claude-md.ts`, `src/agents-md.ts`, `src/skills/`, `docs/reference/knowledge-lifecycle.md` | #70 | Maximilian Maksutovic |
 | 2026-08-11 | 2026-08-11-ste-human-output | STE (ASD-STE100 pragmatic) as the house style for all human-facing output: output-style.md rewritten as one integrated STE rule set, vendored maintainer-side linter, CI test holding shipped template prose to zero fix-to-zero violations, interview playback style citation (D6) | `src/templates/reference/output-style.md`, `src/templates/REVIEW_GATE_TEMPLATE.html`, `scripts/ste-lint.py`, `tests/ste-lint.test.ts`, `src/skills/joycraft-interview.md` | #68 | Maximilian Maksutovic |
 | 2026-07-31 | 2026-07-31-team-ready-gates | Native question UI directive in all gate skills, defer-to-person (`assigned` state + tagged cards), custom output templates (docs/templates/output/), implementing-agent handoff prompt in briefs, timestamp+revision stamps + persisted autoOpen, install-first README + SECURITY.md | `src/skills/`, `src/templates/REVIEW_GATE_TEMPLATE.html`, `src/version.ts`, `docs/templates/`, `README.md`, `SECURITY.md`, `tests/gate-contract.test.ts` | #67 | Maximilian Maksutovic |

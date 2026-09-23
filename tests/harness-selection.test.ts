@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { Readable } from 'node:stream';
 import { init } from '../src/init';
+import { insertModelProfilePointer } from '../src/improve-claude-md';
 import { upgrade } from '../src/upgrade';
 import { readInstallationManifest } from '../src/install-manifest';
 import { parseHarnessSelection, resolveHarnesses, sanitizeHarnesses, HARNESSES } from '../src/harness';
@@ -397,13 +398,16 @@ describe('init leaves project toolchain gates clean', () => {
     }
   });
 
-  it('multi-tool init never touches an existing AGENTS.md or CLAUDE.md', async () => {
+  it('multi-tool init never regenerates an existing AGENTS.md or CLAUDE.md (only the D14 pointer row is added)', async () => {
     const dir = createTmpDir();
     try {
       writeFileSync(join(dir, 'AGENTS.md'), '# Mine\n');
       writeFileSync(join(dir, 'CLAUDE.md'), '# Also mine\n');
       await initWithAnswers(dir, 'claude,codex', 'shared');
-      expect(readFileSync(join(dir, 'AGENTS.md'), 'utf-8')).toBe('# Mine\n');
+      // AGENTS.md is the designated memory file: its bytes are kept and only
+      // the model-profile Context Map pointer is appended.
+      expect(readFileSync(join(dir, 'AGENTS.md'), 'utf-8')).toBe(insertModelProfilePointer('# Mine\n'));
+      expect(readFileSync(join(dir, 'AGENTS.md'), 'utf-8').startsWith('# Mine\n')).toBe(true);
       expect(readFileSync(join(dir, 'CLAUDE.md'), 'utf-8')).toBe('# Also mine\n');
     } finally {
       cleanup(dir);

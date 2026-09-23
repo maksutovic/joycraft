@@ -196,6 +196,10 @@ content.
 4. Offer — don't push — an optional extra render: "I can also publish this
    research as a hosted artifact for a shareable link." Only publish if the human
    says yes; the local file remains the canonical render. If declined, no retry.
+5. When the readout carries two or more questions for the human, the hosted
+   render is an interactive checkpoint instead: build it per
+   `docs/templates/reference/interactive-checkpoint.md` and read the answers
+   back before stamping. The local file stays the canonical render.
 
 At this gate, your chat message is EXACTLY this template — nothing outside it.
 The content lives in the artifact, not the chat. Findings go in the research
@@ -376,6 +380,10 @@ content.
 4. Offer — don't push — an optional extra render: "I can also publish this
    research as a hosted artifact for a shareable link." Only publish if the human
    says yes; the local file remains the canonical render. If declined, no retry.
+5. When the readout carries two or more questions for the human, the render is
+   an interactive checkpoint instead: build it per
+   `docs/templates/reference/interactive-checkpoint.md` and read the answers
+   back before stamping. The local file stays the canonical render.
 
 At this gate, your chat message is EXACTLY this template — nothing outside it.
 The content lives in the artifact, not the chat. Findings go in the research
@@ -551,6 +559,10 @@ content.
 4. Offer — don't push — an optional extra render: "I can also publish this
    research as a hosted artifact for a shareable link." Only publish if the human
    says yes; the local file remains the canonical render. If declined, no retry.
+5. When the readout carries two or more questions for the human, the render is
+   an interactive checkpoint instead: build it per
+   `docs/templates/reference/interactive-checkpoint.md` and read the answers
+   back before stamping. The local file stays the canonical render.
 
 At this gate, your chat message is EXACTLY this template — nothing outside it.
 The content lives in the artifact, not the chat. Findings go in the research

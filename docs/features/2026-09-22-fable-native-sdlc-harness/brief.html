@@ -1,0 +1,344 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT REVIEW GATE · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. Any Joycraft gate skill (brief review, design
+  review, decompose review, research readout, tune report, optimize audit)
+  fills the content slots to render its review artifact; it MUST NOT alter the
+  structure, the class names, or the CSS below. Keeping the skeleton fixed is
+  the whole point: freeform per-gate HTML would make every review a fresh
+  hand-rolled artifact, and the human would relearn the page each time.
+
+  This template is a deliberate extension of the decision dossier's design
+  system, not a second one — the same tokens, the same type stack, the same
+  self-containment contract. The dossier keeps its own skeleton for decide;
+  this one covers every other gate.
+
+  Slots are the HTML comments below whose text begins with the slot marker
+  (the word SLOT followed by a colon and a region name). Each names a region
+  and gives filling guidance. Replace the slot comment (and any placeholder)
+  with real markup that uses ONLY the classes already defined in the style
+  block. (This contract comment intentionally does not nest a literal example
+  of the slot delimiters, because a nested comment terminator would end this
+  comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the slot regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · Keep the header's context strip container even when empty; the layout
+      copes with an empty strip, so do not remove the container.
+    · Repeat the content section (section class "sec") once per topic. Inside a
+      section, use only the pre-defined blocks: the "pillars" card grid, a
+      "tablebox" wrapping a table, the "cols" must / must-not columns, or the
+      "criteria" checklist. Do not add block types.
+    · Repeat the question card (div class "q") once per open question. If the
+      gate has NO open questions, delete the whole questions section — the
+      layout copes.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject the framing outright and say what is right
+      instead).
+    · Never present an unverified claim as settled. A gate artifact is a
+      persuasive object; say plainly which rows are grounded facts and which
+      are proposals awaiting the human's word.
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more content sections, then the optional questions section, then the
+  how-to-answer box, then footer. Do not reorder.
+  ============================================================================
+-->
+<title>Brief Review — 2026-09-22-fable-native-sdlc-harness</title>
+<title>Review Gate — TEMPLATE</title>
+<style>
+  /* Design tokens: light theme is the default set on :root. These are the
+     decision dossier's tokens verbatim — one design system, two skeletons. */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono, .spec-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Context strip: grounded facts as .lock-chip spans; .open marks an item that
+     is still unsettled. The container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  /* Content section. Repeat once per topic. */
+  section.sec { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .sec-head h2 { margin: 0; }
+  h2 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 18px; max-width: 74ch; }
+
+  /* Block A — pillars: a card grid for 2–4 parallel ideas. */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .pillar h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pillar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* Block B — tablebox: any table (spec lists, decomposition plans). Scrolls
+     inside its own box on narrow screens so the body never scrolls. */
+  .tablebox { margin-top: 6px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+  .tablebox table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+  .tablebox th { text-align: left; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  .tablebox td { padding: 11px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+  .tablebox tr:last-child td { border-bottom: none; }
+  .spec-name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .size { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--ink-2); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .wave { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--accent-wash); color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+
+  /* Block C — cols: the must / must-not pair. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .col .clab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .col ul { margin: 9px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .col li { color: var(--ink-2); margin-bottom: 5px; line-height: 1.4; }
+  .col.must li::before { content: "✓ "; color: var(--good-ink); font-weight: 700; }
+  .col.must-not li::before { content: "✗ "; color: var(--bad-ink); font-weight: 700; }
+
+  /* Block D — criteria: an acceptance checklist. */
+  .criteria { margin: 6px 0 0; padding: 0; list-style: none; }
+  .criteria li { position: relative; padding: 9px 0 9px 26px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-2); }
+  .criteria li:last-child { border-bottom: none; }
+  .criteria li::before { content: "□"; position: absolute; left: 2px; color: var(--ink-3); }
+  .criteria li.met::before { content: "☑"; color: var(--good-ink); }
+
+  /* Questions. One .q card per open question; amber left border. */
+  .questions { margin-top: 54px; }
+  .q { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warn-ink); border-radius: 8px; padding: 18px 22px; margin-top: 12px; }
+  .q .qnum { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .q h3 { font-size: 16.5px; font-weight: 700; margin: 6px 0 8px; }
+  .q .rec { font-size: 14.5px; color: var(--ink); margin: 0 0 6px; }
+  .q .rec strong { color: var(--accent-ink); }
+  .q .why { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 74ch; }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Brief Review · feature: 2026-09-22-fable-native-sdlc-harness · September 22, 2026 · rev 4 · September 22, 2026 19:42</div>
+  <h1>Fable-native SDLC harness</h1>
+  <p class="dek">The interview draft is now a full feature brief with twelve specs. Approve the decomposition, or say which rows are wrong. The markdown at docs/features/2026-09-22-fable-native-sdlc-harness/brief.md is canonical.</p>
+  <div class="locked">
+    <span class="lock-chip">D1–D9 from interview</span>
+    <span class="lock-chip">D10 triage = interview mode</span>
+    <span class="lock-chip">D11 evals = inert templates</span>
+    <span class="lock-chip">D12 dogfood in-feature</span>
+    <span class="lock-chip">D13 no lockdown</span>
+    <span class="lock-chip">D14 users advisory, repo cleaned</span>
+    <span class="lock-chip">12 specs · 4 waves</span>
+    <span class="lock-chip">0 open questions</span>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Shape</span>
+    <h2>What ships</h2>
+  </div>
+  <p class="sub">Three inputs point the same way: Anthropic's Fable 5.1 prompting guide, Theo Browne's reset-to-defaults operator view, and the AI-native SDLC playbook's intent-to-incident chain. Joycraft already runs the middle of that chain. This feature closes the two ends and makes the Claude harness Fable-native.</p>
+  <div class="pillars">
+    <div class="pillar">
+      <h3>Model profile doc</h3>
+      <p>One reference doc carries the guide's tested prompt blocks by name. CLAUDE.md points at it in one Context Map row. Skills cite block names, never copy text. Installs for Claude, Pi, and omp; never Codex.</p>
+    </div>
+    <div class="pillar">
+      <h3>Intent inbox</h3>
+      <p>docs/intent/ with a fixed shape: Author, Status, source, Problem, Proposed outcome, Affected users and systems, Constraints, Open questions. Interview writes one first. new-feature and bugfix consume by path. Triage is an interview mode.</p>
+    </div>
+    <div class="pillar">
+      <h3>Governance recipes</h3>
+      <p>Four unregistered hook recipes in the Claude kit and an evals-in-CI scaffold under docs/templates/evals/. Nothing is written to .github/workflows/ by the installer. Every bugfix seeds an eval.</p>
+    </div>
+    <div class="pillar">
+      <h3>Optimize source</h3>
+      <p>A model-profile evidence step flags legacy anti-formatting and hand-holding rules as RETIRE or PROBATION candidates. Advisory only. No auto-edits.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Plan</span>
+    <h2>Decomposition</h2>
+  </div>
+  <p class="sub">Wave 1 runs 1, 2, 5, 9, 10 in parallel. Wave 2 runs 3, 4, 6, 8, 11. Wave 3 is 7. Wave 4 is the dogfood update. Specs that touch skills or templates pause for approval before their first write.</p>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Spec</th><th>Description</th><th>Depends</th><th>Size</th><th>Wave</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td class="spec-name">write-model-profile-doc</td><td>Reference doc with the Fable 5.1 blocks by name plus Theo's end-state and choose-between-paths rules.</td><td>None</td><td><span class="size">M</span></td><td><span class="wave">1</span></td></tr>
+        <tr><td>2</td><td class="spec-name">gate-reference-docs-by-harness</td><td>Template entries can declare receiving harnesses; profile doc excludes codex; enumeration test for src/templates/reference/.</td><td>None</td><td><span class="size">M</span></td><td><span class="wave">1</span></td></tr>
+        <tr><td>3</td><td class="spec-name">point-memory-file-at-profile</td><td>One Context Map row on fresh install, and update inserts the same row into an existing CLAUDE.md or AGENTS.md via the merge logic, touching nothing else; idempotent.</td><td>1, 2</td><td><span class="size">M</span></td><td><span class="wave">2</span></td></tr>
+        <tr><td>4</td><td class="spec-name">cite-profile-in-skills</td><td>implement, implement-feature, session-end, new-feature, interview cite block names; regen and sync same commit.</td><td>1</td><td><span class="size">M</span></td><td><span class="wave">2</span></td></tr>
+        <tr><td>5</td><td class="spec-name">add-intent-template-and-inbox</td><td>INTENT_TEMPLATE.md, inbox README with vocabulary map, installer creates docs/intent/, folder-map description row.</td><td>None</td><td><span class="size">S</span></td><td><span class="wave">1</span></td></tr>
+        <tr><td>6</td><td class="spec-name">emit-intent-from-interview</td><td>Interview's first artifact is docs/intent/&lt;slug&gt;.md with source: interview; draft brief becomes optional.</td><td>5</td><td><span class="size">M</span></td><td><span class="wave">2</span></td></tr>
+        <tr><td>7</td><td class="spec-name">add-triage-mode-to-interview</td><td>List untriaged intents at entry, propose tags and priority, human routes to interview, bugfix, backlog, or discard.</td><td>5, 6</td><td><span class="size">M</span></td><td><span class="wave">3</span></td></tr>
+        <tr><td>8</td><td class="spec-name">consume-intent-in-new-feature-and-bugfix</td><td>Accept an intent path, pre-fill, stamp intent: in frontmatter, leave the intent file in place.</td><td>5</td><td><span class="size">S</span></td><td><span class="wave">2</span></td></tr>
+        <tr><td>9</td><td class="spec-name">ship-governance-hook-recipes</td><td>Plan-sync, protected-path guard, test-file lock, allow/ask/block gate shape; documented, unregistered.</td><td>None</td><td><span class="size">M</span></td><td><span class="wave">1</span></td></tr>
+        <tr><td>10</td><td class="spec-name">ship-evals-in-ci-recipe</td><td>docs/templates/evals/ with task JSON shape, check.sh, agent-evals.yml on schedule and harness-file changes; bugfix reminder line.</td><td>None</td><td><span class="size">M</span></td><td><span class="wave">1</span></td></tr>
+        <tr><td>11</td><td class="spec-name">add-fable-era-retire-source-to-optimize</td><td>Model-profile evidence step and label; advisory RETIRE or PROBATION; label counts updated; tune roadmap tells pre-Fable users to run optimize.</td><td>1</td><td><span class="size">M</span></td><td><span class="wave">2</span></td></tr>
+        <tr><td>12</td><td class="spec-name">dogfood-update-and-cleanup-on-joycraft</td><td>Run the built updater on this repo; run optimize on AGENTS.md and apply its RETIRE rows by hand; commit installed files, pointer, CHANGELOG.</td><td>1–11</td><td><span class="size">M</span></td><td><span class="wave">4</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Boundaries</span>
+    <h2>Constraints and scope</h2>
+  </div>
+  <div class="cols">
+    <div class="col must">
+      <span class="clab">Must</span>
+      <ul>
+        <li>One home per fact: Fable guidance lives in the profile doc; skills cite by name.</li>
+        <li>Gate the profile doc by harness. Reference docs install unconditionally today, so D6 is an installer change.</li>
+        <li>Intent source: field accepts human, interview, linear:&lt;id&gt;, alert:&lt;name&gt;, and future &lt;system&gt;:&lt;id&gt; without schema change.</li>
+        <li>Regenerate bundled variants and sync installed copies in the same commit as any skill edit.</li>
+        <li>Every spec adding a reference doc includes the dogfood update step; pnpm build alone does not reach docs/templates/.</li>
+      </ul>
+    </div>
+    <div class="col must-not">
+      <span class="clab">Must not</span>
+      <ul>
+        <li>Add runtime dependencies. Hooks and evals are shell, claude -p, and jq.</li>
+        <li>Write to .github/workflows/ during install or update.</li>
+        <li>Touch the holdout scenarios repo or its dispatch workflow.</li>
+        <li>Auto-edit a user's CLAUDE.md from optimize.</li>
+        <li>Add a Pi- or omp-scoped memory file; both read the root pair.</li>
+        <li>Ship REVIEW.md, the PR-review agent, the maintenance loop, Linear triggers, a triage skill, or an init-evals command. All backlogged or excluded.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Done</span>
+    <h2>Success criteria</h2>
+  </div>
+  <ul class="criteria">
+    <li>Fresh update with claude selected installs the profile doc and one Context Map row; codex-only installs neither.</li>
+    <li>update on an existing customized CLAUDE.md or AGENTS.md adds the row and changes nothing else; a second run is a no-op.</li>
+    <li>Pi-only and omp-only installs receive the profile doc.</li>
+    <li>docs/intent/ exists after install with a README and nothing else.</li>
+    <li>Interview with an empty inbox writes an intent before any brief; with two untriaged intents it offers triage first.</li>
+    <li>new-feature and bugfix given an intent path stamp intent: in frontmatter and leave the intent file in place.</li>
+    <li>Four hook recipes ship unregistered; the evals scaffold ships under docs/templates/evals/.</li>
+    <li>Optimize flags "never use markdown" as an advisory RETIRE candidate.</li>
+    <li>Joycraft's own repo shows all of the above after the dogfood spec, and its AGENTS.md carries no rule the model-profile step flags.</li>
+    <li>pnpm test and pnpm typecheck pass with no regressions in install, upgrade, or skill sync tests.</li>
+  </ul>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Handoff</span>
+    <h2>Prompt for the implementing agent</h2>
+  </div>
+  <div class="pillars">
+    <div class="pillar">
+      <h3>Picking up</h3>
+      <p>You are picking up docs/features/2026-09-22-fable-native-sdlc-harness/brief.md, written 2026-09-22. Decisions D1-D14 are stamped in the brief. Do not reopen them.</p>
+    </div>
+    <div class="pillar">
+      <h3>Start</h3>
+      <p>Read the brief's Decomposition and Raw Notes, then implement spec 1 and spec 2 before touching any skill. Pause for approval before the first write under src/templates/ or src/skills/.</p>
+    </div>
+    <div class="pillar">
+      <h3>Hazard</h3>
+      <p>A new template reaches docs/templates/ in this repo only when the built updater runs on the repo itself. pnpm build alone leaves it out of the manifest. Every skill edit must regenerate variants and sync installed copies in the same commit.</p>
+    </div>
+    <div class="pillar">
+      <h3>Done when</h3>
+      <p>Every Decomposition row has a spec marked done, all Success Criteria are checked, and pnpm test and pnpm typecheck pass.</p>
+    </div>
+  </div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>Reply <strong>approve</strong> to accept the brief and move to decomposition. To change it, name the spec row, constraint, or criterion and say what is right; the markdown is updated and this page re-renders as rev 5. If the framing itself is wrong, reject it outright and say what is right instead of picking from what is offered. Answers land in docs/features/2026-09-22-fable-native-sdlc-harness/brief.md.</p>
+</div>
+
+<footer>
+  <p>Produced by joycraft-new-feature · feature 2026-09-22-fable-native-sdlc-harness · canonical docs/features/2026-09-22-fable-native-sdlc-harness/brief.md · rev 4 · generated 2026-09-22T19:42:19Z</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

@@ -113,7 +113,7 @@ Check the spec's Edge Cases table. For each scenario:
 
 When the spec is implemented and all its tests pass, wrap up and advance according to the spec's **execution mode**. Read the `mode:` field from the spec's frontmatter (written by `joycraft-decompose`). If the spec has **no `mode:` field**, default to **`batch`** (back-compat with pre-mode specs). If the value is unrecognized, treat it as `batch` and note the unrecognized value.
 
-**You perform the wrap-up. You find the next spec. Do not stop to tell the human to run `$joycraft-spec-done` or to paste the next file path — those hand-backs carry zero information and break the feature's momentum.**
+**You perform the wrap-up. You find the next spec. Do not stop to tell the human to run `$joycraft-spec-done` or to paste the next file path — those hand-backs carry zero information and break the feature's momentum.** Carry this through per the "Finish the Whole Task" block in `docs/templates/reference/model-profile-claude-fable-5-1.md`.
 
 ### 6a. Per-spec wrap-up
 

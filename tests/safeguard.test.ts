@@ -157,3 +157,72 @@ describe('safeguard', () => {
     });
   });
 });
+
+describe('block-dangerous.sh runtime — the payload Claude Code actually sends', () => {
+  const { execFileSync } = require('node:child_process') as typeof import('node:child_process');
+  const dir = join(tmpdir(), `joycraft-hook-${process.pid}-${Date.now()}`);
+  const hook = join(dir, 'block-dangerous.sh');
+
+  beforeEach(() => {
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(hook, generateHookScript(), { mode: 0o755 });
+    writeFileSync(join(dir, 'deny-patterns.txt'), generateDenyPatternsFile());
+  });
+
+  const run = (payload: unknown, env: NodeJS.ProcessEnv = process.env) => {
+    const input = typeof payload === 'string' ? payload : JSON.stringify(payload);
+    try {
+      execFileSync(hook, [], { input, env, stdio: ['pipe', 'pipe', 'pipe'] });
+      return { status: 0, stderr: '' };
+    } catch (err: any) {
+      return { status: err.status ?? 1, stderr: String(err.stderr ?? '') };
+    }
+  };
+
+  it('blocks with NO argv, reading tool_name and command from stdin JSON', () => {
+    const r = run({ tool_name: 'Bash', tool_input: { command: 'rm -rf /' } });
+    expect(r.status).toBe(2);
+    expect(r.stderr).toContain('Blocked by Joycraft Safeguard');
+  });
+
+  it('writes the reason to stderr, not stdout', () => {
+    const input = JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git push --force origin main' } });
+    let stdout = '';
+    let status = 0;
+    try {
+      stdout = execFileSync(hook, [], { input, stdio: ['pipe', 'pipe', 'pipe'] }).toString();
+    } catch (err: any) {
+      status = err.status;
+      stdout = String(err.stdout ?? '');
+    }
+    expect(status).toBe(2);
+    expect(stdout).toBe('');
+  });
+
+  it('tolerates pretty-printed JSON with spaces around the colon', () => {
+    expect(run(JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'rm -rf /' } }, null, 2)).status).toBe(2);
+  });
+
+  it('tolerates escaped quotes inside the command', () => {
+    expect(run({ tool_name: 'Bash', tool_input: { command: 'echo "done" && git push -f origin main' } }).status).toBe(2);
+  });
+
+  it('passes a non-Bash tool through', () => {
+    expect(run({ tool_name: 'Write', tool_input: { file_path: 'x', content: 'rm -rf /' } }).status).toBe(0);
+  });
+
+  it('still checks when tool_name is absent (the matcher already scoped it to Bash)', () => {
+    expect(run({ tool_input: { command: 'rm -rf /' } }).status).toBe(2);
+  });
+
+  it('allows a safe command', () => {
+    expect(run({ tool_name: 'Bash', tool_input: { command: 'git status' } }).status).toBe(0);
+  });
+
+  it('blocks without jq on PATH (fallback parser)', () => {
+    const env = { ...process.env, PATH: '/usr/bin:/bin' };
+    expect(run({ tool_name: 'Bash', tool_input: { command: 'rm -rf /' } }, env).status).toBe(2);
+    expect(run({ tool_name: 'Bash', tool_input: { command: 'echo "hi" && rm -rf /' } }, env).status).toBe(2);
+    expect(run({ tool_name: 'Bash', tool_input: { command: 'git status' } }, env).status).toBe(0);
+  });
+});

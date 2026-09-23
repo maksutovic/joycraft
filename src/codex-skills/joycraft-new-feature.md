@@ -13,7 +13,9 @@ You are starting a new feature. Follow this process in order. Do not skip steps.
 
 Before starting the interview, scan `docs/features/` for existing artifacts the user may want to continue from.
 
-**Skip this phase if:** the user provided a brief path as an argument (they already know what to work from).
+**Skip this phase if:** the user provided a brief path or an intent path (`docs/intent/<name>.md`) as an argument (they already know what to work from).
+
+**Given an intent path:** read the file (its shape is `docs/templates/INTENT_TEMPLATE.md`) and pre-fill Phase 1 from it — **Problem** frames the problem in the brief's Vision, **Proposed outcome** feeds Vision and Success Criteria, **Affected users and systems** feeds User Stories, **Constraints** feeds Hard Constraints, and **Open questions** become your opening interview questions instead of a blank floor. Ask about any missing section through the question directive. If the intent path does not exist, say so in one line and fall back to the no-argument flow. If its `Status:` already says it was consumed, tell the human by which skill and proceed only on their go-ahead. Normalize the path to project-relative before writing it into the brief's `intent:` key (Phase 2). After writing the brief, overwrite the intent's `Status:` line in place with `Status: consumed by joycraft-new-feature → docs/features/<slug>/brief.md (YYYY-MM-DD)`. The intent file stays in `docs/intent/` — never move, delete, or archive it.
 
 **Steps:**
 1. Check if `docs/features/` exists. If not, skip to Phase 1.
@@ -52,7 +54,7 @@ this skill: the Phase 0 route choice, this interview, and the Phase 2 brief
 review.
 Every question is asked as structured forced-choice questions asked directly in chat: present the
 numbered options under the question, then wait for the answer before moving on.
-Never dump an unanswerable wall of open prose questions.
+Never dump an unanswerable wall of open prose questions. When a gate holds two or more questions, build an interactive checkpoint page instead and read the answers back — the protocol is in `docs/templates/reference/interactive-checkpoint.md`; chat remains the surface for a single question and for the one re-prompt.
 Three rules ride on every question, no exceptions:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —
@@ -96,7 +98,7 @@ Three rules ride on every question, no exceptions:
 - Play back your understanding: "So if I'm hearing you right..."
 - Push toward testable statements: "How would we verify that works?"
 
-Keep asking until you can fill out a Feature Brief.
+Keep asking until you can fill out a Feature Brief. While interviewing, follow the "Give User-Facing Progress Updates" and "End State of Every Prompt" blocks in `docs/templates/reference/model-profile-claude-fable-5-1.md`.
 
 ## Phase 2: Feature Brief
 
@@ -117,8 +119,11 @@ status: active
 owner: <resolved name>
 created: YYYY-MM-DD
 feature: <slug>
+intent: docs/intent/<name>.md
 ---
 ```
+
+Write the `intent:` line only when the skill was given an intent path; otherwise omit it and keep the 4 fields.
 
 **Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist. If you can't get a name, leave the field as `<resolved name>` and note it for the user.
 

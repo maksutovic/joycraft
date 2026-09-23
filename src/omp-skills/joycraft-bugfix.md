@@ -11,6 +11,8 @@ You are fixing a bug. Follow this process in order. Do not skip steps.
 
 **Guard clause:** If this is clearly a new feature, redirect to `/skill:joycraft-new-feature` and stop.
 
+**Intent path argument:** if the user passed an intent path (`docs/intent/<name>.md`, shaped by `docs/templates/INTENT_TEMPLATE.md`), read it and start Phase 1 triage from its **Problem** (the symptom) and **Affected users and systems** (where to look) instead of a blank symptom question; ask about anything missing through the question directive. If the intent path does not exist, say so in one line and triage from scratch. If its `Status:` already says it was consumed, tell the human by which skill and proceed only on their go-ahead. Normalize the path to project-relative for the spec's `intent:` key (Phase 4). After writing the spec, overwrite the intent's `Status:` line in place with `Status: consumed by joycraft-bugfix → docs/bugfixes/<area>/<name>.md (YYYY-MM-DD)`. The intent file stays in `docs/intent/` — never move, delete, or archive it. With no argument, run every phase exactly as below.
+
 ---
 
 ## Phase 1: Triage
@@ -102,6 +104,7 @@ Write a bug fix spec to `docs/bugfixes/<area>/bugfix-name.md`. Use the relevant 
 **Area README:** When creating (or adding to) a `docs/bugfixes/<area>/` folder, also lazy-create/update a `docs/bugfixes/<area>/README.md` index — a one-line-per-bug table (`| Bug | Spec | Status | Date |`) so areas that accumulate many bugs stay navigable. Append a row for the new bugfix.
 
 **Why:** Even bug fixes deserve a spec. It forces clarity on what "fixed" means, ensures test-first discipline, and creates a traceable record of the fix.
+**Seed an eval:** turn the reproduction case into a harness eval too — how is in `docs/templates/evals/README.md`.
 
 The spec file MUST start with YAML frontmatter — the 4-field personal schema (the `area:` field carries the area name, used informally to indicate "what folder this lives under"):
 
@@ -111,8 +114,11 @@ status: todo
 owner: <resolved name>
 created: YYYY-MM-DD
 area: <area>
+intent: docs/intent/<name>.md
 ---
 ```
+
+Write the `intent:` line only when the skill was given an intent path; otherwise omit it and keep the 4 fields.
 
 A bugfix spec is a spec, so its `status:` uses the spec vocabulary —
 `todo | in-review | done`, per `docs/templates/reference/spec-status-lifecycle.md`.

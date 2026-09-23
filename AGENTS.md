@@ -21,8 +21,8 @@
 
 ### ASK FIRST
 - Adding dependencies — this is a CLI tool, keep it minimal
-- Changing template content — templates are the core product, changes affect all users
-- Changing skill content — skills are the user-facing interface
+- Changing template content outside an approved spec — templates are the core product; a spec that names the change is the approval
+- Changing skill content outside an approved spec — skills are the user-facing interface; a spec that names the change is the approval
 - Modifying the CLAUDE.md merge/improve logic — this touches user files
 - Publishing to npm
 - Merging PRs to main/master
@@ -33,7 +33,7 @@
 - Add runtime dependencies that aren't strictly necessary
 - Reference absolute paths — all templates and skills must use project-relative paths
 - Include methodology research, project assessments, or personal notes in the tool
-- Push directly to main/master (always use feature branches + PR) <!-- origin: source AGENTS.md 2026-07-21, probation: claude-sonnet-5 -->
+- Push directly to main/master (always use feature branches + PR) <!-- origin: source AGENTS.md 2026-07-21, probation: claude-fable-5-1 -->
 - Amend commits that have been pushed to remote
 - Access, read, or reference the scenarios repo (`joycraft-scenarios`)
 - Mention scenario test names or contents
@@ -124,11 +124,9 @@ Joycraft skill entry
 | `scripts/automatic-release.mjs` + `scripts/release-preparation.mjs` + `scripts/release-verification.mjs` | Automatic version preparation, retained tarball, and consumer verification |
 | `scripts/verify-publication.mjs` + `scripts/release-report.mjs` | Bounded registry visibility checks and validated report reuse across publish attempts |
 | `src/improve-claude-md.ts` | Merge logic for existing CLAUDE.md files — most complex logic |
-| `templates/` | Source-of-truth for all templates — changes here propagate to users via upgrade |
 | `src/skills/` | Source-of-truth for all product skills — `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/`, `src/copilot-skills/`, `src/omp-skills/` are generated from it (never edit those directly) |
 | `src/local-skills/` | Repo-local maintainer skills (e.g. `release-docs-sync`). Transformed per-harness into the installed trees by `scripts/sync-skills.mjs`, but never bundled — nothing here ships to users |
 | `docs/features/<slug>/specs/` | Atomic specs for building Joycraft itself (per-feature queues) |
-| `docs/briefs/2026-03-23-joysmith-cli-plugin.md` | Feature Brief — the full vision |
 
 ---
 
@@ -176,24 +174,18 @@ Read the relevant atomic spec in docs/features/<slug>/specs/
 
 ---
 
-## Spec Status
-
-| Spec | Phase | Status |
-|------|-------|--------|
-| stack-detection | 1 | Ready |
-| assess-skill | 1 | Ready |
-| init-cli | 2 | Ready |
-| upgrade-apply-skill | 2 | Ready |
-| workflow-skills | 3 | Ready |
-| upgrade-cli | 3 | Ready |
-| agents-md-support | 3 | Ready |
-
----
-
 ## Execution Profile
 
 <!-- joycraft:execution-profile -->
-- claude: Swarms: decompose yes · implement yes · model opus 5 · effort medium
+- claude: Swarms: decompose yes · implement yes · model opus 5.5 · effort high
 - codex: Swarms: decompose yes · implement yes · model 5.6 terra · effort medium
 - pi: Swarms: decompose yes · implement yes · model kimi-k3 · effort max
 <!-- /joycraft:execution-profile -->
+
+## Context Map
+
+Keep this file lean — link out, don't inline. Long-form reference docs live in `docs/context/reference/`; this table points to what to read on demand.
+
+| Document | Read it when… |
+|----------|---------------|
+| `docs/templates/reference/model-profile-claude-fable-5-1.md` | Working with Claude Fable 5.1 — finishing whole tasks, scope, progress updates, prose |

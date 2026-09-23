@@ -5,9 +5,12 @@ import {
   renderExecutionProfileSection,
   type ExecutionProfile,
 } from './execution-profile.js';
+import { MODEL_PROFILE_PATH } from './model-profile.js';
 import {
   generateBoundariesSection,
+  generateContextMapSection,
   generateExternalApiSafetySection,
+  insertModelProfilePointer,
   generatePrivateSetupNote,
   generateProductIdentitySection,
   PRIVATE_SETUP_NOTE_MARKER,
@@ -84,6 +87,7 @@ export function generateAgentsMd(
   executionProfile?: ExecutionProfile,
   identity?: ProductIdentity,
   projectDir?: string,
+  modelProfilePointer = false,
 ): string {
   const frameworkNote = stack.framework ? ` (${stack.framework})` : '';
   const langLabel = stack.language === 'unknown' ? '' : ` | **Stack:** ${stack.language}${frameworkNote}`;
@@ -108,6 +112,10 @@ export function generateAgentsMd(
     '',
   ];
 
+  if (modelProfilePointer) {
+    lines.push(generateContextMapSection(true), '');
+  }
+
   const identitySection = generateProductIdentitySection(identity);
   if (identitySection) {
     lines.push(identitySection, '');
@@ -131,6 +139,7 @@ export function improveAgentsMd(
   executionProfile?: ExecutionProfile,
   identity?: ProductIdentity,
   projectDir?: string,
+  modelProfilePointer = false,
 ): string {
   // A folder-map block is machine-owned structure: regenerate it in place
   // (human wording preserved) whenever we know the real directory.
@@ -140,6 +149,10 @@ export function improveAgentsMd(
   }
   const sections = parseSections(working);
   const additions: string[] = [];
+  const hasContextMap = hasSection(sections, /context\s*map/i);
+  const wantsPointer = modelProfilePointer && !working.includes(MODEL_PROFILE_PATH);
+  // Scoped step: one row into an existing Context Map, nothing else re-rendered.
+  if (wantsPointer && hasContextMap) working = insertModelProfilePointer(working);
 
   if (!hasSection(sections, /behavioral\s*boundar/i)) {
     additions.push(generateBoundariesSection());
@@ -168,6 +181,10 @@ export function improveAgentsMd(
 
   if (privateProfile && !working.includes(PRIVATE_SETUP_NOTE_MARKER)) {
     additions.push(generatePrivateSetupNote());
+  }
+
+  if (wantsPointer && !hasContextMap) {
+    additions.push(generateContextMapSection(true));
   }
 
   if (additions.length === 0) {

@@ -13,7 +13,9 @@ import { generateAgentsMd } from './agents-md.js';
 import {
   generateCLAUDEMd,
   generateClaudeMdPointer,
+  insertModelProfilePointer,
 } from './improve-claude-md.js';
+import { selectsModelProfile } from './model-profile.js';
 import { generatePermissions } from './permissions.js';
 import { planPiExcludedFromTsconfig } from './tsconfig.js';
 import type { Harness } from './harness.js';
@@ -37,6 +39,43 @@ focused without losing the thread.
   confirmation, never automatically.
 - Promote an item by turning it into a Feature Brief under
   \`docs/features/<slug>/\` when you're ready to build it.
+`;
+
+/**
+ * The first-run intent inbox README. Editable source of truth:
+ * `src/templates/intent/README.md` (a test asserts the two are identical).
+ */
+export const INTENT_README = `# Intent inbox
+
+An intent is a short note that describes a need before anyone commits to
+building it: a customer bug, a product idea, a ticket from another system, or
+an alert. Put intents here, one file per intent. Nothing needs to decide on a
+feature name first.
+
+- One file per intent: \`docs/intent/YYYY-MM-DD-<short-name>.md\`.
+- Use the shape in \`docs/templates/INTENT_TEMPLATE.md\`: Author, Status,
+  \`source\`, Problem, Proposed outcome, Affected users and systems,
+  Constraints, Open questions.
+- A new intent starts with \`Status: untriaged\`. Joycraft skills update that
+  line when they triage or consume the intent. The file stays here afterwards.
+- \`source:\` records where the intent came from, for example \`human\`,
+  \`interview\`, \`linear:<id>\`, or \`alert:<name>\`. It is free text.
+
+## How intents map to Joycraft artifacts
+
+Anthropic's AI-native development playbook names a chain of artifacts. Joycraft
+already has most of them under its own names. Nothing is renamed. Use the
+Joycraft names below.
+
+| Playbook term | Joycraft artifact | Where it lives |
+|---------------|-------------------|----------------|
+| intent | intent | \`docs/intent/<name>.md\` |
+| spec | brief | \`docs/features/<slug>/brief.md\` |
+| plan | design + atomic specs | \`docs/features/<slug>/design.md\` and \`docs/features/<slug>/specs/\` |
+
+An intent becomes a brief through \`/joycraft-new-feature\`, or a bugfix spec
+through \`/joycraft-bugfix\`. The brief, design, and specs keep their current
+names and folders.
 `;
 
 export interface InventoryPatchOperation {
@@ -96,6 +135,14 @@ function regularFile(root: string, relative: string): boolean {
   }
 }
 
+function isDirectory(root: string, relative: string): boolean {
+  try {
+    return lstatSync(join(root, ...relative.split('/'))).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
 function existingPath(root: string, relative: string): boolean {
   try {
     lstatSync(join(root, ...relative.split('/')));
@@ -128,6 +175,19 @@ function existingClaudeSkills(root: string, selected: readonly Harness[]): strin
   }
 }
 
+/**
+ * Any non-Claude harness makes AGENTS.md the shared memory file and CLAUDE.md
+ * an `@AGENTS.md` import pointer; a Claude-only selection keeps CLAUDE.md.
+ */
+function sharesAgentsMd(harnesses: readonly Harness[]): boolean {
+  return harnesses.some((harness) => harness !== 'claude');
+}
+
+/** The one memory file this selection designates (see generatorContent). */
+function memoryFilePath(harnesses: readonly Harness[]): 'CLAUDE.md' | 'AGENTS.md' {
+  return sharesAgentsMd(harnesses) ? 'AGENTS.md' : 'CLAUDE.md';
+}
+
 function generatorContent(
   root: string,
   path: string,
@@ -137,22 +197,27 @@ function generatorContent(
   existingSkills: string[],
   executionProfile: ExecutionProfile | undefined,
 ): string | undefined {
-  const multiTool = harnesses.some((harness) => harness !== 'claude');
+  const multiTool = sharesAgentsMd(harnesses);
+  const modelProfilePointer = selectsModelProfile(harnesses);
   if (path === 'CLAUDE.md') {
     return multiTool
       ? generateClaudeMdPointer()
       : generateCLAUDEMd(projectName(root), stack, existingSkills, {
           privateProfile: profile === 'private',
           projectDir: root,
+          modelProfilePointer,
         });
   }
   if (path === 'AGENTS.md') {
+    // Claude-only: CLAUDE.md is the memory file and carries the pointer, so the
+    // companion AGENTS.md stays without it (one pointer per project).
     return multiTool
       ? generateCLAUDEMd(projectName(root), stack, existingSkills, {
           privateProfile: profile === 'private',
           multiTool: true,
           executionProfile,
           projectDir: root,
+          modelProfilePointer,
         })
       : generateAgentsMd(projectName(root), stack, profile === 'private', executionProfile, undefined, root);
   }
@@ -238,6 +303,22 @@ function freshBacklogEntry(input: FreshInventoryInput): BundleInventoryEntry | u
     active: true,
     installable: true,
     content: BACKLOG_README,
+  };
+}
+
+function freshIntentEntry(input: FreshInventoryInput): BundleInventoryEntry | undefined {
+  if (!input.freshInstall) return undefined;
+  // Never write into a docs/intent that is a regular file or any other non-directory.
+  if (existingPath(input.root, 'docs/intent') && !isDirectory(input.root, 'docs/intent')) return undefined;
+  if (existingPath(input.root, 'docs/intent/README.md')) return undefined;
+  return {
+    path: 'docs/intent/README.md',
+    harness: 'shared',
+    kind: 'create-once',
+    ownership: 'managed',
+    active: true,
+    installable: true,
+    content: INTENT_README,
   };
 }
 
@@ -477,6 +558,42 @@ function tsconfigPatch(input: FreshInventoryInput, diagnostics: string[]): Inven
 }
 
 /**
+ * Insert the one model-profile Context Map row into an existing memory file
+ * (D14). Only the selection's designated file is read; the operation exists
+ * only when the bytes would change, so a second run reports nothing. It never
+ * creates or resurrects the file, and never removes a row (D14 keeps cleanup
+ * advisory).
+ */
+function contextMapPointerPatch(
+  input: FreshInventoryInput,
+  entries: readonly BundleInventoryEntry[],
+  diagnostics: string[],
+): InventoryPatchOperation | undefined {
+  if (!selectsModelProfile(input.harnesses)) return undefined;
+  const memory = memoryFilePath(input.harnesses);
+  if (!regularFile(input.root, memory)) return undefined;
+  // A generated document written in this same run already carries the row.
+  if (entries.some((entry) => entry.path === memory && entry.content !== undefined)) return undefined;
+  let raw: string;
+  try {
+    raw = readFileSync(join(input.root, memory), 'utf8');
+  } catch {
+    diagnostics.push(`${memory} could not be read; add the model profile row to its Context Map manually.`);
+    return undefined;
+  }
+  const next = insertModelProfilePointer(raw);
+  if (next === raw) return undefined;
+  return {
+    path: memory,
+    kind: 'write',
+    content: next,
+    currentPresent: true,
+    rawPrecondition: rawFileHash(raw),
+    reason: 'Add one Context Map row pointing at the Claude Fable 5.1 model profile; every other byte is preserved.',
+  };
+}
+
+/**
  * Read current project bytes and turn fresh-install setup into inventory
  * entries plus transaction-ready operations. This function performs no writes,
  * prompts, registry access, or mutation of the supplied inventory/manifest.
@@ -488,14 +605,16 @@ export function materializeFreshInstallInventory(input: FreshInventoryInput): Ma
   const known = new Set(entries.map((entry) => entry.path));
   const backlog = freshBacklogEntry(input);
   if (backlog && !known.has(backlog.path)) entries.push(backlog);
+  const intent = freshIntentEntry(input);
+  if (intent && !known.has(intent.path)) entries.push(intent);
   const settings = freshSettingsEntry(input);
   if (settings && !known.has(settings.path)) entries.push(settings);
 
   const directories: string[] = [];
   if (input.freshInstall) {
-    for (const relative of ['docs/context', 'docs/backlog']) {
+    for (const relative of ['docs/context', 'docs/backlog', 'docs/intent']) {
       if (!existingPath(input.root, relative)) directories.push(relative);
-      else if (!regularFile(input.root, relative)) {
+      else {
         try {
           if (!lstatSync(join(input.root, ...relative.split('/'))).isDirectory()) {
             diagnostics.push(`${relative} exists but is not a directory; preserving it.`);
@@ -507,7 +626,11 @@ export function materializeFreshInstallInventory(input: FreshInventoryInput): Ma
     }
   }
 
-  const patchOperations = [settingsPatch(input, diagnostics), tsconfigPatch(input, diagnostics)]
+  const patchOperations = [
+    settingsPatch(input, diagnostics),
+    tsconfigPatch(input, diagnostics),
+    contextMapPointerPatch(input, entries, diagnostics),
+  ]
     .filter((operation): operation is InventoryPatchOperation => operation !== undefined);
   return {
     entries,

@@ -18,9 +18,11 @@ still `open`.
 
 Two hard rules frame everything below:
 
-- **The dossier is display-only.** All capture happens in the native question
-  flow (the AskUserQuestion tool) — never via interactive HTML, pick-strings, or
-  paste-backs.
+- **The dossier is display-only; the checkpoint captures.** Answers land
+  through the interactive checkpoint page (two or more questions) or the
+  AskUserQuestion tool (one question, and the one re-prompt) — never via
+  pick-strings or paste-backs. The checkpoint protocol lives in
+  `docs/templates/reference/interactive-checkpoint.md`.
 - **Never certify your own framing as complete** (RF-KILL-3). The questions
   are YOUR framing of what's open; the assumptions manifest exists to expose
   what you did NOT ask. Label every unchecked load-bearing claim UNVERIFIED
@@ -143,8 +145,13 @@ only enforces them). You are the **auditor**, not the author:
 
 ## Step 5: Ask — native UI, forced choice, typed rationale
 
-Ask with the AskUserQuestion tool, one decision at a time, in risk order
-(mandatory boundary questions first).
+With two or more questions, render them as one interactive checkpoint page
+from `docs/templates/CHECKPOINT_TEMPLATE.html`, publish it with the db
+capability, and read the answers back per `docs/templates/reference/interactive-checkpoint.md`
+— the dossier stays the display, the checkpoint is the capture. With one
+question, or for the re-prompt below, ask with the AskUserQuestion tool, in
+risk order (mandatory boundary questions first). Every mechanic below applies
+to both surfaces.
 Mechanics that are load-bearing:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —

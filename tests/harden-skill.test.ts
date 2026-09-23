@@ -126,10 +126,10 @@ describe('proof conversion: NEVER push directly to main/master is live', () => {
 
 describe('hook still works: block-dangerous.sh blocks the new pattern', () => {
   it('exits 2 for a direct push to main', () => {
-    const input = JSON.stringify({ tool_input: { command: 'git push origin main' }, command: 'git push origin main' });
+    const input = JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git push origin main' } });
     let exitCode = 0;
     try {
-      execFileSync(HOOK_SCRIPT, ['Bash'], { input, cwd: repoRoot });
+      execFileSync(HOOK_SCRIPT, [], { input, cwd: repoRoot });
     } catch (err: any) {
       exitCode = err.status ?? 1;
     }
@@ -137,10 +137,10 @@ describe('hook still works: block-dangerous.sh blocks the new pattern', () => {
   });
 
   it('does not block a push to a differently-named branch (main-docs)', () => {
-    const input = JSON.stringify({ tool_input: { command: 'git push origin main-docs' }, command: 'git push origin main-docs' });
+    const input = JSON.stringify({ tool_name: 'Bash', tool_input: { command: 'git push origin main-docs' } });
     let exitCode = 0;
     try {
-      execFileSync(HOOK_SCRIPT, ['Bash'], { input, cwd: repoRoot });
+      execFileSync(HOOK_SCRIPT, [], { input, cwd: repoRoot });
     } catch (err: any) {
       exitCode = err.status ?? 1;
     }

@@ -47,10 +47,12 @@ describe('init', () => {
       const contents = existsSync(docsDir)
         ? require('node:fs').readdirSync(docsDir).filter((n: string) => !n.startsWith('.')).sort()
         : [];
-      // context/, templates/, and backlog/ are created up front: the generated
-      // CLAUDE.md/AGENTS.md point at backlog/, so it must exist (no dangling
-      // pointer). Everything else stays lazy-created by skills.
-      expect(contents).toEqual(['backlog', 'context', 'templates']);
+      // context/, templates/, backlog/, and intent/ are created up front: the
+      // generated CLAUDE.md/AGENTS.md point at backlog/, so it must exist (no
+      // dangling pointer), and intent/ is the inbox outside sources file into
+      // before any skill runs. Everything else stays lazy-created by skills.
+      expect(contents).toEqual(['backlog', 'context', 'intent', 'templates']);
+      expect(require('node:fs').readdirSync(join(docsDir, 'intent'))).toEqual(['README.md']);
       // State lives in the harness-neutral docs/.joycraft/ home.
       expect(existsSync(join(docsDir, '.joycraft', 'manifest.json'))).toBe(true);
 

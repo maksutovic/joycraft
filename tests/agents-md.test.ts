@@ -206,3 +206,66 @@ describe('product identity section in AGENTS.md', () => {
     expect(result).not.toContain('Product Identity');
   });
 });
+
+describe('model-profile pointer row in AGENTS.md', () => {
+  const PROFILE_PATH = 'docs/templates/reference/model-profile-claude-fable-5-1.md';
+  const count = (s: string) => s.split(PROFILE_PATH).length - 1;
+
+  it('generateAgentsMd emits one Context Map row when the selection is eligible', () => {
+    const out = generateAgentsMd('P', nodeStack, false, undefined, undefined, undefined, true);
+    expect(out).toContain('## Context Map');
+    expect(count(out)).toBe(1);
+  });
+
+  it('generateAgentsMd omits the row for an ineligible (codex-only) selection', () => {
+    expect(generateAgentsMd('P', nodeStack)).not.toContain(PROFILE_PATH);
+    expect(generateAgentsMd('P', nodeStack, false, undefined, undefined, undefined, false)).not.toContain(PROFILE_PATH);
+  });
+
+  it('the multi-tool AGENTS.md (generateCLAUDEMd multiTool) carries the row only when eligible', () => {
+    expect(count(generateCLAUDEMd('P', nodeStack, [], { multiTool: true, modelProfilePointer: true }))).toBe(1);
+    expect(generateCLAUDEMd('P', nodeStack, [], { multiTool: true })).not.toContain(PROFILE_PATH);
+  });
+
+  it('improveAgentsMd inserts exactly one row into a customized AGENTS.md with a Context Map', () => {
+    const existing = [
+      '# Project',
+      '',
+      '## Behavioral Boundaries',
+      'rules here',
+      '',
+      '### External API Safety',
+      '- safety rules here',
+      '',
+      '## Architecture',
+      'arch here',
+      '',
+      '## Key Files',
+      'files here',
+      '',
+      '## Development',
+      'dev here',
+      '',
+      '## Context Map',
+      '',
+      '| Document | Read it when… |',
+      '|---|---|',
+      '',
+    ].join('\n');
+    const result = improveAgentsMd(existing, nodeStack, false, undefined, undefined, undefined, true);
+    expect(count(result)).toBe(1);
+    expect(result.replace(/^\|[^\n]*model-profile-claude-fable-5-1[^\n]*\n/m, '')).toBe(existing);
+    // idempotent
+    expect(improveAgentsMd(result, nodeStack, false, undefined, undefined, undefined, true)).toBe(result);
+  });
+
+  it('improveAgentsMd appends the Context Map with the row when the section is missing', () => {
+    const result = improveAgentsMd('# P\n', nodeStack, false, undefined, undefined, undefined, true);
+    expect(result).toContain('## Context Map');
+    expect(count(result)).toBe(1);
+  });
+
+  it('improveAgentsMd leaves an ineligible AGENTS.md without the row', () => {
+    expect(improveAgentsMd('# P\n', nodeStack)).not.toContain(PROFILE_PATH);
+  });
+});

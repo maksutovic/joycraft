@@ -70,7 +70,7 @@ When a spec fails (tests not green, wrap-up missing, a subagent reports failure,
 
 ## Step 4: Finish — Session-End Once
 
-When no `todo` specs remain, run the once-per-feature finisher yourself, in this conversation: invoke `{{skill_prefix}}session-end` (or read and follow `{{skills_dir}}/joycraft-session-end/SKILL.md`). It owns the gates the loop deliberately skipped: full validation (must pass before anything graduates `in-review → done`), discovery consolidation, and push/PR per the project's {{boundary_file}} git autonomy rules.
+When no `todo` specs remain, run the once-per-feature finisher yourself, in this conversation: invoke `{{skill_prefix}}session-end` (or read and follow `{{skills_dir}}/joycraft-session-end/SKILL.md`). It owns the gates the loop deliberately skipped: full validation (must pass before anything graduates `in-review → done`), discovery consolidation, and push/PR per the project's {{boundary_file}} git autonomy rules. Until then keep driving the queue per the "Finish the Whole Task" and "Keep Changes and Tests to What the Task Asks" blocks in `docs/templates/reference/model-profile-claude-fable-5-1.md`.
 
 ## Final Report
 

@@ -11,6 +11,16 @@ You are helping the user brainstorm and explore what they want to build. This is
 
 ## How to Run the Interview
 
+### 0. Triage the Inbox First
+
+Before opening the floor, read `docs/intent/*.md`, skipping `README.md`. An intent is **untriaged** when its `Status:` header value is `untriaged` or the `Status:` header is absent; any other value (`triaged`, a route word, or anything a human typed) means triaged, and the file is not listed. With zero untriaged intents — a missing `docs/intent/` or one holding only `README.md` counts as zero — say nothing about triage and go straight to Step 1: silent, never an empty-list report, never a directory creation. Skip a malformed or unreadable intent with a one-line note — never a crash, never a silent drop.
+
+With one or more untriaged intents, state the count and list them all, then ask through the question directive in Step 2 (its rules, `defer to <name>` included, apply here too) whether to triage now or start a fresh brainstorm. A fresh brainstorm writes no stamps and leaves the inbox unchanged; the human may triage a subset and leave the rest untriaged.
+
+For each intent the human chooses to triage, the agent proposes tags and a priority, and the human routes it to exactly one of `interview`, `bugfix`, `backlog`, or `discard`. The agent proposes; the human decides — never route on your own judgment, and never infer a route from silence. A routing question deferred to a named person is recorded as assigned, and that intent stays untriaged.
+
+Stamp the chosen route word into the intent's `Status:` line in place (`Status: <route>`), so a later reader can tell routed-to-bugfix from routed-to-backlog; change nothing else in the file. The intent file stays in `docs/intent/` on every route, `discard` included — never delete, move, or archive it. Routing is a stamp plus a handoff, never an execution: `interview` continues into Step 1 with that intent as context; `bugfix` names the next command for the human (`/joycraft-bugfix docs/intent/<file>.md`); `backlog` names the next step for the human — a user-confirmed backlog entry with the intent as its `source:`. Triage never writes to `docs/backlog/` and never invokes a downstream skill. Triage renders no HTML artifact and stays in chat.
+
 ### 1. Open the Floor
 
 Start with something like:
@@ -23,7 +33,7 @@ Let the user talk freely. Do not interrupt their flow. Do not push toward struct
 **How to ask — the question directive.**
 Every question in this skill is asked as structured forced-choice questions asked directly in chat:
 present the numbered options under the question, then wait for the answer before
-moving on. Never dump an unanswerable wall of open prose questions.
+moving on. Never dump an unanswerable wall of open prose questions. When a gate holds two or more questions, build an interactive checkpoint page instead and read the answers back — the protocol is in `docs/templates/reference/interactive-checkpoint.md`; chat remains the surface for a single question and for the one re-prompt.
 Three rules ride on every question, no exceptions:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —
@@ -36,22 +46,7 @@ Three rules ride on every question, no exceptions:
   > Do NOT just pick an option — use the free-text field and type your answer
   > as "<choice> because <one-sentence reason>". If every option here is wrong,
   > reject the framing: type what's right instead.
-- **"Defer to <name>" is always a valid answer.** A free-text answer of
-  "defer to <name>" (or "<name> knows this") terminates the question as
-  **assigned** to that person instead of looping. Record it in the artifact's
-  closing "Open Questions — Assigned" section — question, assignee, date, and
-  a context link; the section exists only when at least one question is
-  assigned. Then confirm the deferral in one visible chat line — who, which
-  question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the
-  artifact's Open Questions — Assigned section`). Never mutate the file
-  silently on a conversational shortcut. A defer with no name ("someone else
-  knows this") gets exactly one follow-up asking who; without a name the
-  question stays open — never an anonymous assignment. Re-deferring to a
-  different person: the latest assignment wins, and the confirmation line
-  notes the reassignment. If an assigned question is answered later in the
-  session, remove it from the assigned section, record the answer normally,
-  and confirm in one line. Assignment is not backlogging — never auto-write
-  assigned questions to `docs/backlog/`.
+- **"Defer to <name>" is always a valid answer.** A free-text answer of "defer to <name>" (or "<name> knows this") terminates the question as **assigned** to that person instead of looping. Record it in the artifact's closing "Open Questions — Assigned" section — question, assignee, date, and a context link; the section exists only when at least one question is assigned. Then confirm the deferral in one visible chat line — who, which question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the artifact's Open Questions — Assigned section`). Never mutate the file silently on a conversational shortcut. A defer with no name ("someone else knows this") gets exactly one follow-up asking who; without a name the question stays open — never an anonymous assignment. Re-deferring to a different person: the latest assignment wins, and the confirmation line notes the reassignment. If an assigned question is answered later in the session, remove it from the assigned section, record the answer normally, and confirm in one line. Assignment is not backlogging — never auto-write assigned questions to `docs/backlog/`.
 
 Question discipline — hard rules, not vibes:
 
@@ -86,7 +81,7 @@ After the user has gotten their ideas out, play back in EXACTLY this
 fixed-slot shape — the per-slot caps are hard, and the playback is never
 narrated as prose. Tone follows the style contract in
 `docs/templates/reference/output-style.md`; volume and placement are fixed
-by the template itself:
+by the template itself; pacing follows the "Give User-Facing Progress Updates" block in `docs/templates/reference/model-profile-claude-fable-5-1.md`:
 
 ```
 Mission: <1 line>
@@ -95,17 +90,16 @@ Open: <Q-numbers + ≤3-word labels only — no restatement>
 Confirm or correct — then I write the draft.
 ```
 
-This playback is a **blocking gate**: Step 4's file write — and any commit —
+This playback is a **blocking gate**: Step 4's file writes — and any commit —
 happens only after an affirmative or corrected reply. One round, not a
 yes/no loop: inline corrections count as approval of everything else. Apply
 them, re-play only the changed lines, and proceed.
 
-### 4. Write a Draft Brief
+### 4. Write the Intent (and optionally a Draft Brief)
 
-Derive a slug `YYYY-MM-DD-<topic>` (today's date + kebab-case topic — no `-draft` suffix).
-Create a draft file at `docs/features/<slug>/brief.md`. Lazy-create `docs/features/<slug>/` if it doesn't exist.
+Derive a slug `YYYY-MM-DD-<topic>` (today's date + kebab-case topic — no `-draft` suffix). The intent and any later feature folder share this one name. **Write the intent first — always.** Before any other file write in this skill, write `docs/intent/<slug>.md` in the shape of `docs/templates/INTENT_TEMPLATE.md` — read that template and fill its header fields and every section from the conversation; it is the one home for the section list, so mirror it rather than inventing your own. Header values: `Author:` the resolved owner name (Owner resolution below), `Status: untriaged` (triage keys on this exact value), `source: interview`. Open questions left after the playback fill its Open questions section. Lazy-create `docs/intent/` if it doesn't exist. A same-slug re-run overwrites the intent — tell the human which file was replaced.
 
-The file MUST start with YAML frontmatter — the 4-field personal schema with `status: draft`:
+**The draft brief is optional.** After the intent is written, ask one question through the question directive, with at least the options "Intent only — triage it later" and "Also write a draft brief now". **Intent only:** create no folder under `docs/features/`, skip the brief format and the render-and-open subsection below (the skip is expected, never a failure), and continue at Step 5. **Draft brief:** create `docs/features/<slug>/brief.md`, lazy-creating `docs/features/<slug>/`. It MUST start with YAML frontmatter — the 4-field personal schema with `status: draft`, plus `intent:` pointing back at the intent:
 
 ```yaml
 ---
@@ -113,6 +107,7 @@ status: draft
 owner: <resolved name>
 created: YYYY-MM-DD
 feature: <slug>
+intent: docs/intent/<slug>.md
 ---
 ```
 
@@ -195,7 +190,7 @@ knows what stage they are reading.
 
 ### Render and open the draft brief
 
-`docs/features/<slug>/brief.md` is written first and stays **canonical** — agents
+Only when a draft brief was written — with intent only, skip this subsection. `docs/features/<slug>/brief.md` is written first and stays **canonical** — agents
 read the md, never the HTML. The HTML is a render of it and never invents content.
 
 1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
@@ -238,7 +233,7 @@ If during the conversation deferred work surfaces (a tangent, a "later" item, a 
 
 > "This looks like deferred work — want me to capture it to `docs/backlog/`?"
 
-Only on user confirmation, write a backlog entry at `docs/backlog/YYYY-MM-DD-<short-name>.md` with backlog frontmatter:
+Only on user confirmation, write a backlog entry at `docs/backlog/YYYY-MM-DD-<short-name>.md` with backlog frontmatter (with intent only, `source:` is `docs/intent/<slug>.md` instead):
 
 ```yaml
 ---
@@ -259,7 +254,7 @@ nothing outside them. Do not summarize the brief after writing it — the
 artifact is the summary. Include any backlog paths produced as a side effect
 in the Artifact line. Tone follows the style contract in
 `docs/templates/reference/output-style.md`; volume and placement are fixed by
-the template itself.
+the template itself. With intent only, the headline reads `Intent filed:` and the Artifact line is `docs/intent/<slug>.md` (nothing opened). The hand-off honors the "End State of Every Prompt" block in `docs/templates/reference/model-profile-claude-fable-5-1.md`.
 
 ```markdown
 **Draft brief ready: <what this idea is, one line>**
@@ -281,7 +276,7 @@ Next:
 ```bash
 /joycraft-new-feature docs/features/<slug>/brief.md
 ```
-Run /clear first.
+Run /clear first. With intent only (no draft brief), substitute `docs/intent/<slug>.md` for the brief path on the command line and the picking-up line of the briefing below — new-feature pre-fills from the intent and writes the brief itself.
 
 Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /clear. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
 
@@ -315,5 +310,5 @@ If the idea sounds complex — touches many files, involves architectural decisi
 - **Product identity lives in /joycraft-gather-context.** If values, team vocabulary, or code-taste talk surfaces, point there — its identity block elicits it; don't capture it here.
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail — and write it to the style contract in `docs/templates/reference/output-style.md`.
-- **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
-- **Two channels, one home per fact.** `brief.md` and its HTML render carry the content; chat carries decisions and the slot template. Never restate in chat what the brief says — point at it.
+- **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated intent (and a draft brief, when wanted).
+- **Two channels, one home per fact.** The intent — and `brief.md` with its HTML render, when written — carry the content; chat carries decisions and the slot template. Never restate in chat what the brief says — point at it.

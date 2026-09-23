@@ -34,6 +34,7 @@ const EVIDENCE_LABELS = [
   'NOT_APPLICABLE',
   'NEVER_READ',
   'WRITE_HEAVY',
+  'MODEL_SUPERSEDED',
 ];
 
 describe('joycraft-optimize v2: disposition vocabulary', () => {
@@ -51,8 +52,9 @@ describe('joycraft-optimize v2: disposition vocabulary', () => {
     });
   }
 
-  it('declares the evidence vocabulary as exactly seven, no synonyms', () => {
-    expect(content()).toMatch(/Evidence label vocabulary \(exactly seven, no synonyms\)/);
+  it('declares the evidence vocabulary as exactly eight, no synonyms', () => {
+    expect(EVIDENCE_LABELS).toHaveLength(8);
+    expect(content()).toMatch(/Evidence label vocabulary \(exactly eight, no synonyms\)/);
   });
 
   it('declares the disposition vocabulary as exactly six, no synonyms', () => {
@@ -203,5 +205,119 @@ describe('joycraft-optimize v2: taxonomy checks wired into the audit', () => {
     const c = content();
     expect(c).toMatch(/6,?000/);
     expect(c).toMatch(/8,?000/);
+  });
+});
+
+const PROFILE_DOC_PATH = 'docs/templates/reference/model-profile-claude-fable-5-1.md';
+const PROFILE_DOC = join(repoRoot, PROFILE_DOC_PATH);
+const GENERATED_OPTIMIZE = join(repoRoot, 'src', 'claude-skills', 'joycraft-optimize.md');
+const TUNE_SKILL = join(repoRoot, '.claude', 'skills', 'joycraft-tune', 'SKILL.md');
+
+// The model-profile evidence step: from its `## Step N...Model Profile...` heading
+// to the next `## ` heading.
+function modelProfileStep(text: string): string {
+  const m = text.match(/^## Step [0-9a-z]+: [^\n]*Model[- ]Profile[^\n]*$/im);
+  expect(m, 'model-profile step heading').not.toBeNull();
+  const start = text.indexOf(m![0]);
+  const rest = text.slice(start + m![0].length);
+  const end = rest.indexOf('\n## ');
+  return m![0] + (end > -1 ? rest.slice(0, end) : rest);
+}
+
+describe('add-fable-era-retire-source-to-optimize: model-profile evidence step', () => {
+  const step = () => modelProfileStep(read(OPTIMIZE_SKILL));
+
+  it('has a model-profile step that reads the installed profile doc path', () => {
+    expect(step()).toContain(PROFILE_DOC_PATH);
+  });
+
+  it('sits after Step 2b (telemetry) and before Step 3 (duplication)', () => {
+    const c = read(OPTIMIZE_SKILL);
+    const stepIdx = c.indexOf(step().split('\n')[0]);
+    expect(stepIdx).toBeGreaterThan(c.indexOf('## Step 2b'));
+    expect(stepIdx).toBeLessThan(c.indexOf('## Step 3'));
+  });
+
+  it('cites at least one block by a heading that exists in the profile doc', () => {
+    const headings = read(PROFILE_DOC)
+      .split('\n')
+      .filter((l) => l.startsWith('## '))
+      .map((l) => l.slice(3).trim())
+      .filter((h) => h !== 'Scope');
+    const cited = headings.filter((h) => step().includes(h));
+    expect(cited.length).toBeGreaterThan(0);
+    expect(step()).toContain('Formatting When Appropriate');
+  });
+
+  it('copies no block prose from the profile doc', () => {
+    const prose = read(PROFILE_DOC)
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l.length > 60 && !l.startsWith('#'));
+    const s = step();
+    for (const line of prose) {
+      expect(s).not.toContain(line);
+    }
+  });
+
+  it('names the anti-formatting flag class with a markdown example', () => {
+    const s = step().toLowerCase();
+    expect(s).toMatch(/anti-formatting/);
+    expect(s).toMatch(/never use markdown/);
+  });
+
+  it('names the hand-holding flag class', () => {
+    const s = step().toLowerCase();
+    expect(s).toMatch(/hand-holding/);
+    expect(s).toMatch(/check in/);
+    expect(s).toMatch(/narrate/);
+  });
+
+  it('labels flagged rows MODEL_SUPERSEDED and maps them to RETIRE or PROBATION only', () => {
+    const s = step();
+    expect(s).toContain('MODEL_SUPERSEDED');
+    expect(s).toMatch(/`RETIRE`[^\n]*opposite/);
+    expect(s).toMatch(/`PROBATION`[^\n]*unverified/);
+  });
+
+  it("is advisory only: applies nothing and never edits the user's CLAUDE.md", () => {
+    const s = step().toLowerCase();
+    expect(s).toMatch(/applies nothing/);
+    expect(s).toMatch(/never edits[^\n]*claude\.md/);
+  });
+
+  it('names INACCESSIBLE as the evidence when the profile doc is absent', () => {
+    expect(step()).toMatch(/absent[^\n]*`INACCESSIBLE`|`INACCESSIBLE`[^\n]*absent/);
+  });
+
+  it('does not flag a rule for age alone', () => {
+    expect(step().toLowerCase()).toMatch(/age alone/);
+  });
+
+  it('the step is present in the generated claude variant', () => {
+    expect(modelProfileStep(read(GENERATED_OPTIMIZE))).toContain(PROFILE_DOC_PATH);
+  });
+
+  it('the Edge Cases table has an absent-profile-doc row', () => {
+    const c = read(OPTIMIZE_SKILL);
+    const edge = c.slice(c.lastIndexOf('## Edge Cases'));
+    expect(edge).toMatch(/profile doc[^\n]*`INACCESSIBLE`/i);
+  });
+
+  it('the report legend lists MODEL_SUPERSEDED', () => {
+    expect(read(OPTIMIZE_SKILL)).toMatch(/\[VERIFIED\/[^\]]*MODEL_SUPERSEDED\]/);
+  });
+});
+
+describe('add-fable-era-retire-source-to-optimize: tune roadmap referral', () => {
+  it('Step 6 roadmap tells a user with a pre-profile memory file to run optimize', () => {
+    const c = read(TUNE_SKILL);
+    const start = c.indexOf('## Step 6: Show the Harness Maturity Roadmap');
+    expect(start).toBeGreaterThan(-1);
+    const rest = c.slice(start + 1);
+    const end = rest.indexOf('\n## ');
+    const region = end > -1 ? rest.slice(0, end) : rest;
+    expect(region).toMatch(/model profile[^\n]*optimize|optimize[^\n]*model profile/i);
+    expect(region).toMatch(/predates/i);
   });
 });

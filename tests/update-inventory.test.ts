@@ -18,6 +18,7 @@ import type { StackInfo } from '../src/detect';
 import type { InstallationManifest } from '../src/install-manifest';
 import {
   BACKLOG_README,
+  INTENT_README,
   materializeFreshInstallInventory,
 } from '../src/update-inventory';
 
@@ -92,9 +93,72 @@ describe('materializeFreshInstallInventory', () => {
     expect(claude?.content).toContain('my-tool');
     expect(agents?.content).toContain('## Execution Profile');
     expect(backlog?.content).toBe(BACKLOG_README);
-    expect(result.setup.directories).toEqual(expect.arrayContaining(['docs/context', 'docs/backlog']));
+    expect(result.setup.directories).toEqual(expect.arrayContaining(['docs/context', 'docs/backlog', 'docs/intent']));
+    const intent = result.entries.find((entry) => entry.path === 'docs/intent/README.md');
+    expect(intent?.kind).toBe('create-once');
+    expect(intent?.ownership).toBe('managed');
+    expect(intent?.harness).toBe('shared');
+    expect(intent?.content).toBe(INTENT_README);
+    expect(result.entries.filter((entry) => entry.path.startsWith('docs/intent/')).map((entry) => entry.path))
+      .toEqual(['docs/intent/README.md']);
     expect(existsSync(join(root, 'CLAUDE.md'))).toBe(false);
+    expect(existsSync(join(root, 'docs', 'intent'))).toBe(false);
     expect(existsSync(join(root, 'docs', 'context'))).toBe(false);
+  });
+
+  it('materializes no intent README when one already exists, and keeps user intents', () => {
+    const root = project();
+    put(root, 'docs/intent/README.md', '# My customized inbox\n');
+    put(root, 'docs/intent/2026-09-01-customer-bug.md', 'Author: someone\n');
+    const result = materializeFreshInstallInventory({
+      root,
+      entries: getBundleInventory(['claude']),
+      manifest: manifest(),
+      harnesses: ['claude'],
+      profile: 'shared',
+      stack,
+      executionProfile: defaultExecutionProfile(['claude']),
+      freshInstall: true,
+    });
+
+    expect(result.entries.some((entry) => entry.path.startsWith('docs/intent/'))).toBe(false);
+    expect(result.setup.directories).not.toContain('docs/intent');
+    expect(result.diagnostics.filter((d) => d.includes('docs/intent'))).toEqual([]);
+  });
+
+  it('preserves a docs/intent regular file with a diagnostic and writes nothing into it', () => {
+    const root = project();
+    put(root, 'docs/intent', 'not a directory\n');
+    const result = materializeFreshInstallInventory({
+      root,
+      entries: getBundleInventory(['claude']),
+      manifest: manifest(),
+      harnesses: ['claude'],
+      profile: 'shared',
+      stack,
+      executionProfile: defaultExecutionProfile(['claude']),
+      freshInstall: true,
+    });
+
+    expect(result.entries.some((entry) => entry.path.startsWith('docs/intent/'))).toBe(false);
+    expect(result.setup.directories).not.toContain('docs/intent');
+    expect(result.diagnostics.some((d) => d.includes('docs/intent'))).toBe(true);
+  });
+
+  it('does not create the intent inbox on an upgrade (non-fresh) run', () => {
+    const root = project();
+    const result = materializeFreshInstallInventory({
+      root,
+      entries: getBundleInventory(['claude']),
+      manifest: manifest(),
+      harnesses: ['claude'],
+      profile: 'shared',
+      stack,
+      executionProfile: defaultExecutionProfile(['claude']),
+    });
+
+    expect(result.entries.some((entry) => entry.path === 'docs/intent/README.md')).toBe(false);
+    expect(result.setup.directories).not.toContain('docs/intent');
   });
 
   it('does not expand a supplied fixture inventory into the full package bundle', () => {
