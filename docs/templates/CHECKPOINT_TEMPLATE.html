@@ -8,10 +8,12 @@
   JOYCRAFT INTERACTIVE CHECKPOINT · FIXED-STRUCTURE TEMPLATE
   ============================================================================
   This is a LOCKED skeleton for a gate that CAPTURES answers, not only shows
-  them. A Joycraft gate skill running on the Claude harness fills the slots,
-  publishes the page with the Artifact tool and the db capability, and later
-  reads the answers back. The human answers on the page at their own pace,
-  every click saves on the spot, and the page works on a phone.
+  them. A Joycraft gate skill fills the slots and opens the page. Two
+  transports, one page: on the Claude harness the skill publishes it with the
+  Artifact tool and the db capability and every click saves to the store; on
+  every other harness the skill opens the file locally, answers persist in the
+  browser, and the human copies the output block into chat. The agent reads
+  the answers back either way.
 
   The protocol that surrounds this page (when to build one, how Claude reads
   the answers back, what to confirm in chat) lives in ONE place:
@@ -229,9 +231,9 @@
 <section class="output">
   <div class="sec-head">
     <span class="eyebrow">Output</span>
-    <h2>What Claude will stamp</h2>
+    <h2>What your agent will stamp</h2>
   </div>
-  <p class="sub">This block is built live from your answers. It is the exact <code>decisions:</code> shape the skill writes into the brief. If saving is unavailable, copy it into chat.</p>
+  <p class="sub">This block is built live from your answers. It is the exact <code>decisions:</code> shape the skill writes into the brief. In local mode, copy it into chat when you are done.</p>
   <pre id="out"></pre>
   <div class="actions"><button class="btn secondary" id="copy" type="button">Copy</button><span class="hint" id="copy-hint"></span></div>
 </section>
@@ -264,7 +266,7 @@
       { key: "__discard", label: "Discard", esc: true },
       { key: "__defer", label: "Defer to a person", esc: true }
     ];
-    var data, db = null, readOnly = false;
+    var data, db = null, readOnly = false, localMode = false, storeKey = "";
     var answers = {};      // id -> { choice, rationale, assignee, at }
     var timers = {};       // id -> debounce timer
     var chains = {};       // id -> promise chain (one write at a time per doc)
@@ -289,6 +291,13 @@
     }
     var COLLECTION = data.collection || "answers";
     var STATUS_DOC = data.statusDoc || "meta/status";
+    storeKey = "joycraft:checkpoint:" + (data.feature || "") + ":" + (data.gate || "") + ":" + data.questions.map(function (q) { return q.id; }).join(",");
+    function storageLoad() {
+      try { var raw = localStorage.getItem(storeKey); if (raw) { var o = JSON.parse(raw); if (o && typeof o === "object") answers = o; } } catch (e) { /* storage unavailable */ }
+    }
+    function storageSave() {
+      try { localStorage.setItem(storeKey, JSON.stringify(answers)); } catch (e) { /* storage unavailable */ }
+    }
 
     function optionLabel(q, key) {
       var i;
@@ -347,12 +356,14 @@
       $("bar").style.width = Math.round((done / total) * 100) + "%";
       $("qhead").textContent = done === total ? "All " + total + " answered" : done + " of " + total + " answered";
       $("submit").disabled = readOnly || done !== total;
-      $("submit-hint").textContent = done === total ? "Submit tells Claude you are done." : (total - done) + " still open. You can leave and come back.";
+      $("submit").textContent = localMode ? "Copy answers" : ($("submit").textContent === "Submitted" ? "Submitted" : "Submit answers");
+      $("submit-hint").textContent = done === total ? (localMode ? "Copy answers, then paste the block into chat." : "Submit tells your agent you are done.") : (total - done) + " still open. You can leave and come back.";
     }
 
     function yamlStr(s) { return JSON.stringify(String(s == null ? "" : s)); }
     function renderOutput() {
-      var lines = ["decisions:"];
+      var done = data.questions.filter(isComplete).length;
+      var lines = ["# joycraft-checkpoint feature=" + (data.feature || "") + " gate=" + (data.gate || "") + " answered=" + done + "/" + data.questions.length + " at=" + new Date().toISOString(), "decisions:"];
       data.questions.forEach(function (q) {
         var a = answers[q.id] || {};
         var state = terminal(a);
@@ -360,9 +371,12 @@
         lines.push("  - id: " + q.id);
         lines.push("    question: " + yamlStr(q.question));
         lines.push("    status: " + state);
+        lines.push("    key: " + yamlStr(a.choice || ""));
         lines.push("    choice: " + yamlStr(choice));
+        if (state === "assigned") lines.push("    assignee: " + yamlStr(a.assignee || ""));
         lines.push("    rationale: " + yamlStr(a.rationale || (state === "open" ? "" : "(not given)")));
       });
+      lines.push("# end joycraft-checkpoint");
       $("out").textContent = lines.join("\n");
     }
 
@@ -372,6 +386,7 @@
       Object.keys(patch).forEach(function (k) { next[k] = patch[k]; });
       next.at = new Date().toISOString();
       answers[id] = next;
+      storageSave();
       return next;
     }
 
@@ -413,24 +428,36 @@
       var el = ev.target;
       if (el.hasAttribute && (el.hasAttribute("data-rationale") || el.hasAttribute("data-assignee"))) renderCards();
     });
-    $("copy").addEventListener("click", function () {
+    function copyOut(hintEl, okText) {
       var text = $("out").textContent;
-      var done = function () { $("copy-hint").textContent = "Copied."; };
-      var fail = function () { $("copy-hint").textContent = "Select the block and copy it by hand."; };
+      var done = function () { $(hintEl).textContent = okText; };
+      var fail = function () {
+        try {
+          var r = document.createRange(); r.selectNodeContents($("out"));
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+          if (document.execCommand("copy")) { done(); return; }
+        } catch (e2) { /* fall through */ }
+        $(hintEl).textContent = "Select the block and copy it by hand.";
+      };
       try { navigator.clipboard.writeText(text).then(done, fail); } catch (e) { fail(); }
-    });
+    }
+    $("copy").addEventListener("click", function () { copyOut("copy-hint", "Copied."); });
     $("submit").addEventListener("click", function () {
+      if (localMode) { renderOutput(); copyOut("submit-hint", "Copied. Paste this block into chat."); return; }
       if (!db || readOnly) return;
       var done = data.questions.filter(isComplete).length;
       db.doc(STATUS_DOC).set({ submitted: true, answered: done, total: data.questions.length, gate: data.gate || "", feature: data.feature || "", at: new Date().toISOString() })
-        .then(function () { banner("Submitted. Tell Claude the checkpoint is done and it will read your answers back.", "ok"); $("submit").textContent = "Submitted"; $("submit").disabled = true; })
-        .catch(function () { banner("Submit did not save. Tell Claude in chat that you are done.", "bad"); });
+        .then(function () { banner("Submitted. Tell your agent the checkpoint is done and it will read your answers back.", "ok"); $("submit").textContent = "Submitted"; $("submit").disabled = true; })
+        .catch(function () { banner("Submit did not save. Tell your agent in chat that you are done.", "bad"); });
     });
 
+    storageLoad();
     renderCards();
 
     function withoutDb() {
-      banner("Not saving: this view has no data store. Answer here, then copy the output block into chat.", "warn");
+      localMode = true;
+      banner("Local mode: answers stay in this browser. When done, click Copy answers and paste the block into chat.", "warn");
+      renderCards();
     }
 
     if (!window.claude || typeof window.claude.use !== "function") { withoutDb(); return; }

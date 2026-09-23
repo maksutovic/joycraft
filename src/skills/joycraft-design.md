@@ -129,7 +129,7 @@ surface for a single question and for the one re-prompt.
 <!-- harness:codex|pi|copilot|omp -->
 Every question is asked as structured forced-choice questions asked directly in chat: present the
 numbered options under the question, then wait for the answer before moving on.
-Never dump an unanswerable wall of open prose questions.
+Never dump an unanswerable wall of open prose questions. When a gate holds two or more questions, build an interactive checkpoint page instead and read the answers back — the protocol is in `docs/templates/reference/interactive-checkpoint.md`; chat remains the surface for a single question and for the one re-prompt.
 <!-- /harness -->
 Three rules ride on every question, no exceptions:
 

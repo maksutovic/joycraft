@@ -21,8 +21,8 @@ const skill = (name: string) => readFileSync(join(ROOT, 'src', 'skills', `${name
 
 /**
  * The interactive checkpoint: a gate page that captures answers through the
- * Artifact db capability and is read back with ArtifactData. Claude-only by
- * construction, because no other harness has those tools.
+ * Artifact db capability on Claude, and through local mode (browser storage +
+ * a pasted output block) on every other harness. One page, two transports.
  */
 
 const SLOTS = ['title', 'eyebrow', 'title-h1', 'dek', 'context-strip', 'sections', 'checkpoint-data', 'howto', 'footer'];
@@ -70,9 +70,18 @@ describe('CHECKPOINT_TEMPLATE.html — shape', () => {
     expect(t).toContain('clarified');
   });
 
-  it('degrades honestly without a data store', () => {
-    expect(template()).toContain('Not saving');
-    expect(template()).toContain('copy the output block');
+  it('enters local mode without a data store: storage mirror, Copy answers, parseable block', () => {
+    const t = template();
+    expect(t).toContain('Local mode');
+    expect(t).toContain('localStorage.setItem(storeKey');
+    expect(t).toContain('localStorage.getItem(storeKey');
+    expect(t).toContain('"Copy answers"');
+    expect(t).toContain('# joycraft-checkpoint feature=');
+    expect(t).toContain('# end joycraft-checkpoint');
+    expect(t).toContain('"    key: "');
+    expect(t).toContain('"    assignee: "');
+    expect(t).toContain('execCommand("copy")');
+    expect(t).not.toContain('Tell Claude');
   });
 
   it('is self-contained: no external requests', () => {
@@ -117,6 +126,7 @@ const BLOCKS = [
   'Data Contract',
   'Publish and Verify',
   'Read Back',
+  'Local Mode',
   'Fallbacks',
   'Lessons From the First Run',
 ];
@@ -157,10 +167,10 @@ describe('reference/interactive-checkpoint.md — the one home of the protocol',
   });
 });
 
-describe('harness gating — claude only', () => {
-  it('gates both files to claude', () => {
-    expect(TEMPLATE_HARNESS_GATES[TEMPLATE_KEY]).toEqual(['claude']);
-    expect(TEMPLATE_HARNESS_GATES[DOC_KEY]).toEqual(['claude']);
+describe('harness reach — every harness', () => {
+  it('gates neither file: both are shared templates', () => {
+    expect(TEMPLATE_HARNESS_GATES[TEMPLATE_KEY]).toBeUndefined();
+    expect(TEMPLATE_HARNESS_GATES[DOC_KEY]).toBeUndefined();
   });
 
   it('bundles both files', () => {
@@ -168,19 +178,11 @@ describe('harness gating — claude only', () => {
     expect(TEMPLATES[DOC_KEY]).toBe(doc());
   });
 
-  it('installs for claude and for a mixed selection that includes claude', () => {
-    for (const selection of [['claude'], ['claude', 'codex']] as const) {
-      const paths = getBundleInventory([...selection]).map((e) => e.path);
-      expect(paths).toContain(INSTALLED_DOC);
-      expect(paths).toContain(INSTALLED_TEMPLATE);
-    }
-  });
-
-  it('never installs for codex, pi, omp, or copilot alone', () => {
-    for (const harness of ['codex', 'pi', 'omp', 'copilot'] as const) {
+  it('installs for every single-harness selection', () => {
+    for (const harness of ['claude', 'codex', 'pi', 'omp', 'copilot'] as const) {
       const paths = getBundleInventory([harness]).map((e) => e.path);
-      expect(paths, harness).not.toContain(INSTALLED_DOC);
-      expect(paths, harness).not.toContain(INSTALLED_TEMPLATE);
+      expect(paths, harness).toContain(INSTALLED_DOC);
+      expect(paths, harness).toContain(INSTALLED_TEMPLATE);
     }
   });
 });
@@ -196,55 +198,49 @@ const CITING_SKILLS = [
   'joycraft-optimize',
 ] as const;
 
-/** Text inside every claude-including harness block, plus text outside any block. */
-function claudeVisible(content: string): string {
+/** Text a given harness reads: outside any block, plus blocks naming it. */
+function visibleTo(content: string, harness: string): string {
   const out: string[] = [];
   const re = /<!-- harness:([^ ]+) -->([\s\S]*?)<!-- \/harness -->/g;
   let last = 0;
   let m: RegExpExecArray | null;
   while ((m = re.exec(content))) {
     out.push(content.slice(last, m.index));
-    if (m[1].split('|').includes('claude')) out.push(m[2]);
+    if (m[1].split('|').includes(harness)) out.push(m[2]);
     last = m.index + m[0].length;
   }
   out.push(content.slice(last));
   return out.join('');
 }
 
-function nonClaudeOnly(content: string): string {
-  return [...content.matchAll(/<!-- harness:([^ ]+) -->([\s\S]*?)<!-- \/harness -->/g)]
-    .filter((m) => !m[1].split('|').includes('claude'))
-    .map((m) => m[2])
-    .join('');
-}
+const HARNESSES = ['claude', 'codex', 'pi', 'omp', 'copilot'] as const;
 
-describe('gate skills cite the checkpoint on the claude harness only', () => {
+describe('gate skills cite the checkpoint on every harness', () => {
   for (const name of CITING_SKILLS) {
-    it(`${name}.md cites the reference doc where claude reads it`, () => {
-      expect(claudeVisible(skill(name))).toContain(INSTALLED_DOC);
-    });
-
-    it(`${name}.md keeps the citation out of the other harnesses' blocks`, () => {
-      expect(nonClaudeOnly(skill(name))).not.toContain('interactive-checkpoint');
-    });
+    for (const harness of HARNESSES) {
+      it(`${name}.md cites the reference doc where ${harness} reads it`, () => {
+        expect(visibleTo(skill(name), harness)).toContain(INSTALLED_DOC);
+      });
+    }
 
     it(`${name}.md does not restate the read-back protocol`, () => {
       expect(skill(name)).not.toContain('answers/<id>');
       expect(skill(name)).not.toContain('meta/status');
+      expect(skill(name)).not.toContain('# end joycraft-checkpoint');
     });
   }
 
-  it('decide no longer forbids interactive capture on claude', () => {
-    const visible = claudeVisible(skill('joycraft-decide'));
-    expect(visible).not.toContain('never via interactive HTML');
+  it('decide no longer forbids interactive capture on any harness', () => {
+    expect(skill('joycraft-decide')).not.toContain('never via interactive HTML');
+    expect(skill('joycraft-decide')).not.toMatch(/never via\s+interactive HTML/);
   });
 
-  it('generated non-claude variants carry no checkpoint reference', () => {
-    for (const tree of ['codex-skills', 'pi-skills', 'omp-skills', 'copilot-skills']) {
+  it('every generated variant carries the checkpoint reference', () => {
+    for (const tree of ['claude-skills', 'codex-skills', 'pi-skills', 'omp-skills', 'copilot-skills']) {
       for (const name of CITING_SKILLS) {
         const p = join(ROOT, 'src', tree, `${name}.md`);
         if (!existsSync(p)) continue;
-        expect(readFileSync(p, 'utf-8'), `${tree}/${name}`).not.toContain('interactive-checkpoint');
+        expect(readFileSync(p, 'utf-8'), `${tree}/${name}`).toContain('interactive-checkpoint');
       }
     }
   });

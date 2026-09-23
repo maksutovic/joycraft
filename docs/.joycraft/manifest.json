@@ -380,19 +380,19 @@
     },
     ".agents/skills/joycraft-decide/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "b457fa3fcfd0c3baf403520cc8b5d6282e85f8c06296efce5742e70d9f4aff36",
+      "vendorHash": "d375f28bbc231ceea69521b28b92ec2910f882647599f7b2af83daea00667b46",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".agents/skills/joycraft-decompose/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "0f02cb2615a35257e3f9b660b0426d98a0528c05ba09d96e5dc07fc7481be447",
+      "vendorHash": "fe4e8759aeb6a28f7d46a8ec12c7b764e463fe45ed392e7e8ffb01c5ba8db2c3",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".agents/skills/joycraft-design/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "dd6931eefdd515ba174cb0eb71ccf92b31538479075195a0e06fe08d75e2fdc8",
+      "vendorHash": "60063279325326986e191677f00e98562bcf1e9de3704a1b8f21cb61e1376588",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -428,7 +428,7 @@
     },
     ".agents/skills/joycraft-interview/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "0f757a8b392a648d362404445ee0b341964dc48045290c1111446d3dcf4be0fa",
+      "vendorHash": "5fe3b36a2bfbec31ff401586b4393549dbee22beba0acdbd08577bdff504300f",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -440,19 +440,19 @@
     },
     ".agents/skills/joycraft-new-feature/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "b4c621cb6d18465b6a883e11e402f34087a0a2794dc89435c636b3796455dbe4",
+      "vendorHash": "eab5f59c8ebb896f9a814dbff9f7f9b8fdfbdbcb974f82bc0c296d64ce34920b",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".agents/skills/joycraft-optimize/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "45d85c19ebbbc4c16e577b25f4fb962c0a49c617625b63ad947cdf55a1a89bb6",
+      "vendorHash": "37b8050071221474a7819f79566dc43aac4d57fd9d2c9d4c15f8e5aa33058281",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".agents/skills/joycraft-research/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "a4ab3eed85ae567956fea6c8adea2f6ec3685306619e141d3c9759109004e8c0",
+      "vendorHash": "8b8bd4965c82dfbd51d689824a9f28a3863afba7cff7bedbe3f301fda777a412",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -476,7 +476,7 @@
     },
     ".agents/skills/joycraft-tune/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "e180603226c373d49fdcca8aa414c67e884e571ace7d05dba0acc5fdf1f5c780",
+      "vendorHash": "03cab8773c3d5956b83ef88eca5fba84bc696c544fb2bafb54a5b96ef0ad6ff6",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -512,19 +512,19 @@
     },
     ".pi/skills/joycraft-decide/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "fc736c3ad90a955341c64846da86e5c65892c594d5e701801c7533e9de05f9e0",
+      "vendorHash": "3c0623e4e827c22d9521c42973f35847e8ecad5f6400528d9f2ce545e113d8cb",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".pi/skills/joycraft-decompose/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "68153b6959105a564952f28eb0440711cb366c662848af6e27a0ad819ecbce82",
+      "vendorHash": "9eb5160b88c7ecadccb8d2fe86dd6d9ead74e724c5d3f9590f980db37a4c0b84",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".pi/skills/joycraft-design/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "2308f5f3748744db39cb3d1d1397273d61823a856cb63a4277e0220e019c23a2",
+      "vendorHash": "ed4980c7568239adbdefa7d55e9eb387fa39e15ebb34573c9636f5367b51a3a5",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -560,7 +560,7 @@
     },
     ".pi/skills/joycraft-interview/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "91719045fe525ff387764b8004e4e2776c0b46eda7eabef3a1d630f85864ac71",
+      "vendorHash": "6f065646e013c0bb7ee25ad439f67b088ec70cb0bd553a0454b4bd4c6fa49a17",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -572,19 +572,19 @@
     },
     ".pi/skills/joycraft-new-feature/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "ece0efde29e70eda811e9b2ce0929bbfb0d74f62109e3865f555e34854662033",
+      "vendorHash": "b92a952a3286ba9c3d223914cf743470af6eac5c2fa00c913d5a8db899c33c73",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".pi/skills/joycraft-optimize/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "b66ba844b6fbc04beb8ebb938fb06dfb539fc36d0c76f85389b5beb2eddd3b55",
+      "vendorHash": "e3760f2a19b6f3e10c6a0f67659fa96d37aae0daf09f782235e6bbd352be03d2",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".pi/skills/joycraft-research/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "38191bb51d505f0bb0f89cc086a4d8d8eb08ecdcbf88f93a9eff70b53a8e6331",
+      "vendorHash": "5480bcd76875a2fbbae3b28e0a068a035ca9c638b9277a82c111f869ba47a461",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -608,7 +608,7 @@
     },
     ".pi/skills/joycraft-tune/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "a1f84a51962fe10de0afa8d0159c0c19e1279264e1b1753ed05111388fa5363b",
+      "vendorHash": "0ef7bb55eff4f0dc520eddc140e3242d77c2ff1cd843d5b41e9447a210b21e33",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -698,19 +698,19 @@
     },
     ".github/skills/joycraft-decide/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "df77fedac3822d2b1d31bb213bff16c09af76be25ce0a4c1a222ed0187cd5266",
+      "vendorHash": "395148307d45559261ec8fbd2928be3c4893c46f0b7c41a070563efbc616252f",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".github/skills/joycraft-decompose/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "816e0329004001315ee0eb35b0042083b3ac83262e67298a1c667e2ae46fa915",
+      "vendorHash": "19912952448ed4782ac1bf13997e07a2d6b92273b93e50720576004f501d659c",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".github/skills/joycraft-design/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "89f2012e1e55b4c2eb2428254bd71afed0fbdc1935686b7590cc4b03a5fdf292",
+      "vendorHash": "59497b08e8d97e40b2727832e546571dee0deaf075836b225d621640c6cd6246",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -746,7 +746,7 @@
     },
     ".github/skills/joycraft-interview/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "8d3c49cfd7825d46f60d8fab8df27f225d239a843b839ddac69d78a51162d483",
+      "vendorHash": "d04036fd98abfdbc02f10cd202a30f18f444559565bd41457561190ba3c0473c",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -758,19 +758,19 @@
     },
     ".github/skills/joycraft-new-feature/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "60a1fcf96e6dca85926ed8a4b2b87d5ca6cceeea4bf606780bef663b8d93d09c",
+      "vendorHash": "73cfba2ba9d6b8f0df2564d574a28fd0f97ea935b3b1bd4e338cda68a50150bb",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".github/skills/joycraft-optimize/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "54bb301dde0f837e8c50ca0b0eb07d6617df0d782f62f19b42e18d51be427989",
+      "vendorHash": "32ce07554fc02c71a70f62a7817bf8516be9a0cca82875f4651013e03699e160",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".github/skills/joycraft-research/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "28f7021dcefa01db167c6334f904cba15186b4860bf5db4fefe5bf8a4ebb5cb3",
+      "vendorHash": "1926ced6d1fc06b6ff9d2a82ffebed98afa93956baef2b15847926a036e20699",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -794,7 +794,7 @@
     },
     ".github/skills/joycraft-tune/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "3aa8d6a29096f5aa922f014aa212e50ca90f7918f4dd16eb5a828277b4b961be",
+      "vendorHash": "fbe2adb05d0da8d2fb164fb5b104f2748dcf172bba547b2d6b2df3a550ae2170",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -830,19 +830,19 @@
     },
     ".omp/skills/joycraft-decide/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "fc736c3ad90a955341c64846da86e5c65892c594d5e701801c7533e9de05f9e0",
+      "vendorHash": "3c0623e4e827c22d9521c42973f35847e8ecad5f6400528d9f2ce545e113d8cb",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".omp/skills/joycraft-decompose/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "73d20caa10c063d8beda9be7eb104fe60f5b2fb58f01a25cc2f3eaac2dbd174f",
+      "vendorHash": "cd59505f93010872c2afafe57e764bac151af33e1f23410bf6b3b6abc3c41d7c",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".omp/skills/joycraft-design/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "2308f5f3748744db39cb3d1d1397273d61823a856cb63a4277e0220e019c23a2",
+      "vendorHash": "ed4980c7568239adbdefa7d55e9eb387fa39e15ebb34573c9636f5367b51a3a5",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -878,7 +878,7 @@
     },
     ".omp/skills/joycraft-interview/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "91719045fe525ff387764b8004e4e2776c0b46eda7eabef3a1d630f85864ac71",
+      "vendorHash": "6f065646e013c0bb7ee25ad439f67b088ec70cb0bd553a0454b4bd4c6fa49a17",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -890,19 +890,19 @@
     },
     ".omp/skills/joycraft-new-feature/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "ece0efde29e70eda811e9b2ce0929bbfb0d74f62109e3865f555e34854662033",
+      "vendorHash": "b92a952a3286ba9c3d223914cf743470af6eac5c2fa00c913d5a8db899c33c73",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".omp/skills/joycraft-optimize/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "63b14145530723cb61756bdbb8b4878cc3f7ffbdd1ad2885330699cdded9bd64",
+      "vendorHash": "bb309543e159b7262a7876a5bca9358a9a33c53e95710c1764a796ad669d8970",
       "kind": "vendor",
       "ownership": "verified"
     },
     ".omp/skills/joycraft-research/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "d4ea66f26e02f9cab16448eb7db04e285ab43e57b7211ff3aa44d354e80d0953",
+      "vendorHash": "f1092455698eaf360765db7235a54450cfc0f13e79d986556b69fff1ec154646",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -926,7 +926,7 @@
     },
     ".omp/skills/joycraft-tune/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "b2b42e4690ee75f7062756b88a29f593d359ea83fb8b6fe4fd59b3c746e7457e",
+      "vendorHash": "de87cab0162e82318a6cb15510bc53ae04be9e795437870393b49c41f31bf730",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -1022,13 +1022,13 @@
     },
     "docs/templates/CHECKPOINT_TEMPLATE.html": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "b2e706e11a5d3d51770b93f970a256b45ede37e5c3538d9722db00ed103fa18c",
+      "vendorHash": "d3f113e71c32ebf94af20c1dfe472d60a28b17227ddf79b42e354184c271dccd",
       "kind": "vendor",
       "ownership": "verified"
     },
     "docs/templates/reference/interactive-checkpoint.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "b75d8ff854d1c64ccc9d932fdb09579f841b89616c6153a56b7a71b8f0c4f794",
+      "vendorHash": "e69432b78d73865f0821606e8ed0740745b48d08815d4716961df3282a806471",
       "kind": "vendor",
       "ownership": "verified"
     }
@@ -1036,5 +1036,5 @@
   "pendingConflicts": [
     ".claude/hooks/joycraft/deny-patterns.txt"
   ],
-  "__joycraftTransactionId": "38ed881a-bd50-410d-b2de-bfa60b0ed0df"
+  "__joycraftTransactionId": "d515ebcf-98d4-48ce-8d73-6c550ac419f3"
 }

@@ -17,9 +17,12 @@ still `open`.
 
 Two hard rules frame everything below:
 
-- **The dossier is display-only.** All capture happens in the native question
-  flow (structured forced-choice questions asked directly in chat) — never via
-  interactive HTML, pick-strings, or paste-backs.
+- **The dossier is display-only; the checkpoint captures.** Answers land
+  through the interactive checkpoint page in local mode (two or more
+  questions; the human pastes its output block) or
+  structured forced-choice questions asked directly in chat (one question,
+  and the one re-prompt). The checkpoint
+  protocol lives in `docs/templates/reference/interactive-checkpoint.md`.
 - **Never certify your own framing as complete** (RF-KILL-3). The questions
   are YOUR framing of what's open; the assumptions manifest exists to expose
   what you did NOT ask. Label every unchecked load-bearing claim UNVERIFIED
@@ -142,9 +145,12 @@ only enforces them). You are the **auditor**, not the author:
 
 ## Step 5: Ask — native UI, forced choice, typed rationale
 
-Ask directly in chat, one decision at a time, in risk order (mandatory
-boundary questions first): present the numbered options, then wait for the
-answer before asking the next question.
+With two or more questions, render them as one interactive checkpoint page
+from `docs/templates/CHECKPOINT_TEMPLATE.html`, open it locally, and read the
+pasted output block back per `docs/templates/reference/interactive-checkpoint.md`.
+With one question, or for the re-prompt below, ask directly in chat, in risk
+order (mandatory boundary questions first): present the numbered options, then
+wait for the answer. Every mechanic below applies to both surfaces.
 Mechanics that are load-bearing:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —

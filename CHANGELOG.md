@@ -7,10 +7,10 @@ claim that a release has shipped.
 
 ---
 
-## Unreleased — Interactive checkpoints (Claude harness)
+## Unreleased — Interactive checkpoints
 
-Gate questions on the Claude harness can now be answered on one private web
-page instead of one chat prompt at a time. A gate skill renders
+Gate questions can now be answered on one web page instead of one chat prompt
+at a time. A gate skill renders
 `docs/templates/CHECKPOINT_TEMPLATE.html`, publishes it with the Artifact db
 capability, the human answers at their own pace with every click saved, and
 Claude reads the answers back with the artifact data tool before stamping.
@@ -19,8 +19,12 @@ Claude reads the answers back with the artifact data tool before stamping.
   holds the loop, the page anatomy, the data contract, the read-back rules, and
   the lessons from the first run. Decide, interview, new-feature, design,
   research, and decompose cite it by path on the Claude harness only.
-- **Claude-only by construction.** Both files are harness-gated to Claude; the
-  other harnesses keep their chat question directives unchanged.
+- **Every harness, two transports.** On Claude the page saves to the artifact
+  store on every click. On Codex, Pi, omp, and Copilot the same page runs in
+  local mode: answers persist in the browser, Submit becomes Copy answers, and
+  the human pastes a marked, parseable block into chat. All eight gate skills
+  (tune and optimize included) build a checkpoint when a gate needs a human
+  judgment.
 - **Decide's capture rule changed on Claude.** The dossier stays display-only;
   the checkpoint is the capture surface for two or more questions, and the
   AskUserQuestion tool remains the surface for one question and the re-prompt.
