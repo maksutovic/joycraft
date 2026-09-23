@@ -331,7 +331,7 @@
     },
     ".claude/hooks/joycraft/block-dangerous.sh": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "804a8cf8a03fc3fa44ced1b81e6c71b5c953d0561e2f871a9f83fb5bb37e34ef",
+      "vendorHash": "e58f11ebaf1eac1c4bd1b95f89b51c0ed5b403a547ae8fc592047878d04af59d",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -1036,5 +1036,5 @@
   "pendingConflicts": [
     ".claude/hooks/joycraft/deny-patterns.txt"
   ],
-  "__joycraftTransactionId": "d515ebcf-98d4-48ce-8d73-6c550ac419f3"
+  "__joycraftTransactionId": "38d78fc4-a27b-4079-b095-6046dfe29fb7"
 }

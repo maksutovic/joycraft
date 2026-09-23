@@ -25,6 +25,11 @@ Claude reads the answers back with the artifact data tool before stamping.
   the human pastes a marked, parseable block into chat. All eight gate skills
   (tune and optimize included) build a checkpoint when a gate needs a human
   judgment.
+- **Fixed: the safeguard hook never blocked.** The generated
+  `.claude/hooks/joycraft/block-dangerous.sh` read the tool name from a
+  command-line argument Claude Code never passes, so it always exited 0. It now
+  reads `tool_name` and `tool_input.command` from the hook's stdin JSON and
+  writes its reason to stderr. Run `npx joycraft update` to receive the fix.
 - **Decide's capture rule changed on Claude.** The dossier stays display-only;
   the checkpoint is the capture surface for two or more questions, and the
   AskUserQuestion tool remains the surface for one question and the re-prompt.

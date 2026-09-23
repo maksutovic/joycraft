@@ -18,7 +18,7 @@ feature: 2026-09-22-fable-native-sdlc-harness
 ## The generated block-dangerous hook never blocks (pre-existing)
 **Expected:** Spec 9 assumed `.claude/hooks/joycraft/block-dangerous.sh` follows the exit-code contract it documents.
 **Actual:** The script reads the tool name from `$1`, which Claude Code never passes, so as registered it always exits 0. It also prints its reason to stdout, which the hook runner does not surface. A separate contract mistake in the spec: exit 1 is a non-blocking warning, not an ask. A real ask is exit 0 plus a JSON `permissionDecision`.
-**Impact:** The fix belongs in `src/safeguard.ts` (`generateHookScript`) and is out of this feature's scope. Until then the deny patterns in `.claude/hooks/joycraft/deny-patterns.txt` are documentation, not enforcement. The exit-code-gate recipe in `docs/templates/hooks/` shows the correct three outcomes.
+**Impact:** Fixed 2026-09-23 on the same PR: `generateHookScript` now reads `tool_name` and `tool_input.command` from the stdin JSON (jq when present, a tolerant grep fallback otherwise), ignores argv, and writes the reason to stderr. The harden test had passed `Bash` as argv, which is why it never caught the no-op; it now invokes the hook the way Claude Code does. The exit-code-gate recipe in `docs/templates/hooks/` shows the correct three outcomes.
 
 ## Gated templates leak into the updater's harness scans
 **Expected:** Spec 2 said canonical-order ownership would keep a harness-gated template out of the updater's harness detection.
