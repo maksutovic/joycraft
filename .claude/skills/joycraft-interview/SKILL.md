@@ -13,6 +13,16 @@ You are helping the user brainstorm and explore what they want to build. This is
 
 ## How to Run the Interview
 
+### 0. Triage the Inbox First
+
+Before opening the floor, read `docs/intent/*.md`, skipping `README.md`. An intent is **untriaged** when its `Status:` header value is `untriaged` or the `Status:` header is absent; any other value (`triaged`, a route word, or anything a human typed) means triaged, and the file is not listed. With zero untriaged intents — a missing `docs/intent/` or one holding only `README.md` counts as zero — say nothing about triage and go straight to Step 1: silent, never an empty-list report, never a directory creation. Skip a malformed or unreadable intent with a one-line note — never a crash, never a silent drop.
+
+With one or more untriaged intents, state the count and list them all, then ask through the question directive in Step 2 (its rules, `defer to <name>` included, apply here too) whether to triage now or start a fresh brainstorm. A fresh brainstorm writes no stamps and leaves the inbox unchanged; the human may triage a subset and leave the rest untriaged.
+
+For each intent the human chooses to triage, the agent proposes tags and a priority, and the human routes it to exactly one of `interview`, `bugfix`, `backlog`, or `discard`. The agent proposes; the human decides — never route on your own judgment, and never infer a route from silence. A routing question deferred to a named person is recorded as assigned, and that intent stays untriaged.
+
+Stamp the chosen route word into the intent's `Status:` line in place (`Status: <route>`), so a later reader can tell routed-to-bugfix from routed-to-backlog; change nothing else in the file. The intent file stays in `docs/intent/` on every route, `discard` included — never delete, move, or archive it. Routing is a stamp plus a handoff, never an execution: `interview` continues into Step 1 with that intent as context; `bugfix` names the next command for the human (`/joycraft-bugfix docs/intent/<file>.md`); `backlog` names the next step for the human — a user-confirmed backlog entry with the intent as its `source:`. Triage never writes to `docs/backlog/` and never invokes a downstream skill. Triage renders no HTML artifact and stays in chat.
+
 ### 1. Open the Floor
 
 Start with something like:
@@ -38,22 +48,7 @@ Three rules ride on every question, no exceptions:
   > Do NOT just pick an option — use the free-text field and type your answer
   > as "<choice> because <one-sentence reason>". If every option here is wrong,
   > reject the framing: type what's right instead.
-- **"Defer to <name>" is always a valid answer.** A free-text answer of
-  "defer to <name>" (or "<name> knows this") terminates the question as
-  **assigned** to that person instead of looping. Record it in the artifact's
-  closing "Open Questions — Assigned" section — question, assignee, date, and
-  a context link; the section exists only when at least one question is
-  assigned. Then confirm the deferral in one visible chat line — who, which
-  question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the
-  artifact's Open Questions — Assigned section`). Never mutate the file
-  silently on a conversational shortcut. A defer with no name ("someone else
-  knows this") gets exactly one follow-up asking who; without a name the
-  question stays open — never an anonymous assignment. Re-deferring to a
-  different person: the latest assignment wins, and the confirmation line
-  notes the reassignment. If an assigned question is answered later in the
-  session, remove it from the assigned section, record the answer normally,
-  and confirm in one line. Assignment is not backlogging — never auto-write
-  assigned questions to `docs/backlog/`.
+- **"Defer to <name>" is always a valid answer.** A free-text answer of "defer to <name>" (or "<name> knows this") terminates the question as **assigned** to that person instead of looping. Record it in the artifact's closing "Open Questions — Assigned" section — question, assignee, date, and a context link; the section exists only when at least one question is assigned. Then confirm the deferral in one visible chat line — who, which question, where it was recorded (e.g. `Assigned: Q2 → Sam · recorded in the artifact's Open Questions — Assigned section`). Never mutate the file silently on a conversational shortcut. A defer with no name ("someone else knows this") gets exactly one follow-up asking who; without a name the question stays open — never an anonymous assignment. Re-deferring to a different person: the latest assignment wins, and the confirmation line notes the reassignment. If an assigned question is answered later in the session, remove it from the assigned section, record the answer normally, and confirm in one line. Assignment is not backlogging — never auto-write assigned questions to `docs/backlog/`.
 
 Question discipline — hard rules, not vibes:
 
