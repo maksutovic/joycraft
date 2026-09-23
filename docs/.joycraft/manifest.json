@@ -947,10 +947,16 @@
       "vendorHash": "711a731296f392656f869fe9264f88d4c3717a0e63f1e121f0e00ca6dacbfb89",
       "kind": "vendor",
       "ownership": "verified"
+    },
+    "docs/templates/reference/model-profile-claude-fable-5-1.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "c3c335f88ee96eba3d885d27be928fc6b2b03bbc215f7bafda645dbe2fd0a97e",
+      "kind": "vendor",
+      "ownership": "verified"
     }
   },
   "pendingConflicts": [
     ".claude/hooks/joycraft/deny-patterns.txt"
   ],
-  "__joycraftTransactionId": "c22e90e6-32d4-4d45-b049-7dd52863ec6c"
+  "__joycraftTransactionId": "2260e357-900a-40be-b19b-616d7ceb0090"
 }
