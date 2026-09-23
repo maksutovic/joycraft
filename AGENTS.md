@@ -197,3 +197,11 @@ Read the relevant atomic spec in docs/features/<slug>/specs/
 - codex: Swarms: decompose yes · implement yes · model 5.6 terra · effort medium
 - pi: Swarms: decompose yes · implement yes · model kimi-k3 · effort max
 <!-- /joycraft:execution-profile -->
+
+## Context Map
+
+Keep this file lean — link out, don't inline. Long-form reference docs live in `docs/context/reference/`; this table points to what to read on demand.
+
+| Document | Read it when… |
+|----------|---------------|
+| `docs/templates/reference/model-profile-claude-fable-5-1.md` | Working with Claude Fable 5.1 — finishing whole tasks, scope, progress updates, prose |

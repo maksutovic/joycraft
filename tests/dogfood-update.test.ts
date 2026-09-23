@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { update } from '../src/update';
@@ -79,5 +79,36 @@ describe('repository dogfood through the production updater', () => {
     expect(installed.manifest.targetVersion).toMatch(/^\d+\.\d+\.\d+$/);
     expect(installed.manifest.harnesses).toEqual(['claude', 'codex', 'pi', 'copilot', 'omp']);
     expect(installed.manifest.files['docs/.joycraft/check.mjs'].ownership).toBe('verified');
+  });
+
+  it('records the Fable-native harness artifacts in the checked-in shared manifest', () => {
+    const installed = readInstallationManifestInfo(process.cwd(), 'shared');
+    expect(installed.status).toBe('valid');
+    const files = Object.keys(installed.manifest?.files ?? {});
+    const expected = [
+      'docs/templates/reference/model-profile-claude-fable-5-1.md',
+      'docs/templates/hooks/README.md',
+      'docs/templates/hooks/exit-code-gate.sh',
+      'docs/templates/hooks/plan-sync-on-completion.sh',
+      'docs/templates/hooks/protected-path-guard.sh',
+      'docs/templates/hooks/test-file-lock.sh',
+      'docs/templates/evals/README.md',
+      'docs/templates/evals/agent-evals.yml',
+      'docs/templates/evals/check.sh',
+      'docs/templates/evals/example-task.json',
+    ];
+    for (const path of expected) {
+      expect(files, path).toContain(path);
+      expect(existsSync(join(process.cwd(), path)), path).toBe(true);
+    }
+  });
+
+  it('leaves the hook recipes unregistered and installs no eval workflow in this repository', () => {
+    expect(readFileSync(join(process.cwd(), '.claude/settings.json'), 'utf8')).not.toContain('docs/templates/hooks');
+    expect(existsSync(join(process.cwd(), '.github/workflows/agent-evals.yml'))).toBe(false);
+  });
+
+  it('keeps the intent inbox at its README only', () => {
+    expect(readdirSync(join(process.cwd(), 'docs/intent'))).toEqual(['README.md']);
   });
 });

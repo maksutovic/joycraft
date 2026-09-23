@@ -7,6 +7,40 @@ claim that a release has shipped.
 
 ---
 
+## Unreleased — Fable-native SDLC harness
+
+Joycraft now steers Claude Fable 5.1 through one model-profile reference doc,
+`docs/templates/reference/model-profile-claude-fable-5-1.md`. It carries the
+guide's tested prompt blocks under stable headings, and skills cite them by
+block name instead of copying their prose.
+
+- **Harness-gated reference docs.** A template can declare which harnesses
+  receive it. The profile doc installs for Claude Code, Pi, and omp, and never
+  for Codex.
+- **Memory-file pointer.** A fresh install writes one Context Map row pointing at
+  the profile. `update` inserts the same row into an existing CLAUDE.md or
+  AGENTS.md and changes nothing else. A file with no Context Map section gains
+  the section plus that row. A second run is a no-op.
+- **Intent inbox.** Install creates `docs/intent/` with a README that maps
+  intent, spec, and plan to Joycraft's names, plus an intent template. Intents
+  accept any `source:`, such as `human`, `interview`, or `linear:<id>`.
+- **Interview emits and triages intents.** Interview writes an intent before any
+  draft brief. When the inbox holds untriaged intents, it offers triage first.
+  The agent proposes tags and priority, and the human routes each intent.
+- **Intent consumers.** `/joycraft-new-feature` and `/joycraft-bugfix` accept an
+  intent path, pre-fill from it, and stamp `intent:` in their frontmatter. The
+  intent file stays in place with its status updated.
+- **Hook recipes.** Four unregistered hook recipes ship under
+  `docs/templates/hooks/`: plan sync on completion, a protected-path guard, a
+  test-file lock during a bugfix, and an allow, ask, or block exit-code gate.
+  The installer registers none of them.
+- **Evals scaffold.** Inert evals-in-CI files ship under `docs/templates/evals/`
+  for you to copy in. Install never writes to `.github/workflows/`.
+- **Model-superseded rules.** `/joycraft-optimize` gains a `MODEL_SUPERSEDED`
+  evidence label. It flags anti-formatting and hand-holding rules that the
+  installed model profile contradicts, as advisory RETIRE or PROBATION rows.
+  `/joycraft-tune`'s roadmap tells users with a pre-Fable memory file to run it.
+
 ## Unreleased — Recover publication verification
 
 A successful npm publication no longer fails verification after one stale `latest`
