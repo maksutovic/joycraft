@@ -1,0 +1,335 @@
+<meta charset="utf-8">
+<!--
+  ============================================================================
+  JOYCRAFT REVIEW GATE · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton. Any Joycraft gate skill (brief review, design
+  review, decompose review, research readout, tune report, optimize audit)
+  fills the content slots to render its review artifact; it MUST NOT alter the
+  structure, the class names, or the CSS below. Keeping the skeleton fixed is
+  the whole point: freeform per-gate HTML would make every review a fresh
+  hand-rolled artifact, and the human would relearn the page each time.
+
+  This template is a deliberate extension of the decision dossier's design
+  system, not a second one — the same tokens, the same type stack, the same
+  self-containment contract. The dossier keeps its own skeleton for decide;
+  this one covers every other gate.
+
+  Slots are the HTML comments below whose text begins with the slot marker
+  (the word SLOT followed by a colon and a region name). Each names a region
+  and gives filling guidance. Replace the slot comment (and any placeholder)
+  with real markup that uses ONLY the classes already defined in the style
+  block. (This contract comment intentionally does not nest a literal example
+  of the slot delimiters, because a nested comment terminator would end this
+  comment early and dump the rest onto the page.)
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the slot regions. Do not invent classes, restyle, add fonts, or
+      add external references of any kind.
+    · Keep the document self-contained: ZERO external requests. No CDN, no
+      remote fonts, no remote images, no external scripts. Fonts are system
+      stacks only; the sole JS permitted is the inline theme handler at the end.
+    · Keep the header's context strip container even when empty; the layout
+      copes with an empty strip, so do not remove the container.
+    · Repeat the content section (section class "sec") once per topic. Inside a
+      section, use only the pre-defined blocks: the "pillars" card grid, a
+      "tablebox" wrapping a table, the "cols" must / must-not columns, or the
+      "criteria" checklist. Do not add block types.
+    · Repeat the question card (div class "q") once per open question. If the
+      gate has NO open questions, delete the whole questions section — the
+      layout copes.
+    · Keep the how-to-answer box, and keep it naming the reject-this-framing
+      escape (the human can reject the framing outright and say what is right
+      instead).
+    · Never present an unverified claim as settled. A gate artifact is a
+      persuasive object; say plainly which rows are grounded facts and which
+      are proposals awaiting the human's word.
+
+  Structure order is fixed: header (eyebrow, h1, dek, context strip), then one
+  or more content sections, then the optional questions section, then the
+  how-to-answer box, then footer. Do not reorder.
+  ============================================================================
+-->
+<title>Decompose Review — fable-native-sdlc-harness</title>
+<style>
+  /* Design tokens: light theme is the default set on :root. These are the
+     decision dossier's tokens verbatim — one design system, two skeletons. */
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  /* Dark tokens follow the OS preference by default... */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+      --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+      --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+      --rule: #2A3140; --rule-strong: #3A4356;
+      --good-ink: #7ED0A4; --good-wash: #17301F;
+      --warn-ink: #E8B36A; --warn-wash: #33270F;
+      --bad-ink: #E39C92; --bad-wash: #34201D;
+    }
+  }
+  /* ...and an explicit data-theme override wins in both directions, so a
+     viewer's theme toggle stamps :root[data-theme] and beats the OS default. */
+  :root[data-theme="dark"] {
+    --ground: #12151C; --surface: #1A1F29; --surface-2: #212734;
+    --ink: #E6EAF2; --ink-2: #A8B2C4; --ink-3: #78829A;
+    --accent: #8CA5E8; --accent-ink: #A6BAF0; --accent-wash: #232C42;
+    --rule: #2A3140; --rule-strong: #3A4356;
+    --good-ink: #7ED0A4; --good-wash: #17301F;
+    --warn-ink: #E8B36A; --warn-wash: #33270F;
+    --bad-ink: #E39C92; --bad-wash: #34201D;
+  }
+  :root[data-theme="light"] {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --accent: #2F4E8C; --accent-ink: #2F4E8C; --accent-wash: #E9EEF7;
+    --rule: #E2E6EC; --rule-strong: #C9D0DB;
+    --good-ink: #1E6B45; --good-wash: #DFF2E7;
+    --warn-ink: #92550C; --warn-wash: #F8EDDA;
+    --bad-ink: #8C3A32; --bad-wash: #F7E7E4;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    font-size: 16.5px; line-height: 1.5; }
+  .sans, h1, h2, h3, .chip, .eyebrow, .tag { font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .mono, .spec-name { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px 90px; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-ink); }
+  header { padding-top: 56px; }
+  h1 { font-size: clamp(30px, 5vw, 42px); font-weight: 700; letter-spacing: -0.015em; line-height: 1.08; margin: 12px 0 12px; text-wrap: balance; }
+  .dek { font-size: 18px; color: var(--ink-2); max-width: 64ch; margin: 0 0 22px; }
+
+  /* Context strip: grounded facts as .lock-chip spans; .open marks an item that
+     is still unsettled. The container stays even when empty. */
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 0 18px; border-top: 1px solid var(--rule-strong); border-bottom: 1px solid var(--rule-strong); }
+  .lock-chip { font-size: 12px; font-weight: 600; padding: 4px 11px; border-radius: 100px; background: var(--good-wash); color: var(--good-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .lock-chip.open { background: var(--warn-wash); color: var(--warn-ink); }
+
+  /* Content section. Repeat once per topic. */
+  section.sec { margin-top: 54px; }
+  .sec-head { display: flex; align-items: baseline; gap: 14px; border-bottom: 1px solid var(--rule-strong); padding-bottom: 10px; margin-bottom: 8px; }
+  .sec-head h2 { margin: 0; }
+  h2 { font-size: 23px; font-weight: 700; letter-spacing: -0.01em; text-wrap: balance; }
+  .sub { font-size: 14.5px; color: var(--ink-2); margin: 10px 0 18px; max-width: 74ch; }
+
+  /* Block A — pillars: a card grid for 2–4 parallel ideas. */
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 18px; }
+  .pillar h3 { font-size: 15.5px; font-weight: 700; margin: 0 0 6px; }
+  .pillar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+
+  /* Block B — tablebox: any table (spec lists, decomposition plans). Scrolls
+     inside its own box on narrow screens so the body never scrolls. */
+  .tablebox { margin-top: 6px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; overflow-x: auto; }
+  .tablebox table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14px; }
+  .tablebox th { text-align: left; font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-3); padding: 12px 16px; border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+  .tablebox td { padding: 11px 16px; border-bottom: 1px solid var(--rule); color: var(--ink-2); vertical-align: top; }
+  .tablebox tr:last-child td { border-bottom: none; }
+  .spec-name { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .size { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; padding: 2px 8px; border-radius: 100px; background: var(--surface-2); color: var(--ink-2); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+  .wave { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: var(--accent-wash); color: var(--accent-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; white-space: nowrap; }
+
+  /* Block C — cols: the must / must-not pair. */
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 680px) { .cols { grid-template-columns: 1fr; } }
+  .col { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 14px 18px; }
+  .col .clab { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .col ul { margin: 9px 0 0; padding: 0; list-style: none; font-size: 14px; }
+  .col li { color: var(--ink-2); margin-bottom: 5px; line-height: 1.4; }
+  .col.must li::before { content: "✓ "; color: var(--good-ink); font-weight: 700; }
+  .col.must-not li::before { content: "✗ "; color: var(--bad-ink); font-weight: 700; }
+
+  /* Block D — criteria: an acceptance checklist. */
+  .criteria { margin: 6px 0 0; padding: 0; list-style: none; }
+  .criteria li { position: relative; padding: 9px 0 9px 26px; border-bottom: 1px solid var(--rule); font-size: 14.5px; color: var(--ink-2); }
+  .criteria li:last-child { border-bottom: none; }
+  .criteria li::before { content: "□"; position: absolute; left: 2px; color: var(--ink-3); }
+  .criteria li.met::before { content: "☑"; color: var(--good-ink); }
+
+  /* Questions. One .q card per open question; amber left border. */
+  .questions { margin-top: 54px; }
+  .q { background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--warn-ink); border-radius: 8px; padding: 18px 22px; margin-top: 12px; }
+  .q .qnum { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn-ink); font-family: "Avenir Next", Avenir, "Segoe UI", system-ui, sans-serif; }
+  .q h3 { font-size: 16.5px; font-weight: 700; margin: 6px 0 8px; }
+  .q .rec { font-size: 14.5px; color: var(--ink); margin: 0 0 6px; }
+  .q .rec strong { color: var(--accent-ink); }
+  .q .why { font-size: 14px; color: var(--ink-2); margin: 0; max-width: 74ch; }
+
+  .howto { margin-top: 48px; background: var(--accent-wash); border-radius: 8px; padding: 20px 26px; }
+  .howto p { margin: 6px 0 0; font-size: 15px; color: var(--ink); max-width: none; }
+  footer { margin-top: 56px; border-top: 1px solid var(--rule-strong); padding-top: 16px; font-size: 13px; color: var(--ink-3); }
+
+  /* Images, if any slot ever adds one, never force the body to scroll. */
+  img { max-width: 100%; height: auto; }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decompose Review · feature: fable-native-sdlc-harness · September 22, 2026 · rev 2 · September 22, 2026 16:55</div>
+  <h1>Twelve specs, four waves, three premises for your word</h1>
+  <p class="dek">The brief's decomposition, verified against the code and written as twelve atomic specs. Approve the three INVENTED premises and the modes, or reject the framing and say what is right.</p>
+  <div class="locked"><span class="lock-chip">D1–D15 stamped</span><span class="lock-chip">12 specs</span><span class="lock-chip">4 waves</span><span class="lock-chip">wave 2 parallel-safe</span><span class="lock-chip open">3 INVENTED premises</span><span class="lock-chip open">modes awaiting approval</span></div>
+</header>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Plan</span>
+    <h2>Twelve specs across four waves</h2>
+  </div>
+  <p class="sub">The brief's twelve rows, verified against the code. Spec 4 moved from wave 2 to wave 3 because it edits the same two skill files as specs 6, 7, and 8. Every row is a grounded proposal; modes are recommendations awaiting your word.</p>
+  <div class="tablebox">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Spec</th><th>Description</th><th>Depends on</th><th>Size</th><th>Mode</th><th>Wave</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td class="spec-name">write-model-profile-doc</td><td>Add the Fable 5.1 profile reference doc with named, greppable blocks and land its installed copy.</td><td>—</td><td><span class="size">M</span></td><td>checkpoint</td><td><span class="wave">wave 1</span></td></tr>
+        <tr><td>2</td><td class="spec-name">gate-reference-docs-by-harness</td><td>Let a template entry declare its harnesses; the profile doc installs for claude, pi, omp, never codex; add the reference-dir enumeration test.</td><td>—</td><td><span class="size">M</span></td><td>checkpoint</td><td><span class="wave">wave 1</span></td></tr>
+        <tr><td>3</td><td class="spec-name">point-memory-file-at-profile</td><td>Fresh install and update both emit one Context Map row pointing at the profile doc, idempotent, nothing else touched.</td><td>1, 2</td><td><span class="size">M</span></td><td>checkpoint</td><td><span class="wave">wave 2</span></td></tr>
+        <tr><td>4</td><td class="spec-name">cite-profile-in-skills</td><td>Five skills cite the profile doc by path and block name, no block text copied.</td><td>1</td><td><span class="size">M</span></td><td>checkpoint</td><td><span class="wave">wave 3</span></td></tr>
+        <tr><td>5</td><td class="spec-name">add-intent-template-and-inbox</td><td>Add the intent template and inbox README; installer creates docs/intent/; folder map gains a row.</td><td>—</td><td><span class="size">S</span></td><td>batch</td><td><span class="wave">wave 1</span></td></tr>
+        <tr><td>6</td><td class="spec-name">emit-intent-from-interview</td><td>Interview writes docs/intent/&lt;slug&gt;.md first; the draft brief becomes optional.</td><td>5</td><td><span class="size">M</span></td><td>checkpoint</td><td><span class="wave">wave 2</span></td></tr>
+        <tr><td>7</td><td class="spec-name">add-triage-mode-to-interview</td><td>Interview lists untriaged intents, proposes tags and priority, routes on the human's word.</td><td>5, 6</td><td><span class="size">M</span></td><td>checkpoint</td><td><span class="wave">wave 3</span></td></tr>
+        <tr><td>8</td><td class="spec-name">consume-intent-in-new-feature-and-bugfix</td><td>Both skills accept an intent path, pre-fill, stamp intent:, leave the file in place.</td><td>5</td><td><span class="size">S</span></td><td>batch</td><td><span class="wave">wave 2</span></td></tr>
+        <tr><td>9</td><td class="spec-name">ship-governance-hook-recipes</td><td>Four documented, unregistered hook recipes plus a wiring README.</td><td>—</td><td><span class="size">M</span></td><td>checkpoint</td><td><span class="wave">wave 1</span></td></tr>
+        <tr><td>10</td><td class="spec-name">ship-evals-in-ci-recipe</td><td>Inert evals scaffold under docs/templates/evals/; bugfix gains a one-line reminder.</td><td>—</td><td><span class="size">M</span></td><td>checkpoint</td><td><span class="wave">wave 1</span></td></tr>
+        <tr><td>11</td><td class="spec-name">add-fable-era-retire-source-to-optimize</td><td>Optimize gains a model-profile evidence step and the MODEL_SUPERSEDED label; tune's roadmap points at it.</td><td>1</td><td><span class="size">M</span></td><td>checkpoint</td><td><span class="wave">wave 2</span></td></tr>
+        <tr><td>12</td><td class="spec-name">dogfood-update-and-cleanup-on-joycraft</td><td>Run the built updater on this repo, assert zero drift, apply optimize's RETIRE rows to AGENTS.md by hand, update CHANGELOG.</td><td>1–11</td><td><span class="size">M</span></td><td>checkpoint</td><td><span class="wave">wave 4</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Order</span>
+    <h2>Execution waves and parallel-safety</h2>
+  </div>
+  <div class="pillars">
+    <div class="pillar">
+      <h3>Wave 1 · 1 → 2 → 5 → 9 → 10</h3>
+      <p>NOT parallel-safe. Overlap: docs/.joycraft/manifest.json, tests/bundle-inventory.test.ts, tests/model-profile-template.test.ts, tests/init-selections.test.ts. Run in that order.</p>
+    </div>
+    <div class="pillar">
+      <h3>Wave 2 · 3, 6, 8, 11</h3>
+      <p>Parallel-safe: Affected Files are disjoint. Use worktrees. pnpm sync-skills rewrites every installed tree, so two syncs in one checkout can pick up each other's half-edits.</p>
+    </div>
+    <div class="pillar">
+      <h3>Wave 3 · 7 → 4</h3>
+      <p>NOT parallel-safe. Overlap: src/skills/joycraft-interview.md. Spec 4 runs last so its citations land after specs 6, 7, and 8 restructure the interview and new-feature skills.</p>
+    </div>
+    <div class="pillar">
+      <h3>Wave 4 · 12</h3>
+      <p>Sequential. Runs the built updater on this repo, asserts zero drift, applies optimize's RETIRE rows to AGENTS.md by hand, updates CHANGELOG.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Grounding</span>
+    <h2>Prior knowledge reused and brief mismatches</h2>
+  </div>
+  <div class="cols">
+    <div class="col must">
+      <span class="clab">Reused</span>
+      <ul>
+        <li>decision-log 2026-09-01: exactly-N evidence labels, no synonyms. Spec 11 adds MODEL_SUPERSEDED; the count goes to eight.</li>
+        <li>decision-log 2026-07-27: reference docs ship from src/templates/reference/ to docs/templates/reference/. Spec 1 uses that path.</li>
+        <li>discovery 2026-07-29: regen and sync land in the same commit as every skill edit. Spec 12 is a zero-drift gate, not the sync owner.</li>
+        <li>discovery 2026-07-31: verify the skill has the step; check the TEMPLATES record. Spec 4 names the two character-window tests.</li>
+        <li>shipped 2026-09-01: the INACCESSIBLE evidence precedent. Spec 11 reuses it when the profile doc is absent.</li>
+      </ul>
+    </div>
+    <div class="col must-not">
+      <span class="clab">Brief claims the code contradicts</span>
+      <ul>
+        <li>"update inserts the pointer through the merge logic": improveCLAUDEMd and improveAgentsMd have no production caller. Spec 3 wires them into the update path for the first time. Riskiest spec.</li>
+        <li>"src/bundle-inventory.ts:121": the line is near 118–124. Drift only.</li>
+        <li>"no enumeration test for src/templates/reference/": true, but tests/output-style-template.test.ts asserts byte parity for one file. Spec 1 builds on it.</li>
+        <li>tests/bundle-inventory.test.ts requires a scalar harness field. Spec 2 gates by a path-keyed table instead of an array.</li>
+        <li>"templates/claude-kit is the recipe pattern": the repo-root templates/ folder ships to nobody. Spec 9 puts recipes under src/templates/hooks/.</li>
+        <li>"nothing writes to .github/workflows/": src/init-autofix.ts does, for workflows/-prefixed keys under opt-in autofix. Spec 10 keeps the scaffold under evals/ and tests the prefix.</li>
+        <li>"AGENTS.md carries a never-use-markdown rule": it does not. Spec 12 names three narrower candidates for optimize, not pre-decided edits.</li>
+        <li>"the row inserts into an existing Context Map": this repo's CLAUDE.md and AGENTS.md have none. The dogfood exercises Q1 directly.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Modes</span>
+    <h2>Execution mode recommendation</h2>
+  </div>
+  <p class="sub">The project has no Default execution mode line, so the default is batch. S specs 5 and 8 run batch. Every M spec runs checkpoint so each lands an atomic commit with its regen and sync. No spec is L, so none needs isolated.</p>
+  <ul class="criteria">
+    <li>batch: 5, 8</li>
+    <li>checkpoint: 1, 2, 3, 4, 6, 7, 9, 10, 11, 12</li>
+    <li>isolated: none</li>
+  </ul>
+</section>
+
+<section class="questions">
+  <div class="sec-head">
+    <span class="eyebrow">Open</span>
+    <h2>Questions for you</h2>
+  </div>
+  <div class="q">
+    <span class="qnum">Q1 · INVENTED · spec 3</span>
+    <h3>When a memory file has no Context Map section at all, does update append the section plus the one row?</h3>
+    <p class="rec"><strong>Recommend:</strong> Approve. Becomes D16.</p>
+    <p class="why">The brief says update adds one row and changes nothing else. A file with no section cannot take a row without gaining the section. The alternative leaves that user with no pointer.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">Q2 · INVENTED · spec 7</span>
+    <h3>Does triage run in chat, with no HTML gate artifact?</h3>
+    <p class="rec"><strong>Recommend:</strong> Approve. Becomes D17.</p>
+    <p class="why">Triage is a per-file route decision, not a document the human reads. A second render block in interview would also trip the one-render-per-skill test.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">Q3 · INVENTED · spec 7</span>
+    <h3>Does routing to bugfix or backlog name the next command, and write nothing to docs/backlog/?</h3>
+    <p class="rec"><strong>Recommend:</strong> Approve. Becomes D18.</p>
+    <p class="why">D3 makes the human the router. Every backlog entry in this harness is user-confirmed, never auto-written. Triage stamps the intent's Status and stops.</p>
+  </div>
+  <div class="q">
+    <span class="qnum">Q4 · modes</span>
+    <h3>Do the recommended execution modes stand?</h3>
+    <p class="rec"><strong>Recommend:</strong> Yes. batch for 5 and 8, checkpoint for the rest.</p>
+    <p class="why">The specs are written with these modes in their frontmatter and the queue. An override is a one-word edit per spec.</p>
+  </div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>Reply "approve" to lock the three premises as D16–D18 and the modes as written. Reply "approve, but <change>" to adjust a spec, a mode, or a wave. If the framing itself is wrong, reject it outright and say what is right instead; nothing here is settled until you say so. Answers land in the brief's decisions frontmatter and in the spec files.</p>
+</div>
+
+<footer>
+  <p>Produced by joycraft-decompose · feature 2026-09-22-fable-native-sdlc-harness · 2026-09-22 · canonical record docs/features/2026-09-22-fable-native-sdlc-harness/decompose.md · rev 2 · generated 2026-09-22T23:55:48.584933+00:00</p>
+</footer>
+</div>
+
+<script>
+  // Theme handling only (the sole permitted JS). A viewer/host may stamp
+  // data-theme on <html>; if none is set we defer to prefers-color-scheme via
+  // the CSS above. This block lets a ?theme=dark|light query param force it for
+  // local preview without any network access.
+  (function () {
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") {
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch (e) { /* no-op: theme falls back to prefers-color-scheme */ }
+  })();
+</script>

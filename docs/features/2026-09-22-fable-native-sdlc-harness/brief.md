@@ -79,6 +79,21 @@ decisions:
     status: clarified
     choice: Approve the brief and proceed to decomposition.
     rationale: The user replied "approve" at the brief review gate on 2026-09-22 (artifact rev 4).
+  - id: D16
+    question: What does update do to a memory file with no Context Map section?
+    status: clarified
+    choice: A memory file with no `## Context Map` section receives the section plus the one profile row, appended, rather than being left without a pointer.
+    rationale: Approved at the decompose gate on 2026-09-22 (artifact rev 2). The brief asks for one row and nothing else changed; a file with no section cannot take a row without gaining the section.
+  - id: D17
+    question: Does triage render an HTML gate artifact?
+    status: clarified
+    choice: No. Triage runs in chat with no second render-and-open block and no second REVIEW_GATE_TEMPLATE.html reference in joycraft-interview.
+    rationale: Approved at the decompose gate on 2026-09-22 (artifact rev 2). Triage is a per-file route decision, and a second render block would trip the one-render-per-skill test.
+  - id: D18
+    question: Does triage invoke downstream skills or write backlog entries?
+    status: clarified
+    choice: No. Routing to bugfix or backlog names the next command for the human; triage writes nothing to docs/backlog/ and invokes no skill.
+    rationale: Approved at the decompose gate on 2026-09-22 (artifact rev 2). D3 makes the human the router and every backlog entry stays user-confirmed.
 ---
 
 # Fable-native SDLC harness — Feature Brief
@@ -231,10 +246,22 @@ recipe, and an advisory optimize source that flags legacy rules.
 - [ ] Parallel worktrees (specs are independent)
 - [x] Mixed
 
-Wave 1 in parallel: 1, 2, 5, 9, 10. Wave 2 in parallel: 3, 4, 6, 8, 11.
-Wave 3: 7. Wave 4: 12. Specs 4, 6, 7, 8 edit skill content and specs 1, 5,
-9, 10 add template content; both are ask-first boundaries, so each of those
-specs pauses for approval before its first write.
+Decomposed 2026-09-22 (`decompose.md`, `specs/README.md`):
+
+- Wave 1: 1 → 2 → 5 → 9 → 10, sequential (shared: install manifest,
+  `tests/bundle-inventory.test.ts`, `tests/model-profile-template.test.ts`,
+  `tests/init-selections.test.ts`).
+- Wave 2: 3, 6, 8, 11, parallel-safe in worktrees (Affected Files disjoint).
+- Wave 3: 7 → 4, sequential (both edit `src/skills/joycraft-interview.md`).
+  Spec 4 moved here from wave 2 so its citations land after specs 6, 7, and 8
+  restructure the interview and new-feature skills.
+- Wave 4: 12.
+
+Modes: 5 and 8 `batch`; all others `checkpoint`. Specs 4, 6, 7, 8, 10, 11 edit
+skill content and specs 1, 5, 9, 10 add template content; both are ask-first
+boundaries, so each of those specs pauses for approval before its first write.
+Every template-adding spec lands its `docs/templates/` copy in its own commit;
+spec 12 verifies zero drift rather than owning the sync.
 
 ## Success Criteria
 
@@ -265,8 +292,8 @@ specs pauses for approval before its first write.
 
 ## Raw Notes
 
-Decisions D1 to D15 are stamped in the frontmatter. D10 to D14 were answered
-at the new-feature gate on 2026-09-22.
+Decisions D1 to D18 are stamped in the frontmatter. D10 to D14 were answered
+at the new-feature gate on 2026-09-22; D16 to D18 at the decompose gate.
 
 Prompt blocks from the Fable 5.1 guide to carry into the profile doc, by name:
 finish the whole task (autonomous-operation block plus delivering-work block),

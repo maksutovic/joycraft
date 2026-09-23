@@ -193,7 +193,7 @@ Read the relevant atomic spec in docs/features/<slug>/specs/
 ## Execution Profile
 
 <!-- joycraft:execution-profile -->
-- claude: Swarms: decompose yes · implement yes · model opus 5 · effort medium
+- claude: Swarms: decompose yes · implement yes · model opus 5.5 · effort high
 - codex: Swarms: decompose yes · implement yes · model 5.6 terra · effort medium
 - pi: Swarms: decompose yes · implement yes · model kimi-k3 · effort max
 <!-- /joycraft:execution-profile -->
