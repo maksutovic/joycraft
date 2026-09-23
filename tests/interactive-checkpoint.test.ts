@@ -192,6 +192,8 @@ const CITING_SKILLS = [
   'joycraft-design',
   'joycraft-research',
   'joycraft-decompose',
+  'joycraft-tune',
+  'joycraft-optimize',
 ] as const;
 
 /** Text inside every claude-including harness block, plus text outside any block. */

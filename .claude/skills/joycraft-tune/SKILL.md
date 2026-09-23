@@ -86,15 +86,9 @@ agents read the md, never the HTML. The HTML is a render of it and never invents
    CSS. The previous render's footer revision + 1 is this one's; no previous
    file, or an unparseable hand-edited footer, → revision 1 (note the reset in
    the footer) — never fail the render. The filename never changes.
-4. Check `autoOpen` in `docs/.joycraft/local/settings.json` (missing file or key =
-   true). False ⇒ skip opening silently and print the absolute path instead.
-   Otherwise open it before asking anything: `open <path>` on darwin,
-   `xdg-open <path>` otherwise. If that fails, print the absolute path and continue —
-   headless, CI, and isolated mode are a no-op here (the environment check
-   precedes the setting), never a failure.
-5. Offer — don't push — an optional extra render: "I can also publish this
-   assessment as a hosted artifact for a shareable link." Only publish if the
-   human says yes; the local file stays canonical. If declined, no retry.
+4. Check `autoOpen` in `docs/.joycraft/local/settings.json` (missing file or key = true). False ⇒ skip opening silently and print the absolute path instead. Otherwise open it before asking anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If that fails, print the absolute path and continue — headless, CI, and isolated mode are a no-op here (the environment check precedes the setting), never a failure.
+5. Offer — don't push — an optional extra render: "I can also publish this assessment as a hosted artifact for a shareable link." Only publish if the human says yes; the local file stays canonical. If declined, no retry.
+6. When the assessment carries two or more questions for the human, the hosted render is an interactive checkpoint instead: build it per `docs/templates/reference/interactive-checkpoint.md` and read the answers back before stamping. The local file stays the canonical render.
 
 At this gate, your chat message is EXACTLY this template — nothing outside it.
 The content lives in the artifact: the scores table and the per-dimension findings go in the assessment, never in chat.

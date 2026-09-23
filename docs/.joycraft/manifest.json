@@ -289,7 +289,7 @@
     },
     ".claude/skills/joycraft-optimize/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "2bff7c840962390c8d58a7d4dae1118f811d9621686d59391e0b6e07b37b7d65",
+      "vendorHash": "253df153f3ebbe16d2372fc857287278157195017130ff9ecaa1a88b4f959498",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -319,7 +319,7 @@
     },
     ".claude/skills/joycraft-tune/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "34739fc75e2776c106909442bf77587c6df17cba005e2379ebea5a884bc030b6",
+      "vendorHash": "c86baf48f55f9d11b01ef83b59fa9690b36a3d951716293949c929b32ce5752d",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -446,7 +446,7 @@
     },
     ".agents/skills/joycraft-optimize/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "1a26e5f71d51ca027b6ed8c3bfcc90842d9c31372d0b62e7beffc035b1dcc334",
+      "vendorHash": "45d85c19ebbbc4c16e577b25f4fb962c0a49c617625b63ad947cdf55a1a89bb6",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -476,7 +476,7 @@
     },
     ".agents/skills/joycraft-tune/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "e203285e8252e51d94c75b0d189824860a5b46010fdceeb950a0840f1b9b992a",
+      "vendorHash": "e180603226c373d49fdcca8aa414c67e884e571ace7d05dba0acc5fdf1f5c780",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -578,7 +578,7 @@
     },
     ".pi/skills/joycraft-optimize/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "f3ae8bca1d8457c69975aa6d89f8cadb47b24fb71a97871362d7961dfb7c9538",
+      "vendorHash": "b66ba844b6fbc04beb8ebb938fb06dfb539fc36d0c76f85389b5beb2eddd3b55",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -608,7 +608,7 @@
     },
     ".pi/skills/joycraft-tune/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "dfa0c6a4118b369dbccbf3a0068f48b98d296a6600f70c797c11373be4181228",
+      "vendorHash": "a1f84a51962fe10de0afa8d0159c0c19e1279264e1b1753ed05111388fa5363b",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -764,7 +764,7 @@
     },
     ".github/skills/joycraft-optimize/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "bf1163aca5de84d55fca5623ebd715ca6751cb7a12967a5757f68a555af9eb8a",
+      "vendorHash": "54bb301dde0f837e8c50ca0b0eb07d6617df0d782f62f19b42e18d51be427989",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -794,7 +794,7 @@
     },
     ".github/skills/joycraft-tune/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "2bf549082474a71a25bd4b240c5fa459f2d5b1c0bf557be22a410f76e9c1f069",
+      "vendorHash": "3aa8d6a29096f5aa922f014aa212e50ca90f7918f4dd16eb5a828277b4b961be",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -896,7 +896,7 @@
     },
     ".omp/skills/joycraft-optimize/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "ff0aea533e9226210eccb0365826ead146e49cf294c60350337bc94f0655bb3a",
+      "vendorHash": "63b14145530723cb61756bdbb8b4878cc3f7ffbdd1ad2885330699cdded9bd64",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -926,7 +926,7 @@
     },
     ".omp/skills/joycraft-tune/SKILL.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "8f2fbf1312c66e357a0d20577002f9040ca98506c8d7f6f9a2cf8f2d4e764230",
+      "vendorHash": "b2b42e4690ee75f7062756b88a29f593d359ea83fb8b6fe4fd59b3c746e7457e",
       "kind": "vendor",
       "ownership": "verified"
     },
@@ -1028,7 +1028,7 @@
     },
     "docs/templates/reference/interactive-checkpoint.md": {
       "vendorVersion": "0.7.13",
-      "vendorHash": "bacefa8c2cf26630bb53a2477d4b6815431e0f85e1e81dfba233dbc0a07ae408",
+      "vendorHash": "b75d8ff854d1c64ccc9d932fdb09579f841b89616c6153a56b7a71b8f0c4f794",
       "kind": "vendor",
       "ownership": "verified"
     }
@@ -1036,5 +1036,5 @@
   "pendingConflicts": [
     ".claude/hooks/joycraft/deny-patterns.txt"
   ],
-  "__joycraftTransactionId": "8fa5a37f-6053-4f2a-97e9-e7fa881ad1b7"
+  "__joycraftTransactionId": "38ed881a-bd50-410d-b2de-bfa60b0ed0df"
 }

@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-09-22
+last_updated: 2026-09-23
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -11,6 +11,8 @@ last_updated_by: Maximilian Maksutovic
 
 | Date | Decision | Why | Alternatives Rejected | Revisit When |
 | 2026-09-06 | Reliable updates D6: approve 15 specs, 14 waves, checkpoint/isolated modes, and GPT-5.6 Terra medium spec-writing swarm | User approved the review and explicitly requested this model and effort | Batch-only execution; another decomposition round | Concrete implementation evidence requires a changed boundary |
+| 2026-09-23 | Interactive checkpoint C3: every gate that needs a human judgment builds a checkpoint — all eight gate skills, tune and optimize included | Max: anything that requires human judgement and an answer makes sense for this (answered on the first live checkpoint page) | Six decision-bearing skills only | A gate turns out to be read-and-approve with no real choice |
+| 2026-09-23 | Interactive checkpoint C2: a rendered checkpoint page is committed beside the gate's other renders unless the human says otherwise | Max: the whole point of Joycraft is to maintain context; answers never live in the file | Publish only, never commit; commit only when it embeds no unpublished data | A page must embed data that cannot enter git |
 | 2026-09-22 | Fable-native harness D1: one model-profile reference doc; CLAUDE.md points at it, skills cite path + block name | One home per fact; duplicating prompt blocks into skills is the drift living-harness removed | Inline blocks in five skills | A second model profile is needed |
 | 2026-09-22 | Fable-native harness D2: docs/intent/ inbox is the front door; interview emits, new-feature and bugfix consume by path; brief/design/specs keep their names | Anthropic's playbook makes intent canonical; later artifacts already have stable names | Renaming brief to spec and specs to plan | An external system needs a different inbox shape |
 | 2026-09-22 | Fable-native harness D3: human triage; agent proposes tags and priority, human routes to interview, bugfix, backlog, or discard | Routing is a judgment the human owns | Agent auto-routing | Triage volume makes human routing a bottleneck |

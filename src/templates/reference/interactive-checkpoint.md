@@ -2,7 +2,7 @@
 
 > How a Joycraft gate on the Claude harness captures the human's answers on a private web page instead of one chat question at a time. This doc is the one home for the pattern; skills cite it by path and block name and never restate it. The page itself is `docs/templates/CHECKPOINT_TEMPLATE.html`.
 
-This pattern needs the `Artifact` tool with the `db` capability and the `ArtifactData` tool. Both exist only on the Claude harness. On any other harness, or when the tools are absent in a session, the skill's chat question directive stays in force unchanged.
+This pattern needs the `Artifact` tool with the `db` capability and the `ArtifactData` tool. Both exist only on the Claude harness. Every gate that needs a human judgment uses it: decide, interview, new-feature, design, research, decompose, tune, and optimize. On any other harness, or when the tools are absent in a session, the skill's chat question directive stays in force unchanged.
 
 ## When to Build a Checkpoint
 
@@ -13,7 +13,7 @@ Build one page when a gate holds two or more questions the human must answer, or
 1. Stop at the human's step. Commit or save the work so far. Do not guess an answer to move on.
 2. Gather every open question from this gate into one list. Each carries its id, the framing as a question, two to four options the consuming skill can stamp, the recommended option, one paragraph of why, and the evidence lines the decision rests on.
 3. Render one page from `docs/templates/CHECKPOINT_TEMPLATE.html`. Fill only the slot regions and the JSON data block. The runtime script stays byte-identical.
-4. Publish it privately with the `Artifact` tool and `capabilities: {"db": {}}`. The page stays out of git when it embeds unpublished data; when it holds only what the brief already holds, save the render beside the gate's other renders.
+4. Publish it privately with the `Artifact` tool and `capabilities: {"db": {}}`. Commit the render beside the gate's other renders (`docs/features/<slug>/checkpoint-<gate>.html`) unless the human says otherwise: Joycraft exists to keep context, and the answers never live in the file. The answers live in the artifact store.
 5. Give the human the link in one line, with the question count and the words "answer at your pace, then tell me it is done".
 6. When the human says it is done, read the answers back and stamp them with the skill's own stamping rules.
 

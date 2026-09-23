@@ -132,9 +132,7 @@ Write the overhead report md first (the disposition table and the report section
 3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both fail, print the absolute path and continue — headless, CI, and isolated mode are a no-op here, never a failure.
 4. Offer — don't push — an optional extra render: "I can also publish this overhead report as a hosted artifact for a shareable link." Only publish if the human says yes; the local file remains the canonical render. If declined, no retry.
 
-At this gate, your chat message is EXACTLY this template — nothing outside it.
-The content lives in the artifact, not the chat. The disposition table and the
-overhead report go in the artifact — never paste them into chat.
+At this gate, your chat message is EXACTLY this template — nothing outside it. The content lives in the artifact, not the chat. The disposition table and the overhead report go in the artifact — never paste them into chat.
 
 ```markdown
 **Harness audited: <N> controls — <headline disposition, one line>**
