@@ -1,5 +1,5 @@
 ---
-status: in-review
+status: done
 owner: Maximilian Maksutovic
 created: 2026-09-22
 feature: 2026-09-22-fable-native-sdlc-harness

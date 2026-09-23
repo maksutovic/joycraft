@@ -1,17 +1,17 @@
 {
   "feature": "2026-09-22-fable-native-sdlc-harness",
   "specs": [
-    { "id": 1, "file": "write-model-profile-doc.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
-    { "id": 2, "file": "gate-reference-docs-by-harness.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
-    { "id": 3, "file": "point-memory-file-at-profile.md", "depends_on": [1, 2], "status": "in-review", "mode": "checkpoint" },
-    { "id": 4, "file": "cite-profile-in-skills.md", "depends_on": [1], "status": "in-review", "mode": "checkpoint" },
-    { "id": 5, "file": "add-intent-template-and-inbox.md", "depends_on": [], "status": "in-review", "mode": "batch" },
-    { "id": 6, "file": "emit-intent-from-interview.md", "depends_on": [5], "status": "in-review", "mode": "checkpoint" },
-    { "id": 7, "file": "add-triage-mode-to-interview.md", "depends_on": [5, 6], "status": "in-review", "mode": "checkpoint" },
-    { "id": 8, "file": "consume-intent-in-new-feature-and-bugfix.md", "depends_on": [5], "status": "in-review", "mode": "batch" },
-    { "id": 9, "file": "ship-governance-hook-recipes.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
-    { "id": 10, "file": "ship-evals-in-ci-recipe.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
-    { "id": 11, "file": "add-fable-era-retire-source-to-optimize.md", "depends_on": [1], "status": "in-review", "mode": "checkpoint" },
-    { "id": 12, "file": "dogfood-update-and-cleanup-on-joycraft.md", "depends_on": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "status": "in-review", "mode": "checkpoint" }
+    { "id": 1, "file": "write-model-profile-doc.md", "depends_on": [], "status": "done", "mode": "checkpoint" },
+    { "id": 2, "file": "gate-reference-docs-by-harness.md", "depends_on": [], "status": "done", "mode": "checkpoint" },
+    { "id": 3, "file": "point-memory-file-at-profile.md", "depends_on": [1, 2], "status": "done", "mode": "checkpoint" },
+    { "id": 4, "file": "cite-profile-in-skills.md", "depends_on": [1], "status": "done", "mode": "checkpoint" },
+    { "id": 5, "file": "add-intent-template-and-inbox.md", "depends_on": [], "status": "done", "mode": "batch" },
+    { "id": 6, "file": "emit-intent-from-interview.md", "depends_on": [5], "status": "done", "mode": "checkpoint" },
+    { "id": 7, "file": "add-triage-mode-to-interview.md", "depends_on": [5, 6], "status": "done", "mode": "checkpoint" },
+    { "id": 8, "file": "consume-intent-in-new-feature-and-bugfix.md", "depends_on": [5], "status": "done", "mode": "batch" },
+    { "id": 9, "file": "ship-governance-hook-recipes.md", "depends_on": [], "status": "done", "mode": "checkpoint" },
+    { "id": 10, "file": "ship-evals-in-ci-recipe.md", "depends_on": [], "status": "done", "mode": "checkpoint" },
+    { "id": 11, "file": "add-fable-era-retire-source-to-optimize.md", "depends_on": [1], "status": "done", "mode": "checkpoint" },
+    { "id": 12, "file": "dogfood-update-and-cleanup-on-joycraft.md", "depends_on": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "status": "done", "mode": "checkpoint" }
   ]
 }

@@ -1,2 +1,0 @@
-Spec 6 never mentioned the 329-line cap on `src/skills/joycraft-interview.md` in `tests/gather-context-skill.test.ts`; the intent + optional-brief prose (~37 lines as wrapped) had to be packed into long single-line paragraphs to fit. Spec 7 (triage mode) will hit the same cap.
-See `docs/features/2026-09-22-fable-native-sdlc-harness/specs/emit-intent-from-interview.md` and `tests/gather-context-skill.test.ts` ("stays within its pre-change line budget").

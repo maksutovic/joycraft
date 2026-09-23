@@ -1,2 +1,0 @@
-Spec claimed canonical-order ownership kept gated templates out of the updater's harness scans; it did not — `selectedHarnessIgnoreWarning` picked the claude-owned profile doc over `.claude/skills/`, and `recognizedHarnesses` counted a stray doc as a claude install.
-Fixed with a `harnessTreeEntry` predicate that skips `docs/templates/` in `src/update.ts`; see `docs/features/2026-09-22-fable-native-sdlc-harness/specs/gate-reference-docs-by-harness.md`.

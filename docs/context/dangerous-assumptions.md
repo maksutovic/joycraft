@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-07-20
+last_updated: 2026-09-22
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -11,6 +11,10 @@ last_updated_by: Maximilian Maksutovic
 
 | Agent Might Assume | But Actually | Impact If Wrong |
 |-------------------|-------------|----------------|
+| The registered `block-dangerous.sh` hook blocks matching commands | It reads the tool name from `$1`, which Claude Code never passes, so it always exits 0 (found 2026-09-22; fix belongs in `src/safeguard.ts`) | Deny patterns are treated as enforced when they are only documented |
+| A hook exit code of 1 asks the user | Exit 1 is a non-blocking warning; an ask is exit 0 plus a JSON `permissionDecision` | A recipe meant to pause silently continues |
+| Skill files can grow freely | Tests cap interview (329), optimize (285), tune (228), and session-end (211) lines | Prose edits break the suite after the fact |
+| A converged `update --preview` plans zero actions | It lists a `reconcile` for every verified file; only content-changing actions mean drift | A zero-drift check fails on a healthy install |
 | A spec's Affected-Files table is the full blast radius | It's a hand-written hint; for a path/constant rename, `grep -rln` is authoritative. A relocated path often has silent readers (existence-gates, `try/catch` reads) the table omits | Feature quietly dies (no crash, no failing test) for those readers — e.g. the version-state relocation missed `init-autofix.ts`/`cli.ts`/the generated hook |
 | Templates are just docs | Templates are the core product — they get copied into every user's project | Bad template = bad experience for every user |
 | Skills can import other files | Skills must be fully self-contained — `.claude/skills/` files can't import | Broken skill for every user who installs it |

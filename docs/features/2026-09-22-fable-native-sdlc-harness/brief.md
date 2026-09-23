@@ -1,5 +1,6 @@
 ---
 status: active
+reap: eligible
 owner: Maximilian Maksutovic
 created: 2026-09-22
 feature: 2026-09-22-fable-native-sdlc-harness
@@ -242,8 +243,8 @@ recipe, and an advisory optimize source that flags legacy rules.
 
 ## Execution Strategy
 
-- [ ] Sequential (specs have chain dependencies)
-- [ ] Parallel worktrees (specs are independent)
+- [x] Sequential (specs have chain dependencies)
+- [x] Parallel worktrees (specs are independent)
 - [x] Mixed
 
 Decomposed 2026-09-22 (`decompose.md`, `specs/README.md`):
@@ -265,30 +266,30 @@ spec 12 verifies zero drift rather than owning the sync.
 
 ## Success Criteria
 
-- [ ] A fresh `npx joycraft update` with claude selected installs
+- [x] A fresh `npx joycraft update` with claude selected installs
       `docs/templates/reference/model-profile-claude-fable-5-1.md` and one
       Context Map row pointing at it; the same with codex only installs
       neither.
-- [ ] `npx joycraft update` on a project with an existing customized
+- [x] `npx joycraft update` on a project with an existing customized
       CLAUDE.md or AGENTS.md adds the Context Map row and changes nothing
       else in that file; a second run is a no-op.
-- [ ] Pi-only and omp-only installs receive the profile doc.
-- [ ] `docs/intent/` exists after install with a README and no other files.
-- [ ] Running interview with an empty inbox writes an intent file before any
+- [x] Pi-only and omp-only installs receive the profile doc.
+- [x] `docs/intent/` exists after install with a README and no other files.
+- [x] Running interview with an empty inbox writes an intent file before any
       brief; with two untriaged intents it offers triage first.
-- [ ] new-feature and bugfix given an intent path produce a brief or bugfix
+- [x] new-feature and bugfix given an intent path produce a brief or bugfix
       spec whose frontmatter carries `intent:`, and the intent file remains.
-- [ ] Four hook recipe files ship in the Claude kit, none registered in
+- [x] Four hook recipe files ship in the Claude kit, none registered in
       settings by the installer.
-- [ ] The evals scaffold ships under `docs/templates/evals/` and nothing is
+- [x] The evals scaffold ships under `docs/templates/evals/` and nothing is
       written to `.github/workflows/`.
-- [ ] Optimize's report gains a model-profile row; a CLAUDE.md containing
+- [x] Optimize's report gains a model-profile row; a CLAUDE.md containing
       "never use markdown" yields an advisory RETIRE candidate.
-- [ ] Joycraft's own repo shows all of the above after the dogfood spec, and
+- [x] Joycraft's own repo shows all of the above after the dogfood spec, and
       its AGENTS.md carries no rule that optimize's model-profile step flags.
-- [ ] `pnpm test` and `pnpm typecheck` pass; `tests/status-migration.test.ts`
+- [x] `pnpm test` and `pnpm typecheck` pass; `tests/status-migration.test.ts`
       still passes because intent files live outside its guarded paths.
-- [ ] No regressions in existing install, upgrade, or skill sync tests.
+- [x] No regressions in existing install, upgrade, or skill sync tests.
 
 ## Raw Notes
 
