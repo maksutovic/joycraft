@@ -107,7 +107,7 @@ Three rules ride on every question, no exceptions:
 - Play back your understanding: "So if I'm hearing you right..."
 - Push toward testable statements: "How would we verify that works?"
 
-Keep asking until you can fill out a Feature Brief.
+Keep asking until you can fill out a Feature Brief. While interviewing, follow the "Give User-Facing Progress Updates" and "End State of Every Prompt" blocks in `docs/templates/reference/model-profile-claude-fable-5-1.md`.
 
 ## Phase 2: Feature Brief
 

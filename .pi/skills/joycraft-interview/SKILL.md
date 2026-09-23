@@ -81,7 +81,7 @@ After the user has gotten their ideas out, play back in EXACTLY this
 fixed-slot shape — the per-slot caps are hard, and the playback is never
 narrated as prose. Tone follows the style contract in
 `docs/templates/reference/output-style.md`; volume and placement are fixed
-by the template itself:
+by the template itself; pacing follows the "Give User-Facing Progress Updates" block in `docs/templates/reference/model-profile-claude-fable-5-1.md`:
 
 ```
 Mission: <1 line>
@@ -254,7 +254,7 @@ nothing outside them. Do not summarize the brief after writing it — the
 artifact is the summary. Include any backlog paths produced as a side effect
 in the Artifact line. Tone follows the style contract in
 `docs/templates/reference/output-style.md`; volume and placement are fixed by
-the template itself. With intent only, the headline reads `Intent filed:` and the Artifact line is `docs/intent/<slug>.md` (nothing opened).
+the template itself. With intent only, the headline reads `Intent filed:` and the Artifact line is `docs/intent/<slug>.md` (nothing opened). The hand-off honors the "End State of Every Prompt" block in `docs/templates/reference/model-profile-claude-fable-5-1.md`.
 
 ```markdown
 **Draft brief ready: <what this idea is, one line>**

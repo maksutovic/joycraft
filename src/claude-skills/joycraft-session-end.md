@@ -132,7 +132,7 @@ For each spec in `docs/features/<slug>/specs/` (or `docs/bugfixes/<area>/` for b
 2. **Frontmatter** — edit the spec file's YAML `status:` to `done`.
 
 Rules:
-- Only graduate specs that are `in-review`. A spec still at `todo` was never started — **leave it `todo` and report it as remaining** (the feature isn't fully done; see the PR gate in step 6).
+- Only graduate specs that are `in-review`. A spec still at `todo` was never started — **leave it `todo` and report it as remaining** (the feature isn't fully done; see the PR gate in step 6). Graduate nothing beyond what was validated, per the "Keep Changes and Tests to What the Task Asks" block in `docs/templates/reference/model-profile-claude-fable-5-1.md`.
 - Never write `done` for work nothing has validated — this validation run (step 2) is what licenses the graduation. (Once `verify-in-loop` ships, an independent verify performs the `in-review → done` transition; until then, this step does.)
 - `done` means **verified**, not **merged**. A merged PR is a git fact, never a spec status — do not invent a `merged` status or any fourth state beyond `todo`/`in-review`/`done`.
 
