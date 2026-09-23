@@ -9,7 +9,7 @@
     { "id": 6, "file": "emit-intent-from-interview.md", "depends_on": [5], "status": "todo", "mode": "checkpoint" },
     { "id": 7, "file": "add-triage-mode-to-interview.md", "depends_on": [5, 6], "status": "todo", "mode": "checkpoint" },
     { "id": 8, "file": "consume-intent-in-new-feature-and-bugfix.md", "depends_on": [5], "status": "todo", "mode": "batch" },
-    { "id": 9, "file": "ship-governance-hook-recipes.md", "depends_on": [], "status": "todo", "mode": "checkpoint" },
+    { "id": 9, "file": "ship-governance-hook-recipes.md", "depends_on": [], "status": "in-review", "mode": "checkpoint" },
     { "id": 10, "file": "ship-evals-in-ci-recipe.md", "depends_on": [], "status": "todo", "mode": "checkpoint" },
     { "id": 11, "file": "add-fable-era-retire-source-to-optimize.md", "depends_on": [1], "status": "todo", "mode": "checkpoint" },
     { "id": 12, "file": "dogfood-update-and-cleanup-on-joycraft.md", "depends_on": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "status": "todo", "mode": "checkpoint" }

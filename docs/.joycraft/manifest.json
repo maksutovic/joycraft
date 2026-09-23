@@ -965,10 +965,40 @@
       "vendorHash": "f93afb8b7abbb1274aec57c5c8a390b54f1789237ddb0242556ef2e0c1dbbdc2",
       "kind": "vendor",
       "ownership": "verified"
+    },
+    "docs/templates/hooks/README.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "3c2b5b3dfe1e65147b43b246fdb3d2234dbfeeff83a9e37e82f0b8e5e9d64716",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/hooks/exit-code-gate.sh": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "e4ce9cd9a266830469ce16f3aeb6556ca783c921f402fc51599cf4bd8e35f08e",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/hooks/plan-sync-on-completion.sh": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "27e9b6fa449a22abd4b7ab7580a62ac938b2be9aba18f8336390dd0cec75c0e5",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/hooks/protected-path-guard.sh": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "470cc2e87a9651990a1473c52f4214d517123e8edb6b29a18e117dd243760bd4",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/hooks/test-file-lock.sh": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "226c6dc279a490ddc040f41ba11ab9146d3dbf3e9624c5162080e216a5a30889",
+      "kind": "vendor",
+      "ownership": "verified"
     }
   },
   "pendingConflicts": [
     ".claude/hooks/joycraft/deny-patterns.txt"
   ],
-  "__joycraftTransactionId": "4b9c4993-e636-4873-ba22-f75a7948ffde"
+  "__joycraftTransactionId": "08602a76-0969-4673-be83-e6bd24de6ba7"
 }

@@ -143,3 +143,24 @@ describe('init selection boundary', () => {
     }
   });
 });
+
+describe('governance hook recipes install', () => {
+  it('a claude-selected update writes the five recipe files and registers none of them', async () => {
+    const root = project();
+    try {
+      await update(root, { nonInteractive: true, harnesses: ['claude'] });
+      for (const file of ['README.md', 'exit-code-gate.sh', 'plan-sync-on-completion.sh', 'protected-path-guard.sh', 'test-file-lock.sh']) {
+        expect(existsSync(join(root, 'docs', 'templates', 'hooks', file)), file).toBe(true);
+      }
+      const settings = readFileSync(join(root, '.claude', 'settings.json'), 'utf-8');
+      expect(settings).toContain('block-dangerous.sh');
+      expect(settings).not.toContain('docs/templates/hooks');
+      for (const recipe of ['plan-sync-on-completion', 'protected-path-guard', 'test-file-lock', 'exit-code-gate']) {
+        expect(settings).not.toContain(recipe);
+      }
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  });
+});
+

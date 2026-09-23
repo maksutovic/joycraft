@@ -133,3 +133,39 @@ describe('per-template harness gates', () => {
     }
   });
 });
+
+const HOOK_RECIPE_PATHS = [
+  'docs/templates/hooks/README.md',
+  'docs/templates/hooks/exit-code-gate.sh',
+  'docs/templates/hooks/plan-sync-on-completion.sh',
+  'docs/templates/hooks/protected-path-guard.sh',
+  'docs/templates/hooks/test-file-lock.sh',
+];
+
+describe('governance hook recipes', () => {
+  it('ships the five recipe files as shared vendor entries for a claude selection', () => {
+    const byPath = new Map(getBundleInventory(['claude']).map((entry) => [entry.path, entry]));
+    for (const path of HOOK_RECIPE_PATHS) {
+      expect(byPath.get(path), path).toEqual(expect.objectContaining({ kind: 'vendor', harness: 'shared' }));
+    }
+  });
+
+  it('registers nothing: the settings.json config-patch set is exactly the six pre-existing entries', () => {
+    const entries = getBundleInventory(['claude']);
+    const patches = entries.filter((entry) => entry.kind === 'config-patch');
+    expect(patches.some((entry) => entry.path.startsWith('docs/templates/hooks/'))).toBe(false);
+    const settings = patches
+      .filter((entry) => entry.path === '.claude/settings.json')
+      .map((entry) => entry.ownedKey ?? entry.ownedRegion)
+      .sort();
+    expect(settings).toEqual([
+      'autoMemoryEnabled',
+      'env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS',
+      'hooks.PreToolUse[command=.claude/hooks/joycraft/block-dangerous.sh]',
+      'hooks.SessionStart[command=node .claude/hooks/joycraft-version-check.mjs]',
+      'permissions.allow[joycraft-generated]',
+      'permissions.deny[joycraft-generated]',
+    ]);
+    expect(patches.some((entry) => String(entry.ownedKey ?? entry.ownedRegion).includes('docs/templates/hooks'))).toBe(false);
+  });
+});
