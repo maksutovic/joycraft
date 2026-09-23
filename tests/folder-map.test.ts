@@ -53,6 +53,14 @@ describe('renderFolderMap', () => {
     expect(row).toContain('TODO');
   });
 
+  it('describes the docs/intent/ inbox instead of emitting the placeholder', () => {
+    mkdirSync(join(tree, 'docs', 'intent'), { recursive: true });
+    const row = renderFolderMap(tree).split('\n').find((l) => l.startsWith('| `docs/intent/`'));
+    expect(row).toBeDefined();
+    expect(row).not.toContain('TODO');
+    expect(row!.toLowerCase()).toContain('intent');
+  });
+
   it('documents the nested per-directory growth path', () => {
     const map = renderFolderMap(tree).toLowerCase();
     expect(map).toMatch(/per-directory/);

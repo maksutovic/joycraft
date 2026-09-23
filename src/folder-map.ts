@@ -45,6 +45,7 @@ const KNOWN_DESCRIPTIONS: Record<string, string> = {
   'docs/discoveries/': 'Session surprises worth remembering',
   'docs/templates/': 'Bundled output and reference templates',
   'docs/backlog/': 'Deferred work, one file per item',
+  'docs/intent/': 'Intent inbox — incoming work before a feature slug exists',
   'docs/research/': 'Research notes and findings',
 };
 

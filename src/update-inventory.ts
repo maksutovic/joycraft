@@ -39,6 +39,43 @@ focused without losing the thread.
   \`docs/features/<slug>/\` when you're ready to build it.
 `;
 
+/**
+ * The first-run intent inbox README. Editable source of truth:
+ * `src/templates/intent/README.md` (a test asserts the two are identical).
+ */
+export const INTENT_README = `# Intent inbox
+
+An intent is a short note that describes a need before anyone commits to
+building it: a customer bug, a product idea, a ticket from another system, or
+an alert. Put intents here, one file per intent. Nothing needs to decide on a
+feature name first.
+
+- One file per intent: \`docs/intent/YYYY-MM-DD-<short-name>.md\`.
+- Use the shape in \`docs/templates/INTENT_TEMPLATE.md\`: Author, Status,
+  \`source\`, Problem, Proposed outcome, Affected users and systems,
+  Constraints, Open questions.
+- A new intent starts with \`Status: untriaged\`. Joycraft skills update that
+  line when they triage or consume the intent. The file stays here afterwards.
+- \`source:\` records where the intent came from, for example \`human\`,
+  \`interview\`, \`linear:<id>\`, or \`alert:<name>\`. It is free text.
+
+## How intents map to Joycraft artifacts
+
+Anthropic's AI-native development playbook names a chain of artifacts. Joycraft
+already has most of them under its own names. Nothing is renamed. Use the
+Joycraft names below.
+
+| Playbook term | Joycraft artifact | Where it lives |
+|---------------|-------------------|----------------|
+| intent | intent | \`docs/intent/<name>.md\` |
+| spec | brief | \`docs/features/<slug>/brief.md\` |
+| plan | design + atomic specs | \`docs/features/<slug>/design.md\` and \`docs/features/<slug>/specs/\` |
+
+An intent becomes a brief through \`/joycraft-new-feature\`, or a bugfix spec
+through \`/joycraft-bugfix\`. The brief, design, and specs keep their current
+names and folders.
+`;
+
 export interface InventoryPatchOperation {
   path: string;
   kind: 'write';
@@ -91,6 +128,14 @@ const UPDATE_CHECK_HOOK = 'node .claude/hooks/joycraft-version-check.mjs';
 function regularFile(root: string, relative: string): boolean {
   try {
     return lstatSync(join(root, ...relative.split('/'))).isFile();
+  } catch {
+    return false;
+  }
+}
+
+function isDirectory(root: string, relative: string): boolean {
+  try {
+    return lstatSync(join(root, ...relative.split('/'))).isDirectory();
   } catch {
     return false;
   }
@@ -238,6 +283,22 @@ function freshBacklogEntry(input: FreshInventoryInput): BundleInventoryEntry | u
     active: true,
     installable: true,
     content: BACKLOG_README,
+  };
+}
+
+function freshIntentEntry(input: FreshInventoryInput): BundleInventoryEntry | undefined {
+  if (!input.freshInstall) return undefined;
+  // Never write into a docs/intent that is a regular file or any other non-directory.
+  if (existingPath(input.root, 'docs/intent') && !isDirectory(input.root, 'docs/intent')) return undefined;
+  if (existingPath(input.root, 'docs/intent/README.md')) return undefined;
+  return {
+    path: 'docs/intent/README.md',
+    harness: 'shared',
+    kind: 'create-once',
+    ownership: 'managed',
+    active: true,
+    installable: true,
+    content: INTENT_README,
   };
 }
 
@@ -488,14 +549,16 @@ export function materializeFreshInstallInventory(input: FreshInventoryInput): Ma
   const known = new Set(entries.map((entry) => entry.path));
   const backlog = freshBacklogEntry(input);
   if (backlog && !known.has(backlog.path)) entries.push(backlog);
+  const intent = freshIntentEntry(input);
+  if (intent && !known.has(intent.path)) entries.push(intent);
   const settings = freshSettingsEntry(input);
   if (settings && !known.has(settings.path)) entries.push(settings);
 
   const directories: string[] = [];
   if (input.freshInstall) {
-    for (const relative of ['docs/context', 'docs/backlog']) {
+    for (const relative of ['docs/context', 'docs/backlog', 'docs/intent']) {
       if (!existingPath(input.root, relative)) directories.push(relative);
-      else if (!regularFile(input.root, relative)) {
+      else {
         try {
           if (!lstatSync(join(input.root, ...relative.split('/'))).isDirectory()) {
             diagnostics.push(`${relative} exists but is not a directory; preserving it.`);

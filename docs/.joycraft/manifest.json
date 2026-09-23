@@ -953,10 +953,22 @@
       "vendorHash": "c3c335f88ee96eba3d885d27be928fc6b2b03bbc215f7bafda645dbe2fd0a97e",
       "kind": "vendor",
       "ownership": "verified"
+    },
+    "docs/templates/INTENT_TEMPLATE.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "178852bcbf8fd5102e34795fef22508c143605159b23523ae499e6bf45852620",
+      "kind": "vendor",
+      "ownership": "verified"
+    },
+    "docs/templates/intent/README.md": {
+      "vendorVersion": "0.7.13",
+      "vendorHash": "f93afb8b7abbb1274aec57c5c8a390b54f1789237ddb0242556ef2e0c1dbbdc2",
+      "kind": "vendor",
+      "ownership": "verified"
     }
   },
   "pendingConflicts": [
     ".claude/hooks/joycraft/deny-patterns.txt"
   ],
-  "__joycraftTransactionId": "2260e357-900a-40be-b19b-616d7ceb0090"
+  "__joycraftTransactionId": "4b9c4993-e636-4873-ba22-f75a7948ffde"
 }

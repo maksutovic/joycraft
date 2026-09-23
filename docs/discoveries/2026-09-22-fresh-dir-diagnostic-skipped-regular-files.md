@@ -1,0 +1,2 @@
+Spec add-intent-template-and-inbox said a regular file at `docs/context`/`docs/backlog` already got a "not a directory" diagnostic; the loop in `materializeFreshInstallInventory` actually skipped regular files silently, so the loop now diagnoses them too, and `freshIntentEntry` refuses to write into a non-directory `docs/intent` (`freshBacklogEntry` still lacks that guard).
+See `src/update-inventory.ts` and `docs/features/2026-09-22-fable-native-sdlc-harness/specs/add-intent-template-and-inbox.md` (Edge Cases row 2).
