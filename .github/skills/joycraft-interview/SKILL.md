@@ -95,17 +95,16 @@ Open: <Q-numbers + ≤3-word labels only — no restatement>
 Confirm or correct — then I write the draft.
 ```
 
-This playback is a **blocking gate**: Step 4's file write — and any commit —
+This playback is a **blocking gate**: Step 4's file writes — and any commit —
 happens only after an affirmative or corrected reply. One round, not a
 yes/no loop: inline corrections count as approval of everything else. Apply
 them, re-play only the changed lines, and proceed.
 
-### 4. Write a Draft Brief
+### 4. Write the Intent (and optionally a Draft Brief)
 
-Derive a slug `YYYY-MM-DD-<topic>` (today's date + kebab-case topic — no `-draft` suffix).
-Create a draft file at `docs/features/<slug>/brief.md`. Lazy-create `docs/features/<slug>/` if it doesn't exist.
+Derive a slug `YYYY-MM-DD-<topic>` (today's date + kebab-case topic — no `-draft` suffix). The intent and any later feature folder share this one name. **Write the intent first — always.** Before any other file write in this skill, write `docs/intent/<slug>.md` in the shape of `docs/templates/INTENT_TEMPLATE.md` — read that template and fill its header fields and every section from the conversation; it is the one home for the section list, so mirror it rather than inventing your own. Header values: `Author:` the resolved owner name (Owner resolution below), `Status: untriaged` (triage keys on this exact value), `source: interview`. Open questions left after the playback fill its Open questions section. Lazy-create `docs/intent/` if it doesn't exist. A same-slug re-run overwrites the intent — tell the human which file was replaced.
 
-The file MUST start with YAML frontmatter — the 4-field personal schema with `status: draft`:
+**The draft brief is optional.** After the intent is written, ask one question through the question directive, with at least the options "Intent only — triage it later" and "Also write a draft brief now". **Intent only:** create no folder under `docs/features/`, skip the brief format and the render-and-open subsection below (the skip is expected, never a failure), and continue at Step 5. **Draft brief:** create `docs/features/<slug>/brief.md`, lazy-creating `docs/features/<slug>/`. It MUST start with YAML frontmatter — the 4-field personal schema with `status: draft`, plus `intent:` pointing back at the intent:
 
 ```yaml
 ---
@@ -113,6 +112,7 @@ status: draft
 owner: <resolved name>
 created: YYYY-MM-DD
 feature: <slug>
+intent: docs/intent/<slug>.md
 ---
 ```
 
@@ -195,7 +195,7 @@ knows what stage they are reading.
 
 ### Render and open the draft brief
 
-`docs/features/<slug>/brief.md` is written first and stays **canonical** — agents
+Only when a draft brief was written — with intent only, skip this subsection. `docs/features/<slug>/brief.md` is written first and stays **canonical** — agents
 read the md, never the HTML. The HTML is a render of it and never invents content.
 
 1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
@@ -238,7 +238,7 @@ If during the conversation deferred work surfaces (a tangent, a "later" item, a 
 
 > "This looks like deferred work — want me to capture it to `docs/backlog/`?"
 
-Only on user confirmation, write a backlog entry at `docs/backlog/YYYY-MM-DD-<short-name>.md` with backlog frontmatter:
+Only on user confirmation, write a backlog entry at `docs/backlog/YYYY-MM-DD-<short-name>.md` with backlog frontmatter (with intent only, `source:` is `docs/intent/<slug>.md` instead):
 
 ```yaml
 ---
@@ -259,7 +259,7 @@ nothing outside them. Do not summarize the brief after writing it — the
 artifact is the summary. Include any backlog paths produced as a side effect
 in the Artifact line. Tone follows the style contract in
 `docs/templates/reference/output-style.md`; volume and placement are fixed by
-the template itself.
+the template itself. With intent only, the headline reads `Intent filed:` and the Artifact line is `docs/intent/<slug>.md` (nothing opened).
 
 ```markdown
 **Draft brief ready: <what this idea is, one line>**
@@ -281,7 +281,7 @@ Next:
 ```bash
 /joycraft-new-feature docs/features/<slug>/brief.md
 ```
-Run /clear first.
+Run /clear first. With intent only (no draft brief), substitute `docs/intent/<slug>.md` for the brief path on the command line and the picking-up line of the briefing below — new-feature pre-fills from the intent and writes the brief itself.
 
 Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /clear. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
 
@@ -315,5 +315,5 @@ If the idea sounds complex — touches many files, involves architectural decisi
 - **Product identity lives in /joycraft-gather-context.** If values, team vocabulary, or code-taste talk surfaces, point there — its identity block elicits it; don't capture it here.
 - **Mark everything as DRAFT.** The output is a starting point, not a commitment.
 - **Keep it short.** The draft brief should be 1-2 pages max. Capture the essence, not every detail — and write it to the style contract in `docs/templates/reference/output-style.md`.
-- **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated draft.
-- **Two channels, one home per fact.** `brief.md` and its HTML render carry the content; chat carries decisions and the slot template. Never restate in chat what the brief says — point at it.
+- **Multiple interviews are fine.** The user might run this several times as their thinking evolves. Each creates a new dated intent (and a draft brief, when wanted).
+- **Two channels, one home per fact.** The intent — and `brief.md` with its HTML render, when written — carry the content; chat carries decisions and the slot template. Never restate in chat what the brief says — point at it.
