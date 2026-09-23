@@ -77,8 +77,8 @@ describe('add-reaper-pass: live features excluded', () => {
   });
 });
 
-describe('add-optimize-telemetry-evidence: exactly seven evidence labels', () => {
-  const LABELS = [
+describe('add-optimize-telemetry-evidence: exactly eight evidence labels', () => {
+  const PRIOR_LABELS = [
     'VERIFIED',
     'USER_REPORTED',
     'INFERRED',
@@ -87,14 +87,38 @@ describe('add-optimize-telemetry-evidence: exactly seven evidence labels', () =>
     'NEVER_READ',
     'WRITE_HEAVY',
   ];
+  const LABELS = [...PRIOR_LABELS, 'MODEL_SUPERSEDED'];
 
-  it('the vocabulary heading says exactly seven', () => {
+  const vocabRows = () => {
+    const c = content();
+    const start = c.indexOf('Evidence label vocabulary');
+    expect(start).toBeGreaterThan(-1);
+    const rest = c.slice(start);
+    const end = rest.indexOf('\n## ');
+    const block = end > -1 ? rest.slice(0, end) : rest;
+    return block
+      .split('\n')
+      .filter((line) => /^\|\s*`[A-Z_]+`\s*\|/.test(line));
+  };
+
+  it('holds exactly eight labels', () => {
+    expect(LABELS).toHaveLength(8);
+  });
+
+  it('the vocabulary heading says exactly eight', () => {
     expect(content()).toMatch(
-      /Evidence label vocabulary \(exactly seven, no synonyms\)/,
+      /Evidence label vocabulary \(exactly eight, no synonyms\)/,
     );
   });
 
-  it('the vocabulary table has exactly seven label rows, one per label', () => {
+  it('MODEL_SUPERSEDED is one word, new, and appears in exactly one table row', () => {
+    expect('MODEL_SUPERSEDED').toMatch(/^[A-Z_]+$/);
+    expect(PRIOR_LABELS).not.toContain('MODEL_SUPERSEDED');
+    const rows = vocabRows().filter((r) => r.includes('`MODEL_SUPERSEDED`'));
+    expect(rows).toHaveLength(1);
+  });
+
+  it('the vocabulary table has exactly eight label rows, one per label', () => {
     const c = content();
     const start = c.indexOf('Evidence label vocabulary');
     expect(start).toBeGreaterThan(-1);
@@ -104,7 +128,7 @@ describe('add-optimize-telemetry-evidence: exactly seven evidence labels', () =>
     const rows = block
       .split('\n')
       .filter((line) => /^\|\s*`[A-Z_]+`\s*\|/.test(line));
-    expect(rows).toHaveLength(7);
+    expect(rows).toHaveLength(8);
     for (const label of LABELS) {
       expect(rows.some((r) => r.includes(`\`${label}\``))).toBe(true);
     }

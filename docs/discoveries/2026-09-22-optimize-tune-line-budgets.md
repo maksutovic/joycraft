@@ -1,0 +1,2 @@
+Spec budgeted ~60 lines of optimize/tune prose, but `tests/discovery-staleness.test.ts` caps optimize at 285 lines and `tests/tune-auto-memory-finding.test.ts` caps tune at 228. Neither file was in the spec's Affected Files.
+The budget was paid in the same commit: a compact Step 2c, optimize's hard-wrapped render prose reflowed with no content change, and tune's tip added to an existing line. See `docs/features/2026-09-22-fable-native-sdlc-harness/specs/add-fable-era-retire-source-to-optimize.md`.

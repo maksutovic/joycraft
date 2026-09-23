@@ -217,7 +217,7 @@ Show a tailored roadmap focused on harness maturity, not autonomy, ordered by th
 - **Context docs with real content** — production map, dangerous assumptions, decision log actually populated, not scaffolding
 - **Healthy spec-driven loop** — features flow interview → brief → specs → implement → session-end, with discoveries captured along the way
 
-Frame it with the levels: most projects should aim to run excellently at Levels 3-4 (spec-driven development with a well-maintained harness). Mention Level 5 (spec queue, autofix, holdout scenarios) once, as an experimental north star for teams with the budget and infrastructure to maintain it — not the expected next step. **Tip:** Run `{{skill_prefix}}optimize` to audit your session's token overhead — plugins, MCP servers, and harness file sizes.
+Frame it with the levels: most projects should aim to run excellently at Levels 3-4 (spec-driven development with a well-maintained harness). Mention Level 5 (spec queue, autofix, holdout scenarios) once, as an experimental north star for teams with the budget and infrastructure to maintain it — not the expected next step. **Tip:** Run `{{skill_prefix}}optimize` to audit your session's token overhead — plugins, MCP servers, and harness file sizes. **Tip:** If your memory file ({{boundary_file}}) predates the installed model profile (`docs/templates/reference/model-profile-claude-fable-5-1.md`), run `{{skill_prefix}}optimize`. It flags legacy anti-formatting and hand-holding rules as `RETIRE` or `PROBATION` candidates and applies nothing.
 
 ## Edge Cases
 

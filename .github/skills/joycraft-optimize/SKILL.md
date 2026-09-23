@@ -27,7 +27,7 @@ For each control, determine:
 
 1. **Home file** — where it currently lives.
 2. **Disposition** — exactly one of the six values below.
-3. **Evidence label** — exactly one of the seven values below, describing how confident this run is in the disposition.
+3. **Evidence label** — exactly one of the eight values below, describing how confident this run is in the disposition.
 4. **Reason** — one line.
 
 ### Disposition vocabulary (exactly six, no synonyms)
@@ -43,7 +43,7 @@ For each control, determine:
 
 **The Disposition cell is the bare word only** — never a hedged or qualified variant (`RETIRE-candidate`, `KEEP (note)`, `RETIRE (unconfirmed)`). Confidence and caveats belong in the Evidence label (`INFERRED` for an unconfirmed read) and the Reason column, never appended to the Disposition value. Do not reuse an Evidence-label word (`NOT_APPLICABLE`, `INACCESSIBLE`, etc.) as a Disposition — the two vocabularies are disjoint; a not-applicable/inaccessible row still needs one of the six Disposition words (usually `KEEP` with the inapplicability explained in Reason) plus the matching Evidence label.
 
-### Evidence label vocabulary (exactly seven, no synonyms)
+### Evidence label vocabulary (exactly eight, no synonyms)
 
 | Label | When to use it |
 |---|---|
@@ -54,6 +54,7 @@ For each control, determine:
 | `NOT_APPLICABLE` | The check doesn't apply to this project (e.g., no `docs/context/shipped.md` yet) |
 | `NEVER_READ` | Telemetry shows ≥1 write and 0 voluntary reads for this doc |
 | `WRITE_HEAVY` | Telemetry shows a ≥3:1 writes:voluntary reads ratio for this doc |
+| `MODEL_SUPERSEDED` | The rule was written for an older model, and the installed model profile (Step 2c) states the opposite or makes the rule moot. The Reason names the profile block |
 
 Anything not mechanically checked this run is `INFERRED` or `INACCESSIBLE` — never `VERIFIED`.
 
@@ -65,6 +66,16 @@ Read `docs/.joycraft/telemetry.json` — machine-local, gitignored, written by `
 - **Read successfully** → label each knowledge-layer doc row: `NEVER_READ` or `WRITE_HEAVY` per the definitions above, else `VERIFIED` for a healthy row. **Only voluntary reads count toward retire/keep evidence** — a mandated read (the active skill's own text opened the doc) proves nothing about the doc's value.
 - **`fidelity: "degraded"`** (Codex-sourced counts, where reads default to mandated) → labels still apply; the report notes the degraded fidelity on that row.
 - **Team scale:** past ~3 contributors, machine-local counts bias toward kill. Per-user counts must merge at optimize time (aggregates, never transcripts) before telemetry evidence backs a RETIRE; until then report the counts as `INFERRED` and say so.
+
+## Step 2c: Compare Rules Against the Model Profile (PROTOCOL)
+
+Read `docs/templates/reference/model-profile-claude-fable-5-1.md`, the installed model profile, and compare each boundary rule from Step 2 against its blocks. Cite a block by that path and its heading; never copy block prose. Flag two classes of rule. **Anti-formatting** rules ban markdown or structure outright (for example "never use markdown"); check them against *Formatting When Appropriate*. **Hand-holding** rules tell the model to stop and check in before each step, narrate every action, or avoid acting autonomously; check them against *Finish the Whole Task*, *Give User-Facing Progress Updates*, and *Paths to Choose Between*. Flag contradiction, not age: a rule that is only old gets no row, because age alone is not evidence.
+
+Each flagged rule gets one row with evidence `MODEL_SUPERSEDED`, a Reason that names the contradicted block, and one of the six dispositions:
+- `RETIRE` when the named block states the opposite of the rule.
+- `PROBATION` when the rule is unverified under the current model, or the user wrote it on purpose.
+
+Profile doc absent (always the case on Codex) → the rows take evidence `INACCESSIBLE`; note the gap and continue. No boundary file → `NOT_APPLICABLE`. A rule in two homes → Step 3 assigns `ONE_HOME`; add this row for the canonical home only. **Advisory only:** optimize applies nothing and never edits the user's CLAUDE.md or any other boundary file, and a `RETIRE` row from this step never reaches the Reaper, which acts only on feature folders.
 
 ## Step 3: Cross-File Duplication Detection
 
@@ -114,25 +125,12 @@ Write the prose around the tables to the style contract in `docs/templates/refer
 
 ### Render and open the overhead report
 
-Write the overhead report md first (the disposition table and the report
-sections below) and keep it **canonical** — agents read the md, never the HTML.
-The HTML is a render of it and never invents content.
+Write the overhead report md first (the disposition table and the report sections below) and keep it **canonical** — agents read the md, never the HTML. The HTML is a render of it and never invents content.
 
-1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the
-   `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the
-   template's structure, class names, CSS, and theme script stay
-   **byte-identical** — never generate freeform gate HTML.
-2. Write it beside the report — same directory, same basename, `.html`
-   extension (e.g. `docs/context/overhead-report.html`) — creating the directory
-   if it doesn't exist yet. Re-running the audit overwrites the same file; the md
-   is the record.
-3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>`
-   otherwise. If both fail, print the absolute path and continue — headless, CI,
-   and isolated mode are a no-op here, never a failure.
-4. Offer — don't push — an optional extra render: "I can also publish this
-   overhead report as a hosted artifact for a shareable link." Only publish if
-   the human says yes; the local file remains the canonical render. If declined,
-   no retry.
+1. Read `docs/templates/REVIEW_GATE_TEMPLATE.html`. Fill ONLY the `<!-- SLOT:name — … -->` regions per each slot's inline guidance; the template's structure, class names, CSS, and theme script stay **byte-identical** — never generate freeform gate HTML.
+2. Write it beside the report — same directory, same basename, `.html` extension (e.g. `docs/context/overhead-report.html`) — creating the directory if it doesn't exist yet. Re-running the audit overwrites the same file; the md is the record.
+3. Open it before asking anything: `open <path>` on darwin, `xdg-open <path>` otherwise. If both fail, print the absolute path and continue — headless, CI, and isolated mode are a no-op here, never a failure.
+4. Offer — don't push — an optional extra render: "I can also publish this overhead report as a hosted artifact for a shareable link." Only publish if the human says yes; the local file remains the canonical render. If declined, no retry.
 
 At this gate, your chat message is EXACTLY this template — nothing outside it.
 The content lives in the artifact, not the chat. The disposition table and the
@@ -162,7 +160,7 @@ Lead with the **disposition table** — one row per material control, columns: C
 
 | Control | Home File | Disposition | Evidence | Reason |
 |---|---|---|---|---|
-| [rule/skill/hook name] | [file path] | [KEEP/ONE_HOME/LOAD_LATER/MAKE_A_CHECK/PROBATION/RETIRE] | [VERIFIED/USER_REPORTED/INFERRED/INACCESSIBLE/NOT_APPLICABLE/NEVER_READ/WRITE_HEAVY] | [one line] |
+| [rule/skill/hook name] | [file path] | [KEEP/ONE_HOME/LOAD_LATER/MAKE_A_CHECK/PROBATION/RETIRE] | [VERIFIED/USER_REPORTED/INFERRED/INACCESSIBLE/NOT_APPLICABLE/NEVER_READ/WRITE_HEAVY/MODEL_SUPERSEDED] | [one line] |
 
 ## Session Overhead Report
 
@@ -192,7 +190,7 @@ Lead with the **disposition table** — one row per material control, columns: C
 - [N] hook definitions ([list event names])
 
 ### Recommendations
-- [Specific, actionable items for anything over threshold or non-KEEP disposition — e.g. "CLAUDE.md is 312 lines — split reference sections into docs/"; "PROBATION: 2 hardened rules provisioned under a different model — re-verify via /joycraft-harden"]
+- [Specific, actionable items for anything over threshold or non-KEEP disposition — e.g. "CLAUDE.md is 312 lines — split reference sections into docs/"; "PROBATION: 2 hardened rules provisioned under a different model — re-verify via /joycraft-harden"; "MODEL_SUPERSEDED: 'never use markdown' contradicts *Formatting When Appropriate* in the model profile — RETIRE candidate, remove by hand"]
 ```
 
 **Length is a symptom — duplication is the disease.** Before recommending a trim, check whether the same guidance lives in more than one home; drifting copies confuse the model more than honest length does. Recommend one canonical home with pointers (`ONE_HOME`), not deletion. Unique load-bearing content gets `KEEP` with a note.
@@ -253,6 +251,7 @@ End by pointing at [Joycraft's token discipline guide](docs/guides/token-discipl
 | `docs/context/shipped.md` doesn't exist yet | Layer-2 budget row: `NOT_APPLICABLE`, not a failure |
 | Non-Joycraft project (no skills dir) | Taxonomy checks: `INACCESSIBLE`, skip — v1 behavior preserved |
 | Human-door count lands at 10 | Report the overage with a demotion candidate named; never silently reclassify to pass the check |
+| Model profile doc absent | Model-profile rows: `INACCESSIBLE`, note the gap and continue — never error |
 | `docs/.joycraft/telemetry.json` absent or malformed | Knowledge-layer rows: `INACCESSIBLE`, note the corruption — never guess counts |
 | Reaper: `gh` unauthenticated or offline | Shipped path reports `INACCESSIBLE` and skips all deletions this run — never falls back to git-log guessing |
 | Reaper: ledger row missing but brief says `reap: eligible` | Skip + flag: extraction incomplete — re-run session-end's graduation path first |
