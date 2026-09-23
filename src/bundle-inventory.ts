@@ -13,6 +13,7 @@ import {
 import { HARNESSES, sanitizeHarnesses, type Harness } from './harness.js';
 import { generateDenyPatternsFile, generateHookScript } from './safeguard.js';
 import { generateClaudeSessionStartAdapter } from './claude-session-start.js';
+import { MODEL_PROFILE_HARNESSES, MODEL_PROFILE_TEMPLATE_KEY } from './model-profile.js';
 
 export type BundleEntryKind = 'vendor' | 'create-once' | 'config-patch';
 export type BundleEntryHarness = Harness | 'shared';
@@ -98,8 +99,9 @@ const deferred = (path: string, harness: BundleEntryHarness, ownedRegion?: strin
  * is inert: this table filters the bundled record and never supplies paths.
  */
 export const TEMPLATE_HARNESS_GATES: Readonly<Record<string, readonly Harness[]>> = {
-  // D6: keyed to the model, not the harness. Pi and omp run Claude models; Codex and Copilot do not.
-  'reference/model-profile-claude-fable-5-1.md': ['claude', 'pi', 'omp'],
+  // D6: keyed to the model, not the harness. The list lives in model-profile.ts
+  // so the memory-file pointer row is gated on exactly the same harnesses.
+  [MODEL_PROFILE_TEMPLATE_KEY]: MODEL_PROFILE_HARNESSES,
 };
 
 /**

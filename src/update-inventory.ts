@@ -13,7 +13,9 @@ import { generateAgentsMd } from './agents-md.js';
 import {
   generateCLAUDEMd,
   generateClaudeMdPointer,
+  insertModelProfilePointer,
 } from './improve-claude-md.js';
+import { selectsModelProfile } from './model-profile.js';
 import { generatePermissions } from './permissions.js';
 import { planPiExcludedFromTsconfig } from './tsconfig.js';
 import type { Harness } from './harness.js';
@@ -173,6 +175,19 @@ function existingClaudeSkills(root: string, selected: readonly Harness[]): strin
   }
 }
 
+/**
+ * Any non-Claude harness makes AGENTS.md the shared memory file and CLAUDE.md
+ * an `@AGENTS.md` import pointer; a Claude-only selection keeps CLAUDE.md.
+ */
+function sharesAgentsMd(harnesses: readonly Harness[]): boolean {
+  return harnesses.some((harness) => harness !== 'claude');
+}
+
+/** The one memory file this selection designates (see generatorContent). */
+function memoryFilePath(harnesses: readonly Harness[]): 'CLAUDE.md' | 'AGENTS.md' {
+  return sharesAgentsMd(harnesses) ? 'AGENTS.md' : 'CLAUDE.md';
+}
+
 function generatorContent(
   root: string,
   path: string,
@@ -182,22 +197,27 @@ function generatorContent(
   existingSkills: string[],
   executionProfile: ExecutionProfile | undefined,
 ): string | undefined {
-  const multiTool = harnesses.some((harness) => harness !== 'claude');
+  const multiTool = sharesAgentsMd(harnesses);
+  const modelProfilePointer = selectsModelProfile(harnesses);
   if (path === 'CLAUDE.md') {
     return multiTool
       ? generateClaudeMdPointer()
       : generateCLAUDEMd(projectName(root), stack, existingSkills, {
           privateProfile: profile === 'private',
           projectDir: root,
+          modelProfilePointer,
         });
   }
   if (path === 'AGENTS.md') {
+    // Claude-only: CLAUDE.md is the memory file and carries the pointer, so the
+    // companion AGENTS.md stays without it (one pointer per project).
     return multiTool
       ? generateCLAUDEMd(projectName(root), stack, existingSkills, {
           privateProfile: profile === 'private',
           multiTool: true,
           executionProfile,
           projectDir: root,
+          modelProfilePointer,
         })
       : generateAgentsMd(projectName(root), stack, profile === 'private', executionProfile, undefined, root);
   }
@@ -538,6 +558,42 @@ function tsconfigPatch(input: FreshInventoryInput, diagnostics: string[]): Inven
 }
 
 /**
+ * Insert the one model-profile Context Map row into an existing memory file
+ * (D14). Only the selection's designated file is read; the operation exists
+ * only when the bytes would change, so a second run reports nothing. It never
+ * creates or resurrects the file, and never removes a row (D14 keeps cleanup
+ * advisory).
+ */
+function contextMapPointerPatch(
+  input: FreshInventoryInput,
+  entries: readonly BundleInventoryEntry[],
+  diagnostics: string[],
+): InventoryPatchOperation | undefined {
+  if (!selectsModelProfile(input.harnesses)) return undefined;
+  const memory = memoryFilePath(input.harnesses);
+  if (!regularFile(input.root, memory)) return undefined;
+  // A generated document written in this same run already carries the row.
+  if (entries.some((entry) => entry.path === memory && entry.content !== undefined)) return undefined;
+  let raw: string;
+  try {
+    raw = readFileSync(join(input.root, memory), 'utf8');
+  } catch {
+    diagnostics.push(`${memory} could not be read; add the model profile row to its Context Map manually.`);
+    return undefined;
+  }
+  const next = insertModelProfilePointer(raw);
+  if (next === raw) return undefined;
+  return {
+    path: memory,
+    kind: 'write',
+    content: next,
+    currentPresent: true,
+    rawPrecondition: rawFileHash(raw),
+    reason: 'Add one Context Map row pointing at the Claude Fable 5.1 model profile; every other byte is preserved.',
+  };
+}
+
+/**
  * Read current project bytes and turn fresh-install setup into inventory
  * entries plus transaction-ready operations. This function performs no writes,
  * prompts, registry access, or mutation of the supplied inventory/manifest.
@@ -570,7 +626,11 @@ export function materializeFreshInstallInventory(input: FreshInventoryInput): Ma
     }
   }
 
-  const patchOperations = [settingsPatch(input, diagnostics), tsconfigPatch(input, diagnostics)]
+  const patchOperations = [
+    settingsPatch(input, diagnostics),
+    tsconfigPatch(input, diagnostics),
+    contextMapPointerPatch(input, entries, diagnostics),
+  ]
     .filter((operation): operation is InventoryPatchOperation => operation !== undefined);
   return {
     entries,

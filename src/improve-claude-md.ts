@@ -7,6 +7,7 @@ import {
   renderExecutionProfileSection,
   type ExecutionProfile,
 } from './execution-profile.js';
+import { MODEL_PROFILE_CONTEXT_MAP_ROW, MODEL_PROFILE_PATH } from './model-profile.js';
 
 export interface ImproveOptions {
   projectDir?: string;
@@ -37,6 +38,13 @@ export interface ImproveOptions {
    * section only exists once gather-context/interview collected real answers.
    */
   identity?: ProductIdentity;
+  /**
+   * True when the selection includes a harness that receives the Claude Fable
+   * 5.1 model profile (see model-profile.ts). The Context Map then carries the
+   * one pointer row to it — generated fresh, or inserted into an existing table
+   * without touching any other line.
+   */
+  modelProfilePointer?: boolean;
 }
 
 /**
@@ -254,13 +262,95 @@ This project uses [Joycraft](https://github.com/maksutovic/joycraft) for AI deve
 Run \`/joycraft-tune\` to see where your project stands and what to improve next.${invocationNote}`;
 }
 
-export function generateContextMapSection(): string {
+const CONTEXT_MAP_TABLE_HEADER = '| Document | Read it when… |\n|----------|---------------|';
+
+export function generateContextMapSection(modelProfilePointer = false): string {
+  const row = modelProfilePointer ? `\n${MODEL_PROFILE_CONTEXT_MAP_ROW}` : '';
   return `## Context Map
 
 Keep this file lean — link out, don't inline. Long-form reference docs live in \`docs/context/reference/\`; this table points to what to read on demand.
 
-| Document | Read it when… |
-|----------|---------------|`;
+${CONTEXT_MAP_TABLE_HEADER}${row}`;
+}
+
+interface SourceLine {
+  /** Line text without its terminator or a trailing CR. */
+  text: string;
+  start: number;
+  /** Offset just past the line terminator (or EOF). */
+  end: number;
+}
+
+function sourceLines(content: string): SourceLine[] {
+  const lines: SourceLine[] = [];
+  let offset = 0;
+  while (offset < content.length) {
+    const newline = content.indexOf('\n', offset);
+    const end = newline === -1 ? content.length : newline + 1;
+    const raw = content.slice(offset, newline === -1 ? content.length : newline);
+    lines.push({ text: raw.replace(/\r$/, ''), start: offset, end });
+    offset = end;
+  }
+  return lines;
+}
+
+function insertAfterLine(content: string, line: SourceLine, block: string, newline: string): string {
+  if (content[line.end - 1] === '\n') {
+    return content.slice(0, line.end) + block + newline + content.slice(line.end);
+  }
+  // The anchor is the final, unterminated line: keep the file unterminated.
+  return content + newline + block;
+}
+
+/**
+ * Scoped single-line insertion of the model-profile Context Map row (D14).
+ * Returns the input unchanged when the file already names the profile path
+ * anywhere. Otherwise appends the row to the end of the first table in the
+ * `## Context Map` section (matched case-insensitively), adds a table when the
+ * section has none, or appends the section with the row when the file has no
+ * Context Map at all. The file's newline style is preserved and no other byte
+ * moves.
+ */
+export function insertModelProfilePointer(content: string): string {
+  if (content.includes(MODEL_PROFILE_PATH)) return content;
+  const newline = content.includes('\r\n') ? '\r\n' : '\n';
+  const lines = sourceLines(content);
+  const header = lines.findIndex((line) => line.text.startsWith('## ') && /context\s*map/i.test(line.text));
+
+  if (header === -1) {
+    const section = generateContextMapSection(true).replace(/\n/g, newline);
+    if (content === '') return section + newline;
+    const base = content.endsWith('\n') ? content : content + newline;
+    return base + newline + section + newline;
+  }
+
+  let sectionEnd = lines.length;
+  for (let index = header + 1; index < lines.length; index++) {
+    if (lines[index].text.startsWith('## ')) {
+      sectionEnd = index;
+      break;
+    }
+  }
+  const isTableLine = (index: number) => lines[index].text.trim().startsWith('|');
+  let tableStart = -1;
+  for (let index = header + 1; index < sectionEnd; index++) {
+    if (isTableLine(index)) {
+      tableStart = index;
+      break;
+    }
+  }
+  if (tableStart !== -1) {
+    let last = tableStart;
+    while (last + 1 < sectionEnd && isTableLine(last + 1)) last++;
+    return insertAfterLine(content, lines[last], MODEL_PROFILE_CONTEXT_MAP_ROW, newline);
+  }
+
+  let lastContent = header;
+  for (let index = header + 1; index < sectionEnd; index++) {
+    if (lines[index].text.trim() !== '') lastContent = index;
+  }
+  const table = ['', ...CONTEXT_MAP_TABLE_HEADER.split('\n'), MODEL_PROFILE_CONTEXT_MAP_ROW].join(newline);
+  return insertAfterLine(content, lines[lastContent], table, newline);
 }
 
 function generateExternalValidationSection(): string {
@@ -325,6 +415,10 @@ export function improveCLAUDEMd(
   }
   const sections = parseSections(working);
   const additions: string[] = [];
+  const hasContextMap = hasSection(sections, /context\s*map/i);
+  const wantsPointer = opts?.modelProfilePointer === true && !working.includes(MODEL_PROFILE_PATH);
+  // Scoped step: one row into an existing Context Map, nothing else re-rendered.
+  if (wantsPointer && hasContextMap) working = insertModelProfilePointer(working);
 
   if (!hasSection(sections, /behavioral\s*boundar/i)) {
     additions.push(generateBoundariesSection());
@@ -350,8 +444,8 @@ export function improveCLAUDEMd(
     additions.push(generateGettingStartedSection());
   }
 
-  if (!hasSection(sections, /context\s*map/i)) {
-    additions.push(generateContextMapSection());
+  if (!hasContextMap) {
+    additions.push(generateContextMapSection(wantsPointer));
   }
 
   if (!hasSection(sections, /external\s*validation/i)) {
@@ -421,7 +515,7 @@ export function generateCLAUDEMd(
     '',
     generateGotchasSection(),
     '',
-    generateContextMapSection(),
+    generateContextMapSection(opts?.modelProfilePointer === true),
     '',
     generateGettingStartedSection(opts?.multiTool ?? false),
     '',

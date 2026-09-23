@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 
 import { init } from '../src/init';
 import { upgrade } from '../src/upgrade';
+import { insertModelProfilePointer } from '../src/improve-claude-md';
 import { getBundleInventory } from '../src/bundle-inventory';
 import { updateStatusExitCode } from '../src/update';
 import { manifestPath, normalizedVendorHash, type InstallationManifest } from '../src/install-manifest';
@@ -296,7 +297,10 @@ describe('upgrade alias through the shared update engine', () => {
       await runUpgrade(root);
 
       for (const [path, content] of Object.entries(files)) {
-        expect(readFileSync(join(root, path), 'utf8')).toBe(content);
+        // D14: the designated memory file (AGENTS.md for a multi-tool install)
+        // keeps its bytes and gains only the model-profile Context Map pointer.
+        const expected = path === 'AGENTS.md' ? insertModelProfilePointer(content) : content;
+        expect(readFileSync(join(root, path), 'utf8')).toBe(expected);
       }
     } finally {
       cleanup(root);
