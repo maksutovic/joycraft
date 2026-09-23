@@ -179,6 +179,7 @@ describe('model profile template: installed copy stays byte-identical', () => {
 describe('reference templates dir: enumeration guard', () => {
   const REFERENCE_DIR = join(TEMPLATES_DIR, 'reference');
   const EXPECTED_FILES = [
+    'interactive-checkpoint.md',
     'knowledge-lifecycle.md',
     'model-profile-claude-fable-5-1.md',
     'output-style.md',

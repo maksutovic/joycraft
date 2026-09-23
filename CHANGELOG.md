@@ -7,6 +7,24 @@ claim that a release has shipped.
 
 ---
 
+## Unreleased — Interactive checkpoints (Claude harness)
+
+Gate questions on the Claude harness can now be answered on one private web
+page instead of one chat prompt at a time. A gate skill renders
+`docs/templates/CHECKPOINT_TEMPLATE.html`, publishes it with the Artifact db
+capability, the human answers at their own pace with every click saved, and
+Claude reads the answers back with the artifact data tool before stamping.
+
+- **One home for the protocol.** `docs/templates/reference/interactive-checkpoint.md`
+  holds the loop, the page anatomy, the data contract, the read-back rules, and
+  the lessons from the first run. Decide, interview, new-feature, design,
+  research, and decompose cite it by path on the Claude harness only.
+- **Claude-only by construction.** Both files are harness-gated to Claude; the
+  other harnesses keep their chat question directives unchanged.
+- **Decide's capture rule changed on Claude.** The dossier stays display-only;
+  the checkpoint is the capture surface for two or more questions, and the
+  AskUserQuestion tool remains the surface for one question and the re-prompt.
+
 ## Unreleased — Fable-native SDLC harness
 
 Joycraft now steers Claude Fable 5.1 through one model-profile reference doc,

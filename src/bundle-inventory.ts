@@ -102,6 +102,10 @@ export const TEMPLATE_HARNESS_GATES: Readonly<Record<string, readonly Harness[]>
   // D6: keyed to the model, not the harness. The list lives in model-profile.ts
   // so the memory-file pointer row is gated on exactly the same harnesses.
   [MODEL_PROFILE_TEMPLATE_KEY]: MODEL_PROFILE_HARNESSES,
+  // The interactive checkpoint needs the Artifact db capability and the
+  // ArtifactData tool, which exist only on the Claude harness.
+  'CHECKPOINT_TEMPLATE.html': ['claude'],
+  'reference/interactive-checkpoint.md': ['claude'],
 };
 
 /**

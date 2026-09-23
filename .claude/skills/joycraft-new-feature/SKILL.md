@@ -56,7 +56,10 @@ this skill: the Phase 0 route choice, this interview, and the Phase 2 brief
 review.
 Every question goes through the AskUserQuestion tool. Never emit a plain
 Q1/Q2/Q3 list in chat and wait for the human to type answers back — the tool is
-the capture surface, chat is not.
+the capture surface, chat is not. When a gate holds two or more questions, build
+an interactive checkpoint page instead and read the answers back — the protocol
+is in `docs/templates/reference/interactive-checkpoint.md`; the tool remains the
+surface for a single question and for the one re-prompt.
 Three rules ride on every question, no exceptions:
 
 - **Every question has ≥2 real options.** A one-option question is invalid —

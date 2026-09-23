@@ -136,6 +136,12 @@ the HTML. The HTML is a render of it and never invents content.
    decomposition as a hosted artifact for a shareable link." Only publish if the
    human says yes; the local file remains the canonical render. If declined, no
    retry.
+<!-- harness:claude -->
+6. When the review carries two or more questions for the human, the hosted
+   render is an interactive checkpoint instead: build it per
+   `docs/templates/reference/interactive-checkpoint.md` and read the answers
+   back before stamping. The local file stays the canonical render.
+<!-- /harness -->
 
 At this gate, your chat message is EXACTLY this template — nothing outside it.
 The content lives in the artifact, not the chat. The decomposition table goes

@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  ============================================================================
+  JOYCRAFT INTERACTIVE CHECKPOINT · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton for a gate that CAPTURES answers, not only shows
+  them. A Joycraft gate skill running on the Claude harness fills the slots,
+  publishes the page with the Artifact tool and the db capability, and later
+  reads the answers back. The human answers on the page at their own pace,
+  every click saves on the spot, and the page works on a phone.
+
+  The protocol that surrounds this page (when to build one, how Claude reads
+  the answers back, what to confirm in chat) lives in ONE place:
+  docs/templates/reference/interactive-checkpoint.md. This file is only the
+  render.
+
+  Slots are the HTML comments below whose text begins with the slot marker
+  (the word SLOT followed by a colon and a region name). Replace the slot
+  comment (and any placeholder) with real markup that uses ONLY the classes
+  already defined in the style block. The one data slot is the JSON block
+  with id "checkpoint-data": the questions section renders itself from it.
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the slot regions. Do not invent classes, restyle, add fonts,
+      or add external references of any kind. No CDN, no remote fonts, no
+      remote images, no fetches. The runtime script at the end stays
+      byte-identical.
+    · Put every question in the JSON data block. Never hand-write question
+      cards: the script renders them so every option on the page is one the
+      read-back accepts.
+    · Give every question at least two real options and mark the recommended
+      option with its key in "recommend". A one-option question is invalid.
+    · Offer only options the consuming skill can stamp. The page always adds
+      the fixed escapes (backlog, discard, defer to a person) and a free-text
+      rationale, so the human can reject the framing on every card.
+    · Carry the evidence a decision needs onto the card ("evidence" lines),
+      so the human decides without leaving the page.
+    · Keep the how-to box, and keep it naming the reject-this-framing escape.
+
+  Structure order is fixed: header, optional content sections, the questions
+  section (rendered), the output panel (rendered), the how-to box, footer.
+  ============================================================================
+-->
+<!-- SLOT:title · page title text, for example "Decision Checkpoint — <feature-name>" -->
+<title>Checkpoint — TEMPLATE</title>
+<style>
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --line: #D9DEE7; --accent: #2F6FED; --accent-ink: #FFFFFF;
+    --ok: #1F8A4C; --warn: #B7791F; --bad: #C53030;
+    --chip: #E8EEFB; --chip-ink: #24439A;
+    --radius: 12px; --gutter: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0F141B; --surface: #161C25; --surface-2: #1E2631;
+      --ink: #E6EAF0; --ink-2: #AEB7C4; --ink-3: #7F8A99;
+      --line: #2B3543; --accent: #6C9BFF; --accent-ink: #0B1220;
+      --ok: #4CC97A; --warn: #E2B04A; --bad: #F26D6D;
+      --chip: #1D2A45; --chip-ink: #BFD0FF;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0F141B; --surface: #161C25; --surface-2: #1E2631;
+    --ink: #E6EAF0; --ink-2: #AEB7C4; --ink-3: #7F8A99;
+    --line: #2B3543; --accent: #6C9BFF; --accent-ink: #0B1220;
+    --ok: #4CC97A; --warn: #E2B04A; --bad: #F26D6D;
+    --chip: #1D2A45; --chip-ink: #BFD0FF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--ground); color: var(--ink);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 0 var(--gutter) 48px;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  header { padding: 32px 0 16px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-size: 28px; line-height: 1.2; margin: 8px 0; }
+  h2 { font-size: 20px; margin: 0; }
+  h3 { font-size: 17px; margin: 0 0 6px; }
+  .dek { color: var(--ink-2); margin: 0 0 12px; }
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; }
+  .lock-chip { background: var(--chip); color: var(--chip-ink); border-radius: 999px; padding: 4px 10px; font-size: 13px; }
+  .lock-chip.open { background: transparent; border: 1px dashed var(--line); color: var(--ink-2); }
+  .banner { border-radius: var(--radius); padding: 10px 14px; margin: 12px 0 0; font-size: 14px; background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); }
+  .banner.ok { border-color: var(--ok); }
+  .banner.warn { border-color: var(--warn); }
+  .banner.bad { border-color: var(--bad); }
+  .sec, .questions, .output, .howto { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; margin: 16px 0; }
+  .sec-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+  .sub { color: var(--ink-2); margin: 0 0 12px; }
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface-2); border-radius: var(--radius); padding: 12px; }
+  .pillar p { margin: 0; color: var(--ink-2); font-size: 14px; }
+  .tablebox { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .col { background: var(--surface-2); border-radius: var(--radius); padding: 12px; }
+  .clab { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); }
+  .col ul, .criteria { margin: 6px 0 0; padding-left: 20px; }
+  .criteria li.met { color: var(--ok); }
+  .progress { height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin: 8px 0 16px; }
+  .progress > span { display: block; height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  .q { border-top: 1px solid var(--line); padding: 16px 0; }
+  .q:first-of-type { border-top: 0; padding-top: 0; }
+  .qnum { display: inline-block; font-size: 12px; color: var(--ink-3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+  .qnum.done { color: var(--ok); }
+  .rec { margin: 0 0 4px; font-size: 14px; }
+  .why { margin: 0 0 10px; color: var(--ink-2); font-size: 14px; }
+  .evidence { background: var(--surface-2); border-radius: var(--radius); padding: 10px 12px; margin: 0 0 10px; font-size: 14px; color: var(--ink-2); }
+  .evidence p { margin: 0 0 4px; }
+  .seg { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+  .seg button { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+  .seg button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .seg button.esc { border-style: dashed; color: var(--ink-2); }
+  .seg button.esc.on { background: var(--ink-2); color: var(--surface); border-color: var(--ink-2); }
+  .seg button:disabled { opacity: .5; cursor: default; }
+  .ta { width: 100%; min-height: 64px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink); padding: 8px 10px; font: inherit; font-size: 14px; resize: vertical; }
+  .assignee { width: 100%; max-width: 320px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 6px 10px; font: inherit; font-size: 14px; margin: 0 0 8px; }
+  .hint { font-size: 13px; color: var(--ink-3); margin: 4px 0 0; }
+  .hint.bad { color: var(--bad); }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .btn { border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); border-radius: 8px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; }
+  .btn.secondary { background: transparent; color: var(--accent); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  pre { background: var(--surface-2); border-radius: var(--radius); padding: 12px; overflow-x: auto; font-size: 13px; line-height: 1.45; margin: 0; }
+  footer { color: var(--ink-3); font-size: 13px; padding: 8px 0; }
+  [hidden] { display: none !important; }
+  img { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <!-- SLOT:eyebrow — kicker line, for example "Joycraft Decision Checkpoint · feature: <name> · <Month DD, YYYY>". End it with the generation stamp: "· rev N · <Month DD, YYYY HH:MM>". -->
+  <div class="eyebrow"></div>
+  <!-- SLOT:title-h1 — the headline: what this checkpoint decides, in a phrase -->
+  <h1></h1>
+  <!-- SLOT:dek — 1–2 sentences: what this page is, that every click saves, and that the human can stop and come back -->
+  <p class="dek"></p>
+  <!-- SLOT:context-strip — REQUIRED CONTAINER, keep even if empty. One .lock-chip span per grounded fact carried into this gate; add the open class to the unsettled ones. -->
+  <div class="locked"></div>
+  <div class="banner" id="banner" role="status">Connecting…</div>
+</header>
+
+<!-- SLOT:sections — OPTIONAL. REPEAT this <section class="sec"> once per topic the human needs before answering. Use ONLY the pre-defined blocks (.pillars, .tablebox, .cols, .criteria). Delete the whole section when the cards carry enough evidence on their own. -->
+<section class="sec">
+  <div class="sec-head">
+    <!-- SLOT:section-eyebrow — short kicker, for example "Context" -->
+    <span class="eyebrow"></span>
+    <!-- SLOT:section-title — the section heading -->
+    <h2></h2>
+  </div>
+  <!-- SLOT:section-standfirst — OPTIONAL one-paragraph orientation -->
+  <p class="sub"></p>
+  <!-- SLOT:block-pillars — OPTIONAL. One .pillar per idea. Delete if unused. -->
+  <div class="pillars">
+    <div class="pillar">
+      <h3></h3>
+      <p></p>
+    </div>
+  </div>
+  <!-- SLOT:block-table — OPTIONAL. One row per item. Delete the whole .tablebox if unused. -->
+  <div class="tablebox">
+    <table>
+      <thead><tr><th></th><th></th><th></th></tr></thead>
+      <tbody><tr><td></td><td></td><td></td></tr></tbody>
+    </table>
+  </div>
+  <!-- SLOT:block-cols — OPTIONAL must / must-not pair. Delete if unused. -->
+  <div class="cols">
+    <div class="col must"><span class="clab">Must</span><ul></ul></div>
+    <div class="col must-not"><span class="clab">Must not</span><ul></ul></div>
+  </div>
+  <!-- SLOT:block-criteria — OPTIONAL checklist. Add class "met" to a satisfied criterion. Delete if unused. -->
+  <ul class="criteria"></ul>
+</section>
+
+<!-- SLOT:checkpoint-data — THE DATA SLOT. Replace the JSON below. One entry per
+     question. "id" is the stable id the consuming skill stamps (for example
+     "D4"). "recommend" names an option key or is null. "options" holds 2–4
+     real choices the skill can stamp; the page adds the fixed escapes itself.
+     "evidence" is an optional list of short plain-text lines the human needs
+     to decide on the card. "collection" and "statusDoc" are the db paths
+     Claude reads back; keep them unless the reference doc says otherwise. -->
+<script type="application/json" id="checkpoint-data">
+{
+  "gate": "decide",
+  "feature": "feature-slug",
+  "collection": "answers",
+  "statusDoc": "meta/status",
+  "questions": [
+    {
+      "id": "D1",
+      "question": "Which option should we take?",
+      "recommend": "a",
+      "why": "One paragraph on the tension that makes this genuinely open.",
+      "evidence": ["A short fact the decision rests on."],
+      "options": [
+        { "key": "a", "label": "Option A" },
+        { "key": "b", "label": "Option B" }
+      ]
+    }
+  ]
+}
+</script>
+
+<section class="questions">
+  <div class="sec-head">
+    <span class="eyebrow">Decide</span>
+    <h2 id="qhead">Questions for you</h2>
+  </div>
+  <div class="progress"><span id="bar"></span></div>
+  <div id="cards"></div>
+  <div class="actions">
+    <button class="btn" id="submit" type="button" disabled>Submit answers</button>
+    <span class="hint" id="submit-hint"></span>
+  </div>
+</section>
+
+<section class="output">
+  <div class="sec-head">
+    <span class="eyebrow">Output</span>
+    <h2>What Claude will stamp</h2>
+  </div>
+  <p class="sub">This block is built live from your answers. It is the exact <code>decisions:</code> shape the skill writes into the brief. If saving is unavailable, copy it into chat.</p>
+  <pre id="out"></pre>
+  <div class="actions"><button class="btn secondary" id="copy" type="button">Copy</button><span class="hint" id="copy-hint"></span></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <!-- SLOT:howto — how the human answers: pick an option or an escape, type the one-sentence reason, submit when done. MUST name the reject-this-framing escape: if every option is wrong, say what is right in the reason box instead of picking. -->
+  <p></p>
+</div>
+
+<footer>
+  <!-- SLOT:footer — provenance line: which gate produced this, feature slug, date. End it with "rev N · generated <ISO timestamp>". -->
+  <p></p>
+</footer>
+</div>
+
+<script>
+  // Runtime — byte-identical in every render. Renders the question cards from
+  // the JSON data slot, saves each answer to the artifact db as it changes,
+  // restores state on reload, and builds the decisions YAML the skill stamps.
+  (function () {
+    "use strict";
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) { /* theme falls back to prefers-color-scheme */ }
+
+    var ESCAPES = [
+      { key: "__backlog", label: "Backlog", esc: true },
+      { key: "__discard", label: "Discard", esc: true },
+      { key: "__defer", label: "Defer to a person", esc: true }
+    ];
+    var data, db = null, readOnly = false;
+    var answers = {};      // id -> { choice, rationale, assignee, at }
+    var timers = {};       // id -> debounce timer
+    var chains = {};       // id -> promise chain (one write at a time per doc)
+    var $ = function (id) { return document.getElementById(id); };
+
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+    function banner(text, cls) { var b = $("banner"); b.textContent = text; b.className = "banner" + (cls ? " " + cls : ""); }
+
+    try {
+      data = JSON.parse($("checkpoint-data").textContent);
+    } catch (e) {
+      banner("The checkpoint data block is not valid JSON. Ask Claude to re-render this page.", "bad");
+      return;
+    }
+    if (!data || !Array.isArray(data.questions) || !data.questions.length) {
+      banner("No questions were rendered into this checkpoint.", "warn");
+      return;
+    }
+    var COLLECTION = data.collection || "answers";
+    var STATUS_DOC = data.statusDoc || "meta/status";
+
+    function optionLabel(q, key) {
+      var i;
+      for (i = 0; i < q.options.length; i++) if (q.options[i].key === key) return q.options[i].label;
+      for (i = 0; i < ESCAPES.length; i++) if (ESCAPES[i].key === key) return ESCAPES[i].label;
+      return key || "";
+    }
+    function isComplete(q) {
+      var a = answers[q.id];
+      if (!a || !a.choice) return false;
+      if (a.choice === "__defer") return !!(a.assignee && a.assignee.trim());
+      return !!(a.rationale && a.rationale.trim());
+    }
+    function terminal(a) {
+      if (!a || !a.choice) return "open";
+      if (a.choice === "__backlog") return "backlogged";
+      if (a.choice === "__discard") return "discarded";
+      if (a.choice === "__defer") return "assigned";
+      return "clarified";
+    }
+
+    function renderCards() {
+      var html = "";
+      data.questions.forEach(function (q, idx) {
+        var a = answers[q.id] || {};
+        html += '<div class="q" data-id="' + esc(q.id) + '">';
+        html += '<span class="qnum' + (isComplete(q) ? " done" : "") + '">' + esc(q.id) + (isComplete(q) ? " · answered" : " · " + (idx + 1) + " of " + data.questions.length) + "</span>";
+        html += "<h3>" + esc(q.question) + "</h3>";
+        if (q.recommend) html += '<p class="rec"><strong>Recommend:</strong> ' + esc(optionLabel(q, q.recommend)) + "</p>";
+        if (q.why) html += '<p class="why">' + esc(q.why) + "</p>";
+        if (Array.isArray(q.evidence) && q.evidence.length) {
+          html += '<div class="evidence">';
+          q.evidence.forEach(function (line) { html += "<p>" + esc(line) + "</p>"; });
+          html += "</div>";
+        }
+        html += '<div class="seg" role="group" aria-label="Options for ' + esc(q.id) + '">';
+        (q.options || []).forEach(function (o) {
+          html += '<button type="button" data-q="' + esc(q.id) + '" data-key="' + esc(o.key) + '" class="' + (a.choice === o.key ? "on" : "") + '"' + (readOnly ? " disabled" : "") + ">" + esc(o.label) + (q.recommend === o.key ? " · recommended" : "") + "</button>";
+        });
+        ESCAPES.forEach(function (o) {
+          html += '<button type="button" data-q="' + esc(q.id) + '" data-key="' + o.key + '" class="esc' + (a.choice === o.key ? " on" : "") + '"' + (readOnly ? " disabled" : "") + ">" + o.label + "</button>";
+        });
+        html += "</div>";
+        html += '<input class="assignee" type="text" placeholder="Who owns this answer?" data-assignee="' + esc(q.id) + '" value="' + esc(a.assignee || "") + '"' + (a.choice === "__defer" ? "" : " hidden") + (readOnly ? " disabled" : "") + ">";
+        html += '<textarea class="ta" data-rationale="' + esc(q.id) + '" placeholder="<choice> because <one-sentence reason>. If every option is wrong, reject the framing: type what is right instead."' + (readOnly ? " disabled" : "") + ">" + esc(a.rationale || "") + "</textarea>";
+        html += '<p class="hint' + (a.choice && !isComplete(q) ? " bad" : "") + '">' + (a.choice ? (isComplete(q) ? "Saved as " + terminal(a) + "." : (a.choice === "__defer" ? "Name the person who owns this answer." : "Add the one-sentence reason — a bare pick is not recorded.")) : "Pick an option or an escape, then type the reason.") + "</p>";
+        html += "</div>";
+      });
+      $("cards").innerHTML = html;
+      renderProgress();
+      renderOutput();
+    }
+
+    function renderProgress() {
+      var done = data.questions.filter(isComplete).length, total = data.questions.length;
+      $("bar").style.width = Math.round((done / total) * 100) + "%";
+      $("qhead").textContent = done === total ? "All " + total + " answered" : done + " of " + total + " answered";
+      $("submit").disabled = readOnly || done !== total;
+      $("submit-hint").textContent = done === total ? "Submit tells Claude you are done." : (total - done) + " still open. You can leave and come back.";
+    }
+
+    function yamlStr(s) { return JSON.stringify(String(s == null ? "" : s)); }
+    function renderOutput() {
+      var lines = ["decisions:"];
+      data.questions.forEach(function (q) {
+        var a = answers[q.id] || {};
+        var state = terminal(a);
+        var choice = state === "clarified" ? optionLabel(q, a.choice) : state === "assigned" ? "assigned to " + (a.assignee || "?") : state;
+        lines.push("  - id: " + q.id);
+        lines.push("    question: " + yamlStr(q.question));
+        lines.push("    status: " + state);
+        lines.push("    choice: " + yamlStr(choice));
+        lines.push("    rationale: " + yamlStr(a.rationale || (state === "open" ? "" : "(not given)")));
+      });
+      $("out").textContent = lines.join("\n");
+    }
+
+    function localSet(id, patch) {
+      var cur = answers[id] || {};
+      var next = { choice: cur.choice || "", rationale: cur.rationale || "", assignee: cur.assignee || "" };
+      Object.keys(patch).forEach(function (k) { next[k] = patch[k]; });
+      next.at = new Date().toISOString();
+      answers[id] = next;
+      return next;
+    }
+
+    function persist(id) {
+      if (!db || readOnly) return;
+      var body = answers[id];
+      chains[id] = (chains[id] || Promise.resolve()).then(function () {
+        var ref = db.collection(COLLECTION).doc(id);
+        return body.choice ? ref.set(body) : ref.delete();
+      }).then(function () {
+        banner("Saved. Every change lands as you make it; come back any time.", "ok");
+      }).catch(function (e) {
+        if (e && e.code === "invalid_argument") { readOnly = true; banner("This view cannot write answers. Copy the output block into chat instead.", "warn"); renderCards(); }
+        else banner("A save did not go through (" + (e && e.code ? e.code : "unknown") + "). Your last change may not be recorded.", "bad");
+      });
+    }
+
+    function schedule(id) {
+      clearTimeout(timers[id]);
+      timers[id] = setTimeout(function () { persist(id); }, 400);
+    }
+
+    document.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-q]");
+      if (!b || readOnly) return;
+      var id = b.getAttribute("data-q"), key = b.getAttribute("data-key");
+      var cur = answers[id] || {};
+      localSet(id, { choice: cur.choice === key ? "" : key });
+      renderCards();
+      persist(id);
+    });
+    document.addEventListener("input", function (ev) {
+      var el = ev.target;
+      if (readOnly) return;
+      if (el.hasAttribute("data-rationale")) { localSet(el.getAttribute("data-rationale"), { rationale: el.value }); renderProgress(); renderOutput(); schedule(el.getAttribute("data-rationale")); }
+      if (el.hasAttribute("data-assignee")) { localSet(el.getAttribute("data-assignee"), { assignee: el.value }); renderProgress(); renderOutput(); schedule(el.getAttribute("data-assignee")); }
+    });
+    document.addEventListener("focusout", function (ev) {
+      var el = ev.target;
+      if (el.hasAttribute && (el.hasAttribute("data-rationale") || el.hasAttribute("data-assignee"))) renderCards();
+    });
+    $("copy").addEventListener("click", function () {
+      var text = $("out").textContent;
+      var done = function () { $("copy-hint").textContent = "Copied."; };
+      var fail = function () { $("copy-hint").textContent = "Select the block and copy it by hand."; };
+      try { navigator.clipboard.writeText(text).then(done, fail); } catch (e) { fail(); }
+    });
+    $("submit").addEventListener("click", function () {
+      if (!db || readOnly) return;
+      var done = data.questions.filter(isComplete).length;
+      db.doc(STATUS_DOC).set({ submitted: true, answered: done, total: data.questions.length, gate: data.gate || "", feature: data.feature || "", at: new Date().toISOString() })
+        .then(function () { banner("Submitted. Tell Claude the checkpoint is done and it will read your answers back.", "ok"); $("submit").textContent = "Submitted"; $("submit").disabled = true; })
+        .catch(function () { banner("Submit did not save. Tell Claude in chat that you are done.", "bad"); });
+    });
+
+    renderCards();
+
+    function withoutDb() {
+      banner("Not saving: this view has no data store. Answer here, then copy the output block into chat.", "warn");
+    }
+
+    if (!window.claude || typeof window.claude.use !== "function") { withoutDb(); return; }
+    window.claude.use("db").then(function (ns) {
+      if (!ns) { withoutDb(); return; }
+      db = ns;
+      banner("Connected. Every change saves as you make it.", "ok");
+      db.collection(COLLECTION).onSnapshot(function (snap) {
+        snap.docs.forEach(function (d) {
+          var body = d.data() || {};
+          var cur = answers[d.id];
+          if (cur && cur.at && body.at && cur.at > body.at) return; // local edit is newer
+          answers[d.id] = { choice: body.choice || "", rationale: body.rationale || "", assignee: body.assignee || "", at: body.at || "" };
+        });
+        snap.docChanges().forEach(function (ch) { if (ch.type === "removed") delete answers[ch.doc.id]; });
+        if (!document.activeElement || !document.activeElement.hasAttribute("data-rationale")) renderCards(); else { renderProgress(); renderOutput(); }
+      }, function (e) {
+        if (e && e.code === "revoked") { readOnly = true; banner("Access to the data store ended. Copy the output block into chat.", "warn"); renderCards(); }
+      });
+      db.doc(STATUS_DOC).get().then(function (s) {
+        if (s.exists && s.data() && s.data().submitted) { $("submit").textContent = "Submitted"; $("submit").disabled = true; }
+      }).catch(function () { /* status is advisory */ });
+    }).catch(withoutDb);
+  })();
+</script>
+</body>
+</html>

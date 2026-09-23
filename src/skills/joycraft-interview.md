@@ -36,7 +36,7 @@ Let the user talk freely. Do not interrupt their flow. Do not push toward struct
 <!-- harness:claude -->
 Every question in this skill goes through the AskUserQuestion tool. Never emit a
 plain Q1/Q2/Q3 list in chat and wait for the human to type answers back — the
-tool is the capture surface, chat is not.
+tool is the capture surface, chat is not. When a gate holds two or more questions, or a triage round names several intents, build an interactive checkpoint page instead and read the answers back — the protocol is in `docs/templates/reference/interactive-checkpoint.md`; the tool remains the surface for a single question and for the one re-prompt.
 <!-- /harness -->
 <!-- harness:codex|pi|copilot|omp -->
 Every question in this skill is asked as structured forced-choice questions asked directly in chat:
