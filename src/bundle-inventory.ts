@@ -90,6 +90,37 @@ const deferred = (path: string, harness: BundleEntryHarness, ownedRegion?: strin
   ...(ownedRegion ? { ownedRegion } : {}),
 });
 
+/**
+ * Per-template harness gates, keyed by `TEMPLATES` key (the path relative to
+ * `src/templates/`). A listed template installs only when the selection
+ * includes at least one of its harnesses. Keys absent from this table stay
+ * `'shared'` and install for every selection. A key with no matching template
+ * is inert: this table filters the bundled record and never supplies paths.
+ */
+export const TEMPLATE_HARNESS_GATES: Readonly<Record<string, readonly Harness[]>> = {
+  // D6: keyed to the model, not the harness. Pi and omp run Claude models; Codex and Copilot do not.
+  'reference/model-profile-claude-fable-5-1.md': ['claude', 'pi', 'omp'],
+};
+
+/**
+ * Map bundled templates to `docs/templates/` vendor entries for a selection.
+ * An ungated template yields one `'shared'` entry. A gated template yields one
+ * entry owned by the first eligible selected harness in canonical order, or
+ * nothing when no eligible harness is selected.
+ */
+export function templateEntries(
+  templates: Readonly<Record<string, string>>,
+  selected: readonly Harness[],
+  gates: Readonly<Record<string, readonly Harness[]>> = TEMPLATE_HARNESS_GATES,
+): BundleInventoryEntry[] {
+  return Object.entries(templates).flatMap(([path, content]) => {
+    const gate = Object.prototype.hasOwnProperty.call(gates, path) ? gates[path] : undefined;
+    if (!gate) return [vendor(`docs/templates/${path}`, 'shared', content)];
+    const owner = HARNESSES.find((harness) => gate.includes(harness) && selected.includes(harness));
+    return owner ? [vendor(`docs/templates/${path}`, owner, content)] : [];
+  });
+}
+
 function mapVendorFiles(
   harness: Harness,
   root: string,
@@ -118,7 +149,7 @@ export function getBundleInventory(selection: readonly Harness[] | unknown = HAR
   const selected = sanitizeHarnesses(selection) ?? [...HARNESSES];
   const wants = (harness: Harness): boolean => selected.includes(harness);
   const entries: BundleInventoryEntry[] = [
-    ...Object.entries(TEMPLATES).map(([path, content]) => vendor(`docs/templates/${path}`, 'shared', content)),
+    ...templateEntries(TEMPLATES, selected),
     createOnce('CLAUDE.md'),
     createOnce('AGENTS.md'),
     vendor('docs/.joycraft/check.mjs', 'shared', CHECKER_SOURCE, { executable: true, mode: 0o755 }),

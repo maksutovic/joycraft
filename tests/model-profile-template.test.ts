@@ -1,7 +1,11 @@
-import { describe, it, expect } from 'vitest';
-import { readFileSync, existsSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { describe, it, expect, afterEach } from 'vitest';
+import { readFileSync, existsSync, readdirSync, mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, relative } from 'node:path';
 import { getBundleInventory } from '../src/bundle-inventory';
+import { TEMPLATES } from '../src/bundled-files';
+import { update } from '../src/update';
+import { readInstallationManifest, type InstallationManifest } from '../src/install-manifest';
 
 const ROOT = join(__dirname, '..');
 const TEMPLATES_DIR = join(ROOT, 'src', 'templates');
@@ -169,5 +173,107 @@ describe('model profile template: installed copy stays byte-identical', () => {
     const installed = join(ROOT, INSTALLED_PATH);
     expect(existsSync(installed), `${installed} should exist`).toBe(true);
     expect(readFileSync(installed)).toEqual(readFileSync(PROFILE_DOC));
+  });
+});
+
+describe('reference templates dir: enumeration guard', () => {
+  const REFERENCE_DIR = join(TEMPLATES_DIR, 'reference');
+  const EXPECTED_FILES = [
+    'knowledge-lifecycle.md',
+    'model-profile-claude-fable-5-1.md',
+    'output-style.md',
+    'spec-status-lifecycle.md',
+  ];
+
+  it('src/templates/reference/ contains exactly the expected .md files', () => {
+    expect(existsSync(REFERENCE_DIR), `${REFERENCE_DIR} should exist`).toBe(true);
+    const found = readdirSync(REFERENCE_DIR).filter((f) => f.endsWith('.md')).sort();
+    expect(found).toEqual(EXPECTED_FILES);
+  });
+
+  for (const file of EXPECTED_FILES) {
+    it(`${file} maps to the reference/${file} bundle key`, () => {
+      expect(Object.keys(TEMPLATES)).toContain(`reference/${file}`);
+    });
+  }
+});
+
+describe('model profile template: harness-gated install', () => {
+  const roots: string[] = [];
+  afterEach(() => {
+    for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
+  });
+  function project(): string {
+    const root = mkdtempSync(join(tmpdir(), 'joycraft-profile-gate-'));
+    roots.push(root);
+    return root;
+  }
+  function manifest(root: string): InstallationManifest {
+    const found = readInstallationManifest(root) ?? readInstallationManifest(root, 'private');
+    expect(found, 'installation manifest should exist').not.toBeNull();
+    return found!;
+  }
+  const installed = (root: string): boolean => existsSync(join(root, INSTALLED_PATH));
+
+  it('a codex-only install does not write the profile doc', async () => {
+    const root = project();
+    const result = await update(root, { nonInteractive: true, harnesses: ['codex'] });
+    expect(result.status).toBe('applied');
+    expect(installed(root)).toBe(false);
+    expect(manifest(root).files[INSTALLED_PATH]).toBeUndefined();
+  });
+
+  it('a pi-only install writes the profile doc', async () => {
+    const root = project();
+    const result = await update(root, { nonInteractive: true, harnesses: ['pi'] });
+    expect(result.status).toBe('applied');
+    expect(installed(root)).toBe(true);
+    expect(readFileSync(join(root, INSTALLED_PATH))).toEqual(readFileSync(PROFILE_DOC));
+  });
+
+  it('adding claude to a codex-only install writes the profile doc', async () => {
+    const root = project();
+    await update(root, { nonInteractive: true, harnesses: ['codex'] });
+    expect(installed(root)).toBe(false);
+    await update(root, { nonInteractive: true, harnesses: ['codex', 'claude'] });
+    expect(installed(root)).toBe(true);
+    expect(manifest(root).files[INSTALLED_PATH]).toBeDefined();
+  });
+
+  it('dropping every eligible harness deletes the unmodified profile doc and its manifest row', async () => {
+    const root = project();
+    await update(root, { nonInteractive: true, harnesses: ['pi'] });
+    expect(installed(root)).toBe(true);
+    await update(root, { nonInteractive: true, harnesses: ['codex'] });
+    expect(installed(root)).toBe(false);
+    expect(manifest(root).files[INSTALLED_PATH]).toBeUndefined();
+  });
+
+  it('a claude install records the profile doc with verified ownership', async () => {
+    const root = project();
+    await update(root, { nonInteractive: true, harnesses: ['claude'] });
+    expect(manifest(root).files[INSTALLED_PATH]?.ownership).toBe('verified');
+  });
+
+  it('the gated doc does not replace the claude skill tree in the selected-harness ignore warning', async () => {
+    const root = project();
+    writeFileSync(join(root, '.gitignore'), '.claude/\n');
+    const result = await update(root, { nonInteractive: true, harnesses: ['claude'], gitignore: 'shared' });
+    expect(result.status).toBe('applied');
+    const warning = result.diagnostics.find((line) => line.startsWith('Selected claude harness path'));
+    expect(warning, result.diagnostics.join('\n')).toBeDefined();
+    expect(warning).toContain('.claude/');
+    expect(warning).not.toContain(INSTALLED_PATH);
+  });
+
+  it('the gated doc on disk is not a harness detection signal for a manifest-less project', async () => {
+    const root = project();
+    const piSkill = getBundleInventory(['pi']).find((entry) => entry.harness === 'pi' && entry.path.startsWith('.pi/skills/'))!;
+    for (const [path, content] of [[piSkill.path, piSkill.content!], [INSTALLED_PATH, readFileSync(PROFILE_DOC, 'utf-8')]]) {
+      mkdirSync(dirname(join(root, path)), { recursive: true });
+      writeFileSync(join(root, path), content);
+    }
+    const result = await update(root, { nonInteractive: true, preview: true });
+    expect(result.harnesses).toEqual(['pi']);
   });
 });
