@@ -42,7 +42,7 @@ describe('unified update command', () => {
     }
   });
 
-  it('preserves customized files in safe unattended mode and exposes conflicts separately', async () => {
+  it('replaces customized files in safe unattended mode and saves the edited copy', async () => {
     const root = project();
     try {
       const entry = getBundleInventory(['codex']).find((candidate) => candidate.path.endsWith('joycraft-tune/SKILL.md'))!;
@@ -53,10 +53,13 @@ describe('unified update command', () => {
         harnesses: ['codex'],
         bundle: { version: '1.0.0', integrity: '', inventory: [{ ...entry, content: 'base\n' }] },
       });
-      expect(first.status).toBe('conflict');
-      expect(first.conflicts).toContain(entry.path);
-      expect(first.preserved).toContain(entry.path);
-      expect(updateStatusExitCode(first.status)).toBe(2);
+      expect(first.status).toBe('applied');
+      expect(first.conflicts).toEqual([]);
+      expect(first.preserved).not.toContain(entry.path);
+      expect(updateStatusExitCode(first.status)).toBe(0);
+      expect(readFileSync(join(root, entry.path), 'utf8')).toBe('base\n');
+      const backup = first.replaced?.find((candidate) => candidate.path === entry.path)?.backup;
+      expect(readFileSync(join(root, backup!), 'utf8')).toBe('local edit\n');
     } finally {
       rmSync(root, { recursive: true, force: true });
     }

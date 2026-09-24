@@ -32,6 +32,8 @@ export interface UpdatePlanOptions {
   repair?: readonly string[];
   /** Optional trusted historical vendor hashes used for bridge adoption. */
   catalogue?: readonly VendorCatalogueEntry[];
+  /** Project-relative directory for copies of edited files that a replacement overwrites. */
+  backupDirectory?: string;
 }
 
 export type UpdateActionKind =
@@ -63,6 +65,10 @@ export interface PlannedUpdateAction {
   patch?: { ownedKey?: string; ownedRegion?: string };
   /** A preserved known document that needs no user-facing action or status. */
   nonActionable?: boolean;
+  /** Where the user's edited bytes are saved before this action replaces them. */
+  backupPath?: string;
+  /** Set on the backup write itself; names the file it preserves. */
+  backupOf?: string;
 }
 
 export interface UpdatePlan {
@@ -213,6 +219,8 @@ export function createUpdatePlan(input: {
   const actions: PlannedUpdateAction[] = [];
   const groups = new Map<string, TargetGroup>();
   const knownPaths = new Set<string>();
+  const backupDirectory = options.backupDirectory
+    ?? `docs/.joycraft/local/replaced/${options.targetVersion ?? input.manifest.targetVersion}`;
 
   for (const entry of input.inventory) {
     knownPaths.add(entry.path);
@@ -310,6 +318,7 @@ export function createUpdatePlan(input: {
     const targetEqualsBase = baselineHash !== undefined && targetHash === baselineHash;
     let kind: UpdateActionKind;
     let reason: string;
+    let untouchedCreateOnce = false;
     if (currentContent === undefined) {
       if (verified) { kind = 'preserve'; reason = 'Local deletion is preserved; repair requires explicit selection.'; }
       else if (old) { kind = 'preserve'; reason = 'Prior ownership is unverified; preserve the local deletion.'; }
@@ -319,6 +328,7 @@ export function createUpdatePlan(input: {
       }
     } else if (old?.kind === 'create-once' && !explicitReplacement(options, group.path)) {
       kind = 'preserve'; reason = 'Create-once document is user-owned after its first creation; preserve local content.';
+      untouchedCreateOnce = old.vendorHash !== '' && currentHash === old.vendorHash;
     } else if (currentEqualsTarget) {
       kind = old && verified ? 'reconcile' : 'adopt';
       reason = kind === 'reconcile' ? 'Current bytes already equal target; reconcile manifest metadata.' : 'Exact trusted target match establishes vendor ownership.';
@@ -326,8 +336,15 @@ export function createUpdatePlan(input: {
       kind = 'replace'; reason = 'Current bytes equal the verified vendor base; safe replacement.';
     } else if ((options.forceCustomized ?? []).includes(group.path)) {
       kind = 'replace'; reason = 'Scoped init force selected this known customized path.';
+    } else if (first.kind === 'create-once' && !explicitReplacement(options, group.path)) {
+      // Covers installs whose manifest still records this path as vendor.
+      kind = 'preserve'; reason = 'User-owned file; Joycraft does not change it after creating it.';
+      if (old) nextManifest.files[group.path] = { ...old, kind: 'create-once' };
     } else if (targetEqualsBase) {
       kind = 'preserve'; reason = 'Vendor target is unchanged; preserve the local-only edit.';
+    } else if (first.kind === 'vendor') {
+      // Joycraft-owned file: install the newer version; the edited copy is backed up below.
+      kind = 'replace'; reason = 'Joycraft has a newer version of this edited file; the edited copy is saved as a backup.';
     } else if (verified) {
       kind = 'conflict'; reason = 'Current customization and target vendor content both differ from the verified base.';
     } else {
@@ -336,12 +353,13 @@ export function createUpdatePlan(input: {
     // A local-only edit is normally preserved because the vendor target has
     // not changed. An explicit replacement path is the user's reviewed
     // authorization to replace those bytes as well; keep the ordinary
-    // conflict shape for both-changed files so review metadata remains clear.
+    // conflict shape for both-changed non-vendor files so review metadata remains clear.
     if (kind === 'preserve' && explicitReplacement(options, group.path) && currentContent !== undefined && target !== undefined) {
       kind = 'replace';
       reason = 'Explicit replacement selected for this customized path.';
     }
     const action = actionBase(group.path, kind, reason, currentContent, target, first.mode);
+    if (untouchedCreateOnce && kind === 'preserve') action.nonActionable = true;
     if (target !== undefined && ['replace', 'create', 'adopt', 'conflict'].includes(kind)) action.content = bytes(target);
     action.selected = selected(options, group.path, kind);
     if (kind === 'preserve' && currentContent === undefined && verified && options.repair?.includes(group.path)) {
@@ -352,6 +370,19 @@ export function createUpdatePlan(input: {
     }
     if (kind === 'conflict' && currentContent !== undefined && target !== undefined) action.diff = diff(group.path, currentContent, target);
     if (first.kind === 'config-patch') action.patch = { ...(first.ownedKey ? { ownedKey: first.ownedKey } : {}), ...(first.ownedRegion ? { ownedRegion: first.ownedRegion } : {}) };
+    // Any write over bytes that are neither the vendor base nor the target
+    // saves those bytes first, in the same transaction.
+    const overwritesEdits = currentContent !== undefined && first.kind !== 'config-patch' && !currentEqualsBase && !currentEqualsTarget
+      && action.selected && (action.kind === 'replace' || (action.kind === 'conflict' && action.resolution === 'replace'));
+    if (overwritesEdits) {
+      action.backupPath = `${backupDirectory}/${group.path}.bak`;
+      add({
+        ...actionBase(action.backupPath, 'create', `Edited copy of ${group.path}, saved before Joycraft replaced it.`, undefined, currentContent, undefined),
+        selected: true,
+        content: bytes(currentContent),
+        backupOf: group.path,
+      });
+    }
     add(action);
     if (action.selected && ['replace', 'create', 'adopt', 'repair', 'reconcile'].includes(action.kind)) addFile(nextManifest, group.path, first, targetHash, options.targetVersion ?? input.manifest.targetVersion);
     if (action.selected && action.kind === 'conflict' && action.resolution === 'replace') addFile(nextManifest, group.path, first, targetHash, options.targetVersion ?? input.manifest.targetVersion);

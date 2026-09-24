@@ -37,7 +37,7 @@ describe('repository dogfood through the production updater', () => {
     expect(readFileSync(join(root, 'docs/.joycraft/state.json'), 'utf8')).toBe(legacy);
     expect(readFileSync(join(root, '.claude/settings.json'), 'utf8')).toBe(settings);
   });
-  it('bridges a copied installation while preserving custom skills, instructions, and local preferences', async () => {
+  it('bridges a copied installation, backing up an edited skill and preserving instructions and local preferences', async () => {
     const root = mkdtempSync(join(tmpdir(), 'joycraft copied repo with spaces '));
     roots.push(root);
     cpSync('.agents/skills', join(root, '.agents/skills'), { recursive: true });
@@ -49,15 +49,17 @@ describe('repository dogfood through the production updater', () => {
     const legacy = JSON.stringify({ version: '0.7.11', harnesses: ['codex'], gitignoreProfile: 'shared', autoOpen: false, files: {}, userExtension: { keep: 'unchanged' } });
     put(root, 'docs/.joycraft/state.json', legacy);
     const preview = await update(root, { preview: true, nonInteractive: true });
-    expect(preview.conflicts).toContain(skill);
+    expect(preview.conflicts).toEqual([]);
+    expect(preview.replaced?.map((entry) => entry.path)).toContain(skill);
     expect(preview.applied).toEqual([]);
     expect(existsSync(join(root, manifestPath()))).toBe(false);
     expect(readFileSync(join(root, 'docs/.joycraft/state.json'), 'utf8')).toBe(legacy);
     const applied = await update(root, { nonInteractive: true, yes: true });
-    expect(applied.exitCode).toBe(2);
-    expect(applied.conflicts).toEqual(preview.conflicts);
-    expect(applied.preserved).toContain(skill);
-    expect(readFileSync(join(root, skill), 'utf8')).toBe(custom);
+    expect(applied.exitCode).toBe(0);
+    expect(applied.conflicts).toEqual([]);
+    const skillBackup = applied.replaced?.find((entry) => entry.path === skill)?.backup;
+    expect(readFileSync(join(root, skillBackup!), 'utf8')).toBe(custom);
+    expect(readFileSync(join(root, skill), 'utf8')).not.toBe(custom);
     expect(readFileSync(join(root, 'AGENTS.md'))).toEqual(instructions);
     expect(applied.harnesses).toEqual(['codex']);
     expect(existsSync(join(root, 'docs/.joycraft/state.json'))).toBe(false);
@@ -66,8 +68,9 @@ describe('repository dogfood through the production updater', () => {
     expect(local.legacy.state.userExtension).toEqual({ keep: 'unchanged' });
     const backup = JSON.parse(readFileSync(join(root, 'docs/.joycraft/local/legacy-state-backup.json'), 'utf8'));
     expect(Buffer.from(backup['docs/.joycraft/state.json'], 'base64').toString('utf8')).toBe(legacy);
-    expect((await update(root, { nonInteractive: true })).conflicts).toContain(skill);
-    expect(readFileSync(join(root, skill), 'utf8')).toBe(custom);
+    const again = await update(root, { nonInteractive: true });
+    expect(again.conflicts).toEqual([]);
+    expect(again.replaced ?? []).toEqual([]);
   });
 
   it('checks in the repository manifest produced by its dogfood update', () => {

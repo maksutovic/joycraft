@@ -42,7 +42,7 @@ cd /path/to/your/project
 npx joycraft@latest update
 ```
 
-Answer a few questions — which harnesses to install, whether to commit them, and (with Claude Code) whether to turn off auto-memory for this project — and `update` does the rest: detects your stack, writes `AGENTS.md`/`CLAUDE.md` with your real build/test commands, installs the skills. On later runs, unmodified vendor files refresh while customizations are preserved for review.
+Answer a few questions — which harnesses to install, whether to commit them, and (with Claude Code) whether to turn off auto-memory for this project — and `update` does the rest: detects your stack, writes `AGENTS.md`/`CLAUDE.md` with your real build/test commands, installs the skills. On later runs, Joycraft's skills and templates refresh to the latest version (an edited copy is saved first), and your own files stay untouched.
 
 `npm install -g joycraft` if you'd rather have the command on your PATH; `npx` works without it. Every step from install to first shipped feature: [Setup walkthrough](docs/guides/setup-walkthrough.md).
 
@@ -66,7 +66,7 @@ Brainstorming first? `/joycraft-interview`. Fixing a bug? `/joycraft-bugfix`. Th
 npx joycraft@latest update
 ```
 
-Run this from the project root. In a fresh interactive project it asks which harnesses to install. In CI or another unattended fresh project, provide an explicit selection, for example `--harnesses codex --non-interactive`. On an existing project it reads the shared or private installation manifest and preserves the selected harnesses, local content, unrelated configuration, and unknown state fields. `--yes` applies safe changes while preserving customized files; it is not blanket permission to overwrite them. Use `--preview` to review the actual plan, `--replace-customized <paths...>` for reviewed replacements, and `--repair <paths...>` for explicitly restoring missing managed files. Details, policies, bridge behavior, and exit codes are in [Upgrading](docs/guides/upgrading.md).
+Run this from the project root. In a fresh interactive project it asks which harnesses to install. In CI or another unattended fresh project, provide an explicit selection, for example `--harnesses codex --non-interactive`. On an existing project it reads the shared or private installation manifest and preserves the selected harnesses, local content, unrelated configuration, and unknown state fields. Your own files (`CLAUDE.md`, `AGENTS.md`, `deny-patterns.txt`, your settings) are never changed; an edited Joycraft skill or template is replaced with the latest version after your copy is saved under `docs/.joycraft/local/replaced/`. `--yes` follows the same rules. Use `--preview` to review the actual plan, `--replace-customized <paths...>` to reset one of your own files to Joycraft's default, and `--repair <paths...>` for explicitly restoring missing managed files. Details, policies, bridge behavior, and exit codes are in [Upgrading](docs/guides/upgrading.md).
 
 `init` and `upgrade` remain supported aliases into the same update engine. `init` is the friendly fresh-install entry point; `upgrade` keeps older automation working. If npm fails with `ETARGET` before Joycraft starts, retry with an online npm metadata refresh:
 

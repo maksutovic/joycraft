@@ -53,24 +53,42 @@ separate command and review:
 npx joycraft@latest migrate --help
 ```
 
-## Review and preserve local work
+## Your files and Joycraft's files
 
 The updater compares the vendor baseline, the bytes on disk, and the target
-bundle before it writes. Unmodified vendor files update automatically. A
-customized file is preserved and reported as a conflict until you review it.
-`--yes` and `--non-interactive` apply safe actions; they do not grant blanket
-permission to overwrite custom files.
+bundle before it writes. It treats two kinds of file differently.
 
-Preview the real plan without changing files:
+**Your files are never changed.** Joycraft creates `CLAUDE.md`, `AGENTS.md`,
+`.claude/hooks/joycraft/deny-patterns.txt`, and
+`docs/templates/evals/example-task.json` once, then leaves them to you. It adds
+only its own entries to `.claude/settings.json` and never replaces your
+settings. The update lists these files under "Kept your versions".
+
+**Joycraft's files get the latest version.** Skills, templates, hooks, and
+scripts are Joycraft's. An unmodified copy updates silently. If you edited one
+and the new release changes it, the update installs the new version and saves
+your edited copy first, under `docs/.joycraft/local/replaced/<timestamp>/`
+with a `.bak` suffix. That folder is gitignored. The update lists these files
+under "Replaced your edited copies". If you edited a file and the new release
+does not change it, your edit stays.
+
+`--yes` and `--non-interactive` follow the same rules: they never replace your
+files, and an edited Joycraft file is always saved before it is replaced.
+Automatic (`auto-safe`) updates never replace an edited file; they stop and
+leave that to an explicit `update`.
+
+To get an edited copy back, copy the `.bak` file over the installed one, or
+undo the whole update with `--rollback`. Preview the real plan without
+changing files:
 
 ```bash
 npx joycraft@latest update --preview
 ```
 
-After reviewing a conflict, replace only named paths with the public flag:
+To replace one of your own files with Joycraft's default, name it explicitly:
 
 ```bash
-npx joycraft@latest update --replace-customized .agents/skills/joycraft-tune/SKILL.md
+npx joycraft@latest update --replace-customized .claude/hooks/joycraft/deny-patterns.txt
 ```
 
 Restore explicitly named missing managed files with `--repair`. Recovery of an
@@ -92,14 +110,14 @@ Exit codes are stable for scripts and agents:
 
 | Code | Meaning |
 |---:|---|
-| `0` | Applied, no-op, or preserved safely |
+| `0` | Applied (including edited files replaced after a backup), no-op, or kept safely |
 | `1` | Invalid request or failed update |
-| `2` | Customized paths remain as reviewable conflicts |
+| `2` | Something needs your review, such as a settings entry Joycraft cannot merge |
 | `3` | Attention is required, such as incomplete recovery |
 
 Use `--json` when a caller needs `status`, `targetVersion`, `installedVersion`,
-`applied`, `preserved`, `conflicts`, `diagnostics`, and `exitCode` as result
-fields.
+`applied`, `preserved`, `conflicts`, `replaced` (each replaced path with its
+backup), `diagnostics`, and `exitCode` as result fields.
 
 ## Update checks and policies
 

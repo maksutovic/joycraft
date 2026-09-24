@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { update } from '../src/update.js';
@@ -23,9 +23,11 @@ it('distinguishes preserved local edits from pending vendor changes across actua
     writeFileSync(join(root, path), 'my customization\n');
     expect((await refresh('2.0.0', 'vendor original\n')).exitCode).toBe(0);
     expect((await check()).status).toBe('available');
-    expect((await refresh('3.0.0', 'vendor changed\n')).exitCode).toBe(2);
-    expect(await check()).toEqual(expect.objectContaining({ status: 'pending-conflicts', conflicts: [path] }));
-    expect((await refresh('3.0.0', 'vendor changed\n', [path])).exitCode).toBe(0);
+    // A vendor change over the local edit installs the new version and backs up the edit.
+    const replaced = await refresh('3.0.0', 'vendor changed\n');
+    expect(replaced.exitCode).toBe(0);
+    expect(readFileSync(join(root, path), 'utf8')).toBe('vendor changed\n');
+    expect(readFileSync(join(root, replaced.replaced![0].backup), 'utf8')).toBe('my customization\n');
     expect((await check()).status).toBe('available');
   } finally { rmSync(root, { recursive: true, force: true }); }
 });

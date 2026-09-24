@@ -7,6 +7,32 @@ claim that a release has shipped.
 
 ---
 
+## Unreleased — Upgrades that just upgrade
+
+`npx joycraft@latest upgrade` used to end with `Joycraft update: conflict.` and
+exit code 2 whenever a file differed from what Joycraft expected, and it did
+that again on every later run. The only way out was `--replace-customized`,
+which threw the edit away. Now an upgrade installs the latest Joycraft and
+reports exit 0. It never loses an edit.
+
+- **Your files stay yours.** `.claude/hooks/joycraft/deny-patterns.txt` and
+  `docs/templates/evals/example-task.json` are now user-owned, like `CLAUDE.md`
+  and `AGENTS.md`. Joycraft creates them once and never changes them again.
+  Before this change, a deny pattern added by the harden or lockdown skill
+  turned every later upgrade into a permanent conflict. Existing installs move
+  to the new ownership on their next update, with no action needed.
+- **Joycraft's files get the latest version.** When you edited a skill,
+  template, hook, or script and the new release changes it, the update installs
+  the new version. In the same transaction, it saves your edited copy under
+  `docs/.joycraft/local/replaced/<timestamp>/` with a `.bak` suffix. The output
+  lists these under "Replaced your edited copies", and `--json` adds a
+  `replaced` field. `--rollback` restores the edited copy. Automatic
+  (`auto-safe`) updates still refuse to replace an edited file.
+- **Output that says what happened.** The first line now reads `Joycraft
+  updated to <version>.`, `Joycraft is up to date (<version>).`, or `Joycraft
+  update needs your review.`, instead of a bare status word. "Preserved
+  customizations" is now "Kept your versions".
+
 ## Unreleased — Interactive checkpoints
 
 Gate questions can now be answered on one web page instead of one chat prompt

@@ -239,10 +239,10 @@ function materializeDocuments(
     const recorded = input.manifest.files[entry.path] !== undefined;
     const forceKnown = input.force === true && KNOWN_GENERATED_DOCUMENTS.has(entry.path);
 
-    if (entry.content !== undefined) {
-      if (!exists || forceKnown) return [entry];
-      return [];
-    }
+    // A bundled create-once file stays declared even when it exists: the
+    // planner preserves it, and dropping it would make an older vendor row
+    // for the same path look like an orphan that the planner may delete.
+    if (entry.content !== undefined) return [entry];
 
     const content = generatorContent(
       input.root,
