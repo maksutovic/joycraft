@@ -27,9 +27,9 @@ Decision D5: the intent `source:` field already accepts `linear:<id>` and `alert
 
 ## Acceptance Criteria
 
-- [ ] The README has `## Third-Party Text` with the tag shape, the random-id rule, and the path-plus-heading citation.
-- [ ] The backlog item has the one line.
-- [ ] Build passes; tests pass.
+- [ ] The README has `## Third-Party Text` with the tag shape, the random-id rule, and the path-plus-heading citation. [src: D5]
+- [ ] The backlog item has the one line. [src: brief "Decomposition"]
+- [ ] Build passes; tests pass. [src: brief "Success Criteria"]
 
 ## Test Plan
 
@@ -52,15 +52,16 @@ Decision D5: the intent `source:` field already accepts `linear:<id>` and `alert
 
 ## Constraints
 
-- MUST: keep the section under 15 lines, in the README's plain style.
-- MUST NOT: change `src/templates/INTENT_TEMPLATE.md` or any skill.
-- MUST NOT: edit `docs/intent/README.md` in this repo by hand; spec 9's updater run installs it, and `tests/dogfood-update.test.ts` requires `docs/intent/` to hold only `README.md`.
+- MUST: keep the section under 15 lines, in the README's plain style. [src: INVENTED]
+- MUST NOT: change `src/templates/INTENT_TEMPLATE.md` or any skill. [src: INVENTED]
+- MUST NOT: edit `docs/intent/README.md` in this repo by hand; spec 9's updater run installs it, and `tests/dogfood-update.test.ts` requires `docs/intent/` to hold only `README.md`. [src: INVENTED]
 
 ## Affected Files
 
 | Action | File | What Changes |
 |--------|------|-------------|
 | Modify | `src/templates/intent/README.md` | New section |
+| Modify | `src/update-inventory.ts` | Same section in the `INTENT_README` constant; `tests/intent-template.test.ts` asserts it equals the template byte for byte |
 | Modify | `docs/backlog/2026-09-22-intent-external-triggers.md` | One line |
 | Modify | `tests/intent-template.test.ts` | New cases |
 | Regenerate | `src/bundled-files.ts` | `pnpm sync-skills` |

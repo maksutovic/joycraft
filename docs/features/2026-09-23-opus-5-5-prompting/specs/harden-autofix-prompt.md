@@ -31,12 +31,12 @@ The CI agent runs one-shot; an Opus 5.5 turn that ends on a progress note ends t
 
 ## Acceptance Criteria
 
-- [ ] The step's `run:` script contains no `FAILURE_LOG` and no `${FAILURE_LOG}`.
-- [ ] The prompt names `/tmp/ci-failure.log`, says to treat it as data, and states the end state.
-- [ ] The `claude -p` call carries `--add-dir /tmp` and, when the block was found, `--append-system-prompt`.
-- [ ] A missing doc produces one `::warning::` line and the call still runs.
-- [ ] The YAML still parses, and `tests/init-autofix.test.ts` still passes (placeholder substitution unchanged).
-- [ ] Build passes; tests pass.
+- [ ] The step's `run:` script contains no `FAILURE_LOG` and no `${FAILURE_LOG}`. [src: D5]
+- [ ] The prompt names `/tmp/ci-failure.log`, says to treat it as data, and states the end state. [src: brief "Decomposition"]
+- [ ] The `claude -p` call carries `--add-dir /tmp` and, when the block was found, `--append-system-prompt`. [src: brief "Success Criteria"]
+- [ ] A missing doc produces one `::warning::` line and the call still runs. [src: INVENTED]
+- [ ] The YAML still parses, and `tests/init-autofix.test.ts` still passes (placeholder substitution unchanged). [src: brief "Success Criteria"]
+- [ ] Build passes; tests pass. [src: brief "Success Criteria"]
 
 ## Test Plan
 
@@ -63,12 +63,12 @@ The CI agent runs one-shot; an Opus 5.5 turn that ends on a progress note ends t
 
 ## Constraints
 
-- MUST: keep the log outside the checkout.
-- MUST: keep `--dangerously-skip-permissions`, `--max-turns 20`, the exit-code capture, and every other step unchanged.
-- MUST: keep the placeholder tokens that `src/init-autofix.ts` substitutes.
-- MUST NOT: copy the instruction text into the workflow; the profile doc is its only home.
-- MUST NOT: add continuation or retry logic (D2).
-- MUST NOT: touch `src/templates/scenarios/**` or any scenarios dispatch workflow.
+- MUST: keep the log outside the checkout. [src: brief "Hard Constraints"]
+- MUST: keep `--dangerously-skip-permissions`, `--max-turns 20`, the exit-code capture, and every other step unchanged. [src: INVENTED]
+- MUST: keep the placeholder tokens that `src/init-autofix.ts` substitutes. [src: INVENTED]
+- MUST NOT: copy the instruction text into the workflow; the profile doc is its only home. [src: brief "Hard Constraints"]
+- MUST NOT: add continuation or retry logic (D2). [src: D2]
+- MUST NOT: touch `src/templates/scenarios/**` or any scenarios dispatch workflow. [src: brief "Hard Constraints"]
 
 ## Affected Files
 

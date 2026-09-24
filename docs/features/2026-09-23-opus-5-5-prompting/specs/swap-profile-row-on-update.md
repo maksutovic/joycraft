@@ -41,13 +41,13 @@ Without the swap, every existing install keeps a Context Map row that points at 
 
 ## Acceptance Criteria
 
-- [ ] Rules 1–5 above hold, with LF and CRLF files.
-- [ ] Running the function twice gives the same output as running it once, for every rule.
-- [ ] No byte outside the swapped or deleted line changes.
-- [ ] Rule 4 produces exactly one diagnostic and no write for the old line.
-- [ ] Integration: a temp project whose manifest tracks an unmodified `docs/templates/reference/model-profile-claude-fable-5-1.md` and whose memory file has the old row → after `update(root, { nonInteractive: true })`: the Fable doc is gone, `docs/templates/reference/model-profile-claude.md` exists, the row is swapped in place, and a second update reports no change to the memory file.
-- [ ] Integration: same, but the Fable doc bytes are edited → the file is kept.
-- [ ] Build passes; tests pass.
+- [ ] Rules 1–5 above hold, with LF and CRLF files. [src: D1]
+- [ ] Running the function twice gives the same output as running it once, for every rule. [src: brief "Hard Constraints"]
+- [ ] No byte outside the swapped or deleted line changes. [src: brief "Success Criteria"]
+- [ ] Rule 4 produces exactly one diagnostic and no write for the old line. [src: INVENTED]
+- [ ] Integration: a temp project whose manifest tracks an unmodified `docs/templates/reference/model-profile-claude-fable-5-1.md` and whose memory file has the old row → after `update(root, { nonInteractive: true })`: the Fable doc is gone, `docs/templates/reference/model-profile-claude.md` exists, the row is swapped in place, and a second update reports no change to the memory file. [src: brief "Success Criteria"]
+- [ ] Integration: same, but the Fable doc bytes are edited → the file is kept. [src: brief "Success Criteria"]
+- [ ] Build passes; tests pass. [src: brief "Success Criteria"]
 
 ## Test Plan
 
@@ -74,12 +74,12 @@ Without the swap, every existing install keeps a Context Map row that points at 
 
 ## Constraints
 
-- MUST: match the old row exactly; any other row is never removed (D14 still holds for everything else).
-- MUST: keep the file's newline style and final-newline state.
-- MUST: read the manifest-entry shape from `src/install-manifest.ts`; do not hand-roll hashes.
-- MUST NOT: touch `AGENTS.md`, `CLAUDE.md`, or `docs/.joycraft/manifest.json` in this repo (spec 9).
-- MUST NOT: change how the updater decides to delete or orphan vendor files; this spec only tests it.
-- ASK FIRST boundary: this is CLAUDE.md merge logic. Decision D1 approves exactly rules 1–5; anything beyond them needs the human.
+- MUST: match the old row exactly; any other row is never removed (D14 still holds for everything else). [src: brief "Hard Constraints"]
+- MUST: keep the file's newline style and final-newline state. [src: brief "Success Criteria"]
+- MUST: read the manifest-entry shape from `src/install-manifest.ts`; do not hand-roll hashes. [src: INVENTED]
+- MUST NOT: touch `AGENTS.md`, `CLAUDE.md`, or `docs/.joycraft/manifest.json` in this repo (spec 9). [src: brief "Hard Constraints"]
+- MUST NOT: change how the updater decides to delete or orphan vendor files; this spec only tests it. [src: brief "Success Criteria"]
+- ASK FIRST boundary: this is CLAUDE.md merge logic. Decision D1 approves exactly rules 1–5; anything beyond them needs the human. [src: D1]
 
 ## Affected Files
 

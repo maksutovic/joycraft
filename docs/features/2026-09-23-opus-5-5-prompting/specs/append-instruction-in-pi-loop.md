@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-23-opus-5-5-prompting/brief.md`
 > **Status:** Ready
 > **Date:** 2026-09-24
-> **Estimated scope:** 1 session / 3 files / ~80 lines
+> **Estimated scope:** 1 session / 5 files / ~80 lines
 
 ---
 
@@ -31,11 +31,11 @@ mode: checkpoint
 
 ## Acceptance Criteria
 
-- [ ] With the doc present, both recorded `pi` invocations carry `--append-system-prompt` followed by the extracted text, and the text equals the fenced block's content.
-- [ ] With the doc absent, the loop prints the warning once, calls `pi` without the flag, and exits 0 when the queue completes.
-- [ ] The loop's existing behavior is unchanged: fail-fast on a non-zero `pi` exit, session-end once at the end.
-- [ ] README mentions the appended instruction.
-- [ ] Build passes; tests pass.
+- [ ] With the doc present, both recorded `pi` invocations carry `--append-system-prompt` followed by the extracted text, and the text equals the fenced block's content. [src: D2]
+- [ ] With the doc absent, the loop prints the warning once, calls `pi` without the flag, and exits 0 when the queue completes. [src: brief "Success Criteria"]
+- [ ] The loop's existing behavior is unchanged: fail-fast on a non-zero `pi` exit, session-end once at the end. [src: D2]
+- [ ] README mentions the appended instruction. [src: INVENTED]
+- [ ] Build passes; tests pass. [src: brief "Success Criteria"]
 
 ## Test Plan
 
@@ -61,12 +61,12 @@ mode: checkpoint
 
 ## Constraints
 
-- MUST: keep `set -euo pipefail` semantics; the extraction must not abort the script when the doc is missing.
-- MUST: quote the extracted text as one argument.
-- MUST: keep the script POSIX-tool only (bash, awk/sed, grep).
-- MUST NOT: add continuation, retries, completion checks, or `--session-id` handling (D2).
-- MUST NOT: copy the instruction text into the script; the profile doc is its only home.
-- MUST NOT: edit `.pi/scripts/joycraft/` in this repo by hand; spec 9's updater run installs it.
+- MUST: keep `set -euo pipefail` semantics; the extraction must not abort the script when the doc is missing. [src: brief "Success Criteria"]
+- MUST: quote the extracted text as one argument. [src: brief "Success Criteria"]
+- MUST: keep the script POSIX-tool only (bash, awk/sed, grep). [src: brief "Hard Constraints"]
+- MUST NOT: add continuation, retries, completion checks, or `--session-id` handling (D2). [src: D2]
+- MUST NOT: copy the instruction text into the script; the profile doc is its only home. [src: brief "Hard Constraints"]
+- MUST NOT: edit `.pi/scripts/joycraft/` in this repo by hand; spec 9's updater run installs it. [src: brief "Hard Constraints"]
 
 ## Affected Files
 

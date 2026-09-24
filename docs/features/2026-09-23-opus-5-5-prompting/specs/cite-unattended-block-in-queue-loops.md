@@ -30,11 +30,11 @@ Decision D3: the human must not type "continue" while an autonomous queue runs, 
 
 ## Acceptance Criteria
 
-- [ ] implement-feature's claude variant and its codex|copilot|omp variant cite "Keep Working in Unattended Runs" in the queue loop, with the three wanted stops named.
-- [ ] implement's continue-the-queue citation names both "Finish the Whole Task" and "Keep Working in Unattended Runs".
-- [ ] `joycraft-interview`, `joycraft-new-feature`, `joycraft-decide`, `joycraft-design`, and `joycraft-decompose` (source and generated variants) do not contain "Keep Working in Unattended Runs".
-- [ ] Generated variants and installed trees are regenerated in the same commit.
-- [ ] Build passes; tests pass.
+- [ ] implement-feature's claude variant and its codex|copilot|omp variant cite "Keep Working in Unattended Runs" in the queue loop, with the three wanted stops named. [src: D3]
+- [ ] implement's continue-the-queue citation names both "Finish the Whole Task" and "Keep Working in Unattended Runs". [src: brief "Decomposition"]
+- [ ] `joycraft-interview`, `joycraft-new-feature`, `joycraft-decide`, `joycraft-design`, and `joycraft-decompose` (source and generated variants) do not contain "Keep Working in Unattended Runs". [src: D3]
+- [ ] Generated variants and installed trees are regenerated in the same commit. [src: brief "Hard Constraints"]
+- [ ] Build passes; tests pass. [src: brief "Success Criteria"]
 
 ## Test Plan
 
@@ -60,11 +60,11 @@ Decision D3: the human must not type "continue" while an autonomous queue runs, 
 
 ## Constraints
 
-- MUST: run `pnpm sync-skills` and commit generated variants and the installed trees in the same commit.
-- MUST: keep existing citations; add, do not replace.
-- MUST NOT: cite the block from any gate skill (D3).
-- MUST NOT: change loop behavior, fail-fast rules, or execution-mode pauses; this is a citation only.
-- ASK FIRST boundary: skill content. The approved brief (D3) names this change.
+- MUST: run `pnpm sync-skills` and commit generated variants and the installed trees in the same commit. [src: brief "Hard Constraints"]
+- MUST: keep existing citations; add, do not replace. [src: brief "Decomposition"]
+- MUST NOT: cite the block from any gate skill (D3). [src: D3]
+- MUST NOT: change loop behavior, fail-fast rules, or execution-mode pauses; this is a citation only. [src: brief "Hard Constraints"]
+- ASK FIRST boundary: skill content. The approved brief (D3) names this change. [src: D3]
 
 ## Affected Files
 

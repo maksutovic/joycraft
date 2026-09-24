@@ -31,12 +31,12 @@ Old memory files carry think-harder rules that cost latency on Opus 5.5 and can 
 
 ## Acceptance Criteria
 
-- [ ] Step 2c names three rule classes and describes Thinking instructions with the example phrases above.
-- [ ] Step 2c states the RETIRE-or-PROBATION rule by reading harnesses and the Execution Profile.
-- [ ] The step cites `docs/templates/reference/model-profile-claude.md` and *Drop Thinking Instructions*.
-- [ ] Evidence label and disposition counts in the skill are unchanged.
-- [ ] Generated variants and installed trees regenerated in the same commit.
-- [ ] Build passes; tests pass.
+- [ ] Step 2c names three rule classes and describes Thinking instructions with the example phrases above. [src: D4]
+- [ ] Step 2c states the RETIRE-or-PROBATION rule by reading harnesses and the Execution Profile. [src: D4]
+- [ ] The step cites `docs/templates/reference/model-profile-claude.md` and *Drop Thinking Instructions*. [src: brief "Decomposition"]
+- [ ] Evidence label and disposition counts in the skill are unchanged. [src: INVENTED]
+- [ ] Generated variants and installed trees regenerated in the same commit. [src: brief "Hard Constraints"]
+- [ ] Build passes; tests pass. [src: brief "Success Criteria"]
 
 ## Test Plan
 
@@ -47,7 +47,7 @@ Old memory files carry think-harder rules that cost latency on Opus 5.5 and can 
 | Model-aware rule | Same: contains `RETIRE`, `PROBATION`, "Execution Profile", and "scope" within Step 2c | unit |
 | Citation | Same: contains the profile path and "Drop Thinking Instructions" | unit |
 | Counts unchanged | Existing count assertions in `tests/upgrade-optimize-v2.test.ts` stay green without edits | unit |
-| Citation heading exists | `tests/model-profile-citations.test.ts` parser accepts the new citation line (the heading exists after spec 2) | unit |
+| Citation heading exists | `tests/upgrade-optimize-v2.test.ts`: the existing "cites at least one block by a heading that exists in the profile doc" test reads the headings of `docs/templates/reference/model-profile-claude.md`; add an assertion that "Drop Thinking Instructions" is one of those headings and appears in Step 2c (the heading exists after spec 2). `tests/model-profile-citations.test.ts` does not cover optimize: its `SKILLS` list holds five other skills and it parses quoted block names, while optimize cites blocks in italics | unit |
 
 **Execution order:**
 1. Write the tests — red.
@@ -63,18 +63,19 @@ Old memory files carry think-harder rules that cost latency on Opus 5.5 and can 
 
 ## Constraints
 
-- MUST: keep optimize advisory; it never edits a memory file.
-- MUST: keep six dispositions and the existing evidence labels.
-- MUST: run `pnpm sync-skills` and commit variants and installed trees together.
-- MUST NOT: change the anti-formatting and hand-holding classes.
-- ASK FIRST boundary: skill content. The approved brief (D4) names this change.
+- MUST: keep optimize advisory; it never edits a memory file. [src: brief "Hard Constraints"]
+- MUST: keep six dispositions and the existing evidence labels. [src: INVENTED]
+- MUST: run `pnpm sync-skills` and commit variants and installed trees together. [src: brief "Hard Constraints"]
+- MUST NOT: change the anti-formatting and hand-holding classes. [src: D4]
+- ASK FIRST boundary: skill content. The approved brief (D4) names this change. [src: D4]
 
 ## Affected Files
 
 | Action | File | What Changes |
 |--------|------|-------------|
 | Modify | `src/skills/joycraft-optimize.md` | Step 2c |
-| Regenerate | `src/*-skills/`, `src/bundled-files.ts`, installed trees | `pnpm sync-skills` |
+| Regenerate | `src/{claude,codex,pi,copilot,omp}-skills/joycraft-optimize.md`, `src/bundled-files.ts` | `pnpm sync-skills` (generate-bundled-files) |
+| Regenerate | `.claude/skills/joycraft-optimize/SKILL.md`, `.agents/skills/joycraft-optimize/SKILL.md`, `.pi/skills/joycraft-optimize/SKILL.md`, `.github/skills/joycraft-optimize/SKILL.md`, `.omp/skills/joycraft-optimize/SKILL.md` | `pnpm sync-skills` (sync-skills) |
 | Modify | `tests/upgrade-optimize-v2.test.ts` | New assertions |
 
 ## Approach

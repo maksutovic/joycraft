@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  ============================================================================
+  JOYCRAFT INTERACTIVE CHECKPOINT · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton for a gate that CAPTURES answers, not only shows
+  them. A Joycraft gate skill fills the slots and opens the page. Two
+  transports, one page: on the Claude harness the skill publishes it with the
+  Artifact tool and the db capability and every click saves to the store; on
+  every other harness the skill opens the file locally, answers persist in the
+  browser, and the human copies the output block into chat. The agent reads
+  the answers back either way.
+
+  The protocol that surrounds this page (when to build one, how Claude reads
+  the answers back, what to confirm in chat) lives in ONE place:
+  docs/templates/reference/interactive-checkpoint.md. This file is only the
+  render.
+
+  Slots are the HTML comments below whose text begins with the slot marker
+  (the word SLOT followed by a colon and a region name). Replace the slot
+  comment (and any placeholder) with real markup that uses ONLY the classes
+  already defined in the style block. The one data slot is the JSON block
+  with id "checkpoint-data": the questions section renders itself from it.
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the slot regions. Do not invent classes, restyle, add fonts,
+      or add external references of any kind. No CDN, no remote fonts, no
+      remote images, no fetches. The runtime script at the end stays
+      byte-identical.
+    · Put every question in the JSON data block. Never hand-write question
+      cards: the script renders them so every option on the page is one the
+      read-back accepts.
+    · Give every question at least two real options and mark the recommended
+      option with its key in "recommend". A one-option question is invalid.
+    · Offer only options the consuming skill can stamp. The page always adds
+      the fixed escapes (backlog, discard, defer to a person) and a free-text
+      rationale, so the human can reject the framing on every card.
+    · Carry the evidence a decision needs onto the card ("evidence" lines),
+      so the human decides without leaving the page.
+    · Keep the how-to box, and keep it naming the reject-this-framing escape.
+
+  Structure order is fixed: header, optional content sections, the questions
+  section (rendered), the output panel (rendered), the how-to box, footer.
+  ============================================================================
+-->
+<title>Opus 5.5 Decompose Checkpoint</title>
+<style>
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --line: #D9DEE7; --accent: #2F6FED; --accent-ink: #FFFFFF;
+    --ok: #1F8A4C; --warn: #B7791F; --bad: #C53030;
+    --chip: #E8EEFB; --chip-ink: #24439A;
+    --radius: 12px; --gutter: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0F141B; --surface: #161C25; --surface-2: #1E2631;
+      --ink: #E6EAF0; --ink-2: #AEB7C4; --ink-3: #7F8A99;
+      --line: #2B3543; --accent: #6C9BFF; --accent-ink: #0B1220;
+      --ok: #4CC97A; --warn: #E2B04A; --bad: #F26D6D;
+      --chip: #1D2A45; --chip-ink: #BFD0FF;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0F141B; --surface: #161C25; --surface-2: #1E2631;
+    --ink: #E6EAF0; --ink-2: #AEB7C4; --ink-3: #7F8A99;
+    --line: #2B3543; --accent: #6C9BFF; --accent-ink: #0B1220;
+    --ok: #4CC97A; --warn: #E2B04A; --bad: #F26D6D;
+    --chip: #1D2A45; --chip-ink: #BFD0FF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--ground); color: var(--ink);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 0 var(--gutter) 48px;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  header { padding: 32px 0 16px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-size: 28px; line-height: 1.2; margin: 8px 0; }
+  h2 { font-size: 20px; margin: 0; }
+  h3 { font-size: 17px; margin: 0 0 6px; }
+  .dek { color: var(--ink-2); margin: 0 0 12px; }
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; }
+  .lock-chip { background: var(--chip); color: var(--chip-ink); border-radius: 999px; padding: 4px 10px; font-size: 13px; }
+  .lock-chip.open { background: transparent; border: 1px dashed var(--line); color: var(--ink-2); }
+  .banner { border-radius: var(--radius); padding: 10px 14px; margin: 12px 0 0; font-size: 14px; background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); }
+  .banner.ok { border-color: var(--ok); }
+  .banner.warn { border-color: var(--warn); }
+  .banner.bad { border-color: var(--bad); }
+  .sec, .questions, .output, .howto { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; margin: 16px 0; }
+  .sec-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+  .sub { color: var(--ink-2); margin: 0 0 12px; }
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface-2); border-radius: var(--radius); padding: 12px; }
+  .pillar p { margin: 0; color: var(--ink-2); font-size: 14px; }
+  .tablebox { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .col { background: var(--surface-2); border-radius: var(--radius); padding: 12px; }
+  .clab { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); }
+  .col ul, .criteria { margin: 6px 0 0; padding-left: 20px; }
+  .criteria li.met { color: var(--ok); }
+  .progress { height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin: 8px 0 16px; }
+  .progress > span { display: block; height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  .q { border-top: 1px solid var(--line); padding: 16px 0; }
+  .q:first-of-type { border-top: 0; padding-top: 0; }
+  .qnum { display: inline-block; font-size: 12px; color: var(--ink-3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+  .qnum.done { color: var(--ok); }
+  .rec { margin: 0 0 4px; font-size: 14px; }
+  .why { margin: 0 0 10px; color: var(--ink-2); font-size: 14px; }
+  .evidence { background: var(--surface-2); border-radius: var(--radius); padding: 10px 12px; margin: 0 0 10px; font-size: 14px; color: var(--ink-2); }
+  .evidence p { margin: 0 0 4px; }
+  .seg { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+  .seg button { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+  .seg button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .seg button.esc { border-style: dashed; color: var(--ink-2); }
+  .seg button.esc.on { background: var(--ink-2); color: var(--surface); border-color: var(--ink-2); }
+  .seg button:disabled { opacity: .5; cursor: default; }
+  .ta { width: 100%; min-height: 64px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink); padding: 8px 10px; font: inherit; font-size: 14px; resize: vertical; }
+  .assignee { width: 100%; max-width: 320px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 6px 10px; font: inherit; font-size: 14px; margin: 0 0 8px; }
+  .hint { font-size: 13px; color: var(--ink-3); margin: 4px 0 0; }
+  .hint.bad { color: var(--bad); }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .btn { border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); border-radius: 8px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; }
+  .btn.secondary { background: transparent; color: var(--accent); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  pre { background: var(--surface-2); border-radius: var(--radius); padding: 12px; overflow-x: auto; font-size: 13px; line-height: 1.45; margin: 0; }
+  footer { color: var(--ink-3); font-size: 13px; padding: 8px 0; }
+  [hidden] { display: none !important; }
+  img { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Joycraft Decompose Checkpoint · feature: 2026-09-23-opus-5-5-prompting · September 24, 2026 · rev 1 · September 24, 2026 00:19</div>
+  <h1>Seven answers before the spec queue is final</h1>
+  <p class="dek">Two line caps, one README the updater never refreshes, one application of D4, the execution modes, and the 13 INVENTED spec lines. Every click saves. You can stop and come back.</p>
+  <div class="locked"><span class="lock-chip">D1–D9 clarified</span><span class="lock-chip">9 specs</span><span class="lock-chip">109 cites</span><span class="lock-chip">0 deferred syncs</span><span class="lock-chip open">7 questions open</span></div>
+  <div class="banner" id="banner" role="status">Connecting…</div>
+</header>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Context</span>
+    <h2>The nine specs, run in order 1 to 9</h2>
+  </div>
+  <p class="sub">D9 approved these rows. No wave is parallel-safe: every spec but 3 regenerates src/bundled-files.ts, and implement-feature runs parallel subagents in one working tree. The mode column shows the M1 recommendation.</p>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>Spec</th><th>Order</th><th>Mode (proposed)</th></tr></thead>
+      <tbody><tr><td>1. retarget-profile-to-claude-doc</td><td>depends — · size L</td><td>isolated</td></tr><tr><td>2. add-opus-5-5-blocks</td><td>depends 1 · size M</td><td>checkpoint</td></tr><tr><td>3. swap-profile-row-on-update</td><td>depends 1 · size M</td><td>checkpoint</td></tr><tr><td>4. cite-unattended-block-in-queue-loops</td><td>depends 2 · size S</td><td>checkpoint</td></tr><tr><td>5. append-instruction-in-pi-loop</td><td>depends 2 · size S</td><td>checkpoint</td></tr><tr><td>6. harden-autofix-prompt</td><td>depends 2 · size M</td><td>checkpoint</td></tr><tr><td>7. add-untrusted-text-rule-to-intent-readme</td><td>depends 2 · size S</td><td>checkpoint</td></tr><tr><td>8. flag-thinking-rules-in-optimize</td><td>depends 1, 2 · size M</td><td>checkpoint</td></tr><tr><td>9. dogfood-on-joycraft</td><td>depends 1–8 · size M</td><td>checkpoint</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<script type="application/json" id="checkpoint-data">
+{
+  "gate": "decompose",
+  "feature": "2026-09-23-opus-5-5-prompting",
+  "collection": "answers",
+  "statusDoc": "meta/status",
+  "questions": [
+    {
+      "id": "D10",
+      "question": "How does the profile doc fit its 200-line test budget?",
+      "recommend": "a",
+      "why": "The doc is at 183 lines. Spec 1 adds about 15 and spec 2 adds about 100, so the existing budget test fails as the specs are written. D1 rules out a second doc. The doc loads on demand, so a larger cap costs less than it does for an always-loaded file.",
+      "evidence": [
+        "tests/model-profile-template.test.ts:70 expects at most 200 lines",
+        "src/templates/reference/model-profile-claude-fable-5-1.md is 183 lines today",
+        "Spec 1 adds 11 Applies to lines and the Scope fallback rule",
+        "Spec 2 adds four Behavior / Fix blocks, one with the four-stop instruction"
+      ],
+      "options": [
+        {
+          "key": "a",
+          "label": "Spec 1 raises the cap to 320, with a reason comment"
+        },
+        {
+          "key": "b",
+          "label": "Retire the line budget, keep the block-shape tests"
+        },
+        {
+          "key": "c",
+          "label": "Hold 200: trim blocks to fit"
+        }
+      ]
+    },
+    {
+      "id": "D11",
+      "question": "How does spec 8 fit optimize's 285-line cap?",
+      "recommend": "a",
+      "why": "The cap guards against restating the staleness rule. It rose from 282 to 285 once before for real content. Packing the new rule class into long single lines fits the number but games the intent.",
+      "evidence": [
+        "tests/discovery-staleness.test.ts:107 expects optimize at most 285 lines",
+        "src/skills/joycraft-optimize.md is 283 lines today",
+        "Spec 8 adds a third rule class to Step 2c (D4)",
+        "No spec names this cap"
+      ],
+      "options": [
+        {
+          "key": "a",
+          "label": "Spec 8 raises the cap by the lines it adds, at most +10, with a reason comment"
+        },
+        {
+          "key": "b",
+          "label": "Hold 285: fit the rule class in the 2 free lines"
+        }
+      ]
+    },
+    {
+      "id": "D12",
+      "question": "How does this repo's docs/intent/README.md get spec 7's section?",
+      "recommend": "a",
+      "why": "The updater writes that file once, on a fresh install, and never refreshes it. Spec 7 forbids a hand edit, and spec 9 expects the updater to make the change, so no implementer can reach green. Option b leaves this repo's inbox without the rule.",
+      "evidence": [
+        "freshIntentEntry in src/update-inventory.ts returns nothing unless freshInstall is true and the file is missing",
+        "docs/intent/README.md is not in docs/.joycraft/manifest.json",
+        "docs/templates/intent/README.md is manifest-tracked, so spec 9's updater run refreshes it",
+        "The backlog line from spec 7 points readers at docs/intent/README.md"
+      ],
+      "options": [
+        {
+          "key": "a",
+          "label": "Spec 7 copies the section in by hand, spec 9 asserts it"
+        },
+        {
+          "key": "b",
+          "label": "Leave it: spec 9 asserts the templates copy, the backlog line points there"
+        }
+      ]
+    },
+    {
+      "id": "D13",
+      "question": "When does a Claude Code project count as covered by the Opus 5.5-only Drop Thinking Instructions block?",
+      "recommend": "a",
+      "why": "D4 says RETIRE only when every harness that reads the file runs a model the block covers. Spec 8 counts Claude Code as always covered, so a Claude Code project on Fable 5.1 gets RETIRE. The brief's success criterion assumes an Opus 5.5 project. This card applies D4. It does not reopen it.",
+      "evidence": [
+        "Block tag table: Drop Thinking Instructions applies to Opus 5.5 only",
+        "Claude Code's system prompt names the running model (brief anchor 100)",
+        "Execution Profile rows name a model per harness",
+        "Brief success criterion: RETIRE for a Claude-only project, PROBATION when AGENTS.md also serves Codex"
+      ],
+      "options": [
+        {
+          "key": "a",
+          "label": "Covered only when the running model or the Execution Profile row is Opus 5.5"
+        },
+        {
+          "key": "b",
+          "label": "Claude Code always counts as covered (spec as written)"
+        }
+      ]
+    },
+    {
+      "id": "M1",
+      "question": "Which execution mode does each spec get?",
+      "recommend": "a",
+      "why": "CLAUDE.md sets no default mode, so the fallback is batch. Spec 1 is L and earns a fresh context. Spec 7 is batch as written, and its uncommitted bundle regen would land in spec 8's commit.",
+      "evidence": [
+        "Spec 1: 7 skills, 7 test files, bundle regen, one green commit",
+        "Specs 2, 3, 6, 8, 9 are M. Specs 4, 5, 7 are S",
+        "implement-feature runs an isolated spec in one fresh-context subagent",
+        "Every spec regenerates src/bundled-files.ts except spec 3"
+      ],
+      "options": [
+        {
+          "key": "a",
+          "label": "Spec 1 isolated, specs 2-9 checkpoint"
+        },
+        {
+          "key": "b",
+          "label": "As written: spec 7 batch, all others checkpoint"
+        },
+        {
+          "key": "c",
+          "label": "All nine checkpoint"
+        }
+      ]
+    },
+    {
+      "id": "I1",
+      "question": "Approve three behaviors that go beyond the brief's spec rows?",
+      "recommend": "a",
+      "why": "Each is small and mirrors a behavior the brief names elsewhere. An approved line becomes a new clarified decision and is re-cited to it. A dropped line leaves its spec.",
+      "evidence": [
+        "Spec 3 AC: a hand-edited line that still names the Fable path gets exactly one diagnostic and no write",
+        "Spec 5 AC: the pi-scripts README mentions the appended instruction",
+        "Spec 6 AC: a missing profile doc gives one ::warning:: line and the autofix run continues (mirrors spec 5)"
+      ],
+      "options": [
+        {
+          "key": "a",
+          "label": "Approve all three"
+        },
+        {
+          "key": "b",
+          "label": "Drop all three"
+        },
+        {
+          "key": "c",
+          "label": "Mixed: name the ones to drop in the reason"
+        }
+      ]
+    },
+    {
+      "id": "I2",
+      "question": "Approve ten guard-rail lines that have no brief source?",
+      "recommend": "a",
+      "why": "They are scope guards, test hygiene, and one plan review. None widens scope. An approved line becomes a new clarified decision. A dropped line leaves its spec.",
+      "evidence": [
+        "Spec 2: new prose in the doc's plain style, no em-dashes",
+        "Spec 3: read the manifest-entry shape from src/install-manifest.ts, no hand-rolled hashes",
+        "Spec 6: keep the other autofix flags and steps, and the init-autofix placeholder tokens (2 lines)",
+        "Spec 7: section under 15 lines, and no INTENT_TEMPLATE or skill edits (2 lines)",
+        "Spec 8: keep six dispositions and the evidence labels (constraint + AC, 2 lines)",
+        "Spec 9: review the updater plan before applying, and run /release-docs-sync before the PR (2 lines)"
+      ],
+      "options": [
+        {
+          "key": "a",
+          "label": "Approve all ten"
+        },
+        {
+          "key": "b",
+          "label": "Drop all ten"
+        },
+        {
+          "key": "c",
+          "label": "Mixed: name the ones to drop in the reason"
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<section class="questions">
+  <div class="sec-head">
+    <span class="eyebrow">Decide</span>
+    <h2 id="qhead">Questions for you</h2>
+  </div>
+  <div class="progress"><span id="bar"></span></div>
+  <div id="cards"></div>
+  <div class="actions">
+    <button class="btn" id="submit" type="button" disabled>Submit answers</button>
+    <span class="hint" id="submit-hint"></span>
+  </div>
+</section>
+
+<section class="output">
+  <div class="sec-head">
+    <span class="eyebrow">Output</span>
+    <h2>What your agent will stamp</h2>
+  </div>
+  <p class="sub">This block is built live from your answers. It is the exact <code>decisions:</code> shape the skill writes into the brief. In local mode, copy it into chat when you are done.</p>
+  <pre id="out"></pre>
+  <div class="actions"><button class="btn secondary" id="copy" type="button">Copy</button><span class="hint" id="copy-hint"></span></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <p>Pick an option or an escape on each card and type a one-sentence reason. When you are done, press Submit and tell the agent it is done. If every option on a card is wrong, reject the framing: say what is right in the reason box instead of picking.</p>
+</div>
+
+<footer>
+  <p>Produced by /joycraft-decompose · feature 2026-09-23-opus-5-5-prompting · canonical: docs/features/2026-09-23-opus-5-5-prompting/decompose.md · rev 1 · generated 2026-09-24T00:19:47-07:00</p>
+</footer>
+</div>
+
+<script>
+  // Runtime — byte-identical in every render. Renders the question cards from
+  // the JSON data slot, saves each answer to the artifact db as it changes,
+  // restores state on reload, and builds the decisions YAML the skill stamps.
+  (function () {
+    "use strict";
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) { /* theme falls back to prefers-color-scheme */ }
+
+    var ESCAPES = [
+      { key: "__backlog", label: "Backlog", esc: true },
+      { key: "__discard", label: "Discard", esc: true },
+      { key: "__defer", label: "Defer to a person", esc: true }
+    ];
+    var data, db = null, readOnly = false, localMode = false, storeKey = "";
+    var answers = {};      // id -> { choice, rationale, assignee, at }
+    var timers = {};       // id -> debounce timer
+    var chains = {};       // id -> promise chain (one write at a time per doc)
+    var $ = function (id) { return document.getElementById(id); };
+
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+    function banner(text, cls) { var b = $("banner"); b.textContent = text; b.className = "banner" + (cls ? " " + cls : ""); }
+
+    try {
+      data = JSON.parse($("checkpoint-data").textContent);
+    } catch (e) {
+      banner("The checkpoint data block is not valid JSON. Ask Claude to re-render this page.", "bad");
+      return;
+    }
+    if (!data || !Array.isArray(data.questions) || !data.questions.length) {
+      banner("No questions were rendered into this checkpoint.", "warn");
+      return;
+    }
+    var COLLECTION = data.collection || "answers";
+    var STATUS_DOC = data.statusDoc || "meta/status";
+    storeKey = "joycraft:checkpoint:" + (data.feature || "") + ":" + (data.gate || "") + ":" + data.questions.map(function (q) { return q.id; }).join(",");
+    function storageLoad() {
+      try { var raw = localStorage.getItem(storeKey); if (raw) { var o = JSON.parse(raw); if (o && typeof o === "object") answers = o; } } catch (e) { /* storage unavailable */ }
+    }
+    function storageSave() {
+      try { localStorage.setItem(storeKey, JSON.stringify(answers)); } catch (e) { /* storage unavailable */ }
+    }
+
+    function optionLabel(q, key) {
+      var i;
+      for (i = 0; i < q.options.length; i++) if (q.options[i].key === key) return q.options[i].label;
+      for (i = 0; i < ESCAPES.length; i++) if (ESCAPES[i].key === key) return ESCAPES[i].label;
+      return key || "";
+    }
+    function isComplete(q) {
+      var a = answers[q.id];
+      if (!a || !a.choice) return false;
+      if (a.choice === "__defer") return !!(a.assignee && a.assignee.trim());
+      return !!(a.rationale && a.rationale.trim());
+    }
+    function terminal(a) {
+      if (!a || !a.choice) return "open";
+      if (a.choice === "__backlog") return "backlogged";
+      if (a.choice === "__discard") return "discarded";
+      if (a.choice === "__defer") return "assigned";
+      return "clarified";
+    }
+
+    function renderCards() {
+      var html = "";
+      data.questions.forEach(function (q, idx) {
+        var a = answers[q.id] || {};
+        html += '<div class="q" data-id="' + esc(q.id) + '">';
+        html += '<span class="qnum' + (isComplete(q) ? " done" : "") + '">' + esc(q.id) + (isComplete(q) ? " · answered" : " · " + (idx + 1) + " of " + data.questions.length) + "</span>";
+        html += "<h3>" + esc(q.question) + "</h3>";
+        if (q.recommend) html += '<p class="rec"><strong>Recommend:</strong> ' + esc(optionLabel(q, q.recommend)) + "</p>";
+        if (q.why) html += '<p class="why">' + esc(q.why) + "</p>";
+        if (Array.isArray(q.evidence) && q.evidence.length) {
+          html += '<div class="evidence">';
+          q.evidence.forEach(function (line) { html += "<p>" + esc(line) + "</p>"; });
+          html += "</div>";
+        }
+        html += '<div class="seg" role="group" aria-label="Options for ' + esc(q.id) + '">';
+        (q.options || []).forEach(function (o) {
+          html += '<button type="button" data-q="' + esc(q.id) + '" data-key="' + esc(o.key) + '" class="' + (a.choice === o.key ? "on" : "") + '"' + (readOnly ? " disabled" : "") + ">" + esc(o.label) + (q.recommend === o.key ? " · recommended" : "") + "</button>";
+        });
+        ESCAPES.forEach(function (o) {
+          html += '<button type="button" data-q="' + esc(q.id) + '" data-key="' + o.key + '" class="esc' + (a.choice === o.key ? " on" : "") + '"' + (readOnly ? " disabled" : "") + ">" + o.label + "</button>";
+        });
+        html += "</div>";
+        html += '<input class="assignee" type="text" placeholder="Who owns this answer?" data-assignee="' + esc(q.id) + '" value="' + esc(a.assignee || "") + '"' + (a.choice === "__defer" ? "" : " hidden") + (readOnly ? " disabled" : "") + ">";
+        html += '<textarea class="ta" data-rationale="' + esc(q.id) + '" placeholder="<choice> because <one-sentence reason>. If every option is wrong, reject the framing: type what is right instead."' + (readOnly ? " disabled" : "") + ">" + esc(a.rationale || "") + "</textarea>";
+        html += '<p class="hint' + (a.choice && !isComplete(q) ? " bad" : "") + '">' + (a.choice ? (isComplete(q) ? "Saved as " + terminal(a) + "." : (a.choice === "__defer" ? "Name the person who owns this answer." : "Add the one-sentence reason — a bare pick is not recorded.")) : "Pick an option or an escape, then type the reason.") + "</p>";
+        html += "</div>";
+      });
+      $("cards").innerHTML = html;
+      renderProgress();
+      renderOutput();
+    }
+
+    function renderProgress() {
+      var done = data.questions.filter(isComplete).length, total = data.questions.length;
+      $("bar").style.width = Math.round((done / total) * 100) + "%";
+      $("qhead").textContent = done === total ? "All " + total + " answered" : done + " of " + total + " answered";
+      $("submit").disabled = readOnly || done !== total;
+      $("submit").textContent = localMode ? "Copy answers" : ($("submit").textContent === "Submitted" ? "Submitted" : "Submit answers");
+      $("submit-hint").textContent = done === total ? (localMode ? "Copy answers, then paste the block into chat." : "Submit tells your agent you are done.") : (total - done) + " still open. You can leave and come back.";
+    }
+
+    function yamlStr(s) { return JSON.stringify(String(s == null ? "" : s)); }
+    function renderOutput() {
+      var done = data.questions.filter(isComplete).length;
+      var lines = ["# joycraft-checkpoint feature=" + (data.feature || "") + " gate=" + (data.gate || "") + " answered=" + done + "/" + data.questions.length + " at=" + new Date().toISOString(), "decisions:"];
+      data.questions.forEach(function (q) {
+        var a = answers[q.id] || {};
+        var state = terminal(a);
+        var choice = state === "clarified" ? optionLabel(q, a.choice) : state === "assigned" ? "assigned to " + (a.assignee || "?") : state;
+        lines.push("  - id: " + q.id);
+        lines.push("    question: " + yamlStr(q.question));
+        lines.push("    status: " + state);
+        lines.push("    key: " + yamlStr(a.choice || ""));
+        lines.push("    choice: " + yamlStr(choice));
+        if (state === "assigned") lines.push("    assignee: " + yamlStr(a.assignee || ""));
+        lines.push("    rationale: " + yamlStr(a.rationale || (state === "open" ? "" : "(not given)")));
+      });
+      lines.push("# end joycraft-checkpoint");
+      $("out").textContent = lines.join("\n");
+    }
+
+    function localSet(id, patch) {
+      var cur = answers[id] || {};
+      var next = { choice: cur.choice || "", rationale: cur.rationale || "", assignee: cur.assignee || "" };
+      Object.keys(patch).forEach(function (k) { next[k] = patch[k]; });
+      next.at = new Date().toISOString();
+      answers[id] = next;
+      storageSave();
+      return next;
+    }
+
+    function persist(id) {
+      if (!db || readOnly) return;
+      var body = answers[id];
+      chains[id] = (chains[id] || Promise.resolve()).then(function () {
+        var ref = db.collection(COLLECTION).doc(id);
+        return body.choice ? ref.set(body) : ref.delete();
+      }).then(function () {
+        banner("Saved. Every change lands as you make it; come back any time.", "ok");
+      }).catch(function (e) {
+        if (e && e.code === "invalid_argument") { readOnly = true; banner("This view cannot write answers. Copy the output block into chat instead.", "warn"); renderCards(); }
+        else banner("A save did not go through (" + (e && e.code ? e.code : "unknown") + "). Your last change may not be recorded.", "bad");
+      });
+    }
+
+    function schedule(id) {
+      clearTimeout(timers[id]);
+      timers[id] = setTimeout(function () { persist(id); }, 400);
+    }
+
+    document.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-q]");
+      if (!b || readOnly) return;
+      var id = b.getAttribute("data-q"), key = b.getAttribute("data-key");
+      var cur = answers[id] || {};
+      localSet(id, { choice: cur.choice === key ? "" : key });
+      renderCards();
+      persist(id);
+    });
+    document.addEventListener("input", function (ev) {
+      var el = ev.target;
+      if (readOnly) return;
+      if (el.hasAttribute("data-rationale")) { localSet(el.getAttribute("data-rationale"), { rationale: el.value }); renderProgress(); renderOutput(); schedule(el.getAttribute("data-rationale")); }
+      if (el.hasAttribute("data-assignee")) { localSet(el.getAttribute("data-assignee"), { assignee: el.value }); renderProgress(); renderOutput(); schedule(el.getAttribute("data-assignee")); }
+    });
+    document.addEventListener("focusout", function (ev) {
+      var el = ev.target;
+      if (el.hasAttribute && (el.hasAttribute("data-rationale") || el.hasAttribute("data-assignee"))) renderCards();
+    });
+    function copyOut(hintEl, okText) {
+      var text = $("out").textContent;
+      var done = function () { $(hintEl).textContent = okText; };
+      var fail = function () {
+        try {
+          var r = document.createRange(); r.selectNodeContents($("out"));
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+          if (document.execCommand("copy")) { done(); return; }
+        } catch (e2) { /* fall through */ }
+        $(hintEl).textContent = "Select the block and copy it by hand.";
+      };
+      try { navigator.clipboard.writeText(text).then(done, fail); } catch (e) { fail(); }
+    }
+    $("copy").addEventListener("click", function () { copyOut("copy-hint", "Copied."); });
+    $("submit").addEventListener("click", function () {
+      if (localMode) { renderOutput(); copyOut("submit-hint", "Copied. Paste this block into chat."); return; }
+      if (!db || readOnly) return;
+      var done = data.questions.filter(isComplete).length;
+      db.doc(STATUS_DOC).set({ submitted: true, answered: done, total: data.questions.length, gate: data.gate || "", feature: data.feature || "", at: new Date().toISOString() })
+        .then(function () { banner("Submitted. Tell your agent the checkpoint is done and it will read your answers back.", "ok"); $("submit").textContent = "Submitted"; $("submit").disabled = true; })
+        .catch(function () { banner("Submit did not save. Tell your agent in chat that you are done.", "bad"); });
+    });
+
+    storageLoad();
+    renderCards();
+
+    function withoutDb() {
+      localMode = true;
+      banner("Local mode: answers stay in this browser. When done, click Copy answers and paste the block into chat.", "warn");
+      renderCards();
+    }
+
+    if (!window.claude || typeof window.claude.use !== "function") { withoutDb(); return; }
+    window.claude.use("db").then(function (ns) {
+      if (!ns) { withoutDb(); return; }
+      db = ns;
+      banner("Connected. Every change saves as you make it.", "ok");
+      db.collection(COLLECTION).onSnapshot(function (snap) {
+        snap.docs.forEach(function (d) {
+          var body = d.data() || {};
+          var cur = answers[d.id];
+          if (cur && cur.at && body.at && cur.at > body.at) return; // local edit is newer
+          answers[d.id] = { choice: body.choice || "", rationale: body.rationale || "", assignee: body.assignee || "", at: body.at || "" };
+        });
+        snap.docChanges().forEach(function (ch) { if (ch.type === "removed") delete answers[ch.doc.id]; });
+        if (!document.activeElement || !document.activeElement.hasAttribute("data-rationale")) renderCards(); else { renderProgress(); renderOutput(); }
+      }, function (e) {
+        if (e && e.code === "revoked") { readOnly = true; banner("Access to the data store ended. Copy the output block into chat.", "warn"); renderCards(); }
+      });
+      db.doc(STATUS_DOC).get().then(function (s) {
+        if (s.exists && s.data() && s.data().submitted) { $("submit").textContent = "Submitted"; $("submit").disabled = true; }
+      }).catch(function () { /* status is advisory */ });
+    }).catch(withoutDb);
+  })();
+</script>
+</body>
+</html>

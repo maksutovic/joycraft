@@ -31,14 +31,14 @@ The brief's success criteria require this repo to run the shipped result, and D7
 
 ## Acceptance Criteria
 
-- [ ] The manifest tracks `docs/templates/reference/model-profile-claude.md` and not the Fable path; the Fable file is gone from disk.
-- [ ] `AGENTS.md` has exactly one Context Map row for the profile, the new one, at the old row's position; `git diff AGENTS.md` shows only that row and the effort change.
-- [ ] `AGENTS.md` Execution Profile claude row ends `effort medium`.
-- [ ] `.pi/scripts/joycraft/joycraft-implement-loop` is byte-identical to `src/templates/pi-scripts/joycraft-implement-loop`.
-- [ ] `docs/templates/workflows/autofix.yml` and `docs/intent/README.md` are byte-identical to their sources.
-- [ ] `tests/dogfood-update.test.ts` expects the new path and passes.
-- [ ] CHANGELOG.md has the entry.
-- [ ] `pnpm test && pnpm typecheck` pass.
+- [ ] The manifest tracks `docs/templates/reference/model-profile-claude.md` and not the Fable path; the Fable file is gone from disk. [src: brief "Success Criteria"]
+- [ ] `AGENTS.md` has exactly one Context Map row for the profile, the new one, at the old row's position; `git diff AGENTS.md` shows only that row and the effort change. [src: brief "Success Criteria"]
+- [ ] `AGENTS.md` Execution Profile claude row ends `effort medium`. [src: D7]
+- [ ] `.pi/scripts/joycraft/joycraft-implement-loop` is byte-identical to `src/templates/pi-scripts/joycraft-implement-loop`. [src: brief "Decomposition"]
+- [ ] `docs/templates/workflows/autofix.yml` and `docs/intent/README.md` are byte-identical to their sources. [src: brief "Decomposition"]
+- [ ] `tests/dogfood-update.test.ts` expects the new path and passes. [src: brief "Success Criteria"]
+- [ ] CHANGELOG.md has the entry. [src: brief "Decomposition"]
+- [ ] `pnpm test && pnpm typecheck` pass. [src: brief "Success Criteria"]
 
 ## Test Plan
 
@@ -64,18 +64,19 @@ The brief's success criteria require this repo to run the shipped result, and D7
 
 ## Constraints
 
-- MUST: run only after specs 1–8 are `in-review`.
-- MUST: review the updater's plan output before applying; stop and report if it plans to replace or delete anything other than the files named above, the regenerated skill trees, and the row.
-- MUST: keep every other byte of `AGENTS.md` and `CLAUDE.md`.
-- MUST: run `/release-docs-sync` before opening the PR (AGENTS.md ALWAYS rule); the CHANGELOG entry satisfies the docs gate.
-- MUST NOT: apply any optimize row by hand beyond reporting it.
-- MUST NOT: change the codex or pi Execution Profile rows.
+- MUST: run only after specs 1–8 are `in-review`. [src: brief "Decomposition"]
+- MUST: review the updater's plan output before applying; stop and report if it plans to replace or delete anything other than the files named above, the regenerated skill trees, and the row. [src: INVENTED]
+- MUST: keep every other byte of `AGENTS.md` and `CLAUDE.md`. [src: brief "Success Criteria"]
+- MUST: run `/release-docs-sync` before opening the PR (AGENTS.md ALWAYS rule); the CHANGELOG entry satisfies the docs gate. [src: INVENTED]
+- MUST NOT: apply any optimize row by hand beyond reporting it. [src: brief "Hard Constraints"]
+- MUST NOT: change the codex or pi Execution Profile rows. [src: D7]
 
 ## Affected Files
 
 | Action | File | What Changes |
 |--------|------|-------------|
-| Installer | `docs/templates/reference/*`, `docs/.joycraft/manifest.json`, `.pi/scripts/joycraft/*`, `docs/templates/workflows/autofix.yml`, `docs/intent/README.md`, installed skill trees | `node dist/cli.js update .` |
+| Installer | `docs/templates/reference/*`, `docs/.joycraft/manifest.json`, `.pi/scripts/joycraft/*`, `docs/templates/workflows/autofix.yml`, `docs/templates/intent/README.md`, `docs/intent/README.md`, installed skill trees | `node dist/cli.js update .` |
+| Regenerate | `src/bundled-files.ts`, `src/*-skills/`, installed skill trees | `pnpm build` runs `generate-bundled-files.mjs` and `sync-skills.mjs`; expected no content change once specs 1–8 synced |
 | Installer | `AGENTS.md` (or the memory file the selection names) | Row swap |
 | Modify | `AGENTS.md` | Execution Profile effort |
 | Modify | `tests/dogfood-update.test.ts` | New path, new cases |

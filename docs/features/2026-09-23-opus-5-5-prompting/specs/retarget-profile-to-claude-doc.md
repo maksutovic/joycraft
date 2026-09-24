@@ -17,7 +17,7 @@ mode: checkpoint
 
 ## What
 
-Rename the bundled profile `src/templates/reference/model-profile-claude-fable-5-1.md` to `src/templates/reference/model-profile-claude.md` (`git mv`). Retitle it `# Model Profile: Claude`. Rewrite its header blockquote and `## Scope` so the doc is the single home for steering across Claude models, and add the model-selection rule. Put one `**Applies to:** <models>` line as the first non-empty line under every block heading except `## Scope`, with the tags below. Keep every existing block heading byte-for-byte, because skills cite headings. Move every reference to the old path (constants, 7 skills, 8 test files, code comments, reason strings) to the new path in the same commit, regenerate and sync skills, and copy the source doc to `docs/templates/reference/model-profile-claude.md`.
+Rename the bundled profile `src/templates/reference/model-profile-claude-fable-5-1.md` to `src/templates/reference/model-profile-claude.md` (`git mv`). Retitle it `# Model Profile: Claude`. Rewrite its header blockquote and `## Scope` so the doc is the single home for steering across Claude models, and add the model-selection rule. Put one `**Applies to:** <models>` line as the first non-empty line under every block heading except `## Scope`, with the tags below. Keep every existing block heading byte-for-byte, because skills cite headings. Move every reference to the old path (constants, 7 skills, 7 test files — `tests/dogfood-update.test.ts` keeps the old path until spec 9 — code comments, reason strings) to the new path in the same commit, regenerate and sync skills, and copy the source doc to `docs/templates/reference/model-profile-claude.md`.
 
 Tags (from the brief's tag table, decision D1):
 
@@ -42,17 +42,17 @@ Joycraft installs a Fable-only profile into every Claude, Pi, and omp project, s
 
 ## Acceptance Criteria
 
-- [ ] `src/templates/reference/model-profile-claude.md` exists; `src/templates/reference/model-profile-claude-fable-5-1.md` does not.
-- [ ] Every `## ` heading except `## Scope` has `**Applies to:** <value>` as its first non-empty line, with the values in the table above.
-- [ ] Scope states the selection rule and the cannot-tell fallback.
-- [ ] All ten existing block headings are unchanged.
-- [ ] `src/model-profile.ts`: `MODEL_PROFILE_TEMPLATE_KEY` is `reference/model-profile-claude.md`; `MODEL_PROFILE_CONTEXT_MAP_ROW` reads `` | `docs/templates/reference/model-profile-claude.md` | Working with a Claude model — steering blocks tagged by model; apply the ones tagged for the model you run | ``; the module doc comment no longer says "Fable 5.1 model profile".
-- [ ] The 7 skills (`implement`, `implement-feature`, `session-end`, `new-feature`, `interview`, `tune`, `optimize`) cite `docs/templates/reference/model-profile-claude.md` with the same block names as before.
-- [ ] `grep -rn "model-profile-claude-fable-5-1" src --include='*.ts' --include='*.md' | grep -v bundled-files` returns nothing.
-- [ ] `docs/templates/reference/model-profile-claude.md` exists and is byte-identical to the source.
-- [ ] `pnpm sync-skills` output is committed in the same commit.
-- [ ] Build passes (`pnpm typecheck`).
-- [ ] Tests pass (`pnpm test`).
+- [ ] `src/templates/reference/model-profile-claude.md` exists; `src/templates/reference/model-profile-claude-fable-5-1.md` does not. [src: D1]
+- [ ] Every `## ` heading except `## Scope` has `**Applies to:** <value>` as its first non-empty line, with the values in the table above. [src: brief "Block tags for the Claude profile"]
+- [ ] Scope states the selection rule and the cannot-tell fallback. [src: brief "Hard Constraints"]
+- [ ] All ten existing block headings are unchanged. [src: brief "Hard Constraints"]
+- [ ] `src/model-profile.ts`: `MODEL_PROFILE_TEMPLATE_KEY` is `reference/model-profile-claude.md`; `MODEL_PROFILE_CONTEXT_MAP_ROW` reads `` | `docs/templates/reference/model-profile-claude.md` | Working with a Claude model — steering blocks tagged by model; apply the ones tagged for the model you run | ``; the module doc comment no longer says "Fable 5.1 model profile". [src: D1]
+- [ ] The 7 skills (`implement`, `implement-feature`, `session-end`, `new-feature`, `interview`, `tune`, `optimize`) cite `docs/templates/reference/model-profile-claude.md` with the same block names as before. [src: brief "Decomposition"]
+- [ ] `grep -rn "model-profile-claude-fable-5-1" src --include='*.ts' --include='*.md' | grep -v bundled-files` returns nothing. [src: brief "Success Criteria"]
+- [ ] `docs/templates/reference/model-profile-claude.md` exists and is byte-identical to the source. [src: brief "Hard Constraints"]
+- [ ] `pnpm sync-skills` output is committed in the same commit. [src: brief "Hard Constraints"]
+- [ ] Build passes (`pnpm typecheck`). [src: brief "Success Criteria"]
+- [ ] Tests pass (`pnpm test`). [src: brief "Success Criteria"]
 
 ## Test Plan
 
@@ -82,14 +82,14 @@ Joycraft installs a Fable-only profile into every Claude, Pi, and omp project, s
 
 ## Constraints
 
-- MUST: land every path change in one commit; a partial rename leaves the suite red.
-- MUST: keep all ten block headings byte-identical.
-- MUST: run `pnpm sync-skills` and commit `src/*-skills/`, `src/bundled-files.ts`, and the installed trees (`.claude/skills`, `.agents/skills`, `.pi/skills`, `.github/skills`, `.omp/skills`) in the same commit.
-- MUST: copy the source to `docs/templates/reference/model-profile-claude.md` by hand (`cp`).
-- MUST NOT: run the built updater (`node dist/cli.js update`) on this repo. The row swap arrives in spec 3; an update now adds the new row beside the old one. Spec 9 runs it.
-- MUST NOT: delete `docs/templates/reference/model-profile-claude-fable-5-1.md` or edit `docs/.joycraft/manifest.json` or `AGENTS.md`/`CLAUDE.md`. `tests/dogfood-update.test.ts` checks the checked-in manifest, which still lists the Fable doc until spec 9.
-- MUST NOT: add Opus 5.5 blocks here (spec 2).
-- MUST NOT: change the updater's row logic (spec 3).
+- MUST: land every path change in one commit; a partial rename leaves the suite red. [src: brief "Decomposition"]
+- MUST: keep all ten block headings byte-identical. [src: brief "Hard Constraints"]
+- MUST: run `pnpm sync-skills` and commit `src/*-skills/`, `src/bundled-files.ts`, and the installed trees (`.claude/skills`, `.agents/skills`, `.pi/skills`, `.github/skills`, `.omp/skills`) in the same commit. [src: brief "Hard Constraints"]
+- MUST: copy the source to `docs/templates/reference/model-profile-claude.md` by hand (`cp`). [src: brief "Hard Constraints"]
+- MUST NOT: run the built updater (`node dist/cli.js update`) on this repo. The row swap arrives in spec 3; an update now adds the new row beside the old one. Spec 9 runs it. [src: brief "Hard Constraints"]
+- MUST NOT: delete `docs/templates/reference/model-profile-claude-fable-5-1.md` or edit `docs/.joycraft/manifest.json` or `AGENTS.md`/`CLAUDE.md`. `tests/dogfood-update.test.ts` checks the checked-in manifest, which still lists the Fable doc until spec 9. [src: brief "Hard Constraints"]
+- MUST NOT: add Opus 5.5 blocks here (spec 2). [src: brief "Decomposition"]
+- MUST NOT: change the updater's row logic (spec 3). [src: brief "Decomposition"]
 
 ## Affected Files
 

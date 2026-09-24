@@ -11,7 +11,7 @@ mode: checkpoint
 > **Parent Brief:** `docs/features/2026-09-23-opus-5-5-prompting/brief.md`
 > **Status:** Ready
 > **Date:** 2026-09-24
-> **Estimated scope:** 1 session / 3 files / ~140 lines
+> **Estimated scope:** 1 session / 4 files / ~140 lines
 
 ---
 
@@ -35,13 +35,13 @@ The profile has no Opus 5.5 guidance, and specs 4–8 cite these four headings.
 
 ## Acceptance Criteria
 
-- [ ] The four headings exist exactly as written above, after the existing ten blocks.
-- [ ] Each has `**Applies to:** Opus 5.5` as its first non-empty line.
-- [ ] `## Keep Working in Unattended Runs` contains exactly one fenced block, and its content with whitespace collapsed equals the instruction above with whitespace collapsed.
-- [ ] `## Drop Thinking Instructions` names `reasoning_extraction` and tells the reader to scope a rule to another model instead of deleting it.
-- [ ] `## Mark Untrusted Text` shows the `pasted_content` tag shape with a matching id on both tags.
-- [ ] The installed copy is byte-identical to the source.
-- [ ] Build passes; tests pass.
+- [ ] The four headings exist exactly as written above, after the existing ten blocks. [src: brief "Block tags for the Claude profile"]
+- [ ] Each has `**Applies to:** Opus 5.5` as its first non-empty line. [src: brief "Hard Constraints"]
+- [ ] `## Keep Working in Unattended Runs` contains exactly one fenced block, and its content with whitespace collapsed equals the instruction above with whitespace collapsed. [src: brief "Hard Constraints"]
+- [ ] `## Drop Thinking Instructions` names `reasoning_extraction` and tells the reader to scope a rule to another model instead of deleting it. [src: D4]
+- [ ] `## Mark Untrusted Text` shows the `pasted_content` tag shape with a matching id on both tags. [src: D5]
+- [ ] The installed copy is byte-identical to the source. [src: brief "Hard Constraints"]
+- [ ] Build passes; tests pass. [src: brief "Success Criteria"]
 
 ## Test Plan
 
@@ -68,12 +68,12 @@ The profile has no Opus 5.5 guidance, and specs 4–8 cite these four headings.
 
 ## Constraints
 
-- MUST: keep the instruction text word-for-word; specs 5 and 6 extract it at run time.
-- MUST: keep exactly one fenced block in `## Keep Working in Unattended Runs`.
-- MUST: write the non-fenced prose in the doc's plain style: short sentences, one idea each, no em-dashes in new prose.
-- MUST: `cp` the source to `docs/templates/reference/model-profile-claude.md`.
-- MUST NOT: run the built updater on this repo (spec 9).
-- MUST NOT: edit skills; citations come in specs 4 and 8.
+- MUST: keep the instruction text word-for-word; specs 5 and 6 extract it at run time. [src: brief "Hard Constraints"]
+- MUST: keep exactly one fenced block in `## Keep Working in Unattended Runs`. [src: brief "Decomposition"]
+- MUST: write the non-fenced prose in the doc's plain style: short sentences, one idea each, no em-dashes in new prose. [src: INVENTED]
+- MUST: `cp` the source to `docs/templates/reference/model-profile-claude.md`. [src: brief "Hard Constraints"]
+- MUST NOT: run the built updater on this repo (spec 9). [src: brief "Hard Constraints"]
+- MUST NOT: edit skills; citations come in specs 4 and 8. [src: brief "Decomposition"]
 
 ## Affected Files
 
