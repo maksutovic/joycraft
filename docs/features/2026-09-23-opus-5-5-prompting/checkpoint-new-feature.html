@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  ============================================================================
+  JOYCRAFT INTERACTIVE CHECKPOINT · FIXED-STRUCTURE TEMPLATE
+  ============================================================================
+  This is a LOCKED skeleton for a gate that CAPTURES answers, not only shows
+  them. A Joycraft gate skill fills the slots and opens the page. Two
+  transports, one page: on the Claude harness the skill publishes it with the
+  Artifact tool and the db capability and every click saves to the store; on
+  every other harness the skill opens the file locally, answers persist in the
+  browser, and the human copies the output block into chat. The agent reads
+  the answers back either way.
+
+  The protocol that surrounds this page (when to build one, how Claude reads
+  the answers back, what to confirm in chat) lives in ONE place:
+  docs/templates/reference/interactive-checkpoint.md. This file is only the
+  render.
+
+  Slots are the HTML comments below whose text begins with the slot marker
+  (the word SLOT followed by a colon and a region name). Replace the slot
+  comment (and any placeholder) with real markup that uses ONLY the classes
+  already defined in the style block. The one data slot is the JSON block
+  with id "checkpoint-data": the questions section renders itself from it.
+
+  CONTRACT · the filling agent MUST:
+    · Fill ONLY the slot regions. Do not invent classes, restyle, add fonts,
+      or add external references of any kind. No CDN, no remote fonts, no
+      remote images, no fetches. The runtime script at the end stays
+      byte-identical.
+    · Put every question in the JSON data block. Never hand-write question
+      cards: the script renders them so every option on the page is one the
+      read-back accepts.
+    · Give every question at least two real options and mark the recommended
+      option with its key in "recommend". A one-option question is invalid.
+    · Offer only options the consuming skill can stamp. The page always adds
+      the fixed escapes (backlog, discard, defer to a person) and a free-text
+      rationale, so the human can reject the framing on every card.
+    · Carry the evidence a decision needs onto the card ("evidence" lines),
+      so the human decides without leaving the page.
+    · Keep the how-to box, and keep it naming the reject-this-framing escape.
+
+  Structure order is fixed: header, optional content sections, the questions
+  section (rendered), the output panel (rendered), the how-to box, footer.
+  ============================================================================
+-->
+<!-- SLOT:title · page title text, for example "Decision Checkpoint — <feature-name>" -->
+<title>Opus 5.5 Prompting Checkpoint</title>
+<style>
+  :root {
+    --ground: #F5F6F8; --surface: #FFFFFF; --surface-2: #EEF1F5;
+    --ink: #1B2430; --ink-2: #4E5A6E; --ink-3: #7C8698;
+    --line: #D9DEE7; --accent: #2F6FED; --accent-ink: #FFFFFF;
+    --ok: #1F8A4C; --warn: #B7791F; --bad: #C53030;
+    --chip: #E8EEFB; --chip-ink: #24439A;
+    --radius: 12px; --gutter: 16px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0F141B; --surface: #161C25; --surface-2: #1E2631;
+      --ink: #E6EAF0; --ink-2: #AEB7C4; --ink-3: #7F8A99;
+      --line: #2B3543; --accent: #6C9BFF; --accent-ink: #0B1220;
+      --ok: #4CC97A; --warn: #E2B04A; --bad: #F26D6D;
+      --chip: #1D2A45; --chip-ink: #BFD0FF;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0F141B; --surface: #161C25; --surface-2: #1E2631;
+    --ink: #E6EAF0; --ink-2: #AEB7C4; --ink-3: #7F8A99;
+    --line: #2B3543; --accent: #6C9BFF; --accent-ink: #0B1220;
+    --ok: #4CC97A; --warn: #E2B04A; --bad: #F26D6D;
+    --chip: #1D2A45; --chip-ink: #BFD0FF;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--ground); color: var(--ink);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 0 var(--gutter) 48px;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  header { padding: 32px 0 16px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+  h1 { font-size: 28px; line-height: 1.2; margin: 8px 0; }
+  h2 { font-size: 20px; margin: 0; }
+  h3 { font-size: 17px; margin: 0 0 6px; }
+  .dek { color: var(--ink-2); margin: 0 0 12px; }
+  .locked { display: flex; flex-wrap: wrap; gap: 8px; }
+  .lock-chip { background: var(--chip); color: var(--chip-ink); border-radius: 999px; padding: 4px 10px; font-size: 13px; }
+  .lock-chip.open { background: transparent; border: 1px dashed var(--line); color: var(--ink-2); }
+  .banner { border-radius: var(--radius); padding: 10px 14px; margin: 12px 0 0; font-size: 14px; background: var(--surface-2); color: var(--ink-2); border: 1px solid var(--line); }
+  .banner.ok { border-color: var(--ok); }
+  .banner.warn { border-color: var(--warn); }
+  .banner.bad { border-color: var(--bad); }
+  .sec, .questions, .output, .howto { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; margin: 16px 0; }
+  .sec-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+  .sub { color: var(--ink-2); margin: 0 0 12px; }
+  .pillars { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .pillar { background: var(--surface-2); border-radius: var(--radius); padding: 12px; }
+  .pillar p { margin: 0; color: var(--ink-2); font-size: 14px; }
+  .tablebox { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .col { background: var(--surface-2); border-radius: var(--radius); padding: 12px; }
+  .clab { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); }
+  .col ul, .criteria { margin: 6px 0 0; padding-left: 20px; }
+  .criteria li.met { color: var(--ok); }
+  .progress { height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin: 8px 0 16px; }
+  .progress > span { display: block; height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  .q { border-top: 1px solid var(--line); padding: 16px 0; }
+  .q:first-of-type { border-top: 0; padding-top: 0; }
+  .qnum { display: inline-block; font-size: 12px; color: var(--ink-3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+  .qnum.done { color: var(--ok); }
+  .rec { margin: 0 0 4px; font-size: 14px; }
+  .why { margin: 0 0 10px; color: var(--ink-2); font-size: 14px; }
+  .evidence { background: var(--surface-2); border-radius: var(--radius); padding: 10px 12px; margin: 0 0 10px; font-size: 14px; color: var(--ink-2); }
+  .evidence p { margin: 0 0 4px; }
+  .seg { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; }
+  .seg button { border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 14px; cursor: pointer; }
+  .seg button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .seg button.esc { border-style: dashed; color: var(--ink-2); }
+  .seg button.esc.on { background: var(--ink-2); color: var(--surface); border-color: var(--ink-2); }
+  .seg button:disabled { opacity: .5; cursor: default; }
+  .ta { width: 100%; min-height: 64px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink); padding: 8px 10px; font: inherit; font-size: 14px; resize: vertical; }
+  .assignee { width: 100%; max-width: 320px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 6px 10px; font: inherit; font-size: 14px; margin: 0 0 8px; }
+  .hint { font-size: 13px; color: var(--ink-3); margin: 4px 0 0; }
+  .hint.bad { color: var(--bad); }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .btn { border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); border-radius: 8px; padding: 8px 14px; font: inherit; font-size: 14px; cursor: pointer; }
+  .btn.secondary { background: transparent; color: var(--accent); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  pre { background: var(--surface-2); border-radius: var(--radius); padding: 12px; overflow-x: auto; font-size: 13px; line-height: 1.45; margin: 0; }
+  footer { color: var(--ink-3); font-size: 13px; padding: 8px 0; }
+  [hidden] { display: none !important; }
+  img { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <!-- SLOT:eyebrow — kicker line, for example "Joycraft Decision Checkpoint · feature: <name> · <Month DD, YYYY>". End it with the generation stamp: "· rev N · <Month DD, YYYY HH:MM>". -->
+  <div class="eyebrow">Joycraft New-Feature Checkpoint · feature: 2026-09-23-opus-5-5-prompting · September 23, 2026 · rev 1 · September 23, 2026 23:41</div>
+  <!-- SLOT:title-h1 — the headline: what this checkpoint decides, in a phrase -->
+  <h1>What Joycraft changes for Claude Opus 5.5</h1>
+  <!-- SLOT:dek — 1–2 sentences: what this page is, that every click saves, and that the human can stop and come back -->
+  <p class="dek">I read Anthropic's Opus 5.5 prompting guide against Joycraft's skills, templates, and scripts. Five sections call for a change, and eight scoping questions decide how far this feature goes. Every click saves, so you can stop and come back.</p>
+  <!-- SLOT:context-strip — REQUIRED CONTAINER, keep even if empty. One .lock-chip span per grounded fact carried into this gate; add the open class to the unsettled ones. -->
+  <div class="locked"><span class="lock-chip">New feature; no draft matches</span><span class="lock-chip">Builds on fable-native-sdlc-harness (PR #78)</span><span class="lock-chip">Skills hold zero think-harder or show-your-reasoning lines</span><span class="lock-chip">claude and pi CLIs both take --append-system-prompt</span><span class="lock-chip">Dogfood on this repo, no lockdown (same as PR #78)</span><span class="lock-chip open">Profile structure (D1)</span></div>
+  <div class="banner" id="banner" role="status">Connecting…</div>
+</header>
+
+<!-- SLOT:sections — OPTIONAL. REPEAT this <section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Analysis</span>
+    <h2>Guide sections against Joycraft</h2>
+  </div>
+  <p class="sub">Each row is one section of the guide, where it touches Joycraft, and what to do. Four rows need work. Five do not apply because Joycraft makes no direct API calls and works inside one repo.</p>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>Guide section</th><th>Where it lands in Joycraft</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>Unattended agentic runs</td><td>autofix.yml runs <code>claude -p</code>; the Pi loop runs <code>pi -p</code> per spec; implement-feature drives a whole queue</td><td><strong>Act.</strong> Biggest gap. A progress note that ends the turn ends the job (D2, D3)</td></tr>
+        <tr><td>Calibrate effort</td><td>Execution Profile rows are free text. This repo runs <code>opus 5.5 · effort high</code></td><td><strong>Act.</strong> Profile block (D6); this repo's row (D7)</td></tr>
+        <tr><td>Mark pasted text</td><td>Claude Code already tags pastes. autofix.yml pastes the raw CI log into the prompt. The intent inbox will take third-party text</td><td><strong>Act</strong> (D5)</td></tr>
+        <tr><td>Thinking instructions in chat</td><td>No skill says think carefully. Users' own CLAUDE.md files often do</td><td><strong>Act</strong> through optimize (D4)</td></tr>
+        <tr><td>Safeguard refusals</td><td>No skill asks the model to write its reasoning into the reply</td><td>Clean. Optimize flags it in user files (D4)</td></tr>
+        <tr><td>Progress updates</td><td>Claude Code renders them and sends silence reminders. Interview and new-feature cite the Fable progress block</td><td>Handled by the harness. Retag the block</td></tr>
+        <tr><td>Time signals for agent teams</td><td>implement-feature parallel waves; decompose swarms</td><td>Optional (D8)</td></tr>
+        <tr><td>Thinking disabled, max_tokens</td><td>Joycraft makes no direct API calls and sets no thinking level</td><td>Not applicable</td></tr>
+        <tr><td>Multi-app exploration</td><td>Joycraft works inside one repo; gather-context and bugfix read before acting</td><td>Not applicable</td></tr>
+        <tr><td>Complex visual inputs</td><td>No image-reading workflow</td><td>Not applicable</td></tr>
+        <tr><td>Frontend design defaults</td><td>Gate pages come from a fixed template; Joycraft does not generate frontends</td><td>Not applicable</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-head">
+    <span class="eyebrow">Model profile</span>
+    <h2>The profile doc speaks only to Fable 5.1</h2>
+  </div>
+  <p class="sub">Joycraft installs one model profile, <code>model-profile-claude-fable-5-1.md</code>, for every Claude, Pi, and omp project. This repo runs Opus 5.5 and still points at it. Most of its blocks carry over; two are Fable-only. This is how each block fares on Opus 5.5.</p>
+  <div class="tablebox">
+    <table>
+      <thead><tr><th>Block</th><th>On Opus 5.5</th><th>Proposed tag</th></tr></thead>
+      <tbody>
+        <tr><td>Finish the Whole Task</td><td>Carries over. The Opus 5.5 guide has a sharper tested block that names four stops to avoid</td><td>Keep; add the Opus 5.5 block for unattended runs</td></tr>
+        <tr><td>Keep Changes and Tests to What the Task Asks</td><td>Not in the Opus 5.5 guide</td><td>Tag Fable 5.1 only</td></tr>
+        <tr><td>Give User-Facing Progress Updates</td><td>Opus 5.5 writes updates by default. A one-line intent and a closing recap still help when a human watches</td><td>Tag both models</td></tr>
+        <tr><td>Mannered Prose</td><td>Not in the Opus 5.5 guide, which says its reports read plainly</td><td>Tag Fable 5.1 only</td></tr>
+        <tr><td>Compaction, Targeted Edits, Batch Tool Calls, Formatting When Appropriate</td><td>Not model-specific</td><td>Tag all Claude models</td></tr>
+        <tr><td>End State of Every Prompt, Paths to Choose Between</td><td>Operator rules, not model-specific</td><td>Tag all Claude models</td></tr>
+        <tr><td>New: Effort Calibration, Unattended Runs, No Thinking Instructions, Mark Untrusted Text</td><td>From the Opus 5.5 guide</td><td>Add, tagged Opus 5.5</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SLOT:checkpoint-data — THE DATA SLOT. Replace the JSON below. One entry per
+     question. "id" is the stable id the consuming skill stamps (for example
+     "D4"). "recommend" names an option key or is null. "options" holds 2–4
+     real choices the skill can stamp; the page adds the fixed escapes itself.
+     "evidence" is an optional list of short plain-text lines the human needs
+     to decide on the card. "collection" and "statusDoc" are the db paths
+     Claude reads back; keep them unless the reference doc says otherwise. -->
+<script type="application/json" id="checkpoint-data">
+{
+  "gate": "new-feature",
+  "feature": "2026-09-23-opus-5-5-prompting",
+  "collection": "answers",
+  "statusDoc": "meta/status",
+  "questions": [
+    {
+      "id": "D1",
+      "question": "How should the model profile hold guidance for more than one Claude model?",
+      "recommend": "one-doc",
+      "why": "Six of the ten Fable blocks are not Fable-specific, so a sibling doc per model copies them and they drift apart. One doc keeps one citation path in every skill and one row in the memory file. The cost is a rename: the updater must swap the old Context Map row for the new one. That changes D14 of PR #78 (the updater never removes a row) and touches merge logic you gate as ask-first.",
+      "evidence": [
+        "src/model-profile.ts holds exactly one template key: model-profile-claude-fable-5-1.md.",
+        "7 skills and 8 test files name the Fable path.",
+        "This repo's Execution Profile runs claude on opus 5.5, but its Context Map row says 'Working with Claude Fable 5.1'.",
+        "The updater deletes an unmodified vendor file the bundle stops shipping, and keeps an edited one as an orphan (src/update-plan.ts:417-433).",
+        "contextMapPointerPatch never removes a row today (src/update-inventory.ts:561)."
+      ],
+      "options": [
+        {
+          "key": "one-doc",
+          "label": "One Claude profile doc; each block says which models it applies to"
+        },
+        {
+          "key": "per-model",
+          "label": "One doc per model: add an Opus 5.5 doc beside the Fable doc"
+        },
+        {
+          "key": "core-plus-deltas",
+          "label": "A model-neutral rules doc plus a small delta doc per model"
+        }
+      ]
+    },
+    {
+      "id": "D2",
+      "question": "Which unattended surfaces get the Opus 5.5 early-stop fixes?",
+      "recommend": "all-three",
+      "why": "Opus 5.5 sometimes ends a turn with a progress note instead of a tool call. In a one-shot run that ends the job. The Pi loop then runs spec-done, which commits the half-built spec as in-review with no validation. The guide's fix has two parts: a standing instruction that names the stops to avoid, and at most two or three automatic continuations while a checklist has open items. The spec queue JSON is already that checklist. The Stop-hook recipe gives interactive implement-feature runs the same continuation and ships unregistered, like the four existing hook recipes.",
+      "evidence": [
+        "autofix.yml runs claude -p --max-turns 20 and commits whatever changed when the exit code is 0.",
+        "joycraft-implement-loop runs pi -p implement, then pi -p spec-done, with no completion check between them.",
+        "Checked locally: claude and pi both accept --append-system-prompt; pi has --session-id, claude has --resume and --continue.",
+        "Guide: cap automatic continuations at two or three so a stuck run ends and can be reviewed."
+      ],
+      "options": [
+        {
+          "key": "all-three",
+          "label": "Autofix workflow, Pi loop, and a Claude Code Stop-hook recipe"
+        },
+        {
+          "key": "ci-and-pi",
+          "label": "Autofix workflow and Pi loop only"
+        },
+        {
+          "key": "instruction-only",
+          "label": "Standing instruction only, no continuation logic"
+        }
+      ]
+    },
+    {
+      "id": "D3",
+      "question": "Does implement-feature's queue loop use the Opus 5.5 four-stop instruction?",
+      "recommend": "queue-only",
+      "why": "The guide says to leave this block out of work where a human is there to answer. implement-feature is started by a human, but while the queue runs nobody is answering. A stop between specs only makes the human type 'continue'. The block still allows the stops you want, where nothing can move without you, and never overrides confirmation for destructive actions. Gate skills such as interview, new-feature, and decide would never cite it.",
+      "evidence": [
+        "implement-feature.md:73 cites Finish the Whole Task today.",
+        "Guide: 'leave the addition out of human-in-the-loop applications, where someone is there to answer.'"
+      ],
+      "options": [
+        {
+          "key": "queue-only",
+          "label": "Yes, from the queue loop only; gate skills never cite it"
+        },
+        {
+          "key": "headless-only",
+          "label": "No, headless runs only; implement-feature keeps Finish the Whole Task"
+        }
+      ]
+    },
+    {
+      "id": "D4",
+      "question": "Should optimize flag think-harder and write-out-your-reasoning rules in a user's memory file?",
+      "recommend": "flag",
+      "why": "Older CLAUDE.md files often say 'think step by step' or 'explain your reasoning before you code'. On Opus 5.5 thinking is always on and effort is the control. The guide found that removing think-carefully lines made replies start sooner with no clear loss in quality. A rule that pushes the model to write its reasoning into the reply can be declined as a reasoning_extraction refusal. Optimize stays advisory: it flags RETIRE candidates and edits nothing.",
+      "evidence": [
+        "Grep of src/skills and src/templates: no 'think step by step', 'ultrathink', or 'show your reasoning' lines. Joycraft itself is clean.",
+        "optimize.md:74 checks two rule classes today: anti-formatting and hand-holding."
+      ],
+      "options": [
+        {
+          "key": "flag",
+          "label": "Yes: a third rule class beside anti-formatting and hand-holding"
+        },
+        {
+          "key": "doc-only",
+          "label": "No: say it only in the profile doc"
+        }
+      ]
+    },
+    {
+      "id": "D5",
+      "question": "How should Joycraft mark text that a third party wrote?",
+      "recommend": "file-plus-rule",
+      "why": "autofix.yml pastes the raw CI failure log into the prompt, and a PR author controls text that lands in that log. Text in the prompt carries the user's authority. A file the agent reads arrives as a tool result, which Opus 5.5 treats as data and resists best, and a long log stays out of the prompt. For the intent inbox, Claude Code's system prompt already carries the pasted_content note, so a future writer that wraps third-party text in those tags gets the defense with no skill change.",
+      "evidence": [
+        "autofix.yml:127-134 puts ${FAILURE_LOG} straight into the claude -p prompt.",
+        "The intent source field accepts linear:<id> and alert:<name>; external writers are backlogged (docs/backlog/2026-09-22-intent-external-triggers.md).",
+        "Not verified: whether claude -p carries the same pasted_content note as an interactive session.",
+        "Guide: the tags are plain text and can be imitated, so they are one guardrail among several."
+      ],
+      "options": [
+        {
+          "key": "file-plus-rule",
+          "label": "Autofix reads the log from a file; intent README gains the tag rule"
+        },
+        {
+          "key": "tags-plus-rule",
+          "label": "Autofix wraps the log in pasted_content tags; intent README gains the tag rule"
+        },
+        {
+          "key": "rule-only",
+          "label": "Intent README rule only; leave autofix as it is"
+        }
+      ]
+    },
+    {
+      "id": "D6",
+      "question": "Where does Opus 5.5 effort guidance live?",
+      "recommend": "profile-only",
+      "why": "The guide's point is that effort names do not carry across models: Opus 5.5 at medium matches Opus 5 at high on coding. That fact belongs beside the other Opus 5.5 guidance. Tune's effort question has no recommendations by a recorded decision, because model facts go stale faster than releases; routing defaults belong to the backlogged model-tiering feature.",
+      "evidence": [
+        "tune.md:185: 'Recommend no model or tier here — routing defaults are the backlogged model-tiering feature's scope.'",
+        "Guide: start at medium, save xhigh and max for measured gains, and lower effort before you prompt for less thinking."
+      ],
+      "options": [
+        {
+          "key": "profile-only",
+          "label": "A profile block only; tune stays recommendation-free"
+        },
+        {
+          "key": "profile-plus-tune",
+          "label": "A profile block plus a one-line hint in tune's effort question"
+        }
+      ]
+    },
+    {
+      "id": "D7",
+      "question": "This repo's Execution Profile runs claude on opus 5.5 at effort high. What should it say?",
+      "recommend": "medium",
+      "why": "Anthropic's testing puts Opus 5.5 at medium level with Opus 5 at high on coding tasks, in fewer steps and tokens, and Opus 5.5 thinks more per turn than Opus 5 at the same level. The high setting looks carried over from Opus 5. Swarm subagents do scoped decompose and implement work, which is the case the guide measured. The evals recipe from PR #78 can measure it instead if you want evidence first.",
+      "evidence": [
+        "AGENTS.md Execution Profile: 'claude: Swarms: decompose yes · implement yes · model opus 5.5 · effort high'.",
+        "Guide: 'Start at medium … rather than carrying over the setting you used on Claude Opus 5.'"
+      ],
+      "options": [
+        {
+          "key": "medium",
+          "label": "Change it to medium in the dogfood spec"
+        },
+        {
+          "key": "keep-high",
+          "label": "Keep high"
+        },
+        {
+          "key": "measure",
+          "label": "Measure first: run the evals recipe at medium and high"
+        }
+      ]
+    },
+    {
+      "id": "D8",
+      "question": "Should implement-feature's parallel waves get the guide's time signal?",
+      "recommend": "not-now",
+      "why": "The guide found that a time signal makes agent teams finish sooner. It also warns that under time pressure the model may search and verify a little less, and implement-feature relies on each spec's tests. Claude Code gives a skill no way to report elapsed time on each message, so only the one-sentence form is available. Pick Backlog if you want it captured for later.",
+      "evidence": [
+        "implement-feature.md Step 2 spawns concurrent subagents only for waves marked parallel-safe.",
+        "Guide: the budget is advisory; check answer quality on your own tasks."
+      ],
+      "options": [
+        {
+          "key": "not-now",
+          "label": "Not in this feature"
+        },
+        {
+          "key": "ship-now",
+          "label": "Add one 'time matters' line to the parallel-wave subagent prompt"
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<section class="questions">
+  <div class="sec-head">
+    <span class="eyebrow">Decide</span>
+    <h2 id="qhead">Questions for you</h2>
+  </div>
+  <div class="progress"><span id="bar"></span></div>
+  <div id="cards"></div>
+  <div class="actions">
+    <button class="btn" id="submit" type="button" disabled>Submit answers</button>
+    <span class="hint" id="submit-hint"></span>
+  </div>
+</section>
+
+<section class="output">
+  <div class="sec-head">
+    <span class="eyebrow">Output</span>
+    <h2>What your agent will stamp</h2>
+  </div>
+  <p class="sub">This block is built live from your answers. It is the exact <code>decisions:</code> shape the skill writes into the brief. In local mode, copy it into chat when you are done.</p>
+  <pre id="out"></pre>
+  <div class="actions"><button class="btn secondary" id="copy" type="button">Copy</button><span class="hint" id="copy-hint"></span></div>
+</section>
+
+<div class="howto">
+  <div class="eyebrow">How to answer</div>
+  <!-- SLOT:howto — how the human answers: pick an option or an escape, type the one-sentence reason, submit when done. MUST name the reject-this-framing escape: if every option is wrong, say what is right in the reason box instead of picking. -->
+  <p>Pick one option per card, or an escape: Backlog, Discard, or Defer to a named person. Then type a one-sentence reason in the box. If every option on a card is wrong, reject the framing: skip the buttons and write what is right in the reason box. Press Submit when you are done, then tell me in chat.</p>
+</div>
+
+<footer>
+  <!-- SLOT:footer — provenance line: which gate produced this, feature slug, date. End it with "rev N · generated <ISO timestamp>". -->
+  <p>joycraft-new-feature · Phase 1 interview · feature 2026-09-23-opus-5-5-prompting · 2026-09-23 · rev 1 · generated 2026-09-23T23:41:40-07:00</p>
+</footer>
+</div>
+
+<script>
+  // Runtime — byte-identical in every render. Renders the question cards from
+  // the JSON data slot, saves each answer to the artifact db as it changes,
+  // restores state on reload, and builds the decisions YAML the skill stamps.
+  (function () {
+    "use strict";
+    try {
+      var t = new URLSearchParams(location.search).get("theme");
+      if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t);
+    } catch (e) { /* theme falls back to prefers-color-scheme */ }
+
+    var ESCAPES = [
+      { key: "__backlog", label: "Backlog", esc: true },
+      { key: "__discard", label: "Discard", esc: true },
+      { key: "__defer", label: "Defer to a person", esc: true }
+    ];
+    var data, db = null, readOnly = false, localMode = false, storeKey = "";
+    var answers = {};      // id -> { choice, rationale, assignee, at }
+    var timers = {};       // id -> debounce timer
+    var chains = {};       // id -> promise chain (one write at a time per doc)
+    var $ = function (id) { return document.getElementById(id); };
+
+    function esc(s) {
+      return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+      });
+    }
+    function banner(text, cls) { var b = $("banner"); b.textContent = text; b.className = "banner" + (cls ? " " + cls : ""); }
+
+    try {
+      data = JSON.parse($("checkpoint-data").textContent);
+    } catch (e) {
+      banner("The checkpoint data block is not valid JSON. Ask Claude to re-render this page.", "bad");
+      return;
+    }
+    if (!data || !Array.isArray(data.questions) || !data.questions.length) {
+      banner("No questions were rendered into this checkpoint.", "warn");
+      return;
+    }
+    var COLLECTION = data.collection || "answers";
+    var STATUS_DOC = data.statusDoc || "meta/status";
+    storeKey = "joycraft:checkpoint:" + (data.feature || "") + ":" + (data.gate || "") + ":" + data.questions.map(function (q) { return q.id; }).join(",");
+    function storageLoad() {
+      try { var raw = localStorage.getItem(storeKey); if (raw) { var o = JSON.parse(raw); if (o && typeof o === "object") answers = o; } } catch (e) { /* storage unavailable */ }
+    }
+    function storageSave() {
+      try { localStorage.setItem(storeKey, JSON.stringify(answers)); } catch (e) { /* storage unavailable */ }
+    }
+
+    function optionLabel(q, key) {
+      var i;
+      for (i = 0; i < q.options.length; i++) if (q.options[i].key === key) return q.options[i].label;
+      for (i = 0; i < ESCAPES.length; i++) if (ESCAPES[i].key === key) return ESCAPES[i].label;
+      return key || "";
+    }
+    function isComplete(q) {
+      var a = answers[q.id];
+      if (!a || !a.choice) return false;
+      if (a.choice === "__defer") return !!(a.assignee && a.assignee.trim());
+      return !!(a.rationale && a.rationale.trim());
+    }
+    function terminal(a) {
+      if (!a || !a.choice) return "open";
+      if (a.choice === "__backlog") return "backlogged";
+      if (a.choice === "__discard") return "discarded";
+      if (a.choice === "__defer") return "assigned";
+      return "clarified";
+    }
+
+    function renderCards() {
+      var html = "";
+      data.questions.forEach(function (q, idx) {
+        var a = answers[q.id] || {};
+        html += '<div class="q" data-id="' + esc(q.id) + '">';
+        html += '<span class="qnum' + (isComplete(q) ? " done" : "") + '">' + esc(q.id) + (isComplete(q) ? " · answered" : " · " + (idx + 1) + " of " + data.questions.length) + "</span>";
+        html += "<h3>" + esc(q.question) + "</h3>";
+        if (q.recommend) html += '<p class="rec"><strong>Recommend:</strong> ' + esc(optionLabel(q, q.recommend)) + "</p>";
+        if (q.why) html += '<p class="why">' + esc(q.why) + "</p>";
+        if (Array.isArray(q.evidence) && q.evidence.length) {
+          html += '<div class="evidence">';
+          q.evidence.forEach(function (line) { html += "<p>" + esc(line) + "</p>"; });
+          html += "</div>";
+        }
+        html += '<div class="seg" role="group" aria-label="Options for ' + esc(q.id) + '">';
+        (q.options || []).forEach(function (o) {
+          html += '<button type="button" data-q="' + esc(q.id) + '" data-key="' + esc(o.key) + '" class="' + (a.choice === o.key ? "on" : "") + '"' + (readOnly ? " disabled" : "") + ">" + esc(o.label) + (q.recommend === o.key ? " · recommended" : "") + "</button>";
+        });
+        ESCAPES.forEach(function (o) {
+          html += '<button type="button" data-q="' + esc(q.id) + '" data-key="' + o.key + '" class="esc' + (a.choice === o.key ? " on" : "") + '"' + (readOnly ? " disabled" : "") + ">" + o.label + "</button>";
+        });
+        html += "</div>";
+        html += '<input class="assignee" type="text" placeholder="Who owns this answer?" data-assignee="' + esc(q.id) + '" value="' + esc(a.assignee || "") + '"' + (a.choice === "__defer" ? "" : " hidden") + (readOnly ? " disabled" : "") + ">";
+        html += '<textarea class="ta" data-rationale="' + esc(q.id) + '" placeholder="<choice> because <one-sentence reason>. If every option is wrong, reject the framing: type what is right instead."' + (readOnly ? " disabled" : "") + ">" + esc(a.rationale || "") + "</textarea>";
+        html += '<p class="hint' + (a.choice && !isComplete(q) ? " bad" : "") + '">' + (a.choice ? (isComplete(q) ? "Saved as " + terminal(a) + "." : (a.choice === "__defer" ? "Name the person who owns this answer." : "Add the one-sentence reason — a bare pick is not recorded.")) : "Pick an option or an escape, then type the reason.") + "</p>";
+        html += "</div>";
+      });
+      $("cards").innerHTML = html;
+      renderProgress();
+      renderOutput();
+    }
+
+    function renderProgress() {
+      var done = data.questions.filter(isComplete).length, total = data.questions.length;
+      $("bar").style.width = Math.round((done / total) * 100) + "%";
+      $("qhead").textContent = done === total ? "All " + total + " answered" : done + " of " + total + " answered";
+      $("submit").disabled = readOnly || done !== total;
+      $("submit").textContent = localMode ? "Copy answers" : ($("submit").textContent === "Submitted" ? "Submitted" : "Submit answers");
+      $("submit-hint").textContent = done === total ? (localMode ? "Copy answers, then paste the block into chat." : "Submit tells your agent you are done.") : (total - done) + " still open. You can leave and come back.";
+    }
+
+    function yamlStr(s) { return JSON.stringify(String(s == null ? "" : s)); }
+    function renderOutput() {
+      var done = data.questions.filter(isComplete).length;
+      var lines = ["# joycraft-checkpoint feature=" + (data.feature || "") + " gate=" + (data.gate || "") + " answered=" + done + "/" + data.questions.length + " at=" + new Date().toISOString(), "decisions:"];
+      data.questions.forEach(function (q) {
+        var a = answers[q.id] || {};
+        var state = terminal(a);
+        var choice = state === "clarified" ? optionLabel(q, a.choice) : state === "assigned" ? "assigned to " + (a.assignee || "?") : state;
+        lines.push("  - id: " + q.id);
+        lines.push("    question: " + yamlStr(q.question));
+        lines.push("    status: " + state);
+        lines.push("    key: " + yamlStr(a.choice || ""));
+        lines.push("    choice: " + yamlStr(choice));
+        if (state === "assigned") lines.push("    assignee: " + yamlStr(a.assignee || ""));
+        lines.push("    rationale: " + yamlStr(a.rationale || (state === "open" ? "" : "(not given)")));
+      });
+      lines.push("# end joycraft-checkpoint");
+      $("out").textContent = lines.join("\n");
+    }
+
+    function localSet(id, patch) {
+      var cur = answers[id] || {};
+      var next = { choice: cur.choice || "", rationale: cur.rationale || "", assignee: cur.assignee || "" };
+      Object.keys(patch).forEach(function (k) { next[k] = patch[k]; });
+      next.at = new Date().toISOString();
+      answers[id] = next;
+      storageSave();
+      return next;
+    }
+
+    function persist(id) {
+      if (!db || readOnly) return;
+      var body = answers[id];
+      chains[id] = (chains[id] || Promise.resolve()).then(function () {
+        var ref = db.collection(COLLECTION).doc(id);
+        return body.choice ? ref.set(body) : ref.delete();
+      }).then(function () {
+        banner("Saved. Every change lands as you make it; come back any time.", "ok");
+      }).catch(function (e) {
+        if (e && e.code === "invalid_argument") { readOnly = true; banner("This view cannot write answers. Copy the output block into chat instead.", "warn"); renderCards(); }
+        else banner("A save did not go through (" + (e && e.code ? e.code : "unknown") + "). Your last change may not be recorded.", "bad");
+      });
+    }
+
+    function schedule(id) {
+      clearTimeout(timers[id]);
+      timers[id] = setTimeout(function () { persist(id); }, 400);
+    }
+
+    document.addEventListener("click", function (ev) {
+      var b = ev.target.closest("button[data-q]");
+      if (!b || readOnly) return;
+      var id = b.getAttribute("data-q"), key = b.getAttribute("data-key");
+      var cur = answers[id] || {};
+      localSet(id, { choice: cur.choice === key ? "" : key });
+      renderCards();
+      persist(id);
+    });
+    document.addEventListener("input", function (ev) {
+      var el = ev.target;
+      if (readOnly) return;
+      if (el.hasAttribute("data-rationale")) { localSet(el.getAttribute("data-rationale"), { rationale: el.value }); renderProgress(); renderOutput(); schedule(el.getAttribute("data-rationale")); }
+      if (el.hasAttribute("data-assignee")) { localSet(el.getAttribute("data-assignee"), { assignee: el.value }); renderProgress(); renderOutput(); schedule(el.getAttribute("data-assignee")); }
+    });
+    document.addEventListener("focusout", function (ev) {
+      var el = ev.target;
+      if (el.hasAttribute && (el.hasAttribute("data-rationale") || el.hasAttribute("data-assignee"))) renderCards();
+    });
+    function copyOut(hintEl, okText) {
+      var text = $("out").textContent;
+      var done = function () { $(hintEl).textContent = okText; };
+      var fail = function () {
+        try {
+          var r = document.createRange(); r.selectNodeContents($("out"));
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+          if (document.execCommand("copy")) { done(); return; }
+        } catch (e2) { /* fall through */ }
+        $(hintEl).textContent = "Select the block and copy it by hand.";
+      };
+      try { navigator.clipboard.writeText(text).then(done, fail); } catch (e) { fail(); }
+    }
+    $("copy").addEventListener("click", function () { copyOut("copy-hint", "Copied."); });
+    $("submit").addEventListener("click", function () {
+      if (localMode) { renderOutput(); copyOut("submit-hint", "Copied. Paste this block into chat."); return; }
+      if (!db || readOnly) return;
+      var done = data.questions.filter(isComplete).length;
+      db.doc(STATUS_DOC).set({ submitted: true, answered: done, total: data.questions.length, gate: data.gate || "", feature: data.feature || "", at: new Date().toISOString() })
+        .then(function () { banner("Submitted. Tell your agent the checkpoint is done and it will read your answers back.", "ok"); $("submit").textContent = "Submitted"; $("submit").disabled = true; })
+        .catch(function () { banner("Submit did not save. Tell your agent in chat that you are done.", "bad"); });
+    });
+
+    storageLoad();
+    renderCards();
+
+    function withoutDb() {
+      localMode = true;
+      banner("Local mode: answers stay in this browser. When done, click Copy answers and paste the block into chat.", "warn");
+      renderCards();
+    }
+
+    if (!window.claude || typeof window.claude.use !== "function") { withoutDb(); return; }
+    window.claude.use("db").then(function (ns) {
+      if (!ns) { withoutDb(); return; }
+      db = ns;
+      banner("Connected. Every change saves as you make it.", "ok");
+      db.collection(COLLECTION).onSnapshot(function (snap) {
+        snap.docs.forEach(function (d) {
+          var body = d.data() || {};
+          var cur = answers[d.id];
+          if (cur && cur.at && body.at && cur.at > body.at) return; // local edit is newer
+          answers[d.id] = { choice: body.choice || "", rationale: body.rationale || "", assignee: body.assignee || "", at: body.at || "" };
+        });
+        snap.docChanges().forEach(function (ch) { if (ch.type === "removed") delete answers[ch.doc.id]; });
+        if (!document.activeElement || !document.activeElement.hasAttribute("data-rationale")) renderCards(); else { renderProgress(); renderOutput(); }
+      }, function (e) {
+        if (e && e.code === "revoked") { readOnly = true; banner("Access to the data store ended. Copy the output block into chat.", "warn"); renderCards(); }
+      });
+      db.doc(STATUS_DOC).get().then(function (s) {
+        if (s.exists && s.data() && s.data().submitted) { $("submit").textContent = "Submitted"; $("submit").disabled = true; }
+      }).catch(function () { /* status is advisory */ });
+    }).catch(withoutDb);
+  })();
+</script>
+</body>
+</html>
