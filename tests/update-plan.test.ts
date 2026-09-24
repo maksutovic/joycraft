@@ -47,7 +47,7 @@ describe('createUpdatePlan comparison contract', () => {
     ['current equals target', target, target, manifestFor(), 'reconcile'],
     ['current equals verified base', base, target, manifestFor(), 'replace'],
     ['local-only edit', 'local\n', base, manifestFor(), 'preserve'],
-    ['current and target diverge', 'local\n', target, manifestFor(), 'conflict'],
+    ['current and target diverge', 'local\n', target, manifestFor(), 'replace'],
     ['verified local deletion', undefined, target, manifestFor(), 'preserve'],
   ])('%s', (_name, current, targetContent, manifest, kind) => {
     const plan = createUpdatePlan({ snapshot: snapshot(current), manifest, inventory: [vendor(targetContent)] });
@@ -82,15 +82,17 @@ describe('createUpdatePlan comparison contract', () => {
     expect(plan.nextManifest.files[path]).toBeUndefined();
   });
 
-  it('preserves a customized orphan and exposes a real diff and bytes', () => {
+  it('replaces diverged bytes against raw preconditions and backs up the current bytes', () => {
     const plan = createUpdatePlan({ snapshot: snapshot('local\n'), manifest: manifestFor(), inventory: [vendor(target)] });
     const action = plan.actions.find((candidate) => candidate.path === path)!;
-    expect(action.kind).toBe('conflict');
+    expect(action.kind).toBe('replace');
     expect(action.preservedContent).toBe('local\n');
-    expect(action.diff).toContain('-local');
-    expect(action.diff).toContain('+target');
     expect(action.rawPrecondition).toBe(rawFileHash('local\n'));
     expect(action.rawTargetHash).toBe(rawFileHash(target));
+    const backup = plan.actions.find((candidate) => candidate.backupOf === path)!;
+    expect(backup.path).toBe(action.backupPath);
+    expect(backup.content).toBe('local\n');
+    expect(backup.rawTargetHash).toBe(rawFileHash('local\n'));
   });
 
   it('uses normalized vendor comparison while preserving current newlines for replacement', () => {
@@ -102,26 +104,20 @@ describe('createUpdatePlan comparison contract', () => {
     expect(action.rawPrecondition).toBe(rawFileHash(current));
   });
 
-  it('does not select a customized replacement unattended, but records explicit selection', () => {
-    const unattended = createUpdatePlan({
-      snapshot: snapshot('local\n'),
-      manifest: manifestFor(),
-      inventory: [vendor()],
-      options: { safeUnattended: true },
-    });
-    expect(unattended.actions.find((action) => action.path === path)?.selected).toBe(false);
-
-    const explicit = createUpdatePlan({
-      snapshot: snapshot('local\n'),
-      manifest: manifestFor(),
-      inventory: [vendor()],
-      options: { safeUnattended: true, replaceCustomized: [path] },
-    });
-    const action = explicit.actions.find((candidate) => candidate.path === path)!;
-    expect(action.kind).toBe('conflict');
-    expect(action.selected).toBe(true);
-    expect(action.resolution).toBe('replace');
-    expect(action.content).toBe(target);
+  it('selects a backed-up replacement of a diverged vendor file with or without explicit selection', () => {
+    for (const replaceCustomized of [undefined, [path]]) {
+      const plan = createUpdatePlan({
+        snapshot: snapshot('local\n'),
+        manifest: manifestFor(),
+        inventory: [vendor()],
+        options: { safeUnattended: true, replaceCustomized },
+      });
+      const action = plan.actions.find((candidate) => candidate.path === path)!;
+      expect(action.kind).toBe('replace');
+      expect(action.selected).toBe(true);
+      expect(action.content).toBe(target);
+      expect(action.backupPath).toBeDefined();
+    }
   });
 
   it('requires explicit repair to restore a verified local deletion', () => {

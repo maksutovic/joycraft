@@ -65,15 +65,18 @@ describe('real CLI update outcomes', () => {
     expect(code).toBe(1);
     expect(output.status).toBe('invalid');
   });
-  it('reports unknown customized files with exit 2 and preserves their bytes', () => {
+  it('replaces unknown customized files with exit 0 and saves their bytes', () => {
     const relative = '.agents/skills/joycraft-tune/SKILL.md';
     const { code, output, root } = run('conflict', ['update', '--harnesses', 'codex', '--yes', '--json'], (root) => {
       mkdirSync(dirname(join(root, relative)), { recursive: true });
       writeFileSync(join(root, relative), 'my custom skill\n');
     });
-    expect(code).toBe(2);
-    expect(output.conflicts).toContain(relative);
-    expect(readFileSync(join(root, relative), 'utf8')).toBe('my custom skill\n');
+    expect(code).toBe(0);
+    expect(output.conflicts).toEqual([]);
+    const backup = output.replaced.find((entry: { path: string }) => entry.path === relative)?.backup;
+    expect(backup).toMatch(/^docs\/\.joycraft\/local\/replaced\/.+\.bak$/);
+    expect(readFileSync(join(root, backup), 'utf8')).toBe('my custom skill\n');
+    expect(readFileSync(join(root, relative), 'utf8')).not.toBe('my custom skill\n');
   });
   it('reports project lock attention with exit 3 and no applied files', () => {
     const { code, output } = run('locked', ['update', '--harnesses', 'codex', '--yes', '--json'], (root) => {

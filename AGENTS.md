@@ -29,7 +29,7 @@
 - Any destructive git operation (force-push, reset --hard, branch deletion)
 
 ### NEVER
-- Overwrite user files without explicit confirmation or `--force` flag
+- Overwrite user files without explicit confirmation or `--force` flag. One approved exception: an explicit `update` replaces an edited Joycraft-owned file (skill, template, hook, script) after saving the edited copy under `docs/.joycraft/local/replaced/`; user-owned files (`CLAUDE.md`, `AGENTS.md`, settings, `deny-patterns.txt`) are never replaced this way
 - Add runtime dependencies that aren't strictly necessary
 - Reference absolute paths — all templates and skills must use project-relative paths
 - Include methodology research, project assessments, or personal notes in the tool
@@ -100,7 +100,7 @@ npx joycraft@latest update
   → read installation manifest (or conservatively bridge legacy state)
   → compare vendor baseline, current bytes, and executing bundle
   → preview or apply selected safe actions in one recoverable transaction
-  → publish manifest last; preserve local settings and customized files
+  → publish manifest last; keep user-owned files; back up edited Joycraft files before replacing them
 
 Joycraft skill entry
   → installed checker reads local policy and cached version

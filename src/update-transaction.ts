@@ -37,6 +37,8 @@ const LOCK_RELATIVE = `${LOCAL_DIR}/update.lock`;
 const JOURNAL_RELATIVE = `${LOCAL_DIR}/update-journal.json`;
 const BACKUPS_RELATIVE = `${LOCAL_DIR}/backups`;
 const LAST_SUCCESSFUL_RELATIVE = `${LOCAL_DIR}/last-successful.json`;
+/** User-facing copies of edited files an update replaced; ordinary plan writes. */
+const REPLACED_RELATIVE = `${LOCAL_DIR}/replaced`;
 
 export type TransactionPhase =
   | 'lock-acquired'
@@ -350,6 +352,7 @@ function profileFor(plan: UpdatePlan, options: TransactionOptions): GitignorePro
 }
 
 function isControlPath(relativePath: string, profile: GitignoreProfile): boolean {
+  if (relativePath.startsWith(`${REPLACED_RELATIVE}/`)) return false;
   const controls = [
     // Both authority locations are transaction control paths regardless of
     // the destination profile. A private transaction must not be able to

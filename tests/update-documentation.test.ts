@@ -121,7 +121,8 @@ describe('reliable update documentation contract', () => {
     expect(setup).toContain('npx joycraft@latest update');
     expect(setup).toContain('docs/.joycraft/manifest.json');
     expect(setup).toContain('docs/.joycraft/local/');
-    expect(setup).toMatch(/preserv(?:es|ing) customized files/i);
+    expect(setup).toMatch(/never changes your\s+own files/i);
+    expect(setup).toMatch(/saves an edited copy before\s+replacing it/i);
     expect(tracking).toContain('docs/.joycraft/manifest.json');
     expect(tracking).toContain('docs/.joycraft/local/manifest.json');
     expect(tracking).toContain('npx joycraft@latest update --gitignore=private');

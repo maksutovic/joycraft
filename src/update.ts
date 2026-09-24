@@ -114,6 +114,8 @@ export interface UpdateOutcome {
   applied: string[];
   preserved: string[];
   conflicts: string[];
+  /** Edited Joycraft files that were replaced, with where the edited copy was saved. */
+  replaced?: Array<{ path: string; backup: string }>;
   diagnostics: string[];
   registry: 'unknown' | 'available' | 'unavailable' | 'not-requested';
   transaction?: TransactionResult;
@@ -485,10 +487,18 @@ function localSettingsFromAdoption(root: string, entries: readonly BundleInvento
   return { manifest: adopted.manifest, localSettings: adopted.localSettings, conflicts: adopted.conflicts };
 }
 
-function pathsForOutcome(plan: UpdatePlan): { applied: string[]; preserved: string[]; conflicts: string[] } {
+function pathsForOutcome(plan: UpdatePlan): {
+  applied: string[];
+  preserved: string[];
+  conflicts: string[];
+  replaced: Array<{ path: string; backup: string }>;
+} {
   const applied = plan.actions
-    .filter((action) => action.selected && ['replace', 'create', 'repair', 'delete', 'conflict'].includes(action.kind))
+    .filter((action) => action.selected && !action.backupOf && ['replace', 'create', 'repair', 'delete', 'conflict'].includes(action.kind))
     .map((action) => action.path);
+  const replaced = plan.actions
+    .filter((action) => action.selected && action.backupPath !== undefined)
+    .map((action) => ({ path: action.path, backup: action.backupPath! }));
   const resolved = new Set(plan.actions
     .filter((action) => action.kind === 'conflict' && action.selected && action.resolution === 'replace')
     .map((action) => action.path));
@@ -497,7 +507,21 @@ function pathsForOutcome(plan: UpdatePlan): { applied: string[]; preserved: stri
     .filter((entry) => !plan.actions.some((action) => action.path === entry.path && action.nonActionable === true))
     .map((entry) => entry.path);
   const conflicts = plan.conflicts.filter((action) => !resolved.has(action.path)).map((action) => action.path);
-  return { applied: [...new Set(applied)], preserved: [...new Set(preserved)], conflicts: [...new Set(conflicts)] };
+  return { applied: [...new Set(applied)], preserved: [...new Set(preserved)], conflicts: [...new Set(conflicts)], replaced };
+}
+
+/**
+ * Choose a fresh directory for edited copies that this update replaces. The
+ * planner stays pure, so the timestamp and existence check live here.
+ */
+export function backupDirectoryFor(root: string, now: Date = new Date()): string {
+  const pad = (value: number): string => String(value).padStart(2, '0');
+  const stamp = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}`
+    + `-${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}`;
+  const base = `docs/.joycraft/local/replaced/${stamp}`;
+  let candidate = base;
+  for (let suffix = 2; existsSync(join(root, ...candidate.split('/'))); suffix += 1) candidate = `${base}-${suffix}`;
+  return candidate;
 }
 
 function setupPatchAction(operation: InventoryPatchOperation): PlannedUpdateAction {
@@ -777,6 +801,7 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
       forceCustomized: [...new Set(forceCustomized)],
       repair: options.repair,
       baseManifestDigest: existingManifest ? undefined : null,
+      backupDirectory: backupDirectoryFor(root),
     },
   });
   plan.diagnostics.push(...materialized.diagnostics.map((diagnostic) => (
@@ -827,12 +852,14 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
       authorityTransition: authorityTransition !== undefined,
     });
     if (!eligibility.eligible) {
-      return outcome(selected.conflicts.length > 0 ? 'conflict' : 'invalid', {
+      // Edited files that an explicit update would replace are what the user needs to review here.
+      const needsReview = [...new Set([...selected.conflicts, ...selected.replaced.map((entry) => entry.path)])];
+      return outcome(needsReview.length > 0 ? 'conflict' : 'invalid', {
         targetVersion: bundle.version,
         profile: authority.profile,
         harnesses,
         preserved: selected.preserved,
-        conflicts: selected.conflicts,
+        conflicts: needsReview,
         diagnostics: [...plan.diagnostics, ...eligibility.diagnostics],
         plan,
         localSettings,
@@ -856,6 +883,7 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
       applied: [],
       preserved: selected.preserved,
       conflicts: selected.conflicts,
+      replaced: selected.replaced,
       diagnostics: plan.diagnostics,
       plan,
       localSettings,
@@ -923,6 +951,7 @@ export async function update(dir: string, options: UpdateOptions = {}): Promise<
     applied: actualApplied,
     preserved: selected.preserved,
     conflicts: [...new Set([...selected.conflicts, ...transaction.conflicts])],
+    replaced: transaction.status === 'applied' ? selected.replaced : [],
     diagnostics,
     transaction,
     plan,
@@ -944,6 +973,7 @@ export function formatUpdateOutcome(result: UpdateOutcome, json = false): string
       applied: result.applied,
       preserved: result.preserved,
       conflicts: result.conflicts,
+      replaced: result.replaced ?? [],
       diagnostics: result.diagnostics,
       registry: result.registry,
       existingSkills: result.existingSkills,
@@ -961,6 +991,12 @@ export function formatUpdateOutcome(result: UpdateOutcome, json = false): string
   const lines = [headline];
   if (target && !headline.includes(target)) lines.push(`  Target: ${target}`);
   if (result.applied.length) lines.push(`  Applied: ${result.applied.length}`);
+  const replaced = result.replaced ?? [];
+  if (replaced.length) {
+    const first = replaced[0];
+    const directory = first.backup.slice(0, first.backup.length - `${first.path}.bak`.length);
+    lines.push(`  Replaced your edited copies (saved in ${directory}): ${replaced.map((entry) => entry.path).join(', ')}`);
+  }
   if (result.preserved.length) lines.push(`  Kept your versions: ${result.preserved.join(', ')}`);
   if (result.conflicts.length) lines.push(`  Needs review: ${result.conflicts.join(', ')}`);
   for (const diagnostic of result.diagnostics) lines.push(`  ⚠ ${diagnostic}`);

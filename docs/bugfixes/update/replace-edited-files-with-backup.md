@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-23
 area: update
@@ -122,7 +122,7 @@ A user edits a Joycraft skill or template. Later a new Joycraft version ships a 
 | Modify | `src/update.ts` | Unique backup directory, `replaced` outcome, output line, automatic-mode status |
 | Modify | `src/auto-safe-update.ts` | Explicit-update gate for backup replacements |
 | Modify | `README.md`, `docs/guides/upgrading.md`, `docs/guides/git-tracking.md`, `docs/guides/setup-walkthrough.md`, `AGENTS.md` | Describe the new behavior and the boundary exception |
-| Modify | tests listed in the Test Plan | New and updated assertions |
+| Modify | tests listed in the Test Plan | Updated assertions. The new AC1–AC10 tests live together in `tests/update-replace-edits.test.ts`, not spread across the files named in the Test Plan. `tests/dogfood-update.test.ts`, `tests/update-check-integration.test.ts` and `tests/update-documentation.test.ts` also encoded the old preserve-and-conflict behavior and were updated |
 
 ## Edge Cases
 

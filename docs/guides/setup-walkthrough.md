@@ -44,9 +44,10 @@ npx joycraft@latest update
 
 Then it detects your stack and plans `AGENTS.md`, `CLAUDE.md`, the skills for
 your chosen harnesses, `docs/context/`, and the templates. On a fresh project
-it creates the missing files. On an existing project it updates unmodified
-Joycraft files and preserves customized files for review; `--yes` does not
-grant blanket overwrite permission.
+it creates the missing files. On an existing project it never changes your
+own files (`CLAUDE.md`, `AGENTS.md`, `deny-patterns.txt`, settings). It
+updates Joycraft's skills and templates, and saves an edited copy before
+replacing it.
 
 For an unattended fresh project, select harnesses explicitly, for example
 `npx joycraft@latest update --harnesses codex --non-interactive`. Existing
@@ -114,8 +115,9 @@ PR.
 npx joycraft@latest update
 ```
 
-Refreshes the skills and templates you installed while preserving
-customizations. See [Installing and updating](upgrading.md).
+Refreshes the skills and templates you installed, keeps your own files, and
+backs up any edited Joycraft file before replacing it. See
+[Installing and updating](upgrading.md).
 
 ## Where things live afterwards
 

@@ -134,7 +134,7 @@ describe('upgrade alias through the shared update engine', () => {
     }
   });
 
-  it('preserves vendor conflicts under --yes and replaces only explicitly selected paths', async () => {
+  it('replaces an edited vendor file under --yes and saves the edited copy', async () => {
     const root = project();
     try {
       const oldInventory = fullInventory;
@@ -146,24 +146,21 @@ describe('upgrade alias through the shared update engine', () => {
       const custom = 'local edit that conflicts with a vendor update\n';
       writeFileSync(join(root, skill.path), custom);
 
-      const conflict = await runUpgrade(root, changedInventory);
-      expect(conflict.status).toBe('conflict');
-      expect(conflict.exitCode).toBe(2);
-      expect(conflict.conflicts).toContain(skill.path);
-      expect(conflict.preserved).toContain(skill.path);
-      expect(readFileSync(join(root, skill.path), 'utf8')).toBe(custom);
-
-      const replaced = await runUpgrade(root, changedInventory, { replaceCustomized: [skill.path] });
+      const replaced = await runUpgrade(root, changedInventory);
       expect(replaced.status).toBe('applied');
       expect(replaced.exitCode).toBe(0);
+      expect(replaced.conflicts).toEqual([]);
+      expect(replaced.preserved).not.toContain(skill.path);
       expect(readFileSync(join(root, skill.path), 'utf8')).toBe(skill.content);
+      const backup = replaced.replaced?.find((candidate) => candidate.path === skill.path)?.backup;
+      expect(readFileSync(join(root, backup!), 'utf8')).toBe(custom);
       expect(readManifest(root).files[skill.path]?.vendorHash).toBe(normalizedVendorHash(skill.content!));
     } finally {
       cleanup(root);
     }
   });
 
-  it('keeps declined custom bytes and the recorded vendor baseline across repeated upgrades', async () => {
+  it('replaces an edited file once and leaves repeated upgrades quiet', async () => {
     const root = project();
     try {
       const oldInventory = fullInventory;
@@ -172,23 +169,23 @@ describe('upgrade alias through the shared update engine', () => {
         : candidate);
       await initialize(root, oldInventory, '1.0.0');
       const skill = entry(changedInventory, 'joycraft-tune/SKILL.md');
-      const custom = 'the user customization must survive every conflict\n';
+      const custom = 'the user customization is backed up once\n';
       writeFileSync(join(root, skill.path), custom);
 
       for (let run = 0; run < 3; run += 1) {
         const result = await runUpgrade(root, changedInventory);
-        expect(result.status).toBe('conflict');
-        expect(readFileSync(join(root, skill.path), 'utf8')).toBe(custom);
-        expect(readManifest(root).files[skill.path]?.vendorHash).toBe(
-          normalizedVendorHash(oldInventory.find((candidate) => candidate.path === skill.path)!.content!),
-        );
+        expect(result.exitCode).toBe(0);
+        expect(result.conflicts).toEqual([]);
+        expect(result.replaced?.map((candidate) => candidate.path) ?? []).toEqual(run === 0 ? [skill.path] : []);
+        expect(readFileSync(join(root, skill.path), 'utf8')).toBe(skill.content);
+        expect(readManifest(root).files[skill.path]?.vendorHash).toBe(normalizedVendorHash(skill.content!));
       }
     } finally {
       cleanup(root);
     }
   });
 
-  it('does not invent a vendor baseline for customized bytes with unknown ownership', async () => {
+  it('replaces customized bytes with unknown ownership and records the new vendor baseline', async () => {
     const root = project();
     try {
       const oldInventory = fullInventory;
@@ -205,9 +202,14 @@ describe('upgrade alias through the shared update engine', () => {
 
       const result = await runUpgrade(root, changedInventory);
 
-      expect(result.status).toBe('conflict');
-      expect(readFileSync(join(root, skill.path), 'utf8')).toBe(custom);
-      expect(readManifest(root).files[skill.path]).toBeUndefined();
+      expect(result.status).toBe('applied');
+      expect(readFileSync(join(root, skill.path), 'utf8')).toBe(skill.content);
+      const backup = result.replaced?.find((candidate) => candidate.path === skill.path)?.backup;
+      expect(readFileSync(join(root, backup!), 'utf8')).toBe(custom);
+      expect(readManifest(root).files[skill.path]).toMatchObject({
+        ownership: 'verified',
+        vendorHash: normalizedVendorHash(skill.content!),
+      });
     } finally {
       cleanup(root);
     }

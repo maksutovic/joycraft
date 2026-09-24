@@ -41,10 +41,12 @@ and other local state live under `docs/.joycraft/local/`.
 
 ## Re-running init on an existing project
 
-`update` is the normal command for an existing project. It updates unmodified
-Joycraft files and preserves customized files as reviewable conflicts. The
-`init` alias is also safe on an existing project: it fills missing managed files
-and uses the same preservation checks. `--force` is accepted only by the init
+`update` is the normal command for an existing project. It never changes your
+files (`CLAUDE.md`, `AGENTS.md`, `deny-patterns.txt`, your settings). It
+updates Joycraft's files, and saves an edited copy under
+`docs/.joycraft/local/replaced/` before replacing it. The `init` alias is also
+safe on an existing project: it fills missing managed files and uses the same
+checks. `--force` is accepted only by the init
 alias and is scoped to known setup inventory paths; use
 `--replace-customized <paths...>` for an explicit reviewed replacement. This
 makes `init` useful for a private-profile clone: a teammate gets the committed

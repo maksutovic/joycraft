@@ -105,6 +105,9 @@ export function evaluateAutoSafeEligibility(input: AutoSafeEligibilityInput): Au
     reject('The update plan changes user configuration.');
   }
   if ((input.replaceCustomized?.length ?? 0) > 0) reject('Customized replacements require an explicit update.');
+  if (input.plan.actions.some((action) => action.selected && action.backupPath !== undefined)) {
+    reject('Replacing edited files requires an explicit update.');
+  }
   if ((input.repair?.length ?? 0) > 0) reject('Repairs require an explicit update.');
   if (input.migration) reject('Migrations require an explicit update.');
   if (input.legacyBridge) reject('Legacy bridge adoption requires an explicit update.');
