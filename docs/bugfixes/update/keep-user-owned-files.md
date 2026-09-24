@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-09-23
 area: update
@@ -101,6 +101,7 @@ The same category error applies to `docs/templates/evals/example-task.json`. It 
 | Modify | `src/bundle-inventory.ts` | `create-once` with content for `deny-patterns.txt` and `evals/example-task.json`; export `USER_OWNED_VENDOR_PATHS` |
 | Modify | `src/update-plan.ts` | `create-once` inventory branch, manifest kind migration, `nonActionable` for untouched create-once files |
 | Modify | `src/update.ts` | `formatUpdateOutcome` headlines and labels |
+| Modify | `src/update-inventory.ts` | Keep a bundled create-once entry declared when its file exists. Found during implementation: the materializer dropped it, so an older `vendor` row for the same path became an orphan, and the planner would delete an untouched verified copy |
 | Modify | `tests/update-plan.test.ts`, `tests/upgrade.test.ts`, `tests/bundle-inventory.test.ts`, `tests/update-cli.test.ts` | New regression tests |
 
 ## Edge Cases

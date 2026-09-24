@@ -65,6 +65,29 @@ const createOnce = (path: string): BundleInventoryEntry => ({
   installable: false,
 });
 
+/**
+ * A file Joycraft writes on first install and then hands to the user. The
+ * product tells users to edit these, so an update never changes them again.
+ */
+const createOnceWithContent = (
+  path: string,
+  harness: BundleEntryHarness,
+  content: string,
+  options: Pick<BundleInventoryEntry, 'executable' | 'mode'> = {},
+): BundleInventoryEntry => ({
+  ...vendor(path, harness, content, options),
+  kind: 'create-once',
+});
+
+const DENY_PATTERNS_PATH = '.claude/hooks/joycraft/deny-patterns.txt';
+const EXAMPLE_EVAL_TEMPLATE_KEY = 'evals/example-task.json';
+
+/** Installed files that users are told to edit; updates keep their bytes. */
+export const USER_OWNED_VENDOR_PATHS: readonly string[] = [
+  DENY_PATTERNS_PATH,
+  `docs/templates/${EXAMPLE_EVAL_TEMPLATE_KEY}`,
+];
+
 const patch = (
   path: string,
   harness: Harness,
@@ -117,6 +140,7 @@ export function templateEntries(
 ): BundleInventoryEntry[] {
   return Object.entries(templates).flatMap(([path, content]) => {
     const gate = Object.prototype.hasOwnProperty.call(gates, path) ? gates[path] : undefined;
+    if (path === EXAMPLE_EVAL_TEMPLATE_KEY) return [createOnceWithContent(`docs/templates/${path}`, 'shared', content)];
     if (!gate) return [vendor(`docs/templates/${path}`, 'shared', content)];
     const owner = HARNESSES.find((harness) => gate.includes(harness) && selected.includes(harness));
     return owner ? [vendor(`docs/templates/${path}`, owner, content)] : [];
@@ -161,7 +185,7 @@ export function getBundleInventory(selection: readonly Harness[] | unknown = HAR
     entries.push(...mapVendorFiles('claude', '.claude/skills', SKILLS));
     entries.push(
       vendor('.claude/hooks/joycraft/block-dangerous.sh', 'claude', generateHookScript(), { executable: true, mode: 0o755 }),
-      vendor('.claude/hooks/joycraft/deny-patterns.txt', 'claude', generateDenyPatternsFile(), { executable: false }),
+      createOnceWithContent(DENY_PATTERNS_PATH, 'claude', generateDenyPatternsFile(), { executable: false }),
       vendor('.claude/hooks/joycraft-version-check.mjs', 'claude', generateClaudeSessionStartAdapter(), { executable: true, mode: 0o755 }),
       patch('.claude/settings.json', 'claude', undefined, 'hooks.SessionStart[command=node .claude/hooks/joycraft-version-check.mjs]'),
       patch('.claude/settings.json', 'claude', undefined, 'hooks.PreToolUse[command=.claude/hooks/joycraft/block-dangerous.sh]'),

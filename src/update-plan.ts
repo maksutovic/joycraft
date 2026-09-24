@@ -310,6 +310,7 @@ export function createUpdatePlan(input: {
     const targetEqualsBase = baselineHash !== undefined && targetHash === baselineHash;
     let kind: UpdateActionKind;
     let reason: string;
+    let untouchedCreateOnce = false;
     if (currentContent === undefined) {
       if (verified) { kind = 'preserve'; reason = 'Local deletion is preserved; repair requires explicit selection.'; }
       else if (old) { kind = 'preserve'; reason = 'Prior ownership is unverified; preserve the local deletion.'; }
@@ -319,6 +320,7 @@ export function createUpdatePlan(input: {
       }
     } else if (old?.kind === 'create-once' && !explicitReplacement(options, group.path)) {
       kind = 'preserve'; reason = 'Create-once document is user-owned after its first creation; preserve local content.';
+      untouchedCreateOnce = old.vendorHash !== '' && currentHash === old.vendorHash;
     } else if (currentEqualsTarget) {
       kind = old && verified ? 'reconcile' : 'adopt';
       reason = kind === 'reconcile' ? 'Current bytes already equal target; reconcile manifest metadata.' : 'Exact trusted target match establishes vendor ownership.';
@@ -326,6 +328,10 @@ export function createUpdatePlan(input: {
       kind = 'replace'; reason = 'Current bytes equal the verified vendor base; safe replacement.';
     } else if ((options.forceCustomized ?? []).includes(group.path)) {
       kind = 'replace'; reason = 'Scoped init force selected this known customized path.';
+    } else if (first.kind === 'create-once' && !explicitReplacement(options, group.path)) {
+      // Covers installs whose manifest still records this path as vendor.
+      kind = 'preserve'; reason = 'User-owned file; Joycraft does not change it after creating it.';
+      if (old) nextManifest.files[group.path] = { ...old, kind: 'create-once' };
     } else if (targetEqualsBase) {
       kind = 'preserve'; reason = 'Vendor target is unchanged; preserve the local-only edit.';
     } else if (verified) {
@@ -342,6 +348,7 @@ export function createUpdatePlan(input: {
       reason = 'Explicit replacement selected for this customized path.';
     }
     const action = actionBase(group.path, kind, reason, currentContent, target, first.mode);
+    if (untouchedCreateOnce && kind === 'preserve') action.nonActionable = true;
     if (target !== undefined && ['replace', 'create', 'adopt', 'conflict'].includes(kind)) action.content = bytes(target);
     action.selected = selected(options, group.path, kind);
     if (kind === 'preserve' && currentContent === undefined && verified && options.repair?.includes(group.path)) {

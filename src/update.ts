@@ -950,11 +950,19 @@ export function formatUpdateOutcome(result: UpdateOutcome, json = false): string
       transaction: result.transaction,
     });
   }
-  const lines = [`Joycraft update: ${result.status}.`];
-  if (result.targetVersion) lines.push(`  Target: ${result.targetVersion}`);
+  const target = result.targetVersion;
+  const headline = result.status === 'applied' && target
+    ? `Joycraft updated to ${target}.`
+    : (result.status === 'noop' || result.status === 'preserved') && target
+      ? `Joycraft is up to date (${target}).`
+      : result.status === 'conflict'
+        ? 'Joycraft update needs your review.'
+        : `Joycraft update: ${result.status}.`;
+  const lines = [headline];
+  if (target && !headline.includes(target)) lines.push(`  Target: ${target}`);
   if (result.applied.length) lines.push(`  Applied: ${result.applied.length}`);
-  if (result.preserved.length) lines.push(`  Preserved customizations: ${result.preserved.join(', ')}`);
-  if (result.conflicts.length) lines.push(`  Pending conflicts: ${result.conflicts.join(', ')}`);
+  if (result.preserved.length) lines.push(`  Kept your versions: ${result.preserved.join(', ')}`);
+  if (result.conflicts.length) lines.push(`  Needs review: ${result.conflicts.join(', ')}`);
   for (const diagnostic of result.diagnostics) lines.push(`  ⚠ ${diagnostic}`);
   return lines.join('\n');
 }

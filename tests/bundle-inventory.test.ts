@@ -4,6 +4,7 @@ import {
   getBundleInventory,
   templateEntries,
   TEMPLATE_HARNESS_GATES,
+  USER_OWNED_VENDOR_PATHS,
   type BundleInventoryEntry,
 } from '../src/bundle-inventory';
 import { TEMPLATES } from '../src/bundled-files';
@@ -105,7 +106,7 @@ describe('per-template harness gates', () => {
         expect(byPath.get(`docs/templates/${key}`), `${harness}: ${key}`).toEqual({
           path: `docs/templates/${key}`,
           harness: 'shared',
-          kind: 'vendor',
+          kind: USER_OWNED_VENDOR_PATHS.includes(`docs/templates/${key}`) ? 'create-once' : 'vendor',
           ownership: 'managed',
           active: true,
           installable: true,
@@ -178,10 +179,11 @@ const EVALS_SCAFFOLD_PATHS = [
 ];
 
 describe('evals scaffold', () => {
-  it('ships the four scaffold files as shared vendor entries for a claude selection', () => {
+  it('ships the four scaffold files as shared entries, with the example task user-owned', () => {
     const byPath = new Map(getBundleInventory(['claude']).map((entry) => [entry.path, entry]));
     for (const path of EVALS_SCAFFOLD_PATHS) {
-      expect(byPath.get(path), path).toEqual(expect.objectContaining({ kind: 'vendor', harness: 'shared' }));
+      const kind = path.endsWith('example-task.json') ? 'create-once' : 'vendor';
+      expect(byPath.get(path), path).toEqual(expect.objectContaining({ kind, harness: 'shared' }));
     }
   });
 
