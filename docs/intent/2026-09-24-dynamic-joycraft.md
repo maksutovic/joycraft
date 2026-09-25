@@ -22,7 +22,7 @@ Joycraft was built to keep weaker models on task. Frontier models (Fable 5.1, Op
 
 ## Affected users and systems
 
-Every Joycraft user on Claude Code, Codex, Pi, Copilot, and omp. All 22 skills in `src/skills/`, the generator and sync scripts, the update machinery and its ownership kinds, the folder map, the model profile, the CLI, the templates, the intent inbox, the checkpoint pages, and the docs-sync gate. The parked Opus 5.5 prompting feature on `feature/opus-5-5-prompting`.
+Every Joycraft user on Claude Code, Codex, Pi, Copilot, and omp. Order of service, confirmed 2026-09-24: the maintainer first as the super-user, then the roughly fifteen colleagues who use Joycraft daily, on one path. Output of this exploration, confirmed: intent and evidence pack committed, no draft brief; panel findings delivered as an in-depth HTML artifact with a Markdown copy. All 22 skills in `src/skills/`, the generator and sync scripts, the update machinery and its ownership kinds, the folder map, the model profile, the CLI, the templates, the intent inbox, the checkpoint pages, and the docs-sync gate. The parked Opus 5.5 prompting feature on `feature/opus-5-5-prompting`.
 
 ## Constraints
 
@@ -36,8 +36,6 @@ Every Joycraft user on Claude Code, Codex, Pi, Copilot, and omp. All 22 skills i
 ## Open questions
 
 - P0–P11 in `docs/research/2026-09-24-dynamic-joycraft-evidence.md` section 9, each to be kept, flipped, or qualified by the panels.
-- Q2: the maintainer picked "solo practitioners of mixed skill" and wrote "me truly first." Confirm the order: maintainer as the super-user first, colleagues second, same path.
-- Q8: the maintainer picked "intent + draft brief + commit" and wrote "no brief though." Confirm: intent and evidence pack committed, no draft brief, panel findings delivered as an in-depth HTML artifact with a Markdown copy.
 - Can Stop hooks block in current Claude Code? The hooks page says no; prompt-type Stop hooks and `/goal` exist. Needs a direct check before any Stop-gate design.
 - Is a self-declared technical background reliable, or should the harness infer level from behavior?
 - What re-checks human-corrected architecture decisions as the code drifts?
