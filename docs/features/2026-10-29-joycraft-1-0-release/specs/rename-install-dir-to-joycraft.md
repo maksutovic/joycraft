@@ -13,7 +13,7 @@ reasoning_effort: high
 # Rename the Install Directory to .joycraft — Atomic Spec
 
 > **Parent Brief:** `docs/features/2026-10-29-joycraft-1-0-release/brief.md`
-> **Status:** Ready after spec 3, spec 4, spec 7, spec 8, spec 9, spec 21
+> **Status:** Ready after spec 3, spec 4, spec 7, spec 8, spec 9, spec 21, spec 22
 > **Date:** 2026-10-29
 > **Estimated scope:** Medium; about 106 files reference the old path
 > **Phase:** 3 — Rename

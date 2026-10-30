@@ -20,7 +20,7 @@ Ship the field build as `joycraft@1.0.0` on npm `latest`. First fix the failing 
 | 7 | [certify-codex-and-claude-hosts](certify-codex-and-claude-hosts.md) | 2 Host support | `joycraft-prototype` `field/1.0` | 6 | checkpoint |
 | 8 | [certify-pi-and-omp-hosts](certify-pi-and-omp-hosts.md) | 2 Host support | `joycraft-prototype` `field/1.0` | 6 | checkpoint |
 | 9 | [certify-copilot-and-opencode-hosts](certify-copilot-and-opencode-hosts.md) | 2 Host support | `joycraft-prototype` `field/1.0` | 6 | checkpoint |
-| 10 | [rename-install-dir-to-joycraft](rename-install-dir-to-joycraft.md) | 3 Rename | `joycraft-prototype` `field/1.0` | 3, 4, 7, 8, 9, 21 | isolated |
+| 10 | [rename-install-dir-to-joycraft](rename-install-dir-to-joycraft.md) | 3 Rename | `joycraft-prototype` `field/1.0` | 3, 4, 7, 8, 9, 21, 22 | isolated |
 | 11 | [cut-release-branch-and-vendor-payload](cut-release-branch-and-vendor-payload.md) | 4 Release vehicle | this repo, branch `release/1.0` | 10 | checkpoint |
 | 12 | [wire-cli-to-payload](wire-cli-to-payload.md) | 4 Release vehicle | this repo, branch `release/1.0` | 11 | isolated |
 | 13 | [detect-0-7-installs-and-dry-run](detect-0-7-installs-and-dry-run.md) | 4 Release vehicle | this repo, branch `release/1.0` | 12 | checkpoint |
@@ -28,16 +28,17 @@ Ship the field build as `joycraft@1.0.0` on npm `latest`. First fix the failing 
 | 15 | [add-rollback](add-rollback.md) | 4 Release vehicle | this repo, branch `release/1.0` | 14 | checkpoint |
 | 16 | [release-gate-tests-in-ci](release-gate-tests-in-ci.md) | 4 Release vehicle | this repo, branch `release/1.0` | 14, 15 | checkpoint |
 | 17 | [ship-final-0-7-nudge](ship-final-0-7-nudge.md) | 4 Release vehicle | this repo, from `main` (0.7.18) | 13 | checkpoint |
-| 18 | [rewrite-readme-for-1-0](rewrite-readme-for-1-0.md) | 5 Docs | this repo, branch `release/1.0` | 12 | checkpoint |
-| 19 | [write-install-and-migration-guides](write-install-and-migration-guides.md) | 5 Docs | this repo, branch `release/1.0` | 14, 15, 21 | checkpoint |
+| 18 | [rewrite-readme-for-1-0](rewrite-readme-for-1-0.md) | 5 Docs | this repo, branch `release/1.0` | 12, 21, 22 | checkpoint |
+| 19 | [write-install-and-migration-guides](write-install-and-migration-guides.md) | 5 Docs | this repo, branch `release/1.0` | 14, 15, 21, 22 | checkpoint |
 | 20 | [prepare-release-notes-and-feedback-channel](prepare-release-notes-and-feedback-channel.md) | 5 Docs | this repo, branch `release/1.0` | 16, 18, 19 | checkpoint |
 | 21 | [set-up-review-loop-verification-tools](set-up-review-loop-verification-tools.md) | 2 Host support | `joycraft-prototype` `field/1.0` | — | checkpoint |
+| 22 | [add-new-project-kickoff](add-new-project-kickoff.md) | 2 Host support | `joycraft-prototype` `field/1.0` | — | checkpoint |
 
 ## Execution waves
 
 | Wave | Specs |
 |---|---|
-| 1 | 1 resolve-hook-paths-from-project-root, 2 record-runtime-failure-detail, 5 add-data-loss-labels-and-escape-script, 21 set-up-review-loop-verification-tools |
+| 1 | 1 resolve-hook-paths-from-project-root, 2 record-runtime-failure-detail, 5 add-data-loss-labels-and-escape-script, 21 set-up-review-loop-verification-tools, 22 add-new-project-kickoff |
 | 2 | 3 fix-recorded-runtime-failures, 4 guard-foreground-wait-loops, 6 build-live-host-smoke-harness |
 | 3 | 7 certify-codex-and-claude-hosts, 8 certify-pi-and-omp-hosts, 9 certify-copilot-and-opencode-hosts |
 | 4 | 10 rename-install-dir-to-joycraft |

@@ -35,6 +35,14 @@ decisions:
   status: clarified
   choice: Setting up the review loop's verification tools (Playwright, simulators, emulators, depending on the project) is Joycraft's job. Install and upgrade tell the user what the review loop needs and ask before installing anything.
   rationale: Max, 2026-10-29. Spec 21.
+- id: D8
+  status: clarified
+  choice: A bare project gets an offered kickoff on first entry that captures the user's context (verbatim notes, follow-up rounds) into AGENTS.md, CLAUDE.md, docs/context/ and a first brief. No scaffold and no stack choice during the kickoff.
+  rationale: Max, 2026-10-29 — he will trial 1.0 on a new project whose context is in his head. Spec 22.
+- id: D9
+  status: clarified
+  choice: Installation is prompt-first. The README leads with a paste-into-your-agent prompt, and the agent runs npx itself; the CLI must be drivable with no TTY.
+  rationale: Max, 2026-10-29 — "the user shouldn't need to be running npm commands themselves". Specs 12 and 18.
 ---
 
 # Joycraft 1.0 release — Brief
@@ -62,7 +70,7 @@ Ship the Joycraft build that is in field use (`joycraft-prototype` `field/1.0`) 
 See [specs/README.md](specs/README.md). Five phases:
 
 1. **Gate fixes** in `joycraft-prototype` `field/1.0` and `joycraft-field`, then a field re-run.
-2. **Host support**: a live smoke harness, one spec per host family, and review-loop tool setup (spec 21).
+2. **Host support**: a live smoke harness, one spec per host family, review-loop tool setup (spec 21), and the new-project kickoff (spec 22).
 3. **Rename** `.joycraft-prototype/` → `.joycraft/`.
 4. **Release vehicle** in this repo on `release/1.0`: vendored payload, CLI wiring, 0.7 detection, `--migrate`, rollback, G10 tests, final 0.7 nudge.
 5. **Docs**: README, install and migration guides, paste prompts, CHANGELOG, feedback channel.

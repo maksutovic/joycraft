@@ -13,7 +13,7 @@ reasoning_effort: high
 # Rewrite the README for 1.0 — Atomic Spec
 
 > **Parent Brief:** `docs/features/2026-10-29-joycraft-1-0-release/brief.md`
-> **Status:** Ready after spec 12
+> **Status:** Ready after spec 12, spec 21, spec 22
 > **Date:** 2026-10-29
 > **Estimated scope:** Medium
 > **Phase:** 5 — Docs
@@ -29,14 +29,16 @@ Colleagues start from the README. The current one describes 0.7.
 
 ## Acceptance Criteria
 
-- [ ] **AC1:** The README states only what the payload and the host evidence support. Each claim maps to a file or an evidence entry.
-- [ ] **AC2:** The install and upgrade commands in it are run, as written, against the packed tarball in CI or the release gates.
-- [ ] **AC3:** No Jev, no `prototype`, no absolute paths.
+- [ ] **AC1:** The top of the README is a single **paste-this-into-your-agent** install prompt. The user never types an npm command. The agent runs `npx joycraft@latest init` itself (with `--plan --json` first), shows the plan, asks the user for the choices, applies, then runs first-use setup (spec 22 for a new project) and the review-loop setup (spec 21). A manual command section exists further down for people who want it.
+- [ ] **AC2:** The README states only what the payload and the host evidence support. Each claim maps to a file or an evidence entry.
+- [ ] **AC3:** The install and upgrade commands in it are run, as written, against the packed tarball in CI or the release gates.
+- [ ] **AC4:** No Jev, no `prototype`, no absolute paths.
 
 ## Test Plan
 
 | Acceptance Criterion | Test | Type |
 |---|---|---|
+| AC1 | Live: paste the prompt into each certified host on an empty folder and on a 0.7 fixture; the agent completes the install without the user typing a command. | Live |
 | AC2 | Extract the code blocks and run them in the release-gates job. | CI |
 
 **Execution order:** Write the tests first, confirm that they fail for the missing behavior, then implement until green. Live tests run last and record their evidence.

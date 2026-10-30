@@ -90,7 +90,8 @@
         7,
         8,
         9,
-        21
+        21,
+        22
       ],
       "status": "todo",
       "mode": "isolated"
@@ -163,7 +164,9 @@
       "id": 18,
       "file": "rewrite-readme-for-1-0.md",
       "depends_on": [
-        12
+        12,
+        21,
+        22
       ],
       "status": "todo",
       "mode": "checkpoint"
@@ -174,7 +177,8 @@
       "depends_on": [
         14,
         15,
-        21
+        21,
+        22
       ],
       "status": "todo",
       "mode": "checkpoint"
@@ -193,6 +197,13 @@
     {
       "id": 21,
       "file": "set-up-review-loop-verification-tools.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 22,
+      "file": "add-new-project-kickoff.md",
       "depends_on": [],
       "status": "todo",
       "mode": "checkpoint"

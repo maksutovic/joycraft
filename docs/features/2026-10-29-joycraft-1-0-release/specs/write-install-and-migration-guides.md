@@ -13,7 +13,7 @@ reasoning_effort: high
 # Write the Install and Migration Guides and Paste Prompts — Atomic Spec
 
 > **Parent Brief:** `docs/features/2026-10-29-joycraft-1-0-release/brief.md`
-> **Status:** Ready after spec 14, spec 15, spec 21
+> **Status:** Ready after spec 14, spec 15, spec 21, spec 22
 > **Date:** 2026-10-29
 > **Estimated scope:** Medium
 > **Phase:** 5 — Docs
