@@ -56,15 +56,18 @@ Settle each goal's "Done when" with the user while writing the brief; if it
 cannot be filled yet, record it as an open decision so dependent specs wait for
 the answer instead of a reviewer discovering it.
 
-When a few current brief decisions need an editable, shareable review surface,
-an artifact can render them without becoming a second decision store. Read
-`.joycraft/references/artifacts.md` only when preparing or using that
-surface; keep a short native question sufficient when it already resolves the
-choice.
+**Ask answerable questions in an artifact.** When the user must choose between
+options, record each choice as a brief decision and render the open decisions
+with the decision artifact (`.joycraft/references/artifacts.md`). Do not list
+option questions in chat: the artifact shows each question with its context and
+options, and saves the answers to the brief. Plain chat is only for one quick
+yes/no or an open question with no options. If you already asked option
+questions in chat and they are unanswered, move them to an artifact now.
 
-For a request to keep an artifact theme from now on, record `artifacts.theme` in
-that project's `.joycraft/preferences.json` and add one link to the existing
-context map when absent. Do not make it global or repeat the selected value in
+For a request to keep an artifact theme or colors from now on, record
+`artifacts.theme` or `artifacts.colors` in that project's
+`.joycraft/preferences.json` with the artifact CLI and add one link to the
+existing context map when absent. Do not make it global or repeat the values in
 the map. A one-off artifact theme stays on the render command.
 
 Choose the next action from what is missing: inspect code for facts, use

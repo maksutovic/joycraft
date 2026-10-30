@@ -24,8 +24,9 @@ Routine refinements within the answer do not require another approval.
 
 ## Decision artifacts
 
-When a small set of current choices benefits from an editable, visual review
-surface, use the conditional artifact workflow in [artifacts.md](artifacts.md).
+Ask the user to choose between options through the artifact workflow in
+[artifacts.md](artifacts.md), not as a list in chat. Plain chat is only for one
+quick yes/no or an open question with no options.
 The brief remains authoritative; artifact data selects what to show and does not
 copy the brief or hold independent answers.
 

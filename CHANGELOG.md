@@ -28,6 +28,12 @@ replaces the 0.7 skill set.
 - **No data collection, no model calls.** 1.0 ships no telemetry and no Jev
   runtime. The 0.7 `telemetry`, `check`, `upgrade`, `migrate` and
   `init-autofix` commands are gone.
+- **Questions go on a decision page.** When the agent asks you to choose
+  between options, it uses the decision artifact instead of chat, and saves your
+  answers to the brief.
+- **Artifact colors.** `node .joycraft/runtime/artifacts/cli.mjs colors --set
+  <colors.json>` sets the decision page's colors, for example from your design
+  system; `--reset` restores the defaults. Hard-to-read palettes are refused.
 - **Live host evidence.** Claude Code, Codex, Pi and Oh My Pi each passed a
   live run: implement a spec in one process, review and complete it in another.
 

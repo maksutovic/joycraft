@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { lstat, mkdir, open, readFile, realpath, rename, unlink } from 'node:fs/promises';
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { questionsFromBrief, saveAnswers } from './decisions.mjs';
-import { artifactTheme, checkedTheme } from './preferences.mjs';
+import { artifactTheme, checkedTheme, artifactColors } from './preferences.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const string = value => typeof value === 'string' && value.trim().length > 0;
@@ -95,7 +95,9 @@ export async function loadArtifact({ root = process.cwd(), brief, view, mode = '
   const { theme: _theme, ...semanticDefinition } = definition;
   const viewRevision = hash(JSON.stringify({ definition: semanticDefinition, inputs }));
   const theme = themeOverride ?? definition.theme ?? await artifactTheme(root) ?? 'light';
-  return { model: { schemaVersion: 1, artifactId, title: definition.title, summary: definition.summary ?? '', theme, source: { path: brief, revision, viewRevision }, questions, comparisons, reviews, mode }, text };
+  // Colors are display-only too: they stay out of the view revision.
+  const colors = (await artifactColors(root))?.[theme];
+  return { model: { schemaVersion: 1, artifactId, title: definition.title, summary: definition.summary ?? '', theme, ...(colors ? { colors } : {}), source: { path: brief, revision, viewRevision }, questions, comparisons, reviews, mode }, text };
 }
 
 export function localState(model) {

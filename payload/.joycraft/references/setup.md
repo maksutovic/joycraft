@@ -242,9 +242,9 @@ pending. An explicit setup-only request with no product context may end with tha
 question or the kickoff offer; do not generate a questionnaire or start building
 an imagined app.
 
-Use the project’s existing interaction home for a choice. One short current
-choice can stay in native chat or an existing artifact; several choices or a
-visual comparison can use a concise visual page. Retain a chat answer in the
+Use the project’s existing interaction home for a choice. A question with
+options goes in the decision artifact; only one quick yes/no or an open question
+with no options stays in native chat. Retain a chat answer in the
 owning brief and do not ask it again.
 
 ## Finish setup and continue

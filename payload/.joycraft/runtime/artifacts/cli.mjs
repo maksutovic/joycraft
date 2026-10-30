@@ -3,23 +3,34 @@ import { pathToFileURL } from 'node:url';
 import { loadArtifact, persistResponses, readProjectFile, writeArtifact } from './model.mjs';
 import { renderArtifact } from './render.mjs';
 import { startArtifact } from './server.mjs';
-import { setArtifactTheme } from './preferences.mjs';
+import { setArtifactColors, setArtifactTheme } from './preferences.mjs';
 
 export async function main(argv, root = process.cwd()) {
   const [command, ...args] = argv;
-  const flags = command === 'serve' ? ['--brief', '--view', '--theme'] : command === 'build' ? ['--brief', '--view', '--out', '--mode', '--theme'] : command === 'import' ? ['--brief', '--view', '--responses', '--apply'] : command === 'theme' ? ['--set'] : [];
-  if (!flags.length) throw new Error('Use serve --brief <path> [--view <path>] [--theme light|dark], build --brief <path> [--view <path>] --out <path> --mode claude|portable [--theme light|dark], import --brief <path> [--view <path>] --responses <path> [--apply], or theme --set light|dark');
+  const flags = command === 'serve' ? ['--brief', '--view', '--theme'] : command === 'build' ? ['--brief', '--view', '--out', '--mode', '--theme'] : command === 'import' ? ['--brief', '--view', '--responses', '--apply'] : command === 'theme' ? ['--set'] : command === 'colors' ? ['--set', '--reset'] : [];
+  if (!flags.length) throw new Error('Use serve --brief <path> [--view <path>] [--theme light|dark], build --brief <path> [--view <path>] --out <path> --mode claude|portable [--theme light|dark], import --brief <path> [--view <path>] --responses <path> [--apply], theme --set light|dark, or colors --set <colors.json> | --reset');
   const values = {};
   for (let i = 0; i < args.length; i += 1) {
     const flag = args[i];
     if (!flags.includes(flag) || Object.hasOwn(values, flag)) throw new Error(`Unknown or repeated argument: ${flag}`);
-    if (flag === '--apply') values[flag] = true;
+    if (flag === '--apply' || flag === '--reset') values[flag] = true;
     else { if (!args[i + 1] || args[i + 1].startsWith('--')) throw new Error(`Missing value for ${flag}`); values[flag] = args[++i]; }
   }
   if (command === 'theme') {
     if (!values['--set']) throw new Error('Theme needs --set light|dark');
     const preferences = await setArtifactTheme(root, values['--set']);
     console.log(JSON.stringify({ path: '.joycraft/preferences.json', theme: preferences.artifacts.theme }, null, 2));
+    return preferences;
+  }
+  if (command === 'colors') {
+    if (!values['--set'] === !values['--reset']) throw new Error('Colors needs --set <colors.json> or --reset');
+    let colors = null;
+    if (values['--set']) {
+      try { colors = JSON.parse((await readProjectFile(root, values['--set'])).toString('utf8')); }
+      catch (error) { throw new Error(`Could not read colors: ${error.message}`); }
+    }
+    const preferences = await setArtifactColors(root, colors);
+    console.log(JSON.stringify({ path: '.joycraft/preferences.json', colors: preferences.artifacts.colors ?? 'kit defaults' }, null, 2));
     return preferences;
   }
   if (!values['--brief']) throw new Error('Supply --brief as a path relative to the project root');

@@ -1,8 +1,9 @@
 # Decision artifacts
 
-Use an artifact when a few current brief decisions need a compact editable
-review surface, an editorial comparison of existing screenshots, or a review
-summary. It renders a selected view of the brief; the brief and queue remain
+Use an artifact for every question that asks the user to choose between
+options: record the choices as brief decisions, then render them. Also use one
+for an editorial comparison of existing screenshots or a review summary. Plain
+chat is only for one quick yes/no or an open question with no options. It renders a selected view of the brief; the brief and queue remain
 the source of truth. Do not use one for a routine native question, a product UI
 slice whose real interaction must be explored, or a long questionnaire.
 
@@ -68,7 +69,34 @@ node .joycraft/runtime/artifacts/cli.mjs theme --set dark
 ```
 
 That command preserves other project preferences and changes only
-`artifacts.theme`. Add one link to the existing context map for the preference
+`artifacts.theme`.
+
+## Colors
+
+A project can replace the kit's colors, for example with its design system. Read
+the project's existing color tokens (CSS variables, Tailwind theme, design-token
+files) or take the user's colors, and map them to the kit's names in a JSON file:
+
+```json
+{
+  "light": { "accent": "#0b5d3b", "accent-hover": "#084a2f" },
+  "dark": { "accent": "#9fe0bf" }
+}
+```
+
+The names are `canvas`, `paper`, `surface`, `ink`, `muted`, `line`,
+`control-line`, `accent`, `accent-hover`, `accent-text`, `accent-soft`, `focus`,
+`error`, `error-bg`, `caution` and `input`. Values are `#rrggbb`. Set only the
+colors you change; the rest keep the kit's values. Then record them:
+
+```sh
+node .joycraft/runtime/artifacts/cli.mjs colors --set <colors.json>
+node .joycraft/runtime/artifacts/cli.mjs colors --reset
+```
+
+`--set` refuses a palette whose text or controls would be hard to read and names
+each failing pair; adjust those colors and try again. `--reset` restores the kit
+colors. Colors are cosmetic like the theme. Add one link to the existing context map for the preference
 file when recording a durable preference, if it is not already linked; do not
 copy the selected value into the map. Theme is cosmetic: it does not change
 brief answers, source or view binding, or Claude answer storage.

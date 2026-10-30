@@ -75,6 +75,29 @@ You can feed it too. Give your agent meeting notes, a photo of a whiteboard or a
 screenshot, and ask it to add what matters to the project context. This gives the
 agent both views: the whole project and the detail of the current step.
 
+## Answering questions: the decision page
+
+When the agent needs you to choose between options, it shows the questions on a
+decision page instead of in chat. Each question shows its context, its options and
+what it affects. You pick an answer, add a note if you want, and save. The answers
+go into the brief, so the agent does not ask again.
+
+Sometimes the agent forgets and lists the options in chat. Then say:
+
+```text
+Put these questions in a Joycraft decision artifact so I can answer them there.
+```
+
+**Colors.** The page uses a light or dark theme. To match your project, ask:
+
+```text
+Use our design system's colors for Joycraft artifacts.
+```
+
+The agent reads your project's color tokens and saves them in
+`.joycraft/preferences.json`. You can also give it your own colors. Joycraft
+refuses colors that make text or buttons hard to read.
+
 ## What Joycraft is
 
 Joycraft is a set of agent skills and a small set of scripts. It installs into your
