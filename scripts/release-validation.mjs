@@ -1,9 +1,10 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { HARNESS_SELECTIONS } from './validate-package.mjs';
 
 export const COMPATIBILITY_STACKS = Object.freeze(['node', 'python', 'rust', 'go']);
-export const HARNESS_SELECTIONS = Object.freeze(['claude', 'codex', 'pi', 'copilot', 'omp', 'claude-codex', 'all']);
+export { HARNESS_SELECTIONS };
 
 // The two supported consumer lanes plus the explicit minimum-runtime smoke
 // lane. The latter is Linux-only because the approved matrix has one minimum
