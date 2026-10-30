@@ -89,7 +89,8 @@
         4,
         7,
         8,
-        9
+        9,
+        21
       ],
       "status": "todo",
       "mode": "isolated"
@@ -172,7 +173,8 @@
       "file": "write-install-and-migration-guides.md",
       "depends_on": [
         14,
-        15
+        15,
+        21
       ],
       "status": "todo",
       "mode": "checkpoint"
@@ -185,6 +187,13 @@
         18,
         19
       ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 21,
+      "file": "set-up-review-loop-verification-tools.md",
+      "depends_on": [],
       "status": "todo",
       "mode": "checkpoint"
     }

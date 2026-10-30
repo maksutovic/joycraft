@@ -32,7 +32,7 @@ G4 requires at most 1 harness failure per 10 specs, and week 2 no worse than wee
 - [ ] **AC1:** Each distinct `error` signature in `failures.jsonl` from the collection window is either fixed with a regression test that reproduces it, or documented in the spec report as an external cause with evidence.
 - [ ] **AC2:** Reviewer dispatch-start failures since `field-1` have a root cause and a fix. A reviewer start that fails is retried once, then reported with detail. It never fails silently.
 - [ ] **AC3:** `refusal`-class records are counted, but they are not "fixed" by weakening the check.
-- [ ] **AC4:** `## Decision needed` (D6): ask Max whether `refusal` records count as G4 harness failures. Until he decides, the digest reports both counts.
+- [ ] **AC4:** D6 (Max, 2026-10-29): `refusal` records are not G4 harness failures. The ingest excludes them from G4 and the digest reports them on their own line (GATES.md amendment `fd12948` in `joycraft-field`).
 
 ## Test Plan
 

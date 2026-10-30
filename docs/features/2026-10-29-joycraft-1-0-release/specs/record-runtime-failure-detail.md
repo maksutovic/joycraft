@@ -31,7 +31,7 @@ Most of the 45 runtime-failure flags since `field-1` say only "error" or "exit N
 
 - [ ] **AC1:** Each listed runtime command writes one JSON line to `.joycraft/local/failures.jsonl` on a non-zero exit, with the fields above.
 - [ ] **AC2:** Each "Dispatch stopped: …" exit is classified `refusal`; any other non-zero exit is classified `error`.
-- [ ] **AC3:** `bin/ingest.py` stores the command, classification and stderr excerpt in the flag detail, and the digest groups by command and classification.
+- [ ] **AC3:** `bin/ingest.py` stores the command, classification and stderr excerpt in the flag detail, counts only `error` records toward G4 (D6), and the digest groups by command and classification.
 - [ ] **AC4:** No record is written on success, and a failure to write the record never changes the command's own exit code.
 
 ## Test Plan

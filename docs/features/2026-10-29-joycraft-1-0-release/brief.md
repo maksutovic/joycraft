@@ -28,9 +28,13 @@ decisions:
   choice: Jev is not shipped.
   rationale: Max, 2026-10-16 ("omit"). G11 checks the payload.
 - id: D6
-  status: open
-  choice: Whether by-design runtime refusals ("Dispatch stopped: Evidence rejected", "Changed path is outside verification inputs") count as G4 harness failures.
-  rationale: GATES.md is frozen; a definition change needs Max's approval and its own commit.
+  status: clarified
+  choice: By-design runtime refusals ("Dispatch stopped: Evidence rejected", "Changed path is outside verification inputs") are not G4 harness failures. They are reported on their own line.
+  rationale: Max, 2026-10-29 — "they were doing their job". GATES.md amendment fd12948 in joycraft-field.
+- id: D7
+  status: clarified
+  choice: Setting up the review loop's verification tools (Playwright, simulators, emulators, depending on the project) is Joycraft's job. Install and upgrade tell the user what the review loop needs and ask before installing anything.
+  rationale: Max, 2026-10-29. Spec 21.
 ---
 
 # Joycraft 1.0 release — Brief
@@ -58,7 +62,7 @@ Ship the Joycraft build that is in field use (`joycraft-prototype` `field/1.0`) 
 See [specs/README.md](specs/README.md). Five phases:
 
 1. **Gate fixes** in `joycraft-prototype` `field/1.0` and `joycraft-field`, then a field re-run.
-2. **Host support**: a live smoke harness and one spec per host family.
+2. **Host support**: a live smoke harness, one spec per host family, and review-loop tool setup (spec 21).
 3. **Rename** `.joycraft-prototype/` → `.joycraft/`.
 4. **Release vehicle** in this repo on `release/1.0`: vendored payload, CLI wiring, 0.7 detection, `--migrate`, rollback, G10 tests, final 0.7 nudge.
 5. **Docs**: README, install and migration guides, paste prompts, CHANGELOG, feedback channel.
@@ -67,7 +71,7 @@ See [specs/README.md](specs/README.md). Five phases:
 
 - Jev, judge and evals in the payload.
 - A full TypeScript port of the prototype runtime. The payload is vendored as-is.
-- Changing GATES.md thresholds (D6 is the only open definition question).
+- Changing GATES.md thresholds. The D6 definition amendment is the only change.
 - Org transfer (Ginga Labs) and Blacksmith, parked by Max until after launch.
 
 ## Boundaries

@@ -13,7 +13,7 @@ reasoning_effort: high
 # Write the Install and Migration Guides and Paste Prompts — Atomic Spec
 
 > **Parent Brief:** `docs/features/2026-10-29-joycraft-1-0-release/brief.md`
-> **Status:** Ready after spec 14, spec 15
+> **Status:** Ready after spec 14, spec 15, spec 21
 > **Date:** 2026-10-29
 > **Estimated scope:** Medium
 > **Phase:** 5 — Docs
@@ -31,7 +31,8 @@ D1's condition: existing users must know exactly what the upgrade does.
 
 - [ ] **AC1:** Every command in the guides is run in the release-gates job.
 - [ ] **AC2:** Each prompt tells the agent to run the dry run first and to report before applying.
-- [ ] **AC3:** The migration guide's "what stays" list matches spec 14's carry-over list exactly.
+- [ ] **AC3:** The install guide and the install and upgrade prompts include the review-loop setup step from spec 21: the agent detects the project type, lists the verification tools the review loop needs, shows what is present and missing, and asks before installing anything.
+- [ ] **AC4:** The migration guide's "what stays" list matches spec 14's carry-over list exactly.
 
 ## Test Plan
 
