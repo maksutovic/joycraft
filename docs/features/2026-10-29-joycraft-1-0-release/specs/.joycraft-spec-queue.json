@@ -1,0 +1,192 @@
+{
+  "feature": "2026-10-29-joycraft-1-0-release",
+  "execution": {
+    "model": "claude-opus-5-5",
+    "effort": "high",
+    "parallel_waves": true
+  },
+  "specs": [
+    {
+      "id": 1,
+      "file": "resolve-hook-paths-from-project-root.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 2,
+      "file": "record-runtime-failure-detail.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 3,
+      "file": "fix-recorded-runtime-failures.md",
+      "depends_on": [
+        2
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 4,
+      "file": "guard-foreground-wait-loops.md",
+      "depends_on": [
+        1
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 5,
+      "file": "add-data-loss-labels-and-escape-script.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 6,
+      "file": "build-live-host-smoke-harness.md",
+      "depends_on": [
+        1
+      ],
+      "status": "todo",
+      "mode": "isolated"
+    },
+    {
+      "id": 7,
+      "file": "certify-codex-and-claude-hosts.md",
+      "depends_on": [
+        6
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 8,
+      "file": "certify-pi-and-omp-hosts.md",
+      "depends_on": [
+        6
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 9,
+      "file": "certify-copilot-and-opencode-hosts.md",
+      "depends_on": [
+        6
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 10,
+      "file": "rename-install-dir-to-joycraft.md",
+      "depends_on": [
+        3,
+        4,
+        7,
+        8,
+        9
+      ],
+      "status": "todo",
+      "mode": "isolated"
+    },
+    {
+      "id": 11,
+      "file": "cut-release-branch-and-vendor-payload.md",
+      "depends_on": [
+        10
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 12,
+      "file": "wire-cli-to-payload.md",
+      "depends_on": [
+        11
+      ],
+      "status": "todo",
+      "mode": "isolated"
+    },
+    {
+      "id": 13,
+      "file": "detect-0-7-installs-and-dry-run.md",
+      "depends_on": [
+        12
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 14,
+      "file": "migrate-from-0-7.md",
+      "depends_on": [
+        13
+      ],
+      "status": "todo",
+      "mode": "isolated"
+    },
+    {
+      "id": 15,
+      "file": "add-rollback.md",
+      "depends_on": [
+        14
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 16,
+      "file": "release-gate-tests-in-ci.md",
+      "depends_on": [
+        14,
+        15
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 17,
+      "file": "ship-final-0-7-nudge.md",
+      "depends_on": [
+        13
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 18,
+      "file": "rewrite-readme-for-1-0.md",
+      "depends_on": [
+        12
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 19,
+      "file": "write-install-and-migration-guides.md",
+      "depends_on": [
+        14,
+        15
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 20,
+      "file": "prepare-release-notes-and-feedback-channel.md",
+      "depends_on": [
+        16,
+        18,
+        19
+      ],
+      "status": "todo",
+      "mode": "checkpoint"
+    }
+  ]
+}
