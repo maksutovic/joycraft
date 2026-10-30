@@ -10,14 +10,14 @@
       "id": 1,
       "file": "resolve-hook-paths-from-project-root.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint"
     },
     {
       "id": 2,
       "file": "record-runtime-failure-detail.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint"
     },
     {
@@ -42,7 +42,7 @@
       "id": 5,
       "file": "add-data-loss-labels-and-escape-script.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint"
     },
     {
@@ -199,14 +199,14 @@
       "id": 21,
       "file": "set-up-review-loop-verification-tools.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint"
     },
     {
       "id": 22,
       "file": "add-new-project-kickoff.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint"
     },
     {

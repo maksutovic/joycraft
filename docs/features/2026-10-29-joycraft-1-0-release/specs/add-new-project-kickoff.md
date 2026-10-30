@@ -1,5 +1,5 @@
 ---
-status: todo
+status: in-review
 owner: Maximilian Maksutovic
 created: 2026-10-29
 feature: 2026-10-29-joycraft-1-0-release
