@@ -27,12 +27,12 @@ export const HARNESS_SELECTIONS = Object.freeze([
   'claude',
   'codex',
   'pi',
-  'copilot',
   'omp',
-  'claude-codex',
+  'copilot',
+  'opencode',
   'all',
 ]);
-const HARNESS_DIRS = Object.freeze({ claude: '.claude', codex: '.agents', pi: '.pi', copilot: '.github', omp: '.omp' });
+const ALL_HOSTS = ['claude', 'codex', 'pi', 'omp', 'copilot', 'opencode'];
 
 const STACK_FIXTURES = Object.freeze({
   node: ['node-npm/package.json'],
@@ -52,9 +52,7 @@ function stableNode(value) {
 }
 
 function selectionArgs(selection) {
-  if (selection === 'all') return 'all';
-  if (selection === 'claude-codex') return 'claude,codex';
-  return selection;
+  return selection === 'all' ? ALL_HOSTS.join(',') : selection;
 }
 
 export function expectedCompatibilityCheckIds(os, node) {
@@ -126,10 +124,10 @@ function assertCliOutcome(result, command, expectedHarnesses, version) {
   if (outcome.exitCode !== 0 || !["applied", "noop"].includes(outcome.status)) {
     throw new Error(`${command} returned an unsuccessful outcome: ${JSON.stringify(outcome)}`);
   }
-  if (outcome.targetVersion !== version && outcome.installedVersion !== version) {
+  if (outcome.version !== version) {
     throw new Error(`${command} did not report retained version ${version}`);
   }
-  if (JSON.stringify(outcome.harnesses) !== JSON.stringify(expectedHarnesses)) {
+  if (JSON.stringify(outcome.hosts) !== JSON.stringify(expectedHarnesses)) {
     throw new Error(`${command} reported unexpected harness selection`);
   }
   return outcome;
@@ -184,11 +182,11 @@ function assertTreeUnchanged(root, snapshot) {
 }
 
 function assertInstalledManifest(projectRoot, version, expectedHarnesses) {
-  const path = join(projectRoot, 'docs', '.joycraft', 'manifest.json');
+  const path = join(projectRoot, '.joycraft', 'installation.json');
   if (!existsSync(path)) throw new Error('CLI did not write an installation manifest');
   const manifest = JSON.parse(readFileSync(path, 'utf8'));
-  if (manifest.targetVersion !== version) throw new Error(`Installation manifest targetVersion is not ${version}`);
-  if (JSON.stringify(manifest.harnesses) !== JSON.stringify(expectedHarnesses)) {
+  if (manifest.joycraft !== version) throw new Error(`Installation manifest version is not ${version}`);
+  if (JSON.stringify(manifest.hosts) !== JSON.stringify(expectedHarnesses)) {
     throw new Error('Installation manifest harness selection does not match the requested selection');
   }
 }
@@ -199,17 +197,16 @@ async function runCompatibilityCheck({ executable, root, fixturesRoot, os, node,
   copyFixture(projectRoot, stack, fixturesRoot);
   const before = snapshotFixtures(projectRoot, stack);
   const harnesses = selectionArgs(selection);
-  const expectedHarnesses = selection === 'all'
-    ? ['claude', 'codex', 'pi', 'copilot', 'omp']
-    : harnesses.split(',');
-  const common = ['--harnesses', harnesses, '--non-interactive', '--yes', '--json'];
+  const expectedHarnesses = harnesses.split(',');
+  const common = ['--harness', harnesses, '--yes', '--json'];
   const initOutcome = await runCli(executable, ['init', projectRoot, ...common], root);
   assertCliOutcome(initOutcome, 'init', expectedHarnesses, version);
   assertInstalledManifest(projectRoot, version, expectedHarnesses);
-  for (const harness of ['claude', 'codex', 'pi', 'copilot', 'omp']) {
-    const artifact = join(projectRoot, HARNESS_DIRS[harness], 'skills', 'joycraft-tune', 'SKILL.md');
-    if (expectedHarnesses.includes(harness) !== existsSync(artifact)) {
-      throw new Error(`Harness selection ${selection} produced an unexpected ${harness} artifact`);
+  // Claude Code reads .claude/skills; every other host reads the shared .agents/skills.
+  const expected = { '.claude': expectedHarnesses.includes('claude'), '.agents': expectedHarnesses.some(host => host !== 'claude') };
+  for (const [dir, wanted] of Object.entries(expected)) {
+    if (wanted !== existsSync(join(projectRoot, dir, 'skills', 'joycraft-entry', 'SKILL.md'))) {
+      throw new Error(`Harness selection ${selection} produced an unexpected ${dir} skill tree`);
     }
   }
   const afterInitTree = readTree(projectRoot);

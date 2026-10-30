@@ -1,0 +1,914 @@
+{
+  "schemaVersion": 1,
+  "source": "npm joycraft",
+  "versions": [
+    "0.7.0",
+    "0.7.1",
+    "0.7.2",
+    "0.7.3",
+    "0.7.4",
+    "0.7.5",
+    "0.7.6",
+    "0.7.7",
+    "0.7.8",
+    "0.7.9",
+    "0.7.10",
+    "0.7.11",
+    "0.7.12",
+    "0.7.13",
+    "0.7.14",
+    "0.7.15",
+    "0.7.16",
+    "0.7.17"
+  ],
+  "files": {
+    ".agents/skills/joycraft-add-context/SKILL.md": [
+      "3552459f82bae9592c4a39d0e79755199eef7ec70d0277da513151b807704d9c",
+      "42d8dfbc2726121000983a765416362631d30da6ad3407cc451d472e874ba866",
+      "524cebc35209abf1376c7f91166b966e259bfd5f7fbab257a1ff61f34cc935e9"
+    ],
+    ".agents/skills/joycraft-add-fact/SKILL.md": [
+      "0a7714a9486d0e7ddba1a4d172ffe2b92be66d614f777a7120913fed62ff683f",
+      "3bfa28388bc8f855167ea12e979daaddb8b05c894693501e73c642f0bac51d56",
+      "5ea873c4b23e3343a27a5e7d3b7bf1fa68eeb6643085150b1d9185f6df714c0a",
+      "87a3e4423cb21ae648ecd730e43d2f17bac72ee0f9bd14f2bd20f41d6550634a"
+    ],
+    ".agents/skills/joycraft-bugfix/SKILL.md": [
+      "035ee49dd48a5122fe5d34dfeb1d6e2de68b244fd24e9a8ed6349351725c311d",
+      "1606b355cde55f02b5c00575ce5a4059e0e87a898cbd2ae35b0e95f4e3c966fa",
+      "393fe6351ba3828df23bff13cfafdcb358a15e75c235dad4f6e1e0ea0e325d77",
+      "ba99f7520355b1bfc8283f09eff096501eda3f03fc31f67f38b7110e7b180443",
+      "da58b059d600c8ab5efa2f0f98118c639e5af416c524ff0acf9af440d2aba822",
+      "f4527630a23deede8f68aba8c3b64ea564e65a47fbde2b3a1be847988fe9bae5"
+    ],
+    ".agents/skills/joycraft-collaborative-setup/SKILL.md": [
+      "2461307868cd5a2dd5393cddd81edb95c213ea595ed8b6e1c65157432f39e64f",
+      "a1e0e91afcbb5bdf088e2204fe4c40bb7427c4cf14d9f1d18ebc06c09af9adb2",
+      "af5f665b53717af8c140020a44e414f1980b5e4966fc790d69fe4258a2de6b21"
+    ],
+    ".agents/skills/joycraft-decide/SKILL.md": [
+      "0bea63b35e2b8c862066a7ac9a62c5d0065de8da833ab7a76d1b581b94a3b522",
+      "2c729d3d91e5ff70ecb8733488366fced7aa524261450b258b23a5d056e72f03",
+      "8aa34fd72ce7f45ec137b51c559a850910ccd7c6bfda3ee9aaa3ce4b7a08b506",
+      "9dda5a4dfd14d3ef8726359f974dbfaf6f8aae4ca5daabcd9a4debed5516e8e5",
+      "9e01a048ec30d9982281bed2d66af8ceceb714eafdf1006ba27a1ce57277b569",
+      "d375f28bbc231ceea69521b28b92ec2910f882647599f7b2af83daea00667b46"
+    ],
+    ".agents/skills/joycraft-decompose/SKILL.md": [
+      "0f02cb2615a35257e3f9b660b0426d98a0528c05ba09d96e5dc07fc7481be447",
+      "258d2fc4c73075064fae36892c5148cf3059febb62daaa071ca59f185fbdba2a",
+      "98daa692bcec5474d1e03bf9e897dd6956cd444566d928d51323837aa12a7dda",
+      "a3e6db3844284a56a0b3378a4f9fe89981e97ef9a3b973249b250a75ab50a695",
+      "ca128f4caf382952aafc662ee7f49f963d32a3b7a231a8f7d212b4495e2651bb",
+      "d8dbb33fd4320712f66cd88f0cf4fcd35e61f0459edfe689cc91bb90924eab83",
+      "fe4e8759aeb6a28f7d46a8ec12c7b764e463fe45ed392e7e8ffb01c5ba8db2c3"
+    ],
+    ".agents/skills/joycraft-design/SKILL.md": [
+      "4b4886b28871551d84fb9bd2ce3593117c13e274e7303b22eca7b3516a0d5786",
+      "4f928454c9db8ae87958865a9ec8332b529d245f68c217cd900a04920766ea49",
+      "60063279325326986e191677f00e98562bcf1e9de3704a1b8f21cb61e1376588",
+      "9344c55aeb84f234665356230d57dfe8d755390e8b6a395a59197163203419e9",
+      "c5041350ff0d52cbaefd9d0de6b384d2e05d4b5925d55650022bf10289671f3f",
+      "dd6931eefdd515ba174cb0eb71ccf92b31538479075195a0e06fe08d75e2fdc8",
+      "eacfdd6285c79a647ae4bd97337b7ebe8910fbf91ca7a737c73aa84cc56d82dd"
+    ],
+    ".agents/skills/joycraft-gather-context/SKILL.md": [
+      "18b228d0c63fea402a498bcba179c6536471ac40df08107d871932572764ee7b",
+      "2c6ac1e77c7d8e4ef14e4a1439eb124dc96036380db1925a5be067119e682eea",
+      "9e1785b6f038cbef36ff40e2506b1bf873edc5870c9881fbbbb5266e931e0463"
+    ],
+    ".agents/skills/joycraft-harden/SKILL.md": [
+      "03215b96db25b9c22c73dbc337af09c0f0773ab8bab185d417afdcc68f8d47c8",
+      "2461393ee8ed7f7a861e00d9970447d8b40db383ef8416b303db4bce49efe654",
+      "3fb9b50cc34f8289d2669dfc432cbc07ccb9d737e6741fd5163667b9e9d6356b"
+    ],
+    ".agents/skills/joycraft-implement-feature/SKILL.md": [
+      "28ab498b0f2fddc9b645aec22222b662d60b98028e7056c0f5d4f9ce637f5bd7",
+      "54036db549ecddbc4bbc10f2cb12cec7d826b7cbdcb9a6e1d71323abe06bf0c0",
+      "b1ed63f1ba856702179a99fc6ae79b501eeed1a056870da54d8667b4039fb953"
+    ],
+    ".agents/skills/joycraft-implement-level5/SKILL.md": [
+      "1409cc994f0b4a04e7bc517759aeed767a925e69592ea088b5151825020a913b",
+      "796b6430db87a59ef2408ebaf0b416db7b80562fca82ba753f760742fdfdfede",
+      "bd719467d595d284b45c65ff8540a187ae933a573a4dd830247d5dd3f887881f",
+      "db21c8481b9a2e02af2ff10f303e2741780b8ffae1d9d3c4d341dc7acb4f2178"
+    ],
+    ".agents/skills/joycraft-implement/SKILL.md": [
+      "2236e108047211a29089018e7c861d0f0120d9590d8665a040626b61036284b4",
+      "3f1402f33d880861370d933be46efee8a53ea18ca8549f60d5e45b04738c78e7",
+      "57547087d09edb764ada5acc4b895221ba2e01826797af7e108b34e8ce4f8b82",
+      "604aaa84a81badaecd847e57820def32da072feb42bf856a6757095a66f3eb0d"
+    ],
+    ".agents/skills/joycraft-interview/SKILL.md": [
+      "3e647685a5b880464716df2ab772d350ead1e2c13d90f3235d3e04a5146205c9",
+      "5edf0da054e9b40545a12fbd4713d77f782d3842533849bf732a591421c054c6",
+      "5fe3b36a2bfbec31ff401586b4393549dbee22beba0acdbd08577bdff504300f",
+      "616e5c327904b1b1acd4ddde59405087f6d742d80b28767f187a6200ee651e90",
+      "80833462ce43eff4ff01f7a5d070f22583f555449cca8b99aa861b763096b924",
+      "81a7a9314867de9fdc06db1aa57b5c82e3d0ca7c54cc6495f2d44db6e4aa4afe",
+      "ac051446717562321ef531551dec8456e91db5d36cbcbe2dd92a9ee30ab12401",
+      "e19870b9c1356a11a4a9c85fd17f01b25837e56d85f3938282cfdb9712455856",
+      "e27694e78fe72f06e15728b44c0ad66d47582191fb0174ca2caa2e69d9ece96e"
+    ],
+    ".agents/skills/joycraft-lockdown/SKILL.md": [
+      "04a9ec840a0d0f3a20aa859ee5e1eb1cdf0e6a50e1c8f2122e2ada132b77898c",
+      "0ac193acb9d2a3e8720c1fd344eaf4bcd5918174fad502c55f0dd6e8219beed1",
+      "c4c605ff7340b870d83aafa80bb9b6334377a9f77912954169c44caa089a2a9a"
+    ],
+    ".agents/skills/joycraft-new-feature/SKILL.md": [
+      "250c28b083bd2cdcbff717154033713eea0a6c3bbe77681ba33f5e59d1561dbb",
+      "27ceb25d4ad94af4cb9da18e5e904377e5aacdf8421fa2389ac57eb85fb52940",
+      "4f7d5582df3ba76cf49fb1f353ee527766aec1d9afc36b5ec84c8776cd86f401",
+      "b9f65b7d2658007aa7b08877ab3aa53941fafea67245879139e7f13ed15100b6",
+      "baed27584bd48b6155b736fc55ebfe61a5218917d7a726bfc7f2584b2d6424c1",
+      "c83e3052ded8a01ddcff6d9362590e3b18eb5a382cde26240a08a52e2094d83f",
+      "eab5f59c8ebb896f9a814dbff9f7f9b8fdfbdbcb974f82bc0c296d64ce34920b"
+    ],
+    ".agents/skills/joycraft-optimize/SKILL.md": [
+      "0b26f7b85950f565c556cd52b9a6807c677f53b366ade7490ec5f4fc2668468a",
+      "0f36af9ecf21593ddc4eff9bd0a674f109e618a88cd85610f542acd85056a994",
+      "1ac6956ea99dfde76bd09b84e0dd9dc992ef12b96dbb24a3e8252a2d2c1c0ff2",
+      "23f1d24e918dc52c7278b6002aa39582569fa2a5244204c6aa78cc754fdc654d",
+      "37b8050071221474a7819f79566dc43aac4d57fd9d2c9d4c15f8e5aa33058281",
+      "54b7557ee411ffb2f47adc4c7aa05a8c4559956cd7fd8b54215c686ffb983adb",
+      "60faf2670549859a5813f6ce4b1194e2e5b4c5a2c664c89cec4d647b0d0b7628",
+      "797b0749fb5656576e4574127cec2537429a8387eff629f44a744598966ce8f5"
+    ],
+    ".agents/skills/joycraft-research/SKILL.md": [
+      "08bae7c5fe747b0dbdc4107cfba032e5d83224a82e5e9be64bbc8a84b6e9a4b7",
+      "48ab9f6eeda0f9683de6ce5f54ea844cb902c7c5f4843eaa0740fb2d9847d02f",
+      "8b8bd4965c82dfbd51d689824a9f28a3863afba7cff7bedbe3f301fda777a412",
+      "a4ab3eed85ae567956fea6c8adea2f6ec3685306619e141d3c9759109004e8c0",
+      "f643a163bbe4bba4341faad87c8ca8fd24d3ac9a067e780b28fc6db0ac944936"
+    ],
+    ".agents/skills/joycraft-session-end/SKILL.md": [
+      "139024fb7b2c3fa57662f7d54cd1e5678316b9ca91dce2730b1b7a7fefdf78ed",
+      "64da17d75c2b5d2a9053fe4f73a6fca04bedc5987723a6e379f411e2dfd51084",
+      "cb94e48273a5ceacf229c4f6849d8f39bbb3d1b582c284302068fad2648d1cb2",
+      "cbbe16935bcf4aa580a8e72839571d0910a9a79455c09f20672c30f28b6cb695",
+      "cf9fd4d514eb12e899eb3198a5f6458df767e4e91c6f7fbf6a7c6fa0f6cc6962",
+      "fe859e65347284e23154133e4e43c06ebd1bec7794524f5a5a167a6435ea6756"
+    ],
+    ".agents/skills/joycraft-setup/SKILL.md": [
+      "1a3ad70a42ba6c15fb3dccd115656e04823aecb196de2092b3755fc62c56b5cd",
+      "c291966d67d0298c3c9cbd7d1f3765770532e48f568a218304a67131be7f285f"
+    ],
+    ".agents/skills/joycraft-spec-done/SKILL.md": [
+      "35dc99b7feaa220929548f50fc96d88ff62b17af4e81666cf5f8cf1d2e09497c",
+      "4018ed142f00ca4d2934c0f213a1047a9dc92d3348d89aa0565198dd6ba118cf"
+    ],
+    ".agents/skills/joycraft-tune/SKILL.md": [
+      "03cab8773c3d5956b83ef88eca5fba84bc696c544fb2bafb54a5b96ef0ad6ff6",
+      "12489de7eb9bc4f118f11378938d6d6bdb97b1bd608afc8eed7f654412846d10",
+      "17a41a8ad2717ec60bdc248b2634a97574946315492026874efdd496e659ae89",
+      "1b434cb1fbcec9596865267f7fa1a3ed86c3ff3e1b676d9449e9040c953519b2",
+      "215125740a765855203ebf78f2f0211b58a654fdd4431afaf0a8e58c09edcc7f",
+      "953bc53b32f5d3962a4d53cf062cb572e1fe3cf26e1beefd4b516464f102ee6f",
+      "9c54e8bc558d7c782b16836c2c9b5d40835e19bcfcf4792ca1c13e34437d3137",
+      "b8947f89104ae15d1a4ce89cdbc0f29f508a174d5fc6051d32a80dfda32be75f",
+      "c6b065726e03d5895943522567acf8f74d37a02b5a7af5a93dfdc8603dffe182"
+    ],
+    ".agents/skills/joycraft-verify/SKILL.md": [
+      "3dd8dbf143143092e2dcd5dedf9a6690af86e20cfb6695b1f9beb0e8816e2cdf",
+      "800a2891c66edce4cbf243f6619540f8fa6f8ddc69f55d6e44a2f4844273c17b",
+      "a672d21028c8e9c98f577d5b10d6fd7a2e2b52e1f4f328ec64c0688ce366af35",
+      "d7ab9b37166f7db05f85800143204f7fa7fb31edf15ca88a4cb282e4c618eeb2"
+    ],
+    ".claude/hooks/joycraft-version-check.mjs": [
+      "0278e6080b532d372f4a639e534fc7a6a0f2a065d8c0db1a94a8e497925c6784",
+      "6bb3f624676067f66bd2b31dba5551f4af65164267abc449cb2fe7cc8771fb31",
+      "974cd86fba4bb643aca6ccf2fe01c5f9bbbcad69ac463b90fc534cda16dcd10c"
+    ],
+    ".claude/hooks/joycraft/block-dangerous.sh": [
+      "804a8cf8a03fc3fa44ced1b81e6c71b5c953d0561e2f871a9f83fb5bb37e34ef",
+      "e58f11ebaf1eac1c4bd1b95f89b51c0ed5b403a547ae8fc592047878d04af59d"
+    ],
+    ".claude/hooks/joycraft/deny-patterns.txt": [
+      "90a835dc97522d05c232a44de6c89dae3a9d679ec5a1eacf3ad46862441bb84e"
+    ],
+    ".claude/skills/joycraft-add-context/SKILL.md": [
+      "422d7a90d925c078131abacb8b879f011eca41e8a957c01e12c607978fa9f311",
+      "5956306bfb46f0e8902ac600c836286f2eb5d9c08337dcceddbed22e3e11f4e7",
+      "65d668e04dcfce62d7c0519314520c254a38533a482a7a1ca3b3c2c7da45bad8"
+    ],
+    ".claude/skills/joycraft-add-fact/SKILL.md": [
+      "095b8672fba2ec6ffc3390749cab92ff7f1ed52d09a02c7e832ef1a1323d4fcd",
+      "1d0afcee0e802f964e2ee026a30044128c9ef5203386c29dc0fbaea649ca1fab",
+      "78de4864957d916edb2063bd8d596b92d5be29953a4feb4e15cfa0281135c860",
+      "b841673c45fcd626abdd274f0de62f6c8d83ad6cba49ccc49fa67685569be74d"
+    ],
+    ".claude/skills/joycraft-bugfix/SKILL.md": [
+      "08979481d775e49213687937f3b4d4d156d6942e48dac0d981d8671cce0f1cac",
+      "1b1ac3ff486cf7f1956a2d774b347e44d14d8f21a3bb2b2028d375bb7499859d",
+      "3e4b31920091f2c6b57b86d414720f036d07ea47a42507735c92f310d29f585c",
+      "8129c78043f1f01feb491c13fb97100debb7a984b32befc33251ed91b5b5b96e",
+      "8d3f71d22b0de6363a2f4c51485e62c64e2b37e0c33a8005fafc5959e75585f9",
+      "93f4cf2f828e4f5c0b9b1651dbf15d72e5ef5e039ed7af7a940b07f65555ebbd",
+      "d01a615d6749f3cb377896cbbbebfdbca33e071805568b046d412243c53f512d"
+    ],
+    ".claude/skills/joycraft-collaborative-setup/SKILL.md": [
+      "07f6cbcdbbab9e0c61e5786f39170ddaa274262e313b376acb0b61078a21186e",
+      "3f410c8c5b618112f9ecdd9efaaebe7bf96e5909560b9a9bb9588835560bb760",
+      "6cbfd209846cabe2cb3aa98ab412c51cac297f81383b3719bc121272376e2dca",
+      "c81c26b581089a406ca2ff6b8f3a42ae50601b4bd09bcfe0859bc5ec06a1dc51"
+    ],
+    ".claude/skills/joycraft-decide/SKILL.md": [
+      "7177a6d000028ecfd8cfce4e7da05062a1fedfc510983235c108ff2b50c9f01b",
+      "72622864f0be18847ead655e6be9bd5a4dcf4da4dc611f2ee56e89295d9eab66",
+      "7acb7508a75b472635ed651d2c9891a281961d8d0e1c591ac32587a55e47f572",
+      "83c8748634497b00092c440fa3d2851da4fba58de0e2dc6c6a72e8ac247c8d58",
+      "b7a53c226973b075fdd65cb65c46d2de943fc819e29da6d9f7ca936a2c8e2aae",
+      "d0abebf687aa4539d805984a5698bf6ac76b4cb9487dea61d101bbf2da9bf2b3"
+    ],
+    ".claude/skills/joycraft-decompose/SKILL.md": [
+      "14996547618e6c561d551d0a48c6d17afa678d8a380ff25935cb4bed93b92ab3",
+      "16c1f1f7162d1eff36c5be5cc47b2aa4bde62abb63153f65607e690dc7dd4583",
+      "2a2da73d5754fd13799eb91e3e51e7f3e2f422a63c9a50d6fe35b24796bc797a",
+      "40a935fd36ab5bcb147896ebe7080836e231330a45c282441aa99048b919f97a",
+      "720622807f1fa5ecaec86d46f01d940a77cb4dd4332c4219ee51e515dbd57efd",
+      "778bbc08b82d12c01a4e8ebe8c71ad8a2e845f1e043fd484b3c5c93c41fc7f7e",
+      "9f63d051233864f3511a12094a2572a2c064775330e08c236bfb5e4d3df89ca8"
+    ],
+    ".claude/skills/joycraft-design/SKILL.md": [
+      "3f0a3d703658b11c9c718d9d01e579aa62ec082968050bd32b10c48c49948f4b",
+      "59a4e5d21eab39518b7865a140a28f09dcedc0e96e30c83148abe8c082f6dbfc",
+      "5d751702fe7e2b6fec1d3f225a68396e3d8b3fd87b7b48b4d3a42922012c139a",
+      "7a49aa9a967c7fd4208701db47dd4d3388bd43300f4e17dac5c98110c0d8b5c2",
+      "8625f3f35b8c7c5b34b13b0dad2618b9b9bae3c2987ea096ffed190c63ba7d6f",
+      "a81a21fdff058316ac16fed36ee0b4a5f9b3046f9be7340c9a24777655822aba",
+      "e8bab2ddf332681c20b68afd974e60215653c9ea541a09ec9506386e31a15092"
+    ],
+    ".claude/skills/joycraft-gather-context/SKILL.md": [
+      "0c7fbae801a26e37d861da81d5f729771717361b19c6627e68c4a74fe96d9746",
+      "78e5a4195128ff8e8fd2a07c4f90e5625ca1e60706bb4c71d0fc11e7593f84eb",
+      "a85d7899b4727ba440c3cdab8c0c52066e1f93180a6fd0bacd2abb17aff532d5",
+      "c54bccb39f80c9ca26316d208737514a1598b47fa258322d85b9d7f9598bfaf3"
+    ],
+    ".claude/skills/joycraft-harden/SKILL.md": [
+      "21974dea7172fbbabc9c281d411facc4a6a7480f7b3b1c1ea4b29006ecf00843",
+      "cbe0a8dd5b82e28833187abafaf9b9b3e46490cbaf38640111a41ef97e0208f0",
+      "f1547439de361eac876b46e2493038db3e80b0a5316746ba7ce1fd94a0edaa80"
+    ],
+    ".claude/skills/joycraft-implement-feature/SKILL.md": [
+      "2139f5a2f82095532c829592be4997e248e95ea463a4d2a831a5aaa89b4ecbb7",
+      "bdc53bcb7d6d7ff86642638a4a85c5446d57ca8d4603e3638e33e6cb6211aee7",
+      "dc514d4f2fb414b7b5740a07385f4a537d29371cb585e421f53466c7d9b432a9",
+      "ef1122a4c05374c0b15173f49de7fe1b7d2d475c224fe0f2eadf86d5721a9680",
+      "f8fdd9b885d044d86ce6325cfcf9fbe240628159768aeda0af30b14e1e41ae0b",
+      "fc313168df9501a38527a0db3c29fd3194a7aaf746c85279e45bf8c94133c466"
+    ],
+    ".claude/skills/joycraft-implement-level5/SKILL.md": [
+      "2f7e4a78d138b041b60ae67aaca960837ce8ad5e6b8f4008bc92ff1b8dff8445",
+      "321dc2781f7f219757ae1cfd790c596e297489b0abfa74f9319b32ccd7531e65",
+      "763a4a4ff3ceabd2fd4c291eb47f8341226d3ab61a9ffbd5c28ccdaecd38e57e",
+      "db070acbd2f6f60d50a13e7e63aa9fd245379b491a81a1fe25a7c735568d9552"
+    ],
+    ".claude/skills/joycraft-implement/SKILL.md": [
+      "0df1df7b8f25d35603da22d15a77e7edf7f8eb47469af87cf0c70bd3c725db99",
+      "5797660ec30302197b3210a603bc5c21093cabb96624b922d217c5cd7f4c4e6d",
+      "58f8097e0b82bb140ae9e2628b544d3b20b0837643c24c7e6dee75e2c227d598",
+      "9b9ead82296c76b083002250337df214517c4932c0b187bc3022a34aa4b0a1cf"
+    ],
+    ".claude/skills/joycraft-interview/SKILL.md": [
+      "3f740216b1a2ce9047f5307f38c11ae14fbd38ee26717679b4c26255a2323843",
+      "4f3217517a3be64a089b4def7124c0f97f8db10560e45a742142bcd7a8519fcd",
+      "5509a4d5ee265c86f6df14313460cd2a75b58a1fed35e47ee90c8c80a454f7e4",
+      "55b91b4e161ad050ce6c9ca4671800fd7026e050930625c74cea8d1014ff1dff",
+      "56b8905cf2bfe55c734d200d3e3e75f7d8aa6b228c2c49850d7e6068048d82e7",
+      "8385a018988ddb83c80446c583b87db9587544b7dfd85ae1a2b3930239ae191d",
+      "911bb82dbc1d3c6c8ebe67e310a1f593352b216069f4ed162e5ca659e4a0caff",
+      "bee108c272f4b73da3f01cc3b9d100d3b055e68af0b617dceee9876dd7ac693d",
+      "f8689487ec7fc206611f4581f3459ada7c83e9e5d89d0ae7a332c1cdd23744a9",
+      "fd9798100a3774b5fa58508368adf0c5de8f711c47cad982e7f7caaa32b48565"
+    ],
+    ".claude/skills/joycraft-lockdown/SKILL.md": [
+      "35ed61fe3fa8bf70a36e05232b8083431c36594dd56e69a716648d29588fbb71",
+      "75f884647a9d7c0fd68cb261239d2df16863260f07f4c6db846e8c97021e3a5c",
+      "b64483b7d29c9bfaf58366db2fcef6eaf80b8eae14c5013f220498f97af47a16"
+    ],
+    ".claude/skills/joycraft-new-feature/SKILL.md": [
+      "1b6597fdbe1e6103c1f3f39a30bc1805e275d372e864fa2dbe5475280a8c491c",
+      "6152441857133539aaa1bea3afa8036796e4b5c1d33192ed65dc85a2ea5397d1",
+      "7d47e166a73a5ee182432ecd3264cde3ddd7752fa49675533561a1fc10fd1c81",
+      "cf58d515575543c43a8b7c1af3d6308aa6a20b344365b4e21dd5bad95b246893",
+      "fd3e2f3ffcb97cecd7e998b4e932e1283dde6f72f45f1902aae20f851ec23630",
+      "fe78b2ae0f3bec1dd6f3aec660d92c8faf1bac92a82bf5d598be7451e80781d9",
+      "ffb41c11d0cc6a978dbc5274d6323acee22c3d3e2c3c5befc6602673b6418959"
+    ],
+    ".claude/skills/joycraft-optimize/SKILL.md": [
+      "09798521677eedcf9d18ed7ac98f16bc1088f650b12b7ededa03928eca5d286e",
+      "1fc81f18fdfdd383bdd5a290e20de3d420ece4ca397ea800c0ac8e4a687af235",
+      "253df153f3ebbe16d2372fc857287278157195017130ff9ecaa1a88b4f959498",
+      "42050916e99ca10f1d720ebd761e161f9d0cfd0ba84a4802c03436e783e65fc6",
+      "57959b2d357bd298e532d80da355b4fdccfdc60dd60a8e8a8f9edae8f0530a67",
+      "72e16081a0c53a1c8fc16f86f588db8116fc611e98939098d68b2c1357282b09",
+      "9767adc7bc2c0f511155e0f81a1f4b38f13bf034ff4eb0bae5e1d38b58c0c7bb",
+      "bd7ea7943e62b822ae48cadd4261ad01836d60a03e48f134bea532e25a0272e0"
+    ],
+    ".claude/skills/joycraft-research/SKILL.md": [
+      "2185e117117888cc6bc5348f64b641db2fc206e7293c63c5f2a76f91b8e6e1bf",
+      "51f802e10a86687e085d1c44c7b969a203ae4cfb28d4c494f9755367b1c3c587",
+      "571130ad533ca130bb5f518d4d9c90101122d5be116bd5ba111ac80d5ed89af4",
+      "8a2120c05d362e7b6bbdfe3621a2297bcaf08e5059c35b5b449a9018d5d6510f",
+      "cf309582f921cad4db0a4c75c2436e02399a39c373378566e404449e1aa2460c"
+    ],
+    ".claude/skills/joycraft-session-end/SKILL.md": [
+      "20ee12dfad74d4d4ef8983b431520e732cb9e4e20b3177f2905cf1be43ae8501",
+      "32f8e8e20bff25860a3b6c0e63469ca19234da17c0c2cf0f21560bd4cd7304c7",
+      "41a82971e86919e126cc7735592a722a024b54b5be465e02b382c6eefca926ec",
+      "8ff62c9cd634c4d68191ff3eb24a868c8f15e1324680526c6dd062f749cceb25",
+      "b57ffb3a1ec68044986f2f117b9a1266bde7649be8cc9594499fb42b8d163d24",
+      "baf5495f5f874fef5c96abcd356fbafac2da0e69e630b2ded52b779e57c13f77",
+      "ee4334e289644b378402de4436b2f9079956be63078860815e80ced90eb6a311"
+    ],
+    ".claude/skills/joycraft-setup/SKILL.md": [
+      "3538abc932cfda18fe7d92afded2a59474fb8fab9e0224fe39dda25ce5c61435",
+      "4c8b65e1a308378ce45ae48a2470a3978fbd3641be674d13cd807ecb1c935899",
+      "6b2eb9056d963762385312f2bf7fe1dd18fe2cc2520056585a3adfc30978d53a"
+    ],
+    ".claude/skills/joycraft-spec-done/SKILL.md": [
+      "3931b2e8eeb8cab2a4216181f73e83e99e8c6266486217adc4bbcdd0870d8dd9",
+      "4cf646f86a8ab5e1245843342f750aea1573c637e75fe90a95f496368970c10c"
+    ],
+    ".claude/skills/joycraft-tune/SKILL.md": [
+      "1ec1b7e264f33bc581d22c019f7ed57181e78e649d218693f725766abd311090",
+      "292bb214c6b3cfaddcd6a55961d5dac7492778991f28d51f926342945d345137",
+      "6b33db5ca466bd92fbed34d0708008c8d079a9e072fd545f5f1e70182ed5638a",
+      "7956c129712ae48a680cb8ee072a63593dc53ac0656baed4d391fe8fedd5c294",
+      "8eb291f883e974cdcdd1fc250aeb167a39d6c3ced2df70c67e81c7487303b162",
+      "c86baf48f55f9d11b01ef83b59fa9690b36a3d951716293949c929b32ce5752d",
+      "ca7c90631f9b5aafab53c24850c3e78013b62aad7b0bb45525875a1987da5c70",
+      "cb46be7b0a485ffdd7b4e75924ce76ccac9646688ec84945da58e93b856dfafc",
+      "d698d8ccc1c24bbbaf76f4ec1b5991b170984185f440ae96a94c884beac3f23e"
+    ],
+    ".claude/skills/joycraft-verify/SKILL.md": [
+      "3b565db4b26f52bc59e6f3a8640ebe94ddef16b2ac79172e3b73e093dedc6e36",
+      "3e8faeaf735c0b5b2ee8e5103107cb11c7de278d62dcc05d28515230adafaba6",
+      "b0f7dd11c6c0913687b2b9ffc49c5b99589515e1896694b3571ca6ea2f6fed2e",
+      "bca24134425277cf4f12ad9ad19db4c37f4d8f7e24be726921d70425fd02a151"
+    ],
+    ".github/skills/joycraft-add-context/SKILL.md": [
+      "b961cd0ae2adcefa9c4194dd5d5314dba036f39a4cd5597f9ad6a649e62e42f2",
+      "bcd9dfeea6696b1d8c46fefb91748e98f65562391b73aec02217bad19cf9064a"
+    ],
+    ".github/skills/joycraft-add-fact/SKILL.md": [
+      "73780708477a99aa72a9faa2edf7883d2de2816dc422fafecb1d5b573d399fbc",
+      "ba3bd056314310ee1a9c24c7276b866af9bba5b802c6badea0f4924d7df6d66c",
+      "f616995bc510f2df856a1f41471955982431559a467f279a7d48f80cc4905220"
+    ],
+    ".github/skills/joycraft-bugfix/SKILL.md": [
+      "06c729090e403c11a3a45b591bcf924e8bbec2cf49cded9cccd6b0072300c594",
+      "636d9c100100810098d3802562576bd3ebc122f15ecc8773f432be08bcf15210",
+      "cb615340d6a60bc7a28019a9f273f34455ae392a1c879ca432faa3fcb19b585a",
+      "da9b7788a8bf381abbe5162e54ed2a32bb0750e126a9a3726a818114b1185024",
+      "fbc89b6e13fe3d8674b25a777586539789b115dc53b000888b28c4aca6033d77"
+    ],
+    ".github/skills/joycraft-collaborative-setup/SKILL.md": [
+      "01582b65a0ca8c7977be4167e504ad33960cb63be22d48989d978c65ae85efe6",
+      "15d9b050be7341ce8180cae7906ace21801a27f0b15ac3f06f28cca685051964",
+      "4aec08e6e554d39dc38fd353e1ad732192cadf479f782e2a79b7b50a3748ed6b"
+    ],
+    ".github/skills/joycraft-decide/SKILL.md": [
+      "0a779f7488a329953701c83db7fd5974af28f347a807f6216304aa6ff4422c2e",
+      "2dc651105c2dc0b085c1de1bb03b4e549b33fdf45cbe8f9cd9c89559a64e48e5",
+      "395148307d45559261ec8fbd2928be3c4893c46f0b7c41a070563efbc616252f",
+      "d8c69e8483d9546b43b23f8839f612cfff53de42dbdb13086d716fce38127efd",
+      "e5de5f7cc0a6a441bc9591758498efbbc0e0466a566135c71fe94f07c01b0829"
+    ],
+    ".github/skills/joycraft-decompose/SKILL.md": [
+      "19912952448ed4782ac1bf13997e07a2d6b92273b93e50720576004f501d659c",
+      "5bad0e306ace484231f24f7f6d7ce61832c446f473a44ffeef718d7dd79ff72a",
+      "816e0329004001315ee0eb35b0042083b3ac83262e67298a1c667e2ae46fa915",
+      "9c1e9ad3b82ba8cc45cd66ae0e6b4185b5ec5161ea7efba395fb82d01ea1e4d3",
+      "b22e8121cd610dde1555fde3ce1b484270d017627611fe5f5d2f51c9d5066d70"
+    ],
+    ".github/skills/joycraft-design/SKILL.md": [
+      "59497b08e8d97e40b2727832e546571dee0deaf075836b225d621640c6cd6246",
+      "6fc8724ea86bd2397bcb03535040a07abe942c3c7cce3a1da24117e2df9fac5e",
+      "89f2012e1e55b4c2eb2428254bd71afed0fbdc1935686b7590cc4b03a5fdf292",
+      "9f28763319476658da96fe0bd39b29e1626a11be2108ef96e0fce6c0b3527aaf",
+      "c31ee67b53b4b8b3f34dd630eedb87276e98b13a1db00c43e7585cf8e2f59dae"
+    ],
+    ".github/skills/joycraft-gather-context/SKILL.md": [
+      "8ed3263a3b277f14e6ddfcd747e6c20792763146b9ad12e625f114a9c53cd4ec",
+      "91be1d0bef0c26198986b296bddc3ff1e16236d0ebd32cd00d39dfe715fcc6f4",
+      "d461a02635b13de5c329f650c5879508093cde0de03d34a5b57c95bbf023791e"
+    ],
+    ".github/skills/joycraft-harden/SKILL.md": [
+      "0e5a12b087e590a5522f2d2635dc49a4dc9a0eeb903309a49b16e68296005dd7",
+      "6cdcc9c155ffc1e59167f1f3cd12079605bb8d587b7d1311f6b272ccdbb5ee90",
+      "f1a19dbedfef6fcef084c4c31847519ada534e3c06b0a2593e2bd08de533742a"
+    ],
+    ".github/skills/joycraft-implement-feature/SKILL.md": [
+      "28fad474d2219bfdc2574927cbac1655ccdd9900b0a749ea72ffd269190c957c",
+      "9822a6158057d6b819e4c6fd496adab7e7a1c66eab5e0b1eab86624419c542c3"
+    ],
+    ".github/skills/joycraft-implement-level5/SKILL.md": [
+      "04c4c3e1d4abcdd59d6cf864c07a367beeb9fc720af50fb306f8584d4b7ae0de",
+      "3d1b772ef7c7883b258bb8849b87decec94bf8e915ddf81ec46cf01be693060d",
+      "c8ac5d3eaa4414c5b6a18ca945af1c6eaaeec60e01225b848b55767a8c601c01"
+    ],
+    ".github/skills/joycraft-implement/SKILL.md": [
+      "224b238bc596507a138af5c0872904e2a34a0e2f6ab137ce03800dc5ff1a8c7b",
+      "621c53a6101d77ce9f39e102b99ab0aef9230efa47ef780bca2dac9edf99efa7",
+      "805ef3ae9466348c2d3cab20435cdac5ba6ef4182b4fa6dcad2c80798ab68b33"
+    ],
+    ".github/skills/joycraft-interview/SKILL.md": [
+      "07b1e407e91903b19fb99d1cee1e25979cb0582e318ab2b678ba438d6b6a9f9a",
+      "123fc27c112c939c0ab0d12f574d331c22bcf48ca1e6f00b8fb4bc310fef2c3d",
+      "53ad04915880a87316416be68dfd9c5e5ea8091d5cf5705043aa93ad6eb54626",
+      "7d2822d9cc1ab68bb53655c6a743910818cef0445f797a10ddd34ec51689924e",
+      "9a886f7d0342efa0ee1861d3b55aa62ce02abfdb73d1da995716365aead90479",
+      "9baa37fc3f1468ec4f87246a6ae587352554ce7df495c02d39f0bef9c045034a",
+      "d04036fd98abfdbc02f10cd202a30f18f444559565bd41457561190ba3c0473c",
+      "e295f13c214181f5d7a6c65e55134397a626888632fe4b2a0005f2044a6c8105"
+    ],
+    ".github/skills/joycraft-lockdown/SKILL.md": [
+      "2610c6656b2222a0aefff9a066badf66a7f4e21e94ce94f9502002818eee50a3",
+      "c8984e19a6e2103ef10ebf6771aa5f2538ada430d74048651a84ea155b15edff"
+    ],
+    ".github/skills/joycraft-new-feature/SKILL.md": [
+      "13511a13b3d52b9d6ac09db2f72ff6e2b46bda4480027b14c8d3d634b2878b9b",
+      "40a6f77a5d9b76053221b467396fff3118b11b6ac255b2812b989d0cb42629c8",
+      "73cfba2ba9d6b8f0df2564d574a28fd0f97ea935b3b1bd4e338cda68a50150bb",
+      "e206eaaeab02be57a611a080b4345575b1c3e1b50fb220e3162a4c0830fc2570",
+      "f8cf93aec7629d060257e8aa8b4539122128e5c50d76c2b8c05db89b96fb2829"
+    ],
+    ".github/skills/joycraft-optimize/SKILL.md": [
+      "010d9a97e2f9d188ee6bb5501ee2fb4d38f36a96c74832fdae363e27f0783c43",
+      "1219b71fd8e0c11e1982945c8111a7217f3e099325be1467638b32caf9e2f9d3",
+      "32ce07554fc02c71a70f62a7817bf8516be9a0cca82875f4651013e03699e160",
+      "77ca92867b36047844127d0ab2f7e40910fb95b2aff3180a3b8c9cbe5827ccda",
+      "83ada4b1f9d3d5087b633a9d8768c2542fa1135d32bb5f554acab8f4f1d9f02a",
+      "ae4bbccf1df17a0bdd48ddae1805742fc1d5c4520e0c47f513c47f2d75a76718"
+    ],
+    ".github/skills/joycraft-research/SKILL.md": [
+      "1926ced6d1fc06b6ff9d2a82ffebed98afa93956baef2b15847926a036e20699",
+      "28f7021dcefa01db167c6334f904cba15186b4860bf5db4fefe5bf8a4ebb5cb3",
+      "6ded30d6a931e0bdf35746720ed10a76db6e8438f5544f28b4c4b3052d791ba9",
+      "f85fa50f4e4cf8e0e97bcff981be42a6a23b2c4c6b8a9b624d398bf26ed0e540"
+    ],
+    ".github/skills/joycraft-session-end/SKILL.md": [
+      "14f2cec27b9d7265ad2886798b21370e69093321930aabf2ab7f044b6eda57e4",
+      "7743d50d97aa6cd9c4d2292ba78b3778afc91c66d798ab6739670cca6a41f436",
+      "892adb5468ccbabdadf77db375f3e939863cdcb9e64013dfb43bf25f4b3f7674",
+      "8ba7560d9a6c30763342f7ccf2cadc096376a21cabc4beeb93a2b120408f5a5c",
+      "a380a3f5a32d1748caa6efc9f184fbac63076aaf93664777fcdf14f175e5923d"
+    ],
+    ".github/skills/joycraft-setup/SKILL.md": [
+      "216a39a4deb5ec40db80056975f39c9b63be9c339b6e979a083074d56bf081e1",
+      "d7e114fc92a04ab06af23c72609dcd525f38b02d479500e9be037aeaa4aa228d"
+    ],
+    ".github/skills/joycraft-spec-done/SKILL.md": [
+      "24f5153eb732b258a911e41e02a7928480b92a8e64e391590d784bf6713decbe",
+      "ed5482818c0bcff7d105c0feadc32b949e7d8e031ea86ce6cf5b9aa1727667e4"
+    ],
+    ".github/skills/joycraft-tune/SKILL.md": [
+      "123fc60e3f58e53b87fe62b2bccd91a77f346fed4bcda5c1a432aae1e1feb0de",
+      "3c8558855b0c8d264accd9149a672d26ab95cf29ae789e040b1347b6248610b1",
+      "4d2e4874b55d9a1fc8f704a8dade9edb2a9b1af236bf5ff4f623747df7e367b2",
+      "a7f379b3737747082e96688c814a37425dfd732d54199873a212ecc4a4c17aa8",
+      "df4344970387526790d7620319dc9d8096a133438f90dd751f53efc9b9449aab",
+      "fbe2adb05d0da8d2fb164fb5b104f2748dcf172bba547b2d6b2df3a550ae2170",
+      "feee5740b8eaa7da8e43d595b90d3a34c4db4d8efcc0ffa529278841179dbf92"
+    ],
+    ".github/skills/joycraft-verify/SKILL.md": [
+      "6e5bccac5a820d811af25ed3b4bb5d7a779ef74dc88209c912fdd1c2f3e432ae",
+      "b957dc8bfb3fab27b4b41ff4c1fa23c2d2c4a9e6705842807602357e7d6c2b44"
+    ],
+    ".omp/skills/joycraft-add-context/SKILL.md": [
+      "3d1a3fa78813c50e7ecbc27dc5687200bcf1497e0a16633bceb11301c862ef1e",
+      "cd0ee4cdf4bacfe4e48222efd5d8182becf19250023072c0666337713eb320f5"
+    ],
+    ".omp/skills/joycraft-add-fact/SKILL.md": [
+      "00b8fc234071f965a600c15261e012da5066b4d0b6343eb7f68106c0c1fb6dc9",
+      "29b59ec0709ef983ee1540ba54d31f4a9ce8d799fbbd2ab2755a00f9d65434a7"
+    ],
+    ".omp/skills/joycraft-bugfix/SKILL.md": [
+      "45e73578c69bf3ed21238e73a7fdbf0f9fd75011da26a38d2b8a543d9da89a64",
+      "c83b646c56c0e1bbd7b71e9fc37d093ef7563804c865920f1979f31d096f54e7",
+      "df70b84b4dea273496f395a43f478036a951340e43656f3fb2918728109e36f3"
+    ],
+    ".omp/skills/joycraft-collaborative-setup/SKILL.md": [
+      "4affb1f3f5a11da8bf1d7757ed82d82d0761f2d126fb9323dbcf7bb53f5965a7",
+      "53b4ce246a434d193562a76251aa2652f16fd73b6fe6f6b0a01d6e18dadf5aef"
+    ],
+    ".omp/skills/joycraft-decide/SKILL.md": [
+      "3c0623e4e827c22d9521c42973f35847e8ecad5f6400528d9f2ce545e113d8cb",
+      "c9c4f6d2d73359799b999e6b8fe4760a1dd63d544bb848d6021675d319a1b8b3",
+      "f65f76163f8273125ddeaafde0a20f340826d9dccc98702e328e92801ab79056"
+    ],
+    ".omp/skills/joycraft-decompose/SKILL.md": [
+      "73d20caa10c063d8beda9be7eb104fe60f5b2fb58f01a25cc2f3eaac2dbd174f",
+      "cd59505f93010872c2afafe57e764bac151af33e1f23410bf6b3b6abc3c41d7c",
+      "f44ad20ae535a5899085db367e783fa7bb37be326a30c8a920c5028f702daf56"
+    ],
+    ".omp/skills/joycraft-design/SKILL.md": [
+      "2308f5f3748744db39cb3d1d1397273d61823a856cb63a4277e0220e019c23a2",
+      "2ef2a7a1c66e3f9731515cc4ce1a954aa2305dd9f9299b74fc8705c146b69a7f",
+      "ed4980c7568239adbdefa7d55e9eb387fa39e15ebb34573c9636f5367b51a3a5"
+    ],
+    ".omp/skills/joycraft-gather-context/SKILL.md": [
+      "80dcc2d4e355fd84370a63daa6e30544a2ab1130038c49129ba3680311533468",
+      "b751d9eabdd0e84ac7b8187f86ac0d0eabaafd90b8a8f05cea6ed05e12a65e3e"
+    ],
+    ".omp/skills/joycraft-harden/SKILL.md": [
+      "03215b96db25b9c22c73dbc337af09c0f0773ab8bab185d417afdcc68f8d47c8",
+      "3fb9b50cc34f8289d2669dfc432cbc07ccb9d737e6741fd5163667b9e9d6356b"
+    ],
+    ".omp/skills/joycraft-implement-feature/SKILL.md": [
+      "5aa8fb0089e1101b8a508f4fbefdb9543f180bebe2b732b23fb98cc0c7ce2a74",
+      "e0e398906cba11fefeeb681fbc1fd9159aa633a2def02dac29c0283349e29711"
+    ],
+    ".omp/skills/joycraft-implement-level5/SKILL.md": [
+      "10550c9753c673e9f5127809a4940725ab8f955dedf2b87e3220fd8da3175405",
+      "cb224a2328ed7784f27a4f9270165fc6f8055719c9310d0bde2663e726468444"
+    ],
+    ".omp/skills/joycraft-implement/SKILL.md": [
+      "3e4a8960cf0310ea47b55a90aaf77626a677d08dfbd3719dbcbfa8eba52fb6e4",
+      "4ec06d09f4e012e96d4c8b964a2cb244ee41d8571e28f1a7a55868365eede832",
+      "8a700b9bec9462943fd25bddeb7f4d31ded9309d9874f17536317f5a64bae7f7"
+    ],
+    ".omp/skills/joycraft-interview/SKILL.md": [
+      "6f065646e013c0bb7ee25ad439f67b088ec70cb0bd553a0454b4bd4c6fa49a17",
+      "e7053515107baf5d0bc6ab9adbd7435c56fc6468661c80486bc1db52f1354e86",
+      "ff5dbc40bea55e857f085c2473d75be9f683b1940e07128525ae6aeaee0a80b4"
+    ],
+    ".omp/skills/joycraft-lockdown/SKILL.md": [
+      "e29dc5430e1709a37e5141fa0029206c54b62a7ad51c94d29c80ce1168872a2c",
+      "faf63c69e401fc63474d284d207c98b2ddb19c1489229c8d110c32ebf1732d05"
+    ],
+    ".omp/skills/joycraft-new-feature/SKILL.md": [
+      "9d0acdca3853a9d270a60160813ebeeb1e7ec6b1a633379f46caa5f96076ccd8",
+      "b92a952a3286ba9c3d223914cf743470af6eac5c2fa00c913d5a8db899c33c73",
+      "ce25fecbc9d93bf234e2fb5efa36926be1b709cd4665440f917ebf1c88f879ad"
+    ],
+    ".omp/skills/joycraft-optimize/SKILL.md": [
+      "5a5bb97c3b7cb7ff8edccfc23be69438b5247c5747662322e7fd249d9380cd44",
+      "5f017b022cdc1ee3275be7a3651a8659b23c3cb722bd1f7e49c80054e0a923ed",
+      "bb309543e159b7262a7876a5bca9358a9a33c53e95710c1764a796ad669d8970"
+    ],
+    ".omp/skills/joycraft-research/SKILL.md": [
+      "6b4662bf006dca3c39324f129b651dfd4227a66f36a2f16c801631a8a73a1ccf",
+      "d4ea66f26e02f9cab16448eb7db04e285ab43e57b7211ff3aa44d354e80d0953",
+      "f1092455698eaf360765db7235a54450cfc0f13e79d986556b69fff1ec154646"
+    ],
+    ".omp/skills/joycraft-session-end/SKILL.md": [
+      "18c9948869727d416bdcec653ed60da8e815140aedc7974e6e25c556bdd499c9",
+      "9e921c45fe21e57fa865d82d0dc9a8503ac1f82900f649b401b3f0de750bfe6f",
+      "fc8bcff0224621e353025b0620a7c34e6b2097495a55c0731a64e1d499a84562"
+    ],
+    ".omp/skills/joycraft-setup/SKILL.md": [
+      "21c2d14bd09641e80eb8af50bc9f648f5f1ddc7c1f99261173eb712f4fa9901e",
+      "ad6d2ad75e358f8b3535f6ed6e04f9e30122a9cfbc2042bfae2786129fd356dd"
+    ],
+    ".omp/skills/joycraft-spec-done/SKILL.md": [
+      "4d0afb784a6ce605f6bef00f575dbf8e00a27171d4907cf021436db6c608b498",
+      "6a3fbbcfdd08c77593b03c444c211496f407bddcbde89256015c1a662337dd65"
+    ],
+    ".omp/skills/joycraft-tune/SKILL.md": [
+      "466635cdddbcb464fddddd6bd385be32614465d3417ff76d4e862ce147cfc4a9",
+      "7ed1742e1adc5a5d5cb631a892a63fe3306983ac49ba455849b818cbbc01d119",
+      "de87cab0162e82318a6cb15510bc53ae04be9e795437870393b49c41f31bf730"
+    ],
+    ".omp/skills/joycraft-verify/SKILL.md": [
+      "78ecec32976db26be3335e31fb35d02992e456b532e019384f3bc1c5d75059a2",
+      "f5dbcebb65f1af1c1d2f93445907f4b53f9f6fc5db2b137c1c0bccce9ede71c5"
+    ],
+    ".pi/agents/joycraft-researcher.md": [
+      "70051be1f163572f6925ebc46c0e39d5114ecb72695c82328a78e8a0d40d47a8"
+    ],
+    ".pi/agents/joycraft-verifier.md": [
+      "23839a8cb03a10042907c1fa130adf4ad71b8aa070aed08d7281fa8da50c4049"
+    ],
+    ".pi/extensions/joycraft-pipeline.ts": [
+      "ef5468ee36fd6c5c7358153b498c5b6b383e9f5be4138751e0e695c8468b02a8"
+    ],
+    ".pi/scripts/joycraft/README.md": [
+      "40659c6e6a986be27a0d8f785cae7e2c7ff0262c57fc3e69e281697bd51cdecc"
+    ],
+    ".pi/scripts/joycraft/joycraft-implement-loop": [
+      "999203536df774e88b4821001ec70cf36669eba99788cb17062f8cf9ac818aa7"
+    ],
+    ".pi/scripts/joycraft/joycraft-mark-done": [
+      "2a62b21779dde88b49580a35d4f18a65caeb1fac69abd65c4c932abdb67391ff",
+      "6866f34ef3cde1f3d4a3b8c7ad67e03f20395a716fb9577706625a4a4e47cc78"
+    ],
+    ".pi/scripts/joycraft/joycraft-next-spec": [
+      "018b0ebb5347e681ee094201277cf93992f79cbed489f4fc308f27eb67193327",
+      "ae0e357078e729eb2dd304721cb3d09ad620cf388bac28ce19bb58884d78d4a7"
+    ],
+    ".pi/scripts/joycraft/joycraft-session-end": [
+      "134d0d6403a5c2178e1c8d3c03098e0f6c828a11091a9962ac63b399aa9f1b69"
+    ],
+    ".pi/scripts/joycraft/joycraft-spec-status": [
+      "005551b6e16a70a10702f798f1367fd7c540c462bf3354ffd1b0de9766418a7e",
+      "bf69022ec498c89bb7efd7abbc4902b84bc5203cab9d5380eeca8f1bd87036ed"
+    ],
+    ".pi/skills/joycraft-add-context/SKILL.md": [
+      "35d6e9a35842a0606700666b3fe908cea270a989bd9401351e4f306f9f0698df",
+      "3d1a3fa78813c50e7ecbc27dc5687200bcf1497e0a16633bceb11301c862ef1e",
+      "cd0ee4cdf4bacfe4e48222efd5d8182becf19250023072c0666337713eb320f5"
+    ],
+    ".pi/skills/joycraft-add-fact/SKILL.md": [
+      "00b8fc234071f965a600c15261e012da5066b4d0b6343eb7f68106c0c1fb6dc9",
+      "29b59ec0709ef983ee1540ba54d31f4a9ce8d799fbbd2ab2755a00f9d65434a7",
+      "a14e07b28edabb638709441ddda26c0ad5db353718645b1c1d00230f3003861d",
+      "f943e502484da00e9ed1a93465de5a7f506bfa8ea6af0de37cc2544a48d6a6cf"
+    ],
+    ".pi/skills/joycraft-bugfix/SKILL.md": [
+      "45e73578c69bf3ed21238e73a7fdbf0f9fd75011da26a38d2b8a543d9da89a64",
+      "55edc5ae8aaa148f9ca796216c3296d61d3f2435a82d158759df0717e4f8df91",
+      "c83b646c56c0e1bbd7b71e9fc37d093ef7563804c865920f1979f31d096f54e7",
+      "c92205765a7995bd6bf06905caed0f4ac57b5788064b2de013354af58944757e",
+      "df70b84b4dea273496f395a43f478036a951340e43656f3fb2918728109e36f3",
+      "f9b26cbbaedf20a6d5fc3eb8b7bd6991f3535efca06aa0d0c471229c7a37a8eb"
+    ],
+    ".pi/skills/joycraft-collaborative-setup/SKILL.md": [
+      "4affb1f3f5a11da8bf1d7757ed82d82d0761f2d126fb9323dbcf7bb53f5965a7",
+      "53b4ce246a434d193562a76251aa2652f16fd73b6fe6f6b0a01d6e18dadf5aef",
+      "bdc8aac19caaaad57c6691cf9b35153ca2062ad68f5b0038973053283ab2fe2e"
+    ],
+    ".pi/skills/joycraft-decide/SKILL.md": [
+      "1e0561abe3ad35cfef54bae74e88890c13947a0569c6dc852c2e1035b9c05a92",
+      "3c0623e4e827c22d9521c42973f35847e8ecad5f6400528d9f2ce545e113d8cb",
+      "3c966e125280cfbec243659ede151379b6d3d85926b0f11409d87fe815e5a6f1",
+      "b98b5f9eb0d043720c36305f8ed59a8e43ba785b973123218441ef4546e9d36c",
+      "c9c4f6d2d73359799b999e6b8fe4760a1dd63d544bb848d6021675d319a1b8b3",
+      "f65f76163f8273125ddeaafde0a20f340826d9dccc98702e328e92801ab79056"
+    ],
+    ".pi/skills/joycraft-decompose/SKILL.md": [
+      "2860b07ad91bd17f965dbe4d489c3e786246465a9ddee2c42a37651dd90ffc67",
+      "68153b6959105a564952f28eb0440711cb366c662848af6e27a0ad819ecbce82",
+      "84491f1d7c13b568dd75699143390b256fedc0f33adb015b744df49bc0cad97d",
+      "9eb5160b88c7ecadccb8d2fe86dd6d9ead74e724c5d3f9590f980db37a4c0b84",
+      "b31b18976b9c47353dcb472c6c584f2e69e22966542f221b03c1ca876b2a234b",
+      "c11e473fb9ac2ddccdf513eee645886271a699bf49430d52ead91e4b3bb5430d",
+      "d6fe114e9c65fdfc84135a1d0e20ae63cfedb49bdd7bfef1b925b8ac42375023"
+    ],
+    ".pi/skills/joycraft-design/SKILL.md": [
+      "0517f54d94904c3a7ce3f89a6787a14702f0e73677f1acfccd7561a1f27f2081",
+      "2308f5f3748744db39cb3d1d1397273d61823a856cb63a4277e0220e019c23a2",
+      "28ee838fd55dd136428235752143412998436b9f68adb17e6a6a8dadd1b50795",
+      "2ef2a7a1c66e3f9731515cc4ce1a954aa2305dd9f9299b74fc8705c146b69a7f",
+      "6f4679679dbb358cbebcedf1c8b5d935fd5afb24342e51c70c34c8abc983f260",
+      "e65ab080f45a325bad41b2b89030d0c170120c024654c1b52c6ad06e600e9053",
+      "ed4980c7568239adbdefa7d55e9eb387fa39e15ebb34573c9636f5367b51a3a5"
+    ],
+    ".pi/skills/joycraft-gather-context/SKILL.md": [
+      "80dcc2d4e355fd84370a63daa6e30544a2ab1130038c49129ba3680311533468",
+      "b751d9eabdd0e84ac7b8187f86ac0d0eabaafd90b8a8f05cea6ed05e12a65e3e",
+      "ed2e1d8f76a7fe952147d837f177db537ceb2c4c5f1debeb9f46ac60b509cb91"
+    ],
+    ".pi/skills/joycraft-harden/SKILL.md": [
+      "03215b96db25b9c22c73dbc337af09c0f0773ab8bab185d417afdcc68f8d47c8",
+      "2461393ee8ed7f7a861e00d9970447d8b40db383ef8416b303db4bce49efe654",
+      "3fb9b50cc34f8289d2669dfc432cbc07ccb9d737e6741fd5163667b9e9d6356b"
+    ],
+    ".pi/skills/joycraft-implement-feature/SKILL.md": [
+      "be6224f2551d77d51c4fc8f9866104cea80b9e94e2a194963fdac4a98c6444a5",
+      "d251410f7137dd2b792ea5fff3c8bcc7c74b7599aa1b54ce792e2380727c48cd",
+      "d6b3a0d3ab443318fe40243b67df925b94b79d26fb5dd318bcfa24ec2e71f557"
+    ],
+    ".pi/skills/joycraft-implement-level5/SKILL.md": [
+      "10550c9753c673e9f5127809a4940725ab8f955dedf2b87e3220fd8da3175405",
+      "81768e8977a5d8c3ae28744fc7730283306d17b0628d07f87992195674bda36c",
+      "c7d389b6bd6410d47ad80e4fc05a102ff6321456f3da7c43eb636617d0f3fe19",
+      "cb224a2328ed7784f27a4f9270165fc6f8055719c9310d0bde2663e726468444"
+    ],
+    ".pi/skills/joycraft-implement/SKILL.md": [
+      "99b4c7f44b537e80de24164509176ed9503f4e603c2ed8599fff6369aeadf710",
+      "9fecb2fcf98ee7ecb09c4decb4ba451fedd63dea9e81558f3e2e3b10d42f0c92",
+      "c22d084b70b4326cd8a30a6543ce17a63bbbf1792984e3250e1c9374c3b64be0",
+      "fa40e17418231cbb75773c7a8772e357327cc59d0280d91f9dbfe346d5f14399"
+    ],
+    ".pi/skills/joycraft-interview/SKILL.md": [
+      "11778db95e2752182ad635c908ec3d20667d89b8be26863b383a83f13ac93acd",
+      "21ef5013ffb5f28ba7db8c80cf5e7ca3f45ff9f1af930c96263892dbca2e2953",
+      "6c92e9756bfdc671a9b945566b92425939508ce9a638e434e595293d5a62df59",
+      "6f065646e013c0bb7ee25ad439f67b088ec70cb0bd553a0454b4bd4c6fa49a17",
+      "75169ea22acd6e1e733e564d82489a030b91c82e6f1fd94c913a4eda5e811d5a",
+      "a57ed088023eeb35968503b5d4b60099d09a6de053365d6ac7162d3b337063b8",
+      "e31e9e71f53d6476c8e0f2dc04f1f2d88dbbf054c11816e2f6faf3017fe62b14",
+      "e7053515107baf5d0bc6ab9adbd7435c56fc6468661c80486bc1db52f1354e86",
+      "ff5dbc40bea55e857f085c2473d75be9f683b1940e07128525ae6aeaee0a80b4"
+    ],
+    ".pi/skills/joycraft-lockdown/SKILL.md": [
+      "cb9709713620ae59659863d98a36c3bfee0a9969e94bcd68fdd07b78c28f3e07",
+      "e29dc5430e1709a37e5141fa0029206c54b62a7ad51c94d29c80ce1168872a2c",
+      "faf63c69e401fc63474d284d207c98b2ddb19c1489229c8d110c32ebf1732d05"
+    ],
+    ".pi/skills/joycraft-new-feature/SKILL.md": [
+      "00a23e75ac1f0b9f75598df2a8d7463ea3abfa5219d77d43e651350e7d21e630",
+      "67a19750fa3a88f70d0491a5188c4377ce91227889829cfe3226551cf34650b7",
+      "83df4914f6c4869c5fa0b5cbf9935e6ce32017024db1f2b85624ab7361585209",
+      "885646a3e83b5898223ce9285b2b9173667e609bdd67c238a5f22a5a060c8458",
+      "9d0acdca3853a9d270a60160813ebeeb1e7ec6b1a633379f46caa5f96076ccd8",
+      "b92a952a3286ba9c3d223914cf743470af6eac5c2fa00c913d5a8db899c33c73",
+      "ce25fecbc9d93bf234e2fb5efa36926be1b709cd4665440f917ebf1c88f879ad"
+    ],
+    ".pi/skills/joycraft-optimize/SKILL.md": [
+      "0b9ee4aec4e73b6eaa1869ac912a3c5aa46b856875ddcab1799b041299abb390",
+      "9099c180a9b07e650608bc7b829520929e74c6996e83a51ea06b94c497ccd824",
+      "dc200f50234a0aee612be6969bc8156a6331608409e12ab121b32f7c2d919fa8",
+      "df84c944e6f3a37a00f5ca7de1e8822aa878732b1c51e882afeb53bd4f5ce906",
+      "e238c3578e0c523989ff960201bbb7db7f84f166894855b765eb6a5aa77ec124",
+      "e3760f2a19b6f3e10c6a0f67659fa96d37aae0daf09f782235e6bbd352be03d2",
+      "e6910ce240167f3d80df13ae6c6dd6584feca493e4df8b3c98c4355476e90728",
+      "fa7a2ef7c96c3319b8bb1be96215e52fd0d1d45101360435999d33eaff49eff5"
+    ],
+    ".pi/skills/joycraft-research/SKILL.md": [
+      "096cdcfb6ed5b0b83774ed10e0c59dc11b8cf9e2d0685be6130fffc2c470ffa0",
+      "38191bb51d505f0bb0f89cc086a4d8d8eb08ecdcbf88f93a9eff70b53a8e6331",
+      "5480bcd76875a2fbbae3b28e0a068a035ca9c638b9277a82c111f869ba47a461",
+      "b87bc8c95eeedc608c02c887319880f0ccf74843eced28549ec3a382766586ab",
+      "baa61e8e117b0b8e79f98083840b795f348ca41c47175e8b205b06c3943da7e9"
+    ],
+    ".pi/skills/joycraft-session-end/SKILL.md": [
+      "18c9948869727d416bdcec653ed60da8e815140aedc7974e6e25c556bdd499c9",
+      "3c407729e00038fa4bc5566ce0b31c0353edd1d4c2f2417b890522517f750c03",
+      "9e921c45fe21e57fa865d82d0dc9a8503ac1f82900f649b401b3f0de750bfe6f",
+      "c7abec5f483e1ccfc32edcff392460c4b79e204395a75628f9ea51d20ae67a97",
+      "ddf10ecf802fdb25d6fa63848f42ea2d0eb768c5c02dfa4fa8a3d599d0b54647",
+      "fc8bcff0224621e353025b0620a7c34e6b2097495a55c0731a64e1d499a84562"
+    ],
+    ".pi/skills/joycraft-setup/SKILL.md": [
+      "21c2d14bd09641e80eb8af50bc9f648f5f1ddc7c1f99261173eb712f4fa9901e",
+      "ad6d2ad75e358f8b3535f6ed6e04f9e30122a9cfbc2042bfae2786129fd356dd"
+    ],
+    ".pi/skills/joycraft-spec-done/SKILL.md": [
+      "0fee49af8ae9d58c63c106495cb86c1c0800044977e5b8942e77f522a95e1876",
+      "71fa49c0a8624d2a45f1b6f6de00cf7ec119cb1c4eaa139cc440af669948beb1"
+    ],
+    ".pi/skills/joycraft-tune/SKILL.md": [
+      "0ef7bb55eff4f0dc520eddc140e3242d77c2ff1cd843d5b41e9447a210b21e33",
+      "4c4002ffcbebdac184c379d67b2bff0674c7929fff23442c3e6228575d0a0add",
+      "54340444586caaa7cfe9079fa404d3f4204d3a77c92e9016545a954ed7907b5f",
+      "777c938e1e22654bd49fdbb2d9a1ab18003240fef18ffd152778e4cef99261b2",
+      "8363020a7504fc514a8a311771376153721e08245e0e2bf6221a244d831c5e2f",
+      "a561270d17eba22f34211fa28a53eeb3b2ab4014749ba5f8ddc1aa88651db5eb",
+      "ae4ce8182ca28a80a382735ea7385dcefdd8c687c4fe9d96f7baad8148608535",
+      "d391d24224459867b7f5c1bc64b4834fa9bd7fff4ac01b95e11ab49b8c3e25c6",
+      "fa6e150c0182f3414ec909908eec8374ed7373de80d8896f0e553626e08813ed"
+    ],
+    ".pi/skills/joycraft-verify/SKILL.md": [
+      "307c0ffb489ce51c08e91b61fbf08109efe7eac5e765cc2052ca1f2f7ff46f8c",
+      "73730cd9f202bfbd04ee97b7375871fcdc60abe71d60ecae2f11f3262767a8b4",
+      "d299792d21212978e943c69cf93610e984bd44fc15aeaf8073003194e5101cfe",
+      "e5cb5a8b244b9064bd8ad7ba9ccb13233417698208f0a7d68f160ed1d5498816"
+    ],
+    "docs/.joycraft/check.mjs": [
+      "711a731296f392656f869fe9264f88d4c3717a0e63f1e121f0e00ca6dacbfb89"
+    ],
+    "docs/.joycraft/local/last-successful.json": [
+      "010044d01811aefe87ff164e92726191ee7b9f23d95d21b9874985c62f13846a",
+      "1fa5e2151c2ce60bd95451c2b3d085f9613dc4f201b9992f5d308fc6d5beffdf",
+      "6614bee97709f13c79f8c53ae6207c750e134ed2646f20d13bb01d053b50c39e",
+      "698f385bc4748b9d803e0fe15f60916a20c54daaf308e0d77c77b944bb8c3bae"
+    ],
+    "docs/backlog/README.md": [
+      "a85cda945db80c794b2ff1eb7016bb460a498e0fd5ab939f77cfc1509500be64"
+    ],
+    "docs/intent/README.md": [
+      "f93afb8b7abbb1274aec57c5c8a390b54f1789237ddb0242556ef2e0c1dbbdc2"
+    ],
+    "docs/templates/CHECKPOINT_TEMPLATE.html": [
+      "d3f113e71c32ebf94af20c1dfe472d60a28b17227ddf79b42e354184c271dccd"
+    ],
+    "docs/templates/CONTRIBUTING-joycraft-template.md": [
+      "38815e8c1094e0258809518db39b2a9ae3decaee4bf27dc4f9b66ea56f71573b",
+      "e204c6a68168784133481cddd14cda80719a25c0b889f6ce96bb229f2657dee0"
+    ],
+    "docs/templates/DECISION_DOSSIER_TEMPLATE.html": [
+      "2547d26dcc6eacb559e98418334d8ef9faa9b9aed98f5a62fd5fe29dd2621d9e"
+    ],
+    "docs/templates/INTENT_TEMPLATE.md": [
+      "178852bcbf8fd5102e34795fef22508c143605159b23523ae499e6bf45852620"
+    ],
+    "docs/templates/REVIEW_GATE_TEMPLATE.html": [
+      "8a6087d778e9b0549a76b11207afde00260d9a1516e02b4b39b81aa8f71ab98e",
+      "96ae08e4b00da8d8a3625d6aa07221fad860ebb5347be4cc2fefda60f7c42545",
+      "ac1f82b21ecef0285dbf9959458cc4492a6d7c8440c5f5e4b6502a235c8a65d8"
+    ],
+    "docs/templates/context/anchors.md": [
+      "6d2d1655715e55c4d9773cb822dabbac3593189a8078affe08f6da46ce983d2a"
+    ],
+    "docs/templates/context/dangerous-assumptions.md": [
+      "3a284c31bf6b11a47d9b6a0ac3280835c04e816c6001ca7b5bb38c144f30f1e0"
+    ],
+    "docs/templates/context/decision-log.md": [
+      "2cba6fe33e7ec97141fc2aaa7765d60de5bc5be84dfb56042e11287718cfaf9d"
+    ],
+    "docs/templates/context/institutional-knowledge.md": [
+      "b2087bcbf493864a54e1eb463803d0df3b2594757db2b61c26b1c9b017e5ce78"
+    ],
+    "docs/templates/context/production-map.md": [
+      "d6cee1d5335deac40d9a2e56b2fc27bc2122eef77f6cf77c015e34d6e24ead07"
+    ],
+    "docs/templates/context/reference/backend.md": [
+      "25e2ccb9970be0cef7d0a587af8a0e7aa4d4261c48e0aa090209b83eca0a2c14"
+    ],
+    "docs/templates/context/reference/design-system.md": [
+      "d6fea157017f70429b2f8af54dbf609c24892a95c08b787211d01b6cdbe9de7f"
+    ],
+    "docs/templates/context/reference/frontend-methodology.md": [
+      "d555c5c29d49caacba2cd3ab6d39a600fc23afeb5aafe0fe5a8868c2d99acaad"
+    ],
+    "docs/templates/context/reference/reference-doc.md": [
+      "e04f93e74041b4b3e74dbdcfc67f01ffd54070fe90d4a22d4226ba2b8fdb9460"
+    ],
+    "docs/templates/context/reference/testing.md": [
+      "c4994726c1246cfc07a14fc8aedbec8bc4ef6a7f17f7ba7db7d5bfb9f0c471ef"
+    ],
+    "docs/templates/context/troubleshooting.md": [
+      "08256329808b2d51c45ec23ac7b3efd163dacea172cb491bf57cfdf54cdb35f1"
+    ],
+    "docs/templates/evals/README.md": [
+      "d75c82bcc30316296835d9fe2023fdb4714ac35a906143b5c0444dd7cae32e76"
+    ],
+    "docs/templates/evals/agent-evals.yml": [
+      "b0e4043627315f3d053397e0795f61760bbf465a58dfee4aef1db59b2a9113ec"
+    ],
+    "docs/templates/evals/check.sh": [
+      "4da0f28da3bcd498bdbd2a13aac1ce9e565f94e2de3a35da9f69a1d78615d804"
+    ],
+    "docs/templates/evals/example-task.json": [
+      "1898f9cb144e7202f81b51a2d608a15a52287e1bfcaf3d78de2e37fc4cd60425"
+    ],
+    "docs/templates/examples/example-brief.md": [
+      "9c3a3f36aaf9779936bfc980edb66c0bacee001ca0fe33ba53d676da4487855f"
+    ],
+    "docs/templates/examples/example-spec.md": [
+      "a7279dcb57e68fa0996d14ddd60b6b1a1194d188db87e35a6e24ee05986d2bfd"
+    ],
+    "docs/templates/hooks/README.md": [
+      "3c2b5b3dfe1e65147b43b246fdb3d2234dbfeeff83a9e37e82f0b8e5e9d64716"
+    ],
+    "docs/templates/hooks/exit-code-gate.sh": [
+      "e4ce9cd9a266830469ce16f3aeb6556ca783c921f402fc51599cf4bd8e35f08e"
+    ],
+    "docs/templates/hooks/plan-sync-on-completion.sh": [
+      "27e9b6fa449a22abd4b7ab7580a62ac938b2be9aba18f8336390dd0cec75c0e5"
+    ],
+    "docs/templates/hooks/protected-path-guard.sh": [
+      "470cc2e87a9651990a1473c52f4214d517123e8edb6b29a18e117dd243760bd4"
+    ],
+    "docs/templates/hooks/test-file-lock.sh": [
+      "226c6dc279a490ddc040f41ba11ab9146d3dbf3e9624c5162080e216a5a30889"
+    ],
+    "docs/templates/intent/README.md": [
+      "f93afb8b7abbb1274aec57c5c8a390b54f1789237ddb0242556ef2e0c1dbbdc2"
+    ],
+    "docs/templates/output/README.md": [
+      "e6a4e51f42e2085545ec514cad65e39e93663fd6b5b07708ca6ba97f3f00048d"
+    ],
+    "docs/templates/reference/interactive-checkpoint.md": [
+      "e69432b78d73865f0821606e8ed0740745b48d08815d4716961df3282a806471"
+    ],
+    "docs/templates/reference/knowledge-lifecycle.md": [
+      "68fd4ec1f92b44d6ea46e6b203e25163cbf0cb1a2812ac814a2cc18e6a2787d7",
+      "f696671dae7d3bb9a99279b933eb0b3a52195bddf91e778f633bb840f99943ee"
+    ],
+    "docs/templates/reference/model-profile-claude-fable-5-1.md": [
+      "c3c335f88ee96eba3d885d27be928fc6b2b03bbc215f7bafda645dbe2fd0a97e"
+    ],
+    "docs/templates/reference/output-style.md": [
+      "2015dee2e47a471bc6107cbc2b674004c747a79e7b19dadae2ef9b79b516933c",
+      "6d122b22fc358e017eb936ed0505d33bca34c48090262b2b5e3fb0ce922a23b1"
+    ],
+    "docs/templates/reference/spec-status-lifecycle.md": [
+      "8accc0acee84301f98a2124b675bb9916bfe3174072fc96409d8d7cc6cec54f0"
+    ],
+    "docs/templates/scenarios/README.md": [
+      "137780df224ca45c402c66861e12d7a9c34b7435e82a89924fd7be363b5389dc",
+      "cea4b8350dda224d497585daf9e411563e7c4ecc2da85de1975dd842ff2d9b59"
+    ],
+    "docs/templates/scenarios/example-scenario.test.ts.template": [
+      "ca55be6f7a0f11bda7cc51aa5f8ba93ea363d1e6ada67c48287010c7e4a6e559"
+    ],
+    "docs/templates/scenarios/package.json": [
+      "9c1bf58f3cd555bc2c805bf9910eed0eb8768adc3b3cbd74906fbf8f57f0e9fc"
+    ],
+    "docs/templates/scenarios/prompts/scenario-agent.md": [
+      "f37ed346807ce667473af9db227ed7d5f043c97b01bc97fb1887696346f476c6"
+    ],
+    "docs/templates/scenarios/workflows/generate.yml": [
+      "bc2cc231148eb5d7224b5a7e5e982fc85f6aac7166baea1ea6a377b8ecad5a56"
+    ],
+    "docs/templates/scenarios/workflows/run.yml": [
+      "c50fa2d0ba201eba842ba87f140d0531e86d43339e17bcfc4ced0600e2e6869c"
+    ],
+    "docs/templates/workflows/autofix.yml": [
+      "d3900967afe005a8ebd524f7a18a7e06b40ec73db01c921b76c6429abc36fe3f"
+    ],
+    "docs/templates/workflows/scenarios-dispatch.yml": [
+      "ca325380f86f834c54d5290f4b8cff4064ae3fb5be31b51ded1ad44aa10d306f"
+    ],
+    "docs/templates/workflows/scenarios-rerun.yml": [
+      "7bffeac1e8f49bdef2d6978c2df21c51d896befde02d5fb6b2bf3d6db12e6301"
+    ],
+    "docs/templates/workflows/spec-dispatch.yml": [
+      "44fed6ef0edf25f0c3d7caffadbf20a480bb2e31c9ad182b864438e193bd2ad0"
+    ]
+  }
+}

@@ -54,7 +54,7 @@ describe('required compatibility validation', () => {
       { os: 'windows', runner: 'windows-latest', node: '24.20.0' },
     ]));
     expect(COMPATIBILITY_STACKS).toEqual(['node', 'python', 'rust', 'go']);
-    expect(HARNESS_SELECTIONS).toEqual(['claude', 'codex', 'pi', 'copilot', 'omp', 'claude-codex', 'all']);
+    expect(HARNESS_SELECTIONS).toEqual(['claude', 'codex', 'pi', 'omp', 'copilot', 'opencode', 'all']);
     const matrix = createCompatibilityMatrix(identity);
     expect(matrix).toHaveLength(196);
     expect(new Set(matrix.map(cell => cell.id)).size).toBe(196);

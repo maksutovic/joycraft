@@ -95,17 +95,14 @@ Past multi-team scale, replace this root map with nested per-directory instructi
 ### Key Data Flow
 
 ```
-npx joycraft@latest update
-  → choose or reuse harnesses and shared/private profile
-  → read installation manifest (or conservatively bridge legacy state)
-  → compare vendor baseline, current bytes, and executing bundle
-  → preview or apply selected safe actions in one recoverable transaction
-  → publish manifest last; keep user-owned files; back up edited Joycraft files before replacing them
+npx joycraft@latest init|update            (1.0: src/cli.ts)
+  → a 0.7 install? print the migration plan and exit 1 (src/legacy-07.ts)
+      --migrate: archive known 0.7 files, keep knowledge, install 1.0, recoverable
+      rollback: restore the migration backup byte for byte (src/rollback.ts)
+  → else choose or reuse hosts; plan per file against .joycraft/installation.json
+  → back up edited Joycraft files, never replace foreign ones, write the manifest last (src/install-v1.ts)
 
-Joycraft skill entry
-  → installed checker reads local policy and cached version
-  → offer one update per conversation when appropriate
-  → finish active skill before an approved or eligible automatic update
+payload/  ← scripts/vendor-payload.mjs --tag field-N (never edit by hand; fix joycraft-prototype and re-vendor)
 ```
 
 ---
@@ -115,7 +112,9 @@ Joycraft skill entry
 | File | Purpose |
 |------|---------|
 | `src/detect.ts` | Stack detection — pure function, no side effects |
-| `src/telemetry.ts` + `src/telemetry-store.ts` | Read-telemetry scanner (Claude/Pi/omp/Codex transcripts) + gitignored store behind `joycraft telemetry` |
+| `src/payload.ts` + `src/install-v1.ts` | 1.0: the vendored payload, host mapping, install/update plan and apply, doctor |
+| `src/legacy-07.ts` + `src/rollback.ts` + `src/data/install-inventory.json` | 1.0: 0.7 detection, migration and rollback; known 0.7 bytes from every published release |
+| `scripts/vendor-payload.mjs` + `scripts/release-gates.mjs` | Vendor the field build into `payload/`; G10 gates against the packed tarball |
 | `src/folder-map.ts` | Check-shaped folder map — sentinel block regenerated at init/upgrade, drift-diffed by tune |
 | `src/init.ts` + `src/upgrade.ts` | Compatibility entry points that delegate to the unified updater |
 | `src/update.ts` + `src/update-plan.ts` + `src/update-transaction.ts` | One executing bundle, conservative per-file planning, atomic apply and guarded recovery |

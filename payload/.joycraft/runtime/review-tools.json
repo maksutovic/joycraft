@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "categories": {
+    "web": { "label": "Web app", "tools": ["playwright"], "ui": true },
+    "ios": { "label": "iOS / macOS app", "tools": ["xcode", "ios-simulator"], "ui": true },
+    "android": { "label": "Android app", "tools": ["android-sdk", "android-emulator"], "ui": true },
+    "flutter": { "label": "Flutter app", "tools": ["flutter"], "ui": true, "mobile": true },
+    "react-native": { "label": "React Native app", "tools": ["react-native-cli"], "ui": true, "mobile": true },
+    "expo": { "label": "Expo app", "tools": ["expo-cli"], "ui": true, "mobile": true },
+    "electron": { "label": "Electron / desktop app", "tools": ["playwright"], "ui": true },
+    "api": { "label": "API / backend", "tools": ["test-runner", "curl"], "ui": false },
+    "cli-library": { "label": "CLI / library", "tools": ["test-runner"], "ui": false }
+  },
+  "tools": {
+    "playwright": { "label": "Playwright + Chromium", "scope": "project", "size": "about 150 MB with Chromium", "sudo": false,
+      "hostAlternative": "browser", "evidence": "{exec} playwright test" },
+    "xcode": { "label": "Xcode (xcodebuild)", "scope": "system", "size": "about 12 GB", "sudo": true,
+      "steps": ["Install Xcode from the App Store and open it once", "Run `sudo xcodebuild -license accept` yourself"] },
+    "ios-simulator": { "label": "iOS Simulator runtime", "scope": "system", "size": "about 8 GB", "sudo": false,
+      "hostAlternative": "simulator", "steps": ["Run `xcodebuild -downloadPlatform iOS`, or Xcode > Settings > Components"],
+      "evidence": "xcrun simctl io booted screenshot <file>" },
+    "android-sdk": { "label": "Android SDK platform tools (adb)", "scope": "system", "size": "about 1 GB", "sudo": false,
+      "steps": ["Install Android Studio, then SDK Manager > SDK Platform-Tools", "Accept the SDK licenses yourself"] },
+    "android-emulator": { "label": "Android emulator image", "scope": "system", "size": "about 4 GB", "sudo": false,
+      "steps": ["Android Studio > Device Manager > create a virtual device"], "evidence": "adb exec-out screencap -p > <file>" },
+    "flutter": { "label": "Flutter SDK", "scope": "system", "size": "about 2 GB", "sudo": false,
+      "steps": ["Install the Flutter SDK (https://docs.flutter.dev/get-started/install) and run `flutter doctor`"] },
+    "react-native-cli": { "label": "React Native CLI", "scope": "project", "size": "a few MB", "sudo": false, "package": "react-native" },
+    "expo-cli": { "label": "Expo CLI", "scope": "project", "size": "a few MB", "sudo": false, "package": "expo" },
+    "test-runner": { "label": "Project test runner", "scope": "project", "size": "declared by the project", "sudo": false },
+    "curl": { "label": "HTTP check (curl)", "scope": "system", "size": "built in on macOS", "sudo": false,
+      "steps": ["Install curl with your system package manager"], "evidence": "curl -sS <url>" }
+  }
+}

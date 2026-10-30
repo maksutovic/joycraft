@@ -64,9 +64,9 @@ function noopManifest(root: string, body = "process.exit(0);"): string {
 describe('package compatibility contract', () => {
   it('defines the complete four-stack and seven-selection matrix', () => {
     expect(STACKS).toEqual(['node', 'python', 'rust', 'go']);
-    expect(HARNESS_SELECTIONS).toEqual(['claude', 'codex', 'pi', 'copilot', 'omp', 'claude-codex', 'all']);
+    expect(HARNESS_SELECTIONS).toEqual(['claude', 'codex', 'pi', 'omp', 'copilot', 'opencode', 'all']);
     expect(expectedCompatibilityCheckIds('ubuntu', '22.23.1')).toHaveLength(28);
-    expect(expectedCompatibilityCheckIds('ubuntu', '22.23.1')).toContain('ubuntu:node-22.23.1:node:claude-codex');
+    expect(expectedCompatibilityCheckIds('ubuntu', '22.23.1')).toContain('ubuntu:node-22.23.1:node:opencode');
   });
 
   it('runs the real retained package CLI in isolated consumers and writes a complete report', async () => {

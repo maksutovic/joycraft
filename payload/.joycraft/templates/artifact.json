@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "example-feature-review",
+  "title": "Example feature review",
+  "summary": "Choose the collection presentation after comparing the current and proposed views.",
+  "decisionIds": ["presentation"],
+  "comparisons": [
+    {
+      "title": "Collection presentation",
+      "decisionId": "presentation",
+      "images": [
+        {
+          "path": "docs/features/example-feature/screens/rows.png",
+          "label": "Compact rows",
+          "alt": "Example collection rendered as compact rows",
+          "caption": "Best when scan speed matters."
+        },
+        {
+          "path": "docs/features/example-feature/screens/cards.png",
+          "label": "Visual cards",
+          "alt": "Example collection rendered as visual cards",
+          "caption": "Best when imagery carries the choice."
+        }
+      ]
+    }
+  ],
+  "reviews": [
+    {
+      "path": "docs/features/example-feature/specs/review-1.report.json",
+      "title": "Recorded implementation review"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ import {
 import { readInstallationManifest, writeInstallationManifest, type InstallationManifest } from '../src/install-manifest';
 import { HARNESSES } from '../src/harness';
 import { STATE_PATH } from '../src/version';
-import { TELEMETRY_PATH } from '../src/telemetry-store';
+const TELEMETRY_PATH = 'docs/.joycraft/telemetry.json';
 
 function project(): string {
   return mkdtempSync(join(tmpdir(), 'joycraft-gitignore-'));

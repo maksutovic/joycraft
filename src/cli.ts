@@ -1,267 +1,193 @@
 import { Command } from 'commander';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import { PRIVATE_DIRS_DISPLAY } from './gitignore.js';
-import { applyMigration, formatMigrationPlan, formatMigrationOutcome, runMigration } from './migration.js';
+import { dirname, join, resolve } from 'path';
+import { createInterface } from 'node:readline/promises';
+import { applyInstall, doctor, formatPlan, planInstall, readManifest, recordedHosts, recoverInstall } from './install-v1.js';
+import { detectLegacy, formatLegacyPlan, migrateLegacy, planLegacy, recoverLegacy } from './legacy-07.js';
+import { applyRollback, formatRollback, planRollback } from './rollback.js';
+import { detectHost, HOST_LABELS, HOSTS, parseHosts, type Host } from './payload.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(__dirname, '..', 'package.json'), 'utf-8'));
 
-const GITIGNORE_OPTION_DESC = `Gitignore profile: 'shared' (commit skills) or 'private' (gitignore ${PRIVATE_DIRS_DISPLAY})`;
+interface InstallOptions {
+  harness?: string;
+  yes?: boolean;
+  plan?: boolean;
+  json?: boolean;
+  migrate?: boolean;
+  keepCustom?: boolean;
+  archiveCustom?: boolean;
+  recover?: boolean;
+}
+
+const interactive = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
+
+async function ask(question: string): Promise<string> {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try { return (await rl.question(question)).trim(); } finally { rl.close(); }
+}
+
+async function confirm(question: string): Promise<boolean> {
+  return /^y(es)?$/i.test(await ask(`${question} [y/N] `));
+}
+
+function out(json: boolean | undefined, value: unknown, text: string): void {
+  console.log(json ? JSON.stringify(value, null, 2) : text);
+}
+
+/** Hosts: --harness, else the recorded choice, else ask (defaulting to the host running this CLI). */
+async function chooseHosts(root: string, opts: InstallOptions, fallback?: Host[]): Promise<Host[]> {
+  if (opts.harness) return parseHosts(opts.harness);
+  const recorded = recordedHosts(root) ?? fallback;
+  if (recorded?.length) return recorded;
+  const detected = detectHost();
+  const suggestion = detected ?? 'claude';
+  if (!interactive() || opts.yes) return [suggestion];
+  console.log(`Hosts: ${HOSTS.map((host) => `${host} (${HOST_LABELS[host]})`).join(', ')}`);
+  const answer = await ask(`Install for which hosts? [${suggestion}] `);
+  return answer ? parseHosts(answer) : [suggestion];
+}
+
+/** Without --yes: a terminal is asked; anything else gets the plan and exit 1, never a waiting prompt. */
+async function approved(opts: InstallOptions, text: string, question: string): Promise<boolean> {
+  if (opts.yes) return true;
+  console.log(text);
+  if (!interactive()) {
+    console.log('\nNothing changed. Re-run with --yes to apply.');
+    process.exitCode = 1;
+    return false;
+  }
+  if (await confirm(question)) return true;
+  console.log('Nothing changed.');
+  return false;
+}
+
+async function install(dir: string, opts: InstallOptions, mode: 'init' | 'update'): Promise<void> {
+  const root = resolve(dir);
+  if (opts.recover) {
+    const migrated = recoverLegacy(root);
+    const result = migrated ? null : recoverInstall(root);
+    out(opts.json, { recovered: migrated ? 'migration' : result?.restored || result?.deleted ? 'update' : null },
+      migrated ? 'Recovered the interrupted migration; the project is as it was before.' : result && (result.restored || result.deleted)
+        ? `Recovered the interrupted update (${result.restored} restored, ${result.deleted} removed).` : 'Nothing to recover.');
+    return;
+  }
+
+  const legacy = detectLegacy(root);
+  if (legacy) {
+    const hosts = opts.harness ? parseHosts(opts.harness) : legacy.hosts;
+    const plan = planLegacy(root, hosts);
+    if (opts.plan || !opts.migrate) {
+      out(opts.json, { legacy: plan.legacy, archive: plan.archive, customized: plan.customized, kept: plan.kept, settings: plan.settings, install: plan.install.actions },
+        formatLegacyPlan(plan, !opts.migrate));
+      if (!opts.migrate) process.exitCode = 1;
+      return;
+    }
+    let keep: string[] = [];
+    if (plan.customized.length) {
+      if (opts.keepCustom) keep = plan.customized;
+      else if (!opts.archiveCustom) {
+        if (!interactive()) {
+          console.log(formatLegacyPlan(plan, false));
+          console.log('\nNothing changed. Add --keep-custom or --archive-custom to decide the customized files.');
+          process.exitCode = 1;
+          return;
+        }
+        for (const path of plan.customized) if (/^k/i.test(await ask(`Customized ${path}: keep it in place or archive it? [k/A] `))) keep.push(path);
+      }
+    }
+    if (!(await approved(opts, formatLegacyPlan(plan, false), 'Migrate to Joycraft 1.0?'))) return;
+    const result = migrateLegacy(plan, { keep });
+    out(opts.json, result, [
+      `Migrated to Joycraft ${plan.install.to.joycraft}. ${result.archived.length} 0.7 file(s) archived in ${result.backup}/.`,
+      ...(result.keptCustom.length ? [`Kept in place: ${result.keptCustom.join(', ')}`] : []),
+      `Undo with: npx joycraft@latest rollback`,
+    ].join('\n'));
+    return;
+  }
+
+  const installed = readManifest(root);
+  if (mode === 'update' && !installed) {
+    console.log('Joycraft is not installed here. Install it with: npx joycraft@latest init');
+    process.exitCode = 1;
+    return;
+  }
+  const hosts = await chooseHosts(root, opts);
+  const plan = planInstall(root, hosts);
+  if (opts.plan) { out(opts.json, plan, formatPlan(plan)); return; }
+  if (!plan.actions.some((action) => action.kind !== 'conflict') && !plan.gitignore.length) {
+    out(opts.json, { status: 'noop', exitCode: 0, version: plan.to.joycraft, hosts, plan }, `Joycraft ${plan.to.joycraft} is up to date for ${hosts.join(', ')}.`);
+    return;
+  }
+  if (!(await approved(opts, formatPlan(plan), installed ? 'Update Joycraft?' : 'Install Joycraft?'))) return;
+  const result = applyInstall(plan);
+  out(opts.json, { status: 'applied', exitCode: 0, version: plan.to.joycraft, hosts, ...result }, [
+    `${installed ? 'Updated' : 'Installed'} Joycraft ${plan.to.joycraft} for ${hosts.join(', ')}: ${result.written.length} written, ${result.removed.length} removed.`,
+    ...(result.backup ? [`Previous files are in ${result.backup}/.`] : []),
+    ...result.conflicts.map((path) => `Kept your file (not installed): ${path}`),
+    ...(installed ? [] : ['Next: open your coding agent here and say what you want to build. Joycraft sets up the rest.']),
+  ].join('\n'));
+}
 
 const program = new Command();
 
 program
   .name('joycraft')
-  .description('Scaffold and upgrade AI development harnesses')
+  .description('Install and update Joycraft in a project')
   .version(pkg.version, '-v, --version');
 
+const installCommand = (name: 'init' | 'update', description: string) => program
+  .command(name)
+  .description(description)
+  .argument('[dir]', 'Project directory', '.')
+  .option('--harness <list>', `Hosts to install for (${HOSTS.join(', ')}), comma or space separated`)
+  .option('--yes', 'Apply without asking')
+  .option('--plan', 'Show what would change and exit; writes nothing')
+  .option('--json', 'Print machine-readable output')
+  .option('--migrate', 'Migrate a Joycraft 0.7 install to 1.0')
+  .option('--keep-custom', 'Migration: keep customized 0.7 files in place')
+  .option('--archive-custom', 'Migration: archive customized 0.7 files with the rest')
+  .option('--recover', 'Undo an interrupted update or migration')
+  .action(async (dir: string, opts: InstallOptions) => {
+    try { await install(dir, opts, name); }
+    catch (error) { console.error(`Error: ${(error as Error).message}`); process.exitCode = 1; }
+  });
+
+installCommand('init', 'Install Joycraft into a project');
+installCommand('update', 'Update Joycraft, or migrate a 0.7 install with --migrate');
+
 program
-  .command('update')
-  .description('Safely install or update Joycraft in a project')
-  .argument('[dir]', 'Target directory', '.')
-  .option('--harnesses <list>', 'Harnesses to install (comma or space separated)')
-  .option('--yes', 'Apply safe updates without prompting')
-  .option('--non-interactive', 'Never prompt; apply safe actions only')
-  .option('--replace-customized <paths...>', 'Explicitly replace these customized paths')
-  .option('--repair <paths...>', 'Explicitly restore these missing managed files')
-  .option('--gitignore <profile>', GITIGNORE_OPTION_DESC)
-  .option('--json', 'Print a structured JSON outcome')
-  .option('--recover', 'Recover the interrupted update transaction')
-  .option('--rollback', 'Rollback the last successful update')
-  .option('--preview', 'Show planned changes without applying them')
-  .option('--auto-safe', 'Require local opt-in and verified automatic-update safety')
-  .action(async (dir: string, opts: {
-    harnesses?: string;
-    yes?: boolean;
-    nonInteractive?: boolean;
-    replaceCustomized?: string[];
-    repair?: string[];
-    gitignore?: string;
-    json?: boolean;
-    recover?: boolean;
-    rollback?: boolean;
-    preview?: boolean;
-    autoSafe?: boolean;
-  }) => {
-    const { update, formatUpdateOutcome } = await import('./update.js');
+  .command('rollback')
+  .description('Undo a 0.7 → 1.0 migration from its backup')
+  .argument('[backup]', 'Backup folder name or timestamp (default: the latest migration)')
+  .option('--dir <dir>', 'Project directory', '.')
+  .option('--yes', 'Apply the rollback')
+  .option('--force', 'Also remove 1.0 files edited after the migration')
+  .action((backup: string | undefined, opts: { dir: string; yes?: boolean; force?: boolean }) => {
     try {
-      let verifiedArtifact;
-      if (opts.autoSafe) {
-        if (opts.recover || opts.rollback || opts.repair?.length || opts.replaceCustomized?.length || opts.gitignore || opts.harnesses) {
-          throw new Error('Automatic updates cannot include recovery, configuration, or customization choices.');
-        }
-        const { readUpdatePolicy } = await import('./update-check.js');
-        if (readUpdatePolicy(dir) !== 'auto-safe') throw new Error('Automatic updates require the explicitly configured local auto-safe policy.');
-        const { readInstallationManifestInfo } = await import('./install-manifest.js');
-        const authorities = ['shared', 'private'].map(profile => readInstallationManifestInfo(dir, profile as 'shared' | 'private'));
-        if (authorities.filter(info => info.status !== 'missing').length !== 1 || !authorities.some(info => info.status === 'valid')) {
-          throw new Error('Automatic updates require one valid existing installation manifest; run an explicit update first.');
-        }
-        const { resolveExactRelease } = await import('./release-resolver.js');
-        const { fetchVerifiedReleaseArtifact } = await import('./release-artifact.js');
-        // The agent selected this exact candidate before invoking its CLI.
-        // Verify its artifact once; the update engine never resolves latest.
-        const resolution = await resolveExactRelease({ version: pkg.version });
-        if (!resolution.ok) throw new Error(resolution.error);
-        verifiedArtifact = await fetchVerifiedReleaseArtifact(resolution.release);
-      }
-      const result = await update(dir, {
-        harnesses: opts.harnesses,
-        yes: opts.yes ?? false,
-        nonInteractive: opts.nonInteractive ?? false,
-        replaceCustomized: opts.replaceCustomized,
-        repair: opts.repair,
-        gitignore: opts.gitignore,
-        recovery: opts.recover ? 'recover' : opts.rollback ? 'rollback' : undefined,
-        preview: opts.preview,
-        json: opts.json,
-        automatic: opts.autoSafe,
-        verifiedArtifact,
-      });
-      if (opts.preview) {
-        const actions = result.plan?.actions.map(({ path, kind, selected, reason }) => ({ path, kind, selected, reason })) ?? [];
-        if (opts.json) console.log(JSON.stringify({ ...JSON.parse(formatUpdateOutcome(result, true)), preview: true, actions }));
-        else console.log(['Preview only; no files changed.', ...actions.map(action => `${action.selected ? 'Planned' : 'Preserved'}: ${action.kind} ${action.path}`), ...result.diagnostics].join('\n'));
-      } else console.log(formatUpdateOutcome(result, opts.json === true));
-      process.exitCode = result.exitCode;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      if (opts.json) console.log(JSON.stringify({ status: 'failed', exitCode: 1, applied: [], preserved: [], conflicts: [], diagnostics: [message] }));
-      else console.error(message);
-      process.exitCode = 1;
-    }
+      const plan = planRollback(opts.dir, backup, { force: opts.force });
+      console.log(formatRollback(plan));
+      if (!opts.yes) { console.log('\nNothing changed. Re-run with --yes to roll back.'); return; }
+      applyRollback(plan);
+      console.log('Rolled back.');
+    } catch (error) { console.error(`Error: ${(error as Error).message}`); process.exitCode = 1; }
   });
 
 program
-  .command('init')
-  .description('Scaffold the Joycraft harness into the current project')
-  .argument('[dir]', 'Target directory', '.')
-  .option('--force', 'Overwrite existing files')
-  .option('--harnesses <list>', 'Harnesses to install (comma or space separated)')
-  .option('--yes', 'Apply safe updates without prompting')
-  .option('--non-interactive', 'Never prompt; apply safe actions only')
-  .option('--replace-customized <paths...>', 'Explicitly replace these customized paths')
-  .option('--gitignore <profile>', GITIGNORE_OPTION_DESC)
-  .option('--json', 'Print a structured JSON outcome')
-  .action(async (dir: string, opts: { force?: boolean; harnesses?: string; yes?: boolean; nonInteractive?: boolean; replaceCustomized?: string[]; gitignore?: string; json?: boolean }) => {
-    const { init, formatInitOutcome } = await import('./init.js');
-    try {
-      const result = await init(dir, {
-        force: opts.force ?? false,
-        harnesses: opts.harnesses,
-        yes: opts.yes ?? false,
-        nonInteractive: opts.nonInteractive ?? false,
-        replaceCustomized: opts.replaceCustomized,
-        gitignore: opts.gitignore,
-        json: opts.json,
-      });
-      if (result) {
-        console.log(formatInitOutcome(result, opts.json === true));
-        if (!opts.json && opts.harnesses === undefined && process.stdin.isTTY !== true) console.log('  Compatibility: init selected all harnesses for this non-interactive run.');
-      }
-      if (result) process.exitCode = result.exitCode;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      if (opts.json) console.log(JSON.stringify({ status: 'failed', exitCode: 1, applied: [], preserved: [], conflicts: [], diagnostics: [message] }));
-      else console.error(message);
-      process.exitCode = 1;
-    }
+  .command('doctor')
+  .description('Check the Joycraft install against its manifest')
+  .argument('[dir]', 'Project directory', '.')
+  .option('--json', 'Print machine-readable output')
+  .action((dir: string, opts: { json?: boolean }) => {
+    const result = doctor(dir);
+    out(opts.json, result, !result.installed ? 'Joycraft is not installed here.'
+      : [`Joycraft ${result.tag}: ${result.ok ? 'ok' : 'needs attention'}`, ...result.missing.map((path) => `  missing: ${path}`),
+        ...result.edited.map((path) => `  edited: ${path}`)].join('\n'));
+    if (!result.ok) process.exitCode = 1;
   });
 
-program
-  .command('upgrade')
-  .description('Upgrade installed Joycraft templates and skills to latest')
-  .argument('[dir]', 'Target directory', '.')
-  .option('--yes', 'Apply safe updates and preserve customizations without prompting')
-  .option('--non-interactive', 'Never prompt; apply safe actions only')
-  .option('--harnesses <list>', 'Harnesses to update (comma or space separated)')
-  .option('--replace-customized <paths...>', 'Explicitly replace these customized paths')
-  .option('--gitignore <profile>', GITIGNORE_OPTION_DESC)
-  .option('--json', 'Print a structured JSON outcome')
-  .action(async (dir: string, opts: { yes?: boolean; nonInteractive?: boolean; harnesses?: string; replaceCustomized?: string[]; gitignore?: string; json?: boolean }) => {
-    const { upgrade } = await import('./upgrade.js');
-    try {
-      const result = await upgrade(dir, { yes: opts.yes ?? false, nonInteractive: opts.nonInteractive ?? false, harnesses: opts.harnesses, replaceCustomized: opts.replaceCustomized, gitignore: opts.gitignore, json: opts.json });
-      if (!opts.json) {
-        const { formatUpdateOutcome } = await import('./update.js');
-        console.log(formatUpdateOutcome(result, false));
-      } else {
-        const { formatUpdateOutcome } = await import('./update.js');
-        console.log(formatUpdateOutcome(result, true));
-      }
-      process.exitCode = result.exitCode;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      if (opts.json) console.log(JSON.stringify({ status: 'failed', exitCode: 1, applied: [], preserved: [], conflicts: [], diagnostics: [message] }));
-      else console.error(message);
-      process.exitCode = 1;
-    }
-  });
-
-program
-  .command('migrate')
-  .description('Preview or explicitly apply the flat-docs to per-feature migration')
-  .argument('[dir]', 'Target directory', '.')
-  .option('--apply', 'Apply the displayed migration plan')
-  .option('--replace-collision <paths...>', 'Replace these existing destination paths explicitly')
-  .option('--include-unknown <paths...>', 'Explicitly establish ownership for orphan spec directories')
-  .option('--json', 'Print a structured JSON outcome')
-  .action((dir: string, opts: { apply?: boolean; replaceCollision?: string[]; includeUnknown?: string[]; json?: boolean }) => {
-    try {
-      const preview = runMigration(dir, { dryRun: true, includeUnknown: opts.includeUnknown });
-      if (!opts.apply) {
-        if (opts.json) console.log(JSON.stringify({ status: 'preview', exitCode: 0, plan: preview.plan }));
-        else console.log(formatMigrationPlan(preview.plan));
-        return;
-      }
-      // Render the same plan that will be applied.
-      if (!opts.json) console.log(formatMigrationPlan(preview.plan));
-      const applied = applyMigration(preview.plan, { replaceCollisions: opts.replaceCollision });
-      const result = { ...applied, plan: preview.plan };
-      console.log(formatMigrationOutcome(result, opts.json === true, false));
-      process.exitCode = result.status === 'complete' ? 0 : 1;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      if (opts.json) console.log(JSON.stringify({ status: 'incomplete', exitCode: 1, applied: 0, skipped: 0, replaced: [], preserved: [], errors: [message] }));
-      else console.error(message);
-      process.exitCode = 1;
-    }
-  });
-
-program
-  .command('telemetry')
-  .description('Scan AI-harness transcripts into knowledge-layer read telemetry')
-  .argument('[dir]', 'Target directory', '.')
-  .action(async (dir: string) => {
-    const { runTelemetryScan, formatTelemetrySummary } = await import('./telemetry-store.js');
-    const { resolve } = await import('node:path');
-    try {
-      const result = await runTelemetryScan(resolve(dir));
-      console.log(formatTelemetrySummary(result));
-    } catch (err) {
-      console.error(err instanceof Error ? err.message : String(err));
-      process.exit(1);
-    }
-  });
-
-program
-  .command('check')
-  .description('Check for a newer Joycraft release using local cached state')
-  .argument('[dir]', 'Target directory', '.')
-  .option('--json', 'Print a structured JSON result')
-  .option('--explicit', 'Bypass local acknowledgement and postponement')
-  .option('--session <id>', 'Reuse one conversation identity for update notices')
-  .action(async (dir: string, opts: { json?: boolean; explicit?: boolean; session?: string }) => {
-    const { resolve } = await import('node:path');
-    const { acknowledgeUpdate, checkForUpdate, resolveCheckSessionId } = await import('./update-check.js');
-    try {
-      const root = resolve(dir);
-      const session = resolveCheckSessionId(opts.session);
-      const result = await checkForUpdate(root, { explicit: opts.explicit === true, sessionId: session });
-      if (opts.json) console.log(JSON.stringify(result));
-      else if (result.display && result.availableVersion) {
-        console.log(`Joycraft ${result.availableVersion} available (you have ${result.installedVersion ?? 'unknown'}). Run: npx joycraft@${result.availableVersion} update`);
-        acknowledgeUpdate(root, { release: result.availableVersion, session });
-      }
-    } catch {
-      // A check must never block the caller's requested work.
-    }
-  });
-
-program
-  .command('init-autofix')
-  .description('Set up the Level 5 auto-fix loop with holdout scenarios')
-  .argument('[dir]', 'Target directory', '.')
-  .option('--scenarios-repo <name>', 'Name for scenarios repo')
-  .option('--app-id <id>', 'GitHub App ID for Joycraft Autofix')
-  .option('--force', 'Overwrite existing workflow files')
-  .option('--dry-run', 'Show what would be created without creating it')
-  .action(async (dir: string, opts: { scenariosRepo?: string; appId?: string; force?: boolean; dryRun?: boolean }) => {
-    const { initAutofix } = await import('./init-autofix.js');
-    await initAutofix(dir, opts);
-  });
-
-program
-  .command('check-version')
-  .description('Check if a newer version of Joycraft is available')
-  .action(async () => {
-    try {
-      const { acknowledgeUpdate, checkForUpdate, resolveCheckSessionId } = await import('./update-check.js');
-      const root = process.cwd();
-      const session = resolveCheckSessionId();
-      const result = await checkForUpdate(root, { explicit: true, sessionId: session });
-      if (result.display && result.availableVersion) {
-        console.log(`Joycraft ${result.availableVersion} available (you have ${result.installedVersion ?? 'unknown'}). Run: npx joycraft@${result.availableVersion} update`);
-        acknowledgeUpdate(root, { release: result.availableVersion, session });
-      }
-    } catch {
-      // Silent — don't block session start
-    }
-  });
-
-// Show help when no arguments provided
 if (process.argv.length <= 2) {
   program.outputHelp();
   process.exit(0);

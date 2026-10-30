@@ -4,192 +4,173 @@
   <img src="docs/joycraft-banner.png" alt="Joycraft, the craft of AI development" width="700" />
 </p>
 
-> The craft of AI development. With joy, not darkness.
+Joycraft helps your coding agent do larger work without losing track. You say what
+you want. The agent writes it down, splits it into small steps, and builds each step
+with tests. Then a second agent checks each step before it counts as done.
 
-## What is Joycraft?
+## Install: paste this into your coding agent
 
-A CLI that installs spec-driven development into [Claude Code](https://code.claude.com/docs), [OpenAI Codex](https://openai.com/codex), [Pi](https://github.com/earendil-works/pi-coding-agent), [GitHub Copilot](https://github.com/features/copilot), and [omp](https://github.com/can1357/oh-my-pi): skills, behavioral boundaries, templates, and a docs structure that matures with your project.
+Open your coding agent in your project (Claude Code, Codex, Pi, Oh My Pi, GitHub
+Copilot CLI or OpenCode) and paste:
 
-```bash
-cd /path/to/your/project
-npx joycraft@latest update
+```text
+Install Joycraft in this project.
+1. Run `npx joycraft@latest init . --plan --json`. Show me the files it will add in a short table. Do not change anything yet.
+2. Ask me which coding agents I use in this project (default: you). Then run
+   `npx joycraft@latest init . --harness <agents> --yes`.
+   If it finds Joycraft 0.7, stop and show me its migration plan.
+3. Use the joycraft-entry skill to set up this project. If the project is new or empty,
+   ask me what I want to build.
+4. Run `node .joycraft/runtime/review-tools.mjs plan --root .`. Tell me which tools
+   you need to check your own work, which ones I have, and which ones are missing.
+   Ask me before you install anything.
+Do not commit, publish, or ask me for API keys.
 ```
 
-Existing scripts may use the equivalent alias `npx joycraft@latest init` for a
-fresh install.
+**Upgrading from 0.7?** Nothing changes until you choose. On a 0.7 project,
+`npx joycraft@latest update .` shows the migration plan and stops. Read
+[Migrating from 0.7](docs/migrating-from-0.7.md), or paste the
+[upgrade prompt](docs/prompts.md#upgrade-from-07). To stay on 0.7:
+`npx joycraft@0.7.17 update`.
 
-Joycraft is a **curated harness, not a memory system**. Everything it writes is in-repo, reviewed in your PRs, and reaped when it stops earning its keep — the opposite of hidden state that accretes until it misleads. Code is the truth about how your project works; the harness holds only what code cannot say (intent, decisions and their rationale, product direction), and `/joycraft-optimize`'s Reaper pass is what keeps it honest. If your agent already keeps its own automatic memory, a Joycraft project supersedes it: the same facts get one home that your whole team can see and review.
+## How to use it
 
-## Contents
+After the install, talk to your agent as usual. Joycraft takes over when the work is
+bigger than one quick change:
 
-- [Install](#install) · [Use](#use) · [Upgrade](#upgrade-and-update)
-- [Setup walkthrough](docs/guides/setup-walkthrough.md) — every step from install to first feature
-- [Which skill do I need?](#which-skill-do-i-need) — the skill table and the core loop
-- [What init creates](#what-init-creates)
-- [Platform support](docs/guides/platform-support.md) — Claude Code, Codex, Pi, Copilot, omp, stacks, headless Pi
-- [Upgrading](docs/guides/upgrading.md) — the unified install/update command and recovery paths
-- [Releasing](docs/guides/releasing.md) — candidate verification, promotion, and retry recovery
-- [Git tracking](docs/guides/git-tracking.md) — shared vs private profiles, reviewable PRs
-- [Migration: flat → per-feature layout](docs/guides/migration-per-feature-layout.md) — the v0.6 docs move
-- [The levels](docs/guides/levels.md) — Dan Shapiro's 5 Levels, where Joycraft aims, and the credits
-- [Security](SECURITY.md) · [Guides](#guides) · [Why Joycraft?](#why-joycraft)
-- [Contributing](CONTRIBUTING.md) · [Acknowledgments](#acknowledgments) · [Changelog](CHANGELOG.md) · [License](LICENSE)
+1. **You say what you want.** The agent asks a few questions. Then it writes a short
+   brief that ends with "Done when": the result you will accept. You approve it.
+2. **The agent splits the brief into specs.** A spec is one small step that it can
+   build and test alone.
+3. **The agent builds each spec with tests.**
+4. **A second agent checks each spec.** It did not write the code. It reads the spec,
+   runs the checks, and says PASS or FAIL. Only a PASS completes the spec. For a
+   screen or page, it looks at the real result in a browser or simulator, if you
+   installed those tools in step 4 of the install.
+5. **The agent wraps up.** It records what it learned for the next session.
 
-## Install
+On a new, empty project, the agent first asks what you want to build. It writes your
+answers to `docs/context/project.md`. It does not choose a stack or write app code at
+this step.
 
-```bash
-cd /path/to/your/project
-npx joycraft@latest update
+## The context map: your project's memory
+
+`AGENTS.md` holds a short context map. Each line links one project document and
+says when to read it. The documents live in `docs/context/`: what the project is,
+who it is for, the decisions you made and why. Before each piece of work, the agent
+uses the map to find the documents and the code that apply.
+
+The map grows with the project:
+
+- **New facts go to one home.** When you decide something, the agent records it in
+  the decision log. It updates an existing document; it does not make a copy.
+- **Finished work becomes history.** A completed feature moves to `docs/archive/`.
+  The agent can check it later to catch a regression.
+- **Mistakes become lessons.** When the checking agent fails a spec, the cause can
+  become a short note for the next agent.
+- **Ideas for later stay visible.** A choice you put off is marked "backlogged". It
+  stays out of the current work, but it is not lost.
+
+You can feed it too. Give your agent meeting notes, a photo of a whiteboard or a
+screenshot, and ask it to add what matters to the project context. This gives the
+agent both views: the whole project and the detail of the current step.
+
+## Answering questions: the decision page
+
+When the agent needs you to choose between options, it shows the questions on a
+decision page instead of in chat. Each question shows its context, its options and
+what it affects. You pick an answer, add a note if you want, and save. The answers
+go into the brief, so the agent does not ask again.
+
+Sometimes the agent forgets and lists the options in chat. Then say:
+
+```text
+Put these questions in a Joycraft decision artifact so I can answer them there.
 ```
 
-Answer a few questions — which harnesses to install, whether to commit them, and (with Claude Code) whether to turn off auto-memory for this project — and `update` does the rest: detects your stack, writes `AGENTS.md`/`CLAUDE.md` with your real build/test commands, installs the skills. On later runs, Joycraft's skills and templates refresh to the latest version (an edited copy is saved first), and your own files stay untouched.
+**Colors.** The page uses a light or dark theme. To match your project, ask:
 
-`npm install -g joycraft` if you'd rather have the command on your PATH; `npx` works without it. Every step from install to first shipped feature: [Setup walkthrough](docs/guides/setup-walkthrough.md).
-
-## Use
-
-Inside your AI tool, drive everything with slash commands:
-
-```
-/joycraft-setup                                     # first run — onboarding, where to begin
-/joycraft-new-feature                               # interview → Feature Brief → atomic specs
-/joycraft-implement-feature docs/features/<slug>/   # run the whole spec queue, TDD per spec
-/joycraft-session-end                               # wrap up: validate, graduate specs, push/PR
-/joycraft-tune                                      # score your harness, apply upgrades
+```text
+Use our design system's colors for Joycraft artifacts.
 ```
 
-Brainstorming first? `/joycraft-interview`. Fixing a bug? `/joycraft-bugfix`. The full table is at [Which skill do I need?](#which-skill-do-i-need); invocation syntax per tool is in [Platform support](docs/guides/platform-support.md).
+The agent reads your project's color tokens and saves them in
+`.joycraft/preferences.json`. You can also give it your own colors. Joycraft
+refuses colors that make text or buttons hard to read.
 
-## Upgrade and update
+## What Joycraft is
 
-```bash
-npx joycraft@latest update
+Joycraft is a set of agent skills and a small set of scripts. It installs into your
+project:
+
+- Skills in `.claude/skills/` (Claude Code) or `.agents/skills/` (all other agents)
+- Scripts and templates in `.joycraft/`
+- Project notes in `AGENTS.md`, `CLAUDE.md` and `docs/`. These are yours: Joycraft
+  adds to them and never removes them.
+
+All of it lives in your repository. Joycraft collects no data and does not call an AI
+model itself. Its only network use is the version check below. Joycraft 1.0 adds no
+hooks and changes no agent settings.
+
+## Updates
+
+At the start of a session, your agent checks npm for a newer Joycraft, at most once a
+day. The check sends no project data. If there is a new version, the agent tells you
+what changed and asks: update now, not now, or turn off. On a yes, it does the update
+for you, checks the result, and tells you what is different. A new major version is
+always your choice.
+
+This is an instruction the agent follows, so it can forget. To check yourself, ask:
+
+```text
+Check for a Joycraft update.
 ```
 
-Run this from the project root. In a fresh interactive project it asks which harnesses to install. In CI or another unattended fresh project, provide an explicit selection, for example `--harnesses codex --non-interactive`. On an existing project it reads the shared or private installation manifest and preserves the selected harnesses, local content, unrelated configuration, and unknown state fields. Your own files (`CLAUDE.md`, `AGENTS.md`, `deny-patterns.txt`, your settings) are never changed; an edited Joycraft skill or template is replaced with the latest version after your copy is saved under `docs/.joycraft/local/replaced/`. `--yes` follows the same rules. Use `--preview` to review the actual plan, `--replace-customized <paths...>` to reset one of your own files to Joycraft's default, and `--repair <paths...>` for explicitly restoring missing managed files. Details, policies, bridge behavior, and exit codes are in [Upgrading](docs/guides/upgrading.md).
+## Hosts
 
-`init` and `upgrade` remain supported aliases into the same update engine. `init` is the friendly fresh-install entry point; `upgrade` keeps older automation working. If npm fails with `ETARGET` before Joycraft starts, retry with an online npm metadata refresh:
-
-```bash
-npm --prefer-online exec --yes -- joycraft@latest update
-```
-
-The launcher resolves one exact candidate. The executing bundle does not silently resolve `latest` again. After a successful update, reinvoke the active skill or restart the agent session so it loads the new instructions.
-
-Update checks are local to each project. The default `notify` policy keeps a 24-hour cache, uses a short bounded request, and stays quiet when offline or unavailable. `auto-safe` is an explicit local opt-in and still requires the reviewed candidate descriptor and every safety gate; `off` disables notices. See [Upgrading](docs/guides/upgrading.md#update-checks-and-policies).
-
-```bash
-npx joycraft@latest telemetry
-```
-
-Scans your Claude Code, Pi, omp, and (best-effort) Codex session transcripts and records which knowledge-layer docs your agents actually read. The result is a gitignored, machine-local file at `docs/.joycraft/telemetry.json` — paths and counters only, never transcript content. `/joycraft-session-end` runs this scan for you; `/joycraft-optimize` cites the counts when it judges which docs earn their place.
-
-## What init creates
-
-- **AGENTS.md** — behavioral boundaries (Always / Ask First / Never) plus your stack's real build/test/lint commands; the single shared instruction file when more than one tool is selected
-- **CLAUDE.md** — on a multi-tool install, [Anthropic's documented import pattern](https://code.claude.com/docs/en/memory): `@AGENTS.md` plus a `## Claude Code` section, so every tool reads one source. A Claude-only install gets the classic full CLAUDE.md
-- **22 skills** — installed to `.claude/skills/` (Claude Code), `.agents/skills/` (Codex), `.pi/skills/` (Pi), `.github/skills/` (Copilot), and/or `.omp/skills/` (omp, invoked as `/skill:joycraft-*`); Pi also gets the headless pipeline runtime in `.pi/scripts/joycraft/`
-- **docs/** — `docs/context/` (production map, dangerous assumptions, decision log, institutional knowledge, troubleshooting) plus templates; feature folders and `docs/backlog/` are created lazily by the skills that write to them. Joycraft records shared installation identity in `docs/.joycraft/manifest.json` and the shared checker in `docs/.joycraft/check.mjs`. Private manifests, personal preferences, and caches stay in the gitignored `docs/.joycraft/local/` directory. Read telemetry stays local too
-- **Agent teams enabled** — with Claude Code selected, `init` sets `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in `.claude/settings.json` so subagent-driven skills work out of the box (never clobbers a value you set)
-
-Re-running on an existing project is covered in [Git tracking](docs/guides/git-tracking.md#re-running-init-on-an-existing-project).
-
-## The Workflow
-
-### Which skill do I need?
-
-| You want to... | Use | What happens |
+| Host | Skills | Tested |
 |---|---|---|
-| Brainstorm an idea before committing to building it | `/joycraft-interview` | Free-form conversation → structured draft brief |
-| Build a new feature from scratch | `/joycraft-new-feature` | Guided interview → Feature Brief → Atomic Specs |
-| Understand existing code before building on it | `/joycraft-research` | Objective codebase research — facts only, no opinions |
-| Align on approach before writing code | `/joycraft-design` | Design discussion → ~200-line artifact for human review |
-| Break a feature into small, independent tasks | `/joycraft-decompose` | Feature Brief → testable Atomic Specs |
-| Fix a bug with a structured workflow | `/joycraft-bugfix` | Reproduce → isolate → fix → verify loop |
-| Implement a spec with TDD | `/joycraft-implement` | Read spec → failing tests → implement until green → wrap up → continue the queue |
-| Run a feature's whole spec queue from one command | `/joycraft-implement-feature` | Fresh-context subagent per spec → fail-fast → session-end once |
-| Run specs autonomously without hand-holding | `/joycraft-implement-level5` | Experimental — autofix loop + holdout scenario testing |
-| Verify an implementation independently | `/joycraft-verify` | Read-only subagent checks work against the spec |
-| Wrap up when a feature's specs are done | `/joycraft-session-end` | Consolidate discoveries → validate → graduate specs → ledger row → telemetry scan → push/PR |
-| Assess and mature your harness | `/joycraft-tune` | Score 7 dimensions → apply fixes → maturity roadmap; flags folder-map drift and auto-memory graduation |
-| Audit harness overhead and prune | `/joycraft-optimize` | Six-disposition self-audit backed by read telemetry; its Reaper pass retires shipped/abandoned feature folders |
-| Set up Joycraft for a team | `/joycraft-collaborative-setup` | Scaffold `docs/areas/`, owner conventions, a team CONTRIBUTING doc |
+| Claude Code | `.claude/skills/` | Yes |
+| Codex | `.agents/skills/` | Yes |
+| Pi | `.agents/skills/` | Yes |
+| Oh My Pi | `.agents/skills/` | Yes |
+| GitHub Copilot CLI | `.agents/skills/` | Installs; full run not tested yet |
+| OpenCode | `.agents/skills/` | Installs; full run not tested yet |
 
-The core loop:
+"Tested" means: we installed Joycraft in a test project, one agent built a spec, and
+a second, separate agent checked it and passed it.
 
-```mermaid
-flowchart LR
-    A[Interview] --> B[Feature Brief]
-    B --> C{Complex?}
-    C -- "Simple" --> F[Decompose]
-    C -- "Complex" --> D[Research]
-    D --> E[Design]
-    E --> F
-    F --> G[Atomic Specs]
-    G --> H[Implement]
-    H --> I[Session End]
+## Commands
 
-    style A fill:#fff,stroke:#333,stroke-width:2px
-    style B fill:#fff,stroke:#333,stroke-width:2px
-    style C fill:#fff,stroke:#333,stroke-width:2px
-    style D fill:#e8e8e8,stroke:#333,stroke-width:2px
-    style E fill:#e8e8e8,stroke:#333,stroke-width:2px
-    style F fill:#fff,stroke:#333,stroke-width:2px
-    style G fill:#fff,stroke:#333,stroke-width:2px
-    style H fill:#333,stroke:#333,color:#fff,stroke-width:2px
-    style I fill:#333,stroke:#333,color:#fff,stroke-width:2px
+Your agent runs these for you. They are here if you want them:
+
+```bash
+npx joycraft@latest init . --harness claude,codex --yes    # install
+npx joycraft@latest update . --yes                         # update (backs up files you edited first)
+npx joycraft@latest doctor .                               # check the install
+npx joycraft@latest update . --migrate --archive-custom --yes   # move a 0.7 project to 1.0
+npx joycraft@latest rollback --yes                         # undo the move to 1.0
 ```
 
-## Guides
+Add `--plan --json` to see the changes without making them. Without `--yes`, and
+outside a terminal, a command shows its plan and stops. It never waits for input.
 
-| Guide | What it covers |
-|---|---|
-| [Setup walkthrough](docs/guides/setup-walkthrough.md) | Every step from `npm install` to your first shipped feature |
-| [The interview](docs/guides/interview-workflow.md) | The structured interview that replaces prompt-iterate-fix — the single biggest upgrade Joycraft makes |
-| [Research and design](docs/guides/research-and-design.md) | Objective research via context isolation, and 200-line design checkpoints before decomposition |
-| [Test-first development](docs/guides/test-first-development.md) | Tests are the mechanism to autonomy — every spec ships a test plan, failing tests come first |
-| [Tuning: risk interview and git autonomy](docs/guides/tuning.md) | The 2–3 minute risk interview that generates your safety boundaries |
-| [Token discipline](docs/guides/token-discipline.md) | Why file artifacts at every step make your conversation context disposable |
-| [Permission modes](docs/guides/permission-modes.md) | Why you do **not** need `--dangerously-skip-permissions` |
-| [Agent compatibility](docs/guides/agent-compatibility.md) | How CLAUDE.md and AGENTS.md stay one source across every supported tool |
-| [Level 5: the autonomous loop](docs/guides/level-5-autonomy.md) | Experimental — workflows, holdout scenarios, and what it really costs |
-| [Methodology](docs/guides/methodology.md) | Why this exists: METR's slowdown finding and the teams that beat it |
-
-## Why Joycraft?
-
-Unstructured prompting rots: instructions pile up in one file, the agent forgets what was decided, and every session starts from zero. Joycraft replaces it with spec-driven development — you interview, you approve the brief and the specs, the agent executes with TDD — and installs a harness (boundaries, context docs, skills) that matures alongside your project instead of decaying. The gates produce shareable artifacts (markdown + HTML) your team can answer in Notion, and every brief ends with a prompt an engineer pastes straight into their coding agent.
-
-The name of the game is Dan Shapiro's [5 Levels of Vibe Coding](docs/guides/levels.md): Joycraft takes a project from Level 1 to a solid Level 4, with an experimental path to 5. The reasoning and the evidence live in the [Methodology guide](docs/guides/methodology.md).
-
-## Security
-
-Joycraft scaffolds files and never runs your code. What it reads and writes, how boundaries and deny patterns constrain your AI agent, and where to report a vulnerability: [SECURITY.md](SECURITY.md).
-
-## Contributing
-
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
-
-The short version:
-
-1. Fork, branch from `main`
-2. `pnpm install && pnpm test` to verify your setup
-3. Write tests first, then implement
-4. `pnpm test && pnpm typecheck && pnpm build`
-5. Open a PR (one approval required)
-
-Look for [`good first issue`](https://github.com/maksutovic/joycraft/labels/good%20first%20issue) labels if you're new. Areas we'd especially love help with: stack detection for new languages, skill improvements, and documentation.
+More: [Install guide](docs/install.md) · [Migrating from 0.7](docs/migrating-from-0.7.md) ·
+[Prompts](docs/prompts.md) · [Changelog](CHANGELOG.md) · [Security](SECURITY.md) ·
+[Contributing](CONTRIBUTING.md) · [License](LICENSE)
 
 ## Acknowledgments
 
-The curated-harness stance above was shaped by people thinking out loud about what agents should and shouldn't remember:
+These people shaped how Joycraft decides what an agent should keep and what it
+should forget:
 
-- **Mario Zechner** (creator of [Pi](https://github.com/earendil-works/pi-coding-agent)) and **Armin Ronacher** (creator of Flask) — "code is truth" and the minimal-harness thesis: no separate memory system for knowledge the code already carries.
-- **Theo Browne** ([t3.gg](https://t3.gg)) — the write-vs-read memory audit that turned decay into something measurable, and the case for directional rather than rule-heavy AGENTS.md content.
-- **Lauren** (Cursor) — the intervention-elimination hierarchy: architecture beats lint and CI, which beat skills and rules, which beat asking a human.
-- **Robert C. Martin** — impose values, not disciplines.
+- **Mario Zechner** (creator of [Pi](https://github.com/earendil-works/pi-coding-agent)) and **Armin Ronacher** (creator of Flask): "code is truth". Do not keep a separate memory of what the code already says.
+- **Theo Browne** ([t3.gg](https://t3.gg)): measure which notes an agent actually reads, and keep `AGENTS.md` short and directional.
+- **Lauren** (Cursor): prefer fixes in this order: architecture, then lint and CI, then skills and rules, then asking a human.
+- **Robert C. Martin**: impose values, not disciplines.
 
-The levels this project aims at are Dan Shapiro's; those credits live in [The levels](docs/guides/levels.md).
+The levels this project aims at are Dan Shapiro's. See [The levels](docs/guides/levels.md).
 
 ## License
 
-MIT. See [LICENSE](LICENSE) for details.
+MIT. See [LICENSE](LICENSE).

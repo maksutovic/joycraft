@@ -7,6 +7,50 @@ claim that a release has shipped.
 
 ---
 
+## 1.0.0 — The field build becomes Joycraft
+
+Joycraft 1.0 is the build that ran in the field trial: one entry skill, a spec
+queue with independent review, and a small runtime that guards completion. It
+replaces the 0.7 skill set.
+
+### Breaking
+
+- The 0.7 skills are gone. `update --migrate` archives them; see
+  [Migrating from 0.7](docs/migrating-from-0.7.md).
+- The `telemetry`, `check`, `upgrade`, `migrate` and `init-autofix` commands are gone.
+- 0.7 spec queues are read-only history. 1.0 does not convert them.
+- 1.0 installs no hooks. The 0.7 version-check hook is removed.
+
+### What's new
+
+- **New install.** `npx joycraft@latest init` installs for Claude Code, Codex,
+  Pi, Oh My Pi, GitHub Copilot CLI and OpenCode. Claude Code reads
+  `.claude/skills/`; the other hosts read `.agents/skills/`. The runtime lives in
+  `.joycraft/`. An agent can drive it: `--harness`, `--yes`, `--plan --json`;
+  without a terminal or `--yes` it prints the plan and exits 1.
+- **0.7 projects are never changed by surprise.** `update` on a 0.7 install
+  prints the migration plan and exits 1. `update --migrate` moves the 0.7 files
+  to `.joycraft-backups/`, keeps your knowledge files, settings and safeguard,
+  and installs 1.0 in one recoverable step. `joycraft rollback --yes` restores
+  the project byte for byte. To stay on 0.7: `npx joycraft@0.7.17 update`.
+- **Updates keep your edits.** An edited Joycraft file is backed up before it is
+  replaced; a file Joycraft did not install is never replaced.
+- **No data collection, no model calls.** 1.0 ships no telemetry and no Jev
+  runtime.
+- **Update check at session start, with no hooks.** Your agent checks npm at most
+  once a day, tells you what changed and updates for you on a yes. It sends no
+  project data. `node .joycraft/runtime/update-check.mjs policy off` turns it off.
+- **Questions go on a decision page.** When the agent asks you to choose
+  between options, it uses the decision artifact instead of chat, and saves your
+  answers to the brief.
+- **Artifact colors.** `node .joycraft/runtime/artifacts/cli.mjs colors --set
+  <colors.json>` sets the decision page's colors, for example from your design
+  system; `--reset` restores the defaults. Hard-to-read palettes are refused.
+- **Live host evidence.** Claude Code, Codex, Pi and Oh My Pi each passed a
+  live run: implement a spec in one process, review and complete it in another.
+
+---
+
 ## Unreleased — Upgrades that just upgrade
 
 `npx joycraft@latest upgrade` used to end with `Joycraft update: conflict.` and

@@ -24,31 +24,31 @@ function relativeLinks(markdown: string): string[] {
   return targets;
 }
 
-describe('README.md — install-first structure', () => {
+describe('README.md — 1.0 prompt-first structure', () => {
   const readme = read('README.md');
-  const firstScreen = readme.split('\n').slice(0, 40).join('\n');
+  const firstScreen = readme.split('\n').slice(0, 45).join('\n');
 
-  it('shows the install/quick-start command within the first 40 lines', () => {
-    expect(firstScreen).toMatch(/npx joycraft(@latest)? init/);
+  it('opens with a paste-into-your-agent install prompt that plans first', () => {
+    expect(firstScreen).toMatch(/##\s+Install: paste this into your coding agent/);
+    expect(firstScreen).toContain('npx joycraft@latest init . --plan --json');
+    expect(firstScreen.indexOf('--plan --json')).toBeLessThan(firstScreen.indexOf('--yes'));
   });
 
-  it('says what Joycraft is on the first screen', () => {
-    expect(firstScreen).toMatch(/##\s+What is Joycraft\?/);
+  it('has an upgrading-from-0.7 box near the top', () => {
+    expect(firstScreen).toMatch(/\*\*Upgrading from 0\.7\?\*\*/);
+    expect(firstScreen).toContain('docs/migrating-from-0.7.md');
+    expect(firstScreen).toContain('npx joycraft@0.7.17 update');
   });
 
-  it('has a table of contents on the first screen', () => {
-    expect(firstScreen).toMatch(/##\s+Contents/);
-    // A TOC is a list of links into the doc or into docs/
-    const tocBlock = firstScreen.slice(firstScreen.search(/##\s+Contents/));
-    const bullets = tocBlock.split('\n').filter((l) => /^\s*[-*]\s+\[/.test(l));
-    expect(bullets.length).toBeGreaterThanOrEqual(5);
+  it('says what Joycraft is and lists every host with its evidence', () => {
+    expect(readme).toMatch(/##\s+What Joycraft is/);
+    for (const host of ['Claude Code', 'Codex', 'Pi', 'Oh My Pi', 'GitHub Copilot CLI', 'OpenCode']) expect(readme).toContain(`| ${host} |`);
   });
 
-  it('links a setup walkthrough that lists the steps a new user runs', () => {
-    expect(readme).toContain('docs/guides/setup-walkthrough.md');
-    const walkthrough = read('docs/guides/setup-walkthrough.md');
-    expect(walkthrough).toMatch(/npx joycraft(@latest)? init/);
-    expect(walkthrough).toMatch(/^\s*1\.\s+/m);
+  it('names no Jev, no prototype and no absolute path', () => {
+    for (const doc of ['README.md', 'docs/install.md', 'docs/migrating-from-0.7.md', 'docs/prompts.md']) {
+      expect(read(doc), doc).not.toMatch(/jev|prototype|\/Users\//i);
+    }
   });
 
   it('links SECURITY.md', () => {
@@ -56,24 +56,36 @@ describe('README.md — install-first structure', () => {
   });
 });
 
-describe('relocated exposition lives in docs/ and stays linked', () => {
-  const readme = read('README.md');
+describe('1.0 guides', () => {
+  it('every prompt plans before it applies and asks for no keys, commits or publishing', () => {
+    const prompts = read('docs/prompts.md');
+    for (const block of prompts.split('```text').slice(1).map((part) => part.split('```')[0])) {
+      expect(block).toMatch(/Do not (commit|post)/);
+      expect(block).toMatch(/API keys/);
+    }
+    expect(prompts.indexOf('--plan --json')).toBeLessThan(prompts.indexOf('init . --harness'));
+  });
 
-  const relocated: Array<[string, RegExp]> = [
-    ['docs/guides/levels.md', /5 Levels/i],
-    ['docs/guides/platform-support.md', /Platform support/i],
-    ['docs/guides/upgrading.md', /Upgrad/i],
-    ['docs/guides/git-tracking.md', /gitignore|shared vs private/i],
-    ['docs/guides/migration-per-feature-layout.md', /Migration/i],
-  ];
+  it("the migration guide's kept list matches the migration code", async () => {
+    const { KEPT } = await import('../src/legacy-07.js');
+    const guide = read('docs/migrating-from-0.7.md');
+    for (const path of KEPT) expect(guide).toContain(path.replace(/\/$/, '/'));
+  });
+});
 
-  for (const [path, contentPattern] of relocated) {
-    it(`${path} exists, keeps its heading, and is linked from the README`, () => {
-      expect(existsSync(join(repoRoot, path))).toBe(true);
-      expect(read(path)).toMatch(contentPattern);
-      expect(readme).toContain(path);
-    });
-  }
+describe('1.0 release notes', () => {
+  it('the published summary belongs to this version and is one short line', () => {
+    const pkg = JSON.parse(read('package.json'));
+    expect(pkg.joycraft.release).toBe(pkg.version);
+    expect(pkg.joycraft.summary.length).toBeLessThanOrEqual(300);
+    expect(pkg.joycraft.summary).not.toMatch(/\n/);
+  });
+
+  it('the changelog has a Breaking section and the feedback channel exists', () => {
+    expect(read('CHANGELOG.md')).toMatch(/### Breaking/);
+    expect(read('.github/ISSUE_TEMPLATE/1-0-feedback.yml')).toMatch(/^name: 1\.0 feedback$/m);
+    expect(read('docs/announcements/1.0.md')).toContain('1-0-feedback.yml');
+  });
 });
 
 describe('SECURITY.md', () => {

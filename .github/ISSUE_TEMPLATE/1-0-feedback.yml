@@ -1,0 +1,37 @@
+name: 1.0 feedback
+description: Tell us how Joycraft 1.0 worked for you
+title: "[1.0 feedback] "
+labels: ["1.0-feedback"]
+body:
+  - type: input
+    id: host
+    attributes:
+      label: Coding agent
+      description: For example Claude Code, Codex, Pi, Oh My Pi, GitHub Copilot CLI or OpenCode.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Joycraft version
+      description: The `joycraft` value in `.joycraft/installation.json`, or the output of `npx joycraft@latest doctor .`.
+    validations:
+      required: true
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: transcript
+    attributes:
+      label: Transcript excerpt (optional)
+      description: Remove private project details and keys before you paste.
+      render: text
