@@ -30,9 +30,10 @@ Ship the field build as `joycraft@1.0.0` on npm `latest`. First fix the failing 
 | 17 | [ship-final-0-7-nudge](ship-final-0-7-nudge.md) | 4 Release vehicle | this repo, from `main` (0.7.18) | 13 | checkpoint |
 | 18 | [rewrite-readme-for-1-0](rewrite-readme-for-1-0.md) | 5 Docs | this repo, branch `release/1.0` | 12, 21, 22 | checkpoint |
 | 19 | [write-install-and-migration-guides](write-install-and-migration-guides.md) | 5 Docs | this repo, branch `release/1.0` | 14, 15, 21, 22 | checkpoint |
-| 20 | [prepare-release-notes-and-feedback-channel](prepare-release-notes-and-feedback-channel.md) | 5 Docs | this repo, branch `release/1.0` | 16, 18, 19 | checkpoint |
+| 20 | [prepare-release-notes-and-feedback-channel](prepare-release-notes-and-feedback-channel.md) | 5 Docs | this repo, branch `release/1.0` | 16, 18, 19, 23 | checkpoint |
 | 21 | [set-up-review-loop-verification-tools](set-up-review-loop-verification-tools.md) | 2 Host support | `joycraft-prototype` `field/1.0` | — | checkpoint |
 | 22 | [add-new-project-kickoff](add-new-project-kickoff.md) | 2 Host support | `joycraft-prototype` `field/1.0` | — | checkpoint |
+| 23 | [check-for-updates-at-session-start](check-for-updates-at-session-start.md) | 4 Release vehicle | this repo, branch `release/1.0` (payload runtime + CLI) | 12, 17 | checkpoint |
 
 ## Execution waves
 
@@ -46,7 +47,7 @@ Ship the field build as `joycraft@1.0.0` on npm `latest`. First fix the failing 
 | 6 | 12 wire-cli-to-payload |
 | 7 | 13 detect-0-7-installs-and-dry-run, 18 rewrite-readme-for-1-0 |
 | 8 | 14 migrate-from-0-7, 17 ship-final-0-7-nudge |
-| 9 | 15 add-rollback |
+| 9 | 15 add-rollback, 23 check-for-updates-at-session-start |
 | 10 | 16 release-gate-tests-in-ci, 19 write-install-and-migration-guides |
 | 11 | 20 prepare-release-notes-and-feedback-channel |
 

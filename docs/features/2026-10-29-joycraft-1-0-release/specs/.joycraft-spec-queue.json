@@ -189,7 +189,8 @@
       "depends_on": [
         16,
         18,
-        19
+        19,
+        23
       ],
       "status": "todo",
       "mode": "checkpoint"
@@ -205,6 +206,16 @@
       "id": 22,
       "file": "add-new-project-kickoff.md",
       "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint"
+    },
+    {
+      "id": 23,
+      "file": "check-for-updates-at-session-start.md",
+      "depends_on": [
+        12,
+        17
+      ],
       "status": "todo",
       "mode": "checkpoint"
     }

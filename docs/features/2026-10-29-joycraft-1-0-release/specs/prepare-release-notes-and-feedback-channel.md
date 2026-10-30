@@ -13,7 +13,7 @@ reasoning_effort: high
 # Prepare the Release Notes and the Feedback Channel — Atomic Spec
 
 > **Parent Brief:** `docs/features/2026-10-29-joycraft-1-0-release/brief.md`
-> **Status:** Ready after spec 16, spec 18, spec 19
+> **Status:** Ready after spec 16, spec 18, spec 19, spec 23
 > **Date:** 2026-10-29
 > **Estimated scope:** Small
 > **Phase:** 5 — Docs

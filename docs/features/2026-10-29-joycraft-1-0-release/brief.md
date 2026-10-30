@@ -43,6 +43,10 @@ decisions:
   status: clarified
   choice: Installation is prompt-first. The README leads with a paste-into-your-agent prompt, and the agent runs npx itself; the CLI must be drivable with no TTY.
   rationale: Max, 2026-10-29 — "the user shouldn't need to be running npm commands themselves". Specs 12 and 18.
+- id: D10
+  status: clarified
+  choice: Every session checks for a newer Joycraft at start, tells the user in one line with a plain summary, and on a yes updates for them end to end. Policies notify (default), auto-safe and off; a major version never auto-applies.
+  rationale: Max, 2026-10-29 — "as automated and easy as possible, which has been the whole mission of 1.0". Spec 23.
 ---
 
 # Joycraft 1.0 release — Brief
@@ -72,7 +76,7 @@ See [specs/README.md](specs/README.md). Five phases:
 1. **Gate fixes** in `joycraft-prototype` `field/1.0` and `joycraft-field`, then a field re-run.
 2. **Host support**: a live smoke harness, one spec per host family, review-loop tool setup (spec 21), and the new-project kickoff (spec 22).
 3. **Rename** `.joycraft-prototype/` → `.joycraft/`.
-4. **Release vehicle** in this repo on `release/1.0`: vendored payload, CLI wiring, 0.7 detection, `--migrate`, rollback, G10 tests, final 0.7 nudge.
+4. **Release vehicle** in this repo on `release/1.0`: vendored payload, CLI wiring, 0.7 detection, `--migrate`, rollback, G10 tests, final 0.7 nudge, session-start update check (spec 23).
 5. **Docs**: README, install and migration guides, paste prompts, CHANGELOG, feedback channel.
 
 ## Out of scope

@@ -33,6 +33,7 @@ D1's condition: existing users must know exactly what the upgrade does.
 - [ ] **AC2:** Each prompt tells the agent to run the dry run first and to report before applying.
 - [ ] **AC3:** The install guide and the install and upgrade prompts include the review-loop setup step from spec 21: the agent detects the project type, lists the verification tools the review loop needs, shows what is present and missing, and asks before installing anything.
 - [ ] **AC4:** The migration guide's "what stays" list matches spec 14's carry-over list exactly.
+- [ ] **AC5:** The install guide explains the session-start update check (spec 23): what it sends, the three policies, how to snooze, pin or turn it off.
 
 ## Test Plan
 
