@@ -1,0 +1,44 @@
+# G10 release gates for 1.0: run from the packed tarball, never the source tree.
+# Never publishes; publishing happens only after Max merges to main.
+name: Release gates
+
+on:
+  push:
+    branches: [release/1.0]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test and type check
+        run: pnpm test && pnpm typecheck
+
+      - name: Pack
+        run: echo "TARBALL=$(npm pack --silent | tail -1)" >> "$GITHUB_ENV"
+
+      - name: Release gates (named checks)
+        run: node scripts/release-gates.mjs --tarball "$TARBALL"

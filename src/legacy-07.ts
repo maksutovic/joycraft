@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve, sep } from 'node:path';
 import installInventory from './data/install-inventory.json';
 import { applyInstall, BACKUP_ROOT, formatPlan, planInstall, recoverInstall, type ApplyResult, type Plan } from './install-v1.js';
@@ -214,7 +214,7 @@ export function recoverLegacy(dir: string): boolean {
   recoverInstall(root);
   const journal = JSON.parse(readFileSync(join(root, MIGRATE_JOURNAL), 'utf8')) as { backup: string; moves: { from: string; to: string }[]; settingsBackup: string | null };
   for (const { from, to } of journal.moves) if (existsSync(inside(root, to)) && !existsSync(inside(root, from))) move(root, to, from);
-  if (journal.settingsBackup && existsSync(inside(root, journal.settingsBackup))) writeFileSync(join(root, '.claude/settings.json'), readFileSync(inside(root, journal.settingsBackup)));
+  if (journal.settingsBackup && existsSync(inside(root, journal.settingsBackup))) copyFileSync(inside(root, journal.settingsBackup), join(root, '.claude/settings.json'));
   rmSync(join(root, MIGRATE_JOURNAL));
   pruneEmpty(root, MIGRATE_JOURNAL, new Set());
   return true;

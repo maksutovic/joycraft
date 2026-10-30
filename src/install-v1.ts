@@ -1,4 +1,4 @@
-import { existsSync, lstatSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve, sep } from 'node:path';
 import { filesForHosts, HOSTS, payloadRoot, readPin, sha256, type Host } from './payload.js';
 
@@ -146,7 +146,12 @@ export function applyInstall(plan: Plan, { backupName = `update-${stamp()}` } = 
   const saved: string[] = [];
   for (const path of [...touched, MANIFEST_PATH, '.gitignore']) {
     const bytes = readBytes(root, path);
-    if (bytes) { writeFile(root, join(backup, 'files', path), bytes); saved.push(path); }
+    if (bytes) {
+      // copyFileSync keeps the file mode, so a restored script stays executable.
+      mkdirSync(dirname(inside(root, join(backup, 'files', path))), { recursive: true });
+      copyFileSync(inside(root, path), inside(root, join(backup, 'files', path)));
+      saved.push(path);
+    }
   }
   if (saved.length) writeFile(root, join(backup, '.gitignore'), '*\n');
   writeFile(root, JOURNAL_PATH, `${JSON.stringify({ schemaVersion: 1, backup, saved, created: touched.filter((path) => !saved.includes(path)) }, null, 2)}\n`);
@@ -180,7 +185,7 @@ export function recoverInstall(dir: string): { restored: number; deleted: number
   const bytes = readBytes(root, JOURNAL_PATH);
   if (!bytes) return { restored: 0, deleted: 0 };
   const journal = JSON.parse(bytes.toString('utf8')) as { backup: string; saved: string[]; created: string[] };
-  for (const path of journal.saved) writeFile(root, path, readFileSync(inside(root, join(journal.backup, 'files', path))));
+  for (const path of journal.saved) copyFileSync(inside(root, join(journal.backup, 'files', path)), inside(root, path));
   for (const path of journal.created) rmSync(inside(root, path), { force: true });
   if (!journal.saved.includes(MANIFEST_PATH)) rmSync(inside(root, MANIFEST_PATH), { force: true });
   rmSync(join(root, JOURNAL_PATH));

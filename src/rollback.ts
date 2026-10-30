@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { BACKUP_ROOT, MANIFEST_PATH, readManifest } from './install-v1.js';
 import { MIGRATION_RECORD } from './legacy-07.js';
@@ -90,16 +90,16 @@ export function applyRollback(plan: RollbackPlan): void {
     for (const path of filesUnder(root, files)) {
       const target = relative(files, path);
       mkdirSync(dirname(inside(root, target)), { recursive: true });
-      writeFileSync(inside(root, target), readFileSync(inside(root, path)));
+      copyFileSync(inside(root, path), inside(root, target));
     }
   }
-  if (record.settingsBackup) writeFileSync(join(root, '.claude/settings.json'), readFileSync(inside(root, record.settingsBackup)));
+  if (record.settingsBackup) copyFileSync(inside(root, record.settingsBackup), join(root, '.claude/settings.json'));
   const restoring = new Set(plan.restore);
   for (const { from, to } of record.moves) {
     if (!restoring.has(from) || !existsSync(inside(root, to))) continue;
     mkdirSync(dirname(inside(root, from)), { recursive: true });
-    // Copy back rather than move, so the backup stays complete.
-    writeFileSync(inside(root, from), readFileSync(inside(root, to)));
+    // Copy back rather than move, so the backup stays complete; the copy keeps the file mode.
+    copyFileSync(inside(root, to), inside(root, from));
   }
   // The install's empty local-state folder goes too, when nothing else lives there.
   for (const dir of ['.joycraft/local', '.joycraft']) { try { rmdirSync(join(root, dir)); } catch { /* not empty */ } }

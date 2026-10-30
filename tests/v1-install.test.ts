@@ -48,7 +48,7 @@ function treeHash(root: string, skip = /^\.joycraft-backups(\/|$)/): string {
       const path = join(dir, name); const rel = relative(root, path);
       if (skip.test(rel)) continue;
       if (statSync(path).isDirectory()) walk(path);
-      else hash.update(`${rel}\0`).update(readFileSync(path));
+      else hash.update(`${rel}\0${statSync(path).mode & 0o777}\0`).update(readFileSync(path));
     }
   };
   walk(root);
