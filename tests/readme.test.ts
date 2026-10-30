@@ -16,7 +16,7 @@ const migrationGuide = join(
 describe('README.md', () => {
   it('links the migration guide', () => {
     const readme = readFileSync(join(__dirname, '..', 'README.md'), 'utf-8');
-    expect(readme).toContain('docs/guides/migration-per-feature-layout.md');
+    expect(readme).toContain('docs/migrating-from-0.7.md');
   });
 
   it('keeps the migration section header in the linked guide', () => {

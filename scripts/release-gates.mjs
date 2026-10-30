@@ -41,7 +41,8 @@ export async function runGates({ tarball, work = mkdtempSync(join(tmpdir(), 'joy
   mkdirSync(prefix, { recursive: true });
   execFileSync('npm', ['install', '--prefix', prefix, '--no-audit', '--no-fund', resolve(tarball)], { stdio: 'pipe' });
   const cli = join(prefix, 'node_modules/joycraft/dist/cli.js');
-  const joycraft = (cwd, ...args) => spawnSync(process.execPath, [cli, ...args], { cwd, encoding: 'utf8', input: '' });
+  const ran = new Set();
+  const joycraft = (cwd, ...args) => { ran.add(args.join(' ')); return spawnSync(process.execPath, [cli, ...args], { cwd, encoding: 'utf8', input: '' }); };
   const expectStatus = (result, status, what) => {
     if (result.status !== status) throw new Error(`${what}: exit ${result.status}, expected ${status}\n${result.stdout}\n${result.stderr}`);
   };
@@ -60,9 +61,13 @@ export async function runGates({ tarball, work = mkdtempSync(join(tmpdir(), 'joy
   for (const [stack, [file, text]] of Object.entries(STACKS)) {
     check(`init ${stack}`, () => {
       const dir = join(work, `stack-${stack}`); mkdirSync(dir, { recursive: true }); writeFileSync(join(dir, file), text);
+      const before = treeHash(dir);
+      expectStatus(joycraft(dir, 'init', '.', '--plan', '--json'), 0, 'plan');
+      if (treeHash(dir) !== before) throw new Error('--plan changed files');
       expectStatus(joycraft(dir, 'init', '.', '--harness', 'claude,codex', '--yes'), 0, 'init');
       expectStatus(joycraft(dir, 'doctor', '.'), 0, 'doctor');
       expectStatus(joycraft(dir, 'update', '.', '--yes'), 0, 'repeat update');
+      expectStatus(joycraft(dir, 'update', '.', '--recover'), 0, 'recover with nothing to recover');
     });
   }
   for (const version of FIXTURES_07) {
@@ -74,6 +79,9 @@ export async function runGates({ tarball, work = mkdtempSync(join(tmpdir(), 'joy
       if (treeHash(dir) !== before) throw new Error('the dry run changed files');
       expectStatus(joycraft(dir, 'update', '.', '--migrate', '--archive-custom', '--yes'), 0, 'migrate');
       expectStatus(joycraft(dir, 'doctor', '.'), 0, 'doctor after migrate');
+      const migrated = treeHash(dir);
+      expectStatus(joycraft(dir, 'rollback'), 0, 'rollback preview');
+      if (treeHash(dir) !== migrated) throw new Error('the rollback preview changed files');
       expectStatus(joycraft(dir, 'rollback', '--yes'), 0, 'rollback');
       if (treeHash(dir) !== before) throw new Error('rollback did not restore the pre-migration tree');
     });
@@ -85,6 +93,17 @@ export async function runGates({ tarball, work = mkdtempSync(join(tmpdir(), 'joy
     expectStatus(joycraft(dir, 'update', '.', '--migrate', '--yes'), 1, 'migrate without a custom choice');
     expectStatus(joycraft(dir, 'update', '.', '--migrate', '--keep-custom', '--yes'), 0, 'migrate keeping custom');
     if (readFileSync(join(dir, '.claude/skills/joycraft-tune/SKILL.md'), 'utf8') !== 'my tune\n') throw new Error('the customized skill was lost');
+  });
+  check('every command in the README and guides is one these gates ran', () => {
+    const docs = ['README.md', 'docs/install.md', 'docs/migrating-from-0.7.md', 'docs/prompts.md'];
+    const missing = [];
+    for (const doc of docs) {
+      for (const match of readFileSync(join(root, doc), 'utf8').matchAll(/npx joycraft@latest ([^`\n#]+)/g)) {
+        const args = match[1].trim().replace('<hosts>', 'claude,codex');
+        if (!ran.has(args)) missing.push(`${doc}: ${args}`);
+      }
+    }
+    if (missing.length) throw new Error(`Documented but never run: ${missing.join('; ')}`);
   });
   return results;
 }

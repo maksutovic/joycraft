@@ -129,7 +129,7 @@ describe('spec 13: a 0.7 install gets a dry run', () => {
     expect(result.status).toBe(1);
     expect(treeHash(dir)).toBe(before);
     expect(result.stdout).toContain(`  ${skill}`);
-    for (const choice of ['update --migrate', 'npx joycraft@0.7.17 update', 'migrate-from-0-7.md']) expect(result.stdout).toContain(choice);
+    for (const choice of ['update --migrate', 'npx joycraft@0.7.17 update', 'migrating-from-0.7.md']) expect(result.stdout).toContain(choice);
     expect(run(dir, 'init', '.').status).toBe(1);
     expect(treeHash(dir)).toBe(before);
   });

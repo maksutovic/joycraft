@@ -6,7 +6,7 @@ import { sha256, type Host } from './payload.js';
 
 export const MIGRATE_JOURNAL = '.joycraft/local/migrate-journal.json';
 export const MIGRATION_RECORD = 'migration.json';
-export const GUIDE_URL = 'https://github.com/maksutovic/joycraft/blob/main/docs/guides/migrate-from-0-7.md';
+export const GUIDE_URL = 'https://github.com/maksutovic/joycraft/blob/main/docs/migrating-from-0.7.md';
 export const STAY_COMMAND = 'npx joycraft@0.7.17 update';
 
 // Folders a 0.7 install wrote Joycraft-owned files into.
