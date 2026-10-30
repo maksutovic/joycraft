@@ -7,30 +7,38 @@ first, report to you, and change nothing until you say so.
 
 ```text
 Install Joycraft in this project.
-1. Run `npx joycraft@latest init . --plan --json` and show me the plan in a short table. Change nothing yet.
-2. Ask me which hosts to install for (default: the one you are), then run
-   `npx joycraft@latest init . --harness <hosts> --yes`.
-   If it reports a Joycraft 0.7 install instead, stop and show me its migration plan.
+1. Run `npx joycraft@latest init . --plan --json`. Show me the files it will add in a short table. Do not change anything yet.
+2. Ask me which coding agents I use in this project (default: you). Then run
+   `npx joycraft@latest init . --harness <agents> --yes`.
+   If it finds Joycraft 0.7, stop and show me its migration plan.
 3. Use the joycraft-entry skill to set up this project. If the project is new or empty,
-   offer me the kickoff so I can tell you what I want to build.
-4. Run the review-loop plan from the setup step. Show me which verification tools are
-   present or missing, and ask before installing anything.
+   ask me what I want to build.
+4. Run `node .joycraft/runtime/review-tools.mjs plan --root .`. Tell me which tools
+   you need to check your own work, which ones I have, and which ones are missing.
+   Ask me before you install anything.
 Do not commit, publish, or ask me for API keys.
 ```
 
 ## Upgrade from 0.7
 
 ```text
-Upgrade this project from Joycraft 0.7 to 1.0.
-1. Run `npx joycraft@latest update .` (it changes nothing on a 0.7 project) and show me
-   the migration plan: what is archived, which customized files it found, and what stays.
-2. For each customized file, ask me: keep it in place or archive it.
-3. After I say go, run `npx joycraft@latest update . --migrate --keep-custom --yes` if I
-   kept any, else `npx joycraft@latest update . --migrate --archive-custom --yes`.
-   Then run `npx joycraft@latest doctor .` and tell me the result.
-4. Run the review-loop plan from the joycraft-entry setup step. Show me which
-   verification tools are present or missing, and ask before installing anything.
-5. Tell me that `npx joycraft@latest rollback --yes` undoes the migration.
+Upgrade this project from Joycraft 0.7 to 1.0. Go one step at a time.
+1. Run `git status`. If there are uncommitted changes, tell me and stop, so I can
+   commit them first.
+2. Run `npx joycraft@latest update .`. On a 0.7 project this changes nothing. It shows
+   the migration plan. Show me the plan in short lists: what it will archive, which
+   Joycraft files I changed, and what stays.
+3. If I changed any Joycraft files, ask me one question: keep them in place, or
+   archive them? Archived files are moved to a backup folder, not deleted.
+4. Wait until I say go. Then run
+   `npx joycraft@latest update . --migrate --keep-custom --yes` if I chose keep, or
+   `npx joycraft@latest update . --migrate --archive-custom --yes` if I chose archive
+   or changed no files.
+5. Run `npx joycraft@latest doctor .` and tell me the result.
+6. Run `node .joycraft/runtime/review-tools.mjs plan --root .`. Tell me which tools
+   you need to check your own work, which ones I have, and which ones are missing.
+   Ask me before you install anything.
+7. Tell me that `npx joycraft@latest rollback --yes` undoes the upgrade.
 Do not commit, publish, or ask me for API keys.
 ```
 

@@ -4,6 +4,32 @@ Joycraft 1.0 replaces the 0.7 skill set with one entry skill, a spec queue with
 independent review, and a small runtime in `.joycraft/`. Nothing in a 0.7 project
 changes until you run the migration, and you can undo it.
 
+## The easy way: paste this into your coding agent
+
+Open your coding agent in your project and paste this prompt. The agent shows you the
+plan first and changes nothing until you say go. The steps below explain what it does.
+
+```text
+Upgrade this project from Joycraft 0.7 to 1.0. Go one step at a time.
+1. Run `git status`. If there are uncommitted changes, tell me and stop, so I can
+   commit them first.
+2. Run `npx joycraft@latest update .`. On a 0.7 project this changes nothing. It shows
+   the migration plan. Show me the plan in short lists: what it will archive, which
+   Joycraft files I changed, and what stays.
+3. If I changed any Joycraft files, ask me one question: keep them in place, or
+   archive them? Archived files are moved to a backup folder, not deleted.
+4. Wait until I say go. Then run
+   `npx joycraft@latest update . --migrate --keep-custom --yes` if I chose keep, or
+   `npx joycraft@latest update . --migrate --archive-custom --yes` if I chose archive
+   or changed no files.
+5. Run `npx joycraft@latest doctor .` and tell me the result.
+6. Run `node .joycraft/runtime/review-tools.mjs plan --root .`. Tell me which tools
+   you need to check your own work, which ones I have, and which ones are missing.
+   Ask me before you install anything.
+7. Tell me that `npx joycraft@latest rollback --yes` undoes the upgrade.
+Do not commit, publish, or ask me for API keys.
+```
+
 ## 1. See the plan (changes nothing)
 
 ```bash
