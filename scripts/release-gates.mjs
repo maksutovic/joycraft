@@ -99,7 +99,7 @@ export async function runGates({ tarball, work = mkdtempSync(join(tmpdir(), 'joy
     const missing = [];
     for (const doc of docs) {
       for (const match of readFileSync(join(root, doc), 'utf8').matchAll(/npx joycraft@latest ([^`\n#]+)/g)) {
-        const args = match[1].trim().replace('<hosts>', 'claude,codex');
+        const args = match[1].trim().replace(/<(hosts|agents)>/, 'claude,codex');
         if (!ran.has(args)) missing.push(`${doc}: ${args}`);
       }
     }
