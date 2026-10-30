@@ -12,7 +12,7 @@ Ship the field build as `joycraft@1.0.0` on npm `latest`. First fix the failing 
 | # | Spec | Phase | Where | Depends on | Mode |
 |---|---|---|---|---|---|
 | 1 | [resolve-hook-paths-from-project-root](resolve-hook-paths-from-project-root.md) | 1 Gate fixes | `joycraft-prototype` `field/1.0` | — | checkpoint |
-| 2 | [record-runtime-failure-detail](record-runtime-failure-detail.md) | 1 Gate fixes | `joycraft-prototype` `field/1.0` and `joycraft-field` | — | checkpoint |
+| 2 | [record-runtime-failure-detail](record-runtime-failure-detail.md) | 1 Gate fixes | `joycraft-field` only (runtime half removed by D11) | — | checkpoint |
 | 3 | [fix-recorded-runtime-failures](fix-recorded-runtime-failures.md) | 1 Gate fixes | `joycraft-prototype` `field/1.0` | 2 | checkpoint |
 | 4 | [guard-foreground-wait-loops](guard-foreground-wait-loops.md) | 1 Gate fixes | `joycraft-prototype` `field/1.0` | 1 | checkpoint |
 | 5 | [add-data-loss-labels-and-escape-script](add-data-loss-labels-and-escape-script.md) | 1 Gate fixes | `joycraft-field` | — | checkpoint |

@@ -47,6 +47,10 @@ decisions:
   status: clarified
   choice: Every session checks for a newer Joycraft at start, tells the user in one line with a plain summary, and on a yes updates for them end to end. Policies notify (default), auto-safe and off; a major version never auto-applies.
   rationale: Max, 2026-10-29 — "as automated and easy as possible, which has been the whole mission of 1.0". Spec 23.
+- id: D11
+  status: clarified
+  choice: Nothing for field data collection ships in 1.0. The runtime failure recorder and the jc-impl/jc-rev naming plus Joycraft-Spec trailer rule are removed from field/1.0 (c3fe775) and kept only as tags trial/failure-recorder and trial/spec-trailer for a later trial. Field telemetry stays in the local joycraft-field repo.
+  rationale: Max, 2026-10-29 — "please do not ship anything regarding data collection to the actual project". Specs 2, 3 and 11.
 ---
 
 # Joycraft 1.0 release — Brief

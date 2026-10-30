@@ -19,6 +19,8 @@ reasoning_effort: high
 > **Phase:** 1 — Gate fixes
 > **Where:** `joycraft-prototype` `field/1.0`
 
+> **D11 (Max, 2026-10-29):** the 1.0 build writes no `failures.jsonl`. Use the transcript-derived runtime flags in the field ledger (`ingest.py --explain <flag id>` shows the command and result text) as the failure source for AC1; spec 2 no longer supplies new records.
+
 ## What
 
 After at least 2 field days with spec 2 installed, fix each `error`-class runtime failure, starting with `scope-bound` (17 since `field-1`) and `dispatch-start` (7 runtime and about 8 reviewer-start failures). Each fixed cause gets a regression test.

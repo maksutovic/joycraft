@@ -19,6 +19,8 @@ reasoning_effort: high
 > **Phase:** 1 — Gate fixes
 > **Where:** `joycraft-prototype` `field/1.0` and `joycraft-field`
 
+> **D11 (Max, 2026-10-29):** the runtime half (the recorder in `field/1.0`, `dd124b1`) was removed in `c3fe775` because nothing for data collection ships in 1.0. It is kept as the tag `trial/failure-recorder`. Only the `joycraft-field` ingest half (`2ad56e2`) remains; it reads records only if a trial build writes them.
+
 ## What
 
 When a Joycraft runtime command fails (`joycraft:scope-bound`, `dispatch-start`, `dispatch-preflight`, `joycraft:accept`, `joycraft:snapshot`), write a failure record with the command name, arguments, exit code, the last 40 lines of stderr, the spec id and a classification: `refusal` (a by-design stop such as "Dispatch stopped: …") or `error`. The field ingest reads these records into `flags.detail`.

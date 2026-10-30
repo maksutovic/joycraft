@@ -32,6 +32,7 @@ The carrier approach from the field plan: ship the field bundle unchanged inside
 - [ ] **AC1:** `node scripts/vendor-payload.mjs --tag <tag>` is reproducible: two runs give identical bytes and an identical PIN.
 - [ ] **AC2:** `grep -ri jev payload/` finds docs only (G11).
 - [ ] **AC3:** `npm pack` includes `payload/`, and the tarball size is reported in the PR.
+- [ ] **AC4:** D11: the payload has no trial data collection. A test fails if `payload/` contains `failure-record`, `failures.jsonl`, `Joycraft-Spec:` or the `jc-impl-`/`jc-rev-` naming rule.
 
 ## Test Plan
 
