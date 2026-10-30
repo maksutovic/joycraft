@@ -4,6 +4,10 @@ description: Set up missing project guidance on first use, then turn a repair, f
 compatibility: Setup and routing helpers require Node.js 22+ and the installed .joycraft runtime only when used; ordinary brief and context navigation has no project-stack prerequisite.
 ---
 
+Run `node .joycraft/runtime/update-check.mjs check` first, once per session. If it
+prints nothing, say nothing. If it prints JSON, follow
+[updates](../../../.joycraft/references/update.md).
+
 Read existing project instructions first. During an upgrade, inspect the installed
 manifest’s `legacyConflicts` and reconcile competing old skill discovery before
 using routing advice; preserved custom content is not a completed migration. On first use, explicit setup/init, or

@@ -76,7 +76,13 @@ npx joycraft@latest doctor .
 
 If an update is interrupted, `npx joycraft@latest update . --recover` puts the files back.
 
-Joycraft 1.0.0 has no automatic update check. Run `update` when you want a new version.
+Your agent also checks for a new version at the start of a session, at most once a day.
+It reads the version from npm, sends no project data, and asks before it updates. To
+stop this, ask your agent to turn off Joycraft update checks, or run:
+
+```bash
+node .joycraft/runtime/update-check.mjs policy off
+```
 
 ## Uninstall
 

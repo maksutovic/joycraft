@@ -13,6 +13,16 @@ Joycraft 1.0 is the build that ran in the field trial: one entry skill, a spec
 queue with independent review, and a small runtime that guards completion. It
 replaces the 0.7 skill set.
 
+### Breaking
+
+- The 0.7 skills are gone. `update --migrate` archives them; see
+  [Migrating from 0.7](docs/migrating-from-0.7.md).
+- The `telemetry`, `check`, `upgrade`, `migrate` and `init-autofix` commands are gone.
+- 0.7 spec queues are read-only history. 1.0 does not convert them.
+- 1.0 installs no hooks. The 0.7 version-check hook is removed.
+
+### What's new
+
 - **New install.** `npx joycraft@latest init` installs for Claude Code, Codex,
   Pi, Oh My Pi, GitHub Copilot CLI and OpenCode. Claude Code reads
   `.claude/skills/`; the other hosts read `.agents/skills/`. The runtime lives in
@@ -26,8 +36,10 @@ replaces the 0.7 skill set.
 - **Updates keep your edits.** An edited Joycraft file is backed up before it is
   replaced; a file Joycraft did not install is never replaced.
 - **No data collection, no model calls.** 1.0 ships no telemetry and no Jev
-  runtime. The 0.7 `telemetry`, `check`, `upgrade`, `migrate` and
-  `init-autofix` commands are gone.
+  runtime.
+- **Update check at session start, with no hooks.** Your agent checks npm at most
+  once a day, tells you what changed and updates for you on a yes. It sends no
+  project data. `node .joycraft/runtime/update-check.mjs policy off` turns it off.
 - **Questions go on a decision page.** When the agent asks you to choose
   between options, it uses the decision artifact instead of chat, and saves your
   answers to the brief.

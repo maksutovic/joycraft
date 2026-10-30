@@ -108,9 +108,23 @@ project:
 - Project notes in `AGENTS.md`, `CLAUDE.md` and `docs/`. These are yours: Joycraft
   adds to them and never removes them.
 
-All of it lives in your repository. Joycraft collects no data, sends nothing anywhere,
-and does not call an AI model itself. Joycraft 1.0 adds no hooks and changes no agent
-settings.
+All of it lives in your repository. Joycraft collects no data and does not call an AI
+model itself. Its only network use is the version check below. Joycraft 1.0 adds no
+hooks and changes no agent settings.
+
+## Updates
+
+At the start of a session, your agent checks npm for a newer Joycraft, at most once a
+day. The check sends no project data. If there is a new version, the agent tells you
+what changed and asks: update now, not now, or turn off. On a yes, it does the update
+for you, checks the result, and tells you what is different. A new major version is
+always your choice.
+
+This is an instruction the agent follows, so it can forget. To check yourself, ask:
+
+```text
+Check for a Joycraft update.
+```
 
 ## Hosts
 

@@ -54,13 +54,16 @@ If `AGENTS.md` is missing, create a concise project-specific file with:
 - Existing commands, their source and execution status, when available.
 - Only established project constraints, preserving their scope.
 - A context map with project-relative links and a short “read when” for each.
+- This line: “First action in each session: run
+  `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow
+  `.joycraft/references/update.md`.”
 
 Do not copy prototype-maintainer rules or fill it with generic coding advice.
 Link detail rather than duplicating it. Do not encode a tentative product idea
 as a permanent boundary. Keep current feature intent in its brief.
 
-If `AGENTS.md` already exists, preserve its content and add only missing facts
-and useful context pointers with a targeted edit. Reuse an existing context map
+If `AGENTS.md` already exists, preserve its content and add only missing facts,
+useful context pointers and the update-check line above with a targeted edit. Reuse an existing context map
 rather than adding another. Read linked content before deciding it is missing.
 When its map names a project-context home, use that exact project-relative home;
 use `docs/context/project.md` only when no context home exists. Do not link a

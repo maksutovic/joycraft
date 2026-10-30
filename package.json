@@ -12,6 +12,11 @@
     "dist",
     "payload"
   ],
+  "joycraft": {
+    "release": "1.0.0",
+    "summary": "A new one-loop workflow with independent review. Moving from 0.7 is a migration you choose and can undo.",
+    "autoSafeEligible": false
+  },
   "scripts": {
     "build": "node scripts/generate-bundled-files.mjs && node scripts/sync-skills.mjs && tsup && node scripts/release-preparation.mjs emit-descriptor",
     "sync-skills": "node scripts/generate-bundled-files.mjs && node scripts/sync-skills.mjs",

@@ -73,6 +73,21 @@ describe('1.0 guides', () => {
   });
 });
 
+describe('1.0 release notes', () => {
+  it('the published summary belongs to this version and is one short line', () => {
+    const pkg = JSON.parse(read('package.json'));
+    expect(pkg.joycraft.release).toBe(pkg.version);
+    expect(pkg.joycraft.summary.length).toBeLessThanOrEqual(300);
+    expect(pkg.joycraft.summary).not.toMatch(/\n/);
+  });
+
+  it('the changelog has a Breaking section and the feedback channel exists', () => {
+    expect(read('CHANGELOG.md')).toMatch(/### Breaking/);
+    expect(read('.github/ISSUE_TEMPLATE/1-0-feedback.yml')).toMatch(/^name: 1\.0 feedback$/m);
+    expect(read('docs/announcements/1.0.md')).toContain('1-0-feedback.yml');
+  });
+});
+
 describe('SECURITY.md', () => {
   it('exists at the repo root', () => {
     expect(existsSync(join(repoRoot, 'SECURITY.md'))).toBe(true);
