@@ -8,7 +8,8 @@ import {
   DEFAULT_GITIGNORE_PROFILE,
   type GitignoreProfile,
 } from './version.js';
-import { TELEMETRY_PATH } from './telemetry-store.js';
+// The 0.7 telemetry store's file; kept ignored so an old project never commits it.
+const TELEMETRY_PATH = 'docs/.joycraft/telemetry.json';
 
 /**
  * The harness directories the `private` profile gitignores. Tracking only

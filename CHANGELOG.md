@@ -7,6 +7,32 @@ claim that a release has shipped.
 
 ---
 
+## 1.0.0 — The field build becomes Joycraft
+
+Joycraft 1.0 is the build that ran in the field trial: one entry skill, a spec
+queue with independent review, and a small runtime that guards completion. It
+replaces the 0.7 skill set.
+
+- **New install.** `npx joycraft@latest init` installs for Claude Code, Codex,
+  Pi, Oh My Pi, GitHub Copilot CLI and OpenCode. Claude Code reads
+  `.claude/skills/`; the other hosts read `.agents/skills/`. The runtime lives in
+  `.joycraft/`. An agent can drive it: `--harness`, `--yes`, `--plan --json`;
+  without a terminal or `--yes` it prints the plan and exits 1.
+- **0.7 projects are never changed by surprise.** `update` on a 0.7 install
+  prints the migration plan and exits 1. `update --migrate` moves the 0.7 files
+  to `.joycraft-backups/`, keeps your knowledge files, settings and safeguard,
+  and installs 1.0 in one recoverable step. `joycraft rollback --yes` restores
+  the project byte for byte. To stay on 0.7: `npx joycraft@0.7.17 update`.
+- **Updates keep your edits.** An edited Joycraft file is backed up before it is
+  replaced; a file Joycraft did not install is never replaced.
+- **No data collection, no model calls.** 1.0 ships no telemetry and no Jev
+  runtime. The 0.7 `telemetry`, `check`, `upgrade`, `migrate` and
+  `init-autofix` commands are gone.
+- **Live host evidence.** Claude Code, Codex, Pi and Oh My Pi each passed a
+  live run: implement a spec in one process, review and complete it in another.
+
+---
+
 ## Unreleased — Upgrades that just upgrade
 
 `npx joycraft@latest upgrade` used to end with `Joycraft update: conflict.` and

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Try a small slice</title>
+<style>
+  *{box-sizing:border-box}body{margin:0;background:#f4f5f2;color:#192b26;font:16px/1.45 system-ui,sans-serif}main{max-width:940px;margin:auto;padding:24px}header{display:flex;align-items:baseline;gap:16px;justify-content:space-between}h1{font-size:20px;margin:0}small{color:#53645d}iframe{display:block;width:100%;height:360px;border:1px solid #d4ded6;border-radius:16px;background:white;margin:18px 0}fieldset{border:0;padding:0;margin:0}legend{font-weight:650;margin-bottom:10px}.options{display:flex;gap:8px;flex-wrap:wrap}label{padding:9px 12px;border:1px solid #aebbb3;border-radius:10px;cursor:pointer;background:white}input{accent-color:#176444;margin-right:7px}button{border:0;background:#176444;color:white;border-radius:10px;padding:11px 18px;font:inherit;font-weight:600;cursor:pointer}button:disabled{opacity:.55;cursor:default}.actions{display:flex;gap:14px;align-items:center;margin:14px 0 8px}#notice{font-size:14px;margin:0}details{font-size:13px;color:#53645d}summary{cursor:pointer}pre{white-space:pre-wrap}#error{color:#97361e}@media(max-width:520px){main{padding:16px}header{display:block}iframe{height:390px;margin:12px 0}.actions{align-items:flex-start;flex-direction:column;gap:8px}}
+</style>
+<main>
+  <header><h1>Try a small slice</h1><small>One choice, then keep building</small></header>
+  <iframe id="preview" title="Product preview" sandbox="allow-scripts"></iframe>
+  <form id="choice-form">
+    <fieldset><legend id="question">Loading choice…</legend><div class="options" id="options"></div></fieldset>
+    <div class="actions"><button id="save" disabled>Save choice</button><p id="notice" role="status" aria-live="polite"></p></div>
+  </form>
+  <p id="error" role="alert"></p>
+  <details><summary>Context and affected work</summary><p>This explores a choice within your request. Saving updates the feature brief; production work follows its authorized scope.</p><pre id="context"></pre></details>
+</main>
+<script>
+  const token = __REQUEST_TOKEN__;
+  const form = document.querySelector('#choice-form'), options = document.querySelector('#options');
+  const save = document.querySelector('#save'), notice = document.querySelector('#notice'), error = document.querySelector('#error');
+  let current, selected;
+  function preview(){document.querySelector('#preview').src = '/slice?choice=' + encodeURIComponent(selected)}
+  function render(state){
+    const previous = current;
+    current = state;
+    if(!state.decision){
+      document.querySelector('#question').textContent = 'All choices are settled.';
+      options.replaceChildren(); save.disabled = true;
+      notice.textContent = 'The current brief has no unanswered choices.';
+      document.querySelector('#context').textContent = 'Read the current brief for settled decisions.';
+      document.querySelector('#preview').removeAttribute('src');
+      return;
+    }
+    const decision = state.decision, editable = ['open','assigned'].includes(decision.status);
+    const preserveDraft = previous && previous.decision && previous.decision.id === decision.id && decision.options.some(option => option.value === selected);
+    selected = preserveDraft ? selected : decision.answer ?? decision.options[0].value;
+    document.querySelector('#question').textContent = decision.question;
+    options.replaceChildren();
+    for(const option of decision.options){
+      const label = document.createElement('label'), input = document.createElement('input');
+      input.type = 'radio'; input.name = 'choice'; input.value = option.value; input.checked = selected === option.value; input.disabled = !editable;
+      input.addEventListener('change',()=>{selected = option.value; preview(); notice.textContent = 'Preview only — save when it fits.'});
+      label.append(input, document.createTextNode(option.label)); options.append(label);
+    }
+    save.disabled = !editable;
+    notice.textContent = decision.status === 'clarified' ? 'Saved in the brief. Ready to continue.' : editable ? 'Preview only — no answer saved yet.' : 'Outside current scope. Reopen in the brief to revisit.';
+    document.querySelector('#context').textContent = 'Decision: ' + decision.id + '\nAffected: ' + (decision.affected.join(', ') || 'None listed');
+    preview();
+  }
+  form.addEventListener('submit', async event=>{
+    event.preventDefault(); save.disabled = true; error.textContent = '';
+    try{
+      const response = await fetch('/answer',{method:'POST',headers:{'Content-Type':'application/json','X-Slice-Token':token},body:JSON.stringify({id:current.decision.id,answer:selected,revision:current.revision})});
+      const result = await response.json();
+      if(!response.ok) throw new Error(result.error);
+      render(result);
+    }catch(problem){error.textContent = problem.message + ' Reload to read the current brief.'}
+  });
+  async function refresh(){
+    try{
+      const response = await fetch('/state'), state = await response.json();
+      if(!response.ok) throw new Error(state.error);
+      if(!current || state.revision !== current.revision) render(state);
+    }catch(problem){error.textContent = problem.message}
+  }
+  refresh();
+  setInterval(refresh, 1000);
+</script>
+</html>

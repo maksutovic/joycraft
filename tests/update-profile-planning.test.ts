@@ -10,7 +10,7 @@ import {
   JOYCRAFT_LOCAL_DIR,
 } from '../src/gitignore';
 import { STATE_PATH } from '../src/version';
-import { TELEMETRY_PATH } from '../src/telemetry-store';
+const TELEMETRY_PATH = 'docs/.joycraft/telemetry.json';
 import {
   applyGitattributes,
   GITATTRIBUTES_COMMENT,

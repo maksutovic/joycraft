@@ -1,0 +1,5 @@
+interface:
+  display_name: "Joycraft Retro"
+  short_description: "Find session friction and propose focused improvements"
+policy:
+  allow_implicit_invocation: false
