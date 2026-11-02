@@ -30,12 +30,30 @@ function markdownFiles(root, folder, skip = []) {
 
 const read = (root, file) => { try { return readFileSync(path.join(root, file), 'utf8'); } catch { return null; } };
 
+// A fence opens with three or more backticks or tildes at any indent (list items
+// indent theirs) and closes on a line of the same character, at least as long.
+// An unclosed fence runs to the end of the file, as in CommonMark.
+function blankFences(text) {
+  let fence = null;
+  return text.split('\n').map(line => {
+    const marker = /^\s*(`{3,}|~{3,})/.exec(line)?.[1];
+    if (!fence) {
+      // A backtick fence's info string has no backtick; ```npm test``` is inline code.
+      if (!marker || (marker[0] === '`' && line.trimStart().slice(marker.length).includes('`'))) return line;
+      fence = marker;
+    } else if (marker && marker[0] === fence[0] && marker.length >= fence.length && /^\s*[`~]+\s*$/.test(line)) {
+      fence = null;
+    }
+    return ' '.repeat(line.length);
+  }).join('\n');
+}
+
 /** Markdown links (checked for existence) and backticked project paths (references only). */
 export function references(file, text) {
   const dir = path.posix.dirname(file);
   const links = [], mentions = [];
   // Blank out fenced code so examples are not read as links; keep line numbers.
-  text = text.replace(/^(```|~~~)[^\n]*\n[\s\S]*?^\1[^\n]*$/gm, block => block.replace(/[^\n]/g, ' '));
+  text = blankFences(text);
   const lineOf = index => text.slice(0, index).split('\n').length;
   const add = (raw, index) => {
     const target = raw.split('#')[0];

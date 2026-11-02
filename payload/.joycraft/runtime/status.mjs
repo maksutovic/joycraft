@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { journalPath } from './completion.mjs';
 import { workPaths } from './config.mjs';
 import { briefDecisionRecords, isObject, localPath, parseJson, readLocal, specStatus, validateQueue } from './identity.mjs';
-import { listWorktrees } from './worktrees.mjs';
+import { decide, listWorktrees } from './worktrees.mjs';
 
 // The queue is the status authority; spec frontmatter mirrors it. This report
 // shows where the mirror or the working folders have drifted, so a session can
@@ -34,7 +34,7 @@ function worktreeCounts(root) {
     const { trees } = listWorktrees({ root, sizes: false });
     return {
       owned: trees.filter(tree => tree.owner === 'joycraft' && !tree.missing).length,
-      prunable: trees.filter(tree => tree.owner === 'joycraft' && !tree.missing && tree.specStatus === 'done' && tree.clean && tree.merged).length,
+      prunable: trees.filter(tree => decide(tree).action === 'remove').length,
       unknown: trees.filter(tree => tree.owner !== 'joycraft').length,
     };
   } catch { return null; }

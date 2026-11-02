@@ -1,6 +1,6 @@
 ---
 id: 1
-status: in-review
+status: done
 ---
 # Worktree create, list and prune
 

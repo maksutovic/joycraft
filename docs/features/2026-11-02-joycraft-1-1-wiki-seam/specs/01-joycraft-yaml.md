@@ -1,6 +1,6 @@
 ---
 id: 1
-status: in-review
+status: done
 ---
 # joycraft-yaml
 

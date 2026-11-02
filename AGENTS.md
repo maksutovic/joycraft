@@ -189,4 +189,8 @@ Keep this file lean — link out, don't inline. Long-form reference docs live in
 | Document | Read it when… |
 |----------|---------------|
 | `payload/.joycraft/references/artifacts.md` | Showing Max a brief, plan, review or questions — render the decision artifact |
+| `docs/context/decision-log.md` | Making or revisiting a product or release decision — check why it was decided first |
+| `docs/context/dangerous-assumptions.md` | Something the agent believes about this repo turned out false — check and add |
+| `docs/context/institutional-knowledge.md` | Looking for an unwritten convention or constraint |
+| `docs/context/production-map.md` | Touching npm publishing, CI release workflows or anything users install |
 | `docs/templates/reference/model-profile-claude-fable-5-1.md` | Working with Claude Fable 5.1 — finishing whole tasks, scope, progress updates, prose |

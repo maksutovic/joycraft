@@ -7,6 +7,22 @@ claim that a release has shipped.
 
 ---
 
+## 1.1.1 — Fixes from the re-reviews
+
+An independent re-review of the 1.0.1 and 1.1 fixes found these. Each has a test.
+
+- **Cleanup and code fences.** Links inside a fence are ignored when the fence is
+  indented (as in a list item), uses four or more backticks, or is never closed. A
+  line that starts with an inline ```` ```code``` ```` span is not a fence.
+- **Trace and folder names.** A declared check folder such as `tests/[slug]` is read
+  as a plain path, not a glob.
+- **`joycraft.yaml` errors.** A bad escape in a quoted value names the line.
+- **Worktrees.** `status` counts as prunable only the trees `prune` would remove.
+  `prune` run from inside a worker tree never lists or forgets that tree.
+- **Locks.** A lock records its holder. Another process takes it over only when the
+  holder has exited, through a guard so two waiters cannot both take it. A holder
+  removes only its own lock.
+
 ## 1.1.0 — Settings, cleanup and test tracing
 
 From David Moshal's field feedback, decisions D1, D3, D4 and D6.

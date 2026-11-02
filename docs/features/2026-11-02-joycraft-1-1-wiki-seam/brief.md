@@ -1,6 +1,6 @@
 ---
 feature: joycraft-1-1-wiki-seam
-status: approved
+status: shipped
 decisions: []
 ---
 # Joycraft 1.1: config, cleanup and the wiki seam

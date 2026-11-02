@@ -11,6 +11,11 @@ const tag = /\[AC:([A-Za-z0-9_.-]+)\]/g;
 
 function filesMatching(root, glob) {
   const pattern = globToRegExp(checkGlob(glob, '--tests'));
+  return filesUnder(root, '', file => pattern.test(file));
+}
+
+// A declared folder is a literal path, so names like tests/[slug] need no glob escaping.
+function filesUnder(root, base, keep = () => true) {
   const out = [];
   const walk = relative => {
     let entries;
@@ -19,10 +24,10 @@ function filesMatching(root, glob) {
       if (entry.name === 'node_modules' || entry.name === '.git' || entry.name === '.joycraft') continue;
       const child = relative ? `${relative}/${entry.name}` : entry.name;
       if (entry.isDirectory()) walk(child);
-      else if (entry.isFile() && pattern.test(child)) out.push(child);
+      else if (entry.isFile() && keep(child)) out.push(child);
     }
   };
-  walk('');
+  walk(base);
   return out;
 }
 
@@ -36,7 +41,7 @@ export function traceSpec({ root = process.cwd(), queuePath, specId, tests = [] 
   const criteria = (spec.verification.criteria ?? []).map(item => item.id);
   const declared = spec.verification.inputs.filter(input => input.kind === 'check' && input.state !== 'absent').map(input => relativePath(input.path));
   // A declared check folder stands for every file inside it.
-  const expanded = declared.flatMap(file => existsSync(path.join(root, file)) && statSync(path.join(root, file)).isDirectory() ? filesMatching(root, `${file}/**`) : [file]);
+  const expanded = declared.flatMap(file => existsSync(path.join(root, file)) && statSync(path.join(root, file)).isDirectory() ? filesUnder(root, file) : [file]);
   const files = [...new Set([...expanded, ...tests.flatMap(glob => filesMatching(root, glob))])].sort();
   const untraceableIds = criteria.filter(id => !/^[A-Za-z0-9_.-]+$/.test(id));
   const traced = Object.fromEntries(criteria.map(id => [id, []]));

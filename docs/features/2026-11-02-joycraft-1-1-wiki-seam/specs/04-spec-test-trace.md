@@ -1,6 +1,6 @@
 ---
 id: 4
-status: in-review
+status: done
 ---
 # spec-test-trace
 
