@@ -4,7 +4,8 @@ status: draft
 source: David Moshal's field test of 1.0.0 (Codex, then Claude), 2026-11-01
 decisions: [
   {"id":"D1","status":"open","question":"How does a project change where Joycraft keeps working files?","answer":null,"options":[{"value":"config-json","label":"A .joycraft/config.json with paths; defaults stay docs/features and docs/archive (recommended)"},{"value":"rename-default","label":"Also change the default to a non-docs folder, e.g. .joycraft/work/"},{"value":"yaml","label":"joycraft.yaml as David suggested (needs a YAML parser or a YAML subset)"}],"affected":["configurable-paths"]},
-  {"id":"D2","status":"open","question":"Do we add a long-lived parent above a feature?","answer":null,"options":[{"value":"optional-parent-field","label":"Optional `parent` field in the brief frontmatter; no rename (recommended for 1.0.x)"},{"value":"rename-hierarchy","label":"Rename to Feature/Spec/Task across scripts and skills (breaking; 2.0)"},{"value":"defer","label":"Defer"}],"affected":["parent-grouping"]},
+  {"id":"D2","status":"open","question":"Do we adopt David's Feature/Spec/Task hierarchy?","answer":null,"options":[{"value":"rename-hierarchy","label":"Yes: Feature (long-lived) / Spec (old feature) / Task (old spec), shipped as 2.0 with a 1.x migration"},{"value":"optional-parent-field","label":"Not yet: optional `parent` field on the brief in 1.x; rename later"},{"value":"defer","label":"Defer"}],"affected":["parent-grouping","unit-archive"]},
+  {"id":"D6","status":"open","question":"Does Joycraft ship wiki governance or only a seam for it?","answer":null,"options":[{"value":"seam-first","label":"Seam first: archive hook + joycraft-cleanup over our own folders; study David's docaudit/doc-governance before shipping a wiki (recommended)"},{"value":"ship-wiki","label":"Ship a wiki layer (OKF + drift anchors + audit script) in Joycraft"},{"value":"seam-only","label":"Seam only; wiki stays bring-your-own"}],"affected":["archive-hook","joycraft-cleanup","feature-wiki"]},
   {"id":"D3","status":"open","question":"Do the spec-to-test checks block completion or only report?","answer":null,"options":[{"value":"report","label":"Report gaps in the review packet; the reviewer decides (recommended)"},{"value":"block","label":"finalize-review refuses a spec with an untraced Check:"}],"affected":["spec-test-trace"]},
   {"id":"D4","status":"open","question":"What do we do with Doc Detective?","answer":null,"options":[{"value":"recipe","label":"Optional review-tools recipe for projects with procedural docs; no dependency (recommended)"},{"value":"skip","label":"Skip"},{"value":"dependency","label":"Bundle it"}],"affected":["doc-detective"]},
   {"id":"D5","status":"open","question":"Version label for this work?","answer":null,"options":[{"value":"split","label":"1.0.1 = fixes (worktrees, coordinator lock, stale status); 1.1.0 = new surface (config, parent, trace) (recommended)"},{"value":"one","label":"All of it as 1.0.1"}],"affected":["release"]}
@@ -42,6 +43,33 @@ feedback into work for the next release.
 | 6 | "TDD works in reverse": tests check what the code already does | **Partly covered** | The implement skill says "one focused test per acceptance `Check:`, from the spec rather than the code". Nothing checks it. |
 | 7 | Stale status: docs said work was still to do after it was done | **Likely** | Specs keep status in two places (queue JSON and spec frontmatter). Brief sections such as "Agent work and pending choices" are prose and never updated. Needs a repro from David's repo. |
 | 8 | Hard to see what was done and where | **Out of scope** | UI layer work (see above). |
+
+### Follow-up from David (2026-11-02, 9:55)
+
+He proposed a concrete design, as a breaking change:
+
+- **Hierarchy:** Feature (long-lived) → Spec (today's feature) → Task (today's spec).
+- **`joycraft-spec-end`** (or `spec-archive`) next to `joycraft-session-end`: archive
+  a spec as soon as its tasks are done, not only at session end.
+- **`joycraft-cleanup`:** a Joycraft version of his doc-cleanup skill.
+- **Flow:** work on a spec → archive it when its tasks are done → the archive
+  updates `wiki/<feature>/`. The result is a clean wiki page per feature.
+- **Wiki:** he recommends OKF with drift anchors (md→md and md→code) and an audit
+  script, and offered to share his `docaudit` and `doc-governance` projects.
+- **Claim:** with that governance, one agent session can run for weeks because the
+  agent reads context from a wiki that is kept free of stale text, so compaction
+  does not hurt.
+
+Notes:
+- This matches finding 1: archive at session end only, and only when the whole
+  unit is done, is why stale text piles up. Archiving per finished unit fixes the
+  cause, not the symptom.
+- 0.7 had part of this (`joycraft-session-end` wrote a shipped ledger and marked
+  briefs `reap: eligible`; see `src/skills/joycraft-session-end.md:99-117`). 1.0
+  dropped it. Check what worked there before redesigning.
+- "OKF" is not defined in this brief. Ask David what it refers to; do not guess.
+- **Action:** accept David's offer of `docaudit` and `doc-governance` and read them
+  before deciding D6.
 
 ## Goals
 
@@ -138,6 +166,39 @@ here. Joycraft does not ship a wiki.
   `JOYCRAFT_PARENT` and `JOYCRAFT_ARCHIVE_PATH` set.
 - A failing hook is reported but does not undo the archive.
 
+### unit-archive
+
+Add a per-unit archive step (`joycraft-spec-end` in David's naming; today's unit
+is a feature). When every spec in a unit is `done`, archive that unit at once,
+without waiting for session end and without the session-wide quiescence
+attestation; only the unit's own workers must be finished. Session end keeps its
+role as the session closer and runs any pending unit archive. Depends on D2 for
+naming.
+
+**Done when:**
+- A session finishes unit A and keeps working on unit B: A is archived before the
+  session ends, and B is untouched.
+- A unit with one spec still `in-review` is not archived, and the reason is printed.
+
+### joycraft-cleanup
+
+A skill plus a deterministic script that finds stale working material and proposes
+removals: briefs and specs whose units are archived but still sit in the working
+folder, `pending` sections that name `done` work, links from curated context into
+working folders, and orphaned worktrees. It reports first and changes files only on
+approval. Shape it after David's doc-cleanup (D6).
+
+**Done when:** on a project with one stale brief, one dangling link from
+`docs/context/` into `docs/features/`, and one orphaned worktree, the script lists
+all three and changes nothing until approved.
+
+### feature-wiki
+
+Under D2's hierarchy, each long-lived Feature has one wiki page
+(`wiki/<feature>/` or the configured path). Archiving a unit updates that page
+through the `archive-hook`. Whether Joycraft writes the page itself or calls the
+project's tool is D6.
+
 ### spec-test-trace
 
 Make "tests come from the spec" checkable. Each acceptance `Check:` gets a stable
@@ -207,14 +268,17 @@ mutation testing (Stryker) stays an opt-in recipe.
 - Can start now without a decision: `worktree-lifecycle`, `coordinator-lock`,
   `stale-status`, `docs-explanation`. These are fixes to 1.0.0 behavior.
 - Blocked on D1: `configurable-paths`, `archive-hook` (shares the config file).
-- Blocked on D2: `parent-grouping`. Blocked on D3: `spec-test-trace`. Blocked on
-  D4: `doc-detective`. D5 decides the version number.
+- Blocked on D2: `parent-grouping`, `unit-archive` naming, `feature-wiki`.
+  Blocked on D6: `joycraft-cleanup` shape, `feature-wiki`. Blocked on D3:
+  `spec-test-trace`. Blocked on D4: `doc-detective`. D5 decides the version
+  number; if D2 is the rename, that part is 2.0.
+- Ask David: what OKF means, and for `docaudit` and `doc-governance`.
 - Before `coordinator-lock`, ask David for his Codex session layout (how many
   sessions, which skill each ran) to reproduce the leak.
 
 ## Scope and limits
 
 - No UI in this work. No wiki in Joycraft.
-- No rename of Feature/Spec in 1.0.x (D2).
+- No rename of Feature/Spec in 1.0.x; a rename is a 2.0 change with migration (D2).
 - No new runtime dependency in the shipped package.
 - Each change lands in `joycraft-prototype` first, then is vendored.
