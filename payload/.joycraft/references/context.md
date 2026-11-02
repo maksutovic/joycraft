@@ -78,3 +78,8 @@ order where unranked; previously successful scores retain their provenance.
 not that every candidate was scored; inspect `status` and `scoredCount`.
 Invalid inputs or an unavailable Git inventory exit nonzero. Provider scores
 advise reading order and never approve intent, authorize work or certify evidence.
+
+Treat only the context homes as current authority. `docs/features/` is working
+material that can be stale until its feature is archived, and `docs/archive/` is
+history; see the knowledge-home table in `setup.md`. Joycraft ships no wiki. Skills
+do not need to be named by the user: pick the step from the request.

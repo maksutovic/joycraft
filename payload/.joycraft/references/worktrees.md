@@ -45,6 +45,32 @@ integration boundary make that safe. Record durable coordinator ownership and
 the captured refs before dispatch or restart, so recovery can distinguish this
 run's resources from another session's.
 
+## Commands
+
+`worktrees.mjs` is the one home for worker trees on hosts without native
+worktree isolation:
+
+```sh
+node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <coordinator-session>
+node .joycraft/runtime/worktrees.mjs list
+node .joycraft/runtime/worktrees.mjs prune          # preview
+node .joycraft/runtime/worktrees.mjs prune --apply
+```
+
+`create` adds `.joycraft/local/worktrees/<feature>-<spec>` on branch
+`joycraft/<feature>-<spec>` from the current or `--base` revision and records the
+owner in `.joycraft/local/worktrees.json`. `list` shows every linked tree with
+its spec status, merged and clean state and size; a tree not in the ledger is
+`unknown-owner`. `prune --apply` removes a tree only when it is recorded, its spec
+is `done`, it is clean and its branch is contained in `--into` (default `HEAD`).
+It never forces a removal. If the project's test runner discovers files under
+dot folders, exclude `.joycraft/` from discovery.
+
+`coordinator.mjs claim|heartbeat|release|show` keeps one coordinator lease per
+queue in the main checkout's `.joycraft/local/coordinators/`. Every worker tree
+reads the same lease. While a lease exists, `dispatch-start.mjs` starts a task only
+with a matching `--coordinator-session` and names the coordinator in its output.
+
 ## Workspace input and project setup
 
 Dispatch accepts an optional runtime workspace input:

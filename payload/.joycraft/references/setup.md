@@ -57,13 +57,22 @@ If `AGENTS.md` is missing, create a concise project-specific file with:
 - This line: “First action in each session: run
   `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow
   `.joycraft/references/update.md`.”
+- This line: “Show every document a person must read, review or answer (a brief,
+  plan, spec set, review or set of questions) as a rendered page, never only as
+  Markdown in chat: use the decision artifact
+  (`node .joycraft/runtime/artifacts/cli.mjs`, see `.joycraft/references/artifacts.md`)
+  for a brief or questions, or an HTML page for any other document. Open it for
+  the person and say where it is.”
+- A context-map row for `.joycraft/references/artifacts.md`, read when “showing a
+  document or questions to a person”.
 
 Do not copy prototype-maintainer rules or fill it with generic coding advice.
 Link detail rather than duplicating it. Do not encode a tentative product idea
 as a permanent boundary. Keep current feature intent in its brief.
 
 If `AGENTS.md` already exists, preserve its content and add only missing facts,
-useful context pointers and the update-check line above with a targeted edit. Reuse an existing context map
+useful context pointers, the update-check line, the rendered-documents line and its
+context-map row above with a targeted edit. Reuse an existing context map
 rather than adding another. Read linked content before deciding it is missing.
 When its map names a project-context home, use that exact project-relative home;
 use `docs/context/project.md` only when no context home exists. Do not link a
@@ -231,6 +240,13 @@ Create additional homes only when they have content:
 | Reusable decision rationale | `docs/context/decision-log.md`, linking to the owning decision |
 | Current feature or mixed change | `docs/features/<slug>/brief.md` |
 | Authorized implementation queue | `docs/features/<slug>/specs/` |
+
+Only the context homes are current project knowledge. `docs/features/` is working
+material: a brief or spec there can be out of date until the feature is archived,
+and `docs/archive/` is history. Context retrieval and any project wiki or doc audit
+should treat both as non-authoritative and must not link to them as current
+truth. Joycraft ships no wiki; a project that keeps one keeps it in its own home
+and links it from the context map.
 
 The brief retains decision authority under `workflow.md`; the context document
 and decision log must not become competing answer stores. Later accepted facts

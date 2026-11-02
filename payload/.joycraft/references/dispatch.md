@@ -64,8 +64,13 @@ node .joycraft/runtime/dispatch-start.mjs \
   --out .joycraft/local/packets/<packet.json> \
   --native-session <actual-host-session-id> \
   --native-agent <actual-host-child-agent-id> \
-  --native-host <host>
+  --native-host <host> \
+  --coordinator-session <coordinator-session-id>
 ```
+
+`--coordinator-session` is required while the queue has a coordinator lease
+(`coordinator.mjs claim`) and must equal the holder; startup output then names
+the coordinator. Omit it only for an unclaimed queue.
 
 Run each `git` command and each Joycraft runtime call (`node
 .joycraft/runtime/…`, `pnpm joycraft:…`) as its own plain shell

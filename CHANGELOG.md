@@ -7,6 +7,37 @@ claim that a release has shipped.
 
 ---
 
+## 1.0.1 — Cleanup after the first field test
+
+Fixes from David Moshal's field test of 1.0.0 on Codex and Claude Code.
+
+### Fixed
+
+- **Worker worktrees are cleaned up.** New `.joycraft/runtime/worktrees.mjs`
+  (`create`, `list`, `prune`). Worker trees get one home,
+  `.joycraft/local/worktrees/`, and an owner ledger. `prune` removes a tree only
+  when its spec is done, the tree is clean and its branch is merged; it never
+  forces. Session end runs it. Before, nothing removed worker trees, and agents
+  invented their own folders.
+- **One coordinator per queue.** New `.joycraft/runtime/coordinator.mjs`. A
+  session claims a queue; while the lease exists, `dispatch-start.mjs` starts a
+  task only with a matching `--coordinator-session` and names the coordinator in
+  its output. Workers ignore instructions from other sessions. Before, parallel
+  sessions on Codex could mix instructions across worktrees.
+- **Status drift is reported.** New `.joycraft/runtime/status.mjs` lists specs
+  whose frontmatter disagrees with the queue, finished features not yet archived,
+  and worktree counts. `--fix` repairs only the frontmatter of accepted done specs.
+
+### Changed
+
+- Setup now writes a rule into the project's `AGENTS.md`: every document a person
+  must read, review or answer is shown as a rendered page (the decision artifact,
+  or HTML), never only as Markdown in chat, with a context-map row for
+  `.joycraft/references/artifacts.md`. Existing projects get it on the next entry.
+- The README and setup reference say what in `docs/` is current: `docs/context/`
+  is; `docs/features/` is working material and `docs/archive/` is history.
+  Joycraft ships no wiki.
+
 ## 1.0.0 — The field build becomes Joycraft
 
 Joycraft 1.0 is the build that ran in the field trial: one entry skill, a spec
