@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "field-feedback-1-0-1",
+  "title": "1.0.1 field feedback: six decisions",
+  "summary": "David Moshal tested 1.0.0 on Codex, then Claude. Checked against the code: worktrees are never cleaned up (no script exists; his .joycraft/local held 191 MB); no runtime records who coordinates a queue, so Codex sessions mixed instructions; archive.mjs hardcodes docs/features and docs/archive; features archive only at session end, so docs/ goes stale; nothing checks that tests come from the spec. Doc Detective research: AGPL, browser download, catches drift only in step-by-step docs, does nothing for tests-vs-spec, so the pick is an opt-in recipe. He then proposed Feature/Spec/Task, a spec-end archive step, joycraft-cleanup, and a wiki page per feature. Fixes that need no decision: worktree create/list/prune, coordinator lock, status-drift check, a README note on what in docs/ is authoritative. Full brief: docs/features/2026-11-02-field-feedback-1-0-1/brief.md",
+  "decisionIds": ["D1", "D2", "D3", "D4", "D5", "D6"]
+}
