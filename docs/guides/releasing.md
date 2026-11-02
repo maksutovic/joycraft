@@ -7,6 +7,15 @@ PR is the release authorization; there is no second release PR to approve.
 The workflow uses npm Trusted Publishing through GitHub OIDC. No separate npm
 promotion token or GitHub environment approval is required by the workflow.
 
+## Every release sets its own notes
+
+A release commit must set `package.json` `version`, `joycraft.release` and
+`joycraft.summary` together, plus `releaseVersion` in `src/joycraft-release.json`.
+The summary is the one line the session-start update check shows users, and
+`tests/public-docs.test.ts` requires `joycraft.release` to equal the version. An
+automatic patch bump with stale notes fails that test in the publish run; 1.0.1's
+first publish failed this way on 2026-11-02.
+
 ## What runs automatically
 
 1. Check out the exact event commit and verify it belongs to `main`.
