@@ -37,6 +37,7 @@ function fixtureTarball(root: string, version: string, failOnUpdate = false): st
     "const target = args[commandIndex + 1];",
     "const root = target && !target.startsWith('-') ? path.resolve(target) : process.cwd();",
     "fs.mkdirSync(root, { recursive: true });",
+    "if (command === 'init' && !args.includes('--yes')) { console.log('Nothing changed. Re-run with --yes to apply.'); process.exit(1); }",
     "fs.appendFileSync(path.join(root, 'consumer-trace.jsonl'), JSON.stringify({ command, version }) + '\\n');",
     `if (${failOnUpdate} && command === 'update') throw new Error('fixture updater failed');`,
   ].join('\n'));
