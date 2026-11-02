@@ -1,0 +1,19 @@
+# joycraft.yaml: project settings for Joycraft. This file is yours; Joycraft only
+# reads it. Every setting is optional; delete what you do not change.
+
+paths:
+  features: docs/features   # working briefs and specs (not current knowledge)
+  archive: docs/archive     # finished features (history)
+  context: docs/context     # current project knowledge
+
+hooks:
+  # Runs once after a feature is archived, from the project root, with
+  # JOYCRAFT_FEATURE, JOYCRAFT_ARCHIVE_PATH and JOYCRAFT_SOURCE_PATH set.
+  # afterArchive: node scripts/wiki-sync.mjs
+
+cleanup:
+  # Code that each context page describes. cleanup.mjs flags a page when this
+  # code changed after the page last changed.
+  impact: []
+  #  - source: src/auction/**
+  #    docs: [docs/context/auction-rules.md]

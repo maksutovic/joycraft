@@ -33,6 +33,10 @@ bounded packet, and binds it. If the real ID, available authority, or a separate
 reviewer context is unavailable, leave the spec `in-review`; do not manufacture
 any of them. A hooks-disabled/manual workflow can still be ready; an unenforced
 result holds only the claimed review, not unrelated work.
+Reviewer startup output also carries `trace`, the spec's criteria with the tests
+tagged `[AC:<criterion-id>]` (`node .joycraft/runtime/trace.mjs --queue <queue> --spec <id>`
+produces the same). Report untraced criteria as findings; a missing tag alone is
+not a FAIL.
 Write packets and snapshots beneath a confirmed Git-ignored project-local
 directory so they do not create unrelated scope paths.
 

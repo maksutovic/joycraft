@@ -118,3 +118,13 @@ does not automatically belong in CI. Diagnose an environment-only UNVERIFIED
 result as an environment limitation, repair that setup, and rerun the affected
 review; do not send unchanged code through a speculative fix round. A genuine
 test race still needs a code/test diagnosis, not just a longer timeout.
+
+## Criterion tags
+
+Tag each acceptance test with its queue criterion ID, `[AC:<criterion-id>]`, in the
+test name or a comment, in any language. `trace.mjs --queue <queue> --spec <id>`
+lists each criterion with its tagged tests from the spec's `check` inputs (add
+`--tests <glob>` for undeclared files) and exits 2 while a criterion is untraced.
+Reviewer startup includes the same trace. A tag shows that a test claims the
+criterion; it does not show that the test is right. Write the test from the spec
+text before reading the implementation.

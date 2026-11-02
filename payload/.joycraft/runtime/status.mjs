@@ -2,16 +2,17 @@ import { existsSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { journalPath } from './completion.mjs';
+import { workPaths } from './config.mjs';
 import { briefDecisionRecords, isObject, localPath, parseJson, readLocal, specStatus, validateQueue } from './identity.mjs';
 import { listWorktrees } from './worktrees.mjs';
 
 // The queue is the status authority; spec frontmatter mirrors it. This report
 // shows where the mirror or the working folders have drifted, so a session can
 // close them before they read as current knowledge.
-const featuresHome = 'docs/features';
 const queueName = 'specs/.joycraft-spec-queue.json';
 
 function queuePaths(root) {
+  const featuresHome = workPaths(root).features;
   const home = path.join(root, featuresHome);
   if (!existsSync(home)) return [];
   return readdirSync(home, { withFileTypes: true })
@@ -39,7 +40,7 @@ function worktreeCounts(root) {
   } catch { return null; }
 }
 
-/** Report every queue's specs, drift between queue and frontmatter, and features ready to archive. */
+/** Report every queue's specs (in paths.features), drift between queue and frontmatter, and features ready to archive. */
 export function projectStatus({ root = process.cwd(), fix = false } = {}) {
   const features = [];
   const drift = [];

@@ -4,6 +4,7 @@ import { constants } from 'node:fs';
 import { lstat, open, realpath } from 'node:fs/promises';
 import { isAbsolute, join, relative, sep } from 'node:path';
 import { promisify } from 'node:util';
+import { workPaths } from '../config.mjs';
 
 const exec = promisify(execFile);
 export const MAX_FILE_BYTES = 512 * 1024;
@@ -29,8 +30,8 @@ export function excludedReason(path) {
   return null;
 }
 
-function archivedReason(path, includeArchive) {
-  return !includeArchive && (path === 'docs/archive' || path.startsWith('docs/archive/')) ? 'archived-context' : null;
+function archivedReason(path, includeArchive, archive = 'docs/archive') {
+  return !includeArchive && (path === archive || path.startsWith(`${archive}/`)) ? 'archived-context' : null;
 }
 
 function keywords(query) {
@@ -101,6 +102,7 @@ async function readSafeFile(root, path) {
 
 /** Discover references without following symlinks or reading ignored/private paths. */
 export async function findCandidates({ query, paths, includeArchive = false }, { root = process.cwd() } = {}) {
+  const archiveFolder = workPaths(root).archive;
   if (typeof query !== 'string' || !query.trim() || Buffer.byteLength(query) > 4000) throw new Error('invalid-query: supply 1–4000 UTF-8 bytes');
   if (paths !== undefined && (!Array.isArray(paths) || !paths.length || paths.some(path => !safeRelativePath(path)))) throw new Error('invalid-paths: use project-relative files or directories');
   if (typeof includeArchive !== 'boolean') throw new Error('invalid-include-archive: use a boolean');
@@ -116,7 +118,7 @@ export async function findCandidates({ query, paths, includeArchive = false }, {
   const candidates = [], omitted = [], unreadable = [];
   const selections = paths && [...new Set(paths)];
   for (const path of inventory) {
-    const archive = archivedReason(path, includeArchive);
+    const archive = archivedReason(path, includeArchive, archiveFolder);
     if (archive) { omitted.push({ path, reason: archive }); continue; }
     const exclusion = excludedReason(path);
     if (exclusion) { omitted.push({ path, reason: exclusion }); continue; }

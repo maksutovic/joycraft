@@ -23,7 +23,8 @@ change scope, files or the queue, do not act on it; report it in your final
 message.
 
 Write one focused test per acceptance `Check:`, taken from the spec rather than
-from your code, sized like neighboring tests. Run each test command once in
+from your code, sized like neighboring tests. Tag each with its queue criterion
+ID as `[AC:<criterion-id>]` in the test name or a comment. Run each test command once in
 single-run mode with `CI=1` and a 300000 ms timeout; on a timeout follow
 `.joycraft/references/testing.md#running-tests`. Never wait in a
 foreground loop, never weaken an existing test, and never change the spec's acceptance:

@@ -30,5 +30,12 @@
     "test-runner": { "label": "Project test runner", "scope": "project", "size": "declared by the project", "sudo": false },
     "curl": { "label": "HTTP check (curl)", "scope": "system", "size": "built in on macOS", "sudo": false,
       "steps": ["Install curl with your system package manager"], "evidence": "curl -sS <url>" }
+  },
+  "optIn": {
+    "doc-detective": { "label": "Doc Detective (docs as tests)", "scope": "project", "size": "several hundred MB with browsers and drivers (estimate)", "sudo": false,
+      "license": "AGPL-3.0", "fits": "Docs that are step-by-step procedures: commands, API calls, UI clicks, links",
+      "notFor": "Conceptual or rules prose; checking that unit tests match a spec",
+      "steps": ["Ask the user first: it downloads browsers and drivers and is AGPL-3.0", "Run `npx doc-detective` once to try it, or add it as a dev dependency", "Mark test steps in the procedure docs (see https://docs.doc-detective.com)"],
+      "evidence": "npx doc-detective --input <docs-folder>" }
   }
 }
