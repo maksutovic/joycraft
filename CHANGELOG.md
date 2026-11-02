@@ -7,6 +7,44 @@ claim that a release has shipped.
 
 ---
 
+## 1.1.0 — Settings, cleanup and test tracing
+
+From David Moshal's field feedback, decisions D1, D3, D4 and D6.
+
+### What's new
+
+- **`joycraft.yaml`.** An optional project-owned file at the root. `paths` moves the
+  working, archive and context folders; `hooks.afterArchive` runs a command after a
+  feature is archived; `cleanup.impact` maps code to the context pages that describe
+  it. Joycraft only reads it. With no file, nothing changes. Template:
+  `.joycraft/templates/joycraft.yaml`; `node .joycraft/runtime/config.mjs` prints the
+  settings in effect.
+- **After-archive hook.** Gets `JOYCRAFT_FEATURE`, `JOYCRAFT_ARCHIVE_PATH` and
+  `JOYCRAFT_SOURCE_PATH`. Use it to update a wiki or run a doc audit such as
+  docaudit. A failing hook does not undo the archive; the archive CLI exits 3.
+- **`joycraft-cleanup`.** A new skill and `cleanup.mjs` report. It finds:
+  - finished features that are not archived
+  - context pages that link to working or archive material
+  - broken links and orphaned context pages
+  - context pages whose mapped code changed after the page last changed
+  - passed OKF `stale_after` dates and links to deprecated pages
+  - worktrees Joycraft did not create
+
+  It never edits. The skill shows proposed fixes and applies only the ones you approve.
+- **Criterion tags.** Tests name the acceptance criterion they check with
+  `[AC:<criterion-id>]`. `trace.mjs` lists each criterion with its tests; reviewer
+  startup includes the trace, and untraced criteria become review findings. A
+  missing tag never fails a spec by itself.
+- **Doc Detective, opt-in.** `review-tools.json` lists it under `optIn` for projects
+  whose docs are step-by-step procedures. Setup offers it only when it fits, and
+  never installs it without your yes. It is AGPL-3.0 with a large browser download.
+
+### Limits
+
+- `paths.context` tells cleanup where the context home is; a new-project kickoff
+  still writes `docs/context/`.
+- The optional hook runtime, which 1.x does not ship, still assumes the default folders.
+
 ## 1.0.1 — Cleanup after the first field test
 
 Fixes from David Moshal's field test of 1.0.0 on Codex and Claude Code.

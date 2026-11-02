@@ -74,6 +74,11 @@ another route.
 
 ## Commitment and queue
 
+Folder names in this guidance are defaults. A project's `joycraft.yaml` can move
+`paths.features`, `paths.archive` and `paths.context`; run
+`node .joycraft/runtime/config.mjs` once per session and use the folders it prints
+wherever a skill or reference says `docs/features`, `docs/archive` or `docs/context`.
+
 Use `docs/features/<slug>/specs/.joycraft-spec-queue.json` and the exact shapes in
 `.joycraft/contracts/types.d.ts`. Only `todo`, `in-review`, `done` are
 spec statuses, mirrored in spec frontmatter. Open or unknown decision state blocks

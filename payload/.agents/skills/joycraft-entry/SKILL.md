@@ -68,6 +68,10 @@ options, and saves the answers to the brief. Plain chat is only for one quick
 yes/no or an open question with no options. If you already asked option
 questions in chat and they are unanswered, move them to an artifact now.
 
+**Use the project's folders.** If `joycraft.yaml` exists, run
+`node .joycraft/runtime/config.mjs` and use its `paths` wherever Joycraft guidance
+says `docs/features`, `docs/archive` or `docs/context`.
+
 **Show documents as pages.** A brief, plan, spec set or review that the user must
 read or approve is also rendered, never left as Markdown in chat: the decision
 artifact for a brief, an HTML page for anything else. Open it and say where it is.

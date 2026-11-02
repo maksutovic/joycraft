@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -13,8 +13,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.0.1",
-    "summary": "Cleans up worker worktrees, keeps one coordinating session per queue, reports status drift, and shows documents as rendered pages.",
+    "release": "1.1.0",
+    "summary": "Adds joycraft.yaml (folders, an after-archive hook, a code-to-docs map), joycraft-cleanup for stale docs, and [AC:id] test tags the reviewer traces.",
     "autoSafeEligible": false
   },
   "scripts": {

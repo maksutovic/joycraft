@@ -35,6 +35,8 @@ any feature listed as ready to archive. Then preview
 `node .joycraft/runtime/worktrees.mjs prune` and apply it with `--apply`: it
 removes only clean, integrated trees of done specs and keeps failed, blocked or
 unknown trees with their reason. Report kept trees and their size from `list`.
+Then run `node .joycraft/runtime/cleanup.mjs` and report its findings; offer
+`joycraft-cleanup` when any remain.
 When this session coordinated a queue and no work on it remains, release the
 lease with `node .joycraft/runtime/coordinator.mjs release --queue <queue> --session <your-session-id>`. See [worker isolation](../../../.joycraft/references/worktrees.md)
 when the session used parallel mutable workers.

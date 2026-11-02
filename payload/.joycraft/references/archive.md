@@ -209,3 +209,20 @@ manual recovery. A collision or changed byte fails without accepting new
 completion. A repeat is idempotent only when the existing replay manifest names
 the feature and every archived mapped byte still matches; otherwise it requires
 manual reconciliation.
+
+## After-archive hook
+
+A project can name one command in `joycraft.yaml`:
+
+```yaml
+hooks:
+  afterArchive: node scripts/wiki-sync.mjs
+```
+
+After a successful `--apply`, the runtime runs it once from the project root with
+`JOYCRAFT_FEATURE`, `JOYCRAFT_ARCHIVE_PATH` and `JOYCRAFT_SOURCE_PATH` set, and reports
+its exit code and output tail under `afterArchive`. Use it to update a project wiki
+or run a doc audit such as docaudit. A failing hook does not undo the archive;
+report it and fix the hook. A repeat of an existing archive does not run it again.
+`paths.features` and `paths.archive` in the same file move the working and archive
+folders; the defaults are `docs/features` and `docs/archive`.

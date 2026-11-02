@@ -4,6 +4,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { readLease } from './coordinator.mjs';
 import { prepareDispatch } from './dispatch-preflight.mjs';
+import { traceSpec } from './trace.mjs';
 import { localPath, readQueue, relativePath, requireValue, validateNativeActor } from './identity.mjs';
 
 // The native hook runtime is optional; without it, startup takes the manual path.
@@ -55,7 +56,13 @@ export async function startDispatch(options, nativeEvent) {
   const hooks = config.enabled
     ? { enabled: true, ...await runtime.bindPreparedSource({ event: nativeEvent, packetPath: outPath }) }
     : { enabled: false, eligible: false, reason: runtime ? 'hooks-disabled' : 'hooks-not-installed' };
-  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator,
+  // The reviewer sees which criteria have a tagged test. It reports; it never blocks startup.
+  let trace;
+  if (options.role === 'reviewer') {
+    try { const { criteria, untraced, unknownTags, missingFiles, note } = traceSpec({ root, queuePath: options.queuePath, specId: options.specId }); trace = { criteria, untraced, unknownTags, missingFiles, ...(note ? { note } : {}) }; }
+    catch (error) { trace = { error: error.message }; }
+  }
+  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...(trace ? { trace } : {}),
     ready: !config.enabled || hooks.eligible === true };
 }
 

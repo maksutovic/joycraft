@@ -90,6 +90,26 @@ agent both views: the whole project and the detail of the current step.
 Joycraft does not ship a wiki. If you keep one, link it from the context map, and
 treat `docs/features/` and `docs/archive/` as non-authoritative in your doc audits.
 
+### Settings: `joycraft.yaml`
+
+Joycraft works with no settings. To change its folders, run a command after a
+feature is archived, or tell cleanup which code each context page describes, add a
+`joycraft.yaml` at the project root (template: `.joycraft/templates/joycraft.yaml`):
+
+```yaml
+paths:
+  features: working/features   # default docs/features
+  archive: working/archive     # default docs/archive
+hooks:
+  afterArchive: node scripts/wiki-sync.mjs
+cleanup:
+  impact:
+    - source: src/auction/**
+      docs: [docs/context/auction-rules.md]
+```
+
+The file is yours: Joycraft reads it and never rewrites it.
+
 ### Keeping the workspace clean
 
 At the end of a session the agent runs three checks for you:
@@ -101,6 +121,13 @@ At the end of a session the agent runs three checks for you:
   made by Joycraft, and says why. `worktrees.mjs list` shows what is left and its size.
 - `node .joycraft/runtime/coordinator.mjs` keeps one coordinating session per queue,
   so a second session's instructions do not reach the first session's workers.
+- `node .joycraft/runtime/cleanup.mjs` reports stale or unreachable project
+  knowledge: finished features not archived, context pages that link to working
+  material, broken or orphaned pages, and pages whose code changed. Ask your agent
+  to "clean up the docs" and it shows the fixes for your approval.
+
+Tests name the acceptance criterion they check, `[AC:<criterion-id>]`, so the
+reviewing agent can see which criteria have a test.
 
 ## Answering questions: the decision page
 

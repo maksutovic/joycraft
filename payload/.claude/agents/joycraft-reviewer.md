@@ -27,6 +27,10 @@ revision instead of rerunning the full suite; run the spec's own tests once in
 single-run mode with `CI=1` and a 300000 ms timeout. Never give a verdict while
 a command you started is still running.
 
+Startup output includes `trace`: each criterion with its `[AC:<id>]` tests. Report
+each untraced criterion as a finding. A missing tag alone is not a FAIL; judge the
+criterion by what you observe.
+
 Report every finding with a severity and the criterion it touches. Only a failing
 stated criterion, or a reproducible defect or regression in the changed code with
 file:line or a receipt, blocks. A case the spec does not decide is "decision

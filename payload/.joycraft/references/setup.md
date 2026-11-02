@@ -178,6 +178,13 @@ its UI claims stay `UNVERIFIED`. With no network, the probes still run; offer
 the install later. For a CI-only project, record the CI job as the evidence
 source when the user picks it.
 
+`review-tools.json` also lists `optIn` tools that detection never plans. Offer
+one only when it fits the project. Example: Doc Detective, for docs that are
+step-by-step procedures. Say what it does not cover and that it is AGPL-3.0 with a
+large browser download, and install nothing without the user's yes. Record an
+accepted opt-in tool in the `## Review loop` section by hand, with its evidence
+command.
+
 ## Project-owned worktrees
 
 For an observed Git project with a parallel-worker preference, keep bootstrap
@@ -240,6 +247,12 @@ Create additional homes only when they have content:
 | Reusable decision rationale | `docs/context/decision-log.md`, linking to the owning decision |
 | Current feature or mixed change | `docs/features/<slug>/brief.md` |
 | Authorized implementation queue | `docs/features/<slug>/specs/` |
+
+A project can move these folders, add an after-archive hook and map code to
+context pages in an optional root `joycraft.yaml`. It is project-owned: create it
+from `.joycraft/templates/joycraft.yaml` only when the user wants one of those
+settings, and never overwrite it. `node .joycraft/runtime/config.mjs` prints the
+settings in effect.
 
 Only the context homes are current project knowledge. `docs/features/` is working
 material: a brief or spec there can be out of date until the feature is archived,

@@ -1,17 +1,19 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { boundQueueForSubject, briefDecisionRecords, canonical, isObject, isSha256, localPath, nonempty, normalizedQueueForSubject, parseJson, readLocal, readQueue, relativePath, requireValue, scopedRequirementForSubject, sha256, specStatus, subjectIdentity, validateIndependentReview } from './identity.mjs';
 import { validateEvidence } from './evidence.mjs';
 import { validateOwnerAcceptance } from './completion.mjs';
+import { readConfig, workPaths } from './config.mjs';
 
 const featureName = value => {
   requireValue(typeof value === 'string' && /^[a-z0-9][a-z0-9-]*$/.test(value), 'Feature must be a lowercase slug');
   return value;
 };
-const archivePath = feature => `docs/archive/${feature}`;
-const featurePath = feature => `docs/features/${feature}`;
+// Folders come from joycraft.yaml (paths.features / paths.archive); defaults are docs/features and docs/archive.
+const archivePath = (root, feature) => `${workPaths(root).archive}/${feature}`;
+const featurePath = (root, feature) => `${workPaths(root).features}/${feature}`;
 
 function localDirectory(root, relative) {
   relative = relativePath(relative);
@@ -56,7 +58,8 @@ function parseAttestation(root, input) {
   const references = attestation.durableContext.references.map(relativePath);
   for (const reference of references) {
     requireValue(reference.endsWith('.md'), 'Durable context references must be current Markdown documentation');
-    requireValue(!reference.startsWith('docs/features/') && !reference.startsWith('docs/archive/'), 'Durable context cannot rely on the feature being archived');
+    const { features, archive } = workPaths(root);
+    requireValue(!reference.startsWith(`${features}/`) && !reference.startsWith(`${archive}/`), 'Durable context cannot rely on the feature being archived');
     readLocal(root, reference);
   }
   return { schemaVersion: 1, phase: 'session-end', host: { sessionId: attestation.host.sessionId, quiescent: true, activeWorkers: [], dependentWork: [] }, durableContext: { carried: true, references } };
@@ -80,7 +83,7 @@ const isDecisionAnswered = decision => ['clarified', 'assigned'].includes(decisi
  * and after hashes must equal that commit's parent and own brief bytes.
  */
 function briefAmendments(root, feature, briefPath, later) {
-  const recordPath = `${featurePath(feature)}/brief-amendments.json`;
+  const recordPath = `${featurePath(root, feature)}/brief-amendments.json`;
   const changed = `Original requirement changed after acceptance: ${briefPath}`;
   requireValue(existsSync(localPath(root, recordPath, true)), `${changed} (no ${recordPath} records its amendments)`);
   const record = parseJson(readLocal(root, recordPath), recordPath);
@@ -118,7 +121,7 @@ function validateReconciliation(record, feature) {
 
 function readReconciliation(root, feature, file) {
   if (file === undefined) return undefined;
-  requireValue(file === `${featurePath(feature)}/archive-reconciliation.json`, 'Use the feature archive-reconciliation.json for the explicit override');
+  requireValue(file === `${featurePath(root, feature)}/archive-reconciliation.json`, 'Use the feature archive-reconciliation.json for the explicit override');
   const bytes = readLocal(root, file), record = parseJson(bytes, file);
   validateReconciliation(record, feature);
   return { path: file, sha256: sha256(bytes), record, used: new Set() };
@@ -160,7 +163,7 @@ function historicalRequirement(root, feature, input, project, normalizations = [
   const later = gitIn(root, ['log', '--full-history', '--topo-order', '--format=%H', '--reverse', `${accepted}..HEAD`, '--', input.path]).split('\n').filter(Boolean);
   const raw = committedBytes(root, accepted, input.path);
   const record = { path: input.path, normalization: input.normalization ?? 'none', ...(input.scope !== undefined ? { scope: input.scope } : {}), acceptedSha256: input.sha256, acceptedCommit: accepted, restoredSha256: sha256(raw), laterCommits: later };
-  if (input.path === `${featurePath(feature)}/brief.md`) record.amendments = briefAmendments(root, feature, input.path, later);
+  if (input.path === `${featurePath(root, feature)}/brief.md`) record.amendments = briefAmendments(root, feature, input.path, later);
   return record;
 }
 
@@ -199,7 +202,7 @@ function historicalReport(root, queuePath, state, review, { ownerAccepted = fals
   const reviewedSpec = reviewedQueue.specs.find(spec => spec.id === state.spec.id);
   requireValue(reviewedSpec && reviewedSpec.file === state.spec.file && canonical(report.subject.criteria) === canonical(reviewedSpec.verification.criteria), `Accepted report criteria differ from the archived spec: ${reportPath}`);
   const declaredSpecPaths = new Set([...state.queue.specs, ...reviewedQueue.specs].map(spec => path.posix.join(path.posix.dirname(queuePath), spec.file)));
-  for (const required of [state.specPath, `docs/features/${state.queue.feature}/brief.md`, ...report.subject.criteria.map(item => relativePath(item.requirement.path))]) {
+  for (const required of [state.specPath, `${featurePath(root, state.queue.feature)}/brief.md`, ...report.subject.criteria.map(item => relativePath(item.requirement.path))]) {
     requireValue(inputs.some(input => isObject(input) && input.path === required && input.kind === 'requirement' && isSha256(input.sha256)), `Accepted report omits original requirement ${required}: ${reportPath}`);
   }
   const requirement = (input, project) => {
@@ -213,7 +216,7 @@ function historicalReport(root, queuePath, state, review, { ownerAccepted = fals
     const explicit = reconciliation?.record.entries.some(entry => entry.report.path === review.path && entry.path === input.path && entry.normalization === input.normalization);
     if (!history.has(key)) history.set(key, explicit ? reconciledRequirement(root, state, review, input, project, reconciliation) : historicalRequirement(root, state.queue.feature, input, project));
   };
-  for (const input of inputs.filter(input => isObject(input) && input.kind === 'requirement' && (bound !== undefined || input.path.startsWith(`docs/features/${state.queue.feature}/`)))) {
+  for (const input of inputs.filter(input => isObject(input) && input.kind === 'requirement' && (bound !== undefined || input.path.startsWith(`${featurePath(root, state.queue.feature)}/`)))) {
     // The queue was checked above. Only an explicit, hash-bound reconciliation can
     // preserve a changed acceptance record; normal requirement fallback cannot.
     if (input.path === queuePath) {
@@ -278,13 +281,13 @@ function historicalDecision(root, queuePath, state, reconciliation) {
 function fileDigest(root, relative) { return { path: relative, sha256: sha256(readLocal(root, relative)) }; }
 
 function existingArchive(root, feature) {
-  const destination = archivePath(feature);
+  const destination = archivePath(root, feature);
   const manifestPath = `${destination}/archive-replay.json`;
   const manifest = parseJson(readLocal(root, manifestPath), manifestPath);
-  requireValue(isObject(manifest) && manifest.schemaVersion === 1 && manifest.kind === 'joycraft-archive-replay' && manifest.feature === feature && manifest.source === featurePath(feature) && Array.isArray(manifest.files), `Archive destination is not a valid archive for ${feature}: ${destination}`);
+  requireValue(isObject(manifest) && manifest.schemaVersion === 1 && manifest.kind === 'joycraft-archive-replay' && manifest.feature === feature && manifest.source === featurePath(root, feature) && Array.isArray(manifest.files), `Archive destination is not a valid archive for ${feature}: ${destination}`);
   if (manifest.reconciliation !== undefined) {
     const proof = manifest.reconciliation;
-    requireValue(isObject(proof) && proof.path === `${featurePath(feature)}/archive-reconciliation.json` && isSha256(proof.sha256), 'Archived reconciliation metadata is malformed');
+    requireValue(isObject(proof) && proof.path === `${featurePath(root, feature)}/archive-reconciliation.json` && isSha256(proof.sha256), 'Archived reconciliation metadata is malformed');
     validateReconciliation(proof.record, feature);
     const ledger = manifest.files.find(file => file.operation === 'moved' && file.originalPath === proof.path && file.sha256 === proof.sha256);
     requireValue(ledger && sha256(readLocal(root, ledger.archivedPath)) === proof.sha256 && canonical(parseJson(readLocal(root, ledger.archivedPath), proof.path)) === canonical(proof.record), 'Archived reconciliation paper trail is missing or changed');
@@ -318,7 +321,7 @@ function existingArchive(root, feature) {
 export function previewArchiveFeature({ root = process.cwd(), feature, phase, attestation, reconciliation: reconciliationPath }) {
   feature = featureName(feature);
   requireValue(phase === 'session-end', 'Archive is allowed only during phase=session-end');
-  const source = featurePath(feature), destination = archivePath(feature);
+  const source = featurePath(root, feature), destination = archivePath(root, feature);
   const parsedAttestation = parseAttestation(root, attestation);
   if (existsSync(projectTarget(root, destination))) {
     requireValue(!existsSync(projectTarget(root, source)), `Archive destination already exists while live source remains: ${destination}`);
@@ -401,7 +404,7 @@ export function archiveFeature(options) {
   // Revalidate every input immediately before changing paths, so a preview cannot race a writer.
   const fresh = previewArchiveFeature({ ...options, root, apply: false });
   requireValue(canonical({ ...plan, attestation: undefined }) === canonical({ ...fresh, attestation: undefined }), 'Archive inputs changed after preview; rerun the session-end preflight');
-  const stage = `docs/archive/.${plan.feature}.staging-${process.pid}-${Date.now()}`;
+  const stage = `${workPaths(root).archive}/.${plan.feature}.staging-${process.pid}-${Date.now()}`;
   const stageLocal = projectTarget(root, stage), destinationLocal = projectTarget(root, plan.destination), sourceLocal = localDirectory(root, plan.source);
   requireValue(!existsSync(stageLocal) && !existsSync(destinationLocal), 'Archive collision detected before move');
   mkdirSync(stageLocal, { recursive: true, mode: 0o700 });
@@ -435,7 +438,22 @@ export function archiveFeature(options) {
     const recovery = restored ? 'The live feature path was preserved.' : `The staged feature remains at ${stage}; restore it manually before retrying.`;
     throw new Error(`Archive stopped without accepting new completion: ${error.message}. ${recovery}`);
   }
-  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical };
+  const afterArchive = runAfterArchive(root, plan);
+  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(afterArchive ? { afterArchive } : {}) };
+}
+
+/** Run the project's hooks.afterArchive once. Its failure is reported; the archive stands. */
+function runAfterArchive(root, plan) {
+  let command;
+  try { command = readConfig(root).hooks.afterArchive; } catch (error) { return { ran: false, error: error.message }; }
+  if (!command) return null;
+  const result = spawnSync(command, {
+    cwd: root, shell: true, encoding: 'utf8', timeout: 600_000, maxBuffer: 16 * 1024 * 1024,
+    env: { ...process.env, JOYCRAFT_FEATURE: plan.feature, JOYCRAFT_ARCHIVE_PATH: plan.destination, JOYCRAFT_SOURCE_PATH: plan.source },
+  });
+  const tail = text => (text ?? '').split('\n').slice(-20).join('\n').trim();
+  return { ran: true, command, exitCode: result.status, ok: result.status === 0 && !result.error,
+    ...(result.error ? { error: result.error.message } : {}), stdout: tail(result.stdout), stderr: tail(result.stderr) };
 }
 
 function argumentsFor(argv) {
@@ -455,6 +473,8 @@ export function main(argv = process.argv.slice(2)) {
   const flags = argumentsFor(argv);
   const result = archiveFeature({ feature: flags['--feature'], phase: flags['--phase'], attestation: flags['--attestation'], reconciliation: flags['--reconciliation'], apply: flags['--apply'] === true });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  // The archive stands; exit 3 tells a caller that only the after-archive hook failed.
+  if (result.afterArchive && !result.afterArchive.ok) process.exitCode = 3;
   return result;
 }
 
