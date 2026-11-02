@@ -5,7 +5,7 @@ source: David Moshal's field test of 1.0.0 (Codex, then Claude), 2026-11-01
 decisions: [
   {"id":"D1","status":"open","question":"How does a project change where Joycraft keeps working files?","answer":null,"options":[{"value":"config-json","label":"A .joycraft/config.json with paths; defaults stay docs/features and docs/archive (recommended)"},{"value":"rename-default","label":"Also change the default to a non-docs folder, e.g. .joycraft/work/"},{"value":"yaml","label":"joycraft.yaml as David suggested (needs a YAML parser or a YAML subset)"}],"affected":["configurable-paths"]},
   {"id":"D2","status":"open","question":"Do we adopt David's Feature/Spec/Task hierarchy?","answer":null,"options":[{"value":"rename-hierarchy","label":"Yes: Feature (long-lived) / Spec (old feature) / Task (old spec), shipped as 2.0 with a 1.x migration"},{"value":"optional-parent-field","label":"Not yet: optional `parent` field on the brief in 1.x; rename later"},{"value":"defer","label":"Defer"}],"affected":["parent-grouping","unit-archive"]},
-  {"id":"D6","status":"open","question":"Does Joycraft ship wiki governance or only a seam for it?","answer":null,"options":[{"value":"seam-first","label":"Seam first: archive hook + joycraft-cleanup over our own folders; study David's docaudit/doc-governance before shipping a wiki (recommended)"},{"value":"ship-wiki","label":"Ship a wiki layer (OKF + drift anchors + audit script) in Joycraft"},{"value":"seam-only","label":"Seam only; wiki stays bring-your-own"}],"affected":["archive-hook","joycraft-cleanup","feature-wiki"]},
+  {"id":"D6","status":"open","question":"Does Joycraft ship wiki governance or only a seam for it?","answer":null,"options":[{"value":"seam-first","label":"Seam first: archive hook + joycraft-cleanup over our own folders; study David's docaudit/doc-governance before shipping a wiki (recommended)"},{"value":"okf-context","label":"Make docs/context an OKF bundle: archive writes the feature page, log.md and verified/stale_after fields; drift anchors later"},{"value":"ship-wiki","label":"Ship a full wiki layer (OKF + drift anchors + audit script) in Joycraft"},{"value":"seam-only","label":"Seam only; wiki stays bring-your-own"}],"affected":["archive-hook","joycraft-cleanup","feature-wiki"]},
   {"id":"D3","status":"open","question":"Do the spec-to-test checks block completion or only report?","answer":null,"options":[{"value":"report","label":"Report gaps in the review packet; the reviewer decides (recommended)"},{"value":"block","label":"finalize-review refuses a spec with an untraced Check:"}],"affected":["spec-test-trace"]},
   {"id":"D4","status":"open","question":"What do we do with Doc Detective?","answer":null,"options":[{"value":"recipe","label":"Optional review-tools recipe for projects with procedural docs; no dependency (recommended)"},{"value":"skip","label":"Skip"},{"value":"dependency","label":"Bundle it"}],"affected":["doc-detective"]},
   {"id":"D5","status":"open","question":"Version label for this work?","answer":null,"options":[{"value":"split","label":"1.0.1 = fixes (worktrees, coordinator lock, stale status); 1.1.0 = new surface (config, parent, trace) (recommended)"},{"value":"one","label":"All of it as 1.0.1"}],"affected":["release"]}
@@ -67,7 +67,22 @@ Notes:
 - 0.7 had part of this (`joycraft-session-end` wrote a shipped ledger and marked
   briefs `reap: eligible`; see `src/skills/joycraft-session-end.md:99-117`). 1.0
   dropped it. Check what worked there before redesigning.
-- "OKF" is not defined in this brief. Ask David what it refers to; do not guess.
+- **OKF** is Google Cloud's [Open Knowledge Format](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md)
+  (v0.2): a folder of Markdown files with YAML frontmatter. Only `type` is
+  required. Optional fields: `sources` (provenance), `generated {by, at}`,
+  `verified [{by, at}]` (trust tiers: unverified, machine-confirmed,
+  human-reviewed), `status: draft|stable|deprecated` and `stale_after` (an absolute
+  date, so "is this stale?" is a plain comparison). Reserved `index.md` per folder
+  and a `log.md` change history. Actors are `agent/version`, `human:<id>` or
+  `process:<id>`.
+- **Fit with Joycraft is strong.** `docs/context/` could be an OKF bundle with no
+  new dependency (frontmatter subset only). Archiving a unit maps cleanly:
+  update the feature's concept page, append to `log.md`, set
+  `verified: {by: process:joycraft-verify, at}` from the accepted PASS report, and
+  set `generated.by` to the agent. `joycraft-cleanup` can then find stale pages
+  deterministically (`stale_after` passed, `status: deprecated` still linked,
+  missing `sources`). OKF has no drift anchors (md→code); those come from David's
+  `docaudit`.
 - **Action:** accept David's offer of `docaudit` and `doc-governance` and read them
   before deciding D6.
 
@@ -272,7 +287,7 @@ mutation testing (Stryker) stays an opt-in recipe.
   Blocked on D6: `joycraft-cleanup` shape, `feature-wiki`. Blocked on D3:
   `spec-test-trace`. Blocked on D4: `doc-detective`. D5 decides the version
   number; if D2 is the rename, that part is 2.0.
-- Ask David: what OKF means, and for `docaudit` and `doc-governance`.
+- Ask David for `docaudit` and `doc-governance`.
 - Before `coordinator-lock`, ask David for his Codex session layout (how many
   sessions, which skill each ran) to reproduce the leak.
 
