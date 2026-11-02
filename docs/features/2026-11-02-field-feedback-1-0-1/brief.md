@@ -3,12 +3,143 @@ feature: field-feedback-1-0-1
 status: draft
 source: David Moshal's field test of 1.0.0 (Codex, then Claude), 2026-11-01
 decisions: [
-  {"id":"D1","status":"open","question":"How does a project change where Joycraft keeps working files?","answer":null,"options":[{"value":"config-json","label":"A .joycraft/config.json with paths; defaults stay docs/features and docs/archive (recommended)"},{"value":"rename-default","label":"Also change the default to a non-docs folder, e.g. .joycraft/work/"},{"value":"yaml","label":"joycraft.yaml as David suggested (needs a YAML parser or a YAML subset)"}],"affected":["configurable-paths"]},
-  {"id":"D2","status":"open","question":"Do we adopt David's Feature/Spec/Task hierarchy?","answer":null,"options":[{"value":"rename-hierarchy","label":"Yes: Feature (long-lived) / Spec (old feature) / Task (old spec), shipped as 2.0 with a 1.x migration"},{"value":"optional-parent-field","label":"Not yet: optional `parent` field on the brief in 1.x; rename later"},{"value":"defer","label":"Defer"}],"affected":["parent-grouping","unit-archive"]},
-  {"id":"D6","status":"open","question":"Does Joycraft ship wiki governance or only a seam for it?","answer":null,"options":[{"value":"seam-first","label":"Seam first: archive hook + joycraft-cleanup over our own folders; study David's docaudit/doc-governance before shipping a wiki (recommended)"},{"value":"okf-context","label":"Make docs/context an OKF bundle: archive writes the feature page, log.md and verified/stale_after fields; drift anchors later"},{"value":"ship-wiki","label":"Ship a full wiki layer (OKF + drift anchors + audit script) in Joycraft"},{"value":"seam-only","label":"Seam only; wiki stays bring-your-own"}],"affected":["archive-hook","joycraft-cleanup","feature-wiki"]},
-  {"id":"D3","status":"open","question":"Do the spec-to-test checks block completion or only report?","answer":null,"options":[{"value":"report","label":"Report gaps in the review packet; the reviewer decides (recommended)"},{"value":"block","label":"finalize-review refuses a spec with an untraced Check:"}],"affected":["spec-test-trace"]},
-  {"id":"D4","status":"open","question":"What do we do with Doc Detective?","answer":null,"options":[{"value":"recipe","label":"Optional review-tools recipe for projects with procedural docs; no dependency (recommended)"},{"value":"skip","label":"Skip"},{"value":"dependency","label":"Bundle it"}],"affected":["doc-detective"]},
-  {"id":"D5","status":"open","question":"Version label for this work?","answer":null,"options":[{"value":"split","label":"1.0.1 = fixes (worktrees, coordinator lock, stale status); 1.1.0 = new surface (config, parent, trace) (recommended)"},{"value":"one","label":"All of it as 1.0.1"}],"affected":["release"]}
+  {
+  "id": "D1",
+  "status": "clarified",
+  "question": "How does a project change where Joycraft keeps working files?",
+  "answer": "yaml",
+  "options": [
+    {
+      "value": "config-json",
+      "label": "A .joycraft/config.json with paths; defaults stay docs/features and docs/archive (recommended)"
+    },
+    {
+      "value": "rename-default",
+      "label": "Also change the default to a non-docs folder, e.g. .joycraft/work/"
+    },
+    {
+      "value": "yaml",
+      "label": "joycraft.yaml as David suggested (needs a YAML parser or a YAML subset)"
+    }
+  ],
+  "affected": [
+    "configurable-paths"
+  ]
+},
+  {
+  "id": "D2",
+  "status": "clarified",
+  "question": "Do we adopt David's Feature/Spec/Task hierarchy?",
+  "answer": "rename-hierarchy",
+  "options": [
+    {
+      "value": "rename-hierarchy",
+      "label": "Yes: Feature (long-lived) / Spec (old feature) / Task (old spec), shipped as 2.0 with a 1.x migration"
+    },
+    {
+      "value": "optional-parent-field",
+      "label": "Not yet: optional `parent` field on the brief in 1.x; rename later"
+    },
+    {
+      "value": "defer",
+      "label": "Defer"
+    }
+  ],
+  "affected": [
+    "parent-grouping",
+    "unit-archive"
+  ]
+},
+  {
+  "id": "D6",
+  "status": "clarified",
+  "question": "Does Joycraft ship wiki governance or only a seam for it?",
+  "answer": "seam-first",
+  "options": [
+    {
+      "value": "seam-first",
+      "label": "Seam first: archive hook + joycraft-cleanup over our own folders; study David's docaudit/doc-governance before shipping a wiki (recommended)"
+    },
+    {
+      "value": "okf-context",
+      "label": "Make docs/context an OKF bundle: archive writes the feature page, log.md and verified/stale_after fields; drift anchors later"
+    },
+    {
+      "value": "ship-wiki",
+      "label": "Ship a full wiki layer (OKF + drift anchors + audit script) in Joycraft"
+    },
+    {
+      "value": "seam-only",
+      "label": "Seam only; wiki stays bring-your-own"
+    }
+  ],
+  "affected": [
+    "archive-hook",
+    "joycraft-cleanup",
+    "feature-wiki"
+  ]
+},
+  {
+  "id": "D3",
+  "status": "clarified",
+  "question": "Do the spec-to-test checks block completion or only report?",
+  "answer": "report",
+  "options": [
+    {
+      "value": "report",
+      "label": "Report gaps in the review packet; the reviewer decides (recommended)"
+    },
+    {
+      "value": "block",
+      "label": "finalize-review refuses a spec with an untraced Check:"
+    }
+  ],
+  "affected": [
+    "spec-test-trace"
+  ]
+},
+  {
+  "id": "D4",
+  "status": "clarified",
+  "question": "What do we do with Doc Detective?",
+  "answer": "recipe",
+  "options": [
+    {
+      "value": "recipe",
+      "label": "Optional review-tools recipe for projects with procedural docs; no dependency (recommended)"
+    },
+    {
+      "value": "skip",
+      "label": "Skip"
+    },
+    {
+      "value": "dependency",
+      "label": "Bundle it"
+    }
+  ],
+  "affected": [
+    "doc-detective"
+  ]
+},
+  {
+  "id": "D5",
+  "status": "clarified",
+  "question": "Version label for this work?",
+  "answer": "split",
+  "options": [
+    {
+      "value": "split",
+      "label": "1.0.1 = fixes (worktrees, coordinator lock, stale status); 1.1.0 = new surface (config, parent, trace) (recommended)"
+    },
+    {
+      "value": "one",
+      "label": "All of it as 1.0.1"
+    }
+  ],
+  "affected": [
+    "release"
+  ]
+}
 ]
 ---
 # Feature intent
