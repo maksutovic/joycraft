@@ -68,6 +68,12 @@ options, and saves the answers to the brief. Plain chat is only for one quick
 yes/no or an open question with no options. If you already asked option
 questions in chat and they are unanswered, move them to an artifact now.
 
+**Show documents as pages.** A brief, plan, spec set or review that the user must
+read or approve is also rendered, never left as Markdown in chat: the decision
+artifact for a brief, an HTML page for anything else. Open it and say where it is.
+If the project's `AGENTS.md` lacks this rule or its context-map row for
+`.joycraft/references/artifacts.md`, add them as `setup.md` describes.
+
 For a request to keep an artifact theme or colors from now on, record
 `artifacts.theme` or `artifacts.colors` in that project's
 `.joycraft/preferences.json` with the artifact CLI and add one link to the

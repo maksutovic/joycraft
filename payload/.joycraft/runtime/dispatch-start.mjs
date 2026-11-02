@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, realpathSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { readLease } from './coordinator.mjs';
 import { prepareDispatch } from './dispatch-preflight.mjs';
 import { localPath, readQueue, relativePath, requireValue, validateNativeActor } from './identity.mjs';
 
@@ -38,8 +39,14 @@ export async function startDispatch(options, nativeEvent) {
   const rel = path.relative(root, parent);
   requireValue(rel !== '..' && !rel.startsWith(`..${path.sep}`) && !path.isAbsolute(rel), 'Packet output parent must stay inside the worker root');
   requireValue(gitIgnored(root, outPath), `Packet output must be git-ignored so it never becomes a scope path: ${outPath}; use .joycraft/local/packets/`);
-  readQueue({ root, queuePath: options.queuePath, specId: options.specId });
+  const { queue } = readQueue({ root, queuePath: options.queuePath, specId: options.specId });
   requireValue(options.role === 'implementer' || options.role === 'reviewer', 'Task startup role must be implementer or reviewer');
+  // A claimed queue takes work only from its coordinator, so a second session's
+  // instructions cannot reach this worker. An unclaimed queue keeps 1.0.0 behavior.
+  const lease = readLease(root, queue.feature);
+  requireValue(!lease || options.coordinatorSession === lease.sessionId,
+    lease && `Queue ${queue.feature} is coordinated by session ${lease.sessionId}${lease.host ? ` on ${lease.host}` : ''}; pass --coordinator-session ${lease.sessionId} only when that session dispatched this task`);
+  const coordinator = lease ? { sessionId: lease.sessionId, ...(lease.host ? { host: lease.host } : {}) } : null;
   // Change scope is opt-in per spec: startup never writes it, and a reviewer
   // without one reviews against the verification inputs alone.
   const packet = prepareDispatch({ ...options, outPath: output });
@@ -48,7 +55,7 @@ export async function startDispatch(options, nativeEvent) {
   const hooks = config.enabled
     ? { enabled: true, ...await runtime.bindPreparedSource({ event: nativeEvent, packetPath: outPath }) }
     : { enabled: false, eligible: false, reason: runtime ? 'hooks-disabled' : 'hooks-not-installed' };
-  return { schemaVersion: 1, packetPath: outPath, packet, hooks,
+  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator,
     ready: !config.enabled || hooks.eligible === true };
 }
 
@@ -66,7 +73,7 @@ export async function main(argv = process.argv.slice(2)) {
   const flags = {};
   const allowed = new Set(['--worker-root', '--expected-manifest', '--queue', '--spec', '--role', '--implementer-session',
     '--implementer-host', '--implementer-agent', '--out', '--brief', '--capabilities', '--coordinator', '--parallel',
-    '--access', '--base-revision', '--native-session', '--native-agent', '--native-host']);
+    '--access', '--base-revision', '--native-session', '--native-agent', '--native-host', '--coordinator-session']);
   for (let index = 0; index < argv.length; index += 2) {
     const key = argv[index]; const value = argv[index + 1];
     requireValue(allowed.has(key) && typeof value === 'string' && value && !value.startsWith('--') && flags[key] === undefined,
@@ -86,6 +93,7 @@ export async function main(argv = process.argv.slice(2)) {
     outPath: flags['--out'], briefPath: flags['--brief'], availableCapabilities: flags['--capabilities'].split(',').filter(Boolean),
     coordinatorRoot: flags['--coordinator'], parallel: flags['--parallel'] === undefined ? undefined : flags['--parallel'] === 'true',
     access: flags['--access'], baseRevision: flags['--base-revision'], nativeHost: flags['--native-host'],
+    coordinatorSession: flags['--coordinator-session'],
   }, { cwd: flags['--worker-root'], session_id: flags['--native-session'], ...(flags['--native-agent'] ? { agent_id: flags['--native-agent'] } : {}) });
   const { packet, ...status } = result;
   process.stdout.write(`${JSON.stringify(status, null, 2)}\n`);

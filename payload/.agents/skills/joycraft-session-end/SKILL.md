@@ -29,10 +29,14 @@ If a completion operation failed or was interrupted, do not declare success or h
 
 Leave enough project-relative paths and next actions for another session to resume the autonomous ready authorized queue without recreating settled context or decisions.
 
-Before ending the session, retain failed or blocked worker trees and their
-diagnostic state. Release worker trees and project-owned resource leases only
-after their changes are integrated and accepted through the required review and
-completion path. See [worker isolation](../../../.joycraft/references/worktrees.md)
+Before ending the session, run `node .joycraft/runtime/status.mjs`. Repair
+lagging frontmatter of accepted specs with `--fix`; report any other drift and
+any feature listed as ready to archive. Then preview
+`node .joycraft/runtime/worktrees.mjs prune` and apply it with `--apply`: it
+removes only clean, integrated trees of done specs and keeps failed, blocked or
+unknown trees with their reason. Report kept trees and their size from `list`.
+When this session coordinated a queue and no work on it remains, release the
+lease with `node .joycraft/runtime/coordinator.mjs release --queue <queue> --session <your-session-id>`. See [worker isolation](../../../.joycraft/references/worktrees.md)
 when the session used parallel mutable workers.
 
 When an `UNVERIFIED` review identifies only an environment condition, record

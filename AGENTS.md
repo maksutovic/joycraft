@@ -18,6 +18,7 @@
 - Open a PR when all specs in a feature are complete
 - Run `/release-docs-sync` before `gh pr create` — a PR that touches `src/`, `templates/`, or `scripts/` must change CHANGELOG.md or carry a `Docs: none — <reason>` line in its body; a PreToolUse hook and the Docs Sync CI check both run `scripts/check-docs-sync.mjs` and block otherwise
 - Use descriptive branch names: feature/spec-name
+- Show Max every document he must read, review or answer (brief, plan, spec set, review, questions) as a rendered page, never only as Markdown in chat: the decision artifact (`node payload/.joycraft/runtime/artifacts/cli.mjs serve --brief <brief.md> --view <artifact.json>`) for a brief or questions, an HTML artifact for anything else. Open it for Max.
 
 ### ASK FIRST
 - Adding dependencies — this is a CLI tool, keep it minimal
@@ -187,4 +188,5 @@ Keep this file lean — link out, don't inline. Long-form reference docs live in
 
 | Document | Read it when… |
 |----------|---------------|
+| `payload/.joycraft/references/artifacts.md` | Showing Max a brief, plan, review or questions — render the decision artifact |
 | `docs/templates/reference/model-profile-claude-fable-5-1.md` | Working with Claude Fable 5.1 — finishing whole tasks, scope, progress updates, prose |

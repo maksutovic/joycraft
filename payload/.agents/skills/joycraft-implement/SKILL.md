@@ -37,8 +37,20 @@ report why, and continue unrelated authorized or manual/disabled workflow.
 
 If existing independent reports reveal a possible recurring failure, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md) before carrying it forward: inspect the current scoped sources and actual counterpart path or journey, then provide any proposed lesson as exact inputs through the existing dispatch flow. A verified repair may establish its local project fact; a broader method benefit remains pending later reuse.
 
+Before the first dispatch, claim the queue as its coordinator with your actual
+host session ID, and pass that ID as `--coordinator-session` to every startup:
+
+```sh
+node .joycraft/runtime/coordinator.mjs claim --queue <queue> --session <your-session-id> --host <host>
+```
+
+If another session holds the queue, stop and report the holder; take it over
+with `--take-over` only when the user says that session has ended.
+
 For a spec marked `execution.parallel: true`, use a separate linked worktree for
-each concurrent mutator, including its build/cache state. Its first action is
+each concurrent mutator, including its build/cache state. Create it with
+`node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <your-session-id>`
+when the host has no native worktree isolation; never invent another folder. Its first action is
 the documented project bootstrap, before edits, stateful runtime work, or packet
 preparation. Dispatch from its actual root. Read [worker isolation](../../../.joycraft/references/worktrees.md)
 when parallel work, integration, cleanup, or resource capacity is in play. If

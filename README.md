@@ -49,6 +49,9 @@ bigger than one quick change:
    installed those tools in step 4 of the install.
 5. **The agent wraps up.** It records what it learned for the next session.
 
+You do not need to call the Joycraft skills by name. Describe the work and the agent
+picks the right step.
+
 On a new, empty project, the agent first asks what you want to build. It writes your
 answers to `docs/context/project.md`. It does not choose a stack or write app code at
 this step.
@@ -74,6 +77,30 @@ The map grows with the project:
 You can feed it too. Give your agent meeting notes, a photo of a whiteboard or a
 screenshot, and ask it to add what matters to the project context. This gives the
 agent both views: the whole project and the detail of the current step.
+
+### What in `docs/` is current
+
+- **`docs/context/` is current.** It holds what the project is and the decisions you
+  made. The agent keeps it up to date.
+- **`docs/features/` is working material.** Briefs and specs record the plan for one
+  piece of work. They can be out of date while the work runs. The spec queue
+  (`.joycraft-spec-queue.json`) is the status of record, not the text.
+- **`docs/archive/` is history.** Finished features move there.
+
+Joycraft does not ship a wiki. If you keep one, link it from the context map, and
+treat `docs/features/` and `docs/archive/` as non-authoritative in your doc audits.
+
+### Keeping the workspace clean
+
+At the end of a session the agent runs three checks for you:
+
+- `node .joycraft/runtime/status.mjs` finds specs whose text disagrees with the queue,
+  and features that are finished but not archived.
+- `node .joycraft/runtime/worktrees.mjs prune` removes the agent's worker worktrees
+  once their spec is done and merged. It keeps anything unfinished, unmerged or not
+  made by Joycraft, and says why. `worktrees.mjs list` shows what is left and its size.
+- `node .joycraft/runtime/coordinator.mjs` keeps one coordinating session per queue,
+  so a second session's instructions do not reach the first session's workers.
 
 ## Answering questions: the decision page
 
