@@ -1,6 +1,6 @@
 ---
 feature: field-feedback-1-0-1
-status: draft
+status: shipped
 source: David Moshal's field test of 1.0.0 (Codex, then Claude), 2026-11-01
 decisions: [
   {

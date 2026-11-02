@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { closeSync, existsSync, mkdirSync, openSync, readFileSync, realpathSync, rmSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { isObject, nonempty, parseJson, readLocal, relativePath, requireValue, validateQueue } from './identity.mjs';
@@ -25,21 +25,44 @@ export function leasePath(root, feature) {
   return path.join(mainTree(root), leaseRelative(feature));
 }
 
+function lockIsStale(lock, waitMs) {
+  const pid = Number(readFileSync(lock, 'utf8'));
+  if (!Number.isInteger(pid) || pid <= 0) return Date.now() - statSync(lock).mtimeMs > waitMs;
+  try { process.kill(pid, 0); return false; } catch (error) { return error.code === 'ESRCH'; }
+}
+
+// Waiters that see a stale lock take turns through a guard file, so two of them
+// cannot both remove it and one remove the other's new lock.
+function takeOver(lock, waitMs) {
+  const guard = `${lock}.takeover`;
+  try { writeFileSync(guard, String(process.pid), { flag: 'wx' }); } catch (error) {
+    if (error.code !== 'EEXIST') throw error;
+    try { if (Date.now() - statSync(guard).mtimeMs > waitMs) rmSync(guard, { force: true }); } catch { /* another waiter removed it */ }
+    return;
+  }
+  try { if (lockIsStale(lock, waitMs)) unlinkSync(lock); } catch { /* the holder released it */ } finally { rmSync(guard, { force: true }); }
+}
+
 /** Serialize a read-modify-write of a small local record with an exclusive lock file. */
 export function withLock(file, action, { waitMs = 5000 } = {}) {
   const lock = `${file}.lock`;
   mkdirSync(path.dirname(file), { recursive: true });
   const deadline = Date.now() + waitMs;
   for (;;) {
-    try { closeSync(openSync(lock, 'wx')); break; } catch (error) {
+    try { writeFileSync(lock, String(process.pid), { flag: 'wx' }); break; } catch (error) {
       if (error.code !== 'EEXIST') throw error;
-      // A lock older than the wait limit belongs to a process that died mid-write.
-      try { if (Date.now() - statSync(lock).mtimeMs > waitMs) { unlinkSync(lock); continue; } } catch { continue; }
+      // The lock names its holder. Take it over only when that process is gone, or,
+      // for a lock with no readable holder, when it is older than the wait limit.
+      let stale = false;
+      try { stale = lockIsStale(lock, waitMs); } catch { continue; }
+      if (stale) { takeOver(lock, waitMs); continue; }
       requireValue(Date.now() < deadline, `Another Joycraft process holds ${path.basename(lock)}; try again`);
       Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 25);
     }
   }
-  try { return action(); } finally { rmSync(lock, { force: true }); }
+  try { return action(); } finally {
+    try { if (readFileSync(lock, 'utf8') === String(process.pid)) unlinkSync(lock); } catch { /* already gone */ }
+  }
 }
 
 /** No lease can exist for a feature name that is not a slug, so 1.0.0 queues keep working. */

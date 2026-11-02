@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-09-23
+last_updated: 2026-11-02
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -102,6 +102,8 @@ last_updated_by: Maximilian Maksutovic
 | 2026-03-23 | Section-level CLAUDE.md merging over full replacement | Users customize their CLAUDE.md — overwriting destroys their work | Full replacement (loses user content), manual merge (users won't do it) | If merge logic becomes too complex to maintain reliably |
 | 2026-03-23 | Copy skills as files, not symlinks | Skills must work after `npx joycraft init` without Joycraft installed | Symlinks (breaks without Joycraft), npm postinstall (fragile) | If skill updates become a major pain point (upgrade command mitigates this) |
 | 2026-03-23 | Commander for CLI arg parsing | Minimal, stable, zero transitive deps — fits "keep it minimal" principle | yargs (heavier), meow (less maintained), raw process.argv (too manual) | If we need subcommand plugins or complex arg validation |
+| 2026-11-02 | Field feedback D5: split David Moshal's feedback into 1.0.1 (fixes: worktree prune, coordinator lease, status drift, rendered-documents rule) and 1.1.0 (new surface: joycraft.yaml, after-archive hook, joycraft-cleanup, [AC:id] trace) | Fixes to 1.0.0 behavior should ship without waiting for new surface | One 1.1 release; one 1.0.1 with everything | A field report shows a fix blocked behind new surface |
+| 2026-11-02 | Field feedback D6: wiki governance is a seam (after-archive hook + report-only cleanup with an impact map), not a built-in wiki; D2: Feature/Spec/Task rename and per-unit archive wait for 2.0 | OKF and docaudit already exist; Joycraft gives them a place to run. A rename breaks every installed queue | Build an OKF wiki in 1.1; adopt docaudit as a dependency | A second field user needs the wiki itself, or 2.0 planning starts |
 
 ## Principles
 

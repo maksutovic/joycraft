@@ -16,7 +16,9 @@ export const defaults = Object.freeze({
 function scalar(text, line) {
   const value = text.trim();
   if (value === '') return null;
-  if (/^"(?:[^"\\]|\\.)*"$/.test(value)) return JSON.parse(value);
+  if (/^"(?:[^"\\]|\\.)*"$/.test(value)) {
+    try { return JSON.parse(value); } catch { throw new Error(`${configFile} line ${line}: a double-quoted value has an escape YAML does not allow here: ${value}`); }
+  }
   if (/^'(?:[^']|'')*'$/.test(value)) return value.slice(1, -1).replaceAll("''", "'");
   requireValue(!/^["']/.test(value), `${configFile} line ${line}: a quoted value must end with its closing quote and nothing after it: ${value}`);
   if (/^\[.*\]$/.test(value)) {

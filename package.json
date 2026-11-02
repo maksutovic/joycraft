@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -13,8 +13,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.1.0",
-    "summary": "Adds joycraft.yaml (folders, an after-archive hook, a code-to-docs map), joycraft-cleanup for stale docs, and [AC:id] test tags the reviewer traces.",
+    "release": "1.1.1",
+    "summary": "Fixes from the 1.0.1 and 1.1 re-reviews: cleanup reads code fences correctly, trace reads folders like tests/[slug], prune skips the tree it runs from, and stale locks are taken over safely.",
     "autoSafeEligible": false
   },
   "scripts": {

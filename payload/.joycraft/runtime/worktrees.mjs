@@ -66,7 +66,7 @@ export function createWorktree({ root = process.cwd(), queuePath, specId, sessio
   });
 }
 
-function linkedTrees(root) {
+function linkedTrees(root, here = root) {
   const blocks = git(root, ['worktree', 'list', '--porcelain']).split(/\n\n+/).filter(Boolean);
   const trees = blocks.map(block => {
     const tree = {};
@@ -76,8 +76,8 @@ function linkedTrees(root) {
     }
     return tree;
   });
-  // The first entry is the main working tree; the coordinator never prunes itself.
-  return trees.slice(1).filter(tree => !existsSync(tree.worktree) || realpathSync(tree.worktree) !== root);
+  // The first entry is the main working tree; the tree prune runs from is never listed.
+  return trees.slice(1).filter(tree => !existsSync(tree.worktree) || realpathSync(tree.worktree) !== here);
 }
 
 function sizeOf(target) {
@@ -113,12 +113,14 @@ function evidenceOnlyHere(root, tree, spec) {
 
 /** Every linked tree with its owner, spec status, merged and clean state. */
 export function listWorktrees({ root = process.cwd(), into = 'HEAD', sizes = true } = {}) {
-  root = gitRoot(root);
+  const main = gitRoot(root);
+  const here = realpathSync(git(root, ['rev-parse', '--show-toplevel']).trim());
+  root = main;
   const ledger = readLedger(root);
   const owned = new Map(ledger.trees.map(entry => [path.resolve(root, entry.path), entry]));
   const queues = new Map();
   const seen = new Set();
-  const trees = linkedTrees(root).map(tree => {
+  const trees = linkedTrees(root, here).map(tree => {
     const absolute = existsSync(tree.worktree) ? realpathSync(tree.worktree) : tree.worktree;
     const entry = owned.get(absolute) ?? owned.get(tree.worktree);
     if (entry) seen.add(entry.path);
@@ -137,11 +139,11 @@ export function listWorktrees({ root = process.cwd(), into = 'HEAD', sizes = tru
     if (sizes) record.bytes = exists ? sizeOf(absolute) : 0;
     return record;
   });
-  const missing = ledger.trees.filter(entry => !seen.has(entry.path)).map(entry => ({ path: entry.path, branch: entry.branch, owner: 'joycraft', feature: entry.feature, specId: entry.specId, exists: false, missing: true }));
+  const missing = ledger.trees.filter(entry => !seen.has(entry.path) && path.resolve(root, entry.path) !== here).map(entry => ({ path: entry.path, branch: entry.branch, owner: 'joycraft', feature: entry.feature, specId: entry.specId, exists: false, missing: true }));
   return { root, into, trees: [...trees, ...missing] };
 }
 
-function decide(tree) {
+export function decide(tree) {
   if (tree.owner === 'joycraft' && !tree.exists) return { action: 'forget', reason: 'Recorded tree no longer exists; drop the ledger entry.' };
   if (tree.owner !== 'joycraft') return { action: 'keep', reason: 'Not created by worktrees.mjs; inspect it, then remove it with git worktree remove if it is yours.' };
   if (tree.specStatus !== 'done') return { action: 'keep', reason: `Spec ${tree.specId} is ${tree.specStatus}; keep the tree until it is done.` };
