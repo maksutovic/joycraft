@@ -118,7 +118,7 @@ describe('release verification', () => {
     expect(result.freshInstall).toBe(true);
     expect(result.previousVersionUpdate).toBe(true);
     expect(calls).toHaveLength(6);
-    expect(calls[3].args.slice(-1)).toEqual(['init']);
+    expect(calls[3].args.slice(-3)).toEqual(['init', '.', '--yes']);
     expect(calls[5].args.slice(-5)).toEqual(['update', '.', '--migrate', '--archive-custom', '--yes']);
     expect(calls.every(call => call.args.includes('--prefer-online'))).toBe(true);
     expect(calls.every(call => call.args.includes('--cache'))).toBe(true);

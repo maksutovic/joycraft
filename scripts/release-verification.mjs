@@ -299,7 +299,8 @@ export async function verifyConsumerInstallations({
   attempts = 2,
   executable = packageName,
   initArgs = ['init', '.', '--harness', 'claude,codex', '--yes'],
-  previousInitArgs = ['init'],
+  // Since 1.0, init without --yes only previews and exits 1.
+  previousInitArgs = ['init', '.', '--yes'],
   // The prior release is 0.7.x: updating its fresh install is the 0.7 → 1.0
   // migration. Its fixture holds only files the prior package generated.
   updateArgs = ['update', '.', '--migrate', '--archive-custom', '--yes'],
