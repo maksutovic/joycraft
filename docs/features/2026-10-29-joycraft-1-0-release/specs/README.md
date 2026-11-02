@@ -59,3 +59,18 @@ Specs in one wave are independent by dependency. Parallel runs still need disjoi
 - Phase 4 starts after a new `field-N` tag that includes phases 1–3. Spec 17 ships from `main` as 0.7.18 and needs Max's approval to merge.
 - Live host specs (6–9) use the subscription logins on this Mac, not API keys.
 - Only Max merges `release/1.0` to `main`; that merge publishes 1.0.0.
+
+## Status after release (2026-11-02)
+
+`joycraft@1.0.0` shipped from PR #81 on 2026-10-30, and 1.0.1 followed from PR #82.
+Specs marked `done` shipped in 1.0.0. They were accepted through the release PR and
+live host smoke runs on Claude, Codex, Pi and Oh My Pi. Still open:
+
+- **4 guard-foreground-wait-loops:** `todo`. 1.0 ships no hooks, so the hook this
+  spec describes was not built. The rule ships as instructions only (implementer
+  agent, `references/testing.md`). Rescope or close.
+- **9 certify-copilot-and-opencode-hosts:** `todo`. Blocked on the Copilot CLI policy
+  at github.com/settings/copilot and an `opencode auth login` subscription.
+- **17 ship-final-0-7-nudge:** `todo`.
+- **22 add-new-project-kickoff:** `in-review`. AC7, the kickoff trial in a real new
+  project, is pending.

@@ -10,14 +10,14 @@
       "id": 1,
       "file": "resolve-hook-paths-from-project-root.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
       "id": 2,
       "file": "record-runtime-failure-detail.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -26,7 +26,7 @@
       "depends_on": [
         2
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -42,7 +42,7 @@
       "id": 5,
       "file": "add-data-loss-labels-and-escape-script.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -51,7 +51,7 @@
       "depends_on": [
         1
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "isolated"
     },
     {
@@ -60,7 +60,7 @@
       "depends_on": [
         6
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -69,7 +69,7 @@
       "depends_on": [
         6
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -93,7 +93,7 @@
         21,
         22
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "isolated"
     },
     {
@@ -102,7 +102,7 @@
       "depends_on": [
         10
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -111,7 +111,7 @@
       "depends_on": [
         11
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "isolated"
     },
     {
@@ -120,7 +120,7 @@
       "depends_on": [
         12
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -129,7 +129,7 @@
       "depends_on": [
         13
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "isolated"
     },
     {
@@ -138,7 +138,7 @@
       "depends_on": [
         14
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -148,7 +148,7 @@
         14,
         15
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -168,7 +168,7 @@
         21,
         22
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -180,7 +180,7 @@
         21,
         22
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -192,14 +192,14 @@
         19,
         23
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
       "id": 21,
       "file": "set-up-review-loop-verification-tools.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint"
     },
     {
@@ -216,7 +216,7 @@
         12,
         17
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint"
     }
   ]
