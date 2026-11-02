@@ -18,7 +18,7 @@
 - Open a PR when all specs in a feature are complete
 - Run `/release-docs-sync` before `gh pr create` — a PR that touches `src/`, `templates/`, or `scripts/` must change CHANGELOG.md or carry a `Docs: none — <reason>` line in its body; a PreToolUse hook and the Docs Sync CI check both run `scripts/check-docs-sync.mjs` and block otherwise
 - Use descriptive branch names: feature/spec-name
-- Show Max every document he must read, review or answer (brief, plan, spec set, review, questions) as a rendered page, never only as Markdown in chat: the decision artifact (`node payload/.joycraft/runtime/artifacts/cli.mjs serve --brief <brief.md> --view <artifact.json>`) for a brief or questions, an HTML artifact for anything else. Open it for Max.
+- Show Max every document to read, review or answer (brief, plan, spec set, review, questions) as a rendered page, never only as Markdown in chat: the decision artifact (`node payload/.joycraft/runtime/artifacts/cli.mjs serve --brief <brief.md> --view <artifact.json>`) for a brief or questions, an HTML artifact for anything else. Open it for Max.
 
 ### ASK FIRST
 - Adding dependencies — this is a CLI tool, keep it minimal
