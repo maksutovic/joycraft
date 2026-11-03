@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -13,8 +13,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.2.1",
-    "summary": "Joycraft asks questions your way: one at a time or as a page, in chat or on the decision page, set at setup and changeable per feature; each question gives context, options with an example and a trade-off, and a recommendation.",
+    "release": "1.2.2",
+    "summary": "The README describes the 1.2 review loop, the install prompt shows what setup found, and an update names what is new and offers the question style.",
     "autoSafeEligible": false
   },
   "scripts": {

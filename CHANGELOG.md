@@ -7,6 +7,26 @@ claim that a release has shipped.
 
 ---
 
+## 1.2.2 — The README catches up
+
+1.2.0 changed the review loop, but the README still described the old one, and an
+update did not tell existing users what was new.
+
+### What's new
+
+- **README: The review loop.** A new section: setup finds each package's own review
+  tool, a gap gets one recommendation, agreed limits are not `UNVERIFIED`, "skip
+  review" waives one feature, and a broken tool holds one spec.
+- **Install prompt step 4** shows the review loop that setup found, and runs the
+  plan only if setup did not.
+- **Updates name what is new.** After a minor or migration update, the agent names
+  what you can now do, one line per release, and asks for your question style when
+  none is recorded.
+
+Payload: joycraft-prototype `field-17`.
+
+---
+
 ## 1.2.1 — Questions your way
 
 David Moshal's `questions-dm` skill asks one question at a time, gives the context

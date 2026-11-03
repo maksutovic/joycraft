@@ -28,7 +28,12 @@ Use the version from `latest`:
    migration plan and stops: show the plan and follow its steps with the user. Never
    apply a migration without the user's yes.
 3. Run `npx joycraft@<latest> doctor .`.
-4. Tell the user in plain words what is different now.
+4. Tell the user in plain words what is different now. For a `minor` or
+   `migration`, name what the user can now do or say, one line per release since
+   the old version, from the release summaries the check listed (and the
+   changelog, when you can read it). When
+   `node .joycraft/runtime/artifacts/cli.mjs questions` prints `unset: true`,
+   ask for the question style now, as [setup](setup.md) step 2 says.
 5. Run the review-loop plan
    ([review loop tools](setup.md#review-loop-tools)). When it prints
    `Review loop unchanged.`, say nothing about it. When it reports a newly

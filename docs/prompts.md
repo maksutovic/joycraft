@@ -15,9 +15,10 @@ Install Joycraft in this project.
    docs, interview me about what the repo cannot tell you, then show me the
    AGENTS.md and CLAUDE.md changes on a page before you write them. If the project
    is new or empty, ask me what I want to build.
-4. Run `node .joycraft/runtime/review-tools.mjs plan --root .`. Tell me which tools
-   you need to check your own work, which ones I have, and which ones are missing.
-   Ask me before you install anything.
+4. Show me the review loop that setup found: for each package, the tool that
+   checks it and what that tool can show. If setup did not do this, run
+   `node .joycraft/runtime/review-tools.mjs plan --root .`. Ask me before you
+   install anything.
 Do not commit, publish, or ask me for API keys.
 ```
 
