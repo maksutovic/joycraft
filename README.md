@@ -23,9 +23,10 @@ Install Joycraft in this project.
    docs, interview me about what the repo cannot tell you, then show me the
    AGENTS.md and CLAUDE.md changes on a page before you write them. If the project
    is new or empty, ask me what I want to build.
-4. Run `node .joycraft/runtime/review-tools.mjs plan --root .`. Tell me which tools
-   you need to check your own work, which ones I have, and which ones are missing.
-   Ask me before you install anything.
+4. Show me the review loop that setup found: for each package, the tool that
+   checks it and what that tool can show. If setup did not do this, run
+   `node .joycraft/runtime/review-tools.mjs plan --root .`. Ask me before you
+   install anything.
 Do not commit, publish, or ask me for API keys.
 ```
 
@@ -47,8 +48,8 @@ bigger than one quick change:
 3. **The agent builds each spec with tests.**
 4. **A second agent checks each spec.** It did not write the code. It reads the spec,
    runs the checks, and says PASS or FAIL. Only a PASS completes the spec. For a
-   screen or page, it looks at the real result in a browser or simulator, if you
-   installed those tools in step 4 of the install.
+   screen or page, it looks at the real result with the package's review tool
+   (see [The review loop](#the-review-loop)).
 5. **The agent wraps up.** It records what it learned for the next session.
 
 You do not need to call the Joycraft skills by name. Describe the work and the agent
@@ -163,6 +164,35 @@ If your docs are step-by-step procedures, the agent can offer
 [Doc Detective](https://docs.doc-detective.com) to run them as tests. It is opt-in:
 the agent says what it does not cover and installs nothing without your yes.
 
+## The review loop
+
+The reviewing agent needs a tool that shows the real result: a browser for a web
+app, a simulator for a mobile app, an HTTP check for an API. Joycraft decides what
+counts as evidence; your project keeps its own tools.
+
+- **Setup finds your tools.** For each package it looks for the tool you already
+  use (Playwright, Cypress, WebdriverIO, Maestro, Newman, an e2e script, a CI job
+  and others) and records one row per package in AGENTS.md, with what that tool can
+  show. Tools that belong to this machine, such as your agent's built-in browser, go
+  to `.joycraft/local/`. Packages that are not declared workspaces are found too, or
+  name them with `--packages`.
+- **A gap gets one recommendation.** If a package has no tool, the agent recommends
+  one with its trade-offs and offers to look at others. It installs only on your yes,
+  and never with `sudo`, a licence or a sign-in. A project with no app records that
+  once and is not asked again.
+- **Limits you agreed to are not failures.** A claim the recorded tool cannot show,
+  or a package you skipped, is reported as a limit. `UNVERIFIED` means a check that
+  should have run and did not.
+- **Skipping review for one feature.** Say "skip review" in the feature interview.
+  The feature's `waiver.json` records your words, and no reviewer runs for it. A
+  waiver never hides a FAIL, and a new install keeps every check on.
+- **A broken tool holds one spec.** If the browser or server breaks, the agent
+  tries one repair (restart, free the port, relaunch). Then it holds that spec as
+  `UNVERIFIED`, tells you, and keeps the rest of the queue going.
+
+After an update, the agent checks the review loop again and asks only about what
+changed.
+
 ## Answering questions: the decision page
 
 When the agent needs you to choose between options, it asks in your question
@@ -215,7 +245,9 @@ day. The check sends no project data. If there is a new version, the agent tells
 whether it is a patch, a minor release or a migration, lists each release since
 yours, and asks: update now, not now, or turn off. Automatic updates apply only
 patches. On a yes, it does the update
-for you, checks the result, and tells you what is different. A new major version is
+for you, checks the result, and tells you what is different. After a minor release
+it names what you can now do, and asks how you want questions if you have not said
+yet. A new major version is
 always your choice.
 
 This is an instruction the agent follows, so it can forget. To check yourself, ask:
