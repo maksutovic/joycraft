@@ -2,11 +2,145 @@
 feature: install-entry-files
 status: draft
 decisions: [
-  {"id":"writer","status":"open","question":"Who writes the Joycraft lines into AGENTS.md and CLAUDE.md on install?","answer":null,"options":[{"value":"cli-block","label":"The CLI, every install and update","description":"init and update write a marked Joycraft block. Same result on every host, no agent needed. The agent still fills the project's own context-map rows."},{"value":"agent-only","label":"The agent, as today","description":"Only setup.md tells the agent to add them. Today's install test shows this gets skipped."},{"value":"custom","label":"Something else","description":"Describe what you want instead.","requiresNote":true}],"affected":["entry-block","claude-import"]},
-  {"id":"map","status":"open","question":"What should the install do with the project's context map?","answer":null,"options":[{"value":"create-if-missing","label":"Create one only if there is none","description":"No map: add an empty `## Context Map` table with the Joycraft rows. Existing map: leave it alone; the Joycraft block links the Joycraft references."},{"value":"rows-into-existing","label":"Also add rows to an existing map","description":"Parse the user's table and append Joycraft rows. More reach, but it edits a user-owned table."},{"value":"custom","label":"Something else","description":"Describe what you want instead.","requiresNote":true}],"affected":["entry-block"]},
-  {"id":"claude","status":"open","question":"How should CLAUDE.md reach AGENTS.md when Claude Code is a selected host?","answer":null,"options":[{"value":"import-line","label":"Add `@AGENTS.md` at the top","description":"Create CLAUDE.md as the import pointer if it is missing; add the import to an existing one only if it has no equivalent. User content stays below."},{"value":"own-block","label":"Put a copy of the Joycraft block in CLAUDE.md","description":"Works without the import, but two copies can drift (the 2026-07-16 decision rejected this)."},{"value":"custom","label":"Something else","description":"Describe what you want instead.","requiresNote":true}],"affected":["claude-import"]},
-  {"id":"trim","status":"open","question":"How far should Joycraft go with an AGENTS.md that is already too long?","answer":null,"options":[{"value":"report-and-propose","label":"Report it, propose moves, apply on your yes","description":"cleanup flags it; the cleanup skill proposes moving file tables, folder trees and workflow sections to a linked context page. Rules are never touched."},{"value":"report-only","label":"Report it only","description":"cleanup flags size and dead pointers; the user trims by hand."},{"value":"custom","label":"Something else","description":"Describe what you want instead.","requiresNote":true}],"affected":["cleanup-checks","trim-rule"]},
-  {"id":"release","status":"open","question":"Which version ships this?","answer":null,"options":[{"value":"1.2.0","label":"1.2.0","description":"Install now writes to user files, so a minor version and a CHANGELOG entry that says so."},{"value":"1.1.2","label":"1.1.2","description":"Treat it as a fix for the 1.0 regression."},{"value":"custom","label":"Something else","description":"Describe what you want instead.","requiresNote":true}],"affected":["release"]}
+  {
+  "id": "writer",
+  "status": "clarified",
+  "question": "Who writes the Joycraft lines into AGENTS.md and CLAUDE.md on install?",
+  "answer": "custom",
+  "options": [
+    {
+      "value": "cli-block",
+      "label": "The CLI, every install and update",
+      "description": "init and update write a marked Joycraft block. Same result on every host, no agent needed. The agent still fills the project's own context-map rows."
+    },
+    {
+      "value": "agent-only",
+      "label": "The agent, as today",
+      "description": "Only setup.md tells the agent to add them. Today's install test shows this gets skipped."
+    },
+    {
+      "value": "custom",
+      "label": "Something else",
+      "description": "Describe what you want instead.",
+      "requiresNote": true
+    }
+  ],
+  "affected": [
+    "entry-block",
+    "claude-import"
+  ],
+  "note": "both of these suggestions are insufficent: the CLI has no context or information what the project is, the agent DOES, the agent shoul very easily be able to write this after an interview with the user after they paste the installation prompt, setup.md is not sufficent there should be plenty of ways for the agent to see if joycraft instructions are embedded into AGENTS.md either automatically or by evoking some manual joycraft skill"
+},
+  {
+  "id": "map",
+  "status": "clarified",
+  "question": "What should the install do with the project's context map?",
+  "answer": "rows-into-existing",
+  "options": [
+    {
+      "value": "create-if-missing",
+      "label": "Create one only if there is none",
+      "description": "No map: add an empty `## Context Map` table with the Joycraft rows. Existing map: leave it alone; the Joycraft block links the Joycraft references."
+    },
+    {
+      "value": "rows-into-existing",
+      "label": "Also add rows to an existing map",
+      "description": "Parse the user's table and append Joycraft rows. More reach, but it edits a user-owned table."
+    },
+    {
+      "value": "custom",
+      "label": "Something else",
+      "description": "Describe what you want instead.",
+      "requiresNote": true
+    }
+  ],
+  "affected": [
+    "entry-block"
+  ],
+  "note": "this is the most critical part of joycraft, without it or a good understanding of how it works, this library is useless, your approach feels like you don't quite understand the context map or are unsure of it's use or how to use it, you must confirm with me you understand this and it's power, otherwise we need to redesign by scratch and exhaustive interview"
+},
+  {
+  "id": "claude",
+  "status": "clarified",
+  "question": "How should CLAUDE.md reach AGENTS.md when Claude Code is a selected host?",
+  "answer": "import-line",
+  "options": [
+    {
+      "value": "import-line",
+      "label": "Add `@AGENTS.md` at the top",
+      "description": "Create CLAUDE.md as the import pointer if it is missing; add the import to an existing one only if it has no equivalent. User content stays below."
+    },
+    {
+      "value": "own-block",
+      "label": "Put a copy of the Joycraft block in CLAUDE.md",
+      "description": "Works without the import, but two copies can drift (the 2026-07-16 decision rejected this)."
+    },
+    {
+      "value": "custom",
+      "label": "Something else",
+      "description": "Describe what you want instead.",
+      "requiresNote": true
+    }
+  ],
+  "affected": [
+    "claude-import"
+  ]
+},
+  {
+  "id": "trim",
+  "status": "clarified",
+  "question": "How far should Joycraft go with an AGENTS.md that is already too long?",
+  "answer": "report-and-propose",
+  "options": [
+    {
+      "value": "report-and-propose",
+      "label": "Report it, propose moves, apply on your yes",
+      "description": "cleanup flags it; the cleanup skill proposes moving file tables, folder trees and workflow sections to a linked context page. Rules are never touched."
+    },
+    {
+      "value": "report-only",
+      "label": "Report it only",
+      "description": "cleanup flags size and dead pointers; the user trims by hand."
+    },
+    {
+      "value": "custom",
+      "label": "Something else",
+      "description": "Describe what you want instead.",
+      "requiresNote": true
+    }
+  ],
+  "affected": [
+    "cleanup-checks",
+    "trim-rule"
+  ]
+},
+  {
+  "id": "release",
+  "status": "clarified",
+  "question": "Which version ships this?",
+  "answer": "1.1.2",
+  "options": [
+    {
+      "value": "1.2.0",
+      "label": "1.2.0",
+      "description": "Install now writes to user files, so a minor version and a CHANGELOG entry that says so."
+    },
+    {
+      "value": "1.1.2",
+      "label": "1.1.2",
+      "description": "Treat it as a fix for the 1.0 regression."
+    },
+    {
+      "value": "custom",
+      "label": "Something else",
+      "description": "Describe what you want instead.",
+      "requiresNote": true
+    }
+  ],
+  "affected": [
+    "release"
+  ]
+}
 ]
 ---
 # Install writes the entry files
