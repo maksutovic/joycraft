@@ -1,6 +1,6 @@
 ---
 feature: install-entry-files
-status: draft
+status: decomposed
 decisions: [
   {
     "id": "writer",
