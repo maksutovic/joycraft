@@ -1,6 +1,6 @@
 ---
 id: 9
-status: in-review
+status: done
 ---
 # A changed brief never silently disables the page
 

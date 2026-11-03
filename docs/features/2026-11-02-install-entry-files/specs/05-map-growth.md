@@ -1,6 +1,6 @@
 ---
 id: 5
-status: in-review
+status: done
 ---
 # Session end grows the map and keeps it current
 

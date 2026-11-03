@@ -1,6 +1,6 @@
 ---
 id: 3
-status: in-review
+status: done
 ---
 # joycraft-cleanup follows David's doc-cleanup method
 

@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-wiring-check.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": true
@@ -40,7 +40,7 @@
       "id": 2,
       "file": "02-cleanup-checks.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": true
@@ -77,7 +77,7 @@
         2,
         5
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -148,7 +148,7 @@
       "id": 5,
       "file": "05-map-growth.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": true
@@ -184,7 +184,7 @@
       "depends_on": [
         5
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -218,7 +218,7 @@
       "id": 7,
       "file": "07-update-notice.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": true
@@ -252,7 +252,7 @@
       "id": 8,
       "file": "08-artifact-answers.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": true
@@ -289,7 +289,7 @@
       "depends_on": [
         8
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -334,7 +334,7 @@
         8,
         9
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": false

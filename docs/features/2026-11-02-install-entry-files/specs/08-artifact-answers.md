@@ -1,6 +1,6 @@
 ---
 id: 8
-status: in-review
+status: done
 ---
 # The decision page always offers "Something else" and keeps notes editable
 
