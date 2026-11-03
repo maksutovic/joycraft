@@ -165,19 +165,23 @@ the agent says what it does not cover and installs nothing without your yes.
 
 ## Answering questions: the decision page
 
-When the agent needs you to choose between options, it shows the questions on a
-decision page instead of in chat. Each question shows its context, its options and
-what it affects. You pick an answer, or "Something else" and say what you want, add
-a note if you want, and save. You can add or change a note after saving. If the
-brief changes while the page is open, the page names the questions that changed and
-keeps your other answers. The answers go into the brief, so the agent does not ask
-again.
-
-Sometimes the agent forgets and lists the options in chat. Then say:
+When the agent needs you to choose between options, it asks in your question
+style. Setup asks for it once: one decision at a time with a short talk about each
+answer, or a page of decisions; on a decision page or as numbered prose in chat.
+To change it for one feature, say:
 
 ```text
-Put these questions in a Joycraft decision artifact so I can answer them there.
+Ask me one question at a time, in chat, for this feature.
 ```
+
+A consequential question gives the context, the question, two to four options each
+with an example and a trade-off, and the agent's recommendation with its reason. On
+the decision page, you pick an answer, or "Something else" and say what you want,
+add a note if you want, and save. You can add or change a note after saving. If the
+brief changes while the page is open, the page names the questions that changed and
+keeps your other answers. In chat or on the page, the answers go into the brief, so
+the agent does not ask again. If a question is not clear, say "wait, what?" and the
+agent explains it again with more context.
 
 **Colors.** The page uses a light or dark theme. To match your project, ask:
 
@@ -263,6 +267,7 @@ should forget:
 - **Lauren** (Cursor): prefer fixes in this order: architecture, then lint and CI, then skills and rules, then asking a human.
 - **Robert C. Martin**: impose values, not disciplines.
 - **aka-luan** ([doc-cleanup](https://github.com/aka-luan/doc-cleanup), MIT), brought to Joycraft by **David Moshal**: Joycraft's doc audit follows its method. Treat every doc claim as a hypothesis and the code as the evidence.
+- **David Moshal**, with his `questions-dm` skill: ask one question at a time, give the context first, and never assume the user remembers what the agent remembers. **Matt Pocock** ([`wait-what`](https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what), MIT): when a message does not land, say it again in plain words with the missing context.
 
 The levels this project aims at are Dan Shapiro's. See [The levels](docs/guides/levels.md).
 

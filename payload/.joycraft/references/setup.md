@@ -54,9 +54,18 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
    each choice with options as a decision in a setup brief at
    `.joycraft/local/setup/brief.md` (format of `.joycraft/templates/brief.md`,
    `feature: setup`; give `.joycraft/local/` a `.gitignore` of `*` when it has
-   none, so nothing there becomes a project change) and serve the decision
-   artifact on it ([artifacts.md](artifacts.md)); plain chat is only for one
-   quick yes/no or an open question with no options. The brief is scratch:
+   none, so nothing there becomes a project change). First, when
+   `node .joycraft/runtime/artifacts/cli.mjs questions` prints `unset: true`,
+   ask how the user wants questions, as two decisions: pacing (one decision at
+   a time with a short discussion after each answer, or a page of decisions)
+   and surface (the decision page, or numbered prose in chat). Give an example
+   of each. Ask only these two, in today's style (a page), and wait for the
+   answer before you ask any other setup question. Record it with
+   `questions --set pacing=...,surface=...` and say that the user can change it
+   for one feature later. Never ask again when a style is recorded. Then ask the
+   other setup decisions in that style ([asking questions](artifacts.md#asking-questions));
+   plain chat with no decision is only for one quick yes/no or an open question
+   with no options. The brief is scratch:
    each answer then goes to its home in step 3. Stop when the user says enough. Never ask again
    what the user answered or a home already states. Keep the user's words apart
    from your observations and assumptions. On a bare project, offer the
@@ -66,12 +75,16 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
      “First action in each session: run
      `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow
      `.joycraft/references/update.md`.” and “Show every document a person must
-     read, review or answer (a brief, plan, spec set, review or set of
-     questions) as a rendered page, never only as Markdown in chat: use the
-     decision artifact (`node .joycraft/runtime/artifacts/cli.mjs`, see
-     `.joycraft/references/artifacts.md`) for a brief or questions, or an HTML
-     page for any other document. Show it where the person works (see
-  `.joycraft/references/artifacts.md#showing-a-page`) and say where it is.”
+     read or review (a brief, plan, spec set or review) as a rendered page,
+     never only as Markdown in chat: use the decision artifact
+     (`node .joycraft/runtime/artifacts/cli.mjs`, see
+     `.joycraft/references/artifacts.md`) for a brief, or an HTML page for any
+     other document. Show it where the person works (see
+     `.joycraft/references/artifacts.md#showing-a-page`) and say where it is.
+     Ask questions in the project's question style
+     (`.joycraft/references/artifacts.md#asking-questions`).” Replace an older
+     version of this line that lists a "set of questions", so it does not
+     override a chat question style.
    - **The map**: one `## Context Map` table (`| Document | Read when |`). One
      row per real home: each required or reference doc, and each home you
      create. A read-when names the work that needs the doc ("Changing how counts
@@ -168,9 +181,11 @@ detects each package from its manifests, probes versions read-only, and prints
 one table and at most one question. It never installs. When it prints
 `Review loop unchanged.`, ask nothing. Packages come from declared workspaces;
 with none and no root manifest, from the manifests below the root that git does
-not ignore. When it prints `No packages found`, ask the user which folders hold
-the apps and pass them as `--packages <dir,dir>` to `plan`, `install` and
-`record`.
+not ignore. When it prints `No packages found`, ask the user once which folders
+hold the apps and pass them as `--packages <dir,dir>` to `plan`, `install` and
+`record`. When the user says there is no app to review (for example one script
+with no manifest), record their words with `record --none "<reason>"`; a
+repeated setup then prints `Review loop unchanged.` and asks nothing.
 
 Show the table: what the plan found per package. Ask the user to confirm it or
 name a tool the plan missed, together with its one question. For a gap, say
@@ -296,10 +311,11 @@ changes the next action. Prefer one short contextual question and continue
 independent work while it is pending. Do not generate a questionnaire or start
 building an imagined app.
 
-Use the project’s existing interaction home for a choice. A question with
-options goes in the decision artifact; only one quick yes/no or an open question
-with no options stays in native chat. Retain a chat answer in the
-owning brief and do not ask it again.
+Use the project’s existing interaction home for a choice. Ask a question with
+options in the user's question style ([asking questions](artifacts.md#asking-questions)),
+in the decision artifact or in chat; only one quick yes/no or an open question
+with no options stays in native chat without a decision. Retain a chat answer in
+the owning brief and do not ask it again.
 
 ## Finish setup and continue
 
@@ -315,7 +331,7 @@ installation manifest `.joycraft/installation.json` records the installed bytes;
 it is dispatch input, not proof that hooks ran or that a review was independent.
 
 A new worker reads `.joycraft/preferences.json` before work, reuses explicit
-model, effort, role, concurrency and verification choices, and inspects the
+model, effort, role, concurrency, verification and question-style choices, and inspects the
 host's available planner, implementer, reviewer, testing, UI and fixture
 capabilities instead of assuming a model. It states unavailable roles plainly.
 Setup and upgrade never change accepted queues, decision state, user guidance or

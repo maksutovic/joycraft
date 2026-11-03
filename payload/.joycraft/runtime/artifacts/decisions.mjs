@@ -102,16 +102,25 @@ function displayedDecision(brief, id) {
       !Array.isArray(decision.affected) || !decision.affected.every(nonempty)) {
     throw new Error('Displayed decision needs question, options and affected references');
   }
-  for (const field of ['why', 'context', 'details']) validateOptionalString(decision[field], `Decision ${field}`);
+  for (const field of ['why', 'context', 'details', 'recommendation']) validateOptionalString(decision[field], `Decision ${field}`);
   const values = new Set();
+  let recommended = 0;
   for (const option of decision.options) {
     if (!option || typeof option !== 'object' || Array.isArray(option) || !nonempty(option.value) || !nonempty(option.label) || values.has(option.value)) {
       throw new Error('Invalid decision options');
     }
-    validateOptionalString(option.description, 'Option description');
+    for (const field of ['description', 'example', 'tradeoff']) validateOptionalString(option[field], `Option ${field}`);
     if (option.requiresNote !== undefined && typeof option.requiresNote !== 'boolean') throw new Error('Option requiresNote must be boolean');
+    if (option.recommended !== undefined && typeof option.recommended !== 'boolean') throw new Error('Option recommended must be boolean');
+    if (option.recommended === true) {
+      if (option.value === CUSTOM_OPTION.value) throw new Error('"Something else" cannot be the recommended option');
+      recommended += 1;
+    }
     values.add(option.value);
   }
+  // One recommendation at most, and a stated reason needs the option it recommends.
+  if (recommended > 1) throw new Error('Only one option can be recommended');
+  if (decision.recommendation !== undefined && recommended === 0) throw new Error('A recommendation needs a recommended option');
   values.add(CUSTOM_OPTION.value);
   if (!(decision.answer === null || values.has(decision.answer)) || (decision.status === 'clarified' && decision.answer === null)) {
     throw new Error('Invalid decision answer');
@@ -127,15 +136,14 @@ function publicQuestion(decision) {
     question: decision.question,
     options: withCustomOption(decision.options).map(option => {
       const result = { value: option.value, label: option.label };
-      if (option.description !== undefined) result.description = option.description;
-      if (option.requiresNote !== undefined) result.requiresNote = option.requiresNote;
+      for (const field of ['description', 'example', 'tradeoff', 'requiresNote', 'recommended']) if (option[field] !== undefined) result[field] = option[field];
       return result;
     }),
     affected: [...decision.affected],
     status: decision.status,
     answer: decision.answer
   };
-  for (const field of ['why', 'context', 'details']) if (decision[field] !== undefined) question[field] = decision[field];
+  for (const field of ['why', 'context', 'details', 'recommendation']) if (decision[field] !== undefined) question[field] = decision[field];
   if (decision.note !== undefined) question.note = decision.note;
   return question;
 }

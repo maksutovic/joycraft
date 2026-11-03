@@ -46,8 +46,9 @@
     return JSON.stringify({
       question: question.question || '',
       options: (question.options || []).map(function (option) {
-        return { value: option.value, label: option.label || '', description: option.description || '', requiresNote: Boolean(option.requiresNote) };
+        return { value: option.value, label: option.label || '', description: option.description || '', example: option.example || '', tradeoff: option.tradeoff || '', recommended: Boolean(option.recommended), requiresNote: Boolean(option.requiresNote) };
       }),
+      recommendation: question.recommendation || '',
       status: question.status || '',
       answer: question.answer == null ? null : question.answer,
       note: question.note == null ? '' : question.note
@@ -336,23 +337,38 @@
       body.append(node('p', { class: 'jca-status jca-status-' + (question.status || 'open'), text: statusLabel(question.status) }));
       if (question.answer) body.append(node('p', { class: 'jca-recorded', text: 'Brief record: ' + question.answer }));
       (model.comparisons || []).filter(function (comparison) { return comparison.decisionId === question.id; }).forEach(function (comparison) { body.append(renderComparison(comparison)); });
-      if (question.context || question.why || (question.affected || []).length) {
-        var detail = node('details', { class: 'jca-details' }, [node('summary', { text: 'Context and impact' })]);
-        if (question.context) detail.append(node('p', { text: question.context }));
-        if (question.why) detail.append(node('p', { text: question.why }));
+      // Context comes before the choice, never behind a click: a person should not have to remember it.
+      if (question.context || question.why) {
+        body.append(node('div', { class: 'jca-context' }, [
+          question.context ? node('p', { text: question.context }) : null,
+          question.why ? node('p', { text: question.why }) : null
+        ]));
+      }
+      if (question.details || (question.affected || []).length) {
+        var detail = node('details', { class: 'jca-details' }, [node('summary', { text: 'More detail' })]);
+        if (question.details) detail.append(node('p', { text: question.details }));
         if ((question.affected || []).length) detail.append(node('p', { text: 'Affected: ' + question.affected.join(', ') }));
         body.append(detail);
       }
       var fieldset = node('fieldset', { class: 'jca-options', disabled: readOnly });
       fieldset.append(node('legend', { text: readOnly ? 'Responses are read-only' : 'Choose one response' }));
-      (question.options || []).forEach(function (option) {
+      // The recommended option leads; "Something else" always closes the list.
+      var rank = function (option) { return option.value === 'custom' ? 2 : option.recommended ? 0 : 1; };
+      var ordered = (question.options || []).map(function (option, position) { return { option: option, position: position }; })
+        .sort(function (left, right) { return rank(left.option) - rank(right.option) || left.position - right.position; })
+        .map(function (item) { return item.option; });
+      var optionLine = function (name, value) { return value ? node('small', { class: 'jca-option-line' }, [node('b', { text: name + ': ' }), text(value)]) : null; };
+      ordered.forEach(function (option) {
         var id = 'jca-' + question.id + '-' + option.value;
         var radio = node('input', { type: 'radio', id: id, name: 'jca-answer-' + question.id, value: option.value, checked: current.answer === option.value,
           onchange: function () { draft[question.id] = { answer: option.value, note: (draft[question.id] || {}).note || '' }; setMessage('quiet', 'Unsaved changes.'); syncLiveUi(); syncNoteRequirement(); } });
-        var label = node('label', { class: 'jca-option', for: id }, [radio, node('span', { class: 'jca-option-copy' }, [node('strong', { text: option.label }), option.description ? node('small', { text: option.description }) : null])]);
+        var title = node('strong', { text: option.label }, [option.recommended ? node('span', { class: 'jca-badge', text: 'Recommended' }) : null]);
+        var label = node('label', { class: 'jca-option' + (option.recommended ? ' jca-option-recommended' : ''), for: id }, [radio, node('span', { class: 'jca-option-copy' }, [title, option.description ? node('small', { text: option.description }) : null, optionLine('Example', option.example), optionLine('Trade-off', option.tradeoff)])]);
         fieldset.append(label);
       });
       body.append(fieldset);
+      var pick = (question.options || []).find(function (option) { return option.recommended; });
+      if (pick && question.recommendation) body.append(node('p', { class: 'jca-recommendation' }, [node('b', { text: 'Recommendation: ' + pick.label + '. ' }), text(question.recommendation)]));
       var note = node('textarea', { class: 'jca-note', id: 'jca-note-' + question.id, rows: 3, disabled: !canEditNote(question), placeholder: 'Optional note' });
       note.value = current.note || '';
       function syncNoteRequirement() {
