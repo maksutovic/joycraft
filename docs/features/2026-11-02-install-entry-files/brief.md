@@ -1,6 +1,6 @@
 ---
 feature: install-entry-files
-status: decomposed
+status: implemented
 decisions: [
   {
     "id": "writer",
