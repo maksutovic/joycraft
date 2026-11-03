@@ -111,7 +111,7 @@ export function validateEnvelope(envelope, model) {
 }
 
 /** Cooperative lock + compare before atomic replacement; no silent stale write. */
-async function replaceBrief(root, path, before, after) {
+export async function replaceBrief(root, path, before, after) {
   if (before === after) return;
   const absolute = await checkedPath(root, path);
   const lock = `${absolute}.joycraft-answer-lock`;

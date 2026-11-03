@@ -7,6 +7,36 @@ claim that a release has shipped.
 
 ---
 
+## 1.2.1 — Questions your way
+
+David Moshal's `questions-dm` skill asks one question at a time, gives the context
+first, and never assumes you remember what the agent remembers. Joycraft now asks
+that way when you want it to.
+
+### What's new
+
+- **Your question style.** Setup asks once how you want questions: one decision at
+  a time with a short talk about each answer, or a page of decisions; on the
+  decision page or as numbered prose in chat. Say "ask me one at a time for this
+  feature" to change it for one feature only. With no style recorded, Joycraft asks
+  as before. Every answer still goes into the brief.
+- **Questions you can answer without remembering.** A consequential question gives
+  the context, one question, two to four options each with an example and a
+  trade-off, then the agent's recommendation and its reason. On the decision page
+  the context shows before the options, and the recommended option comes first with
+  a badge.
+- **Plain words.** Questions use Simplified Technical English and your project's
+  `GLOSSARY.md` terms. Say "wait, what?" and the agent explains it again with the
+  context you were missing, after Matt Pocock's
+  [`wait-what`](https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what).
+- **No repeated review-loop question.** A project with no app package can record
+  that once (`review-tools.mjs record --none "<reason>"`), so a repeated setup asks
+  nothing.
+
+Payload: joycraft-prototype `field-16`.
+
+---
+
 ## 1.2.0 — The review loop uses your tools
 
 Issue #88 (David Moshal): checking a web UI in review meant adding

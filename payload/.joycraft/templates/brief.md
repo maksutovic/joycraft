@@ -1,7 +1,7 @@
 ---
 feature: example-feature
 decisions: [
-  {"id":"presentation","status":"open","question":"Which presentation fits your task?","answer":null,"options":[{"value":"rows","label":"Compact rows"},{"value":"cards","label":"Visual cards"}],"affected":["collection-presentation"]}
+  {"id":"presentation","status":"open","question":"Which presentation fits your task?","answer":null,"context":"The collection page lists 200 items. Today it shows plain rows, and users ask for pictures.","options":[{"value":"rows","label":"Compact rows","description":"Keep the list and add a small picture to each row.","example":"About 20 items show without scrolling.","tradeoff":"Pictures are too small to compare."},{"value":"cards","label":"Visual cards","recommended":true,"description":"Show each item as a card with a large picture.","example":"About 8 items show without scrolling.","tradeoff":"More scrolling to find one item."}],"recommendation":"Users asked for pictures, and cards show them best.","affected":["collection-presentation"]}
 ]
 ---
 # Feature intent

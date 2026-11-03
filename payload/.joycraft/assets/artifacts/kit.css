@@ -89,6 +89,13 @@ html[data-jca-theme] body { margin: 0; background: var(--canvas); color: var(--i
 .jca-option input { margin-top: .28rem; accent-color: var(--accent); }
 .jca-option strong, .jca-option small { display: block; }
 .jca-option small { margin-top: .1rem; color: var(--muted); }
+.jca-option .jca-option-line { margin-top: .3rem; }
+.jca-option-line b, .jca-recommendation b { color: var(--ink); font-weight: 650; }
+.jca-badge { display: inline-block; margin-left: .5rem; padding: .05rem .45rem; border-radius: 999px; background: var(--accent); color: var(--accent-text); font-size: .7rem; font-weight: 700; letter-spacing: .04em; vertical-align: .1em; }
+.jca-option-recommended { border-color: var(--accent); }
+.jca-context { margin: .8rem 0 0; }
+.jca-context p { margin: .55rem 0; }
+.jca-recommendation { margin: 0 0 1rem; padding: .7rem .8rem; border-left: 3px solid var(--accent); background: var(--accent-soft); }
 .jca-note-label { display: block; margin-bottom: .35rem; font-size: .88rem; font-weight: 700; }
 .jca-note { display: block; width: 100%; resize: vertical; border: 1px solid var(--control-line); border-radius: 8px; padding: .7rem; color: var(--ink); background: var(--input); font: inherit; }
 .jca-note::placeholder { color: var(--muted); opacity: 1; }

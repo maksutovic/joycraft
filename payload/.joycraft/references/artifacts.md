@@ -1,11 +1,64 @@
 # Decision artifacts
 
-Use an artifact for every question that asks the user to choose between
-options: record the choices as brief decisions, then render them. Also use one
-for an editorial comparison of existing screenshots or a review summary. Plain
-chat is only for one quick yes/no or an open question with no options. It renders a selected view of the brief; the brief and queue remain
-the source of truth. Do not use one for a routine native question, a product UI
-slice whose real interaction must be explored, or a long questionnaire.
+Record every choice the user must make between options as a brief decision,
+then ask it in the user's [question style](#asking-questions): on this page or
+in chat. Also use a page for an editorial comparison of existing screenshots or
+a review summary. A page renders a selected view of the brief; the brief and
+queue remain the source of truth. Do not use one for a routine native question,
+a product UI slice whose real interaction must be explored, or a long
+questionnaire.
+
+## Asking questions
+
+Do not assume the user remembers what you remember. Before you ask, run:
+
+```sh
+node .joycraft/runtime/artifacts/cli.mjs questions --brief docs/features/<slug>/brief.md
+```
+
+It prints `pacing`, `surface` and where each came from. With `unset: true`, the
+project has no recorded style yet: ask for it as [setup](setup.md) step 2 says,
+then continue.
+
+- **Pacing `one-at-a-time`.** Ask one decision. After the answer, tell the user
+  what it changes and ask if that is correct, and stop there: do not put the
+  next decision in the same message. Ask the next decision after the user
+  replies. Ask first the decision that the others depend on.
+- **Pacing `page`.** Show the open decisions together. After the save, say in
+  one line per answer what it changes.
+- **Surface `artifact`.** Serve the page for the decisions you ask now (the
+  view's `decisionIds`). Discuss the answers in chat.
+- **Surface `chat`.** Write the question as prose with numbered options, in the
+  order below. Save each answer to its brief decision with the user's exact
+  words as the note. The brief stays the only record of the answer.
+
+The user can change the style for one feature ("ask me one at a time here"):
+`questions --brief <brief> --set pacing=one-at-a-time`. That writes a
+`question-style:` line in that brief only. `--clear` removes it. A request to
+change it for every feature is `questions --set ...` without `--brief`.
+
+**Order for a consequential choice** (one that changes scope, cost or what is
+built):
+
+1. Context: what you are doing, the current state, and why you are blocked.
+2. The question: one sentence, one decision.
+3. Two to four options. Each has a short explanation, a concrete example of the
+   result, and the main trade-off.
+4. Your recommendation: the option and the reason.
+
+On the page, put these in `context` (and `why`), `question`, each option's
+`description`, `example` and `tradeoff`, and `recommended: true` on one option
+with the reason in `recommendation`. A small choice can be shorter, but still
+give the context the user needs to answer it.
+
+**Words.** Write questions in
+[ASD-STE100 Simplified Technical English](https://www.asd-ste100.org/): one
+meaning for each word, active voice, short sentences, one idea in each sentence.
+Use the project's terms from `GLOSSARY.md`, or the glossary that `GLOSSARY-MAP.md`
+names, when the project has one. When the user says a question is not clear
+("wait, what?"), do not repeat it. Write it again with the context that was
+missing. This follows `wait-what` in
+[mattpocock/skills](https://github.com/mattpocock/skills/tree/main/skills/productivity/wait-what).
 
 The renderer is deterministic. Agents author a short view-data file, such as
 [`templates/artifact.json`](../templates/artifact.json), and link existing
@@ -32,9 +85,13 @@ review) is shown where they are working, and you always say its path:
 ## Decisions and view data
 
 A brief decision keeps its existing `id`, `status`, `question`, `answer`,
-`options`, and `affected` fields. Artifact views also support an optional
-`description` on an option and `requiresNote: true` when that option needs a
-short explanation. Every question also offers "Something else" (value `custom`,
+`options`, and `affected` fields. A decision can also have `context` and `why`
+(shown before the options), `details` (under "More detail") and
+`recommendation` (the reason for the recommended option). An option can have
+`description`, `example`, `tradeoff`, `recommended: true` (one option at most;
+not `custom`) and `requiresNote: true` when that option needs a short
+explanation. All of these are optional, and the page lists the recommended
+option first. Every question also offers "Something else" (value `custom`,
 note required), so the person can always answer in their own words; do not
 declare it unless you want different wording. The canonical answer remains an
 option `value`, including `custom`. A saved answer keeps its note box: the

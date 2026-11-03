@@ -76,6 +76,7 @@ function parsePreferences(bytes) {
   catch { throw new Error(`Invalid JSON: ${preferencePath}`); }
   if (!preferences || typeof preferences !== 'object' || Array.isArray(preferences)) throw new Error(`${preferencePath} must contain an object`);
   if (preferences.artifacts !== undefined && (!preferences.artifacts || typeof preferences.artifacts !== 'object' || Array.isArray(preferences.artifacts))) throw new Error(`${preferencePath} artifacts must be an object`);
+  if (preferences.questions !== undefined) checkedQuestionStyle(preferences.questions, `${preferencePath} questions`);
   return preferences;
 }
 
@@ -87,7 +88,7 @@ export async function artifactTheme(root) {
   return preferences.artifacts?.theme === undefined ? undefined : checkedTheme(preferences.artifacts.theme, 'Artifact preference theme');
 }
 
-async function updatePreferences(root, change) {
+async function updatePreferences(root, change, section = 'artifacts') {
   const base = await realpath(root);
   const directory = join(base, '.joycraft');
   await mkdir(directory, { recursive: true });
@@ -97,7 +98,7 @@ async function updatePreferences(root, change) {
   let preferences;
   try { preferences = parsePreferences(await readFile(path)); }
   catch (error) { if (error.code !== 'ENOENT') throw error; preferences = { schemaVersion: 1 }; }
-  const updated = { ...preferences, artifacts: change({ ...(preferences.artifacts ?? {}) }) };
+  const updated = { ...preferences, [section]: change({ ...(preferences[section] ?? {}) }) };
   const temporary = `${path}.prefs-${randomBytes(8).toString('hex')}`;
   const file = await open(temporary, 'wx', 0o600);
   try { await file.writeFile(`${JSON.stringify(updated, null, 2)}\n`); await file.sync(); }
@@ -124,4 +125,96 @@ export async function artifactColors(root) {
 export async function setArtifactColors(root, colors) {
   const checked = colors === null ? null : await checkedColors(colors);
   return updatePreferences(root, ({ colors: _colors, ...artifacts }) => checked && Object.keys(checked).length ? { ...artifacts, colors: checked } : artifacts);
+}
+
+// How an agent asks the user: how many decisions at once, and where.
+const questionValues = Object.freeze({ pacing: ['one-at-a-time', 'page'], surface: ['chat', 'artifact'] });
+/** With no recorded style, Joycraft asks as it always has (decision `unset-default`). */
+export const DEFAULT_QUESTION_STYLE = Object.freeze({ pacing: 'page', surface: 'artifact' });
+const styleLine = /^question-style:[ \t]*([^\r\n]*)/gm;
+
+export function checkedQuestionStyle(style, source = 'Question style') {
+  if (!style || typeof style !== 'object' || Array.isArray(style)) throw new Error(`${source} must be an object with pacing and/or surface`);
+  for (const [key, value] of Object.entries(style)) {
+    if (!Object.hasOwn(questionValues, key)) throw new Error(`${source} has an unknown key: ${key}. Use: ${Object.keys(questionValues).join(', ')}`);
+    if (!questionValues[key].includes(value)) throw new Error(`${source} ${key} must be ${questionValues[key].join(' or ')}`);
+  }
+  return style;
+}
+
+/** Parse `pacing=one-at-a-time,surface=chat` from the command line. */
+export function parseQuestionStyle(value) {
+  const style = {};
+  for (const pair of String(value).split(',')) {
+    const [key, choice, extra] = pair.split('=').map(part => part.trim());
+    if (!key || choice === undefined || extra !== undefined || Object.hasOwn(style, key)) throw new Error('Use --set key=value[,key=value], for example pacing=one-at-a-time,surface=chat');
+    style[key] = choice;
+  }
+  return checkedQuestionStyle(style, 'Question style');
+}
+
+function frontmatterBounds(text) {
+  const match = /^(---\r?\n)([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(text);
+  if (!match) throw new Error('Brief needs YAML frontmatter');
+  const start = match[1].length;
+  return { start, end: start + match[2].length };
+}
+
+function styleLines(text) {
+  const { start, end } = frontmatterBounds(text);
+  return [...text.slice(start, end).matchAll(styleLine)].map(match => ({ index: start + match.index, length: match[0].length, value: match[1] }));
+}
+
+/** The brief's own question style, or undefined when it keeps the project's. */
+export function briefQuestionStyle(text) {
+  const lines = styleLines(text);
+  if (lines.length > 1) throw new Error('Expected at most one question-style: line');
+  if (!lines.length) return undefined;
+  let style;
+  try { style = JSON.parse(lines[0].value); }
+  catch { throw new Error('question-style: must be a JSON object, for example {"pacing":"one-at-a-time"}'); }
+  return checkedQuestionStyle(style, 'Brief question-style');
+}
+
+/** Replace, add or (with null) remove only the brief's question-style line. */
+export function withBriefQuestionStyle(text, style) {
+  const current = briefQuestionStyle(text);
+  const [line] = styleLines(text);
+  if (style === null) {
+    if (!line) return text;
+    // Remove the line with its own ending, whatever the rest of the file uses.
+    const next = text.indexOf('\n', line.index + line.length);
+    return text.slice(0, line.index) + text.slice(next + 1);
+  }
+  const merged = checkedQuestionStyle({ ...(current ?? {}), ...style }, 'Brief question-style');
+  const replacement = `question-style: ${JSON.stringify(merged)}`;
+  if (line) return text.slice(0, line.index) + replacement + text.slice(line.index + line.length);
+  // The new line takes the ending of the last frontmatter line, so --clear gives the same bytes back.
+  const { end } = frontmatterBounds(text);
+  const newline = text.startsWith('\r\n', end) ? '\r\n' : '\n';
+  return text.slice(0, end) + newline + replacement + text.slice(end);
+}
+
+export async function projectQuestionStyle(root) {
+  let path;
+  try { path = await checkedPreferencePath(root); }
+  catch (error) { if (error.code === 'ENOENT') return undefined; throw error; }
+  return parsePreferences(await readFile(path)).questions;
+}
+
+export async function setQuestionStyle(root, style) {
+  checkedQuestionStyle(style);
+  return updatePreferences(root, questions => ({ ...questions, ...style }), 'questions');
+}
+
+/** Each key from the brief first, then the project, then the default; `source` says which. */
+export function effectiveQuestionStyle({ project, brief } = {}) {
+  const result = {};
+  const source = {};
+  for (const key of Object.keys(questionValues)) {
+    [result[key], source[key]] = brief?.[key] !== undefined ? [brief[key], 'brief'] : project?.[key] !== undefined ? [project[key], 'project'] : [DEFAULT_QUESTION_STYLE[key], 'default'];
+  }
+  result.source = source;
+  if (project === undefined || Object.keys(project).length === 0) result.unset = true;
+  return result;
 }

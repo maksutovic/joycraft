@@ -1,19 +1,19 @@
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { loadArtifact, persistResponses, readProjectFile, writeArtifact } from './model.mjs';
+import { loadArtifact, persistResponses, readProjectFile, replaceBrief, writeArtifact } from './model.mjs';
 import { renderArtifact } from './render.mjs';
 import { startArtifact } from './server.mjs';
-import { setArtifactColors, setArtifactTheme } from './preferences.mjs';
+import { briefQuestionStyle, effectiveQuestionStyle, parseQuestionStyle, projectQuestionStyle, setArtifactColors, setArtifactTheme, setQuestionStyle, withBriefQuestionStyle } from './preferences.mjs';
 
 export async function main(argv, root = process.cwd()) {
   const [command, ...args] = argv;
-  const flags = command === 'serve' ? ['--brief', '--view', '--theme'] : command === 'build' ? ['--brief', '--view', '--out', '--mode', '--theme'] : command === 'import' ? ['--brief', '--view', '--responses', '--apply'] : command === 'theme' ? ['--set'] : command === 'colors' ? ['--set', '--reset'] : [];
-  if (!flags.length) throw new Error('Use serve --brief <path> [--view <path>] [--theme light|dark], build --brief <path> [--view <path>] --out <path> --mode claude|portable [--theme light|dark], import --brief <path> [--view <path>] --responses <path> [--apply], theme --set light|dark, or colors --set <colors.json> | --reset');
+  const flags = command === 'serve' ? ['--brief', '--view', '--theme'] : command === 'build' ? ['--brief', '--view', '--out', '--mode', '--theme'] : command === 'import' ? ['--brief', '--view', '--responses', '--apply'] : command === 'theme' ? ['--set'] : command === 'colors' ? ['--set', '--reset'] : command === 'questions' ? ['--brief', '--set', '--clear'] : [];
+  if (!flags.length) throw new Error('Use serve --brief <path> [--view <path>] [--theme light|dark], build --brief <path> [--view <path>] --out <path> --mode claude|portable [--theme light|dark], import --brief <path> [--view <path>] --responses <path> [--apply], theme --set light|dark, colors --set <colors.json> | --reset, or questions [--brief <path>] [--set pacing=one-at-a-time|page,surface=chat|artifact | --clear]');
   const values = {};
   for (let i = 0; i < args.length; i += 1) {
     const flag = args[i];
     if (!flags.includes(flag) || Object.hasOwn(values, flag)) throw new Error(`Unknown or repeated argument: ${flag}`);
-    if (flag === '--apply' || flag === '--reset') values[flag] = true;
+    if (flag === '--apply' || flag === '--reset' || flag === '--clear') values[flag] = true;
     else { if (!args[i + 1] || args[i + 1].startsWith('--')) throw new Error(`Missing value for ${flag}`); values[flag] = args[++i]; }
   }
   if (command === 'theme') {
@@ -21,6 +21,30 @@ export async function main(argv, root = process.cwd()) {
     const preferences = await setArtifactTheme(root, values['--set']);
     console.log(JSON.stringify({ path: '.joycraft/preferences.json', theme: preferences.artifacts.theme }, null, 2));
     return preferences;
+  }
+  if (command === 'questions') {
+    // With --brief, --set and --clear change only that feature; without it, --set changes the project default.
+    const briefPath = values['--brief'];
+    if (values['--set'] && values['--clear']) throw new Error('Use --set or --clear, not both');
+    if (values['--clear'] && !briefPath) throw new Error('--clear needs --brief: it removes a feature\'s own question style');
+    const change = values['--set'] ? parseQuestionStyle(values['--set']) : values['--clear'] ? null : undefined;
+    // Read the project default first: a bad stored preference must stop the command before any write.
+    const project = await projectQuestionStyle(root);
+    let brief;
+    if (briefPath) {
+      const text = (await readProjectFile(root, briefPath)).toString('utf8');
+      brief = briefQuestionStyle(text);
+      if (change !== undefined) {
+        const updated = withBriefQuestionStyle(text, change);
+        // Check the new text before the write: a failed command must leave the brief as it was.
+        brief = briefQuestionStyle(updated);
+        if (JSON.stringify(brief ?? null) !== JSON.stringify(change === null ? null : { ...(briefQuestionStyle(text) ?? {}), ...change })) throw new Error('Could not write question-style: safely; the brief is unchanged');
+        await replaceBrief(root, briefPath, text, updated);
+      }
+    } else if (change) await setQuestionStyle(root, change);
+    const style = effectiveQuestionStyle({ project: change && !briefPath ? await projectQuestionStyle(root) : project, brief });
+    console.log(JSON.stringify(style, null, 2));
+    return style;
   }
   if (command === 'colors') {
     if (!values['--set'] === !values['--reset']) throw new Error('Colors needs --set <colors.json> or --reset');

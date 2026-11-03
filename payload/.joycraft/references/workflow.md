@@ -24,8 +24,10 @@ Routine refinements within the answer do not require another approval.
 
 ## Decision artifacts
 
-Ask the user to choose between options through the artifact workflow in
-[artifacts.md](artifacts.md), not as a list in chat. Plain chat is only for one
+Record each choice between options as a brief decision and ask it in the
+user's question style ([asking questions](artifacts.md#asking-questions)): one
+at a time or as a page, in the artifact or in chat. Save every answer to the
+brief, whatever the surface. Plain chat with no decision record is only for one
 quick yes/no or an open question with no options.
 The brief remains authoritative; artifact data selects what to show and does not
 copy the brief or hold independent answers.
@@ -36,7 +38,9 @@ The optional `joycraft-ui-slice/scripts/serve.mjs` helper supports a JSON flow
 array under top-level `decisions:` in YAML frontmatter, as in the brief template.
 Each displayed record has `id`, `status`, `question`, `answer` (null or an option
 value), `options` (two or more `{value,label}` records) and `affected` (paths/IDs).
-Options may additionally have a concise `description` and `requiresNote: true`.
+Options may additionally have a concise `description`, `example`, `tradeoff`,
+`recommended: true` and `requiresNote: true`; a decision may have `context`,
+`why`, `details` and `recommendation` ([decisions](artifacts.md#decisions-and-view-data)).
 Other record fields and all text outside that array are preserved. Unsupported or
 malformed frontmatter is rejected; adapt the artifact to an existing project
 format instead of migrating it without cause. This is an authoring convention,

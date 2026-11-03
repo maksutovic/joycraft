@@ -554,7 +554,8 @@ const roleText = { ui: 'tool that can show the UI', request: 'HTTP check', tests
 export function renderPlan(plan, changes = null) {
   if (!plan.packages.length) {
     return ['Review loop plan', '', 'No packages found: no workspaces are declared and no project manifest was found below the root.',
-      '', 'Which folders hold the apps? Name them with `--packages <dir,dir>` on plan, install and record.'].join('\n');
+      '', 'Which folders hold the apps? Name them with `--packages <dir,dir>` on plan, install and record.',
+      'If the project has no app to review, record the user\'s reason with `record --none "<reason>"`, so this is not asked again.'].join('\n');
   }
   const lines = ['Review loop plan', '', '| Package | Kind | Tool | Status | To install | Can show |', '|---|---|---|---|---|---|'];
   for (const entry of plan.packages) for (const item of entry.tools.filter(tool => !tool.shared)) {
@@ -781,8 +782,10 @@ const cellSafe = text => String(text).replace(/\|/g, '\\|').replace(/\n+/g, '; '
  * Write the chosen setup to AGENTS.md under `## Review loop`, replacing only that section: one row per package.
  * Earlier picks and skips stay for the packages this call does not name. Host tools go to the local record only.
  */
-export function recordReviewLoop(root, plan, { skipped = [], choose = [], commands = [], canShow = [], host = null, hostTools = [] } = {}) {
-  if (!plan.packages.length) throw new Error('No packages found, so there is nothing to record; name them with --packages <dir,dir>');
+export function recordReviewLoop(root, plan, { skipped = [], choose = [], commands = [], canShow = [], host = null, hostTools = [], none = null } = {}) {
+  if (none !== null && (typeof none !== 'string' || !none.trim())) throw new Error('--none takes the user\'s reason, for example --none "a single script, no app to review"');
+  if (none !== null && plan.packages.length) throw new Error(`--none records that there are no packages, but this project has ${plan.packages.map(entry => entry.path).join(', ')}`);
+  if (!plan.packages.length && none === null) throw new Error('No packages found, so there is nothing to record; name them with --packages <dir,dir>, or record the user\'s reason with --none "<reason>"');
   if (hostTools.length && !host) throw new Error('--host-tools needs --host <name>, the host these tools belong to');
   const picks = picksFor(root, plan, { choose, commands, canShow });
   const skips = skipsFor(plan, skipped);
@@ -822,8 +825,8 @@ export function recordReviewLoop(root, plan, { skipped = [], choose = [], comman
   const section = [sectionHeading, '',
     'Recorded by Joycraft setup. The implementer, reviewer and UI checks use these tools and commands.',
     `Tools a host brings itself are recorded per machine in \`${localFile}\`, not here.`, '',
-    ...rows,
-    '', `<!-- joycraft:review-loop v2 ${JSON.stringify({ packages })} -->`, ''].join('\n');
+    ...(none === null ? rows : [`No app packages to review. The user said: ${cellSafe(none.trim())}`]),
+    '', `<!-- joycraft:review-loop v2 ${JSON.stringify({ packages, ...(none === null ? {} : { none: none.trim() }) })} -->`, ''].join('\n');
   const file = path.join(root, 'AGENTS.md');
   const text = read(file);
   let created = false;
@@ -863,6 +866,8 @@ export async function main(argv = process.argv.slice(2)) {
   const repeated = new Set(['--choose', '--command', '--can-show', '--skip']);
   for (let index = 0; index < rest.length; index += 1) {
     if (rest[index] === '--yes') { flags['--yes'] = true; continue; }
+    // A flag's value is the next word; another flag there means the value is missing.
+    if (rest[index + 1] === undefined || rest[index + 1].startsWith('--')) throw new Error(`Missing value for ${rest[index]}`);
     if (repeated.has(rest[index])) (flags[rest[index]] ??= []).push(rest[index + 1]);
     else flags[rest[index]] = rest[index + 1];
     index += 1;
@@ -889,12 +894,12 @@ export async function main(argv = process.argv.slice(2)) {
     // The shared record is detected without the host's tools; those go to the local record.
     const result = recordReviewLoop(root, reviewLoopPlan(root, { ...options, hostTools: [] }), {
       skipped: many('--skip'), choose: many('--choose'), commands: many('--command', false), canShow: many('--can-show', false),
-      host: flags['--host'] ?? null, hostTools: options.hostTools });
+      host: flags['--host'] ?? null, hostTools: options.hostTools, none: flags['--none'] ?? null });
     process.stdout.write(`${JSON.stringify(result)}\n`);
     return result;
   }
   throw new Error('Usage: review-tools.mjs plan|install|record --root <project> [--packages apps/web,apps/api] [--host-tools browser,simulator] [--tools playwright --yes]'
-    + ' [record: --choose <package>=<tool> --command <package>=<command> --can-show <package>=picture,run --skip <tool>|<package>:<tool>|<package> --host <name>]');
+    + ' [record: --choose <package>=<tool> --command <package>=<command> --can-show <package>=picture,run --skip <tool>|<package>:<tool>|<package> --host <name> | --none "<reason>"]');
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

@@ -86,13 +86,18 @@ screenshots-only tool). That is a tooling change: follow
 [change a tool](../../../.joycraft/references/setup.md#review-loop-tools) and
 record the answer, so it is not asked again.
 
-**Ask answerable questions in an artifact.** When the user must choose between
-options, record each choice as a brief decision and render the open decisions
-with the decision artifact (`.joycraft/references/artifacts.md`). Do not list
-option questions in chat: the artifact shows each question with its context and
-options, and saves the answers to the brief. Plain chat is only for one quick
-yes/no or an open question with no options. If you already asked option
-questions in chat and they are unanswered, move them to an artifact now.
+**Ask in the user's question style.** When the user must choose between
+options, record each choice as a brief decision. Then run
+`node .joycraft/runtime/artifacts/cli.mjs questions --brief <brief>` and ask as
+it says: one decision at a time with a short discussion after each answer, or a
+page of decisions; in the decision artifact or as numbered prose in chat. Give
+each consequential question its context, options with an example and a
+trade-off, and your recommendation with the reason, in Simplified Technical
+English. Never assume the user remembers what you remember. Save every answer
+to the brief. Follow
+[asking questions](../../../.joycraft/references/artifacts.md#asking-questions).
+Plain chat with no decision is only for one quick yes/no or an open question
+with no options.
 
 **Use the project's folders.** If `joycraft.yaml` exists, run
 `node .joycraft/runtime/config.mjs` and use its `paths` wherever Joycraft guidance
