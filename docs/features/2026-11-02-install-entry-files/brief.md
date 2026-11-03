@@ -108,6 +108,17 @@ The update prompt must reach the user and describe the jump correctly. Found on
 - Unchanged and already correct: not now (snooze 7 days), turn off, pin,
   update with backups, `doctor`, and `--recover`.
 
+## custom-answer
+
+Max (2026-11-02): the decision page had no way to answer "none of these". Every
+question now offers "Something else" (value `custom`, note required), whether or
+not the brief declares it. Built on joycraft-prototype branch
+`field/1.2-custom-answer`; ships with this release.
+
+**Done when:** a decision with two options shows three on the page; saving
+"Something else" without a note is refused; with a note, the brief records
+`answer: "custom"` and the note.
+
 ## release
 
 The CHANGELOG says plainly that install now edits AGENTS.md and CLAUDE.md, and
