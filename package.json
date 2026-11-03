@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -13,8 +13,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.1.1",
-    "summary": "Fixes from the 1.0.1 and 1.1 re-reviews: cleanup reads code fences correctly, trace reads folders like tests/[slug], prune skips the tree it runs from, and stale locks are taken over safely.",
+    "release": "1.1.2",
+    "summary": "After install, your agent builds Joycraft's context map with you and keeps it current; init, update and doctor report an unwired project; cleanup follows doc-cleanup; the update prompt lists every release since yours.",
     "autoSafeEligible": false
   },
   "scripts": {

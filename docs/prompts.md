@@ -11,8 +11,10 @@ Install Joycraft in this project.
 2. Ask me which coding agents I use in this project (default: you). Then run
    `npx joycraft@latest init . --harness <agents> --yes`.
    If it finds Joycraft 0.7, stop and show me its migration plan.
-3. Use the joycraft-entry skill to set up this project. If the project is new or empty,
-   ask me what I want to build.
+3. Use the joycraft-entry skill to set up Joycraft's context map. Read the project's
+   docs, interview me about what the repo cannot tell you, then show me the
+   AGENTS.md and CLAUDE.md changes on a page before you write them. If the project
+   is new or empty, ask me what I want to build.
 4. Run `node .joycraft/runtime/review-tools.mjs plan --root .`. Tell me which tools
    you need to check your own work, which ones I have, and which ones are missing.
    Ask me before you install anything.
