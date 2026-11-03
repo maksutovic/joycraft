@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft-prototype",
-  "tag": "field-13",
-  "commit": "22ece27616abd10e15a678c2203b6b3a297f9418",
+  "tag": "field-14",
+  "commit": "a23fc6943b2937f66e72d6feec3d686c16b7b846",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "99ce785e551be33412ac7a99ce44585a9b2be4440617caac273680383b4f7057",
     ".agents/skills/joycraft-context/SKILL.md": "e2f85baa47058fd61811fdb60d0cb41fb3f505f3957812d929db95bb99124f1b",
@@ -34,7 +34,7 @@
     ".joycraft/references/knowledge.md": "a08a117a5d0ae65a45dfd8ab3f3da92dd3c7aeedaa09ae1d71ddf3d6528c7f95",
     ".joycraft/references/recurring-failures.md": "7080f6c55492bc19c2897f4f0b128a830a71cdb516678c79ff6e97ffa1dc6b86",
     ".joycraft/references/retro.md": "f359eae19747777fb4687c1bc7eb280f0319ae629ee62913346e60fc56551562",
-    ".joycraft/references/setup.md": "dd9acbdff7ad8553fa05f81311025a1b599679c7432b8687262c2ef9856453b4",
+    ".joycraft/references/setup.md": "54800d023afa6fe4153dbd0d17b3453d570e31ba416df9fde054e9aa2e333c71",
     ".joycraft/references/testing.md": "7a0be4a5424f0fac89cba6e896c66a50948e31332bb7f032f688d72a203e4f4d",
     ".joycraft/references/update.md": "95569e44fe36af52b9d72bc6b64b36745fcfc5d31b9b4d91f10e6bed40a0e987",
     ".joycraft/references/workflow.md": "ed4a6618ab3288ea213691e4485f580d8348f717b6e663d29fbb570541e42c2c",
@@ -62,7 +62,7 @@
     ".joycraft/runtime/redact.mjs": "cc8c0fe5e8d8fe78116ef126f6eee757a247739084e19c342bcf09a2b06524bc",
     ".joycraft/runtime/retro.mjs": "6f3664b0d50c12d4f2d8eef4b4d0d62897939d03e45860d4dcf35c0f5f92677c",
     ".joycraft/runtime/review-tools.json": "c00e4209d67fd655a351946509a2aba2ee287dbaa0a1ad60c22e1286de0b4893",
-    ".joycraft/runtime/review-tools.mjs": "17c13f7ab746478bce5711501a5190991b46616c849780196614950cfc6f0208",
+    ".joycraft/runtime/review-tools.mjs": "2df0d7da93a62b06aa938c40499a564c1e87c5471b51f62478c675a9d488c0cc",
     ".joycraft/runtime/scope.mjs": "e2cdd929596246bf24e18850698db440119badc7068a3c5beab03ded45abbd65",
     ".joycraft/runtime/status.mjs": "0e1d2cc23f8d847ae14e8fc2dd909910d6b5655a0bb0305355f6f4d9709f1e33",
     ".joycraft/runtime/trace.mjs": "b7924f759b07991f4135698df9c32654631a325957f0f8de5c2ca1262c0a836a",

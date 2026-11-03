@@ -53,6 +53,12 @@ David Moshal's field feedback.
   saved answer keeps its note box. When the brief changes under an open page, the
   page names the changed questions, keeps your other answers, and says why a save
   button is disabled.
+- **Review loop finds undeclared packages** ([#89](https://github.com/maksutovic/joycraft/issues/89),
+  from David Moshal). In a repo with no workspaces and no root manifest,
+  `review-tools.mjs plan` printed an empty table. It now finds the manifests below
+  the root that git does not ignore. `--packages <dir,dir>` names the folders on
+  `plan`, `install` and `record`. When nothing is found it says so, and `record`
+  refuses to write an empty table.
 - **Pages show where you work.** A page you must read or answer opens in the host's
   own viewer when it has one (the Claude Code desktop app's browser pane or
   artifacts), in the system browser at a terminal, and nowhere in a non-interactive

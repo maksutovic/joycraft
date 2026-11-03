@@ -166,7 +166,11 @@ Pass `--host-tools browser`, `simulator` or `computer-use` only for tools the
 active host actually reports; they can stand in for a missing install. The plan
 detects each package from its manifests, probes versions read-only, and prints
 one table and at most one question. It never installs. When it prints
-`Review loop unchanged.`, ask nothing.
+`Review loop unchanged.`, ask nothing. Packages come from declared workspaces;
+with none and no root manifest, from the manifests below the root that git does
+not ignore. When it prints `No packages found`, ask the user which folders hold
+the apps and pass them as `--packages <dir,dir>` to `plan`, `install` and
+`record`.
 
 Show the table and ask its one question. Only after the user's yes in this
 conversation, run `review-tools.mjs install --root . --yes` (add

@@ -34,6 +34,40 @@ function workspaceDirs(root) {
   return [...new Set(dirs)];
 }
 
+const manifestFile = /(^|\/)(package\.json|pubspec\.yaml|Package\.swift|build\.gradle(\.kts)?|pyproject\.toml|requirements\.txt|setup\.py|Cargo\.toml|go\.mod)$/;
+const skipDir = name => name.startsWith('.') || ['node_modules', 'vendor', 'Pods', 'dist', 'build', 'target'].includes(name);
+
+/** Project files below the root: git's view when it has one (so .gitignore holds), else a bounded walk. */
+function projectFiles(root) {
+  try {
+    const out = execFileSync('git', ['-C', root, 'ls-files', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 });
+    return out.split('\n').filter(Boolean);
+  } catch {
+    const files = [];
+    const walk = (rel, depth) => {
+      for (const name of listDir(path.join(root, rel))) {
+        const file = rel ? `${rel}/${name}` : name;
+        if (isDir(path.join(root, file))) { if (depth < 6 && !skipDir(name)) walk(file, depth + 1); } else files.push(file);
+      }
+    };
+    walk('', 0);
+    return files;
+  }
+}
+
+/** Folders holding a manifest when no workspaces are declared. The shallowest wins; an Android `app/` belongs to its parent. */
+function nestedPackageDirs(root) {
+  const dirs = new Set();
+  for (const file of projectFiles(root)) {
+    if (!manifestFile.test(file) || file.split('/').some(skipDir)) continue;
+    let dir = path.posix.dirname(file);
+    if (/build\.gradle/.test(file) && path.posix.basename(dir) === 'app') dir = path.posix.dirname(dir);
+    if (dir !== '.') dirs.add(dir);
+  }
+  const sorted = [...dirs].sort();
+  return sorted.filter(dir => !sorted.some(other => other !== dir && dir.startsWith(`${other}/`)));
+}
+
 /** Categories for one package directory, from its manifests and project files only. */
 export function classifyPackage(dir) {
   const found = new Set();
@@ -65,11 +99,19 @@ export function classifyPackage(dir) {
   return [...found];
 }
 
-/** Each package of a project with its categories. A workspace root without its own app is not a package. */
-export function detectProjects(root) {
-  const packages = workspaceDirs(root).map(dir => ({ path: dir, categories: classifyPackage(path.join(root, dir)) }))
-    .filter(entry => entry.categories.length);
+/**
+ * Each package of a project with its categories. A workspace root without its own app is not a package.
+ * `packages` names the folders outright; with no workspaces and no root manifest, nested manifests are scanned.
+ */
+export function detectProjects(root, { packages: named = null } = {}) {
+  const outside = (named ?? []).find(dir => path.isAbsolute(dir) || dir.split(/[\\/]/).includes('..'));
+  if (outside) throw new Error(`--packages takes folders inside the project; ${outside} is not`);
   const own = classifyPackage(root);
+  const declared = named ?? workspaceDirs(root);
+  const dirs = named || declared.length || own.length ? declared : nestedPackageDirs(root);
+  const packages = dirs.map(dir => ({ path: dir, categories: classifyPackage(path.join(root, dir)) }))
+    .filter(entry => entry.categories.length);
+  if (named) return packages;
   const workspaceOnly = packages.length && own.every(category => category === 'cli-library');
   return [...(workspaceOnly || !own.length ? [] : [{ path: '.', categories: own }]), ...packages];
 }
@@ -163,8 +205,8 @@ function startCommand(dir, root, categories) {
 }
 
 /** The Review loop plan: each package, each tool it needs, and that tool's status. Probes only. */
-export function reviewLoopPlan(root, { run = defaultRun, hostTools = [], env = process.env, home = homedir() } = {}) {
-  const packages = detectProjects(root).map(entry => {
+export function reviewLoopPlan(root, { run = defaultRun, hostTools = [], env = process.env, home = homedir(), packages: named = null } = {}) {
+  const packages = detectProjects(root, { packages: named }).map(entry => {
     const dir = path.join(root, entry.path);
     const tools = toolsFor(entry.categories, dir).map(id => {
       const spec = catalog.tools[id];
@@ -191,6 +233,10 @@ const statusText = tool => tool.status === 'present' ? `present${tool.version ? 
 
 /** One table and at most one question, decision first. */
 export function renderPlan(plan, changes = null) {
+  if (!plan.packages.length) {
+    return ['Review loop plan', '', 'No packages found: no workspaces are declared and no project manifest was found below the root.',
+      '', 'Which folders hold the apps? Name them with `--packages <dir,dir>` on plan, install and record.'].join('\n');
+  }
   const lines = ['Review loop plan', '', '| Package | Kind | Tool | Status | To install |', '|---|---|---|---|---|'];
   for (const entry of plan.packages) for (const tool of entry.tools) {
     const install = tool.install?.commands ? `\`${tool.install.commands.map(command => command.join(' ')).join(' && ')}\` (${tool.install.size})`
@@ -259,6 +305,7 @@ export function planForSetup(root, options) {
 
 /** Write the chosen setup to AGENTS.md under `## Review loop`, replacing only that section. */
 export function recordReviewLoop(root, plan, { skipped = [] } = {}) {
+  if (!plan.packages.length) throw new Error('No packages found, so there is nothing to record; name them with --packages <dir,dir>');
   const rows = ['| Package | Tool | Start the app | Take the evidence |', '|---|---|---|---|'];
   const unverified = [];
   for (const entry of plan.packages) {
@@ -307,7 +354,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
   const root = path.resolve(flags['--root'] ?? '.');
   const list = value => (value ? value.split(',').filter(Boolean) : []);
-  const options = { hostTools: list(flags['--host-tools']) };
+  const options = { hostTools: list(flags['--host-tools']), packages: flags['--packages'] ? list(flags['--packages']) : null };
   if (command === 'plan') {
     const { text, ask } = planForSetup(root, options);
     process.stdout.write(`${text}\n`);
@@ -323,7 +370,7 @@ export async function main(argv = process.argv.slice(2)) {
     process.stdout.write(`${JSON.stringify(result)}\n`);
     return result;
   }
-  throw new Error('Usage: review-tools.mjs plan|install|record --root <project> [--host-tools browser,simulator] [--tools playwright --yes] [--skip playwright]');
+  throw new Error('Usage: review-tools.mjs plan|install|record --root <project> [--packages apps/web,apps/api] [--host-tools browser,simulator] [--tools playwright --yes] [--skip playwright]');
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
