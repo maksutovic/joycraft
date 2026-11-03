@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "install-entry-files-decisions",
+  "title": "Install writes the entry files",
+  "summary": "Regression: since 1.0, install leaves AGENTS.md and CLAUDE.md unchanged, so an existing project's agent never learns about the skills or the context map. Five choices set how the fix behaves.",
+  "decisionIds": ["writer", "map", "claude", "trim", "release"]
+}
