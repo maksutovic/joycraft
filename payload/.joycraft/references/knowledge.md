@@ -33,7 +33,7 @@ the map has no home for it.
 
 | Fact | Home |
 |---|---|
-| What the project is (purpose, users, owners, constraints) | `docs/context/project.md` |
+| What the project is (purpose, users, owners, constraints), and the areas setup has not mapped yet | `docs/context/project.md` (from `.joycraft/templates/project-context.md`) |
 | Navigation across code boundaries (where a flow lives) | A focused reference page linked by the map, e.g. `docs/context/architecture.md` |
 | Decision | Current choice in the home that owns that area; reason and rejected options in the decision log |
 | Trap (something that misleads or breaks, and how to avoid it) | The project's troubleshooting or gotchas page, default `docs/context/traps.md` |

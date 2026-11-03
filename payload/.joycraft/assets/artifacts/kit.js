@@ -92,6 +92,8 @@
     // Persistent notice after the brief changed under this page. It stays until dismissed,
     // so selecting options (which updates the status line) never hides it.
     var sourceNotice = null;
+    // The notice element is created once and reused, so a re-render does not re-announce it.
+    var noticeElement = null, noticeKey = '';
     var message = transport ? 'Loading saved responses…' : 'Read-only preview. A response transport is not available.';
     var messageKind = transport ? 'quiet' : 'notice';
 
@@ -144,6 +146,7 @@
         var result = await transport.save({ revision: revision, answers: answers });
         if (destroyed) return;
         applyLoaded(result, Boolean(question), answers.map(function (answer) { return answer.id; }));
+        if (sourceNotice && sourceNotice.conflict) sourceNotice.saved = true;
         setMessage('success', (result && result.message) || 'Saved in artifact — awaiting brief sync.');
       } catch (error) {
         if (error && error.conflict) await reloadAfterConflict(error);
@@ -165,6 +168,7 @@
       }
       sourceNotice = sourceNotice || { changes: [], viewChanged: false };
       sourceNotice.conflict = reason;
+      sourceNotice.saved = false;
       setMessage('error', 'Not saved: ' + reason + ' The page now shows the current source. Your other answers are kept; save again.');
     }
     function mergeNotice(changes, viewChanged) {
@@ -296,10 +300,18 @@
       return [button, button.jcaReason];
     }
     function renderSourceNotice() {
-      if (!sourceNotice) return null;
-      var banner = node('section', { class: 'jca-source-notice' + (sourceNotice.conflict ? ' jca-source-notice-error' : ''), role: 'alert', 'aria-labelledby': 'jca-source-notice-title' });
-      banner.append(node('h2', { id: 'jca-source-notice-title', text: sourceNotice.conflict ? 'Not saved: the source changed after this page loaded' : 'The source changed after this page loaded' }));
-      if (sourceNotice.conflict) banner.append(node('p', { text: sourceNotice.conflict }));
+      if (!sourceNotice) { noticeElement = null; noticeKey = ''; return null; }
+      var key = JSON.stringify(sourceNotice);
+      if (noticeElement && key === noticeKey) return noticeElement;
+      var blocked = sourceNotice.conflict && !sourceNotice.saved;
+      if (!noticeElement) noticeElement = node('section', { role: 'alert', 'aria-labelledby': 'jca-source-notice-title' });
+      noticeElement.className = 'jca-source-notice' + (blocked ? ' jca-source-notice-error' : '');
+      noticeElement.replaceChildren();
+      noticeKey = key;
+      var banner = noticeElement;
+      banner.append(node('h2', { id: 'jca-source-notice-title', text: blocked ? 'Not saved: the source changed after this page loaded'
+        : sourceNotice.conflict ? 'The source changed after this page loaded; your later save went through' : 'The source changed after this page loaded' }));
+      if (blocked) banner.append(node('p', { text: sourceNotice.conflict }));
       if (sourceNotice.changes.length) {
         banner.append(node('p', { text: sourceNotice.changes.length === 1 ? 'This question changed:' : 'These questions changed:' }));
         var list = node('ul');

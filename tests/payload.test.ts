@@ -21,7 +21,7 @@ const text = (path: string) => readFileSync(join(payload, path), 'utf8');
 describe('vendored payload', () => {
   it('matches its PIN byte for byte', () => {
     const pin = JSON.parse(text('PIN'));
-    expect(pin.tag).toMatch(/^field-\d+(-rc\d+)?$/);
+    expect(pin.tag).toMatch(/^field-\d+$/);
     expect(Object.keys(pin.files).sort()).toEqual(files());
     for (const path of files()) expect(createHash('sha256').update(readFileSync(join(payload, path))).digest('hex'), path).toBe(pin.files[path]);
   });

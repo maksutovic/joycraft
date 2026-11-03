@@ -14,16 +14,19 @@ for that rule. This method is adapted from doc-cleanup by aka-luan
 
 Work in two passes: diagnose and report without editing, then execute only what
 the user approves. Approval to edit is not approval to commit. Read
-[cleanup reference](../../../.joycraft/references/cleanup.md) for the checks, the
-AGENTS.md trim and the execution playbook.
+[cleanup reference](../../../.joycraft/references/cleanup.md) for the doc roles,
+the checks, the AGENTS.md trim and the execution playbook.
+
+When setup calls this skill, run steps 1–2 only and hand the findings back to
+setup: no report page and no stop. Setup asks about them in its interview and
+shows the agreed fixes on its one diff page.
 
 ## 1. Inventory
 
 List every in-scope Markdown file (skip generated, dependency, VCS, installed
 skill and runtime files, and paths the user excludes) with its line count and
-role: **entry** (`AGENTS.md`, `CLAUDE.md`), **required** (an entry doc says to
-read it), **reference** (read when a task needs it) or **historical** (kept for
-lookup, not guidance). Follow every reading pointer in the entry docs and mark it
+[role](../../../.joycraft/references/cleanup.md#doc-roles): entry, required,
+reference or historical. Follow every reading pointer in the entry docs and mark it
 resolved, dead or external. Rot costs more the more often a file is read. In a
 large repo, do the entry docs and their pointers first, then area by area, and say
 what you have not read.

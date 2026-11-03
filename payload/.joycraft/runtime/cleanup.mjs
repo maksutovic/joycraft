@@ -71,13 +71,24 @@ export function projectPath(span, exists = () => true) {
   return null;
 }
 
-/** Markdown links (checked for existence) and backticked project paths (references only). */
+/**
+ * Markdown links (checked for existence), backticked project paths and
+ * `@path` import lines (references only). Imports resolve from the file's folder,
+ * as Claude Code reads them.
+ */
 export function references(file, text) {
   const dir = path.posix.dirname(file);
-  const links = [], mentions = [];
+  const links = [], mentions = [], imports = [];
   // Blank out fenced code so examples are not read as links; keep line numbers.
   text = blankFences(text);
-  const lineOf = index => text.slice(0, index).split('\n').length;
+  // Offsets where each line starts, built once; a lookup is a binary search.
+  const starts = [0];
+  for (let index = text.indexOf('\n'); index !== -1; index = text.indexOf('\n', index + 1)) starts.push(index + 1);
+  const lineOf = index => {
+    let low = 0, high = starts.length - 1;
+    while (low < high) { const mid = (low + high + 1) >> 1; if (starts[mid] <= index) low = mid; else high = mid - 1; }
+    return low + 1;
+  };
   const add = (raw, index) => {
     const target = raw.split('#')[0];
     if (!target || /^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('/')) return;
@@ -88,12 +99,17 @@ export function references(file, text) {
   for (const match of text.matchAll(/\[[^\]]*\]\((?:<([^>]+)>|([^)\s]+))(?:\s+"[^"]*")?\)/g)) add(match[1] ?? match[2], match.index);
   for (const match of text.matchAll(/^ {0,3}\[[^\]]+\]:\s+(?:<([^>]+)>|(\S+))/gm)) add(match[1] ?? match[2], match.index);
   for (const match of text.matchAll(/`([A-Za-z0-9_.\/-]+\.md)`/g)) {
-    if (match[1].includes('/')) mentions.push({ target: path.posix.normalize(match[1]), line: text.slice(0, match.index).split('\n').length });
+    if (match[1].includes('/')) mentions.push({ target: path.posix.normalize(match[1]), line: lineOf(match.index) });
+  }
+  for (const match of text.matchAll(/^[ \t]*@(\S+)[ \t]*$/gm)) {
+    const target = match[1];
+    if (/^[~/]/.test(target) || /^[a-z][a-z0-9+.-]*:/i.test(target)) continue;
+    imports.push({ target: path.posix.normalize(path.posix.join(dir, target)), line: lineOf(match.index) });
   }
   // Single-backtick spans on one line; fenced blocks are already blank.
   const spans = [];
   for (const match of text.matchAll(/(?<!`)`([^`\n]+)`(?!`)/g)) spans.push({ span: match[1], line: lineOf(match.index) });
-  return { links, mentions, spans };
+  return { links, mentions, imports, spans };
 }
 
 function frontmatter(text) {
@@ -157,10 +173,14 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
     const staleAfter = meta?.stale_after == null ? NaN : Date.parse(String(meta.stale_after));
     if (Number.isFinite(staleAfter) && staleAfter <= now) findings.push({ check: 'stale-after', path: page, detail: `stale_after ${meta.stale_after} has passed.`, fix: 'Recheck the page against its sources, then move stale_after forward or mark it deprecated.' });
   }
-  for (const file of authorities) {
+  // Read and parse each file once; the checks below share the result.
+  const parsed = new Map(authorities.map(file => {
     const text = read(root, file) ?? '';
-    const { links, mentions } = references(file, text);
-    for (const ref of [...links, ...mentions]) {
+    return [file, { text, ...references(file, text) }];
+  }));
+  for (const file of authorities) {
+    const { links, mentions, imports } = parsed.get(file);
+    for (const ref of [...links, ...mentions, ...imports]) {
       if (ref.target !== file) referenced.add(ref.target);
       if (inside(ref.target, features) || inside(ref.target, archive)) {
         findings.push({ check: 'working-link', path: file, line: ref.line, detail: `Links to ${ref.target}, which is ${inside(ref.target, archive) ? 'history' : 'working material'}, not current knowledge.`, fix: `Move the fact it relies on into ${context}/ and link that instead.` });
@@ -176,10 +196,10 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   // History pages (a decision log, a shipped ledger) rightly name removed paths.
   const exists = relative => existsSync(path.join(root, relative));
   for (const file of authorities) {
-    const text = read(root, file) ?? '';
+    const { text, spans } = parsed.get(file);
     if (historyPage(file, text)) continue;
     const seen = new Set();
-    for (const { span, line } of references(file, text).spans) {
+    for (const { span, line } of spans) {
       const target = projectPath(span, exists);
       if (!target || seen.has(target)) continue;
       seen.add(target);
@@ -189,19 +209,19 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
     }
   }
   // unmapped: a context page that only other context pages reference. An entry
-  // file must link or name it, or agents reach it only by chance. Pages nothing
+  // file must link, name or @-import it, or agents reach it only by chance. Pages nothing
   // references at all are reported once, as orphan.
   const mapped = new Set();
   for (const file of authorities.filter(file => entryFiles.includes(file))) {
-    const { links, mentions } = references(file, read(root, file) ?? '');
-    for (const ref of [...links, ...mentions]) mapped.add(ref.target);
+    const { links, mentions, imports } = parsed.get(file);
+    for (const ref of [...links, ...mentions, ...imports]) mapped.add(ref.target);
   }
   for (const page of pages) {
     if (referenced.has(page) && !mapped.has(page)) findings.push({ check: 'unmapped', path: page, detail: `Only other ${context}/ pages mention this page; ${entryFiles.join(' and ')} do not, so agents may not know when to read it.`, fix: 'Add a context-map row with a "read when", or merge it into a mapped page.' });
   }
   // entry-size: entry files load into every session; keep them within budget.
   for (const file of authorities.filter(file => entryFiles.includes(file))) {
-    const words = (read(root, file) ?? '').split(/\s+/).filter(Boolean).length;
+    const words = parsed.get(file).text.split(/\s+/).filter(Boolean).length;
     if (words > config.cleanup.entryWords) findings.push({ check: 'entry-size', path: file, detail: `${words} words; the budget is ${config.cleanup.entryWords} (cleanup.entryWords).`, fix: 'Move reference detail into context pages and leave a map row that says when to read each.', words });
   }
   for (const page of pages) {

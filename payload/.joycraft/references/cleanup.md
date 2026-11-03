@@ -46,6 +46,15 @@ skipped. Pages may carry OKF frontmatter (`type`, `status`, `stale_after`,
 `verified`); cleanup reads `status` and `stale_after` when present, and `type`
 for the history exemption above.
 
+## Doc roles
+
+Inventory gives every in-scope doc one role:
+
+- **entry**: `AGENTS.md` and `CLAUDE.md`, loaded every session.
+- **required**: an entry doc says to read it.
+- **reference**: read when a task needs it; it gets a context-map row.
+- **historical**: kept for lookup, not guidance; it gets no map row.
+
 ## The six rot patterns
 
 From doc-cleanup. Test every in-scope doc for each; a doc claim is a hypothesis

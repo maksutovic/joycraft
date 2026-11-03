@@ -16,6 +16,12 @@ setting up Joycraft's context map first, follow
 [setup](../../../.joycraft/references/setup.md), then continue the original
 request. A read-only request gets the findings reported, not written.
 
+The check's `advice` lists `unmapped-areas`: the areas setup has not read yet,
+kept under `## Not yet mapped` in the project context page. When a request
+touches a listed area, map that area first: read it, propose its map rows and
+homes, write them on the user's yes, and remove the area from the list. Advice
+alone does not start a full setup.
+
 Read existing project instructions first. During an upgrade, inspect the installed
 manifest’s `legacyConflicts` and reconcile competing old skill discovery before
 using routing advice; preserved custom content is not a completed migration.
