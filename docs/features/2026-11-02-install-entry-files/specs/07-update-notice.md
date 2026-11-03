@@ -1,6 +1,6 @@
 ---
 id: 7
-status: todo
+status: in-review
 ---
 # The update prompt names the right kind of jump and every release
 
@@ -9,7 +9,7 @@ Goal: [update-notice](../brief.md#update-notice). Built in joycraft-prototype, b
 ## acceptance
 
 - `updateKind`: same major and minor → `patch`; same major, higher minor →
-  `minor`; higher major → `migration`. Check: `tests/runtime/update-check.test.mjs`
+  `minor`; higher major → `migration`. Check: `tests/update-check.test.mjs`
   1.0.0→1.1.1 `minor`, 1.1.0→1.1.1 `patch`, 1.1.1→2.0.0 `migration`.
 - The message names each release between installed and latest with its summary
   (from the registry's version metadata `joycraft.summary`), at most five, then
@@ -24,5 +24,7 @@ Goal: [update-notice](../brief.md#update-notice). Built in joycraft-prototype, b
 ## Implementation and verification scope
 
 `.joycraft/runtime/update-check.mjs`, `.joycraft/references/update.md`,
-`tests/runtime/update-check.test.mjs`. If the full packument is too large, use
-the abbreviated metadata endpoint; record which in the spec.
+`tests/update-check.test.mjs`. Data source (measured 2026-11-02): the full package document
+`https://registry.npmjs.org/joycraft`, 25 KB gzipped, is the only single request
+with `joycraft.summary` per version; the abbreviated document has no `joycraft`
+field. A real check took about 1.35 s, inside the 2 s deadline.

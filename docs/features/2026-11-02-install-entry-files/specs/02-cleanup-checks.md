@@ -1,6 +1,6 @@
 ---
 id: 2
-status: todo
+status: in-review
 ---
 # Cleanup finds dead pointers, unmapped pages and a long AGENTS.md
 

@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-wiring-check.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": true
@@ -40,7 +40,7 @@
       "id": 2,
       "file": "02-cleanup-checks.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": true
@@ -148,7 +148,7 @@
       "id": 5,
       "file": "05-map-growth.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": true
@@ -218,7 +218,7 @@
       "id": 7,
       "file": "07-update-notice.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": true
