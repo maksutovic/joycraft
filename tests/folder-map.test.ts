@@ -156,10 +156,13 @@ describe('tune drift check (advisory)', () => {
 });
 
 describe("Joycraft's own AGENTS.md", () => {
-  it('uses the map shape instead of a deep hand-maintained tree', () => {
+  it('links the folder layout from the context map instead of inlining a tree', () => {
     const agents = readFileSync(join(__dirname, '..', 'AGENTS.md'), 'utf-8');
-    expect(agents).toContain(FOLDER_MAP_OPEN);
+    expect(agents).toContain('`docs/context/architecture.md`');
+    expect(agents).not.toContain(FOLDER_MAP_OPEN);
     // No deep ascii tree remains (file-level entries three levels deep).
     expect(agents).not.toMatch(/│\s+│/);
+    const architecture = readFileSync(join(__dirname, '..', 'docs', 'context', 'architecture.md'), 'utf-8');
+    expect(architecture).toContain('## Folders');
   });
 });

@@ -1,8 +1,6 @@
 # Joycraft
 
-**What:** A CLI + Claude Code plugin that scaffolds and upgrades AI development harnesses. `npx joycraft@latest update` installs skills, templates, boundaries, and documentation structure into any project, taking it from Level 1 to Level 4 on Dan Shapiro's 5 Levels of Vibe Coding.
-
-**Component:** npm package (CLI) + agent skills (Claude Code, Codex, Pi, Copilot, omp) | **Updated:** 2026-09-06
+**What:** The `joycraft` npm package. Its CLI installs and updates Joycraft, a skill bundle and small runtime for agent-led software work, in any project, for Claude Code, Codex, Pi, Oh My Pi, GitHub Copilot CLI and OpenCode. The skills and runtime it ships are vendored into `payload/` from joycraft-prototype.
 
 ---
 
@@ -56,123 +54,14 @@ The scenarios repo is deliberately invisible to the coding agent. This is the ho
 
 ---
 
-## Architecture
+## Commands
 
-<!-- joycraft:folder-map -->
-| Folder | What lives here |
-|--------|-----------------|
-| `docs/` | Documentation |
-| `keller-coders-meetups/` | Meetup notes (not part of the tool) |
-| `scripts/` | generate-bundled-files.mjs (regen src/*-skills/), sync-skills.mjs (copy into installed trees), check-docs-sync.mjs (PR docs gate), ste-lint.py (vendored STE linter) |
-| `src/` | CLI + core logic (TypeScript); entry cli.ts, scaffold init.ts, upgrade.ts, detect.ts, improve-claude-md.ts, agents-md.ts |
-| `templates/` | Source-of-truth templates (development reference) |
-| `tests/` | Test suite + fixtures/ (real-world manifest files per stack) |
-| `docs/backlog/` | Deferred work, one file per item |
-| `docs/bugfixes/` | Per-area bugfix specs |
-| `docs/context/` | Knowledge layer — decision-log, shipped ledger, anchors, reference |
-| `docs/discoveries/` | Session surprises worth remembering |
-| `docs/features/` | Per-feature: brief.md, design.md, specs/ (+ .joycraft-spec-queue.json) |
-| `docs/guides/` | How-to guides |
-| `docs/max-discussion-transcripts/` | Discussion transcripts (gitignored content) |
-| `docs/plans/` | Planning docs |
-| `docs/reference/` | Cross-cutting reference (spec status lifecycle, knowledge lifecycle) |
-| `docs/research/` | Research notes and findings |
-| `docs/specs/` | Legacy flat specs (pre-feature-folder era) |
-| `docs/templates/` | Bundled output and reference templates |
-| `docs/vision/` | North-star vision docs (headless-joycraft) |
-| `src/arcade/` | Experimental playground |
-| `src/claude-skills/` | GENERATED from src/skills/ — never edit |
-| `src/codex-skills/` | GENERATED — Codex variants |
-| `src/copilot-skills/` | GENERATED — GitHub Copilot variants |
-| `src/local-skills/` | Repo-local maintainer skills — NOT bundled, never ship to npm |
-| `src/omp-skills/` | GENERATED — omp variants |
-| `src/pi-skills/` | GENERATED — Pi variants |
-| `src/skills/` | CANONICAL skill sources — edit here |
-| `src/templates/` | Bundled templates (copied to docs/templates/) |
+From `package.json` scripts; all four ran green on 2026-11-02.
 
-Past multi-team scale, replace this root map with nested per-directory instruction files (`joycraft-collaborative-setup`) — never a bigger tree.
-<!-- /joycraft:folder-map -->
-
-### Key Data Flow
-
-```
-npx joycraft@latest init|update            (1.0: src/cli.ts)
-  → a 0.7 install? print the migration plan and exit 1 (src/legacy-07.ts)
-      --migrate: archive known 0.7 files, keep knowledge, install 1.0, recoverable
-      rollback: restore the migration backup byte for byte (src/rollback.ts)
-  → else choose or reuse hosts; plan per file against .joycraft/installation.json
-  → back up edited Joycraft files, never replace foreign ones, write the manifest last (src/install-v1.ts)
-
-payload/  ← scripts/vendor-payload.mjs --tag field-N (never edit by hand; fix joycraft-prototype and re-vendor)
-```
-
----
-
-## Key Files
-
-| File | Purpose |
-|------|---------|
-| `src/detect.ts` | Stack detection — pure function, no side effects |
-| `src/payload.ts` + `src/install-v1.ts` | 1.0: the vendored payload, host mapping, install/update plan and apply, doctor |
-| `src/legacy-07.ts` + `src/rollback.ts` + `src/data/install-inventory.json` | 1.0: 0.7 detection, migration and rollback; known 0.7 bytes from every published release |
-| `scripts/vendor-payload.mjs` + `scripts/release-gates.mjs` | Vendor the field build into `payload/`; G10 gates against the packed tarball |
-| `src/folder-map.ts` | Check-shaped folder map — sentinel block regenerated at init/upgrade, drift-diffed by tune |
-| `src/init.ts` + `src/upgrade.ts` | Compatibility entry points that delegate to the unified updater |
-| `src/update.ts` + `src/update-plan.ts` + `src/update-transaction.ts` | One executing bundle, conservative per-file planning, atomic apply and guarded recovery |
-| `src/install-manifest.ts` | Shared/private installation authority and conservative legacy bridge |
-| `src/update-check.ts` + `src/auto-safe-update.ts` | Local discovery policy, quiet checks, and verified automatic-update gates |
-| `scripts/automatic-release.mjs` + `scripts/release-preparation.mjs` + `scripts/release-verification.mjs` | Automatic version preparation, retained tarball, and consumer verification |
-| `scripts/verify-publication.mjs` + `scripts/release-report.mjs` | Bounded registry visibility checks and validated report reuse across publish attempts |
-| `src/improve-claude-md.ts` | Merge logic for existing CLAUDE.md files — most complex logic |
-| `src/skills/` | Source-of-truth for all product skills — `src/claude-skills/`, `src/codex-skills/`, `src/pi-skills/`, `src/copilot-skills/`, `src/omp-skills/` are generated from it (never edit those directly) |
-| `src/local-skills/` | Repo-local maintainer skills (e.g. `release-docs-sync`). Transformed per-harness into the installed trees by `scripts/sync-skills.mjs`, but never bundled — nothing here ships to users |
-| `docs/features/<slug>/specs/` | Atomic specs for building Joycraft itself (per-feature queues) |
-
----
-
-## Development Workflow
-
-### Setup
 ```bash
-pnpm install
+pnpm install && pnpm build && pnpm typecheck && pnpm test
+pnpm build && node dist/cli.js init /tmp/test-project --yes   # try the CLI as npx would
 ```
-
-### Build
-```bash
-pnpm build
-```
-
-### Test
-```bash
-pnpm test
-```
-
-### Type Check
-```bash
-pnpm typecheck
-```
-
-### Test Locally (as if npx)
-```bash
-pnpm build && node dist/cli.js init /tmp/test-project
-```
-
-### Feature Development Flow
-```
-Read the relevant atomic spec in docs/features/<slug>/specs/
-→ Implement → Test → Capture discoveries → Commit
-```
-
----
-
-## Common Gotchas
-
-1. **Templates use project-relative paths.** Never reference `/Users/...` or Joycraft repo paths in templates or skills. They get copied into user projects where those paths don't exist.
-2. **CLAUDE.md merge is the hardest problem.** Improving an existing CLAUDE.md without destroying content requires section-level parsing. When in doubt, append rather than modify.
-3. **Skills must be self-contained.** A skill installed to `.claude/skills/` can't import from other files. All necessary context must be inline in the markdown.
-4. **Test against real project structures.** The fixtures in `tests/fixtures/` should mirror real-world manifest files, not minimal stubs.
-
----
 
 ## Execution Profile
 
@@ -184,13 +73,16 @@ Read the relevant atomic spec in docs/features/<slug>/specs/
 
 ## Context Map
 
-Keep this file lean — link out, don't inline. Long-form reference docs live in `docs/context/reference/`; this table points to what to read on demand.
+Keep this file lean: link out, don't inline. Read a document when its row applies.
 
 | Document | Read it when… |
 |----------|---------------|
 | `payload/.joycraft/references/artifacts.md` | Showing Max a brief, plan, review or questions — render the decision artifact |
+| `docs/context/architecture.md` | Finding where code lives, the 1.x install flow, the legacy 0.7 updater, or the folder layout |
 | `docs/context/decision-log.md` | Making or revisiting a product or release decision — check why it was decided first |
-| `docs/context/dangerous-assumptions.md` | Something the agent believes about this repo turned out false — check and add |
-| `docs/context/institutional-knowledge.md` | Looking for an unwritten convention or constraint |
+| `docs/context/shipped.md` | Checking what shipped in which release or PR |
 | `docs/context/production-map.md` | Touching npm publishing, CI release workflows or anything users install |
+| `docs/context/institutional-knowledge.md` | Looking for an unwritten convention or constraint |
+| `docs/context/dangerous-assumptions.md` | Something the agent believes about this repo turned out false — check and add |
+| `docs/context/anchors.md` | Scoring how sure you are of a claim in a brief, spec or review |
 | `docs/templates/reference/model-profile-claude-fable-5-1.md` | Working with Claude Fable 5.1 — finishing whole tasks, scope, progress updates, prose |

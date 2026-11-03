@@ -108,11 +108,16 @@ cleanup:
       docs: [docs/context/auction-rules.md]
 ```
 
-The file is yours: Joycraft reads it and never rewrites it.
+The file is yours: Joycraft reads it and never rewrites it. Run
+`node .joycraft/runtime/config.mjs` to see the settings in effect.
+
+The `afterArchive` command gets `JOYCRAFT_FEATURE`, `JOYCRAFT_ARCHIVE_PATH` and
+`JOYCRAFT_SOURCE_PATH` in its environment. Use it to update a wiki or run a doc
+audit. If the command fails, the archive stays done and the archive CLI exits 3.
 
 ### Keeping the workspace clean
 
-At the end of a session the agent runs three checks for you:
+At the end of a session the agent runs these checks for you:
 
 - `node .joycraft/runtime/status.mjs` finds specs whose text disagrees with the queue,
   and features that are finished but not archived.
@@ -127,7 +132,12 @@ At the end of a session the agent runs three checks for you:
   to "clean up the docs" and it shows the fixes for your approval.
 
 Tests name the acceptance criterion they check, `[AC:<criterion-id>]`, so the
-reviewing agent can see which criteria have a test.
+reviewing agent can see which criteria have a test. A criterion with no test is a
+finding for the reviewer, not an automatic FAIL.
+
+If your docs are step-by-step procedures, the agent can offer
+[Doc Detective](https://docs.doc-detective.com) to run them as tests. It is opt-in:
+the agent says what it does not cover and installs nothing without your yes.
 
 ## Answering questions: the decision page
 
@@ -163,8 +173,9 @@ project:
   adds to them and never removes them.
 
 All of it lives in your repository. Joycraft collects no data and does not call an AI
-model itself. Its only network use is the version check below. Joycraft 1.0 adds no
-hooks and changes no agent settings.
+model itself. Its only network use is the version check below. Joycraft adds no
+agent hooks and changes no agent settings. The `afterArchive` command above runs only
+if you set it.
 
 ## Updates
 
