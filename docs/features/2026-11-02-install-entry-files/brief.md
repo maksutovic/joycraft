@@ -142,9 +142,9 @@ decisions: [
   },
   {
     "id": "docclean",
-    "status": "open",
+    "status": "clarified",
     "question": "How should David's doc-cleanup come into Joycraft?",
-    "answer": null,
+    "answer": "merge",
     "options": [
       {
         "value": "merge",
@@ -174,9 +174,9 @@ decisions: [
   },
   {
     "id": "audit-on-setup",
-    "status": "open",
+    "status": "clarified",
     "question": "In an existing project, when does the doc audit first run?",
-    "answer": null,
+    "answer": "during-setup",
     "options": [
       {
         "value": "during-setup",
@@ -197,14 +197,16 @@ decisions: [
     ],
     "affected": [
       "map-setup",
-      "doc-audit"
-    ]
+      "doc-audit",
+      "context-skill"
+    ],
+    "note": "basically anytime after installation from a prompt, the user should go through some sort of interview to gather more context about the project from the user, as alot of folks will use this with existing projects, sometimes huge ones. We probably need to document an evokable joycraft skill as well that can add/remove context etc... i think we may already have this?"
   },
   {
     "id": "growth",
-    "status": "open",
+    "status": "clarified",
     "question": "How should session end grow the map?",
-    "answer": null,
+    "answer": "route-and-row",
     "options": [
       {
         "value": "route-and-row",
@@ -224,8 +226,10 @@ decisions: [
       }
     ],
     "affected": [
-      "map-growth"
-    ]
+      "map-growth",
+      "doc-audit"
+    ],
+    "note": "the key per david's comments as well is making sure we address drift/slop -- we need the archive of course to double check regressions, but we don't want to accidently write regressions into context, essentially when an agent starts fresh from a compaction, new session etc... it should see what the current state of play is as the source of truth, not have to climb 100 steps through each decision of how we got to today does that make sense?"
   }
 ]
 ---
@@ -276,13 +280,18 @@ brings in David's doc-cleanup method for keeping it true.
 
 ## map-setup
 
-After install, the agent builds the map from the project, not from a template
-(`writer`, `map`, `audit-on-setup`). The install prompt's step 3 leads into it.
-The agent:
+After every install from the prompt, the agent builds the map from the project,
+not from a template (`writer`, `map`, `audit-on-setup`). Many users install into
+existing, sometimes huge, projects, so the interview is part of every install, not
+only a new project's kickoff. The install prompt's step 3 leads into it. The
+agent:
 1. Reads the existing entry files, README and docs, and gives each doc a role:
-   entry, required, reference or historical.
-2. Interviews the user only for what the repo cannot tell: purpose, users,
-   constraints, decisions already made.
+   entry, required, reference or historical. In a large repo it reads the entry
+   docs and their pointers first, then works area by area, and says what it has
+   not read yet.
+2. Interviews the user for what the repo cannot tell: purpose, users, who owns
+   what, constraints, decisions already made, and which docs are trusted. It runs
+   the doc audit during setup (doc-audit) and asks about what it finds.
 3. Writes or extends AGENTS.md:
    - the Joycraft lines (skills exist, update check first, rendered documents)
    - a `## Context Map` with one row per real home and a read-when tied to real
@@ -331,9 +340,41 @@ home: a decision with its reason, a trap, a reference or a production fact. A ne
 home gets a map row; a changed home keeps its row and its read-when stays true.
 Feature intent stays in the brief.
 
-**Done when:** a session that records a new decision and a new trap ends with
-both in their homes, and the map reaches both. A session with nothing reusable
-changes no context file.
+The homes say what is true now. An agent that starts fresh, after a compaction or
+in a new session, reads the current state as the source of truth. It never has to
+replay a chain of decisions to learn how things are today (Max, with David's
+point on drift). So:
+- A changed fact is rewritten in place. No dated addenda, no "superseded by" notes
+  in live text, no stale table corrected by a footnote.
+- The reason and the rejected options go to the decision log. Finished work and
+  old versions go to the archive, where they remain for regression checks. The
+  archive is never read as current truth.
+- Nothing from the archive or an old decision is written back into a live home
+  without checking it against the code (no regressions written into context).
+
+**Done when:**
+- A session that records a new decision and a new trap ends with both in their
+  homes, and the map reaches both.
+- A session that changes an existing fact leaves one current statement in its
+  home, with the reason in the decision log and no addendum.
+- A session with nothing reusable changes no context file.
+
+## context-skill
+
+The user can add, change or remove project context by asking ("add this to the
+project context", "forget that rule", "what does the map say about billing"). 1.x
+has no skill for this: `joycraft-context` only finds context, and the 0.7 skills
+(`joycraft-add-context`, `joycraft-add-fact`, `joycraft-gather-context`) did not
+come into 1.0. This skill (or `joycraft-context`, extended) routes the change to
+its one home, updates the map row, and shows the diff before writing. Its
+description uses the words people say, so it is picked without being named.
+
+**Done when:**
+- "Add: we deploy on Fridays only" lands in its home with a map row.
+- "Remove the rule about Fridays" deletes it from the live home, leaves the
+  reason in the decision log, and leaves the map with no dangling row.
+- A meeting note or screenshot given to the agent becomes the facts it contains,
+  each in its home.
 
 ## doc-audit
 
@@ -386,6 +427,17 @@ branch `field/1.2-custom-answer`.
 **Done when:** a two-option decision shows three choices; "Something else" with
 no note is refused; with a note the brief records `answer: "custom"` and the note.
 
+## artifact-note-edit
+
+Max (2026-11-02): "once i save an answer, i can no longer add a note". A saved
+(clarified) decision turns its note box and save button off. A note must be
+addable and re-savable at any time; changing the chosen answer can still need a
+reopen.
+
+**Done when:** on a clarified decision the note box stays on, "Save this
+response" saves a changed note, the status and answer stay the same, and the
+brief records the new note.
+
 ## artifact-conflict
 
 Max (2026-11-02): "the buttons seem not to work". The brief changed after the page
@@ -408,8 +460,7 @@ install prompt match.
 Can start now: the failing install-to-setup fixture; the three cleanup checks;
 the update-notice fixes; the artifact-conflict fix.
 
-Blocked: the doc-audit skill text waits on `docclean`; setup ordering waits on
-`audit-on-setup`; the session-end text waits on `growth`.
+All decisions are answered. Next: decompose into specs.
 
 ## Scope and limits
 
