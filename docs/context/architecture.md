@@ -56,12 +56,11 @@ payload/  ← scripts/vendor-payload.mjs --tag field-N (never edit by hand; fix 
 | `docs/guides/`, `docs/reference/` | How-to guides; cross-cutting reference (spec and knowledge lifecycles) |
 | `docs/research/`, `docs/vision/`, `docs/plans/` | Research notes, north-star vision, planning docs |
 | `docs/specs/` | Legacy flat specs from before feature folders |
-| `docs/max-discussion-transcripts/` | Discussion transcripts (content gitignored) |
 | `keller-coders-meetups/` | Meetup notes; not part of the tool |
 
 ## Gotchas
 
 1. **Templates and skills use project-relative paths.** They are copied into user projects, where `/Users/...` or Joycraft repo paths do not exist.
 2. **User notes are additive.** Joycraft adds to `AGENTS.md` and `CLAUDE.md` and never removes content. When a merge is unclear, append rather than modify.
-3. **0.7 skills are self-contained.** A skill installed from `src/skills/` cannot import other files, so its context is inline. 1.x payload skills instead link `.joycraft/references/`.
+3. **0.7 skills are self-contained.** A skill installed from `src/skills/` cannot import other files, so its context is inline. 1.x payload skills instead link the references in `payload/.joycraft/references/`.
 4. **Fixtures mirror real projects.** Files in `tests/fixtures/` are real-world manifests, not minimal stubs.

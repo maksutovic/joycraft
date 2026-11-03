@@ -7,6 +7,13 @@
   var QUESTION_STATES = new Set(['open', 'assigned', 'clarified', 'settled', 'backlogged', 'discarded']);
 
   function fail(message) { throw new Error(message); }
+  // A stale-source rejection: the page should reload the source and keep the person's drafts.
+  function conflict(message, details) {
+    var error = new Error(message);
+    error.conflict = true;
+    Object.keys(details || {}).forEach(function (key) { error[key] = details[key]; });
+    throw error;
+  }
   function nonempty(value) { return typeof value === 'string' && value.trim().length > 0; }
   function own(object, key) { return Object.prototype.hasOwnProperty.call(object, key); }
 
@@ -49,7 +56,7 @@
       if (note !== undefined && typeof note !== 'string') fail('Answer notes must be strings.');
       if (note !== undefined && note.length > MAX_NOTE_LENGTH) fail('Answer notes cannot exceed 4000 characters.');
       if (option.requiresNote && !nonempty(note)) fail('This answer requires a note.');
-      if (mutation && question.status === 'clarified' && (question.answer !== response.answer || (question.note || '') !== (note || ''))) fail('Clarified responses can only be replayed exactly.');
+      if (mutation && question.status === 'clarified' && question.answer !== response.answer) fail('Reopen this decision to change its answer. Its note can change at any time.');
       seen.add(response.id);
       var answer = { id: response.id, answer: response.answer };
       if (note !== undefined && note !== '') answer.note = note;
@@ -90,7 +97,7 @@
   }
 
   function responseRevision(model, revision) {
-    if (revision !== model.source.revision) fail('Source changed. Refresh before saving responses.');
+    if (revision !== model.source.revision) conflict('Source changed after this page loaded. Reload it before saving responses.', { revision: model.source.revision });
   }
 
   function requestedAnswers(model, request) {
@@ -128,7 +135,11 @@
       try { payload = await response.json(); } catch (_) { fail('Local response service returned invalid JSON.'); }
       if (!response || !response.ok) {
         var detail = payload && (payload.error || payload.message);
-        fail(typeof detail === 'string' && detail ? detail : 'Local response service rejected the request' + (response && response.status ? ' (' + response.status + ')' : '') + '.');
+        var text = typeof detail === 'string' && detail ? detail : 'Local response service rejected the request' + (response && response.status ? ' (' + response.status + ')' : '') + '.';
+        if (payload && payload.conflict) conflict(text, { status: response.status, revision: payload.revision, viewRevision: payload.viewRevision });
+        var error = new Error(text);
+        if (response && response.status) error.status = response.status;
+        throw error;
       }
       return payload;
     }

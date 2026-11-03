@@ -7,6 +7,69 @@ claim that a release has shipped.
 
 ---
 
+## 1.1.2 — The agent builds and keeps the context map
+
+Since 1.0, installing into an existing project left AGENTS.md and CLAUDE.md as they
+were, so the agent never learned about the context map or the skills. From Max's and
+David Moshal's field feedback.
+
+### What's new
+
+- **Setup after every install.** The install prompt's step 3 now has the agent read
+  your docs, give each a role, audit them, interview you for what the repo cannot
+  tell it, and propose the context map, the Joycraft lines in AGENTS.md and the
+  `@AGENTS.md` import in CLAUDE.md. It shows the changes on a page and writes them
+  only on your yes. Your existing map rows and rules are kept byte for byte. A large
+  project is mapped area by area.
+- **Wiring report.** `init` and `update` end by checking AGENTS.md and CLAUDE.md with
+  `.joycraft/runtime/wiring.mjs`. When the project is not wired up, they list what is
+  missing and print the sentence to give the agent: "Set up Joycraft's context map".
+  They never edit those files. `doctor` lists the same findings as advice; its exit
+  code still reflects only install problems. `--plan --json` has a `wiring` field.
+  The entry skill runs the same check and sets up first. The CLI always runs its own copy of the
+  check, never the project's, and `--plan` checks CLAUDE.md for the hosts you chose.
+- **The map grows and stays current.** New `.joycraft/references/knowledge.md`: one
+  home per fact; a changed fact is rewritten in place; the reason goes to the
+  decision log; history stays out of live pages. Session end adds a map row for each
+  new home.
+- **Add or remove context by asking.** `joycraft-context` now also adds, changes and
+  removes project context ("add this to the project context", "remove that rule",
+  meeting notes), and shows the change first.
+- **Doc audit from doc-cleanup.** `joycraft-cleanup` follows
+  [doc-cleanup](https://github.com/aka-luan/doc-cleanup) by aka-luan (MIT, notice in
+  `.joycraft/references/doc-cleanup-LICENSE.md`), brought in by David Moshal: inventory,
+  diagnose against the code, report and stop, apply only what you approve, verify.
+  It trims a long AGENTS.md into linked pages and never moves or rewords a rule.
+  Session end runs the audit without being asked: on what the session touched, and
+  on the whole project after a feature is archived. The findings go on the
+  session-end page, and only the fixes you approve are applied.
+  `cleanup.mjs` adds `missing-path`, `unmapped` and `entry-size` (1,000 words by
+  default, `cleanup.entryWords` in `joycraft.yaml`), and runs in linear time.
+- **Update prompt.** It says `patch`, `minor` or `migration` correctly (1.0.0 → 1.1.1
+  used to say "patch"), lists each release since yours with its summary, and links
+  this changelog. Automatic updates apply only patches. The check now reads npm's
+  package document (about 25 KB compressed) once a day.
+- **Decision page.** Every question offers "Something else" with a required note. A
+  saved answer keeps its note box. When the brief changes under an open page, the
+  page names the changed questions, keeps your other answers, and says why a save
+  button is disabled.
+- **Review loop finds undeclared packages** ([#89](https://github.com/maksutovic/joycraft/issues/89),
+  from David Moshal). In a repo with no workspaces and no root manifest,
+  `review-tools.mjs plan` printed an empty table. It now finds the manifests below
+  the root that git does not ignore. `--packages <dir,dir>` names the folders on
+  `plan`, `install` and `record`. When nothing is found it says so, and `record`
+  refuses to write an empty table.
+- **Pages show where you work.** A page you must read or answer opens in the host's
+  own viewer when it has one (the Claude Code desktop app's browser pane or
+  artifacts), in the system browser at a terminal, and nowhere in a non-interactive
+  run (`claude -p`, `codex exec`, CI), where the agent prints the path.
+
+### Note
+
+This release changes what an install leads to: after `init`, the agent proposes
+edits to AGENTS.md and CLAUDE.md. Nothing is written without your yes, and the CLI
+itself still writes neither file.
+
 ## 1.1.1 — Fixes from the re-reviews
 
 An independent re-review of the 1.0.1 and 1.1 fixes found these. Each has a test.

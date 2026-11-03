@@ -19,8 +19,10 @@ Install Joycraft in this project.
 2. Ask me which coding agents I use in this project (default: you). Then run
    `npx joycraft@latest init . --harness <agents> --yes`.
    If it finds Joycraft 0.7, stop and show me its migration plan.
-3. Use the joycraft-entry skill to set up this project. If the project is new or empty,
-   ask me what I want to build.
+3. Use the joycraft-entry skill to set up Joycraft's context map. Read the project's
+   docs, interview me about what the repo cannot tell you, then show me the
+   AGENTS.md and CLAUDE.md changes on a page before you write them. If the project
+   is new or empty, ask me what I want to build.
 4. Run `node .joycraft/runtime/review-tools.mjs plan --root .`. Tell me which tools
    you need to check your own work, which ones I have, and which ones are missing.
    Ask me before you install anything.
@@ -63,10 +65,22 @@ says when to read it. The documents live in `docs/context/`: what the project is
 who it is for, the decisions you made and why. Before each piece of work, the agent
 uses the map to find the documents and the code that apply.
 
+**After you install, the agent builds the map with you.** It reads your docs, gives
+each one a role, checks what they claim against the code, and asks you what the repo
+cannot tell it. Then it shows you the AGENTS.md and CLAUDE.md changes on a page and
+writes them only on your yes. In a large project it maps the main docs first and
+the rest of the project as work reaches it. If Joycraft is not wired into AGENTS.md
+yet, `init`, `update` and `doctor` say so, and the agent sets it up before any other
+Joycraft work.
+
 The map grows with the project:
 
-- **New facts go to one home.** When you decide something, the agent records it in
-  the decision log. It updates an existing document; it does not make a copy.
+- **New facts go to one home.** When you decide something, the agent records it
+  where it belongs and gives a new document a row in the map. It updates an
+  existing document; it does not make a copy.
+- **The map says what is true now.** A changed fact is rewritten in place. The
+  reason goes to the decision log and old versions stay in Git and the archive, so
+  a fresh session reads the current state instead of replaying history.
 - **Finished work becomes history.** A completed feature moves to `docs/archive/`.
   The agent can check it later to catch a regression.
 - **Mistakes become lessons.** When the checking agent fails a spec, the cause can
@@ -74,8 +88,10 @@ The map grows with the project:
 - **Ideas for later stay visible.** A choice you put off is marked "backlogged". It
   stays out of the current work, but it is not lost.
 
-You can feed it too. Give your agent meeting notes, a photo of a whiteboard or a
-screenshot, and ask it to add what matters to the project context. This gives the
+You can feed it too. Say "add this to the project context", "remove that rule" or
+"what does the map say about billing", or give your agent meeting notes, a photo of
+a whiteboard or a screenshot. It puts each fact in its home, keeps the map right, and
+shows you the change first. This gives the
 agent both views: the whole project and the detail of the current step.
 
 ### What in `docs/` is current
@@ -128,8 +144,16 @@ At the end of a session the agent runs these checks for you:
   so a second session's instructions do not reach the first session's workers.
 - `node .joycraft/runtime/cleanup.mjs` reports stale or unreachable project
   knowledge: finished features not archived, context pages that link to working
-  material, broken or orphaned pages, and pages whose code changed. Ask your agent
-  to "clean up the docs" and it shows the fixes for your approval.
+  material, broken, missing or unmapped pages, an AGENTS.md over its word budget,
+  and pages whose code changed.
+- The doc audit, based on [doc-cleanup](https://github.com/aka-luan/doc-cleanup),
+  runs at every session end without being asked. It covers AGENTS.md, CLAUDE.md, the
+  docs the session changed and the pages they link; after a feature is archived, the
+  whole project. It checks each claim against the code, keeps your rules and traps,
+  puts its findings on the session-end page, and changes nothing until you approve.
+  Ask your agent to "clean up the docs" for a full audit at any time.
+- `node .joycraft/runtime/wiring.mjs` reports whether AGENTS.md has the Joycraft
+  lines and a real context map, and whether CLAUDE.md imports it.
 
 Tests name the acceptance criterion they check, `[AC:<criterion-id>]`, so the
 reviewing agent can see which criteria have a test. A criterion with no test is a
@@ -143,8 +167,11 @@ the agent says what it does not cover and installs nothing without your yes.
 
 When the agent needs you to choose between options, it shows the questions on a
 decision page instead of in chat. Each question shows its context, its options and
-what it affects. You pick an answer, add a note if you want, and save. The answers
-go into the brief, so the agent does not ask again.
+what it affects. You pick an answer, or "Something else" and say what you want, add
+a note if you want, and save. You can add or change a note after saving. If the
+brief changes while the page is open, the page names the questions that changed and
+keeps your other answers. The answers go into the brief, so the agent does not ask
+again.
 
 Sometimes the agent forgets and lists the options in chat. Then say:
 
@@ -181,7 +208,9 @@ if you set it.
 
 At the start of a session, your agent checks npm for a newer Joycraft, at most once a
 day. The check sends no project data. If there is a new version, the agent tells you
-what changed and asks: update now, not now, or turn off. On a yes, it does the update
+whether it is a patch, a minor release or a migration, lists each release since
+yours, and asks: update now, not now, or turn off. Automatic updates apply only
+patches. On a yes, it does the update
 for you, checks the result, and tells you what is different. A new major version is
 always your choice.
 
@@ -233,6 +262,7 @@ should forget:
 - **Theo Browne** ([t3.gg](https://t3.gg)): measure which notes an agent actually reads, and keep `AGENTS.md` short and directional.
 - **Lauren** (Cursor): prefer fixes in this order: architecture, then lint and CI, then skills and rules, then asking a human.
 - **Robert C. Martin**: impose values, not disciplines.
+- **aka-luan** ([doc-cleanup](https://github.com/aka-luan/doc-cleanup), MIT), brought to Joycraft by **David Moshal**: Joycraft's doc audit follows its method. Treat every doc claim as a hypothesis and the code as the evidence.
 
 The levels this project aims at are Dan Shapiro's. See [The levels](docs/guides/levels.md).
 

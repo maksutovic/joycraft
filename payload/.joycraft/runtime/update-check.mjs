@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 // Daily check for a newer Joycraft. Prints nothing unless there is something to say,
-// and never fails a session. The request is the package metadata only.
+// and never fails a session. The one request reads the public package document
+// (every version's metadata, about 25 KB compressed), never project data.
 import { lstatSync, mkdirSync, openSync, closeSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const registry = 'https://registry.npmjs.org/joycraft/latest';
+const registry = 'https://registry.npmjs.org/joycraft';
+const changelog = 'https://github.com/maksutovic/joycraft/blob/main/CHANGELOG.md';
+const listed = 5;
 const day = 24 * 60 * 60 * 1000;
 const retryAfter = 60 * 60 * 1000;
 const snoozeFor = 7 * day;
@@ -51,7 +54,11 @@ export function isNewer(candidate, installed) {
   return false;
 }
 
-const updateKind = (latest, installed) => latest.split('.')[0] === installed.split('.')[0] ? 'patch' : 'migration';
+export function updateKind(latest, installed) {
+  const [major, minor] = latest.split('.'), [fromMajor, fromMinor] = installed.split('.');
+  if (BigInt(major) !== BigInt(fromMajor)) return 'migration';
+  return BigInt(minor) === BigInt(fromMinor) ? 'patch' : 'minor';
+}
 const oneLine = value => typeof value === 'string' ? value.replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 300) : '';
 
 function holdLock(root) {
@@ -74,10 +81,17 @@ async function latestRelease(root, { fetcher, now }) {
   try {
     const response = await fetcher(registry, { signal: AbortSignal.timeout(deadline), headers: { accept: 'application/json' } });
     if (!response.ok) throw new Error(`registry ${response.status}`);
-    const metadata = await response.json();
-    if (typeof metadata?.version !== 'string' || !stable.test(metadata.version)) throw new Error('not a stable release');
-    const notes = metadata.joycraft?.release === metadata.version ? metadata.joycraft : {};
-    const fresh = { fetchedAt: now, version: metadata.version, summary: oneLine(notes.summary), autoSafeEligible: notes.autoSafeEligible === true };
+    const packument = await response.json();
+    const version = packument?.['dist-tags']?.latest;
+    const versions = packument?.versions;
+    if (typeof version !== 'string' || !stable.test(version) || !versions || typeof versions !== 'object' || !versions[version]) throw new Error('not a stable release');
+    const notesOf = key => versions[key]?.joycraft?.release === key ? versions[key].joycraft : {};
+    const releases = Object.keys(versions)
+      .filter(key => stable.test(key) && !isNewer(key, version))
+      .sort((a, b) => isNewer(a, b) ? 1 : isNewer(b, a) ? -1 : 0)
+      .map(key => ({ version: key, summary: oneLine(notesOf(key).summary) }));
+    const notes = notesOf(version);
+    const fresh = { fetchedAt: now, version, summary: oneLine(notes.summary), autoSafeEligible: notes.autoSafeEligible === true, releases };
     writeLocal(root, 'update-check.json', fresh);
     return fresh;
   } catch {
@@ -99,8 +113,24 @@ export async function check(root, { fetcher = fetch, now = Date.now() } = {}) {
   const kind = updateKind(latest, installed);
   const summary = cache.summary || 'See the changelog for what changed.';
   if (update.pin === true) return { action: 'note', installed, latest, kind, message: `Joycraft ${latest} is available. This project stays on ${installed} by choice.` };
+  const releases = sinceInstalled(cache, installed, latest);
   const action = policy === 'auto-safe' && kind === 'patch' && cache.autoSafeEligible === true ? 'apply' : 'ask';
-  return { action, installed, latest, kind, summary, message: `Joycraft ${latest} is available (you have ${installed}; ${kind}). ${summary}` };
+  return { action, installed, latest, kind, summary, releases, changelog, message: `Joycraft ${latest} is available (you have ${installed}; ${kind}). ${describe(releases)} Changelog: ${changelog}` };
+}
+
+/** Releases after the installed one up to latest, newest first. A cache from before release lists holds only latest. */
+function sinceInstalled(cache, installed, latest) {
+  const known = Array.isArray(cache.releases) ? cache.releases : [{ version: latest, summary: cache.summary }];
+  return known
+    .filter(entry => typeof entry?.version === 'string' && stable.test(entry.version) && isNewer(entry.version, installed) && !isNewer(entry.version, latest))
+    .map(entry => ({ version: entry.version, summary: oneLine(entry.summary) }))
+    .reverse();
+}
+
+function describe(releases) {
+  const shown = releases.slice(0, listed).map(entry => `${entry.version}: ${entry.summary || 'no summary.'}`.replace(/([^.!?])$/, '$1.'));
+  const more = releases.length - shown.length;
+  return `${shown.join(' ')}${more > 0 ? ` and ${more} more.` : ''}`;
 }
 
 function savePreference(root, change) {

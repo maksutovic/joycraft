@@ -61,6 +61,14 @@ html[data-jca-theme] body { margin: 0; background: var(--canvas); color: var(--i
 .jca-message-success { border-color: var(--accent); background: var(--accent-soft); }
 .jca-message-quiet { color: var(--muted); }
 .jca-actions { display: flex; flex-wrap: wrap; gap: .55rem; margin: .8rem 0 1rem; }
+.jca-source-notice { margin: 1.2rem 0; padding: .8rem 1rem; border: 1px solid var(--accent); border-left-width: 4px; border-radius: 8px; background: var(--accent-soft); font-size: .92rem; }
+.jca-source-notice h2 { margin: 0 0 .45rem; font-size: 1rem; }
+.jca-source-notice p, .jca-source-notice ul { margin: .4rem 0; }
+.jca-source-notice a { color: var(--accent); }
+.jca-source-notice-error { border-color: var(--error); background: var(--error-bg); }
+.jca-source-notice-error h2, .jca-source-notice-error > p:first-of-type { color: var(--error); }
+.jca-changed { margin: 0 0 1rem; color: var(--error); font-size: .9rem; font-weight: 650; }
+.jca-visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .joycraft-artifact button { appearance: none; border: 1px solid var(--control-line); border-radius: 8px; padding: .56rem .82rem; color: var(--accent); background: var(--paper); font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer; }
 .joycraft-artifact button:hover { border-color: var(--accent); background: var(--accent-soft); }
 .joycraft-artifact .jca-save-one, .joycraft-artifact [data-jca-save-all] { color: var(--accent-text); background: var(--accent); border-color: var(--accent); }

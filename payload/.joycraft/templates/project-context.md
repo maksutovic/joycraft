@@ -1,6 +1,6 @@
 # <Project name>
 
-Copy to `docs/context/project.md` during a kickoff. Delete every section that
+Copy to `docs/context/project.md` during a kickoff or setup. Delete every section that
 has no content yet; never leave a placeholder. Mark each statement as the
 user's words, a decision, or an assumption.
 
@@ -26,6 +26,11 @@ What this project will not do, as the user stated it.
 
 | Term | Meaning, in the user's words |
 |---|---|
+
+## Not yet mapped
+
+- One item per project area setup has not read yet (a folder or component).
+  Remove an item once its area is mapped; keep no history here.
 
 ## Open questions
 

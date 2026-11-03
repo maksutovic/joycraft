@@ -14,13 +14,32 @@ artifact CSS, JavaScript, or a second copy of the brief. Keep questions useful:
 one material choice can be enough. Use the existing product UI slice for a
 choice that depends on trying the actual product behavior.
 
+## Showing a page
+
+Every page a person must read or answer (a decision artifact, a setup diff, a
+review) is shown where they are working, and you always say its path:
+
+1. **The host has a viewer.** When your tools include one (the Claude Code
+   desktop app's browser pane or artifact tool, an editor preview), open the
+   page there. Do not hand it to the system browser.
+2. **A person at a terminal, no viewer.** Open it in the system browser (`open`,
+   `xdg-open` or `start`).
+3. **No person watching.** In a non-interactive run (`claude -p`, `codex exec`,
+   CI), open nothing; print the path. Signals: `CLAUDE_CODE_SESSION_ATTENDED=0`,
+   `CODEX_CI=1`, `CI` set, or no terminal. These beat `CLAUDE_CODE_ENTRYPOINT`,
+   which a nested run inherits from the app that started it.
+
 ## Decisions and view data
 
 A brief decision keeps its existing `id`, `status`, `question`, `answer`,
 `options`, and `affected` fields. Artifact views also support an optional
 `description` on an option and `requiresNote: true` when that option needs a
-short explanation. The canonical answer remains the declared option `value`,
-including a `custom` value. Store the human's exact words separately as that
+short explanation. Every question also offers "Something else" (value `custom`,
+note required), so the person can always answer in their own words; do not
+declare it unless you want different wording. The canonical answer remains an
+option `value`, including `custom`. A saved answer keeps its note box: the
+person can add or change the note and save again without reopening. Changing
+the chosen answer still needs a reopen. Store the human's exact words separately as that
 decision's note; never replace the canonical answer with free-form text.
 
 The view data has this shape:

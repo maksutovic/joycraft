@@ -35,8 +35,6 @@ any feature listed as ready to archive. Then preview
 `node .joycraft/runtime/worktrees.mjs prune` and apply it with `--apply`: it
 removes only clean, integrated trees of done specs and keeps failed, blocked or
 unknown trees with their reason. Report kept trees and their size from `list`.
-Then run `node .joycraft/runtime/cleanup.mjs` and report its findings; offer
-`joycraft-cleanup` when any remain.
 When this session coordinated a queue and no work on it remains, release the
 lease with `node .joycraft/runtime/coordinator.mjs release --queue <queue> --session <your-session-id>`. See [worker isolation](../../../.joycraft/references/worktrees.md)
 when the session used parallel mutable workers.
@@ -46,7 +44,14 @@ that condition and arrange a fresh review after it is corrected. Do not create
 an unchanged-code fix round. The existing completion process remains the sole
 owner of acceptance and status changes.
 
-Before archival, update the existing owning context reference and its pointers only when accepted work established reusable project knowledge: record the affected boundary, current coupled sources, observable check, and known limit. Keep accepted observations distinct from proposals, and leave product choices in the brief's decision authority rather than copying them into a competing context record. Do not create a global map or rewrite unrelated context for a local change.
+Before ending, and before any archival, route each reusable fact the session established (a decision with its reason, a trap, a reference, a production fact) to its one home per [knowledge guidance](../../../.joycraft/references/knowledge.md). Rewrite a changed fact in place and put its reason in the decision log; add a context-map row for a new home; keep each touched row's "read when" true. Leave feature intent in the brief. A session with nothing reusable changes no context file.
+
+Then audit the docs without being asked: run `joycraft-cleanup` in its
+session-end mode. Its scope is AGENTS.md, CLAUDE.md, every doc this session
+changed and the context pages they link; after a feature is archived, the whole
+project. Put its findings on the session-end page with the rest of the report and
+apply only the fixes the user approves there. With no findings, say so in one
+line.
 
 When independent reports suggest a reusable failure lesson, use the compact, conditional process in [recurring failure guidance](../../../.joycraft/references/recurring-failures.md): keep only a source-linked shortlist in active task material, inspect current sources before relying on history, and route any proposed lesson as exact next-worker inputs through the existing dispatch path.
 

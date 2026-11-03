@@ -1,6 +1,6 @@
 ---
 name: joycraft-entry
-description: Set up missing project guidance on first use, then turn a repair, feature, or mixed request into a context-backed brief and the next useful action.
+description: Start any Joycraft work. After Joycraft is installed, or when asked to "set up Joycraft" or "check the context map", read the project, interview the user and build the context map in AGENTS.md; then turn a repair, feature, or mixed request into a context-backed brief and the next useful action.
 compatibility: Setup and routing helpers require Node.js 22+ and the installed .joycraft runtime only when used; ordinary brief and context navigation has no project-stack prerequisite.
 ---
 
@@ -8,12 +8,23 @@ Run `node .joycraft/runtime/update-check.mjs check` first, once per session. If 
 prints nothing, say nothing. If it prints JSON, follow
 [updates](../../../.joycraft/references/update.md).
 
+Then run `node .joycraft/runtime/wiring.mjs --root .`. The CLI cannot write
+the project's context map, because it knows nothing about the project; you
+build it. When the check exits 2, or right after an install, or when the user
+asks to set up Joycraft or check the context map, say in one line that you are
+setting up Joycraft's context map first, follow
+[setup](../../../.joycraft/references/setup.md), then continue the original
+request. A read-only request gets the findings reported, not written.
+
+The check's `advice` lists `unmapped-areas`: the areas setup has not read yet,
+kept under `## Not yet mapped` in the project context page. When a request
+touches a listed area, map that area first: read it, propose its map rows and
+homes, write them on the user's yes, and remove the area from the list. Advice
+alone does not start a full setup.
+
 Read existing project instructions first. During an upgrade, inspect the installed
 manifest’s `legacyConflicts` and reconcile competing old skill discovery before
-using routing advice; preserved custom content is not a completed migration. On first use, explicit setup/init, or
-when shared guidance or its context pointers are missing, follow
-[first-use setup](../../../.joycraft/references/setup.md). Establish the missing knowledge homes
-from the current request and repository facts, preserving existing guidance.
+using routing advice; preserved custom content is not a completed migration.
 On a bare project, offer the
 [kickoff](../../../.joycraft/references/setup.md#kickoff-for-a-new-project)
 in one line before any brief or scaffold, and run it when the user asks for it on
@@ -21,8 +32,7 @@ any project. On first entry, setup and upgrade, also run the review-loop plan in
 [review loop tools](../../../.joycraft/references/setup.md#review-loop-tools);
 install nothing without the user's yes.
 Continue the user's work after setup; setup alone does not require a feature
-brief, spec queue, app scaffold, or a new interview. A read-only request stays
-read-only; report missing setup without writing it.
+brief, spec queue or app scaffold.
 
 Before assigning work, read `.joycraft/preferences.json` when it exists. Reuse
 its explicit model, effort, role, concurrency, and verification choices, then
@@ -74,7 +84,8 @@ says `docs/features`, `docs/archive` or `docs/context`.
 
 **Show documents as pages.** A brief, plan, spec set or review that the user must
 read or approve is also rendered, never left as Markdown in chat: the decision
-artifact for a brief, an HTML page for anything else. Open it and say where it is.
+artifact for a brief, an HTML page for anything else. Show it as
+[showing a page](../../../.joycraft/references/artifacts.md#showing-a-page) says and give its path.
 If the project's `AGENTS.md` lacks this rule or its context-map row for
 `.joycraft/references/artifacts.md`, add them as `setup.md` describes.
 

@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join, resolve } from 'path';
 import { createInterface } from 'node:readline/promises';
-import { applyInstall, doctor, formatPlan, planInstall, readManifest, recordedHosts, recoverInstall } from './install-v1.js';
+import { applyInstall, checkWiring, doctor, formatPlan, formatWiring, WIRING_SENTENCE, planInstall, readManifest, recordedHosts, recoverInstall } from './install-v1.js';
 import { detectLegacy, formatLegacyPlan, migrateLegacy, planLegacy, recoverLegacy } from './legacy-07.js';
 import { applyRollback, formatRollback, planRollback } from './rollback.js';
 import { detectHost, HOST_LABELS, HOSTS, parseHosts, type Host } from './payload.js';
@@ -100,10 +100,12 @@ async function install(dir: string, opts: InstallOptions, mode: 'init' | 'update
     }
     if (!(await approved(opts, formatLegacyPlan(plan, false), 'Migrate to Joycraft 1.0?'))) return;
     const result = migrateLegacy(plan, { keep });
-    out(opts.json, result, [
+    const wiring = await checkWiring(root);
+    out(opts.json, { ...result, wiring }, [
       `Migrated to Joycraft ${plan.install.to.joycraft}. ${result.archived.length} 0.7 file(s) archived in ${result.backup}/.`,
       ...(result.keptCustom.length ? [`Kept in place: ${result.keptCustom.join(', ')}`] : []),
       `Undo with: npx joycraft@latest rollback`,
+      ...formatWiring(wiring),
     ].join('\n'));
     return;
   }
@@ -116,18 +118,28 @@ async function install(dir: string, opts: InstallOptions, mode: 'init' | 'update
   }
   const hosts = await chooseHosts(root, opts);
   const plan = planInstall(root, hosts);
-  if (opts.plan) { out(opts.json, plan, formatPlan(plan)); return; }
+  if (opts.plan) {
+    // Nothing records the hosts yet, so the check is told which ones were chosen.
+    const wiring = await checkWiring(root, { hosts });
+    out(opts.json, { ...plan, wiring }, [formatPlan(plan), ...formatWiring(wiring, '  ', { planned: true })].join('\n'));
+    return;
+  }
   if (!plan.actions.some((action) => action.kind !== 'conflict') && !plan.gitignore.length) {
-    out(opts.json, { status: 'noop', exitCode: 0, version: plan.to.joycraft, hosts, plan }, `Joycraft ${plan.to.joycraft} is up to date for ${hosts.join(', ')}.`);
+    const wiring = await checkWiring(root);
+    out(opts.json, { status: 'noop', exitCode: 0, version: plan.to.joycraft, hosts, plan, wiring },
+      [`Joycraft ${plan.to.joycraft} is up to date for ${hosts.join(', ')}.`, ...formatWiring(wiring)].join('\n'));
     return;
   }
   if (!(await approved(opts, formatPlan(plan), installed ? 'Update Joycraft?' : 'Install Joycraft?'))) return;
   const result = applyInstall(plan);
-  out(opts.json, { status: 'applied', exitCode: 0, version: plan.to.joycraft, hosts, ...result }, [
+  // Report only: the CLI never writes AGENTS.md or CLAUDE.md; the agent wires them up.
+  const wiring = await checkWiring(root);
+  out(opts.json, { status: 'applied', exitCode: 0, version: plan.to.joycraft, hosts, ...result, wiring }, [
     `${installed ? 'Updated' : 'Installed'} Joycraft ${plan.to.joycraft} for ${hosts.join(', ')}: ${result.written.length} written, ${result.removed.length} removed.`,
     ...(result.backup ? [`Previous files are in ${result.backup}/.`] : []),
     ...result.conflicts.map((path) => `Kept your file (not installed): ${path}`),
-    ...(installed ? [] : ['Next: open your coding agent here and say what you want to build. Joycraft sets up the rest.']),
+    ...(installed || wiring?.findings.length ? [] : ['Next: open your coding agent here and say what you want to build. Joycraft sets up the rest.']),
+    ...formatWiring(wiring),
   ].join('\n'));
 }
 
@@ -180,11 +192,15 @@ program
   .description('Check the Joycraft install against its manifest')
   .argument('[dir]', 'Project directory', '.')
   .option('--json', 'Print machine-readable output')
-  .action((dir: string, opts: { json?: boolean }) => {
+  .action(async (dir: string, opts: { json?: boolean }) => {
     const result = doctor(dir);
-    out(opts.json, result, !result.installed ? 'Joycraft is not installed here.'
+    // Wiring is advice: it is listed, but only install problems set the exit code.
+    const wiring = result.installed ? await checkWiring(dir) : null;
+    out(opts.json, { ...result, wiring }, !result.installed ? 'Joycraft is not installed here.'
       : [`Joycraft ${result.tag}: ${result.ok ? 'ok' : 'needs attention'}`, ...result.missing.map((path) => `  missing: ${path}`),
-        ...result.edited.map((path) => `  edited: ${path}`)].join('\n'));
+        ...result.edited.map((path) => `  edited: ${path}`),
+        ...(wiring?.findings ?? []).map((finding) => `  advice (${finding.path}): ${finding.detail}`),
+        ...(wiring?.findings.length ? [`  To wire it up, tell your agent: "${WIRING_SENTENCE}"`] : [])].join('\n'));
     if (!result.ok) process.exitCode = 1;
   });
 

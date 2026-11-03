@@ -41,6 +41,39 @@
     });
   }
 
+  // What a person decides from: the question, its options, and its recorded state.
+  function questionSignature(question) {
+    return JSON.stringify({
+      question: question.question || '',
+      options: (question.options || []).map(function (option) {
+        return { value: option.value, label: option.label || '', description: option.description || '', requiresNote: Boolean(option.requiresNote) };
+      }),
+      status: question.status || '',
+      answer: question.answer == null ? null : question.answer,
+      note: question.note == null ? '' : question.note
+    });
+  }
+
+  // Questions that differ between two models: changed, added or removed, in display order.
+  function changedQuestions(before, after) {
+    var oldQuestions = (before && before.questions) || [];
+    var newQuestions = (after && after.questions) || [];
+    var oldById = Object.create(null);
+    oldQuestions.forEach(function (question) { oldById[question.id] = question; });
+    var newIds = Object.create(null);
+    var changes = [];
+    newQuestions.forEach(function (question) {
+      newIds[question.id] = true;
+      var previous = oldById[question.id];
+      if (!previous) changes.push({ id: question.id, question: question.question || question.id, change: 'added' });
+      else if (questionSignature(previous) !== questionSignature(question)) changes.push({ id: question.id, question: question.question || question.id, change: 'changed' });
+    });
+    oldQuestions.forEach(function (question) {
+      if (!newIds[question.id]) changes.push({ id: question.id, question: question.question || question.id, change: 'removed' });
+    });
+    return changes;
+  }
+
   function mount(config) {
     if (!config || !config.element) throw new Error('JoycraftArtifacts.mount requires an element.');
     var root = config.element;
@@ -56,12 +89,20 @@
     var saving = false;
     var destroyed = false;
     var copyFallback = '';
-    var sourceChanged = false;
+    // Persistent notice after the brief changed under this page. It stays until dismissed,
+    // so selecting options (which updates the status line) never hides it.
+    var sourceNotice = null;
+    // The notice element is created once and reused, so a re-render does not re-announce it.
+    var noticeElement = null, noticeKey = '';
     var message = transport ? 'Loading saved responses…' : 'Read-only preview. A response transport is not available.';
     var messageKind = transport ? 'quiet' : 'notice';
 
     function isReadOnly(question) {
       return !writable || ['clarified', 'settled', 'backlogged', 'discarded'].indexOf(question.status) !== -1;
+    }
+    // A saved answer keeps its note open: the note can be added or changed and saved again.
+    function canEditNote(question) {
+      return writable && (!isReadOnly(question) || question.status === 'clarified');
     }
     function dirty() { return !sameResponses(draft, saved); }
     function setMessage(kind, value) { messageKind = kind; message = value; }
@@ -87,11 +128,11 @@
 
     function unsavedAnswers() { return copiedResponses(draft).filter(function (item) {
         var q = model.questions.find(function (candidate) { return candidate.id === item.id; });
-        return q && !isReadOnly(q) && !sameResponses({ value: item }, { value: saved[item.id] || {} });
+        return q && canEditNote(q) && !sameResponses({ value: item }, { value: saved[item.id] || {} });
       }); }
 
     async function save(question) {
-      if (!transport || !writable || saving || loading || sourceChanged) return;
+      if (!transport || !writable || saving || loading) return;
       var pendingAnswers = unsavedAnswers();
       var problem = question ? validation(question) : pendingAnswers.map(function (item) {
         var q = (model.questions || []).filter(function (candidate) { return candidate.id === item.id; })[0];
@@ -105,15 +146,46 @@
         var result = await transport.save({ revision: revision, answers: answers });
         if (destroyed) return;
         applyLoaded(result, Boolean(question), answers.map(function (answer) { return answer.id; }));
+        if (sourceNotice && sourceNotice.conflict) sourceNotice.saved = true;
         setMessage('success', (result && result.message) || 'Saved in artifact — awaiting brief sync.');
       } catch (error) {
-        setMessage('error', 'Could not save. Your edits are still here. ' + (error && error.message ? error.message : 'Try refreshing before saving again.'));
+        if (error && error.conflict) await reloadAfterConflict(error);
+        else setMessage('error', 'Could not save. Your edits are still here. ' + (error && error.message ? error.message : 'Try refreshing before saving again.'));
       } finally { saving = false; render(); }
     }
+    // The source changed after this page loaded: reload it, keep drafts for unchanged
+    // questions, and name the questions that changed in the persistent notice.
+    async function reloadAfterConflict(error) {
+      var reason = error && error.message ? error.message : 'The source changed after this page loaded.';
+      if (typeof transport.load !== 'function') { setMessage('error', 'Not saved. ' + reason + ' Reload the page to continue.'); return; }
+      try {
+        var latest = await transport.load();
+        if (destroyed) return;
+        applyLoaded(latest, true);
+      } catch (loadError) {
+        setMessage('error', 'Not saved. ' + reason + ' Reloading the source also failed: ' + (loadError && loadError.message ? loadError.message : 'unknown error') + '. Your edits are still here.');
+        return;
+      }
+      sourceNotice = sourceNotice || { changes: [], viewChanged: false };
+      sourceNotice.conflict = reason;
+      sourceNotice.saved = false;
+      setMessage('error', 'Not saved: ' + reason + ' The page now shows the current source. Your other answers are kept; save again.');
+    }
+    function mergeNotice(changes, viewChanged) {
+      var current = sourceNotice || { changes: [], viewChanged: false, conflict: '' };
+      changes.forEach(function (change) {
+        var existing = current.changes.filter(function (item) { return item.id === change.id; })[0];
+        if (existing) { existing.question = change.question; if (change.change === 'removed' || existing.change !== 'added') existing.change = change.change; }
+        else current.changes.push(change);
+      });
+      current.viewChanged = current.viewChanged || viewChanged;
+      sourceNotice = current;
+    }
+    function changedIds() { return sourceNotice ? sourceNotice.changes.map(function (change) { return change.id; }) : []; }
     function applyLoaded(result, preserveDraft, confirmedIds) {
       confirmedIds = confirmedIds || [];
       if (!result) throw new Error('The response transport returned no state.');
-      var oldRevision = revision;
+      var oldModel = model;
       var oldViewRevision = viewRevision;
       var pending = Object.assign(Object.create(null), draft);
       var previouslySaved = Object.assign(Object.create(null), saved);
@@ -123,24 +195,31 @@
       writable = Boolean(result.writable);
       storage = result.storage || storage;
       saved = responseMap(result.responses);
+      // Portable pages store only their own answers; start a recorded answer from the brief so its note can change.
+      (model.questions || []).forEach(function (q) {
+        if (q.status === 'clarified' && q.answer && !saved[q.id]) saved[q.id] = { answer: q.answer, note: q.note || '' };
+      });
       draft = Object.assign(Object.create(null), saved);
-      var changedSource = oldViewRevision !== viewRevision || (!confirmedIds.length && oldRevision && revision && oldRevision !== revision);
+      // Our own save changes the saved questions; any other difference came from elsewhere.
+      var changes = changedQuestions(oldModel, model).filter(function (change) { return confirmedIds.indexOf(change.id) === -1; });
+      var viewChanged = Boolean(oldViewRevision && viewRevision && oldViewRevision !== viewRevision);
+      if (changes.length || viewChanged) mergeNotice(changes, viewChanged);
+      // Only questions that changed in this load lose a pending choice; earlier ones were already re-chosen.
+      var changed = changes.map(function (change) { return change.id; });
       if (preserveDraft && !sameResponses(pending, previouslySaved)) {
         Object.keys(pending).forEach(function (id) {
-          if (confirmedIds.indexOf(id) !== -1 || !model.questions.some(function (q) { return q.id === id && !isReadOnly(q); })) return;
+          if (confirmedIds.indexOf(id) !== -1) return;
+          var question = (model.questions || []).filter(function (q) { return q.id === id; })[0];
+          if (!question || !canEditNote(question)) return;
           var before = previouslySaved[id] || { answer: '', note: '' };
           var after = pending[id] || { answer: '', note: '' };
-          if (before.answer !== after.answer || (before.note || '') !== (after.note || '')) {
-            if (changedSource) draft[id] = { answer: '', note: after.note || '' };
-            else draft[id] = after;
-          }
+          if (before.answer === after.answer && (before.note || '') === (after.note || '')) return;
+          // A changed question needs a fresh choice; its note text is kept. Unchanged questions keep the draft.
+          if (changed.indexOf(id) !== -1) draft[id] = { answer: isReadOnly(question) ? ((saved[id] || {}).answer || '') : '', note: after.note || '' };
+          else draft[id] = after;
         });
-        if (changedSource) {
-          sourceChanged = true;
-          setMessage('notice', 'The source changed. Your unsaved note text remains, but choose responses again before saving.');
-        }
       }
-      if (result.message && !sourceChanged) setMessage('notice', result.message);
+      if (result.message) setMessage('notice', result.message);
     }
     async function refresh() {
       if (!transport || typeof transport.load !== 'function' || loading) return;
@@ -186,13 +265,74 @@
       if (messageNode) { messageNode.className = 'jca-message jca-message-' + messageKind; messageNode.textContent = message; }
       var footer = root.querySelector('.jca-footer');
       if (footer) footer.textContent = writable ? (dirty() ? 'Unsaved response edits are on this page.' : countText() + '.') : 'Responses are read-only in this artifact.';
-      root.querySelectorAll('[data-jca-save-all]').forEach(function (button) { button.disabled = !writable || saving || sourceChanged || !unsavedAnswers().length; });
+      root.querySelectorAll('[data-jca-save-all]').forEach(function (button) { describeDisabled(button, saveAllBlocked()); });
+    }
+    function saveAllBlocked() {
+      if (!writable) return 'Responses are read-only in this artifact.';
+      if (saving) return 'A save is in progress.';
+      if (loading) return 'Saved responses are still loading.';
+      if (!unsavedAnswers().length) return 'Nothing to save: choose a response first.';
+      return '';
+    }
+    function saveOneBlocked() {
+      if (saving) return 'A save is in progress.';
+      if (loading) return 'Saved responses are still loading.';
+      return '';
+    }
+    // A disabled button says why: as its tooltip and as its accessible description.
+    function describeDisabled(button, reason) {
+      button.disabled = Boolean(reason);
+      var reasonNode = button.jcaReason;
+      if (reasonNode) reasonNode.textContent = reason || '';
+      if (reason) {
+        button.setAttribute('title', reason);
+        if (reasonNode) button.setAttribute('aria-describedby', reasonNode.id);
+      } else {
+        button.removeAttribute('title');
+        button.removeAttribute('aria-describedby');
+      }
+    }
+    // Returns [button, hidden reason element]; both go into the page.
+    function saveButton(attributes, reason, reasonId) {
+      var button = node('button', Object.assign({ type: 'button' }, attributes));
+      button.jcaReason = node('span', { id: reasonId, class: 'jca-visually-hidden' });
+      describeDisabled(button, reason);
+      return [button, button.jcaReason];
+    }
+    function renderSourceNotice() {
+      if (!sourceNotice) { noticeElement = null; noticeKey = ''; return null; }
+      var key = JSON.stringify(sourceNotice);
+      if (noticeElement && key === noticeKey) return noticeElement;
+      var blocked = sourceNotice.conflict && !sourceNotice.saved;
+      if (!noticeElement) noticeElement = node('section', { role: 'alert', 'aria-labelledby': 'jca-source-notice-title' });
+      noticeElement.className = 'jca-source-notice' + (blocked ? ' jca-source-notice-error' : '');
+      noticeElement.replaceChildren();
+      noticeKey = key;
+      var banner = noticeElement;
+      banner.append(node('h2', { id: 'jca-source-notice-title', text: blocked ? 'Not saved: the source changed after this page loaded'
+        : sourceNotice.conflict ? 'The source changed after this page loaded; your later save went through' : 'The source changed after this page loaded' }));
+      if (blocked) banner.append(node('p', { text: sourceNotice.conflict }));
+      if (sourceNotice.changes.length) {
+        banner.append(node('p', { text: sourceNotice.changes.length === 1 ? 'This question changed:' : 'These questions changed:' }));
+        var list = node('ul');
+        sourceNotice.changes.forEach(function (change) {
+          var label = change.change === 'removed' ? ' (removed)' : change.change === 'added' ? ' (new)' : '';
+          list.append(node('li', {}, [change.change === 'removed' ? text(change.question + label) : node('a', { href: '#jca-question-' + change.id, text: change.question + label })]));
+        });
+        banner.append(list);
+        banner.append(node('p', { text: 'Choose again where a changed question needs it. Answers to other questions are kept and can be saved now.' }));
+      } else {
+        banner.append(node('p', { text: sourceNotice.viewChanged ? 'The screenshots or review on this page changed. No question changed; your answers are kept and can be saved now.' : 'No question on this page changed. Your answers are kept and can be saved now.' }));
+      }
+      banner.append(node('button', { type: 'button', text: 'Dismiss', onclick: function () { sourceNotice = null; setMessage('quiet', dirty() ? 'Unsaved changes.' : 'Source changes reviewed.'); render(); } }));
+      return banner;
     }
     function renderQuestion(question, index) {
       var current = draft[question.id] || { answer: '', note: '' };
       var readOnly = isReadOnly(question);
       var body = node('section', { class: 'jca-question', id: 'jca-question-' + question.id });
       body.append(node('div', { class: 'jca-question-kicker', text: 'Decision ' + (index + 1) }), node('h2', { text: question.question }));
+      if (changedIds().indexOf(question.id) !== -1) body.append(node('p', { class: 'jca-changed', text: 'Changed in the source since this page loaded. Check it and choose again if needed.' }));
       body.append(node('p', { class: 'jca-status jca-status-' + (question.status || 'open'), text: statusLabel(question.status) }));
       if (question.answer) body.append(node('p', { class: 'jca-recorded', text: 'Brief record: ' + question.answer }));
       (model.comparisons || []).filter(function (comparison) { return comparison.decisionId === question.id; }).forEach(function (comparison) { body.append(renderComparison(comparison)); });
@@ -213,7 +353,7 @@
         fieldset.append(label);
       });
       body.append(fieldset);
-      var note = node('textarea', { class: 'jca-note', id: 'jca-note-' + question.id, rows: 3, disabled: readOnly, placeholder: 'Optional note' });
+      var note = node('textarea', { class: 'jca-note', id: 'jca-note-' + question.id, rows: 3, disabled: !canEditNote(question), placeholder: 'Optional note' });
       note.value = current.note || '';
       function syncNoteRequirement() {
         var selected = (question.options || []).find(function (option) { return option.value === (draft[question.id] || {}).answer; });
@@ -227,7 +367,7 @@
       note.addEventListener('input', function () { draft[question.id] = { answer: (draft[question.id] || {}).answer || '', note: note.value }; setMessage('quiet', 'Unsaved changes.'); syncLiveUi(); });
       body.append(noteLabel, note);
       if (question.answer && question.note) body.append(node('p', { class: 'jca-recorded', text: 'Brief note: ' + question.note }));
-      if (!readOnly) body.append(node('button', { class: 'jca-save-one', type: 'button', text: 'Save this response', disabled: saving || loading || sourceChanged, onclick: function () { save(question); } }));
+      if (canEditNote(question)) body.append.apply(body, saveButton({ class: 'jca-save-one', text: readOnly ? 'Save note' : 'Save this response', onclick: function () { save(question); } }, saveOneBlocked(), 'jca-save-reason-' + question.id));
       return body;
     }
     function renderComparison(comparison) {
@@ -267,11 +407,12 @@
         header.append(provenance);
       }
       page.append(header);
+      var notice = renderSourceNotice();
+      if (notice) page.append(notice);
       page.append(node('p', { class: 'jca-message jca-message-' + messageKind, role: messageKind === 'error' ? 'alert' : 'status', text: message }));
       var actions = node('div', { class: 'jca-actions' });
       if (transport) actions.append(node('button', { type: 'button', text: loading ? 'Refreshing…' : 'Refresh', disabled: loading || saving, onclick: refresh }));
-      actions.append(node('button', { type: 'button', 'data-jca-save-all': '', text: 'Save selected answers', disabled: !writable || saving || sourceChanged || !unsavedAnswers().length, onclick: function () { save(); } }));
-      if (sourceChanged) actions.append(node('button', { type: 'button', text: 'I reviewed the updated source', onclick: function () { sourceChanged = false; setMessage('notice', 'Review acknowledged. Select a response where needed, then save.'); render(); } }));
+      actions.append.apply(actions, saveButton({ 'data-jca-save-all': '', text: 'Save selected answers', onclick: function () { save(); } }, saveAllBlocked(), 'jca-save-all-reason'));
       actions.append(node('button', { type: 'button', text: 'Copy saved', onclick: copySaved }), node('button', { type: 'button', text: 'Download saved', onclick: downloadSaved }));
       page.append(actions);
       (model.questions || []).forEach(function (question, index) { page.append(renderQuestion(question, index)); });
@@ -298,4 +439,5 @@
 
   global.JoycraftArtifacts = global.JoycraftArtifacts || {};
   global.JoycraftArtifacts.mount = mount;
+  global.JoycraftArtifacts.changedQuestions = changedQuestions;
 })(window);

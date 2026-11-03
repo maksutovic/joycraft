@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "install-entry-files-decisions",
+  "title": "Joycraft builds and keeps the context map",
+  "summary": "Redesigned around the context map and David's doc-cleanup. Your five earlier answers are in the brief. Three new choices remain; every one has Something else.",
+  "decisionIds": [
+    "docclean",
+    "audit-on-setup",
+    "growth"
+  ]
+}

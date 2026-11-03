@@ -1,21 +1,17 @@
 # First-use project setup
 
-Use this on first entry, an explicit setup/init request, or a missing context
-home. It is an agent-guided part of `joycraft-entry`, not an installer side
-effect or a separate interview; the one exception is the opt-in
-[kickoff for a new project](#kickoff-for-a-new-project). Work inside the current project. Read-only
-requests do not authorize setup writes.
-
-For a reviewed clone, `node scripts/setup.mjs --target <project>` previews the
-smallest missing knowledge homes. Add `--write` only after reviewing the preview.
-It reads only plain target-local repository facts; it never reads `.env.local`,
-Keychain, sibling projects, or private directories. Its `ready` and `partial`
-status describes context discovery, never hook trust or a successful command.
+Run this after every install from the prompt, when the user asks ("set up
+Joycraft", "check the context map"), and whenever
+`node .joycraft/runtime/wiring.mjs --root .` exits 2. The CLI knows nothing
+about the project, so it writes nothing to `AGENTS.md` or `CLAUDE.md`; you build
+the context map from the repository and a short interview with the user. Many
+installs land in existing, sometimes large, projects, so the interview is part
+of every setup, not only a new project's. Work inside the current project. A
+read-only request gets the findings reported, not written.
 
 ## Contents
 
-- [Discover before writing](#discover-before-writing)
-- [Small shared entry point](#small-shared-entry-point)
+- [Set up the context map](#set-up-the-context-map)
 - [Kickoff for a new project](#kickoff-for-a-new-project)
 - [Review loop tools](#review-loop-tools)
 - [Project-owned worktrees](#project-owned-worktrees)
@@ -23,87 +19,99 @@ status describes context discovery, never hook trust or a successful command.
 - [Finish setup and continue](#finish-setup-and-continue)
 - [Upgrade and agent onboarding](#upgrade-and-agent-onboarding)
 
-## Discover before writing
+## Set up the context map
 
-Read applicable instructions, root `AGENTS.md` and `CLAUDE.md` if present, README,
-and the relevant existing context links. Inspect manifests, lockfiles, task
-scripts and CI only as needed to establish the stack and actual commands. Follow
-the project's documentation conventions instead of migrating them into ours.
-Do not scan neighboring projects or credential files. Do not run installs,
-deployments, destructive commands, or application setup just to populate a table.
+The context map in `AGENTS.md` is the project's memory index. Each row points to
+one home for one kind of knowledge and says when to read it, so an agent loads
+only what its work needs; the map then grows with every decision, trap and
+feature ([knowledge.md](knowledge.md)). A project without a real map gets
+nothing from Joycraft, so build it from the project, never from a template.
 
-Use the current conversation for intended users, purpose, stakeholders and
-constraints. Separate user-stated intent from repository observations and your
-assumptions. A declared command is not a verified successful command: cite its
-manifest/script source and mark it unrun until actually executed. On a bare
-project, say the stack and commands are not established; do not choose them for
-the sake of setup. Offer the kickoff below instead.
+**Nothing new, nothing done.** When `wiring.mjs` exits 0, every doc worth
+reading already has a row, and nothing the user told you or the audit found is
+unrecorded, say in one line that Joycraft is already set up. Write nothing,
+render nothing, ask nothing: a repeated setup must leave the project unchanged.
 
-When the current authorized work exposes an unclear state, data, or
-responsibility boundary, inspect the relevant owner and its actual counterparts
-before recording guidance. Preserve source-backed navigation in the existing
-context map or reference home; keep product behavior in the current brief. Read
-`architecture.md` for this focused, conditional discovery. Do not create an
-architecture phase, architecture-complete marker, or empty map during setup.
+1. **Read and audit.** Read `AGENTS.md`, `CLAUDE.md`, the README and every doc
+   they point to, then the other Markdown docs (skip dependencies, generated
+   files, `.joycraft/` and installed skills). Run `joycraft-cleanup` steps 1–2
+   (inventory and diagnose) on what you read: it gives each doc a
+   [role](cleanup.md#doc-roles) and hands its findings back to you, with no
+   report page and no stop of its own. Check claims in entry and required docs
+   against the code; in reference docs, check only the claims the interview or
+   an audit finding touches. Inspect manifests, scripts and CI only to
+   establish the stack and real commands; a declared command is unrun until
+   executed. In a large repo, read the entry docs and their pointers first,
+   then one area at a time; propose each area you did not read as an item of
+   a `## Not yet mapped` list in `docs/context/project.md` (current areas
+   only, no history), so a later session maps it when work reaches it. Do
+   not scan neighboring projects or credential files, and do not run
+   installs, deployments or destructive commands.
+2. **Interview.** Ask only what the repository cannot tell you: purpose, users,
+   who owns what, constraints, decisions already made and why, which docs are
+   trusted, and each audit finding that needs a human. Ask in short rounds of
+   at most three questions, each one that changes what you will write. Write
+   each choice with options as a decision in a setup brief at
+   `.joycraft/local/setup/brief.md` (format of `.joycraft/templates/brief.md`,
+   `feature: setup`; give `.joycraft/local/` a `.gitignore` of `*` when it has
+   none, so nothing there becomes a project change) and serve the decision
+   artifact on it ([artifacts.md](artifacts.md)); plain chat is only for one
+   quick yes/no or an open question with no options. The brief is scratch:
+   each answer then goes to its home in step 3. Stop when the user says enough. Never ask again
+   what the user answered or a home already states. Keep the user's words apart
+   from your observations and assumptions. On a bare project, offer the
+   [kickoff](#kickoff-for-a-new-project) instead.
+3. **Propose.** Draft every change:
+   - **Joycraft lines** in `AGENTS.md`, each only when missing:
+     “First action in each session: run
+     `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow
+     `.joycraft/references/update.md`.” and “Show every document a person must
+     read, review or answer (a brief, plan, spec set, review or set of
+     questions) as a rendered page, never only as Markdown in chat: use the
+     decision artifact (`node .joycraft/runtime/artifacts/cli.mjs`, see
+     `.joycraft/references/artifacts.md`) for a brief or questions, or an HTML
+     page for any other document. Show it where the person works (see
+  `.joycraft/references/artifacts.md#showing-a-page`) and say where it is.”
+   - **The map**: one `## Context Map` table (`| Document | Read when |`). One
+     row per real home: each required or reference doc, and each home you
+     create. A read-when names the work that needs the doc ("Changing how counts
+     are stored"), not its topic. Add a row for
+     `.joycraft/references/artifacts.md`, read when "showing a document or
+     questions to a person". Historical docs get no row. In an existing map,
+     append rows below the user's rows; never edit, reorder or reformat theirs.
+     Every row targets a file that exists after the write.
+   - **Homes**, only with content, routed by [knowledge.md](knowledge.md).
+   - **`CLAUDE.md`**, only when `.joycraft/installation.json` lists the
+     `claude` host: missing → create it as `@AGENTS.md` followed by an empty
+     `## Claude Code` section; present without an `@AGENTS.md` line → add
+     `@AGENTS.md` as line 1; present with it → leave it alone. When `AGENTS.md`
+     already imports or defers to `CLAUDE.md`, add no reciprocal import.
+   - **Audit fixes** for the findings the user agreed to in the interview, made
+     as joycraft-cleanup step 4 says.
 
-## Small shared entry point
+   Add lines, rows and pages. Do not reword, reformat, reorder or delete user
+   content: every existing line of `AGENTS.md` and `CLAUDE.md` survives. With
+   no `AGENTS.md`, create one with the purpose (or "unknown"), established
+   constraints, commands with their source, the Joycraft lines and the map. Keep
+   generic coding advice and tentative product ideas out; feature intent stays
+   in its brief. Respect symlinks and managed files.
+4. **Show, then write.** Render the diff of every file you would change or
+   create, audit fixes included, as one HTML page under
+   `.joycraft/local/setup/`. Show it as [showing a page](artifacts.md#showing-a-page)
+   says, give its path, and write only on the
+   user's yes; this page is setup's only approval stop. A request that
+   already approves the files you propose counts as the yes.
+5. **Check.** `wiring.mjs` exits 0. `node .joycraft/runtime/cleanup.mjs`
+   reports no `missing-path`, `unmapped`, `orphan` or `broken-link` for the
+   files you touched. Every original line of `AGENTS.md` and `CLAUDE.md` is
+   still there. Fix what fails, then tell the user in a few lines which docs the
+   map now reaches, which homes you created and what you have not read or do
+   not know yet. Continue the original request.
 
-If `AGENTS.md` is missing, create a concise project-specific file with:
-
-- Project purpose supported by the request or repository; if unknown, say so.
-- Existing commands, their source and execution status, when available.
-- Only established project constraints, preserving their scope.
-- A context map with project-relative links and a short “read when” for each.
-- This line: “First action in each session: run
-  `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow
-  `.joycraft/references/update.md`.”
-- This line: “Show every document a person must read, review or answer (a brief,
-  plan, spec set, review or set of questions) as a rendered page, never only as
-  Markdown in chat: use the decision artifact
-  (`node .joycraft/runtime/artifacts/cli.mjs`, see `.joycraft/references/artifacts.md`)
-  for a brief or questions, or an HTML page for any other document. Open it for
-  the person and say where it is.”
-- A context-map row for `.joycraft/references/artifacts.md`, read when “showing a
-  document or questions to a person”.
-
-Do not copy prototype-maintainer rules or fill it with generic coding advice.
-Link detail rather than duplicating it. Do not encode a tentative product idea
-as a permanent boundary. Keep current feature intent in its brief.
-
-If `AGENTS.md` already exists, preserve its content and add only missing facts,
-useful context pointers, the update-check line, the rendered-documents line and its
-context-map row above with a targeted edit. Reuse an existing context map
-rather than adding another. Read linked content before deciding it is missing.
-When its map names a project-context home, use that exact project-relative home;
-use `docs/context/project.md` only when no context home exists. Do not link a
-context document that setup did not create or find. This keeps a bare project
-free of dangling links.
-Do not reformat, delete, or replace user instructions. Surface consequential
-contradictions rather than silently resolving them. Respect symlinks and managed
-files; do not replace them or write outside the project through them.
-
-For a missing `CLAUDE.md`, create a thin pointer after `AGENTS.md` exists:
-
-```md
-@AGENTS.md
-```
-
-For an existing `CLAUDE.md`, preserve all guidance. Add the import only if there
-is no equivalent link and it would not create a reference cycle. If CLAUDE.md is
-already the shared authority, keep it there and let the new AGENTS.md point to
-it; do not create reciprocal imports or duplicate its rules. This shared context
-pointer does not itself install skills or hooks; the exporter must use
-`--harness claude` to place those in Claude discovery paths.
-
-Before assigning workers, read an existing `.joycraft/preferences.json`. Reuse
-explicit model, effort, role, concurrency, and verification choices. Then inspect
-the active host for the actual planner, implementer, reviewer, testing, UI, and
-fixture capabilities. Generated defaults and an `unknown` fixture status do not
-prove capability. Until actual isolation is established, use at most four workers
-and one UI worker. Relevant acceptance requires both an inspected rendered UI
-and independent review; if one is unavailable, hold only the claim it would
-support. Ask one short combined question only when a consequential choice remains
-after that inspection.
+When the work exposes an unclear state, data, or responsibility boundary,
+inspect the owner and its actual counterparts before recording guidance; read
+`architecture.md` for that focused check. Do not create an architecture phase,
+architecture-complete marker, or empty map during setup.
 
 ## Kickoff for a new project
 
@@ -158,7 +166,11 @@ Pass `--host-tools browser`, `simulator` or `computer-use` only for tools the
 active host actually reports; they can stand in for a missing install. The plan
 detects each package from its manifests, probes versions read-only, and prints
 one table and at most one question. It never installs. When it prints
-`Review loop unchanged.`, ask nothing.
+`Review loop unchanged.`, ask nothing. Packages come from declared workspaces;
+with none and no root manifest, from the manifests below the root that git does
+not ignore. When it prints `No packages found`, ask the user which folders hold
+the apps and pass them as `--packages <dir,dir>` to `plan`, `install` and
+`record`.
 
 Show the table and ask its one question. Only after the user's yes in this
 conversation, run `review-tools.mjs install --root . --yes` (add
@@ -230,23 +242,9 @@ explicit manual Git-worktree workflow.
 
 ## Knowledge grows with the work
 
-Reuse existing documents for project facts. If none exists and there are durable
-facts worth retaining, create `docs/context/project.md` with the known purpose,
-users/stakeholders and constraints, their source, and any consequential unknowns.
-Create its parent directory and link it from the context map. Omit empty sections
-and private contact details that are unnecessary for the work. If nothing is
-known yet, create only the instruction files; gather the first useful fact before
-creating a context document. Do not manufacture a directory tree of empty files.
-
-Create additional homes only when they have content:
-
-| Content | Default home when no existing convention applies |
-|---|---|
-| Durable project knowledge | `docs/context/project.md` or a focused reference linked by the map |
-| Source-backed cross-boundary navigation | The existing context map or a focused reference linked by it |
-| Reusable decision rationale | `docs/context/decision-log.md`, linking to the owning decision |
-| Current feature or mixed change | `docs/features/<slug>/brief.md` |
-| Authorized implementation queue | `docs/features/<slug>/specs/` |
+Which home holds which kind of fact, and when to create one, is in
+[knowledge guidance](knowledge.md). A current feature lives in
+`docs/features/<slug>/brief.md` and its queue in `docs/features/<slug>/specs/`.
 
 A project can move these folders, add an after-archive hook and map code to
 context pages in an optional root `joycraft.yaml`. It is project-owned: create it
@@ -263,16 +261,16 @@ and links it from the context map.
 
 The brief retains decision authority under `workflow.md`; the context document
 and decision log must not become competing answer stores. Later accepted facts
-update their existing home. Repeating entry with no new knowledge should make
+update their existing home; [knowledge.md](knowledge.md) owns how each fact is
+routed, changed in place and kept current. Repeating entry with no new knowledge should make
 no setup edits, create no duplicate links, and ask no repeated questions. There
 is no setup-complete sentinel: useful source content, not a flag, determines
 whether context is available.
 
-Ask only for missing human knowledge that materially changes the next action.
-Prefer one short contextual question and continue independent work while it is
-pending. An explicit setup-only request with no product context may end with that
-question or the kickoff offer; do not generate a questionnaire or start building
-an imagined app.
+Outside setup's interview, ask only for missing human knowledge that materially
+changes the next action. Prefer one short contextual question and continue
+independent work while it is pending. Do not generate a questionnaire or start
+building an imagined app.
 
 Use the project’s existing interaction home for a choice. A question with
 options goes in the decision artifact; only one quick yes/no or an open question
@@ -281,28 +279,20 @@ owning brief and do not ask it again.
 
 ## Finish setup and continue
 
-Check that newly added links resolve, command claims match their cited source,
-and existing guidance survived the diff. Briefly tell the user which knowledge
-homes were created or extended and any important unknown; then continue the
-original request. Setup does not approve hooks, change credentials, install
+Step 5 of [Set up the context map](#set-up-the-context-map) is the finish
+check; also check that command claims match their cited source. Setup does not approve hooks, change credentials, install
 dependencies, or replace the user's workflow. Read `hooks-install.md` only when
 hook activation is part of the requested setup.
 
 ## Upgrade and agent onboarding
 
-Use `node scripts/export.mjs --target <project> --check --upgrade` to preview an
-upgrade. It names only recognized old Joycraft files that would be replaced.
-Applying without `--check` copies those replaced bytes to `.joycraft-backups/`
-first and writes `.joycraft/installation.json`, whose hashes attest to
-the actual installed skill, reference, and runtime bytes. A changed file absent
-from the prior installation manifest remains a conflict; there is no blanket
-force flag. The manifest is dispatch input, not proof that hooks ran or that a
-review was independent.
+Updates go through the Joycraft CLI; follow [update guidance](update.md). The
+installation manifest `.joycraft/installation.json` records the installed bytes;
+it is dispatch input, not proof that hooks ran or that a review was independent.
 
-For a new worker, copy the onboarding prompt from the setup preview. It directs
-the worker to read existing project preferences before work, reuse explicit
-model/effort/role/concurrency/verification choices, and inspect the host's
-currently available planner, implementer, reviewer, testing, UI, and fixture
-capabilities rather than claiming a hardcoded model is available. State
-unavailable roles and native-hook checks plainly. Do not alter accepted queues,
-decision state, user guidance, or credentials during setup or upgrade.
+A new worker reads `.joycraft/preferences.json` before work, reuses explicit
+model, effort, role, concurrency and verification choices, and inspects the
+host's available planner, implementer, reviewer, testing, UI and fixture
+capabilities instead of assuming a model. It states unavailable roles plainly.
+Setup and upgrade never change accepted queues, decision state, user guidance or
+credentials.

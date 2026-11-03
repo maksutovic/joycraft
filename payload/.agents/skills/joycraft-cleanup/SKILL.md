@@ -1,41 +1,88 @@
 ---
 name: joycraft-cleanup
-description: Find stale or unreachable project knowledge (finished features left in the working folder, context pages that link to working material, broken or orphaned pages, pages whose code changed, leftover worktrees) and fix what the user approves.
+description: Audit project docs and the AGENTS.md context map for rot (stale claims, finished plans and logs, contradictions, dead paths, drifted authorities, unreachable pages), check each claim against the code, propose trimming an AGENTS.md that is too long, and change only what the user approves. Runs at every session end (scoped to what the session touched) and after a feature is archived (whole project); also use for "clean up the docs", "audit the docs", "what in our docs is stale", "AGENTS.md is too long", or when cleanup.mjs reports findings.
 compatibility: Requires Node.js 22+ and the installed .joycraft runtime. Git improves the code-drift and worktree checks.
 ---
 
 # Joycraft Cleanup
 
-Use when the user asks to clean up docs, remove stale material or check that
-project knowledge is current, and at session end when `status.mjs` or the
-archive step leaves loose ends. It keeps the context home trustworthy; it does
-not change product decisions.
+Keep project docs true and the context map lean. Treat every doc claim as a
+hypothesis and the repository as the evidence. The homes the map points to must
+state the current truth; see [knowledge guidance](../../../.joycraft/references/knowledge.md)
+for that rule. This method is adapted from doc-cleanup by aka-luan
+([MIT](../../../.joycraft/references/doc-cleanup-LICENSE.md)), brought in by David Moshal.
 
-Run the report from the project root:
+Work in two passes: diagnose and report without editing, then execute only what
+the user approves. Approval to edit is not approval to commit. Read
+[cleanup reference](../../../.joycraft/references/cleanup.md) for the doc roles,
+the checks, the AGENTS.md trim and the execution playbook.
 
-```sh
-node .joycraft/runtime/cleanup.mjs
-```
+When setup calls this skill, run steps 1–2 only and hand the findings back to
+setup: no report page and no stop. Setup asks about them in its interview and
+shows the agreed fixes on its one diff page.
 
-Exit 0 means no findings; exit 2 means findings. The script reads
-`joycraft.yaml` for `paths` and the `cleanup.impact` map (code globs → context
-pages) and never edits a file. Read `.joycraft/references/cleanup.md` for each
-check and its usual fix.
+When session end calls this skill, the scope is AGENTS.md, CLAUDE.md, the docs the
+session changed and the context pages they link (the whole project after an
+archive). Run steps 1–3, but the report goes on the session-end page instead of a
+page of its own; run step 4 only for the fixes the user approves there.
 
-Then, for each finding:
+## 1. Inventory
 
-1. Read the files it names before proposing anything. For `impact-drift`,
-   read the listed commits' changes and the page; the page may still be true.
-2. Propose one concrete fix per finding: the exact link, page, section or
-   command. Group findings by fix, not by check.
-3. Show the proposals to the user as a rendered page (the decision artifact for
-   choices, or an HTML page), never only as Markdown in chat. Ask once.
-4. Apply only what the user approves. Move durable facts into the context home
-   before an archive. Archive only through the session-end archive path. Remove
-   an unknown worktree only after checking it for unmerged work and with the
-   user's approval.
-5. Run the report again and give the remaining findings with their reasons.
+List every in-scope Markdown file (skip generated, dependency, VCS, installed
+skill and runtime files, and paths the user excludes) with its line count and
+[role](../../../.joycraft/references/cleanup.md#doc-roles): entry, required,
+reference or historical. Follow every reading pointer in the entry docs and mark it
+resolved, dead or external. Rot costs more the more often a file is read. In a
+large repo, do the entry docs and their pointers first, then area by area, and say
+what you have not read.
 
-Never delete a context page to clear a finding; merge or redirect it. Do not
-invent facts to refresh a stale page: when the code does not settle it, record
-the question in the owning brief.
+## 2. Diagnose without editing
+
+Run `node .joycraft/runtime/cleanup.mjs` first: exit 2 means findings, and each
+is evidence to confirm, not a verdict. Then read each doc for the six rot
+patterns: completed-work logs, executed plans, internal contradictions, stale
+claims, dead paths, and authority drift. Check every suspected hit against the
+repository (file lookup, search, config, tests, Git history) and record its
+location, the claim, the evidence, your confidence and the smallest disposition:
+keep, correct, condense, move, archive or banner. Code proves what is
+implemented, not what was intended; when a doc may define the contract, report
+the mismatch as unresolved authority drift.
+
+Mark the load-bearing content that must survive: hard rules, active decisions,
+recurring traps, do-not-do lines and domain vocabulary.
+
+An entry file loads every session, so it holds the project's identity, its rules
+and the context map. When it carries file tables, folder trees, workflow or
+command sections, code or data-flow walkthroughs, or gotcha lists, propose moving
+each into a linked context page with a map row that says when to read it. Never
+propose moving, rewording or reformatting rules: ALWAYS / ASK FIRST / NEVER lists
+and any other must or never section stay exactly as they are. A gotcha that is a
+rule ("Never reference absolute paths") is a rule: it stays.
+
+## 3. Report and stop
+
+Order findings by reading frequency × how badly they would mislead. For each,
+give the claim, the evidence, the consequence and the proposed change. Then give
+a per-file plan, list unresolved decisions separately, and name the load-bearing
+content that will remain. Show it as a rendered page (the decision artifact for
+choices, otherwise an HTML page), not only as Markdown in chat.
+
+Stop for approval. Until the user approves, change no file in the project: no
+edits, no new pages, no "safe" fixes.
+
+## 4. Execute the approved plan
+
+Apply only approved changes, re-checking each fact against the code just before
+writing it, with the playbook in the cleanup reference. Never delete a context
+page to clear a finding; merge or redirect it. When the code does not settle a
+fact, record the question in the owning brief rather than inventing an answer.
+Remove an unknown worktree only after checking it for unmerged work.
+
+## 5. Verify and hand off
+
+Run `cleanup.mjs` again. Check that every link in touched files resolves, that
+archives match their sources, that the load-bearing content survives (rules
+byte-identical), that only approved Markdown changed, and that no new
+contradiction appeared. Report the changed files, archive mappings, remaining
+findings with reasons and unresolved decisions. Offer a docs-only commit with a
+specific message; commit only when the user says yes.
