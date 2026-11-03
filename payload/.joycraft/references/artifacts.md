@@ -19,8 +19,12 @@ choice that depends on trying the actual product behavior.
 A brief decision keeps its existing `id`, `status`, `question`, `answer`,
 `options`, and `affected` fields. Artifact views also support an optional
 `description` on an option and `requiresNote: true` when that option needs a
-short explanation. The canonical answer remains the declared option `value`,
-including a `custom` value. Store the human's exact words separately as that
+short explanation. Every question also offers "Something else" (value `custom`,
+note required), so the person can always answer in their own words; do not
+declare it unless you want different wording. The canonical answer remains an
+option `value`, including `custom`. A saved answer keeps its note box: the
+person can add or change the note and save again without reopening. Changing
+the chosen answer still needs a reopen. Store the human's exact words separately as that
 decision's note; never replace the canonical answer with free-form text.
 
 The view data has this shape:

@@ -10,7 +10,7 @@ export const configFile = 'joycraft.yaml';
 export const defaults = Object.freeze({
   paths: Object.freeze({ features: 'docs/features', archive: 'docs/archive', context: 'docs/context' }),
   hooks: Object.freeze({}),
-  cleanup: Object.freeze({ impact: Object.freeze([]) }),
+  cleanup: Object.freeze({ impact: Object.freeze([]), entryWords: 1000 }),
 });
 
 function scalar(text, line) {
@@ -117,7 +117,7 @@ export function parseYaml(text) {
   return result;
 }
 
-const known = { paths: ['features', 'archive', 'context'], hooks: ['afterArchive'], cleanup: ['impact'] };
+const known = { paths: ['features', 'archive', 'context'], hooks: ['afterArchive'], cleanup: ['impact', 'entryWords'] };
 
 /** Read joycraft.yaml (or return defaults) and validate every known field. */
 export function readConfig(root = process.cwd()) {
@@ -153,7 +153,9 @@ export function readConfig(root = process.cwd()) {
       `${configFile}: cleanup.impact item ${index + 1} needs source (a glob) and docs (a list of files)`);
     checkGlob(entry.source, `cleanup.impact item ${index + 1} source`);
   }
-  return { source: configFile, paths, hooks, cleanup: { impact: impact.map(entry => ({ source: entry.source, docs: entry.docs.map(relativePath) })) } };
+  const entryWords = parsed.cleanup?.entryWords ?? defaults.cleanup.entryWords;
+  requireValue(Number.isInteger(entryWords) && entryWords > 0, `${configFile}: cleanup.entryWords must be a positive whole number of words`);
+  return { source: configFile, paths, hooks, cleanup: { impact: impact.map(entry => ({ source: entry.source, docs: entry.docs.map(relativePath) })), entryWords } };
 }
 
 /** Project-relative work folders for a project. */

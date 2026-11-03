@@ -46,7 +46,7 @@ that condition and arrange a fresh review after it is corrected. Do not create
 an unchanged-code fix round. The existing completion process remains the sole
 owner of acceptance and status changes.
 
-Before archival, update the existing owning context reference and its pointers only when accepted work established reusable project knowledge: record the affected boundary, current coupled sources, observable check, and known limit. Keep accepted observations distinct from proposals, and leave product choices in the brief's decision authority rather than copying them into a competing context record. Do not create a global map or rewrite unrelated context for a local change.
+Before ending, and before any archival, route each reusable fact the session established (a decision with its reason, a trap, a reference, a production fact) to its one home per [knowledge guidance](../../../.joycraft/references/knowledge.md). Rewrite a changed fact in place and put its reason in the decision log; add a context-map row for a new home; keep each touched row's "read when" true. Leave feature intent in the brief. A session with nothing reusable changes no context file.
 
 When independent reports suggest a reusable failure lesson, use the compact, conditional process in [recurring failure guidance](../../../.joycraft/references/recurring-failures.md): keep only a source-linked shortlist in active task material, inspect current sources before relying on history, and route any proposed lesson as exact next-worker inputs through the existing dispatch path.
 

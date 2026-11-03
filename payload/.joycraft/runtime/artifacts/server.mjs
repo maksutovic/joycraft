@@ -8,6 +8,17 @@ export async function startArtifact({ root = process.cwd(), brief, view, theme, 
   await loadArtifact(args);
   const token = randomBytes(24).toString('hex');
   let url;
+  // A save against an older brief or view is a source conflict: say so, with the
+  // current revisions, so the page reloads and keeps answers to unchanged questions.
+  const conflictBody = async (error, request) => {
+    try {
+      const { source } = (await loadArtifact(args)).model;
+      if (request?.revision !== source.revision || request?.viewRevision !== source.viewRevision) {
+        return { error: error.message, conflict: true, revision: source.revision, viewRevision: source.viewRevision };
+      }
+    } catch { /* the original error is the useful one */ }
+    return { error: error.message };
+  };
   const server = createServer(async (request, response) => {
     const send = (status, data, type = 'application/json') => {
       response.writeHead(status, { 'Content-Type': `${type}; charset=utf-8`, 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' });
@@ -29,7 +40,9 @@ export async function startArtifact({ root = process.cwd(), brief, view, theme, 
           body += part;
           if (Buffer.byteLength(body) > 500_000) return send(413, { error: 'Answer request too large' });
         }
-        return send(200, await saveLocal({ ...args, request: JSON.parse(body) }));
+        const answerRequest = JSON.parse(body);
+        try { return send(200, await saveLocal({ ...args, request: answerRequest })); }
+        catch (error) { return send(409, await conflictBody(error, answerRequest)); }
       }
       return send(404, { error: 'Not found' });
     } catch (error) { return send(409, { error: error.message }); }

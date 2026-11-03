@@ -17,3 +17,5 @@ cleanup:
   impact: []
   #  - source: src/auction/**
   #    docs: [docs/context/auction-rules.md]
+  # Word budget for AGENTS.md and CLAUDE.md; cleanup.mjs flags a longer file.
+  # entryWords: 1000

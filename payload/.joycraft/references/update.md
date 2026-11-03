@@ -8,8 +8,10 @@ If it prints JSON, read `action`. Put the line below in your next reply to the u
 even when the request is about something else and even when your reply is short:
 
 - `note`: tell the user `message` in one line. Do not ask anything.
-- `ask`: tell the user `message` in one line and ask once: update now, not now, or
-  turn off. Do not ask again in this session.
+- `ask`: tell the user `message` and ask once: update now, not now, or turn off.
+  Do not ask again in this session. `message` names each release since the
+  installed one (newest five, then how many more) and ends with the changelog link.
+- `kind` is `patch` (same minor), `minor` (newer minor), or `migration` (newer major).
 - `apply`: the user chose automatic updates. Follow "Update" below without asking.
   If the plan would back up an edited file, stop and ask instead.
 
@@ -37,7 +39,7 @@ that the files are back as they were, and continue your work.
   that version for seven days.
 - Turn off: `node .joycraft/runtime/update-check.mjs policy off`.
 - Automatic updates: `node .joycraft/runtime/update-check.mjs policy auto-safe`. Only
-  a release marked safe applies by itself. A new major version always asks.
+  a `patch` release marked safe applies by itself. A `minor` or `migration` always asks.
 - Stay on this version: `node .joycraft/runtime/update-check.mjs pin`, and `unpin` to
   undo it.
 

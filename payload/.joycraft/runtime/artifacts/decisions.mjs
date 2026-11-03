@@ -86,6 +86,15 @@ function validateOptionalString(value, name) {
   if (value !== undefined && typeof value !== 'string') throw new Error(`${name} must be a string`);
 }
 
+// Every displayed question offers a custom answer, so a person is never forced
+// to pick an option they disagree with. A declared `custom` option keeps its text.
+const CUSTOM_OPTION = Object.freeze({ value: 'custom', label: 'Something else', description: 'Describe what you want instead.', requiresNote: true });
+
+function withCustomOption(options) {
+  if (!options.some(option => option.value === CUSTOM_OPTION.value)) return [...options, CUSTOM_OPTION];
+  return options.map(option => option.value === CUSTOM_OPTION.value ? { ...option, requiresNote: true } : option);
+}
+
 function displayedDecision(brief, id) {
   const index = brief.decisions.findIndex(item => item.id === id);
   const decision = brief.decisions[index];
@@ -103,6 +112,7 @@ function displayedDecision(brief, id) {
     if (option.requiresNote !== undefined && typeof option.requiresNote !== 'boolean') throw new Error('Option requiresNote must be boolean');
     values.add(option.value);
   }
+  values.add(CUSTOM_OPTION.value);
   if (!(decision.answer === null || values.has(decision.answer)) || (decision.status === 'clarified' && decision.answer === null)) {
     throw new Error('Invalid decision answer');
   }
@@ -115,7 +125,7 @@ function publicQuestion(decision) {
   const question = {
     id: decision.id,
     question: decision.question,
-    options: decision.options.map(option => {
+    options: withCustomOption(decision.options).map(option => {
       const result = { value: option.value, label: option.label };
       if (option.description !== undefined) result.description = option.description;
       if (option.requiresNote !== undefined) result.requiresNote = option.requiresNote;
@@ -157,7 +167,7 @@ function responseNote(response) {
 }
 
 function sameAnswer(decision, answer, note) {
-  return decision.answer === answer && decision.note === note;
+  return decision.answer === answer && (decision.note || undefined) === (note || undefined);
 }
 
 /**
@@ -177,14 +187,15 @@ export function saveAnswers(text, request) {
     }
     ids.add(response.id);
     const { decision, index } = displayedDecision(brief, response.id);
-    const option = decision.options.find(item => item.value === response.answer);
+    const option = withCustomOption(decision.options).find(item => item.value === response.answer);
     if (!option) throw new Error('Unknown choice');
     const note = responseNote(response);
     if (option.requiresNote && !nonempty(note)) throw new Error('This choice requires a note');
     if (sameAnswer(decision, response.answer, note)) continue;
-    if (!['open', 'assigned'].includes(decision.status)) throw new Error('Reopen the decision explicitly before changing its answer.');
+    const noteOnly = decision.status === 'clarified' && decision.answer === response.answer;
+    if (!noteOnly && !['open', 'assigned'].includes(decision.status)) throw new Error('Reopen the decision explicitly before changing its answer.');
     const updated = { ...decision, answer: response.answer, status: 'clarified' };
-    if (note === undefined) delete updated.note;
+    if (note === undefined || note === '') delete updated.note;
     else updated.note = note;
     changes.push({ index, updated });
   }

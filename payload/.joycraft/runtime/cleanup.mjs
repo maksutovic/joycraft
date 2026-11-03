@@ -48,6 +48,29 @@ function blankFences(text) {
   }).join('\n');
 }
 
+// File types a backticked name with a slash is read as a path for; a name with a
+// slash and no extension counts only when it ends in / or its first folder exists.
+const pathExtensions = new Set(['md', 'mdx', 'txt', 'json', 'jsonl', 'yaml', 'yml', 'toml', 'js', 'mjs', 'cjs', 'ts', 'mts', 'cts', 'tsx', 'jsx',
+  'py', 'rb', 'go', 'rs', 'java', 'kt', 'swift', 'c', 'h', 'cpp', 'cs', 'php', 'sh', 'sql', 'html', 'css', 'scss', 'svg', 'png', 'lock', 'env', 'xml', 'csv']);
+
+/**
+ * A backticked span that names a project path, normalized, or null. Skipped:
+ * anything with spaces, globs, placeholders (<slug>, [slug], {x}, $VAR, ...),
+ * URLs and other colon forms, absolute, home, parent and flag-like spans, and
+ * names without a slash (a bare file name could live in any folder).
+ */
+export function projectPath(span, exists = () => true) {
+  let value = span.trim().replace(/#.*$/, '').replace(/:\d+(?::\d+)?$/, '');
+  if (!value || /\s/.test(value) || /[*?<>[\]{}$%:@`'"|\\]/.test(value) || value.includes('...')) return null;
+  if (/^[-/~.]/.test(value) && !value.startsWith('./') && !/^\.[A-Za-z0-9_]/.test(value)) return null;
+  if (!value.includes('/')) return null;
+  value = path.posix.normalize(value);
+  if (value.startsWith('../') || value === '..' || value === '.') return null;
+  const extension = /\.([A-Za-z0-9]+)$/.exec(value.replace(/\/$/, ''))?.[1]?.toLowerCase();
+  if (span.trim().endsWith('/') || pathExtensions.has(extension) || exists(value.split('/')[0])) return value;
+  return null;
+}
+
 /** Markdown links (checked for existence) and backticked project paths (references only). */
 export function references(file, text) {
   const dir = path.posix.dirname(file);
@@ -67,13 +90,24 @@ export function references(file, text) {
   for (const match of text.matchAll(/`([A-Za-z0-9_.\/-]+\.md)`/g)) {
     if (match[1].includes('/')) mentions.push({ target: path.posix.normalize(match[1]), line: text.slice(0, match.index).split('\n').length });
   }
-  return { links, mentions };
+  // Single-backtick spans on one line; fenced blocks are already blank.
+  const spans = [];
+  for (const match of text.matchAll(/(?<!`)`([^`\n]+)`(?!`)/g)) spans.push({ span: match[1], line: lineOf(match.index) });
+  return { links, mentions, spans };
 }
 
 function frontmatter(text) {
   const block = /^(?:\uFEFF)?---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(text);
   if (!block) return null;
   try { return parseYaml(block[1]); } catch (error) { return { unreadable: error.message.replace(/^joycraft\.yaml /, '') }; }
+}
+
+/** A page that records the past: `type: log|history` frontmatter, a decision log or a shipped ledger. */
+function historyPage(file, text) {
+  const name = path.posix.basename(file);
+  if (name === 'decision-log.md' || /^shipped.*\.md$/.test(name)) return true;
+  const type = frontmatter(text)?.type;
+  return type === 'log' || type === 'history';
 }
 
 const inside = (file, folder) => file === folder || file.startsWith(`${folder}/`);
@@ -136,6 +170,39 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
     for (const ref of links) {
       if (!existsSync(path.join(root, ref.target))) findings.push({ check: 'broken-link', path: file, line: ref.line, detail: `Links to ${ref.target}, which does not exist.`, fix: 'Fix the link or remove it.' });
     }
+  }
+  // missing-path: a backticked project path that names nothing in the project,
+  // read from the root or, in a context page, from the page's own folder.
+  // History pages (a decision log, a shipped ledger) rightly name removed paths.
+  const exists = relative => existsSync(path.join(root, relative));
+  for (const file of authorities) {
+    const text = read(root, file) ?? '';
+    if (historyPage(file, text)) continue;
+    const seen = new Set();
+    for (const { span, line } of references(file, text).spans) {
+      const target = projectPath(span, exists);
+      if (!target || seen.has(target)) continue;
+      seen.add(target);
+      const local = path.posix.normalize(path.posix.join(path.posix.dirname(file), target));
+      if (exists(target) || exists(local)) continue;
+      findings.push({ check: 'missing-path', path: file, line, detail: `Names ${target}, which does not exist.`, fix: 'Point it at the current path, or remove the line if the thing is gone.' });
+    }
+  }
+  // unmapped: a context page that only other context pages reference. An entry
+  // file must link or name it, or agents reach it only by chance. Pages nothing
+  // references at all are reported once, as orphan.
+  const mapped = new Set();
+  for (const file of authorities.filter(file => entryFiles.includes(file))) {
+    const { links, mentions } = references(file, read(root, file) ?? '');
+    for (const ref of [...links, ...mentions]) mapped.add(ref.target);
+  }
+  for (const page of pages) {
+    if (referenced.has(page) && !mapped.has(page)) findings.push({ check: 'unmapped', path: page, detail: `Only other ${context}/ pages mention this page; ${entryFiles.join(' and ')} do not, so agents may not know when to read it.`, fix: 'Add a context-map row with a "read when", or merge it into a mapped page.' });
+  }
+  // entry-size: entry files load into every session; keep them within budget.
+  for (const file of authorities.filter(file => entryFiles.includes(file))) {
+    const words = (read(root, file) ?? '').split(/\s+/).filter(Boolean).length;
+    if (words > config.cleanup.entryWords) findings.push({ check: 'entry-size', path: file, detail: `${words} words; the budget is ${config.cleanup.entryWords} (cleanup.entryWords).`, fix: 'Move reference detail into context pages and leave a map row that says when to read each.', words });
   }
   for (const page of pages) {
     if (!referenced.has(page)) findings.push({ check: 'orphan', path: page, detail: `Nothing in ${entryFiles.join(', ')} or ${context}/ links to this page, so agents may never read it.`, fix: 'Add it to the context map with a "read when", or merge it into a linked page.' });

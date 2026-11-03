@@ -7,6 +7,15 @@ claim that a release has shipped.
 
 ---
 
+## Unreleased
+
+- **Wiring report.** `init` and `update` end by checking AGENTS.md and CLAUDE.md
+  with the payload's `wiring.mjs`. When the project is not wired up, they list what
+  is missing and print the sentence to give the agent: "Set up Joycraft's context
+  map". They never edit those files. `doctor` lists the same findings as advice;
+  its exit code still reflects only install problems. `--plan --json` has a
+  `wiring` field.
+
 ## 1.1.1 — Fixes from the re-reviews
 
 An independent re-review of the 1.0.1 and 1.1 fixes found these. Each has a test.
