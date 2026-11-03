@@ -253,6 +253,19 @@ not the brief declares it. Built on joycraft-prototype branch
 "Something else" without a note is refused; with a note, the brief records
 `answer: "custom"` and the note.
 
+## artifact-conflict
+
+Max (2026-11-02): "the buttons seem not to work". The brief changed after the page
+loaded, so the save got a 409. The page then turned off every save button until
+"I reviewed the updated source" was clicked. Clicking an option replaced the
+explanation with "Unsaved changes.", so nothing said why. The answers survived
+only because they were still in the page.
+
+**Done when:** after a source change, the page says which questions changed and
+keeps that message until it is handled. A disabled save button says why. Answers
+to questions whose text and options did not change are kept and can be saved
+without a re-review step.
+
 ## release
 
 The CHANGELOG says plainly that install now edits AGENTS.md and CLAUDE.md, and
