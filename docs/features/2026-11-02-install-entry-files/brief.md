@@ -84,6 +84,30 @@ shown on a rendered page and applied only on the user's yes.
 proposes about the same moves as PR #87, and leaves ALWAYS, ASK FIRST and NEVER
 byte-identical.
 
+## update-notice
+
+The update prompt must reach the user and describe the jump correctly. Found on
+2026-11-02 by installing 1.0.0 and updating to 1.1.1:
+- The check runs only if the agent picks `joycraft-entry` or AGENTS.md has the
+  first-action line. Install writes neither (see entry-block), so in an existing
+  project the user may never be asked.
+- `updateKind` calls every same-major jump `patch`: 1.0.0 → 1.1.1 said "patch".
+- The message gives only the latest release's summary, so a 1.0.0 user hears the
+  1.1.1 fixes and nothing about the 1.1.0 features.
+- `auto-safe` applies a release when its kind is `patch` and the latest release
+  is marked safe. With the bug above, that can apply a minor release.
+
+**Done when:**
+- A project installed at 1.0.0 (with the entry block) prints the `ask` JSON at
+  the start of a fresh session in Claude Code and Codex.
+- 1.0.0 → 1.1.1 reports `minor`; 1.1.0 → 1.1.1 reports `patch`; 1.x → 2.0
+  reports `migration`.
+- The message names each release since the installed one, or says how many, and
+  links the CHANGELOG.
+- `auto-safe` applies only a `patch` jump.
+- Unchanged and already correct: not now (snooze 7 days), turn off, pin,
+  update with backups, `doctor`, and `--recover`.
+
 ## release
 
 The CHANGELOG says plainly that install now edits AGENTS.md and CLAUDE.md, and
