@@ -40,6 +40,9 @@ David Moshal's field feedback.
   `.joycraft/references/doc-cleanup-LICENSE.md`), brought in by David Moshal: inventory,
   diagnose against the code, report and stop, apply only what you approve, verify.
   It trims a long AGENTS.md into linked pages and never moves or rewords a rule.
+  Session end runs the audit without being asked: on what the session touched, and
+  on the whole project after a feature is archived. The findings go on the
+  session-end page, and only the fixes you approve are applied.
   `cleanup.mjs` adds `missing-path`, `unmapped` and `entry-size` (1,000 words by
   default, `cleanup.entryWords` in `joycraft.yaml`), and runs in linear time.
 - **Update prompt.** It says `patch`, `minor` or `migration` correctly (1.0.0 → 1.1.1

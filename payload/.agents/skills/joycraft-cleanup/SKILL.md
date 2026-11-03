@@ -1,6 +1,6 @@
 ---
 name: joycraft-cleanup
-description: Audit project docs and the AGENTS.md context map for rot (stale claims, finished plans and logs, contradictions, dead paths, drifted authorities, unreachable pages), check each claim against the code, propose trimming an AGENTS.md that is too long, and change only what the user approves. Use for "clean up the docs", "audit the docs", "what in our docs is stale", "AGENTS.md is too long", after a feature is archived, or when cleanup.mjs reports findings.
+description: Audit project docs and the AGENTS.md context map for rot (stale claims, finished plans and logs, contradictions, dead paths, drifted authorities, unreachable pages), check each claim against the code, propose trimming an AGENTS.md that is too long, and change only what the user approves. Runs at every session end (scoped to what the session touched) and after a feature is archived (whole project); also use for "clean up the docs", "audit the docs", "what in our docs is stale", "AGENTS.md is too long", or when cleanup.mjs reports findings.
 compatibility: Requires Node.js 22+ and the installed .joycraft runtime. Git improves the code-drift and worktree checks.
 ---
 
@@ -20,6 +20,11 @@ the checks, the AGENTS.md trim and the execution playbook.
 When setup calls this skill, run steps 1–2 only and hand the findings back to
 setup: no report page and no stop. Setup asks about them in its interview and
 shows the agreed fixes on its one diff page.
+
+When session end calls this skill, the scope is AGENTS.md, CLAUDE.md, the docs the
+session changed and the context pages they link (the whole project after an
+archive). Run steps 1–3, but the report goes on the session-end page instead of a
+page of its own; run step 4 only for the fixes the user approves there.
 
 ## 1. Inventory
 

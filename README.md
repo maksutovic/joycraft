@@ -145,10 +145,13 @@ At the end of a session the agent runs these checks for you:
 - `node .joycraft/runtime/cleanup.mjs` reports stale or unreachable project
   knowledge: finished features not archived, context pages that link to working
   material, broken, missing or unmapped pages, an AGENTS.md over its word budget,
-  and pages whose code changed. Ask your agent to "clean up the docs" and it runs a
-  full audit based on [doc-cleanup](https://github.com/aka-luan/doc-cleanup): it
-  checks every claim against the code, keeps your rules and traps, and changes
-  nothing until you approve.
+  and pages whose code changed.
+- The doc audit, based on [doc-cleanup](https://github.com/aka-luan/doc-cleanup),
+  runs at every session end without being asked. It covers AGENTS.md, CLAUDE.md, the
+  docs the session changed and the pages they link; after a feature is archived, the
+  whole project. It checks each claim against the code, keeps your rules and traps,
+  puts its findings on the session-end page, and changes nothing until you approve.
+  Ask your agent to "clean up the docs" for a full audit at any time.
 - `node .joycraft/runtime/wiring.mjs` reports whether AGENTS.md has the Joycraft
   lines and a real context map, and whether CLAUDE.md imports it.
 
