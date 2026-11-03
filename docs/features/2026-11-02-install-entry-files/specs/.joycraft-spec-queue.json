@@ -77,7 +77,7 @@
         2,
         5
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -184,7 +184,7 @@
       "depends_on": [
         5
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -289,7 +289,7 @@
       "depends_on": [
         8
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": false
