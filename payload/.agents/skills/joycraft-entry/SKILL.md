@@ -70,6 +70,22 @@ Settle each goal's "Done when" with the user while writing the brief; if it
 cannot be filled yet, record it as an open decision so dependent specs wait for
 the answer instead of a reviewer discovering it.
 
+**Review defaults stay strict.** Every feature starts with the review loop on
+and its tools required. Record a waiver only from the user's own words in that
+feature's interview: put them in the note of a settled brief decision and write
+the feature's `waiver.json` naming that decision, before any review runs
+(`.joycraft/references/completion.md`). A `no-review` waiver blocks reviewer
+dispatch for the feature. Never propose or ask about one, and never carry it
+into the next feature.
+
+**Feature sessions stay quiet about the review loop.** A feature interview
+asks nothing about review tools: read the recorded `## Review loop` and write
+criteria its tools can check. Ask once, before any spec, only when the
+feature's main claim needs something the recorded tools cannot show (a drag on a
+screenshots-only tool). That is a tooling change: follow
+[change a tool](../../../.joycraft/references/setup.md#review-loop-tools) and
+record the answer, so it is not asked again.
+
 **Ask answerable questions in an artifact.** When the user must choose between
 options, record each choice as a brief decision and render the open decisions
 with the decision artifact (`.joycraft/references/artifacts.md`). Do not list

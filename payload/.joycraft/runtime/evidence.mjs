@@ -87,6 +87,10 @@ export function validateEvidence(report, criteria) {
       if (!methods.has(observation.method)) fail(`${at} has an unsupported method`);
       if (!results.has(observation.result)) fail(`${at} has an unsupported result`);
       else if (observation.result !== 'PASS') fail(`${at} remains ${observation.result}`);
+      if (observation.cause !== undefined && observation.cause !== 'tool-break') fail(`${at} has an unsupported cause`);
+      else if (observation.cause === 'tool-break' && observation.result !== 'UNVERIFIED') {
+        fail(`${at}: cause 'tool-break' marks only an UNVERIFIED check, not ${String(observation.result)}`);
+      }
       if (!text(observation.actual)) fail(`${at} needs an actual observation`);
       if (observation.method === 'source' && observation.kind !== 'structural') {
         fail(`${at}: a source scan supports structural claims only`);

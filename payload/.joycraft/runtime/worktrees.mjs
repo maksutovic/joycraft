@@ -107,7 +107,7 @@ function ignoredEntries(tree) {
 }
 
 function evidenceOnlyHere(root, tree, spec) {
-  return [spec.acceptedReport?.path, spec.ownerAcceptance?.path].filter(Boolean)
+  return [spec.acceptedReport?.path, spec.ownerAcceptance?.path, spec.waiver?.path, spec.waiver?.review?.path].filter(Boolean)
     .filter(file => existsSync(path.join(tree, file)) && !existsSync(path.join(root, file)));
 }
 

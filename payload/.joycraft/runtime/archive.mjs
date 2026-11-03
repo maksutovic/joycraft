@@ -4,7 +4,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { boundQueueForSubject, briefDecisionRecords, canonical, isObject, isSha256, localPath, nonempty, normalizedQueueForSubject, parseJson, readLocal, readQueue, relativePath, requireValue, scopedRequirementForSubject, sha256, specStatus, subjectIdentity, validateIndependentReview } from './identity.mjs';
 import { validateEvidence } from './evidence.mjs';
-import { validateOwnerAcceptance } from './completion.mjs';
+import { validateOwnerAcceptance, validateWaiver } from './completion.mjs';
 import { readConfig, workPaths } from './config.mjs';
 
 const featureName = value => {
@@ -262,7 +262,22 @@ const validTimestamp = value => typeof value === 'string' && nonempty(value) && 
 function historicalDecision(root, queuePath, state, reconciliation) {
   const accepted = state.spec.acceptedReport;
   const owner = state.spec.ownerAcceptance;
-  requireValue(!(accepted !== undefined && owner !== undefined), `Spec ${state.spec.id} has both acceptedReport and ownerAcceptance`);
+  const waiver = state.spec.waiver;
+  requireValue([accepted, owner, waiver].filter(item => item !== undefined).length <= 1, `Spec ${state.spec.id} has more than one of acceptedReport, ownerAcceptance and waiver`);
+  if (waiver !== undefined) {
+    // The brief may evolve after completion; the waiver bytes and record stay bound.
+    requireValue(isObject(waiver) && isSha256(waiver.sha256), `Spec ${state.spec.id} has a malformed waiver`);
+    const waiverPath = relativePath(waiver.path);
+    const waiverBytes = readLocal(root, waiverPath);
+    requireValue(sha256(waiverBytes) === waiver.sha256, `Feature waiver is missing or changed: ${waiverPath}`);
+    const record = parseJson(waiverBytes, waiverPath);
+    validateWaiver({ root, waiver: record, waiverPath, state, checkSource: false });
+    const limitations = [`waived by the user: "${record.instruction}"`];
+    if (waiver.review === undefined) return { kind: 'feature-waiver', path: waiverPath, sha256: waiver.sha256, report: null, covers: record.covers, receipts: [], limitations };
+    const report = historicalReport(root, queuePath, state, waiver.review, { ownerAccepted: true, reconciliation });
+    requireValue(report.verdict === 'UNVERIFIED', `Waived report must stay UNVERIFIED: ${report.path}`);
+    return { kind: 'feature-waiver', path: waiverPath, sha256: waiver.sha256, report: { path: report.path, sha256: report.sha256, verdict: report.verdict }, covers: record.covers, receipts: report.receipts, limitations, ...(report.requirementHistory ? { requirementHistory: report.requirementHistory } : {}) };
+  }
   if (accepted !== undefined) {
     const report = historicalReport(root, queuePath, state, accepted, { reconciliation });
     return { kind: 'accepted-report', path: report.path, sha256: report.sha256, report: { path: report.path, sha256: report.sha256, verdict: report.verdict }, receipts: report.receipts, limitations: [], ...(report.requirementHistory ? { requirementHistory: report.requirementHistory } : {}) };
@@ -305,7 +320,7 @@ function existingArchive(root, feature) {
       if (['queue-scope', 'queue-status', 'spec-status'].includes(record.normalization) || record.reconciliationEntry !== undefined) {
         requireValue(manifest.reconciliation && record.reconciliationSha256 === manifest.reconciliation.sha256 && Number.isInteger(record.reconciliationEntry), `Reconciled replay has no matching paper trail: ${archivedPath}`);
         const entry = manifest.reconciliation.record.entries[record.reconciliationEntry];
-        requireValue(entry && entry.path === record.path && entry.normalization === record.normalization && entry.acceptedSha256 === record.acceptedSha256 && (entry.acceptedCommit === undefined || entry.acceptedCommit === record.acceptedCommit) && manifest.evidence.some(decision => decision.report.path === entry.report.path && decision.report.sha256 === entry.report.sha256 && decision.requirementHistory?.some(item => canonical(item) === canonical(record))) && manifest.files.some(item => ['moved', 'copied'].includes(item.operation) && item.originalPath === entry.path && item.sha256 === entry.currentSha256), `Reconciled replay differs from its paper trail: ${archivedPath}`);
+        requireValue(entry && entry.path === record.path && entry.normalization === record.normalization && entry.acceptedSha256 === record.acceptedSha256 && (entry.acceptedCommit === undefined || entry.acceptedCommit === record.acceptedCommit) && manifest.evidence.some(decision => decision.report?.path === entry.report.path && decision.report?.sha256 === entry.report.sha256 && decision.requirementHistory?.some(item => canonical(item) === canonical(record))) && manifest.files.some(item => ['moved', 'copied'].includes(item.operation) && item.originalPath === entry.path && item.sha256 === entry.currentSha256), `Reconciled replay differs from its paper trail: ${archivedPath}`);
       }
       requireValue(archivedPath === restoredPath(destination, record) && sha256(requirementProjection(bytes, record)) === record.acceptedSha256, `Restored requirement does not match acceptance: ${archivedPath}`);
     }
@@ -354,7 +369,7 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
   if (reconciliation) requireValue(reconciliation.used.size === reconciliation.record.entries.length, 'Archive reconciliation contains unused or stale entries');
   const copies = new Map();
   for (const decision of evidence) {
-    for (const evidencePath of [decision.path, decision.report.path, ...decision.receipts.map(receipt => receipt.path)]) {
+    for (const evidencePath of [decision.path, decision.report?.path, ...decision.receipts.map(receipt => receipt.path)].filter(Boolean)) {
       if (!evidencePath.startsWith(`${source}/`)) copies.set(evidencePath, fileDigest(root, evidencePath));
     }
   }

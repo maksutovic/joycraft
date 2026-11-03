@@ -1,8 +1,8 @@
-import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
+import { closeSync, existsSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { canonical, isObject, isSha256, localPath, nonempty, parseJson, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, subjectIdentity, validateIndependentReview } from './identity.mjs';
+import { briefDecisionRecords, canonical, isObject, isSha256, localPath, nonempty, parseJson, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, subjectIdentity, validateIndependentReview } from './identity.mjs';
 
 export { snapshot } from './identity.mjs';
 
@@ -173,11 +173,11 @@ export async function complete({ root = process.cwd(), queuePath, specId, report
   const checked = await checkReport({ root, queuePath, specId, reportPath });
   const { report, acceptedReport } = checked;
   if (state.spec.status === 'done') {
-    requireValue(state.spec.ownerAcceptance === undefined, 'Done spec has an owner acceptance; ordinary completion cannot relabel it as PASS');
+    requireValue(state.spec.ownerAcceptance === undefined && state.spec.waiver === undefined, 'Done spec has an owner acceptance or waiver; ordinary completion cannot relabel it as PASS');
     requireValue(canonical(state.spec.acceptedReport) === canonical(acceptedReport), 'Done spec already has a different accepted report; it cannot be silently replaced');
     return { status: 'done', unchanged: true, acceptedReport, implementationRevision: report.subject.implementationRevision };
   }
-  requireValue(state.spec.acceptedReport === undefined && state.spec.ownerAcceptance === undefined, 'In-review spec already has completion metadata; reconcile its status before retrying');
+  requireValue(state.spec.acceptedReport === undefined && state.spec.ownerAcceptance === undefined && state.spec.waiver === undefined, 'In-review spec already has completion metadata; reconcile its status before retrying');
   await writeCompletion({
     root, queuePath, specId, state, metadataKey: 'acceptedReport', metadata: acceptedReport,
     stableFiles: [{ path: reportPath, sha256: acceptedReport.sha256, label: 'Report' }],
@@ -238,11 +238,11 @@ export async function acceptOwner({ root = process.cwd(), queuePath, specId, dec
   const evidenceErrors = await ownerEvidenceErrors(report, state.spec.verification.criteria);
   const ownerAcceptance = { path: decisionPath, sha256: sha256(decisionBytes) };
   if (state.spec.status === 'done') {
-    requireValue(state.spec.acceptedReport === undefined, 'Done spec has an accepted PASS report; owner acceptance cannot replace it');
+    requireValue(state.spec.acceptedReport === undefined && state.spec.waiver === undefined, 'Done spec has an accepted PASS report or waiver; owner acceptance cannot replace it');
     requireValue(canonical(state.spec.ownerAcceptance) === canonical(ownerAcceptance), 'Done spec already has a different owner acceptance; it cannot be silently replaced');
     return { status: 'done', unchanged: true, ownerAcceptance, verdict: report.verdict, unresolved: report.unresolved, evidenceErrors, limitations: decision.limitations, implementationRevision: report.subject.implementationRevision };
   }
-  requireValue(state.spec.acceptedReport === undefined && state.spec.ownerAcceptance === undefined, 'In-review spec already has completion metadata; reconcile its status before retrying');
+  requireValue(state.spec.acceptedReport === undefined && state.spec.ownerAcceptance === undefined && state.spec.waiver === undefined, 'In-review spec already has completion metadata; reconcile its status before retrying');
   await writeCompletion({
     root, queuePath, specId, state, metadataKey: 'ownerAcceptance', metadata: ownerAcceptance,
     stableFiles: [
@@ -257,16 +257,215 @@ export async function acceptOwner({ root = process.cwd(), queuePath, specId, dec
   return { status: 'done', unchanged: false, ownerAcceptance, verdict: report.verdict, unresolved: report.unresolved, evidenceErrors, limitations: decision.limitations, implementationRevision: report.subject.implementationRevision };
 }
 
+const waiverCovers = ['no-review', 'tool-break'];
+
+/** The feature folder holds the brief that quotes a waiver and the one waiver file itself. */
+function featureBriefPath(queuePath) {
+  return path.posix.join(path.posix.dirname(path.posix.dirname(queuePath)), 'brief.md');
+}
+
+/** A feature has at most one waiver, at a fixed path beside its brief, so dispatch can find it. */
+export function featureWaiverPath(queuePath) {
+  return path.posix.join(path.posix.dirname(path.posix.dirname(relativePath(queuePath))), 'waiver.json');
+}
+
+/**
+ * The feature's waiver file, or null when the feature has none. Dispatch and
+ * accept-waiver share this lookup. An unreadable waiver throws, so a broken
+ * file never silently allows review or completion.
+ */
+export function readFeatureWaiver({ root = process.cwd(), queuePath }) {
+  const waiverPath = featureWaiverPath(queuePath);
+  if (!existsSync(path.join(root, waiverPath))) return null;
+  const bytes = readLocal(root, waiverPath);
+  return { path: waiverPath, bytes, waiver: parseJson(bytes, waiverPath) };
+}
+
+/**
+ * Decision block-review-dispatch: "skip review" means review never runs. A
+ * reviewer cannot be dispatched for a spec whose feature waiver covers
+ * no-review, so no FAIL review can exist for a spec that no-review completes.
+ */
+export function assertReviewAllowed({ root = process.cwd(), queuePath }) {
+  let found;
+  try { found = readFeatureWaiver({ root, queuePath }); }
+  catch (error) { throw new Error(`Reviewer dispatch refused: the feature waiver ${featureWaiverPath(queuePath)} is unreadable (${error.message}); fix or remove it first`); }
+  if (found === null) return;
+  const covers = found.waiver?.covers;
+  requireValue(Array.isArray(covers), `Reviewer dispatch refused: the feature waiver ${found.path} has no covers list; fix or remove it first`);
+  requireValue(!covers.includes('no-review'), `Reviewer dispatch refused: the feature waiver ${found.path} covers no-review, so review never runs for this queue. Complete with accept-waiver, or remove no-review from the waiver before any review`);
+}
+
+/**
+ * A FeatureWaiver is the user's own words, given in one feature's interview and
+ * recorded in a clarified brief decision. Like owner acceptance, local JSON
+ * cannot prove a human said them; this validates only the record and its
+ * bindings. `checkSource: false` skips the brief checks for historical
+ * (archive) reads.
+ */
+export function validateWaiver({ root = process.cwd(), waiver, waiverPath, state, checkSource = true }) {
+  waiverPath = relativePath(waiverPath);
+  requireValue(isObject(waiver) && waiver.schemaVersion === 1 && waiver.kind === 'feature-waiver', 'Feature waiver needs schemaVersion 1 and kind feature-waiver');
+  requireValue(Object.keys(waiver).every(key => ['schemaVersion', 'kind', 'queuePath', 'covers', 'instruction', 'decision', 'source', 'createdAt'].includes(key)), 'Feature waiver has unknown fields');
+  requireValue(nonempty(waiver.queuePath) && relativePath(waiver.queuePath) === state.queuePath, `Feature waiver is for another queue (${waiver.queuePath}); a waiver covers only its own feature's queue`);
+  requireValue(waiverPath === featureWaiverPath(state.queuePath), `Feature waiver must be the feature's one waiver file: ${featureWaiverPath(state.queuePath)}`);
+  requireValue(Array.isArray(waiver.covers) && waiver.covers.length > 0 && waiver.covers.every(item => waiverCovers.includes(item)) && new Set(waiver.covers).size === waiver.covers.length, `Feature waiver covers must be a nonempty subset of ${waiverCovers.join(', ')}`);
+  requireValue(nonempty(waiver.instruction), "Feature waiver needs the user's exact nonempty instruction");
+  requireValue(nonempty(waiver.decision) && /^[A-Za-z0-9_-]{1,100}$/.test(waiver.decision), 'Feature waiver needs the id of the brief decision that holds the user\'s words');
+  requireValue(nonempty(waiver.createdAt) && Number.isFinite(Date.parse(waiver.createdAt)), 'Feature waiver needs a valid createdAt timestamp');
+  requireValue(isObject(waiver.source) && nonempty(waiver.source.path) && isSha256(waiver.source.sha256), 'Feature waiver source must be a receipt of the brief with a SHA-256 digest');
+  const sourcePath = relativePath(waiver.source.path);
+  requireValue(sourcePath === featureBriefPath(state.queuePath), `Feature waiver source must be this feature's brief: ${featureBriefPath(state.queuePath)}`);
+  requireValue(waiverPath !== state.queuePath && waiverPath !== state.specPath && waiverPath !== sourcePath, 'Feature waiver must be separate from queue, spec and brief');
+  requireValue(!state.spec.verification.inputs.some(input => relativePath(input.path) === waiverPath), 'Feature waiver cannot be a verification input');
+  if (checkSource) {
+    const briefBytes = readLocal(root, sourcePath);
+    requireValue(sha256(briefBytes) === waiver.source.sha256, `Feature waiver source hash does not match ${sourcePath}`);
+    assertDecisionQuotes(briefBytes, sourcePath, waiver);
+  }
+}
+
+const words = text => text.trim().split(/\s+/).filter(Boolean);
+
+/**
+ * The named decision must exist once in the brief, be settled (clarified or
+ * assigned, with an answer), and hold the instruction as a run of whole words
+ * of its note or answer. Whitespace, including line wraps, is normalized.
+ */
+function assertDecisionQuotes(briefBytes, sourcePath, waiver) {
+  const records = briefDecisionRecords(briefBytes, sourcePath).filter(record => isObject(record) && record.id === waiver.decision);
+  requireValue(records.length === 1, `Feature waiver decision ${waiver.decision} is missing or ambiguous in ${sourcePath}`);
+  const [decision] = records;
+  const answered = typeof decision.answer === 'string' ? nonempty(decision.answer) : decision.answer !== null && decision.answer !== undefined;
+  requireValue(['clarified', 'assigned'].includes(decision.status) && answered, `Feature waiver decision ${waiver.decision} is not answered in ${sourcePath}`);
+  const quote = words(waiver.instruction);
+  requireValue(quote.length >= 3, 'Feature waiver instruction must be at least three of the user\'s words');
+  const holds = text => {
+    if (typeof text !== 'string') return false;
+    const spoken = words(text);
+    for (let start = 0; start + quote.length <= spoken.length; start++) if (quote.every((word, index) => spoken[start + index] === word)) return true;
+    return false;
+  };
+  requireValue(holds(decision.note) || holds(decision.answer), `Feature waiver instruction must appear as whole words in the note or answer of decision ${waiver.decision} in ${sourcePath}`);
+}
+
+const isFailing = report => report.verdict === 'FAIL' || (Array.isArray(report.flows) && report.flows.some(flow => Array.isArray(flow?.observations) && flow.observations.some(observation => observation?.result === 'FAIL')));
+
+/**
+ * Every review report the runtime can see for this queue/spec: the dispatch
+ * report destination beside the queue, the rest of the feature folder, and
+ * local packets. Matching is by subject.queuePath and subject.specId.
+ */
+export function visibleReports({ root = process.cwd(), queuePath, specId }) {
+  queuePath = relativePath(queuePath);
+  const found = [];
+  const scan = relative => {
+    const directory = path.join(root, relativePath(relative));
+    if (!existsSync(directory) || !lstatSync(directory).isDirectory()) return;
+    for (const name of readdirSync(directory).sort()) {
+      const child = path.posix.join(relative, name);
+      const stat = lstatSync(path.join(directory, name));
+      if (stat.isDirectory()) scan(child);
+      else if (stat.isFile() && name.endsWith('.json') && child !== queuePath) {
+        let value;
+        try { value = JSON.parse(readFileSync(path.join(directory, name), 'utf8')); } catch { continue; }
+        if (isObject(value) && 'verdict' in value && isObject(value.subject) && value.subject.queuePath === queuePath && value.subject.specId === specId) found.push({ path: child, report: value });
+      }
+    }
+  };
+  scan(path.posix.dirname(path.posix.dirname(queuePath)));
+  scan('.joycraft/local/packets');
+  return found;
+}
+
+/**
+ * Extra guard only. The enforcement is reviewer dispatch refusing a no-review
+ * queue (assertReviewAllowed), so no review should exist. A report found in the
+ * usual folders still refuses: no-review needs none, and a FAIL never passes.
+ */
+function assertNoReviewBypass({ root, queuePath, specId, report }) {
+  const seen = visibleReports({ root, queuePath, specId });
+  const failing = seen.filter(item => isFailing(item.report) && (report === undefined || item.report.subject.identity === report.subject.identity));
+  requireValue(failing.length === 0, `A waiver never covers a FAIL: a FAIL review exists for this spec (${failing.map(item => item.path).join(', ')})`);
+  if (report === undefined) requireValue(seen.length === 0, `A review report exists for this spec (${seen.map(item => item.path).join(', ')}); no-review cannot skip it. Pass --report so the tool-break and FAIL rules apply`);
+}
+
+/** Fail closed on any FAIL, then allow only an UNVERIFIED report whose gaps are all tool breaks. */
+export function validateWaivedReport({ waiver, report }) {
+  const observations = report.flows.flatMap(flow => flow.observations);
+  const failed = observations.filter(observation => observation.result === 'FAIL').length;
+  requireValue(report.verdict !== 'FAIL' && failed === 0, `A waiver never covers a FAIL: the report ${report.verdict === 'FAIL' ? 'verdict is FAIL' : `has ${failed} FAIL observation(s)`}`);
+  requireValue(report.verdict === 'UNVERIFIED', 'A waived report must be UNVERIFIED; a PASS report uses ordinary completion');
+  requireValue(waiver.covers.includes('tool-break'), 'Feature waiver does not cover tool-break, so it cannot complete a reviewed UNVERIFIED spec');
+  const uncaused = observations.filter(observation => observation.result !== 'PASS' && observation.cause !== 'tool-break').length;
+  requireValue(uncaused === 0, `Feature waiver covers only tool breaks: ${uncaused} non-PASS observation(s) lack cause: 'tool-break'`);
+}
+
+/**
+ * Complete an in-review spec under its feature's waiver. Without a report the
+ * waiver must cover no-review. With a report it must be current, independent,
+ * UNVERIFIED and gap-free except for tool breaks; it keeps its real verdict.
+ */
+export async function acceptWaiver({ root = process.cwd(), queuePath, specId, waiverPath, reportPath }) {
+  queuePath = relativePath(queuePath);
+  waiverPath = relativePath(waiverPath);
+  assertNoJournal(root, queuePath);
+  const state = readQueue({ root, queuePath, specId });
+  requireValue(state.spec.status === 'in-review' || state.spec.status === 'done', 'Only an in-review spec can move to done');
+  requireValue(waiverPath === featureWaiverPath(queuePath), `Feature waiver must be the feature's one waiver file: ${featureWaiverPath(queuePath)}`);
+  const found = readFeatureWaiver({ root, queuePath });
+  requireValue(found !== null, `Feature waiver not found: ${waiverPath}`);
+  const { bytes: waiverBytes, waiver } = found;
+  validateWaiver({ root, waiver, waiverPath, state });
+  let report, reportBytes, evidenceErrors = [];
+  if (reportPath !== undefined) {
+    reportPath = relativePath(reportPath);
+    requireValue(reportPath !== waiverPath, 'Review report must be separate from the waiver');
+    reportBytes = readLocal(root, reportPath);
+    report = parseJson(reportBytes, reportPath);
+    validateReview({ root, report, state, reportPath, artifactPaths: [waiverPath] });
+    validateWaivedReport({ waiver, report });
+    evidenceErrors = await ownerEvidenceErrors(report, state.spec.verification.criteria);
+  } else requireValue(waiver.covers.includes('no-review'), 'Feature waiver does not cover no-review; supply the current UNVERIFIED report for a tool-break waiver');
+  assertNoReviewBypass({ root, queuePath, specId, report });
+  const receipt = { path: waiverPath, sha256: sha256(waiverBytes), ...(report ? { review: { path: reportPath, sha256: sha256(reportBytes) } } : {}) };
+  const result = { status: 'done', waiver: receipt, covers: waiver.covers, instruction: waiver.instruction, ...(report ? { verdict: report.verdict, unresolved: report.unresolved, evidenceErrors, implementationRevision: report.subject.implementationRevision } : { verdict: null }) };
+  if (state.spec.status === 'done') {
+    requireValue(state.spec.acceptedReport === undefined && state.spec.ownerAcceptance === undefined, 'Done spec has an accepted report or owner acceptance; a waiver cannot replace it');
+    requireValue(canonical(state.spec.waiver) === canonical(receipt), 'Done spec already has a different waiver; it cannot be silently replaced');
+    return { ...result, unchanged: true };
+  }
+  requireValue(state.spec.acceptedReport === undefined && state.spec.ownerAcceptance === undefined && state.spec.waiver === undefined, 'In-review spec already has completion metadata; reconcile its status before retrying');
+  await writeCompletion({
+    root, queuePath, specId, state, metadataKey: 'waiver', metadata: receipt,
+    stableFiles: [
+      { path: waiverPath, sha256: receipt.sha256, label: 'Feature waiver' },
+      { path: relativePath(waiver.source.path), sha256: waiver.source.sha256, label: 'Waiver source brief' },
+      ...(report ? [{ path: reportPath, sha256: sha256(reportBytes), label: 'Review report' }] : []),
+    ],
+    validate: currentState => {
+      validateWaiver({ root, waiver, waiverPath, state: currentState });
+      assertNoReviewBypass({ root, queuePath, specId, report });
+      if (report) {
+        validateReview({ root, report, state: currentState, reportPath, artifactPaths: [waiverPath] });
+        validateWaivedReport({ waiver, report });
+      }
+    },
+  });
+  return { ...result, unchanged: false };
+}
+
 function argumentsFor(argv) {
   const [command, ...args] = argv;
-  requireValue(['snapshot', 'scope', 'complete', 'finalize-review', 'accept-owner', 'recover'].includes(command), 'Usage: completion.mjs scope --queue <path> --spec <id> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> | accept-owner --queue <path> --spec <id> --decision <decision.json> | recover --queue <path>');
+  requireValue(['snapshot', 'scope', 'complete', 'finalize-review', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope --queue <path> --spec <id> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
   const flags = {};
   for (let i = 0; i < args.length; i += 2) {
-    requireValue(['--queue', '--spec', '--out', '--report', '--decision'].includes(args[i]) && nonempty(args[i + 1]) && flags[args[i]] === undefined, `Invalid or duplicate argument: ${args[i]}`);
+    requireValue(['--queue', '--spec', '--out', '--report', '--decision', '--waiver'].includes(args[i]) && nonempty(args[i + 1]) && flags[args[i]] === undefined, `Invalid or duplicate argument: ${args[i]}`);
     flags[args[i]] = args[i + 1];
   }
-  const expected = command === 'recover' ? ['--queue'] : command === 'scope' ? ['--queue', '--spec'] : ['--queue', '--spec', command === 'snapshot' ? '--out' : command === 'accept-owner' ? '--decision' : '--report'];
-  requireValue(Object.keys(flags).length === expected.length && expected.every(flag => flags[flag] !== undefined), `Missing or unexpected arguments for ${command}`);
+  const expected = command === 'recover' ? ['--queue'] : command === 'scope' ? ['--queue', '--spec'] : ['--queue', '--spec', command === 'snapshot' ? '--out' : command === 'accept-owner' ? '--decision' : command === 'accept-waiver' ? '--waiver' : '--report'];
+  const optional = command === 'accept-waiver' ? ['--report'] : [];
+  requireValue(expected.every(flag => flags[flag] !== undefined) && Object.keys(flags).every(flag => expected.includes(flag) || optional.includes(flag)), `Missing or unexpected arguments for ${command}`);
   if (command !== 'recover') requireValue(/^(?:0|[1-9]\d*)$/.test(flags['--spec']) && Number.isSafeInteger(Number(flags['--spec'])), 'Spec ID must be a nonnegative integer');
   return { command, flags };
 }
@@ -289,6 +488,7 @@ export async function main(argv = process.argv.slice(2)) {
     const current = snapshot({ root, queuePath, specId: Number(flags['--spec']) });
     result = { queuePath: current.queuePath, specId: current.specId, changeScope: current.binding?.changeScope ?? null };
   } else if (command === 'recover') result = recover({ root, queuePath });
+  else if (command === 'accept-waiver') result = await acceptWaiver({ root, queuePath, specId: Number(flags['--spec']), waiverPath: flags['--waiver'], reportPath: flags['--report'] });
   else if (command === 'accept-owner') result = await acceptOwner({ root, queuePath, specId: Number(flags['--spec']), decisionPath: flags['--decision'] });
   else result = await complete({ root, queuePath, specId: Number(flags['--spec']), reportPath: flags['--report'] });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);

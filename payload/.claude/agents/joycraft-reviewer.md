@@ -34,6 +34,11 @@ criterion by what you observe.
 Report every finding with a severity and the criterion it touches. Only a failing
 stated criterion, or a reproducible defect or regression in the changed code with
 file:line or a receipt, blocks. A case the spec does not decide is "decision
-needed", not FAIL. Do not repeat an earlier round's finding as new. Record only
-what you observed; mark anything unobserved UNVERIFIED. Keep the final message
+needed", not FAIL. Do not repeat an earlier round's finding as new.
+
+Take evidence with each package's recorded tool from the packet's `reviewLoop`,
+within its `canShow`, and say in plain words how you checked. A limit the user
+agreed to (a claim beyond `canShow`, or a package the user skipped) is not
+UNVERIFIED; the parent agent judges what is left. UNVERIFIED is a check that
+should have run and did not. Record only what you observed. Keep the final message
 short: verdict, blocking findings, decision-needed items, report path.

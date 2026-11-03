@@ -81,6 +81,22 @@ If it returns unenforced, or a separate review context/capability is unavailable
 leave the spec `in-review`; do not invent an ID or prompt to continue. This holds
 the claimed review, not unrelated authorized or hooks-disabled/manual work.
 
+When a recorded tool breaks during a run (the dev server does not start, a
+port is taken, the browser or simulator crashes), repair it with what the user
+already agreed to: restart the dev server, free the port, relaunch the browser
+or simulator, then retry once. A repair never installs, upgrades or
+reconfigures anything; that needs the user's yes. If the repair fails, record an
+`UNVERIFIED` observation with `cause: 'tool-break'` and the reason, leave that
+spec `in-review`, and continue with the specs that do not depend on it. At the
+first hold, tell the user in the conversation while workers run: the spec, the
+tool, the cause and the repair tried. The session-end summary lists every held
+spec again.
+
+A tool break stops the whole queue only when the project will not build or
+install, the worktree or repository is broken, or the next step would touch data
+or systems outside the project (a shared database, a deploy). Every other tool
+break is repair, then hold.
+
 Only the guarded completion path can move an `in-review` spec to `done`. Use its manual snapshot/complete commands only at an explicit non-native boundary; read [completion guidance](../../../.joycraft/references/completion.md) before doing so.
 
 When a current independent review is `FAIL` or `UNVERIFIED`, first fix

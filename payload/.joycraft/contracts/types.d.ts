@@ -68,6 +68,8 @@ export interface QueueSpec {
   acceptedReport?: { path: string; sha256: string };
   /** Explicit owner exception, mutually exclusive with acceptedReport; not a PASS. */
   ownerAcceptance?: Receipt;
+  /** The feature's FeatureWaiver file, plus the UNVERIFIED report a tool-break waiver completed on; mutually exclusive with acceptedReport and ownerAcceptance. */
+  waiver?: Receipt & { review?: Receipt };
 }
 export interface SpecQueue { schemaVersion: 1; feature: string; specs: QueueSpec[] }
 export interface BoundInput extends VerificationInput {
@@ -103,6 +105,8 @@ export interface Observation {
   result: Result;
   actual: string;
   receipts: Receipt[];
+  /** Set only on an UNVERIFIED observation whose recorded tool did not work during the run. */
+  cause?: 'tool-break';
   /** Mandatory for test/command observations; null means unavailable. */
   command?: { argv: string[]; exitCode: number | null };
   /** Mandatory for visual observations. Interactions name actual outcomes. */
@@ -154,6 +158,24 @@ export interface OwnerAcceptance {
   /** Exact human instruction in its conversational scope, never inferred from general permission. */
   instruction: string;
   limitations: string[];
+  createdAt: string;
+}
+/**
+ * The user's own words, from one feature's interview, loosening that feature's queue only. Never covers a FAIL.
+ * Lives at `<feature folder>/waiver.json`. While it covers no-review, reviewer dispatch for the queue is refused.
+ */
+export interface FeatureWaiver {
+  schemaVersion: 1;
+  kind: 'feature-waiver';
+  queuePath: string;
+  /** Nonempty subset: complete without a review report, or with an UNVERIFIED report whose gaps are all tool breaks. */
+  covers: Array<'no-review' | 'tool-break'>;
+  /** The user's exact words: whole words of the named decision's note or answer, at least three. */
+  instruction: string;
+  /** Id of the clarified or assigned brief decision whose note holds the instruction. */
+  decision: string;
+  /** Receipt of the feature brief that holds the decision. */
+  source: Receipt;
   createdAt: string;
 }
 export interface ValidationResult { ok: boolean; errors: string[] }

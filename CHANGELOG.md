@@ -7,6 +7,36 @@ claim that a release has shipped.
 
 ---
 
+## 1.2.0 — The review loop uses your tools
+
+Issue #88 (David Moshal): checking a web UI in review meant adding
+`@playwright/test` and a Chromium download to every web package. Joycraft now owns
+the evidence contract and the project owns the tool.
+
+### What's new
+
+- **Discovery from a hint list.** Setup finds the review tool each package already
+  has (Playwright, Cypress, WebdriverIO, Maestro, Newman, an e2e script, a CI job and
+  more) and records one row per package in AGENTS.md, with what the tool can show.
+  This machine's own tools, such as a built-in browser, go to `.joycraft/local/`.
+- **Talked about at setup only.** A gap gets one recommendation with its trade-offs
+  and an offer to research others. Installs run only on your yes, never with `sudo`,
+  a licence or a sign-in. Feature interviews stay quiet unless a feature needs
+  something the recorded tools cannot show.
+- **Agreed limits are not UNVERIFIED.** A claim beyond the recorded tool's reach, or
+  a package you skipped, is a limit you agreed to. `UNVERIFIED` now means a check
+  that should have run and did not.
+- **Per-feature waiver.** Say "skip review" in the interview and the feature's
+  `waiver.json` records your words. Reviewers are then never dispatched for it. A
+  waiver never covers a FAIL. Install defaults keep every gate on.
+- **Tool breaks hold one spec.** The agent repairs once (restart the server, free the
+  port, relaunch the browser), then holds that spec as `UNVERIFIED` with
+  `cause: 'tool-break'`, keeps the queue going and tells you right away.
+
+Payload: joycraft-prototype `field-15`.
+
+---
+
 ## 1.1.2 — The agent builds and keeps the context map
 
 Since 1.0, installing into an existing project left AGENTS.md and CLAUDE.md as they

@@ -10,6 +10,9 @@ For a mutable worker or stateful runtime check, first apply the conditional
 worktree or a resource lease. A `read-only` workspace keeps declared source
 inputs frozen; it may still write declared review reports and receipts outside
 those inputs. Cache-mutating runtime work needs separate mutable state.
+Reviewer preflight refuses a queue whose feature `waiver.json` covers
+`no-review` ([completion guidance](completion.md#feature-waiver)); complete
+those specs with `accept-waiver` instead.
 
 ## Contents
 
@@ -93,6 +96,11 @@ more, alone, with a fresh packet path. If it fails again, stop that spec's
 review and tell the user its printed reason; never continue as if the review
 started. Do not retry a `Task startup stopped:` refusal unchanged; fix its cause.
 
+A worker that holds a spec for a tool break reports the spec, the tool, the
+cause and the repair it tried. The coordinator tells the user at the first hold,
+in the conversation, while other workers keep running; it does not wait for the
+session end. The session-end summary lists every held spec again.
+
 The return is `ready: true` for an available valid startup path, including a
 hooks-disabled/manual path. It is not a cryptographic attestation. Missing human
 prompt history for an enforced startup is explicit
@@ -158,6 +166,10 @@ decisions. Without a selector, the packet conservatively carries every current
 answered decision from that brief. The packet retains its whole-brief reference
 so workers can read each decision in context. Its inputs include any current
 coupled counterpart required to review the requested behavior.
+When `AGENTS.md` has a `## Review loop` section or this machine has
+`.joycraft/local/review-loop.json`, the packet carries `reviewLoop`:
+`{ path, section, local? }`, the shared section plus, when present,
+`local: { path, record }` with this machine's host tools.
 
 ## Bind the hook source view
 

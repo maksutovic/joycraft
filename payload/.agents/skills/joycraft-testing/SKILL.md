@@ -25,11 +25,13 @@ remain valid; only assertions intended to detect the new behavior need meaningfu
 red/green. If a red check was not run, say so. Do not weaken assertions to obtain
 green or alter unrelated tests to manufacture universal failure.
 
-For UI requirements, use the tools and commands in the `Review loop` section of
-`AGENTS.md` (also in the worker packet as `reviewLoop`); a tool it marks skipped
-or missing leaves that UI claim UNVERIFIED.
-Render and inspect the relevant route, state and viewport.
-Perform the interactions the claim needs and observe their outcomes. Fix observed
+For UI requirements, use the package's recorded tool and commands from the
+worker packet's `reviewLoop` (the `Review loop` section of `AGENTS.md`, plus
+`local` host tools), within its `canShow`. A claim beyond `canShow`, or in a
+package the user skipped, is an agreed limit, not UNVERIFIED: check what the
+tool can show and say how you checked. Render and inspect the relevant route,
+state and viewport. When the tool can interact, perform the interactions the
+claim needs and observe their outcomes. Fix observed
 problems within scope, then rerender and reinspect affected states. A saved
 screenshot, DOM check or browser launch alone is not visual inspection. Preserve
 tool access boundaries: if a check is blocked or unavailable, record UNVERIFIED
