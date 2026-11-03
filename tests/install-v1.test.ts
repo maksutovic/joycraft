@@ -1,9 +1,9 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { applyInstall, checkWiring, planInstall, WIRING_SENTENCE } from '../src/install-v1.js';
+import { applyInstall, checkWiring, formatWiring, planInstall, WIRING_SENTENCE } from '../src/install-v1.js';
 
 // Spec 10 (install-entry-files): init, update and doctor report an unwired
 // project and never write AGENTS.md or CLAUDE.md.
@@ -34,7 +34,10 @@ function project(files: Record<string, string> = {}): string {
   const dir = mkdtempSync(join(tmpdir(), 'joycraft-wiring-'));
   dirs.push(dir);
   writeFileSync(join(dir, 'package.json'), '{"name":"app","scripts":{"test":"node --test"}}\n');
-  for (const [path, text] of Object.entries(files)) writeFileSync(join(dir, path), text);
+  for (const [path, text] of Object.entries(files)) {
+    mkdirSync(dirname(join(dir, path)), { recursive: true });
+    writeFileSync(join(dir, path), text);
+  }
   return dir;
 }
 
@@ -59,7 +62,6 @@ describe('spec 10: init, update and doctor report an unwired project', () => {
     expect(result.status, result.stderr).toBe(0);
     const output = JSON.parse(result.stdout);
     expect(output.wiring.wired).toBe(false);
-    expect(output.wiring.source).toBe('project');
     expect(output.wiring.findings.map((finding: { check: string }) => finding.check)).toEqual(['no-agents-md', 'no-claude-import']);
     expect(existsSync(join(dir, 'AGENTS.md'))).toBe(false);
     expect(existsSync(join(dir, 'CLAUDE.md'))).toBe(false);
@@ -116,19 +118,29 @@ describe('spec 10: init, update and doctor report an unwired project', () => {
     expect(result.status, result.stderr).toBe(0);
     const plan = JSON.parse(result.stdout);
     expect(plan.actions.length).toBeGreaterThan(0);
-    expect(plan.wiring).toMatchObject({ wired: false, source: 'payload' });
-    expect(plan.wiring.findings.map((finding: { check: string }) => finding.check)).toEqual(['no-joycraft-lines', 'no-context-map']);
+    expect(plan.wiring).toMatchObject({ wired: false, advice: [] });
+    expect(plan.wiring.findings.map((finding: { check: string }) => finding.check)).toEqual(['no-joycraft-lines', 'no-context-map', 'no-claude-import']);
+    expect(run(dir, 'init', '.', '--harness', 'claude', '--plan').stdout).toContain('After this install');
     expect(existsSync(join(dir, '.joycraft'))).toBe(false);
     expect(bytes(dir, 'AGENTS.md')).toBe(UNWIRED_AGENTS);
     const wired = project({ 'AGENTS.md': WIRED_AGENTS });
     expect(JSON.parse(run(wired, 'init', '.', '--harness', 'codex', '--plan', '--json').stdout).wiring).toMatchObject({ wired: true, findings: [] });
   });
 
-  it('checkWiring falls back to the payload copy when the project has none, and never throws', async () => {
+  it('checkWiring runs the package copy, never the project copy', async () => {
     const dir = project({ 'AGENTS.md': WIRED_AGENTS });
-    expect(await checkWiring(dir)).toMatchObject({ wired: true, source: 'payload' });
+    expect(await checkWiring(dir)).toMatchObject({ wired: true });
     applyInstall(planInstall(dir, ['codex']));
-    writeFileSync(join(dir, '.joycraft/runtime/wiring.mjs'), 'throw new Error("broken");\n');
-    expect(await checkWiring(dir)).toMatchObject({ wired: true, source: 'payload' });
+    writeFileSync(join(dir, '.joycraft/runtime/wiring.mjs'), 'globalThis.projectWiringRan = true; throw new Error("project code");\n');
+    expect(await checkWiring(dir)).toMatchObject({ wired: true });
+    expect((globalThis as { projectWiringRan?: boolean }).projectWiringRan).toBeUndefined();
+  });
+
+  it('reports areas setup has not mapped yet as advice without unwiring the project', async () => {
+    const dir = project({ 'AGENTS.md': WIRED_AGENTS, 'docs/context/project.md': '# Project\n\n## Not yet mapped\n\n- `services/billing/`\n' });
+    const wiring = await checkWiring(dir);
+    expect(wiring?.wired).toBe(true);
+    expect(wiring?.advice.map((item) => item.check)).toEqual(['unmapped-areas']);
+    expect(formatWiring(wiring).join('\n')).toContain('Not mapped yet');
   });
 });

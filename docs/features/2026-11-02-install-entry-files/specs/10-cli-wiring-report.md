@@ -1,6 +1,6 @@
 ---
 id: 10
-status: in-review
+status: done
 ---
 # init, update and doctor report an unwired project
 

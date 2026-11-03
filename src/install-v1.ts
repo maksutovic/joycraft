@@ -218,7 +218,8 @@ export function recordedHosts(dir: string): Host[] | null {
 
 /** What the payload's `.joycraft/runtime/wiring.mjs` reports. */
 export interface WiringFinding { check: string; path: string; detail: string; fix: string }
-export interface WiringResult { wired: boolean; findings: WiringFinding[]; source: 'project' | 'payload' }
+export interface WiringAdvice { check: string; path: string; detail: string; areas?: string[] }
+export interface WiringResult { wired: boolean; findings: WiringFinding[]; advice: WiringAdvice[] }
 
 /** The sentence a person gives the agent to wire the project up. */
 export const WIRING_SENTENCE = "Set up Joycraft's context map";
@@ -227,34 +228,32 @@ const WIRING_MODULE = '.joycraft/runtime/wiring.mjs';
 /**
  * Check whether the project's entry files (AGENTS.md, CLAUDE.md) carry Joycraft.
  * Report only: the check reads files and never writes AGENTS.md or CLAUDE.md.
- * It runs the copy just installed in the project, else the package's payload copy
- * (`prefer: 'payload'` skips the project copy, as `--plan` does before anything is
- * installed). Returns null when neither copy can run, so a broken check never
- * blocks an install.
+ * It always runs the package's own payload copy, never code from the project.
+ * `hosts` lets `--plan` check CLAUDE.md before anything records the hosts.
+ * Returns null when the check cannot run, so it never blocks an install.
  */
-export async function checkWiring(dir: string, { prefer = 'project' }: { prefer?: 'project' | 'payload' } = {}): Promise<WiringResult | null> {
+export async function checkWiring(dir: string, { hosts }: { hosts?: readonly Host[] } = {}): Promise<WiringResult | null> {
   const root = resolve(dir);
-  const candidates: [WiringResult['source'], string][] = [];
-  if (prefer === 'project') candidates.push(['project', join(root, WIRING_MODULE)]);
-  candidates.push(['payload', join(payloadRoot(), WIRING_MODULE)]);
-  for (const [source, path] of candidates) {
-    if (!existsSync(path)) continue;
-    try {
-      const module = await import(pathToFileURL(path).href) as { checkWiring?: (root: string) => { wired: boolean; findings: WiringFinding[] } };
-      if (typeof module.checkWiring !== 'function') continue;
-      const result = module.checkWiring(root);
-      if (!result || !Array.isArray(result.findings)) continue;
-      return { wired: result.findings.length === 0, findings: result.findings, source };
-    } catch { /* try the next copy */ }
-  }
-  return null;
+  const path = join(payloadRoot(), WIRING_MODULE);
+  if (!existsSync(path)) return null;
+  try {
+    const module = await import(pathToFileURL(path).href) as { checkWiring?: (root: string, options?: { hosts?: readonly string[] }) => { findings: WiringFinding[]; advice?: WiringAdvice[] } };
+    if (typeof module.checkWiring !== 'function') return null;
+    const result = module.checkWiring(root, hosts ? { hosts } : {});
+    if (!result || !Array.isArray(result.findings)) return null;
+    return { wired: result.findings.length === 0, findings: result.findings, advice: Array.isArray(result.advice) ? result.advice : [] };
+  } catch { return null; }
 }
 
 /** Plain-words lines for an unwired project; none when it is wired. */
-export function formatWiring(wiring: WiringResult | null, indent = ''): string[] {
-  if (!wiring || wiring.wired) return [];
+export function formatWiring(wiring: WiringResult | null, indent = '', { planned = false } = {}): string[] {
+  if (!wiring) return [];
+  const advice = wiring.advice.map((item) => `${indent}Not mapped yet: ${item.areas?.length ? item.areas.join(', ') : item.detail}`);
+  if (wiring.wired) return advice;
   return [
-    `${indent}Joycraft is installed, but this project's entry files are not wired up yet:`,
+    planned
+      ? `${indent}After this install, the project's entry files will still need wiring up:`
+      : `${indent}Joycraft is installed, but this project's entry files are not wired up yet:`,
     ...wiring.findings.map((finding) => `${indent}  - ${finding.detail}`),
     `${indent}Joycraft does not edit AGENTS.md or CLAUDE.md itself. Give your agent this sentence:`,
     `${indent}  "${WIRING_SENTENCE}"`,

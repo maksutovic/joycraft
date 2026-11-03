@@ -119,9 +119,9 @@ async function install(dir: string, opts: InstallOptions, mode: 'init' | 'update
   const hosts = await chooseHosts(root, opts);
   const plan = planInstall(root, hosts);
   if (opts.plan) {
-    // Nothing is installed yet, so the package's own copy of the check runs.
-    const wiring = await checkWiring(root, { prefer: 'payload' });
-    out(opts.json, { ...plan, wiring }, [formatPlan(plan), ...formatWiring(wiring, '  ')].join('\n'));
+    // Nothing records the hosts yet, so the check is told which ones were chosen.
+    const wiring = await checkWiring(root, { hosts });
+    out(opts.json, { ...plan, wiring }, [formatPlan(plan), ...formatWiring(wiring, '  ', { planned: true })].join('\n'));
     return;
   }
   if (!plan.actions.some((action) => action.kind !== 'conflict') && !plan.gitignore.length) {

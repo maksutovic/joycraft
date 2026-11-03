@@ -26,7 +26,8 @@ David Moshal's field feedback.
   missing and print the sentence to give the agent: "Set up Joycraft's context map".
   They never edit those files. `doctor` lists the same findings as advice; its exit
   code still reflects only install problems. `--plan --json` has a `wiring` field.
-  The entry skill runs the same check and sets up first.
+  The entry skill runs the same check and sets up first. The CLI always runs its own copy of the
+  check, never the project's, and `--plan` checks CLAUDE.md for the hosts you chose.
 - **The map grows and stays current.** New `.joycraft/references/knowledge.md`: one
   home per fact; a changed fact is rewritten in place; the reason goes to the
   decision log; history stays out of live pages. Session end adds a map row for each
@@ -49,6 +50,10 @@ David Moshal's field feedback.
   saved answer keeps its note box. When the brief changes under an open page, the
   page names the changed questions, keeps your other answers, and says why a save
   button is disabled.
+- **Pages show where you work.** A page you must read or answer opens in the host's
+  own viewer when it has one (the Claude Code desktop app's browser pane or
+  artifacts), in the system browser at a terminal, and nowhere in a non-interactive
+  run (`claude -p`, `codex exec`, CI), where the agent prints the path.
 
 ### Note
 

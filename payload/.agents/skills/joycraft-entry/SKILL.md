@@ -84,7 +84,8 @@ says `docs/features`, `docs/archive` or `docs/context`.
 
 **Show documents as pages.** A brief, plan, spec set or review that the user must
 read or approve is also rendered, never left as Markdown in chat: the decision
-artifact for a brief, an HTML page for anything else. Open it and say where it is.
+artifact for a brief, an HTML page for anything else. Show it as
+[showing a page](../../../.joycraft/references/artifacts.md#showing-a-page) says and give its path.
 If the project's `AGENTS.md` lacks this rule or its context-map row for
 `.joycraft/references/artifacts.md`, add them as `setup.md` describes.
 

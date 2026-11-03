@@ -70,7 +70,8 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
      questions) as a rendered page, never only as Markdown in chat: use the
      decision artifact (`node .joycraft/runtime/artifacts/cli.mjs`, see
      `.joycraft/references/artifacts.md`) for a brief or questions, or an HTML
-     page for any other document. Open it for the person and say where it is.”
+     page for any other document. Show it where the person works (see
+  `.joycraft/references/artifacts.md#showing-a-page`) and say where it is.”
    - **The map**: one `## Context Map` table (`| Document | Read when |`). One
      row per real home: each required or reference doc, and each home you
      create. A read-when names the work that needs the doc ("Changing how counts
@@ -96,7 +97,8 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
    in its brief. Respect symlinks and managed files.
 4. **Show, then write.** Render the diff of every file you would change or
    create, audit fixes included, as one HTML page under
-   `.joycraft/local/setup/`. Open it, say where it is, and write only on the
+   `.joycraft/local/setup/`. Show it as [showing a page](artifacts.md#showing-a-page)
+   says, give its path, and write only on the
    user's yes; this page is setup's only approval stop. A request that
    already approves the files you propose counts as the yes.
 5. **Check.** `wiring.mjs` exits 0. `node .joycraft/runtime/cleanup.mjs`

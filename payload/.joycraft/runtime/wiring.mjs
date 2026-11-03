@@ -11,7 +11,8 @@ import { workPaths } from './config.mjs';
 // `advice` (areas setup has not mapped yet) never does.
 const read = (root, file) => { try { return readFileSync(path.join(root, file), 'utf8'); } catch { return null; } };
 
-function claudeInstalled(root) {
+function claudeInstalled(root, hosts) {
+  if (Array.isArray(hosts)) return hosts.includes('claude');
   const text = read(root, '.joycraft/installation.json');
   if (text === null) return false;
   try {
@@ -105,7 +106,7 @@ function contextPage(root) {
 const outsideJoycraft = target => target !== '.joycraft' && !target.startsWith('.joycraft/') && !target.startsWith('../');
 
 /** Report what is missing for the project to be wired up. Reads files only. */
-export function checkWiring(root) {
+export function checkWiring(root, { hosts } = {}) {
   const findings = [];
   const agents = read(root, 'AGENTS.md');
   if (agents === null) {
@@ -125,7 +126,7 @@ export function checkWiring(root) {
       }
     }
   }
-  if (claudeInstalled(root)) {
+  if (claudeInstalled(root, hosts)) {
     const claude = read(root, 'CLAUDE.md');
     // An @AGENTS.md line inside a code fence is an example, not an import.
     if (!imports(claude, 'AGENTS.md') && !(claude !== null && agentsDefersToClaude(root, agents))) {
