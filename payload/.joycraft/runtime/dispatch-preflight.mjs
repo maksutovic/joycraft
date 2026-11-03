@@ -4,7 +4,7 @@ import { constants } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { canonical, isObject, isSha256, nonempty, parseJson, readLocal, readQueue, relativePath, requireAbsent, requireValue, sha256, snapshot, validateNativeActor, validateQueue } from './identity.mjs';
-import { checkReport } from './completion.mjs';
+import { assertReviewAllowed, checkReport } from './completion.mjs';
 import { reviewLoopSection } from './review-tools.mjs';
 
 const unknown = 'unknown';
@@ -82,6 +82,17 @@ export function assertImplementerDependenciesReady(root, sourceView, roles) {
   const byId = new Map(queue.specs.map(item => [item.id, item]));
   const pending = spec.depends_on.filter(id => byId.get(id)?.status !== 'done');
   requireValue(pending.length === 0, `Implementer dispatch is blocked until dependencies are done: ${pending.join(', ')}`);
+}
+
+/**
+ * Decision block-review-dispatch: a reviewer is never dispatched for a queue
+ * whose feature waiver covers no-review. Both the worker tree and the
+ * coordinator tree are checked, so an uncommitted waiver still blocks a
+ * reviewer in a linked worktree.
+ */
+export function assertReviewerNotWaived(sourceView, roles, workspace) {
+  if (!roles.some(role => role.name === 'reviewer')) return;
+  for (const root of new Set([workspace.workerRoot, workspace.coordinatorRoot])) assertReviewAllowed({ root, queuePath: sourceView.queue.path });
 }
 
 function attestWorkspace(workspace, workerRoot, roles, queueParallel) {
@@ -350,6 +361,7 @@ export function preflightDispatch(request, { availableCapabilities } = {}) {
   const sourceView = validateSourceView(root, request.delivery?.sourceView);
   assertImplementerDependenciesReady(root, sourceView, roles);
   const workspace = attestWorkspace(request.workspace, root, roles, queueRequestsParallel(root, sourceView));
+  assertReviewerNotWaived(sourceView, roles, workspace);
   const reportDestination = validateReportDestination(root, request.delivery?.reportDestination);
   rejectSharedSourceOverwrite(workspace, sourceView, reportDestination);
   const requiredCapabilities = validateClaims(request.claims, roles, reportDestination, availableCapabilities);
@@ -456,9 +468,10 @@ export function prepareDispatch({ workerRoot, coordinatorRoot, parallel, access,
     outputContract: { reportPath: reportDestination, schemaVersion: 1, completeWith: 'node .joycraft/runtime/completion.mjs finalize-review --queue <queue-path> --spec <id> --report <report-path>' },
     nativePrompt: role === 'reviewer' ? 'Read the listed files first. Review current raw sources and report observed evidence only. Do not infer an expected verdict or reasoning. Return the schema-v1 report at the declared report path.' : 'Read the listed files first. Implement only the current raw task sources. Do not certify acceptance; preserve planned missing inputs as work to create, then prepare an independent review after committing.',
   };
-  // The project's recorded review-loop tools and commands, so workers use the same setup.
+  // The project's recorded review-loop tools and commands, so workers use the same setup, and this
+  // machine's own host tools from the git-ignored local record when it has one.
   const reviewLoop = reviewLoopSection(root);
-  if (reviewLoop) packet.reviewLoop = { path: 'AGENTS.md', section: reviewLoop };
+  if (reviewLoop) packet.reviewLoop = reviewLoop;
   if (role === 'reviewer' && implementerActor !== undefined) {
     // The native host supplies this only after creating the reviewer. Do not
     // synthesize an actor record in a pre-dispatch packet.

@@ -11,10 +11,11 @@ node .joycraft/runtime/completion.mjs scope --queue <queue-path> --spec <id>
 node .joycraft/runtime/completion.mjs snapshot --queue <queue-path> --spec <id> --out <subject.json>
 node .joycraft/runtime/completion.mjs finalize-review --queue <queue-path> --spec <id> --report <report.json>
 node .joycraft/runtime/completion.mjs accept-owner --queue <queue-path> --spec <id> --decision <owner-acceptance.json>
+node .joycraft/runtime/completion.mjs accept-waiver --queue <queue-path> --spec <id> --waiver <feature-waiver.json> [--report <report.json>]
 node .joycraft/runtime/completion.mjs recover --queue <queue-path>
 ```
 
-`scope` checks a queue's declared change scope without writing a subject. `snapshot` does the same check first, then exclusively creates a new `--out` subject file without changing a status. It binds the implementation revision, queue/spec identity, criteria, and SHA-256 values for exact relevant inputs. The shared record shapes are defined in [.joycraft/contracts/types.d.ts](../contracts/types.d.ts). New subjects carry `binding.version: 1`: their queue projection contains the reviewed spec and its transitive dependencies, with completion metadata (`status`, `acceptedReport`, and `ownerAcceptance`) removed from those records. An unrelated queue record can change without staling that subject; a selected spec's other metadata and dependency edges remain bound. A spec binding preserves raw bytes except for its top-level `status:` value.
+`scope` checks a queue's declared change scope without writing a subject. `snapshot` does the same check first, then exclusively creates a new `--out` subject file without changing a status. It binds the implementation revision, queue/spec identity, criteria, and SHA-256 values for exact relevant inputs. The shared record shapes are defined in [.joycraft/contracts/types.d.ts](../contracts/types.d.ts). New subjects carry `binding.version: 1`: their queue projection contains the reviewed spec and its transitive dependencies, with completion metadata (`status`, `acceptedReport`, `ownerAcceptance`, and `waiver`) removed from those records. An unrelated queue record can change without staling that subject; a selected spec's other metadata and dependency edges remain bound. A spec binding preserves raw bytes except for its top-level `status:` value.
 
 An optional `verification.changeScope` records an explicit full Git commit SHA in `baseRevision`; a branch name, `origin/main`, or inferred base is rejected. Changed verification inputs are captured from NUL-delimited Git status records, including staged, unstaged, rename, and deletion topology. Any changed path outside the verification inputs must be named exactly in `exclusions` with its reason. Store temporary packets and subjects in the project's ignored local-artifact home when it has one; otherwise add each exact untracked snapshot packet output to `exclusions`. `complete` filters only its exact report, receipt, owner-decision, and pending-journal paths while rechecking scope. A deliberate deletion needs a non-requirement verification input with `state: "absent"`; requirement inputs cannot be absent. A rename needs the new present input and the old non-requirement input declared absent.
 
@@ -86,9 +87,61 @@ verified, and the original failed or unverified report remains historical
 evidence. Archive may preserve this paired history only at session end; it does
 not rewrite the report or create a fresh acceptance.
 
+## Feature waiver
+
+Review defaults are strict for every feature. A `FeatureWaiver` loosens them for
+one feature's queue, only in the user's own words from that feature's
+interview. The agent never proposes or asks about one, and the next feature
+starts from the defaults. Record the user's words in the note of a settled brief
+decision, then write the feature's one waiver file, `waiver.json` beside
+`brief.md` (never a verification input), before any review runs:
+
+```json
+{
+  "schemaVersion": 1,
+  "kind": "feature-waiver",
+  "queuePath": "docs/features/example/specs/.joycraft-spec-queue.json",
+  "covers": ["no-review"],
+  "instruction": "quick janky prototype, skip review on this",
+  "decision": "skip-review",
+  "source": { "path": "docs/features/example/brief.md", "sha256": "<SHA-256 of the brief>" },
+  "createdAt": "2026-11-02T12:00:00.000Z"
+}
+```
+
+`covers` is a nonempty subset of `no-review` and `tool-break`. `decision` is the
+id of the brief decision that holds the user's words. `accept-waiver` refuses a
+waiver for another queue, at another path, with unknown fields or covers, an
+empty instruction, a `source` that is not this feature's `brief.md`, a brief hash
+that differs, or a `decision` that is missing, not `clarified`/`assigned` with an
+answer, or whose `note` or `answer` does not contain the instruction as whole
+words (at least three; whitespace and line wraps are normalized).
+
+- **Skip means review never runs** (decision `block-review-dispatch`).
+  `dispatch-preflight.mjs` refuses a reviewer for a queue whose `waiver.json`
+  covers `no-review`, in the worker tree or the coordinator tree, and refuses
+  while that file is unreadable. So no review, and no `FAIL`, exists for a spec
+  that `no-review` completes. Without `--report`, `no-review` completes an
+  `in-review` spec. As an extra guard it still refuses when a review report for
+  the spec is visible in the feature folder or `.joycraft/local/packets/`.
+- With `--report`, the report must be current and independent (validated as for
+  `accept-owner`), `UNVERIFIED`, and every non-`PASS` observation must carry
+  `cause: "tool-break"`; the waiver must cover `tool-break`. The report keeps
+  its verdict; evidence errors are returned as diagnostics. A tool-break-only
+  waiver does not block reviewer dispatch.
+- A `FAIL` verdict or any `FAIL` observation never completes, whatever `covers`
+  says. A `PASS` report uses `finalize-review`.
+
+Limit: a review that ran before `waiver.json` existed is caught only by the
+folder guard. The waiver comes from the interview, so it exists before dispatch.
+On success the queue entry records `waiver: { path, sha256 }`, plus
+`review: { path, sha256 }` for a report-backed completion, mutually exclusive
+with `acceptedReport` and `ownerAcceptance`. A waived spec counts as `done` for
+dependents. Report it as `done, waived by the user: "<instruction>"`.
+
 ## Evidence and reporting
 
-Evidence records observations rather than promises. Command and test observations retain their actual argv, exit code, and unfiltered output receipt. Source review supports structural claims only. A required visual claim needs an inspected render, route, state, viewport, interactions, and observed outcomes. Record unavailable work as `UNVERIFIED`, failures as `FAIL`, and limits explicitly.
+Evidence records observations rather than promises. Command and test observations retain their actual argv, exit code, and unfiltered output receipt. Source review supports structural claims only. A required visual claim needs an inspected render, route, state, viewport, interactions, and observed outcomes. Record a check that should have run and did not (a tool break, an app that did not start) as `UNVERIFIED`, failures as `FAIL`, and limits explicitly. A claim that needs evidence beyond the recorded tool's `canShow`, or a package the user skipped, is an agreed limit, not `UNVERIFIED`; a check within `canShow` that could not run because the tool broke is `UNVERIFIED` with `cause: 'tool-break'`.
 
 Report the command result, reviewer identity, receipt paths, actual observations, and limitations. A green suite or an implementation commit alone is not accepted completion.
 

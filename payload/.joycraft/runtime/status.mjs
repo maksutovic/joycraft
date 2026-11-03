@@ -20,7 +20,7 @@ function queuePaths(root) {
     .map(entry => `${featuresHome}/${entry.name}/${queueName}`).sort();
 }
 
-const accepted = spec => spec.status === 'done' && (isObject(spec.acceptedReport) || isObject(spec.ownerAcceptance));
+const accepted = spec => spec.status === 'done' && (isObject(spec.acceptedReport) || isObject(spec.ownerAcceptance) || isObject(spec.waiver));
 
 function openDecisions(root, folder) {
   const brief = `${folder}/brief.md`;

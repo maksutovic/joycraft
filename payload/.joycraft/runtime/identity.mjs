@@ -193,6 +193,16 @@ export function validateQueue(queue, { select } = {}) {
       requireValue(isObject(spec.ownerAcceptance) && isSha256(spec.ownerAcceptance.sha256), `Invalid owner acceptance for spec ${spec.id}`);
       relativePath(spec.ownerAcceptance.path);
     }
+    if (spec.waiver !== undefined) {
+      requireValue(spec.acceptedReport === undefined && spec.ownerAcceptance === undefined, `Spec ${spec.id} cannot have a waiver together with a PASS acceptance or owner acceptance`);
+      requireValue(isObject(spec.waiver) && isSha256(spec.waiver.sha256), `Invalid waiver for spec ${spec.id}`);
+      relativePath(spec.waiver.path);
+      requireValue(Object.keys(spec.waiver).every(key => ['path', 'sha256', 'review'].includes(key)), `Waiver for spec ${spec.id} has unknown fields`);
+      if (spec.waiver.review !== undefined) {
+        requireValue(isObject(spec.waiver.review) && isSha256(spec.waiver.review.sha256), `Invalid waived review receipt for spec ${spec.id}`);
+        relativePath(spec.waiver.review.path);
+      }
+    }
   }
   for (const spec of queue.specs) requireValue(spec.depends_on.every(id => ids.has(id)), `Unknown dependency for spec ${spec.id}`);
 }
@@ -236,6 +246,7 @@ function queueSpecRequirements(spec) {
   delete requirements.status;
   delete requirements.acceptedReport;
   delete requirements.ownerAcceptance;
+  delete requirements.waiver;
   return requirements;
 }
 

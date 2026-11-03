@@ -29,6 +29,14 @@ Use the version from `latest`:
    apply a migration without the user's yes.
 3. Run `npx joycraft@<latest> doctor .`.
 4. Tell the user in plain words what is different now.
+5. Run the review-loop plan
+   ([review loop tools](setup.md#review-loop-tools)). When it prints
+   `Review loop unchanged.`, say nothing about it. When it reports a newly
+   detected tool, offer to switch that package to it and re-record only that
+   package with `--choose`.
+   When it reports `recorded with v1; re-record to keep it`, confirm the table with the
+   user and run record again, repeating any `--choose` or `--skip` the table shows; a
+   v1 record does not carry them over.
 
 If the update fails, run `npx joycraft@<latest> update . --recover`, tell the user
 that the files are back as they were, and continue your work.

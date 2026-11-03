@@ -172,23 +172,47 @@ not ignore. When it prints `No packages found`, ask the user which folders hold
 the apps and pass them as `--packages <dir,dir>` to `plan`, `install` and
 `record`.
 
-Show the table and ask its one question. Only after the user's yes in this
-conversation, run `review-tools.mjs install --root . --yes` (add
-`--tools <ids>` for a per-tool choice); it adds project-local tools with the
-project's own package manager and lockfile. Never run a system install, `sudo`,
-a license acceptance or a sign-in: give the user the printed steps. Then record
-the choice, with `--skip <ids>` for declined tools:
+Show the table: what the plan found per package. Ask the user to confirm it or
+name a tool the plan missed, together with its one question. For a gap, say
+plainly that automated review of that package needs a tool that can show the
+work. Recommend one from the hint list (`review-tools.json`), with its
+trade-offs: size, what it can show, cost and licence. Say you are happy to
+research other options. Explain what the install runs and where, then wait for
+the user's yes in this conversation before you run
+`review-tools.mjs install --root . --yes` (add `--tools <ids>` for a per-tool
+choice or a hint the user picked). It adds project-local tools with the
+project's own package manager and lockfile. It also runs a user-scope CLI
+install (`npm install -g`, `brew install`) when the hint marks no `sudo`,
+licence or sign-in. Never run `sudo`, a licence acceptance or a sign-in: give
+the user the printed `steps`. Then record the choice:
 
 ```sh
-node .joycraft/runtime/review-tools.mjs record --root . --skip <ids>
+node .joycraft/runtime/review-tools.mjs record --root . [--choose <package>=<tool>] [--command <package>=<command>] [--skip <tool>|<package>:<tool>|<package>] [--host <name> --host-tools <observed host tools>]
 ```
 
-This writes or replaces only the `## Review loop` section of `AGENTS.md`: each
-tool, the command that starts the app and the command that takes the evidence.
-Worker packets carry that section. For a skipped UI tool, say in one line that
-its UI claims stay `UNVERIFIED`. With no network, the probes still run; offer
-the install later. For a CI-only project, record the CI job as the evidence
+`--choose` records the tool the user picked for a package (a hint id, or a
+found script with its `--command`); `'apps/*'=<tool>` records one shared harness
+for those packages. `--skip <tool>` skips that missing tool in every package;
+`--skip apps/lab:<tool>` or `--skip apps/lab` skips only that package. Repeat
+`--command` per value. This writes or replaces only the `## Review loop` section
+of `AGENTS.md`: one row per package with its tool, what it can show, the command
+that starts the app and the command that takes the evidence. Recording again
+keeps earlier choices and skips for packages the call does not name. Host tools
+go to the git-ignored `.joycraft/local/review-loop.json`, never `AGENTS.md`.
+Worker packets carry both. A skipped package's row says it is not reviewed
+(user skipped). With no network, the probes still run; offer the install later. For a CI-only project, record the CI job as the evidence
 source when the user picks it.
+
+**Change a tool.** Talk about the review loop only here: at install, at
+setup and upgrade when the plan reports a change, and when the user asks to
+try, switch, add or remove a tool ("try Maestro for the iOS app"). For a
+request, confirm or research the tool, install it as above, and re-record only
+that package with `--choose <package>=<tool>` (or `--skip` to remove one);
+other rows stay. When the plan's `Changed since the recorded Review loop` names
+a newly detected tool, offer to switch that package to it. When it reports
+`recorded with v1; re-record to keep it`, confirm the table with the user and run
+record again, repeating any `--choose` or `--skip` the table shows; a v1 record
+does not carry them over. An unchanged project asks nothing.
 
 `review-tools.json` also lists `optIn` tools that detection never plans. Offer
 one only when it fits the project. Example: Doc Detective, for docs that are

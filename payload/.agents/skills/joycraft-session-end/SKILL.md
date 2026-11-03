@@ -23,7 +23,7 @@ force local state to a remote tip. Start a replacement only from the durable
 run journal and a newly printed dispatch plan. This guidance describes the
 project/native runtime boundary; it does not enforce lifecycle behavior.
 
-For each completed spec, report the implementation revision, independent reviewer session ID, report and receipt paths, actual commands and outcomes, visual inspection status where required, and known limitations. For owner-accepted work, also report the owner-acceptance record and its inherited limits as `done, owner-accepted with <limits>`; preserve the original `FAIL` or `UNVERIFIED` report rather than calling it PASS or verified.
+For each completed spec, report the implementation revision, independent reviewer session ID, report and receipt paths, actual commands and outcomes, visual inspection status where required, and known limitations. For owner-accepted work, also report the owner-acceptance record and its inherited limits as `done, owner-accepted with <limits>`; preserve the original `FAIL` or `UNVERIFIED` report rather than calling it PASS or verified. List each spec completed under a feature waiver as `done, waived by the user: "<instruction>"`, with any report's real verdict; never call it reviewed or verified.
 
 If a completion operation failed or was interrupted, do not declare success or hand-edit statuses. Retain the helper's error and journal/recovery information, then use the bounded local recovery process in [completion guidance](../../../.joycraft/references/completion.md). It only restores the two status surfaces and accepted-report receipt captured by the journal; it does not retry unrelated work.
 

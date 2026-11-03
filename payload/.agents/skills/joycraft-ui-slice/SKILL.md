@@ -19,9 +19,10 @@ current render cannot answer them. Otherwise build or modify the smallest runnab
 slice in the project's actual stack. Show the consequential state and a useful
 interaction when interaction matters. One viewport is a useful starting size, not
 a rule for all products. Put explanatory detail behind disclosure. The slice is
-exploration, not production approval. Render and inspect it early with permitted
-browser tools; record the route, state, viewport, interactions and observed
-outcomes. If blocked, record UNVERIFIED and the reason; respect denials without
+exploration, not production approval. Render and inspect it early with the
+package's recorded review tool (`Review loop` in `AGENTS.md`) or the host's
+permitted tools; record the route, state, viewport, interactions the tool can
+perform and observed outcomes. If blocked, record UNVERIFIED and the reason; respect denials without
 alternate access routes.
 
 The optional local helper below needs the installed shared runtime. If it is

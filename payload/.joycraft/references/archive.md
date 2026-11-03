@@ -33,8 +33,10 @@ another decision or approval authority.
 
 The preview validates the complete queue before any write: the canonical queue
 must be the only queue anywhere in the feature tree, all specs must be
-`done`, and each spec must have exactly one of an accepted PASS report or an
-explicit `ownerAcceptance` receipt. A normal accepted report must retain its
+`done`, and each spec must have exactly one of an accepted PASS report, an
+explicit `ownerAcceptance` receipt, or a feature `waiver` receipt. A waiver
+keeps its record bytes, the user's quoted instruction as its limitation, and
+for a tool-break completion its UNVERIFIED `waiver.review` report and receipts. A normal accepted report must retain its
 PASS evidence. An owner-acceptance record is historical exception metadata:
 it binds the queue/spec/subject identity to a hashed independent review whose
 verdict remains `FAIL` or `UNVERIFIED`, carries nonempty limitations, and is

@@ -18,7 +18,11 @@ decision status or ask for approval again when the session already supplies it.
 Use `.joycraft/templates/spec.md` and `queue.json` as small starting
 points. Keep each spec independently testable and put requirement text in stable
 brief/spec anchors. Each queued criterion points to its source and declares the
-needed runtime, visual or structural evidence. A check that only a deployed
+needed runtime, visual or structural evidence. Write each criterion so the
+package's recorded review tools (the `Review loop` section of `AGENTS.md`) can
+check it within their `canShow`. A main claim those tools cannot show at all
+goes back to the brief as a tooling-change question, asked once in the
+interview and recorded; it does not enter the queue. A check that only a deployed
 environment can show is not a criterion; list it under the spec's "Deferred until
 deploy" section instead. Include the brief, spec and exact
 relevant code, test/configuration and fixture paths as verification inputs. Plan

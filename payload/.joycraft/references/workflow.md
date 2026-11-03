@@ -68,8 +68,9 @@ outcomes, viewport, route/state and limits. A screenshot or static render is
 enough for an appearance-only choice only when it is actually inspected; it cannot
 prove that the answer was saved. Ask concise visual-detail questions before making
 a pixel-sensitive choice when the available render leaves them material. Check
-both file state and reload. If tools are unavailable or denied, mark required
-visual work UNVERIFIED and continue disjoint work. Never bypass a denial with
+both file state and reload. If a recorded tool breaks or is denied, mark required
+visual work UNVERIFIED and continue disjoint work; a limit the user agreed to is
+not UNVERIFIED. Never bypass a denial with
 another route.
 
 ## Commitment and queue

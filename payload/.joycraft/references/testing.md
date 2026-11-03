@@ -94,20 +94,27 @@ an accepted reference only when that reference is part of the requirement or is
 available and relevant to the comparison. This does not create a universal
 before/after gate.
 
+Take visual evidence with the package's recorded tool from the packet's
+`reviewLoop` (shared `section` plus `local` host tools), within its `canShow`.
 An empty `visual.interactions` list is appropriate for a static appearance-only
-claim. For an interactive requirement, the reviewer must require the relevant
-actions and outcomes; the validator cannot infer them from a criterion id. A
+claim or a tool whose `canShow` has no `interact`. A limit the user agreed to is
+not UNVERIFIED: the reviewer reports how it checked and the parent agent judges
+what is left. For an interactive requirement whose tool can interact, the
+reviewer must require the relevant actions and outcomes; the validator cannot
+infer them from a criterion id. A
 disabled control or error state can itself be an observed result; explain it.
 
 When an inspection finds a scoped defect: retain the observation, fix it, render
 again, repeat affected interactions and inspect the result. If the fix changes a
 bound input, obtain a new subject and fresh affected observations before seeking
 completion. Keep the final flow concise and link prior diagnostics rather than
-copying a transcript. An unavailable browser, inaccessible route or blocked tool
-is a limit and UNVERIFIED check, not permission to bypass access controls or
-declare visual PASS. Do not wrap, relay, or otherwise route around a denied
-command; ask the host for the legitimate correction. Continue independent work
-that remains possible.
+copying a transcript. A recorded tool that stopped working (a browser that
+will not launch) is a tool break: an UNVERIFIED check with `cause: 'tool-break'`,
+not an agreed limit. A route the app does not serve can be an app defect and a
+FAIL. A command the host denies is not a tool break. None of these permits
+bypassing access controls or declaring visual PASS.
+Do not wrap, relay, or otherwise route around a denied command; ask the host for
+the legitimate correction. Continue independent work that remains possible.
 
 ## Where checks run
 
