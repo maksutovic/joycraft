@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-02
+last_updated: 2026-11-03
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -109,6 +109,7 @@ last_updated_by: Maximilian Maksutovic
 | 2026-03-23 | Commander for CLI arg parsing | Minimal, stable, zero transitive deps — fits "keep it minimal" principle | yargs (heavier), meow (less maintained), raw process.argv (too manual) | If we need subcommand plugins or complex arg validation |
 | 2026-11-02 | Field feedback D5: split David Moshal's feedback into 1.0.1 (fixes: worktree prune, coordinator lease, status drift, rendered-documents rule) and 1.1.0 (new surface: joycraft.yaml, after-archive hook, joycraft-cleanup, [AC:id] trace) | Fixes to 1.0.0 behavior should ship without waiting for new surface | One 1.1 release; one 1.0.1 with everything | A field report shows a fix blocked behind new surface |
 | 2026-11-02 | Field feedback D6: wiki governance is a seam (after-archive hook + report-only cleanup with an impact map), not a built-in wiki; D2: Feature/Spec/Task rename and per-unit archive wait for 2.0 | OKF and docaudit already exist; Joycraft gives them a place to run. A rename breaks every installed queue | Build an OKF wiki in 1.1; adopt docaudit as a dependency | A second field user needs the wiki itself, or 2.0 planning starts |
+| 2026-11-03 | User docs give a prompt, not a command: settings (`joycraft.yaml`), wiki, update, rollback and uninstall happen by request (`references/settings.md`); commands stay only in the install guide's CLI reference; 0.7 guides archived | Joycraft should feel agent-driven and ephemeral; the README asked users to hand-edit YAML and run scripts | Keep the YAML example and command block for power users | Users ask for a command-line path the prompts cannot cover |
 
 ## Principles
 
