@@ -66,6 +66,9 @@ export async function runGates({ tarball, work = mkdtempSync(join(tmpdir(), 'joy
       if (treeHash(dir) !== before) throw new Error('--plan changed files');
       expectStatus(joycraft(dir, 'init', '.', '--harness', 'claude,codex', '--yes'), 0, 'init');
       expectStatus(joycraft(dir, 'doctor', '.'), 0, 'doctor');
+      const installed = treeHash(dir);
+      expectStatus(joycraft(dir, 'update', '.', '--plan', '--json'), 0, 'update plan');
+      if (treeHash(dir) !== installed) throw new Error('update --plan changed files');
       expectStatus(joycraft(dir, 'update', '.', '--yes'), 0, 'repeat update');
       expectStatus(joycraft(dir, 'update', '.', '--recover'), 0, 'recover with nothing to recover');
     });
