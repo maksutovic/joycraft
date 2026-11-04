@@ -1,6 +1,8 @@
 # Migration: Flat → Per-Feature Layout (v0.6+)
 
-> [Back to README](../../README.md)
+> **Archived.** This guide describes Joycraft 0.7. For 1.0, see the [README](../../../README.md) and [Prompts](../../prompts.md).
+
+> [Back to README](../../../README.md)
 
 Starting in v0.6, Joycraft organizes feature artifacts into per-feature folders:
 

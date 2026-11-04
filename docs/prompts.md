@@ -1,7 +1,8 @@
 # Prompts
 
 Paste one of these into your coding agent, in your project. Each one has the agent look
-first, report to you, and change nothing until you say so.
+first, report to you, and change nothing until you say so. You never need to run a
+Joycraft command yourself; your agent runs them.
 
 ## Install
 
@@ -42,6 +43,81 @@ Upgrade this project from Joycraft 0.7 to 1.0. Go one step at a time.
    you need to check your own work, which ones I have, and which ones are missing.
    Ask me before you install anything.
 7. Tell me that `npx joycraft@latest rollback --yes` undoes the upgrade.
+Do not commit, publish, or ask me for API keys.
+```
+
+## Stay on 0.7
+
+```text
+Keep this project on Joycraft 0.7. Update it to the newest 0.7 release only
+(`npx joycraft@0.7.17 update`), show me what changed, and do not migrate to 1.0.
+Do not commit, publish, or ask me for API keys.
+```
+
+## Undo the 1.0 upgrade
+
+```text
+Undo this project's upgrade to Joycraft 1.0. Run `npx joycraft@latest rollback` and
+show me what it will put back. Wait until I say go, then run it again with `--yes`.
+Do not commit, publish, or ask me for API keys.
+```
+
+## Update
+
+```text
+Check for a Joycraft update. If there is one, run
+`npx joycraft@latest update . --plan --json`, show me what changes, and update on my yes.
+Do not commit, publish, or ask me for API keys.
+```
+
+To stop or change the daily update check, say "Turn off Joycraft update checks",
+"Update Joycraft patches automatically" or "Stay on this Joycraft version".
+
+## Check the install
+
+```text
+Check my Joycraft install. Run `npx joycraft@latest doctor .` and
+`node .joycraft/runtime/wiring.mjs --root .`, tell me the result in plain words, and
+offer to fix what is wrong.
+Do not commit, publish, or ask me for API keys.
+```
+
+## Change settings
+
+Joycraft works with no settings. Say what you want and the agent edits
+`joycraft.yaml`, shows you the change, and checks it. Keep the lines you want:
+
+```text
+Change these Joycraft settings, and show me the change before you write it:
+- Keep Joycraft's briefs and specs in working/features, and finished features in working/archive.
+- Whenever a feature is archived, run our wiki sync script.
+- The page docs/context/auction-rules.md describes src/auction. Flag it when that code changes.
+Do not commit, publish, or ask me for API keys.
+```
+
+Ask "What are my Joycraft settings?" to see what is in effect.
+
+## Connect your wiki
+
+```text
+We keep a wiki in <where>. Link it from the context map, and keep it up to date
+each time a feature is archived.
+Do not commit, publish, or ask me for API keys.
+```
+
+## Clean up the workspace
+
+```text
+Clean up the docs and the workspace: stale specs, unarchived features, old worktrees
+and context pages that no longer match the code. Show me the findings before you change anything.
+Do not commit, publish, or ask me for API keys.
+```
+
+## Uninstall
+
+```text
+Remove Joycraft from this project. Show me which files go and which stay, and wait
+until I say go.
 Do not commit, publish, or ask me for API keys.
 ```
 

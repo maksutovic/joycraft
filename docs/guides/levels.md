@@ -27,7 +27,7 @@ than the destination.
 
 ## Level 5: The Autonomous Loop (experimental)
 
-Level 5 is where specs go in and validated software comes out — four GitHub Actions workflows, a separate scenarios repo, and two AI agents that can never see each other's work. It works, but budget for real token costs and ongoing scenario maintenance before committing to it. [Read the full guide →](level-5-autonomy.md)
+Level 5 is where specs go in and validated software comes out — four GitHub Actions workflows, a separate scenarios repo, and two AI agents that can never see each other's work. It works, but budget for real token costs and ongoing scenario maintenance before committing to it. [Read the 0.7 guide →](../archive/guides-0.7/level-5-autonomy.md)
 
 ## Why This Exists
 

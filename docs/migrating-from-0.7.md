@@ -32,11 +32,8 @@ Do not commit, publish, or ask me for API keys.
 
 ## 1. See the plan (changes nothing)
 
-```bash
-npx joycraft@latest update .
-```
-
-On a 0.7 project this prints the plan and exits 1:
+The agent runs `npx joycraft@latest update .`. On a 0.7 project this prints the plan
+and exits 1:
 
 - **Archive**: the 0.7 files Joycraft wrote and you did not change: the 0.7 skills in
   `.claude/skills/`, `.agents/skills/`, `.pi/skills/`, `.github/skills/` and
@@ -48,18 +45,9 @@ On a 0.7 project this prints the plan and exits 1:
 
 ## 2. Migrate
 
-```bash
-npx joycraft@latest update . --migrate --archive-custom --yes
-```
-
-or keep your customized files in place:
-
-```bash
-npx joycraft@latest update . --migrate --keep-custom --yes
-```
-
-Without `--keep-custom` or `--archive-custom`, a terminal asks about each customized
-file; anything else gets the plan and exit 1. A customized file at a path where 1.0
+On your go, the agent runs `npx joycraft@latest update . --migrate --archive-custom --yes`,
+or `--keep-custom` in place of `--archive-custom` if you chose to keep your customized
+files in place. A customized file at a path where 1.0
 installs a skill of the same name (for example `joycraft-implement`) is always archived,
 so the 1.0 skill can be installed. Nothing is lost.
 
@@ -70,7 +58,7 @@ The migration is one recoverable step:
   hook (`.claude/hooks/joycraft/block-dangerous.sh`) runs from the project root, so
   it also works in subfolders and worktrees. The old file is backed up first.
 - `.joycraft-backups/` is added to `.gitignore`.
-- The 1.0 manifest is written last. If the migration is interrupted, run
+- The 1.0 manifest is written last. If the migration is interrupted, the agent runs
   `npx joycraft@latest update . --recover` to put the project back as it was.
 
 ## What stays
@@ -93,22 +81,20 @@ guidance and adds only what is missing.
 
 ## 3. Roll back
 
-```bash
-npx joycraft@latest rollback
-```
+Paste this into your coding agent:
 
-shows what it would do. To apply it:
-
-```bash
-npx joycraft@latest rollback --yes
+```text
+Undo this project's upgrade to Joycraft 1.0. Run `npx joycraft@latest rollback` and
+show me what it will put back. Wait until I say go, then run it again with `--yes`.
 ```
 
 It restores the 0.7 files and your settings byte for byte and removes the 1.0 files.
 The backup stays in `.joycraft-backups/`. A 1.0 file you edited after the migration is
-kept and reported; add `--force` to remove it too.
+kept and reported; ask the agent to remove it too (`--force`).
 
 ## Stay on 0.7
 
-```bash
-npx joycraft@0.7.17 update
+```text
+Keep this project on Joycraft 0.7. Update it to the newest 0.7 release only
+(`npx joycraft@0.7.17 update`), show me what changed, and do not migrate to 1.0.
 ```

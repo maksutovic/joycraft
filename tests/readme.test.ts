@@ -9,7 +9,8 @@ const migrationGuide = join(
   __dirname,
   '..',
   'docs',
-  'guides',
+  'archive',
+  'guides-0.7',
   'migration-per-feature-layout.md',
 );
 

@@ -7,6 +7,33 @@ claim that a release has shipped.
 
 ---
 
+## 1.3.0 — Ask, don't run
+
+Joycraft should feel agent-driven: you say what you want, and the agent runs the
+commands. The docs still asked you to copy YAML and run scripts by hand.
+
+### What's new
+
+- **Settings by request.** Say "keep Joycraft's specs in working/features", "run our
+  wiki sync after each archive" or "flag this page when src/auction changes". The
+  agent writes `joycraft.yaml`, shows you the change first, and checks it. Ask
+  "What are my Joycraft settings?" to see what is in effect.
+- **Your wiki.** Tell the agent where your wiki is. It links it from the context map
+  and can update it each time a feature is archived.
+- **Remove Joycraft.** Say "Remove Joycraft from this project". The agent shows
+  which files go and which stay, and deletes on your yes.
+- **Prompts for every step.** README, install guide and migration guide give a
+  prompt in place of each command: update, check the install, undo the 1.0
+  upgrade, stay on 0.7, clean up, uninstall. The CLI commands moved to a reference
+  table in the install guide.
+- **0.7 guides archived.** Setup walkthrough, upgrading, git tracking, per-feature
+  layout migration, platform support, Level 5 and tuning described 0.7 commands.
+  They moved to `docs/archive/guides-0.7/`.
+
+Payload: joycraft-prototype `field-18`.
+
+---
+
 ## 1.2.2 — The README catches up
 
 1.2.0 changed the review loop, but the README still described the old one, and an

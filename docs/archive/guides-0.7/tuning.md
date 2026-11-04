@@ -1,6 +1,8 @@
 # Tuning: Risk Interview & Git Autonomy
 
-> [Back to README](../../README.md)
+> **Archived.** This guide describes Joycraft 0.7. For 1.0, see the [README](../../../README.md) and [Prompts](../../prompts.md).
+
+> [Back to README](../../../README.md)
 
 When `/joycraft-tune` runs for the first time, it does two things: a risk interview and git autonomy configuration.
 

@@ -2,7 +2,7 @@
 
 > [Back to README](../../README.md)
 
-Joycraft works with five harnesses — Claude Code, OpenAI Codex, Pi, GitHub Copilot, and omp — providing the same structured workflows adapted for each platform. For the per-harness install paths and invocation forms, see [platform-support.md](platform-support.md).
+Joycraft works with five harnesses — Claude Code, OpenAI Codex, Pi, GitHub Copilot, and omp — providing the same structured workflows adapted for each platform. For the per-harness install paths and invocation forms, see [the hosts table in the README](../../README.md#hosts).
 
 **Claude Code** reads `CLAUDE.md` automatically and discovers skills in `.claude/skills/`. The behavioral boundaries guide every action. The skills provide structured workflows accessible via `/slash-commands`.
 

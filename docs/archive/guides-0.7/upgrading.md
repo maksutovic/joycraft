@@ -1,6 +1,8 @@
 # Installing and updating Joycraft
 
-> [Back to README](../../README.md)
+> **Archived.** This guide describes Joycraft 0.7. For 1.0, see the [README](../../../README.md) and [Prompts](../../prompts.md).
+
+> [Back to README](../../../README.md)
 
 Joycraft has one planning and application engine. Use the public command from
 the project root for both a new project and an existing installation:

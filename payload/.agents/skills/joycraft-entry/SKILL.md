@@ -1,6 +1,6 @@
 ---
 name: joycraft-entry
-description: Start any Joycraft work. After Joycraft is installed, or when asked to "set up Joycraft" or "check the context map", read the project, interview the user and build the context map in AGENTS.md; then turn a repair, feature, or mixed request into a context-backed brief and the next useful action.
+description: Start any Joycraft work. After Joycraft is installed, when asked to "set up Joycraft", "check the context map", change Joycraft settings or remove Joycraft, read the project, interview the user and build the context map in AGENTS.md; then turn a repair, feature, or mixed request into a context-backed brief and the next useful action.
 compatibility: Setup and routing helpers require Node.js 22+ and the installed .joycraft runtime only when used; ordinary brief and context navigation has no project-stack prerequisite.
 ---
 
@@ -102,6 +102,12 @@ with no options.
 **Use the project's folders.** If `joycraft.yaml` exists, run
 `node .joycraft/runtime/config.mjs` and use its `paths` wherever Joycraft guidance
 says `docs/features`, `docs/archive` or `docs/context`.
+
+**Change settings when asked.** When the user asks to move Joycraft's folders, run
+something after a feature is archived (such as a wiki sync), map code to a context
+page, connect their wiki, see their settings or remove Joycraft, follow
+[settings](../../../.joycraft/references/settings.md). The user never edits
+`joycraft.yaml` or runs a Joycraft command by hand.
 
 **Show documents as pages.** A brief, plan, spec set or review that the user must
 read or approve is also rendered, never left as Markdown in chat: the decision

@@ -30,11 +30,11 @@ Install Joycraft in this project.
 Do not commit, publish, or ask me for API keys.
 ```
 
-**Upgrading from 0.7?** Nothing changes until you choose. On a 0.7 project,
-`npx joycraft@latest update .` shows the migration plan and stops. Read
-[Migrating from 0.7](docs/migrating-from-0.7.md), or paste the
-[upgrade prompt](docs/prompts.md#upgrade-from-07). To stay on 0.7:
-`npx joycraft@0.7.17 update`.
+**Upgrading from 0.7?** Nothing changes until you choose. Paste the
+[upgrade prompt](docs/prompts.md#upgrade-from-07): your agent shows you the migration
+plan and waits for your yes. To stay on 0.7, paste the
+[stay on 0.7 prompt](docs/prompts.md#stay-on-07). More:
+[Migrating from 0.7](docs/migrating-from-0.7.md).
 
 ## How to use it
 
@@ -104,57 +104,54 @@ agent both views: the whole project and the detail of the current step.
   (`.joycraft-spec-queue.json`) is the status of record, not the text.
 - **`docs/archive/` is history.** Finished features move there.
 
-Joycraft does not ship a wiki. If you keep one, link it from the context map, and
-treat `docs/features/` and `docs/archive/` as non-authoritative in your doc audits.
+**Your wiki.** Joycraft works with the wiki you already keep. Tell your agent where
+it is: the agent links it from the context map and can update it each time a
+feature is archived. In doc audits, `docs/features/` and `docs/archive/` are
+working material and history, not current knowledge. A built-in wiki is under
+consideration ([decision D6](docs/context/decision-log.md)).
 
-### Settings: `joycraft.yaml`
-
-Joycraft works with no settings. To change its folders, run a command after a
-feature is archived, or tell cleanup which code each context page describes, add a
-`joycraft.yaml` at the project root (template: `.joycraft/templates/joycraft.yaml`):
-
-```yaml
-paths:
-  features: working/features   # default docs/features
-  archive: working/archive     # default docs/archive
-hooks:
-  afterArchive: node scripts/wiki-sync.mjs
-cleanup:
-  impact:
-    - source: src/auction/**
-      docs: [docs/context/auction-rules.md]
+```text
+We keep a wiki in <where>. Link it from the context map, and keep it up to date
+each time a feature is archived.
 ```
 
-The file is yours: Joycraft reads it and never rewrites it. Run
-`node .joycraft/runtime/config.mjs` to see the settings in effect.
+### Settings
 
-The `afterArchive` command gets `JOYCRAFT_FEATURE`, `JOYCRAFT_ARCHIVE_PATH` and
-`JOYCRAFT_SOURCE_PATH` in its environment. Use it to update a wiki or run a doc
-audit. If the command fails, the archive stays done and the archive CLI exits 3.
+Joycraft works with no settings. To change one, say what you want:
+
+```text
+Keep Joycraft's briefs and specs in working/features.
+Whenever a feature is archived, run our wiki sync script.
+The page docs/context/auction-rules.md describes src/auction. Flag it when that code changes.
+```
+
+The agent writes the change to `joycraft.yaml` at the project root, shows it to you
+first, and checks it. Ask "What are my Joycraft settings?" to see what is in effect.
+The file is yours: Joycraft changes it only when you ask. If a command run after an
+archive fails, the archive still counts as done.
 
 ### Keeping the workspace clean
 
-At the end of a session the agent runs these checks for you:
+At the end of a session the agent checks the workspace for you. You do not run
+anything:
 
-- `node .joycraft/runtime/status.mjs` finds specs whose text disagrees with the queue,
-  and features that are finished but not archived.
-- `node .joycraft/runtime/worktrees.mjs prune` removes the agent's worker worktrees
-  once their spec is done and merged. It keeps anything unfinished, unmerged or not
-  made by Joycraft, and says why. `worktrees.mjs list` shows what is left and its size.
-- `node .joycraft/runtime/coordinator.mjs` keeps one coordinating session per queue,
-  so a second session's instructions do not reach the first session's workers.
-- `node .joycraft/runtime/cleanup.mjs` reports stale or unreachable project
-  knowledge: finished features not archived, context pages that link to working
-  material, broken, missing or unmapped pages, an AGENTS.md over its word budget,
-  and pages whose code changed.
+- **Status.** It finds specs whose text disagrees with the queue, and features that
+  are finished but not archived.
+- **Worktrees.** It removes its worker worktrees once their spec is done and merged.
+  It keeps anything unfinished, unmerged or not made by Joycraft, and says why.
+- **One coordinator.** One session coordinates each queue, so a second session's
+  instructions do not reach the first session's workers.
+- **Stale knowledge.** It reports finished features not archived, context pages that
+  link to working material, broken, missing or unmapped pages, an AGENTS.md over its
+  word budget, and pages whose code changed.
 - The doc audit, based on [doc-cleanup](https://github.com/aka-luan/doc-cleanup),
   runs at every session end without being asked. It covers AGENTS.md, CLAUDE.md, the
   docs the session changed and the pages they link; after a feature is archived, the
   whole project. It checks each claim against the code, keeps your rules and traps,
   puts its findings on the session-end page, and changes nothing until you approve.
   Ask your agent to "clean up the docs" for a full audit at any time.
-- `node .joycraft/runtime/wiring.mjs` reports whether AGENTS.md has the Joycraft
-  lines and a real context map, and whether CLAUDE.md imports it.
+- **Wiring.** It checks that AGENTS.md has the Joycraft lines and a real context map,
+  and that CLAUDE.md imports it.
 
 Tests name the acceptance criterion they check, `[AC:<criterion-id>]`, so the
 reviewing agent can see which criteria have a test. A criterion with no test is a
@@ -235,8 +232,8 @@ project:
 
 All of it lives in your repository. Joycraft collects no data and does not call an AI
 model itself. Its only network use is the version check below. Joycraft adds no
-agent hooks and changes no agent settings. The `afterArchive` command above runs only
-if you set it.
+agent hooks and changes no agent settings. A command after an archive runs only if
+you asked for one.
 
 ## Updates
 
@@ -270,20 +267,22 @@ Check for a Joycraft update.
 "Tested" means: we installed Joycraft in a test project, one agent built a spec, and
 a second, separate agent checked it and passed it.
 
-## Commands
+## Everything else: ask your agent
 
-Your agent runs these for you. They are here if you want them:
+You never need to run a Joycraft command yourself. Each of these is a short prompt
+in [Prompts](docs/prompts.md):
 
-```bash
-npx joycraft@latest init . --harness claude,codex --yes    # install
-npx joycraft@latest update . --yes                         # update (backs up files you edited first)
-npx joycraft@latest doctor .                               # check the install
-npx joycraft@latest update . --migrate --archive-custom --yes   # move a 0.7 project to 1.0
-npx joycraft@latest rollback --yes                         # undo the move to 1.0
-```
+| You want to | Say |
+|---|---|
+| Update Joycraft | "Check for a Joycraft update." |
+| Check the install | "Check my Joycraft install." |
+| Change a setting | "Keep Joycraft's specs in working/features." |
+| Connect your wiki | "Link our wiki and keep it up to date." |
+| Clean up | "Clean up the docs and the workspace." |
+| Undo the 1.0 upgrade | "Undo this project's upgrade to Joycraft 1.0." |
+| Remove Joycraft | "Remove Joycraft from this project." |
 
-Add `--plan --json` to see the changes without making them. Without `--yes`, and
-outside a terminal, a command shows its plan and stops. It never waits for input.
+The CLI commands behind them are in the [install guide](docs/install.md#cli-reference).
 
 More: [Install guide](docs/install.md) · [Migrating from 0.7](docs/migrating-from-0.7.md) ·
 [Prompts](docs/prompts.md) · [Changelog](CHANGELOG.md) · [Security](SECURITY.md) ·

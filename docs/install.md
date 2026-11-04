@@ -1,15 +1,11 @@
 # Install Joycraft
 
-The easiest way is the [install prompt](prompts.md#install): paste it into your coding
-agent and it runs the steps below for you. This page explains each step.
+Paste the [install prompt](prompts.md#install) into your coding agent. It runs the
+steps below for you; you never run them yourself. This page explains each step.
 
 ## 1. See the plan
 
-```bash
-npx joycraft@latest init . --plan --json
-```
-
-This changes nothing. It lists the files Joycraft would add and the lines it would add
+The agent runs `npx joycraft@latest init . --plan --json`. This changes nothing. It lists the files Joycraft would add and the lines it would add
 to `.gitignore` (`.joycraft/local/` and `.joycraft-backups/`).
 
 If the project has Joycraft 0.7, `init` and `update` print the migration plan and exit 1
@@ -17,10 +13,8 @@ instead. See [Migrating from 0.7](migrating-from-0.7.md).
 
 ## 2. Install for your hosts
 
-```bash
-npx joycraft@latest init . --harness claude,codex --yes
-```
-
+The agent asks which coding agents you use, then runs
+`npx joycraft@latest init . --harness claude,codex --yes` with your answer.
 `--harness` takes any of `claude`, `codex`, `pi`, `omp`, `copilot`, `opencode`, comma
 separated. Without it, Joycraft reuses the hosts it recorded last time, or asks, with
 the host you are running inside as the default.
@@ -46,13 +40,8 @@ stack or create app files during the kickoff.
 
 ## 4. The review loop's tools
 
-During setup the agent runs the review-loop plan:
-
-```bash
-node .joycraft/runtime/review-tools.mjs plan --root .
-```
-
-It detects the project type (web, iOS, Android, Flutter, React Native, Expo, Electron,
+During setup the agent runs the review-loop plan
+(`node .joycraft/runtime/review-tools.mjs plan --root .`). It detects the project type (web, iOS, Android, Flutter, React Native, Expo, Electron,
 API, CLI or library) and shows each verification tool the review loop needs as present,
 missing or not needed. It asks one question before installing anything. It installs
 only project-local tools (for example Playwright with your package manager) and only
@@ -60,31 +49,36 @@ after your yes. Xcode, simulators and the Android SDK are steps for you. The cho
 recorded in the `Review loop` section of `AGENTS.md`. If you skip a UI tool, UI claims
 stay unverified in reviews.
 
-## Update
+## Update, check, remove
 
-```bash
-npx joycraft@latest update . --yes
-```
+Ask your agent; each has a prompt in [Prompts](prompts.md):
 
-A Joycraft file you did not edit is replaced. An edited one is copied to
-`.joycraft-backups/update-<time>/` first. A file Joycraft did not install is never
-replaced. Check an install at any time:
+- **Update.** "Check for a Joycraft update." A Joycraft file you did not edit is
+  replaced. An edited one is copied to `.joycraft-backups/update-<time>/` first. A file
+  Joycraft did not install is never replaced. If an update is interrupted, the agent
+  puts the files back.
+- **Update checks.** Your agent checks for a new version at the start of a session, at
+  most once a day. It reads the version from npm, sends no project data, and asks
+  before it updates. Say "Turn off Joycraft update checks" to stop it.
+- **Check the install.** "Check my Joycraft install."
+- **Remove Joycraft.** "Remove Joycraft from this project." The agent removes the
+  files listed in `.joycraft/installation.json` and then `.joycraft/`, after you see
+  the list. Your `AGENTS.md`, `CLAUDE.md`, `docs/` and `joycraft.yaml` stay.
 
-```bash
-npx joycraft@latest doctor .
-```
+## CLI reference
 
-If an update is interrupted, `npx joycraft@latest update . --recover` puts the files back.
+Your agent runs these. They are here for reference and for CI:
 
-Your agent also checks for a new version at the start of a session, at most once a day.
-It reads the version from npm, sends no project data, and asks before it updates. To
-stop this, ask your agent to turn off Joycraft update checks, or run:
+| Command | Does |
+|---|---|
+| `npx joycraft@latest init . --harness claude,codex --yes` | Install |
+| `npx joycraft@latest update . --yes` | Update; backs up files you edited first |
+| `npx joycraft@latest update . --recover` | Put files back after an interrupted update |
+| `npx joycraft@latest doctor .` | Check the install |
+| `npx joycraft@latest update . --migrate --archive-custom --yes` | Move a 0.7 project to 1.0 |
+| `npx joycraft@latest rollback --yes` | Undo the move to 1.0 |
+| `node .joycraft/runtime/update-check.mjs policy off` | Turn off update checks |
+| `node .joycraft/runtime/config.mjs` | Show the settings in effect |
 
-```bash
-node .joycraft/runtime/update-check.mjs policy off
-```
-
-## Uninstall
-
-Remove the files listed in `.joycraft/installation.json`, then `.joycraft/` itself.
-Your `AGENTS.md`, `CLAUDE.md` and `docs/` are yours; Joycraft does not remove them.
+Add `--plan --json` to see the changes without making them. Without `--yes`, and
+outside a terminal, a command shows its plan and stops. It never waits for input.
