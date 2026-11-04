@@ -1,6 +1,8 @@
 # Setup Walkthrough
 
-> [Back to README](../../README.md)
+> **Archived.** This guide describes Joycraft 0.7. For 1.0, see the [README](../../../README.md) and [Prompts](../../prompts.md).
+
+> [Back to README](../../../README.md)
 
 The steps a new user actually runs, in order, from an empty terminal to a first
 feature. Nothing here is optional-but-hidden — this is the whole path.
@@ -85,8 +87,8 @@ the more of it is true, the less each agent has to re-derive.
 Interview → Feature Brief → atomic specs. If you only want to think out loud
 first, start with `/joycraft-interview`. If the feature touches code you don't
 fully understand, run `/joycraft-research` and `/joycraft-design` between the
-brief and decomposition. See [The interview](interview-workflow.md) and
-[Research and design](research-and-design.md).
+brief and decomposition. See [The interview](../../guides/interview-workflow.md) and
+[Research and design](../../guides/research-and-design.md).
 
 ## 7. Implement
 
@@ -97,7 +99,7 @@ brief and decomposition. See [The interview](interview-workflow.md) and
 Reads the next ready spec, writes failing tests, implements until green, wraps
 up, and continues the queue. To run a whole feature from one command, use
 `/joycraft-implement-feature docs/features/<slug>/`. See
-[Test-first development](test-first-development.md).
+[Test-first development](../../guides/test-first-development.md).
 
 ## 8. Finish the session
 

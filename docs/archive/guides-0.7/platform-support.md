@@ -1,6 +1,8 @@
 # Platform Support
 
-> [Back to README](../../README.md)
+> **Archived.** This guide describes Joycraft 0.7. For 1.0, see the [README](../../../README.md) and [Prompts](../../prompts.md).
+
+> [Back to README](../../../README.md)
 
 ## Platform support
 
@@ -50,4 +52,4 @@ Frameworks auto-detected: Next.js, FastAPI, Django, Flask, Actix, Axum, Express,
 
 ## How It Works with AI Agents
 
-Claude Code reads CLAUDE.md, Codex and Pi read AGENTS.md — and Claude Code does **not** read AGENTS.md natively. On a multi-tool install Joycraft therefore keeps one shared AGENTS.md and writes CLAUDE.md as an `@AGENTS.md` import (Anthropic's documented pattern), so every tool reads the same instructions without duplication. [Read the full guide →](agent-compatibility.md)
+Claude Code reads CLAUDE.md, Codex and Pi read AGENTS.md — and Claude Code does **not** read AGENTS.md natively. On a multi-tool install Joycraft therefore keeps one shared AGENTS.md and writes CLAUDE.md as an `@AGENTS.md` import (Anthropic's documented pattern), so every tool reads the same instructions without duplication. [Read the full guide →](../../guides/agent-compatibility.md)

@@ -37,7 +37,8 @@ describe('README.md — 1.0 prompt-first structure', () => {
   it('has an upgrading-from-0.7 box near the top', () => {
     expect(firstScreen).toMatch(/\*\*Upgrading from 0\.7\?\*\*/);
     expect(firstScreen).toContain('docs/migrating-from-0.7.md');
-    expect(firstScreen).toContain('npx joycraft@0.7.17 update');
+    expect(firstScreen).toContain('docs/prompts.md#stay-on-07');
+    expect(read('docs/prompts.md')).toContain('npx joycraft@0.7.17 update');
   });
 
   it('says what Joycraft is and lists every host with its evidence', () => {

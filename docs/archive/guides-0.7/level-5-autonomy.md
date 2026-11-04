@@ -1,6 +1,8 @@
 # Level 5: The Autonomous Loop — Full Guide
 
-> [Back to README](../../README.md)
+> **Archived.** This guide describes Joycraft 0.7. For 1.0, see the [README](../../../README.md) and [Prompts](../../prompts.md).
+
+> [Back to README](../../../README.md)
 
 This guide covers the full architecture, setup, and operation of Joycraft's Level 5 autonomous development loop.
 
