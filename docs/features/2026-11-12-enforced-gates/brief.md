@@ -248,7 +248,10 @@ gate hook off first, so no Stop hook is left that runs a deleted `gate.mjs`.
 This repository vendors `field-20`. Specs 6, 7 and 8 were added there from review findings: a review
 round is one distinct set of reviewed inputs (6), each gate message names its
 next step (7), and a pending-journal message stops at a failed recovery (8).
-The prototype's archive holds the reports. Spec 4 is the only spec left.
+The prototype's archive holds the reports. The queue in this folder
+therefore lists only spec 4; the other spec files here are copies for reading,
+and joycraft-prototype's `docs/archive/enforced-gates/` and
+`docs/archive/gates-uninstall/` are their authority. Spec 4 is the only spec left.
 
 ## gate-check
 
