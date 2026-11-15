@@ -135,8 +135,9 @@ archive fails, the archive still counts as done.
 At the end of a session the agent checks the workspace for you. You do not run
 anything:
 
-- **Status.** It finds specs whose text disagrees with the queue, and features that
-  are finished but not archived.
+- **Status.** It runs the gate check (below). The check finds specs marked done with
+  no accepted review and specs whose text disagrees with the queue. It also finds
+  features that are finished but not archived.
 - **Worktrees.** It removes its worker worktrees once their spec is done and merged.
   It keeps anything unfinished, unmerged or not made by Joycraft, and says why.
 - **One coordinator.** One session coordinates each queue, so a second session's
@@ -190,6 +191,52 @@ counts as evidence; your project keeps its own tools.
 After an update, the agent checks the review loop again and asks only about what
 changed.
 
+### The gates: no spec is done without an accepted review
+
+Joycraft's rule is that only an accepted review completes a spec. Without the
+gates, this rule is an instruction in a skill. An agent can forget the rule or skip
+it, for example late in a long session. The gates make the rule a check.
+
+**What the gate stops.** The gate check finds each spec that is marked done with no
+accepted review, no acceptance from you and no waiver. It sends the agent back with
+the spec name and the next step. A spec that waits at `in-review` is not a problem.
+
+**Why you want it.** Use the gates for long sessions and for sessions that you do
+not watch. A prompt tells the agent what to do, but a prompt is not a guarantee.
+With the gates on, Claude Code runs the check each time the agent tries to stop. The
+agent cannot stop until the problem is gone.
+
+**Turn them on.** Say:
+
+```text
+Turn on Joycraft's gates.
+```
+
+The agent shows you the change to `.claude/settings.json` on a page. It writes the
+change only on your yes. The change adds one Stop hook and no other line. Setup
+also offers the gates one time.
+
+**Turn them off.** Say:
+
+```text
+Turn off Joycraft's gates.
+```
+
+The agent removes Joycraft's hook. Your own hooks stay.
+
+**What the gates do not do.**
+
+- The hook is for Claude Code only for now. On the other agents, the session-end
+  skill runs the check. That step is an instruction, so the agent can still skip it.
+- There is no CI check. Joycraft does not check your pull requests.
+- The hook is not a sandbox. A shell command can still change the queue file. The
+  check finds the result at the next stop.
+
+**A fourth review is refused.** On every agent, one spec gets at most three
+reviews. A round is one set of reviewed inputs, so a new review of the same code
+does not count again. Reviewer startup prints the round and refuses a fourth
+review. The agent then records `## Decision needed` in the spec and asks you.
+
 ## Answering questions: the decision page
 
 When the agent needs you to choose between options, it asks in your question
@@ -232,8 +279,9 @@ project:
 
 All of it lives in your repository. Joycraft collects no data and does not call an AI
 model itself. Its only network use is the version check below. Joycraft adds no
-agent hooks and changes no agent settings. A command after an archive runs only if
-you asked for one.
+agent hooks and changes no agent settings, except the gate hook that you turn on
+([The gates](#the-gates-no-spec-is-done-without-an-accepted-review)). A command
+after an archive runs only if you asked for one.
 
 ## Updates
 
@@ -279,6 +327,8 @@ in [Prompts](docs/prompts.md):
 | Change a setting | "Keep Joycraft's specs in working/features." |
 | Connect your wiki | "Link our wiki and keep it up to date." |
 | Clean up | "Clean up the docs and the workspace." |
+| Turn the gates on | "Turn on Joycraft's gates." |
+| Turn the gates off | "Turn off Joycraft's gates." |
 | Undo the 1.0 upgrade | "Undo this project's upgrade to Joycraft 1.0." |
 | Remove Joycraft | "Remove Joycraft from this project." |
 

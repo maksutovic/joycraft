@@ -113,6 +113,26 @@ and context pages that no longer match the code. Show me the findings before you
 Do not commit, publish, or ask me for API keys.
 ```
 
+## Turn on the gates
+
+With the gates on, Claude Code runs Joycraft's gate check each time the agent tries
+to stop. A spec marked done with no accepted review sends the agent back. The hook is
+for Claude Code only for now. On the other agents, the session-end skill runs the
+check. See [The gates](../README.md#the-gates-no-spec-is-done-without-an-accepted-review).
+
+```text
+Turn on Joycraft's gates. Show me the change to .claude/settings.json on a page,
+and write it only on my yes.
+Do not commit, publish, or ask me for API keys.
+```
+
+## Turn off the gates
+
+```text
+Turn off Joycraft's gates. Remove only Joycraft's hook, and tell me what you removed.
+Do not commit, publish, or ask me for API keys.
+```
+
 ## Uninstall
 
 ```text
