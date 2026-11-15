@@ -10,50 +10,61 @@ claim that a release has shipped.
 ## 1.4.0 — Gates that hold
 
 Joycraft's rule is that only an accepted review completes a spec. Up to 1.3.0 that
-rule was a sentence in a skill, so it held only when the agent followed it. A prompt
+rule was a sentence in a skill. It held only for an agent that followed it. A prompt
 is not a guarantee, least of all in a long or unattended session.
 
 ### What's new
 
-- **Gate check.** `node .joycraft/runtime/gate.mjs check` finds each spec marked
-  `done` with no accepted report, owner acceptance or waiver, and each spec whose
-  queue and frontmatter statuses disagree. It exits 2 and names the problem on
-  stderr; a spec held at `in-review` is never a problem.
+- **Gate check.** `node .joycraft/runtime/gate.mjs check` finds three problems. A
+  spec is marked `done` with no accepted report, owner acceptance or waiver. A
+  spec's queue status and frontmatter status disagree. A queue file or spec file
+  does not parse. The check exits 2 and names each problem on stderr. A spec held
+  at `in-review` is never a problem.
 - **Stop hook on request (Claude Code only).** Say "Turn on Joycraft's gates". The
-  agent shows the change to `.claude/settings.json` on a page and, on your yes, adds
-  one Stop hook that runs the gate check, so Claude Code sends the agent back before
-  it stops. Say "Turn off Joycraft's gates" to remove only that hook. Install does
-  not add it; setup offers it once.
+  agent shows the change to `.claude/settings.json` on a page. On your yes, it adds
+  one Stop hook that runs the gate check. Claude Code then sends the agent back
+  before it stops. Say "Turn off Joycraft's gates" to remove only that hook.
+  Install does not add the hook. Setup offers it once.
 - **Session end runs the check on every harness.** The session-end skill runs the
   gate check after `status.mjs --fix` and does the step each message names.
 - **A fourth review is refused.** Reviewer startup prints `reviewRound` and
   `reviewLimit: 3`, and refuses a fourth review of one spec. A round is one distinct
-  set of reviewed inputs, so a fresh review of the same inputs, or a commit that
-  changes none of them, does not use up a round. The agent then records
-  `## Decision needed`.
-- **Each gate message names its next step**: the completing command, the
-  `status.mjs --fix` repair, the `completion.mjs recover` step for a pending
-  journal (stop on a conflict), or a hand repair to report to you.
+  set of reviewed inputs. A fresh review of the same inputs does not use up a round.
+  A commit that changes none of the inputs also does not use up a round. The agent
+  then records `## Decision needed`.
+- **Each gate message names its next step.** It names the completing command or the
+  `status.mjs --fix` repair. For a pending journal, it names the
+  `completion.mjs recover` step and says to stop on a conflict. Otherwise it names a hand repair to
+  report to you.
 - **Shipped text names only shipped parts.** Skills and references no longer name
-  files that are not shipped or describe the unshipped hooks and the Jev ranker.
-  Seven dead paths are gone (`hooks-runtime.md`, `hooks-install.md`,
-  `hooks-claude.md`, `routing.md` and three `runtime/hooks/` scripts), and the
-  shipped skills, agent files and references went from 30,434 to about 29,500
-  words. A test in this repository now guards the shipped links and terms.
+  files that are not shipped. They no longer describe the unshipped hooks and the
+  Jev ranker. Seven dead paths are gone: `hooks-runtime.md`, `hooks-install.md`,
+  `hooks-claude.md`, `routing.md` and three `runtime/hooks/` scripts. The existing
+  shipped skills, agent files and references went from 30,434 to about 29,500 words.
+  The new gates reference adds about 500 words. A test in this repository now guards
+  the shipped links and terms.
 - **Removing Joycraft turns the gate hook off first.** On "Remove Joycraft from this
-  project", the agent lists the hook among what goes, and removes it before it
+  project", the agent lists the hook among what goes. It removes the hook before it
   deletes any file. No hook is left that runs a deleted script.
 - **README: The gates.** A new section under "The review loop" says what the gate
-  stops, why you would want it, what it does not do, and gives both prompts. They
-  are also in [Prompts](docs/prompts.md).
+  stops and why you want it. It says what the gates do not do, and gives both
+  prompts. The prompts are also in [Prompts](docs/prompts.md).
+
+### Before you turn on the gates
+
+A project from 1.3.0 or earlier can already have specs marked `done` with no
+accepted review. After the update, session end runs the gate check on every harness.
+The check names each of these specs. The agent is told to set each one back to
+`in-review` and get a review. With the hook on, Claude Code does not let the agent
+end a reply until these problems are cleared. First ask your agent to run the gate
+check and show you what it names.
 
 ### What it does not do
 
 - No CI check. Pull requests are not checked.
 - The hook is Claude Code only for now. On Codex, Pi, Oh My Pi, GitHub Copilot CLI
-  and OpenCode the check runs at session end, and the agent can still skip that
-  step.
-- The hook is not a sandbox: a shell command can still write the queue file. The
+  and OpenCode the check runs at session end. The agent can still skip that step.
+- The hook is not a sandbox. A shell command can still write the queue file. The
   check finds the result at the next stop.
 
 Payload: joycraft-prototype `field-20`.

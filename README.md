@@ -197,14 +197,23 @@ Joycraft's rule is that only an accepted review completes a spec. Without the
 gates, this rule is an instruction in a skill. An agent can forget the rule or skip
 it, for example late in a long session. The gates make the rule a check.
 
-**What the gate stops.** The gate check finds each spec that is marked done with no
-accepted review, no acceptance from you and no waiver. It sends the agent back with
-the spec name and the next step. A spec that waits at `in-review` is not a problem.
+**What the gate stops.** The gate check finds three problems:
+
+- A spec is marked done with no accepted review, no acceptance from you and no waiver.
+- A spec has one status in the queue and a different status in the spec file.
+- Joycraft cannot read a queue file or a spec file.
+
+It sends the agent back with the spec or file name and the next step. A spec that waits at
+`in-review` is not a problem.
 
 **Why you want it.** Use the gates for long sessions and for sessions that you do
 not watch. A prompt tells the agent what to do, but a prompt is not a guarantee.
 With the gates on, Claude Code runs the check each time the agent tries to stop. The
 agent cannot stop until the problem is gone.
+
+**Before you turn them on.** An older project can have specs marked done with no
+accepted review. The check sends each one back for a review. First ask your agent to
+run Joycraft's gate check and show you what it names.
 
 **Turn them on.** Say:
 
