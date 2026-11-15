@@ -29,10 +29,9 @@ prepare a source packet for a manual boundary, but it must not bind the child
 using the parent's identity. After launch, the reviewer child bootstraps at its
 actual root and runs `dispatch-start.mjs --role reviewer` with its own actual
 native identity, which captures the subject, preflights delivery, writes the
-bounded packet, and binds it. If the real ID, available authority, or a separate
-reviewer context is unavailable, leave the spec `in-review`; do not manufacture
-any of them. A hooks-disabled/manual workflow can still be ready; an unenforced
-result holds only the claimed review, not unrelated work.
+bounded packet. If the real ID or a separate reviewer context is unavailable,
+leave the spec `in-review`; do not manufacture either. This holds only the
+claimed review, not unrelated work.
 Reviewer startup output also carries `trace`, the spec's criteria with the tests
 tagged `[AC:<criterion-id>]` (`node .joycraft/runtime/trace.mjs --queue <queue> --spec <id>`
 produces the same). Report untraced criteria as findings; a missing tag alone is
@@ -44,10 +43,8 @@ Dispatch `collaboration.spawn_agent` with `fork_turns: "none"` and the packet's 
 
 When already dispatched as the independent reviewer, perform the review directly; do not recursively dispatch another reviewer. Read the parent brief, spec, queue entry, declared criteria and exact verification inputs. Use the supplied subject, set independence truthfully, and do not self-certify implementation from your own context.
 
-Inspect any hook rule/test-gap findings alongside the actual changes and
-requirements. Resolve supported concerns with observed evidence; a classifier
-score or clean hook receipt cannot establish acceptance. Check changed tests for
-weakened assertions that could hide the requested behavior.
+Check changed tests for weakened assertions that could hide the requested
+behavior.
 
 Review scope as well as behavior: determine whether the listed inputs and criteria cover the requested work, including relevant newly changed files. For a cross-boundary change, inspect the combined observable behavior across the relevant producer, consumer, state or storage boundary; separate green helpers, snapshots, or assertion counts do not establish that behavior. If a material counterpart or owning decision/context source was omitted, report the scope gap and require its exact path to be added before a fresh current review subject is prepared. Preserve the snapshot's implementation revision as provenance while checking its current bound inputs. A changed, missing, or renamed input makes the subject stale; do not substitute a newer HEAD as its identity.
 

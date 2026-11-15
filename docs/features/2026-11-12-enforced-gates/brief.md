@@ -241,6 +241,13 @@ owns their decision state: `dead-reference-scope` "seven-and-text" (spec 2),
 `review-cap` "enforce" (new spec 5), `gate-on-all-harnesses`
 "session-end-runs-gate" (spec 3). They do not change the four answers above.
 
+Specs 1, 2, 3, 5, 6, 7 and 8 were implemented in joycraft-prototype on
+2026-11-15, each accepted on an independent PASS review, and tagged
+`field-19`. Specs 6, 7 and 8 were added there from review findings: a review
+round is one distinct set of reviewed inputs (6), each gate message names its
+next step (7), and a pending-journal message stops at a failed recovery (8).
+The prototype's archive holds the reports. Spec 4 is the only spec left.
+
 ## gate-check
 
 Extend the status check, or add a small sibling command, so that a `done` spec

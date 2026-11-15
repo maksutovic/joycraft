@@ -79,10 +79,8 @@ subject or provide the reviewer with an intended verdict or implementer reasonin
 Update only affected accepted facts in their owning reference, reconciling them
 at session end before any eligible archival. Active choices remain in their
 brief; rationale links to that choice; proposals stay marked as proposals.
-References describe and navigate the project. They neither grant permission nor
-become global Jev constraints. Do not add them to global hook rule paths or make
-extra live classification calls merely to maintain a map. Retrieval scores and
-this procedure do not certify exhaustive discovery.
+References describe and navigate the project. They do not grant permission.
+Retrieval scores and this procedure do not certify exhaustive discovery.
 
 Keep task context bounded to relevant sources. When evaluating the change,
 record newly delivered input bytes, repeated reads/provider calls, human

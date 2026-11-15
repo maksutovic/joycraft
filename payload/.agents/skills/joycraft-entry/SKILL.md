@@ -1,7 +1,7 @@
 ---
 name: joycraft-entry
 description: Start any Joycraft work. After Joycraft is installed, when asked to "set up Joycraft", "check the context map", change Joycraft settings or remove Joycraft, read the project, interview the user and build the context map in AGENTS.md; then turn a repair, feature, or mixed request into a context-backed brief and the next useful action.
-compatibility: Setup and routing helpers require Node.js 22+ and the installed .joycraft runtime only when used; ordinary brief and context navigation has no project-stack prerequisite.
+compatibility: Setup helpers require Node.js 22+ and the installed .joycraft runtime only when used; ordinary brief and context navigation has no project-stack prerequisite.
 ---
 
 Run `node .joycraft/runtime/update-check.mjs check` first, once per session. If it
@@ -24,7 +24,7 @@ alone does not start a full setup.
 
 Read existing project instructions first. During an upgrade, inspect the installed
 manifest’s `legacyConflicts` and reconcile competing old skill discovery before
-using routing advice; preserved custom content is not a completed migration.
+choosing skills; preserved custom content is not a completed migration.
 On a bare project, offer the
 [kickoff](../../../.joycraft/references/setup.md#kickoff-for-a-new-project)
 in one line before any brief or scaffold, and run it when the user asks for it on
@@ -49,7 +49,7 @@ scope or a consequential choice.
 
 When an unclear state, data, or responsibility boundary could change the work,
 do focused discovery before splitting it: inspect the actual owner and its
-callers, readers, writers, or other coupled counterpart. Ranking can point to
+callers, readers, writers, or other coupled counterpart. Search can point to
 sources, but does not replace that trace. Keep settled product behavior in the
 brief; record only durable, source-backed navigation in the project's existing
 context homes. Read `.joycraft/references/architecture.md` for this
@@ -109,6 +109,9 @@ page, connect their wiki, see their settings or remove Joycraft, follow
 [settings](../../../.joycraft/references/settings.md). The user never edits
 `joycraft.yaml` or runs a Joycraft command by hand.
 
+**Gates by request.** When the user asks to turn Joycraft's gates on or off, or
+what they do, follow [gates](../../../.joycraft/references/gates.md).
+
 **Show documents as pages.** A brief, plan, spec set or review that the user must
 read or approve is also rendered, never left as Markdown in chat: the decision
 artifact for a brief, an HTML page for anything else. Show it as
@@ -132,20 +135,6 @@ existing direct path when it fits the request. Do not turn routine data entry
 into a code-spec factory or create per-record plans when an approved batch tool
 already owns the operation. Preserve its validation, approval and readback rules.
 
-When a native hook adds routing advice to the prompt, use it to select relevant
-skills. Keep all expressed goals even when a classifier misses a signal. Do not
-repeat a live routing call when the hook already provided current advice.
-Routing does not approve scope, answer a decision, or establish evidence.
-
 Use `joycraft-context` when you need to find relevant project files beyond the
-context map. Its deterministic search (and optional ranking) provides pointers; read the
-selected source before relying on it. For hook status, blocked edits or provider
-failures, read `.joycraft/references/hooks-runtime.md`. Treat unavailable
-checks as unavailable, never as approval. For a denial, compare its cited scope
-with the current task and the actual human question/answer. Repair missing
-source delivery once through the documented binding flow, then resume understood
-authorized work. Do not ask for the same permission again, move a chat answer to
-a different document as an enforcement workaround, weaken a gate, or wrap a
-denied command. Ask the host for the legitimate correction when needed.
-If native hooks are absent and routing is materially uncertain, the explicit adapter in `.joycraft/references/routing.md` remains available.
-When requested setup includes native hooks, use [Codex hook installation](../../../.joycraft/references/hooks-install.md) or [Claude Code hook installation](../../../.joycraft/references/hooks-claude.md) for the active host. Installation and project setup do not establish host trust or execution.
+context map. Its deterministic search provides pointers; read the selected
+source before relying on it.

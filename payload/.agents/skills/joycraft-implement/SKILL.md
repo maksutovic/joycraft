@@ -30,10 +30,7 @@ For normal native execution, the host launches the selected worker first. The
 child bootstraps from its actual root, then runs `dispatch-start.mjs --role
 implementer` with its actual native identity before any tasked edit or mutation.
 The coordinator runs that start itself only when it is the implementer actor.
-Use the returned packet only when `ready` is true. A hooks-disabled/manual
-workflow can be ready; unavailable hook status is not a new permission gate for
-all work. When startup returns unenforced, hold only that claimed enforced task,
-report why, and continue unrelated authorized or manual/disabled workflow.
+Use the returned packet only when `ready` is true.
 
 If existing independent reports reveal a possible recurring failure, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md) before carrying it forward: inspect the current scoped sources and actual counterpart path or journey, then provide any proposed lesson as exact inputs through the existing dispatch flow. A verified repair may establish its local project fact; a broader method benefit remains pending later reuse.
 
@@ -77,9 +74,9 @@ It needs actual host session/agent identity and available current authority
 as described in [dispatch guidance](../../../.joycraft/references/dispatch.md).
 Write its packet or subject beneath a confirmed Git-ignored project-local
 directory, not among reviewed sources.
-If it returns unenforced, or a separate review context/capability is unavailable,
-leave the spec `in-review`; do not invent an ID or prompt to continue. This holds
-the claimed review, not unrelated authorized or hooks-disabled/manual work.
+If a separate review context/capability is unavailable, leave the spec
+`in-review`; do not invent an ID to continue. This holds the claimed review,
+not unrelated authorized work.
 
 When a recorded tool breaks during a run (the dev server does not start, a
 port is taken, the browser or simulator crashes), repair it with what the user
@@ -101,9 +98,10 @@ Only the guarded completion path can move an `in-review` spec to `done`. Use its
 
 When a current independent review is `FAIL` or `UNVERIFIED`, first fix
 straightforward failures within the existing authorization and obtain a fresh
-review. A spec gets at most three reviews; state the real round number in each
-fix brief. Settled briefs and checked specs should make this rare. If a second FAIL
-on the same criterion or a "decision needed" finding still occurs, send no
+review. A spec gets at most three reviews: reviewer startup prints
+`reviewRound` and refuses a fourth. Settled briefs and checked specs should make
+this rare. If startup refuses a review, or a second FAIL on the same criterion
+or a "decision needed" finding still occurs, send no
 further fix and never amend acceptance yourself: note it under `## Decision
 needed` in the spec, leave it `in-review`, and continue independent ready work. An owner can explicitly accept the
 current findings and their stated limits through `accept-owner`; that is a

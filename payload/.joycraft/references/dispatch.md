@@ -3,8 +3,8 @@
 For normal native work, the host launches the worker and the child then uses the
 dispatch-start entry point from its actual root before any tasked edit. A
 coordinator uses it itself only when it is the worker actor. It validates delivery
-and returns a ready/unenforced decision plus the bounded packet and hook-binding
-instructions; it never launches a worker, alters queue status, or accepts work.
+and returns a ready decision plus the bounded packet; it never launches a worker,
+alters queue status, or accepts work.
 For a mutable worker or stateful runtime check, first apply the conditional
 [worker-isolation policy](worktrees.md); this preflight does not create a
 worktree or a resource lease. A `read-only` workspace keeps declared source
@@ -18,7 +18,6 @@ those specs with `accept-waiver` instead.
 
 - [Start a native dispatch](#start-a-native-dispatch)
 - [Call the portable dispatch API](#call-the-portable-dispatch-api)
-- [Bind the hook source view](#bind-the-hook-source-view)
 - [Validate capabilities before dispatch](#validate-capabilities-before-dispatch)
 - [Check the reviewer report](#check-the-reviewer-report)
 
@@ -90,6 +89,7 @@ it before the first implementer mutation, and startup preserves it. The separate
 workspace `--base-revision` option keeps its documented topology check.
 Implementer dispatch requires each dependency to be `done`; reviewer dispatch
 does not require the target itself to be done. Unknown roles are rejected.
+Reviewer startup prints `reviewRound` and `reviewLimit: 3`; a round is one distinct set of reviewed inputs, so a commit that changes none of the spec's verification inputs keeps the round, and a fourth round exits 2.
 
 When a reviewer startup exits non-zero or returns `ready: false`, run it once
 more, alone, with a fresh packet path. If it fails again, stop that spec's
@@ -101,17 +101,8 @@ cause and the repair it tried. The coordinator tells the user at the first hold,
 in the conversation, while other workers keep running; it does not wait for the
 session end. The session-end summary lists every held spec again.
 
-The return is `ready: true` for an available valid startup path, including a
-hooks-disabled/manual path. It is not a cryptographic attestation. Missing human
-prompt history for an enforced startup is explicit
-`ready: false`, exit code 2, and `unenforced`; it is not a permission request,
-an invented prompt, or a substitute session ID. Continue discovery and other
-unrelated authorized work, including manual/disabled workflows, but do not
-dispatch the claimed enforced worker. Do not
-select an arbitrary task to make a native relationship appear valid. A child
-binding uses its own root and a real prompt; it may inherit the same native
-parent session authority only when an observed linked coordinator relationship
-is valid. A unique new root session needs its own actual prompt.
+A valid startup returns `hooks: { enabled: false, reason: "hooks-not-installed" }`
+and `ready: true`. It is not a cryptographic attestation.
 
 When the host reports a native agent/invocation ID, also pass
 `--implementer-host <host> --implementer-agent <actual-agent-id>`. For a root
@@ -142,8 +133,8 @@ from a legacy self-attested call.
 
 Call the portable API from a Codex, Claude, Pi, OMP, or Copilot adapter. Normal
 native startup calls `startDispatch(options, nativeEvent)` so the runtime can
-validate the observed session, agent relationship, and prompt authority before
-it returns a packet:
+validate the observed session and agent relationship before it returns a
+packet:
 
 ```js
 import { startDispatch } from './.joycraft/runtime/dispatch-start.mjs';
@@ -170,30 +161,6 @@ When `AGENTS.md` has a `## Review loop` section or this machine has
 `.joycraft/local/review-loop.json`, the packet carries `reviewLoop`:
 `{ path, section, local? }`, the shared section plus, when present,
 `local: { path, record }` with this machine's host tools.
-
-## Bind the hook source view
-
-Dispatch-start prepares and binds its hash-bound `hookSourceView` with actual
-native IDs. The lower-level manual bind command remains only for an explicit
-non-native boundary. It uses the actual native session ID reported at startup,
-never a generated UUID:
-
-```sh
-node .joycraft/runtime/hooks/cli.mjs bind-source \
-  --session <actual-native-session-id> --packet <project-relative-packet.json>
-```
-
-Bind a known parent session before launching children when the host exposes
-parent inheritance. Otherwise, bind the child after it reports its own actual
-session ID. For children sharing a parent session but working on different
-specs, add `--agent <actual-native-child-id>` when binding each child. Its task
-view remains separate while human prompts still inherit from the parent.
-Rebind after the brief changes. The hook view currently receives only
-hash-checked brief and decision pointers; the worker packet retains the exact
-decision records. An unknown ID leaves the dependent
-Jev check advisory and unverified; it does not permit a substitute ID. The view
-makes selected saved answers available to Jev, but never grants permission or
-an expected review outcome.
 
 ## Validate capabilities before dispatch
 

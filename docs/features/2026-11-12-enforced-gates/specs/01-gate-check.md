@@ -1,6 +1,6 @@
 ---
 id: 1
-status: todo
+status: done
 ---
 # Outcome
 

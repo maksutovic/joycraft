@@ -6,12 +6,6 @@ compatibility: The optional shared evidence validator requires Node.js 22+ and t
 
 # Useful testing evidence
 
-Use any post-edit hook findings as candidate gaps to inspect against the active
-requirements and relevant tests. A flag is not proof of a defect, and no flag is
-not proof of coverage. Keep valid gaps visible until a useful assertion or
-observed interaction resolves them; missing tests during intermediate edits do
-not require stopping understood implementation.
-
 Read the active requirements and relevant existing tests. Choose the smallest
 boundary that can establish each claim: real function inputs for arithmetic,
 composed transitions for stateful behavior, rendered interaction for UI behavior.

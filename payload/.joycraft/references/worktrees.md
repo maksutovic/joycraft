@@ -128,7 +128,7 @@ guidance](https://code.claude.com/docs/en/hooks#reference-scripts-by-path).
 
 On hosts without that native capability, create an equivalent manual Git linked
 worktree at an explicit, verified ref. Build each packet from its actual root:
-`workerRoot`, manifest path, source paths, hook binding context, commands,
+`workerRoot`, manifest path, source paths, commands,
 receipts, and report paths must resolve there. A coordinator may not substitute
 the shared checkout merely because its sources look equivalent.
 

@@ -2,7 +2,7 @@
 
 Use `joycraft-retro` on a requested session worth learning from, including a
 successful session with unexpected friction. It proposes environment improvements;
-it does not run on every session end, change acceptance or add Jev calls.
+it does not run on every session end or change acceptance.
 
 ## Prepare native session evidence
 
@@ -22,9 +22,9 @@ node .joycraft/runtime/retro.mjs prepare --source /absolute/path/session.jsonl -
 ```
 
 Line selection reduces the prepared context, not source-read memory: this small
-helper reads the supplied file into memory. Use an existing episode export or
-the evidence collector for sources too large for that approach, retaining the
-original source references and any selection limits.
+helper reads the supplied file into memory. Use an existing episode export for
+sources too large for that approach, retaining the original source references
+and any selection limits.
 
 Read `coverage.json` first, then `conversation.md` and `tools.jsonl`. The source
 hash and physical line references let you return to exact raw evidence. The
@@ -45,17 +45,8 @@ inspect material before sharing it. It creates no permission or decision state.
 Other harness formats can be read directly; do not describe an unsupported
 format as normalized or invent native coverage.
 
-Keep any linked session/worker files, hook receipts and final review reports as
-separate sources. A single file may not contain all workers or continuations.
-Existing hook metrics can summarize explicit receipts without replaying paid
-checks:
-
-```sh
-node .joycraft/runtime/hooks/metrics.mjs --log /absolute/path/events.jsonl
-```
-
-Provider-reported usage is not an invoice; absent calls, timing or usage remain
-unknown. Do not equate a missing receipt with a free or absent call.
+Keep any linked session/worker files and final review reports as separate
+sources. A single file may not contain all workers or continuations.
 
 ## Judge a candidate
 

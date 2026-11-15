@@ -320,15 +320,15 @@ the owning brief and do not ask it again.
 ## Finish setup and continue
 
 Step 5 of [Set up the context map](#set-up-the-context-map) is the finish
-check; also check that command claims match their cited source. Setup does not approve hooks, change credentials, install
-dependencies, or replace the user's workflow. Read `hooks-install.md` only when
-hook activation is part of the requested setup.
+check; also check that command claims match their cited source. Setup does not
+change credentials, install dependencies, or replace the user's workflow.
+When `.joycraft/installation.json` lists the `claude` host, offer the [gates](gates.md) once, in one line; turn them on only on the user's yes.
 
 ## Upgrade and agent onboarding
 
 Updates go through the Joycraft CLI; follow [update guidance](update.md). The
 installation manifest `.joycraft/installation.json` records the installed bytes;
-it is dispatch input, not proof that hooks ran or that a review was independent.
+it is dispatch input, not proof that a review was independent.
 
 A new worker reads `.joycraft/preferences.json` before work, reuses explicit
 model, effort, role, concurrency, verification and question-style choices, and inspects the

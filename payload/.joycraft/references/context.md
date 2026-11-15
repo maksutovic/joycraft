@@ -43,19 +43,17 @@ and a snippet of at most 1,800 UTF-8 bytes around the first matching line.
 Snippets include source line numbers and whether they are partial. Large files
 are never described as searched or ranked. Read those separately when needed.
 
-Every selected candidate is retained, including a zero-scored file. Jev scores
-all selected candidates in batches of at most 20; there is no candidate cap or
-score cutoff. Encoded states over 60,000 bytes split into smaller batches, leaving
-room for the shared question rubric. Narrow the query or paths before calling when a large area would
-create unnecessary calls. A keyword search can miss paraphrases or dependencies;
-this result never claims exhaustive context. Refine and follow relevant links.
+Every selected candidate is retained, including a zero-scored file; there is no
+candidate cap or score cutoff. A keyword search can miss paraphrases or
+dependencies; this result never claims exhaustive context. Refine and follow
+relevant links.
 
-The JSON `references` are sorted by Jev relevance, then local score/path. Each
-reference identifies `provenance`, `relevance` (or `null`), and its scoring batch.
-`batches` records candidate IDs, returned model, usage and elapsed time for each
-successful call. `omitted`, `unreadable`, and `unranked` explain files that were
-not scored. Hashes bind the result to the bytes read, not future edits. Open the
+The JSON `references` come in local-search order: local score, then path.
+`status` is `local-search-only`, and `unranked` lists each candidate with the
+reason `scoring-disabled`. `omitted` and `unreadable` explain files that were
+not read. Hashes bind the result to the bytes read, not future edits. Open the
 current source before relying on it; a bounded snippet is not the full file.
+Invalid inputs or an unavailable Git inventory exit nonzero.
 
 For an unclear state, data, or responsibility boundary, use the result as a
 starting point and inspect the actual coupled sources as well: the owner and its
@@ -63,28 +61,7 @@ callers, readers, writers, or persistence boundary as applicable. Add discovered
 paths to the brief/spec verification inputs before dispatch, and state any
 unresolved coverage. Read `architecture.md` for focused examples. This expands
 source discovery only when the seam matters; it does not make the context map a
-second source of product decisions or a Jev-enforced prohibition.
-
-Live scoring is the default. `.joycraft/hooks-config.json` supplies
-`enabled`, `timeoutMs`, and Keychain service `JEV_API_KEY`; `--keychain-service` overrides it. The
-shared `.joycraft/runtime/hooks/judge.mjs` primitive uses an existing
-environment credential first, then the configured macOS Keychain service.
-Credentials are never saved in the config, command arguments, result or project.
-No dotenv file, transcript, or whole-project model dump is used.
-The shared redactor removes recognizable credential patterns from outgoing
-query/snippet strings before the Jev call; content hashes still identify the
-original local bytes. Pattern redaction cannot identify arbitrary secret text.
-Setting `enabled: false` selects explicit `local-search-only` output without
-credential lookup; each candidate is marked unranked with `scoring-disabled`.
-
-Missing credentials, malformed provider output or an outage stop further model
-calls for that invocation. All selected references remain available in local
-order where unranked; previously successful scores retain their provenance.
-`status: incomplete-provider-ranking`, `provenance: local-search-fallback` and
-`fallbackReason` make this explicit. Exit success means a usable result exists,
-not that every candidate was scored; inspect `status` and `scoredCount`.
-Invalid inputs or an unavailable Git inventory exit nonzero. Provider scores
-advise reading order and never approve intent, authorize work or certify evidence.
+second source of product decisions or a prohibition.
 
 Treat only the context homes as current authority. `docs/features/` is working
 material that can be stale until its feature is archived, and `docs/archive/` is
