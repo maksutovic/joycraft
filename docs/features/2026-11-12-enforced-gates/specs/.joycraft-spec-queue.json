@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "feature": "enforced-gates",
+  "specs": [
+    {
+      "id": 1,
+      "file": "01-gate-check.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-12-enforced-gates/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-12-enforced-gates/specs/01-gate-check.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "gate-unaccepted-done",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/01-gate-check.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "gate-held-passes",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/01-gate-check.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "gate-clean-silent",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/01-gate-check.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "gate-legacy-queue-skipped",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/01-gate-check.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "file": "02-dead-references.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-12-enforced-gates/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-12-enforced-gates/specs/02-dead-references.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "no-dead-references",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/02-dead-references.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "link-test-fails-on-field-18",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/02-dead-references.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "file": "03-stop-hook-on-request.md",
+      "depends_on": [
+        1,
+        2
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-12-enforced-gates/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-12-enforced-gates/specs/03-stop-hook-on-request.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "gates-on-plan-then-write",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/03-stop-hook-on-request.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "gates-block-stop",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/03-stop-hook-on-request.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "gates-off-clean",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/03-stop-hook-on-request.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "gates-other-hosts",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/03-stop-hook-on-request.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "file": "04-vendor-and-docs.md",
+      "depends_on": [
+        1,
+        2,
+        3
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-12-enforced-gates/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-12-enforced-gates/specs/04-vendor-and-docs.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "vendored-field-19",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/04-vendor-and-docs.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "readme-gates-section",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/04-vendor-and-docs.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "release-fields",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/04-vendor-and-docs.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

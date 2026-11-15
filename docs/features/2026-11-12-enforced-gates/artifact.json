@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "enforced-gates-decisions",
+  "title": "Gates that hold when nobody is watching",
+  "summary": "1.3.0's review gate is a sentence in a skill. This brief adds one check command and lets hooks and CI run it. Four choices; each has a recommendation and Something else.",
+  "decisionIds": [
+    "activation",
+    "hook-set",
+    "ci",
+    "harnesses"
+  ]
+}

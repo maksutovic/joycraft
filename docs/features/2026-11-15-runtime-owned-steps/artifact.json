@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "runtime-owned-steps-decisions",
+  "title": "Three steps the runtime should own",
+  "summary": "Today an agent sets \"in-review\" by two hand edits, sorts findings that the report cannot hold, and builds test receipts by hand from a rule copied in six files. This brief gives each step to a command and deletes the text it replaces. Four choices; each has a recommendation and Something else.",
+  "decisionIds": [
+    "report-contract",
+    "decision-needed-effect",
+    "submit-checks",
+    "sensitivity-check"
+  ]
+}
