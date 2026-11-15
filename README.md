@@ -222,7 +222,8 @@ also offers the gates one time.
 Turn off Joycraft's gates.
 ```
 
-The agent removes Joycraft's hook. Your own hooks stay.
+The agent removes Joycraft's hook. Your own hooks stay. If you remove Joycraft from
+the project, the agent removes this hook first.
 
 **What the gates do not do.**
 

@@ -1,6 +1,6 @@
 ---
 id: 4
-status: todo
+status: in-review
 ---
 # Outcome
 
@@ -12,7 +12,8 @@ README with a prompt/instructions, why you would want this etc..."
 ## acceptance
 
 - The payload is the new field build. Check: `payload/PIN` names the tag that
-  carries specs 1, 2, 3, 5, 6, 7 and 8 (`field-19`); `payload/.joycraft/runtime/gate.mjs` and
+  carries specs 1, 2, 3, 5, 6, 7 and 8 and the uninstall repair (`field-20`;
+  `field-19` left the gate hook behind on uninstall); `payload/.joycraft/runtime/gate.mjs` and
   `payload/.joycraft/references/gates.md` exist; `pnpm test && pnpm typecheck`
   pass, including the payload link test and the payload terms test
   (`[AC:vendored-field-19]`).

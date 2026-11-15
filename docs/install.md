@@ -65,7 +65,8 @@ Ask your agent; each has a prompt in [Prompts](prompts.md):
 - **Check the install.** "Check my Joycraft install."
 - **Remove Joycraft.** "Remove Joycraft from this project." The agent removes the
   files listed in `.joycraft/installation.json` and then `.joycraft/`, after you see
-  the list. Your `AGENTS.md`, `CLAUDE.md`, `docs/` and `joycraft.yaml` stay.
+  the list. If the gates are on, it first removes Joycraft's gate hook from
+  `.claude/settings.json`. Your `AGENTS.md`, `CLAUDE.md`, `docs/` and `joycraft.yaml` stay.
 
 ## CLI reference
 

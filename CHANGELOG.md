@@ -40,6 +40,9 @@ is not a guarantee, least of all in a long or unattended session.
   `hooks-claude.md`, `routing.md` and three `runtime/hooks/` scripts), and the
   shipped skills, agent files and references went from 30,434 to about 29,500
   words. A test in this repository now guards the shipped links and terms.
+- **Removing Joycraft turns the gate hook off first.** On "Remove Joycraft from this
+  project", the agent lists the hook among what goes, and removes it before it
+  deletes any file. No hook is left that runs a deleted script.
 - **README: The gates.** A new section under "The review loop" says what the gate
   stops, why you would want it, what it does not do, and gives both prompts. They
   are also in [Prompts](docs/prompts.md).
@@ -53,7 +56,7 @@ is not a guarantee, least of all in a long or unattended session.
 - The hook is not a sandbox: a shell command can still write the queue file. The
   check finds the result at the next stop.
 
-Payload: joycraft-prototype `field-19`.
+Payload: joycraft-prototype `field-20`.
 
 ---
 

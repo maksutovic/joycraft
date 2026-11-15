@@ -194,8 +194,8 @@ prompting is not a guarantee; a guarantee lives in a hook, a deny rule or CI.
 - Earlier decision: Fable-native harness D4 (2026-09-22), hooks as inert
   recipes. This feature reaches its revisit condition.
 - The payload is vendored from joycraft-prototype. Payload changes are made
-  there and arrive here with a new `PIN`. Assumption: the next tag is
-  `field-19`.
+  there and arrive here with a new `PIN`. The tag is `field-20` (see the
+  note below on `field-19`).
 - Not checked: whether the prototype still has a hook installer to reuse. That
   is a discovery step for decompose, not a decision for Max.
 
@@ -243,7 +243,9 @@ owns their decision state: `dead-reference-scope` "seven-and-text" (spec 2),
 
 Specs 1, 2, 3, 5, 6, 7 and 8 were implemented in joycraft-prototype on
 2026-11-15, each accepted on an independent PASS review, and tagged
-`field-19`. Specs 6, 7 and 8 were added there from review findings: a review
+`field-19`. Then `field-20` repaired uninstall: removing Joycraft turns the
+gate hook off first, so no Stop hook is left that runs a deleted `gate.mjs`.
+This repository vendors `field-20`. Specs 6, 7 and 8 were added there from review findings: a review
 round is one distinct set of reviewed inputs (6), each gate message names its
 next step (7), and a pending-journal message stops at a failed recovery (8).
 The prototype's archive holds the reports. Spec 4 is the only spec left.

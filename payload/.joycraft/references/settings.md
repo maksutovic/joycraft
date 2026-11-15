@@ -49,9 +49,12 @@ On "uninstall Joycraft" or "remove Joycraft":
 1. Read `.joycraft/installation.json`. Its `files` list holds each installed path
    and the `sha256` it had at install.
 2. Show the user what goes: the listed files, with each file whose bytes changed
-   since install marked as edited, and `.joycraft/` itself. Say what stays:
-   `AGENTS.md`, `CLAUDE.md`, `docs/` and `joycraft.yaml` are theirs.
+   since install marked as edited, Joycraft's Stop hook in `.claude/settings.json`
+   when the gates are on, and `.joycraft/` itself. Say what stays: `AGENTS.md`,
+   `CLAUDE.md`, `docs/` and `joycraft.yaml` are theirs.
 3. Offer to remove the Joycraft lines from `AGENTS.md` and `CLAUDE.md` (the context
    map rows that point into `.joycraft/`, and the Joycraft rules). Show that diff
    separately.
-4. On the user's yes, delete the files, then `.joycraft/`. Do not commit.
+4. On the user's yes, first run `node .joycraft/runtime/gate.mjs hook --off`. It
+   removes Joycraft's Stop hook. When the gates are off, it changes nothing. Then
+   delete the files, then `.joycraft/`. Do not commit.
