@@ -148,7 +148,7 @@ Do not commit, publish, or ask me for API keys.
 ## Check the gates
 
 Do this before you turn the gates on, and after you update an older project to
-1.4.0 or later. The check names each spec that is marked done with no accepted review.
+1.4.1 or later. The check names each spec that is marked done with no accepted review.
 
 ```text
 Run Joycraft's gate check with `node .joycraft/runtime/gate.mjs check` and show me

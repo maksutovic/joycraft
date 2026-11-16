@@ -299,7 +299,7 @@ Run Joycraft's gate check with `node .joycraft/runtime/gate.mjs check` and show 
 what it names. Change nothing yet.
 ```
 
-Do this also after you update an older project to 1.4.0 or later, because session
+Do this also after you update an older project to 1.4.1 or later, because session
 end now runs the same check.
 
 **Turn them on.** Say:

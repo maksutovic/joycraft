@@ -3,6 +3,7 @@ import {
   mkdirSync,
   readdirSync,
   readFileSync,
+  renameSync,
   writeFileSync,
   statSync,
   existsSync,
@@ -22,6 +23,19 @@ try {
 } catch {
   // The sync test intentionally copies this generator without node_modules.
   // A checked-in checker artifact remains usable as a fallback there.
+}
+
+/**
+ * Write a generated file only when its content changes, and replace it in one
+ * step. Tests run this generator in the repository while other tests read its
+ * output. A plain write empties the file first, so a reader can see it empty.
+ */
+function writeIfChanged(path, content) {
+  if (existsSync(path) && readFileSync(path, 'utf-8') === content) return false;
+  const temporary = `${path}.${process.pid}.tmp`;
+  writeFileSync(temporary, content);
+  renameSync(temporary, path);
+  return true;
 }
 
 /**
@@ -166,7 +180,7 @@ if (__checkerArgs[0] === 'check') {
 }
 
 const checkerSource = generateChecker();
-writeFileSync(join(ROOT, 'src', 'check.mjs'), checkerSource);
+writeIfChanged(join(ROOT, 'src', 'check.mjs'), checkerSource);
 
 // 1. Canonical-skills pipeline: read src/skills/, render each canonical file
 //    into the three per-harness dirs. Tolerate an empty (or absent) src/skills/
@@ -179,7 +193,7 @@ for (const [harness, dir] of HARNESS_TARGETS) {
   mkdirSync(dir, { recursive: true });
   for (const [file, source] of Object.entries(canonicalSkills)) {
     const transformed = applyTemplate(source, harness, file, { includeUpdateCheck: true });
-    writeFileSync(join(dir, file), toNativeEOL(transformed));
+    writeIfChanged(join(dir, file), toNativeEOL(transformed));
   }
 }
 
@@ -211,5 +225,5 @@ const output = [
   `export const CHECKER_SOURCE: string = ${JSON.stringify(checkerSource)};\n`,
 ].join('\n');
 
-writeFileSync(OUTPUT, output);
+writeIfChanged(OUTPUT, output);
 console.log(`Generated ${OUTPUT} (${Object.keys(skills).length} skills, ${Object.keys(templates).length} templates, ${Object.keys(codexSkills).length} codex skills, ${Object.keys(piSkills).length} pi skills, ${Object.keys(copilotSkills).length} copilot skills, ${Object.keys(ompSkills).length} omp skills)`);
