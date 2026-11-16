@@ -34,15 +34,16 @@ Use the returned packet only when `ready` is true.
 
 If existing independent reports reveal a possible recurring failure, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md) before carrying it forward: inspect the current scoped sources and actual counterpart path or journey, then provide any proposed lesson as exact inputs through the existing dispatch flow. A verified repair may establish its local project fact; a broader method benefit remains pending later reuse.
 
-Before the first dispatch, claim the queue as its coordinator with your actual
-host session ID, and pass that ID as `--coordinator-session` to every startup:
+Before the first dispatch, claim the queue with your actual host session ID and
+pass it as `--coordinator-session` to every startup:
 
 ```sh
 node .joycraft/runtime/coordinator.mjs claim --queue <queue> --session <your-session-id> --host <host>
 ```
 
-If another session holds the queue, stop and report the holder; take it over
-with `--take-over` only when the user says that session has ended.
+If another session holds the queue, stop and report the holder; use
+`--take-over` only when the user says that session has ended. Then run
+`node .joycraft/runtime/queue-check.mjs --queue <queue>`; act on each gap.
 
 For a spec marked `execution.parallel: true`, use a separate linked worktree for
 each concurrent mutator, including its build/cache state. Create it with
@@ -55,7 +56,7 @@ isolation cannot be obtained, replan the affected wave and set the current
 queue entry's `execution.parallel` to `false` before dispatch, recording why;
 then run it serially. Otherwise leave it unstarted.
 
-Implement the spec and run meaningful checks and any relevant rendered inspection during implementation. Do not defer ordinary checks to the batch boundary. Run each test command once in single-run mode with `CI=1` and a 300000 ms timeout; follow [running tests](../../../.joycraft/references/testing.md#running-tests) when one times out. Write one focused test per acceptance `Check:`, from the spec rather than the code, and tag it with its queue criterion ID as `[AC:<criterion-id>]` in the test name or a comment; if a criterion or test looks wrong, report a spec gap instead of editing it to pass. When the implementation is finished, update both the queue entry and the spec's top-level frontmatter `status:` to `in-review` together. A passing test suite, commit, or empty ready set does not accept the work.
+Implement the spec and run meaningful checks and any relevant rendered inspection during implementation. Do not defer ordinary checks to the batch boundary. Run each test command with `node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command>`; see [running tests](../../../.joycraft/references/testing.md#running-tests). Write one focused test per acceptance `Check:`, from the spec rather than the code, and tag it with its queue criterion ID as `[AC:<criterion-id>]` in the test name or a comment; if a criterion or test looks wrong, report a spec gap instead of editing it to pass. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
 
 Honor the queue's commit mode. In `batch`, commit and review the independent ready
 wave at its boundary before advancing its dependents; do not wait for an entire
@@ -99,11 +100,11 @@ Only the guarded completion path can move an `in-review` spec to `done`. Use its
 When a current independent review is `FAIL` or `UNVERIFIED`, first fix
 straightforward failures within the existing authorization and obtain a fresh
 review. A spec gets at most three reviews: reviewer startup prints
-`reviewRound` and refuses a fourth. Settled briefs and checked specs should make
-this rare. If startup refuses a review, or a second FAIL on the same criterion
-or a "decision needed" finding still occurs, send no
-further fix and never amend acceptance yourself: note it under `## Decision
-needed` in the spec, leave it `in-review`, and continue independent ready work. An owner can explicitly accept the
+`reviewRound` and refuses a fourth. If startup refuses a review or a second FAIL
+on the same criterion occurs, send no further fix and never amend acceptance
+yourself: note it under `## Decision needed` in the spec, leave it `in-review`,
+and continue independent ready work. Treat a held `decision-needed` finding
+(`$joycraft-verify`) the same, without the note: `status.mjs` lists it. An owner can explicitly accept the
 current findings and their stated limits through `accept-owner`; that is a
 bounded exception, not a PASS or verified result. Do not ask merely because a
 review failed. Ask only when an explicit override is needed to proceed and a

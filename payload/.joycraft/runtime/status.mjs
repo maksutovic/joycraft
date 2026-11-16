@@ -1,9 +1,10 @@
 import { existsSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { journalPath } from './completion.mjs';
+import { journalPath, visibleReports } from './completion.mjs';
 import { workPaths } from './config.mjs';
-import { briefDecisionRecords, isObject, localPath, parseJson, readLocal, specStatus, validateQueue } from './identity.mjs';
+import { reviewRoundKey } from './dispatch-start.mjs';
+import { briefDecisionRecords, isObject, localPath, nonempty, parseJson, readLocal, sha256, snapshot, specStatus, validateQueue } from './identity.mjs';
 import { decide, listWorktrees } from './worktrees.mjs';
 
 // The queue is the status authority; spec frontmatter mirrors it. This report
@@ -29,6 +30,41 @@ function openDecisions(root, folder) {
   catch { return []; }
 }
 
+const findingsOf = (report, cls) => (Array.isArray(report?.findings) ? report.findings : []).filter(finding => isObject(finding) && finding.class === cls);
+
+function question(feature, spec, finding, report) {
+  const optional = ['criterion', 'at', ...(finding.class === 'follow-up' ? ['assumption'] : [])].filter(key => nonempty(finding[key]));
+  return { feature, specId: spec.id, class: finding.class, id: finding.id, summary: finding.summary, ...Object.fromEntries(optional.map(key => [key, finding[key]])), report };
+}
+
+/** The follow-ups of a done spec's accepted report, from the queue's acceptedReport receipt. */
+function followUps(root, feature, spec, unread) {
+  const receipt = spec.acceptedReport;
+  try {
+    const bytes = readLocal(root, receipt.path);
+    if (sha256(bytes) !== receipt.sha256) throw new Error('changed');
+    return findingsOf(parseJson(bytes, receipt.path), 'follow-up').map(finding => question(feature, spec, finding, receipt.path));
+  } catch {
+    unread.push({ feature, specId: spec.id, path: receipt.path, reason: 'The accepted report is missing or changed here, so its follow-ups cannot be listed.' });
+    return [];
+  }
+}
+
+/** The decision-needed findings of an in-review spec's current report: the latest
+ * visible report whose reviewed inputs (reviewRoundKey) match the current ones. */
+function heldDecisions(root, feature, queuePath, spec) {
+  const reports = visibleReports({ root, queuePath, specId: spec.id });
+  if (!reports.some(item => findingsOf(item.report, 'decision-needed').length)) return [];
+  let current;
+  try {
+    const receipts = reports.flatMap(item => (item.report.flows ?? []).flatMap(flow => (flow?.observations ?? []).flatMap(observation => (observation?.receipts ?? []).map(receipt => receipt?.path))));
+    current = reviewRoundKey(snapshot({ root, queuePath, specId: spec.id, artifactPaths: [journalPath(queuePath), ...reports.map(item => item.path), ...receipts.filter(nonempty)] }));
+  } catch { return []; }
+  const time = item => Date.parse(item.report.createdAt) || 0;
+  const latest = reports.filter(item => reviewRoundKey(item.report.subject) === current).sort((left, right) => time(left) - time(right)).at(-1);
+  return latest ? findingsOf(latest.report, 'decision-needed').map(finding => question(feature, spec, finding, latest.path)) : [];
+}
+
 function worktreeCounts(root) {
   try {
     const { trees } = listWorktrees({ root, sizes: false });
@@ -40,13 +76,16 @@ function worktreeCounts(root) {
   } catch { return null; }
 }
 
-/** Report every queue's specs (in paths.features), drift between queue and frontmatter, and features ready to archive. */
+/** Report every queue's specs (in paths.features), drift between queue and frontmatter, features ready to archive,
+ * and the questions for the user: follow-ups of accepted reports and decision-needed findings of current reports. */
 export function projectStatus({ root = process.cwd(), fix = false } = {}) {
   const features = [];
   const drift = [];
   const fixed = [];
   const readyToArchive = [];
   const problems = [];
+  const questions = [];
+  const unreadReports = [];
   for (const queuePath of queuePaths(root)) {
     const folder = path.posix.dirname(path.posix.dirname(queuePath));
     let queue;
@@ -71,12 +110,14 @@ export function projectStatus({ root = process.cwd(), fix = false } = {}) {
           row.frontmatter = spec.status;
         } else drift.push({ feature: queue.feature, specId: spec.id, file: specPath, queue: spec.status, frontmatter, fixable, reason });
       }
+      if (spec.status === 'done' && isObject(spec.acceptedReport)) questions.push(...followUps(root, queue.feature, spec, unreadReports));
+      if (spec.status === 'in-review') questions.push(...heldDecisions(root, queue.feature, queuePath, spec));
       return row;
     });
     features.push({ feature: queue.feature, queuePath, pendingJournal, specs });
     if (queue.specs.every(spec => spec.status === 'done')) readyToArchive.push({ feature: queue.feature, folder, openDecisions: openDecisions(root, folder) });
   }
-  return { features, drift, fixed, readyToArchive, worktrees: worktreeCounts(root), problems };
+  return { features, drift, fixed, readyToArchive, worktrees: worktreeCounts(root), problems, questions, unreadReports };
 }
 
 export async function main(argv = process.argv.slice(2)) {

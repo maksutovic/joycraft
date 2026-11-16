@@ -27,6 +27,7 @@ Before ending, run `node .joycraft/runtime/status.mjs --fix` (repairs lagging
 frontmatter of accepted specs, lists features ready to archive) and
 `node .joycraft/runtime/gate.mjs check`. Do the step each gate message names,
 such as a completing command. Tell the user each message you could not clear.
+Ask the user each status `questions` entry (findings rule: `$joycraft-verify`).
 Then preview `node .joycraft/runtime/worktrees.mjs prune` and apply it with
 `--apply`: it removes only clean, integrated trees of done specs and keeps the
 rest with their reason. Report kept trees and their size from `list`.
@@ -36,8 +37,7 @@ when the session used parallel mutable workers.
 
 When an `UNVERIFIED` review identifies only an environment condition, record
 that condition and arrange a fresh review after it is corrected. Do not create
-an unchanged-code fix round. The existing completion process remains the sole
-owner of acceptance and status changes.
+an unchanged-code fix round.
 
 Before ending, and before any archival, route each reusable fact the session established (a decision with its reason, a trap, a reference, a production fact) to its one home per [knowledge guidance](../../../.joycraft/references/knowledge.md). Rewrite a changed fact in place and put its reason in the decision log; add a context-map row for a new home; keep each touched row's "read when" true. Leave feature intent in the brief. A session with nothing reusable changes no context file.
 

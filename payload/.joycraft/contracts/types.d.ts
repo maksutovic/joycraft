@@ -65,6 +65,8 @@ export interface QueueSpec {
     /** Captured before implementation; never infer it from a moving upstream branch. */
     changeScope?: { baseRevision: string; exclusions?: Array<{ path: string; reason: string }> };
   };
+  /** Written by `completion.mjs submit` with the move to in-review; subject bindings leave it out, like status. */
+  submitted?: { at: string };
   acceptedReport?: { path: string; sha256: string };
   /** Explicit owner exception, mutually exclusive with acceptedReport; not a PASS. */
   ownerAcceptance?: Receipt;
@@ -144,7 +146,23 @@ export interface VerificationReport {
   verdict: Result;
   flows: FlowEvidence[];
   unresolved: string[];
+  /** Optional; a report without it reads as before. */
+  findings?: ReviewFinding[];
   createdAt: string;
+}
+/** A follow-up never blocks; a blocking or decision-needed finding refuses completion (exit 2). */
+export interface ReviewFinding {
+  /** Unique in the report. */
+  id: string;
+  class: 'blocking' | 'decision-needed' | 'follow-up';
+  origin: 'new' | 'pre-existing' | 'unknown';
+  /** A criterion id of the spec. A blocking or decision-needed finding needs `criterion` or `at`. */
+  criterion?: string;
+  /** file:line or a receipt path. */
+  at?: string;
+  summary: string;
+  /** The reading the reviewer took for a case the spec does not decide. */
+  assumption?: string;
 }
 /** Scoped human instruction recorded by the host; bindings do not authenticate its origin. */
 export interface OwnerAcceptance {

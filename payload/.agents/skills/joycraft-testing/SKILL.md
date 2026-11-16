@@ -36,9 +36,9 @@ than from the code, sized like neighboring tests. Do not commit tests of one-off
 run state. If a criterion or test looks wrong, or conflicts with a later owner
 decision, report a spec gap; never edit it to pass.
 
-Run each test command once in single-run mode with `CI=1` and a 300000 ms
-timeout; follow [running tests](../../../.joycraft/references/testing.md#running-tests)
-when one times out.
+Run each test command with
+`node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command>`;
+see [running tests](../../../.joycraft/references/testing.md#running-tests).
 
 Retain the executed command, actual exit status and unfiltered output. Describe
 what happened separately from what was expected. Bind observations and supporting

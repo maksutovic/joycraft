@@ -23,18 +23,15 @@ message.
 
 Judge the current code against every acceptance bullet and its `Check:`, and
 against the owner intent in the brief. Reuse a suite receipt bound to the same
-revision instead of rerunning the full suite; run the spec's own tests once in
-single-run mode with `CI=1` and a 300000 ms timeout. Never give a verdict while
+revision instead of rerunning the full suite; run the spec's own tests once with
+`node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command>`. Never give a verdict while
 a command you started is still running.
 
 Startup output includes `trace`: each criterion with its `[AC:<id>]` tests. Report
 each untraced criterion as a finding. A missing tag alone is not a FAIL; judge the
 criterion by what you observe.
 
-Report every finding with a severity and the criterion it touches. Only a failing
-stated criterion, or a reproducible defect or regression in the changed code with
-file:line or a receipt, blocks. A case the spec does not decide is "decision
-needed", not FAIL. Do not repeat an earlier round's finding as new.
+Record findings by the findings rule in the verify skill.
 
 Take evidence with each package's recorded tool from the packet's `reviewLoop`,
 within its `canShow`, and say in plain words how you checked. A limit the user

@@ -160,9 +160,8 @@ steps below. Full analysis:
 
 - The brief is authorized. Max answered the four decisions on 2026-11-15. The
   specs are in `specs/`.
-- Assumption: this follows enforced-gates (1.4.0, `field-19`), because its
-  specs 1 and 5 change `dispatch-start.mjs` and read `completion.mjs`. The
-  next payload tag would be `field-20`.
+- This follows enforced-gates (1.4.0), which vendors `field-20`. This
+  feature's payload tag is `field-21`.
 - Verified on `origin/main` (1.3.0, payload `field-18`):
   - No runtime file writes the `in-review` status. `completion.mjs` only
     checks for it (lines 172, 229, 414). `joycraft-implement/SKILL.md` tells
@@ -282,3 +281,16 @@ observations. Visual evidence stays with the project's review-loop tools.
 - No new runtime dependency.
 - A command is not a sandbox. An agent can still edit the queue by hand; the
   gate check of 1.4.0 catches the result.
+
+## Where the specs were built
+
+Specs 1, 2, 3, 4, 5 and 7 were implemented in joycraft-prototype on
+2026-11-15, each accepted on an independent PASS review, and tagged
+`field-21` (`905489e`). Spec 7 was added there from the review of spec 4: the
+queue check skips a file that a `todo` spec plans to create, treats an
+unscoped brief input as citing the whole brief, and does not count a `Check:`
+that is only in code or a comment. The prototype's
+`docs/archive/runtime-owned-steps/feature/` holds the final brief, the specs
+and their queue; the copies in `specs/` here are for reading. This folder has
+no queue. Spec 6 (vendor, README and the release) is the only spec in this
+repository.

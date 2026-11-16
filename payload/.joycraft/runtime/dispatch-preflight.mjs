@@ -544,5 +544,5 @@ export async function main(argv = process.argv.slice(2)) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  main().catch(error => { process.stderr.write(`Dispatch stopped: ${error.message}\n`); process.exitCode = 1; });
+  main().catch(error => { process.stderr.write(`Dispatch stopped: ${error.message}\n`); process.exitCode = error.exitCode ?? 1; });
 }
