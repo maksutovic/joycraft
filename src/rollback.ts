@@ -14,12 +14,13 @@ export interface RollbackPlan {
   remove: string[];
   edited: string[];
   blocked: string[];
-  /** Joycraft's gate Stop hook is in .claude/settings.json, the runtime that runs it goes, and no settings backup will replace the file. */
+  /** Joycraft's gate Stop hook is in .claude/settings.json, rollback removes a runtime file it needs, and no settings backup will replace the file. */
   gateHook: boolean;
 }
 
 const SETTINGS = '.claude/settings.json';
-const GATE = '.joycraft/runtime/gate.mjs';
+const RUNTIME = '.joycraft/runtime/';
+const GATE = `${RUNTIME}gate.mjs`;
 /** The command gate.mjs writes for its Stop hook (its `hookCommand`; a test keeps the two equal). */
 export const GATE_HOOK_COMMAND = 'node "$CLAUDE_PROJECT_DIR"/.joycraft/runtime/gate.mjs check --root "$CLAUDE_PROJECT_DIR"';
 
@@ -79,7 +80,8 @@ export function planRollback(dir: string, stamp?: string, { force = false } = {}
     if (existsSync(inside(root, from)) && !removing.has(from)) blocked.push(from);
     else restore.push(from);
   }
-  const gateHook = !record.settingsBackup && removing.has(GATE) && gateHookIn(root);
+  // gate.mjs imports only files in its own folder, so removing any of them breaks the hook (a test keeps this true).
+  const gateHook = !record.settingsBackup && remove.some((path) => path.startsWith(RUNTIME)) && gateHookIn(root);
   return { root, backup, restore, remove, edited, blocked, gateHook };
 }
 
@@ -87,7 +89,7 @@ export function formatRollback(plan: RollbackPlan): string {
   return [
     `Roll back to before ${plan.backup}:`,
     `  restore ${plan.restore.length} 0.7 file(s) · remove ${plan.remove.length} 1.0 file(s)`,
-    ...(plan.gateHook ? [`  remove Joycraft's gate Stop hook from ${SETTINGS}; the runtime it runs is removed`] : []),
+    ...(plan.gateHook ? [`  remove Joycraft's gate Stop hook from ${SETTINGS}; rollback removes runtime files it needs`] : []),
     ...plan.edited.map((path) => `  kept, edited after the migration (use --force to remove): ${path}`),
     ...plan.blocked.map((path) => `  not restored, a file is already there: ${path}`),
     `  The backup stays in ${plan.backup}.`,

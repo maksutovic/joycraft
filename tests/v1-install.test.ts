@@ -2,7 +2,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { applyInstall, doctor, planInstall, readManifest } from '../src/install-v1.js';
 import { detectLegacy, migrateLegacy, planLegacy, recoverLegacy } from '../src/legacy-07.js';
@@ -256,6 +256,39 @@ describe('spec 15: rollback', () => {
     const after = readFileSync(join(dir, '.claude/settings.json'), 'utf8');
     expect(after).not.toContain('gate.mjs');
     expect(JSON.parse(after)).toEqual(JSON.parse(userSettings));
+  });
+
+  it('every module gate.mjs loads, directly or not, is in .joycraft/runtime/', () => {
+    const runtime = join(repo, 'payload/.joycraft/runtime');
+    const seen = new Set<string>(); const queue = ['gate.mjs'];
+    while (queue.length) {
+      const file = queue.pop()!;
+      if (seen.has(file)) continue;
+      seen.add(file);
+      for (const [, spec] of readFileSync(join(runtime, file), 'utf8').matchAll(/(?:^|\n)\s*(?:import|export)[^'"]*?from\s*['"]([^'"]+)['"]/g)) {
+        if (spec.startsWith('node:')) continue;
+        expect(spec, `${file} imports ${spec}`).toMatch(/^\.\//);
+        expect(relative(runtime, join(runtime, dirname(file), spec)).startsWith('..')).toBe(false);
+        queue.push(relative(runtime, join(runtime, dirname(file), spec)));
+      }
+    }
+    expect(seen.size).toBeGreaterThan(1);
+  });
+
+  it('gates on, gate.mjs edited and kept: rollback still removes the hook, since its imports go', () => {
+    const dir = fixture07('0.7.17');
+    writeFileSync(join(dir, '.claude/settings.json'), userSettings);
+    migrateLegacy(planLegacy(dir));
+    expect(gate(dir, '--on').status).toBe(0);
+    const gateFile = join(dir, '.joycraft/runtime/gate.mjs');
+    writeFileSync(gateFile, `${readFileSync(gateFile, 'utf8')}\n// my change\n`);
+    const plan = planRollback(dir);
+    expect(plan.edited).toContain('.joycraft/runtime/gate.mjs');
+    expect(plan.remove).toContain('.joycraft/runtime/identity.mjs');
+    expect(formatRollback(plan)).toContain("remove Joycraft's gate Stop hook from .claude/settings.json");
+    applyRollback(plan);
+    expect(readFileSync(join(dir, '.claude/settings.json'), 'utf8')).toBe(userSettings);
+    expect(readFileSync(gateFile, 'utf8')).toContain('// my change');
   });
 
   it('gates on with a settings backup: rollback restores the backup as before', () => {
