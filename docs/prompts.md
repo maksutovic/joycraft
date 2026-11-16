@@ -113,6 +113,17 @@ and context pages that no longer match the code. Show me the findings before you
 Do not commit, publish, or ask me for API keys.
 ```
 
+## Check the gates
+
+Do this before you turn the gates on, and after you update an older project to
+1.4.0. The check names each spec that is marked done with no accepted review.
+
+```text
+Run Joycraft's gate check with `node .joycraft/runtime/gate.mjs check` and show me
+what it names. Change nothing yet. For each spec it names, tell me what you recommend.
+Do not commit, publish, or ask me for API keys.
+```
+
 ## Turn on the gates
 
 With the gates on, Claude Code runs Joycraft's gate check each time the agent tries

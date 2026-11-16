@@ -212,8 +212,15 @@ With the gates on, Claude Code runs the check each time the agent tries to stop.
 agent cannot stop until the problem is gone.
 
 **Before you turn them on.** An older project can have specs marked done with no
-accepted review. The check sends each one back for a review. First ask your agent to
-run Joycraft's gate check and show you what it names.
+accepted review. The check sends each one back for a review. To see them first, say:
+
+```text
+Run Joycraft's gate check with `node .joycraft/runtime/gate.mjs check` and show me
+what it names. Change nothing yet.
+```
+
+Do this also after you update an older project to 1.4.0, because session end now
+runs the same check.
 
 **Turn them on.** Say:
 
