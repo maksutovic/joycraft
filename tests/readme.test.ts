@@ -82,4 +82,19 @@ describe('README.md', () => {
     const violations = JSON.parse(lint.stdout).violations;
     for (const kind of ['contraction', 'semicolon', 'banned_modal', 'latin_abbrev', 'slop_word']) expect(violations[kind], kind).toBe(0);
   });
+
+  it('keeps every prompt that README.md and docs/prompts.md share byte-identical', () => {
+    const textBlocks = (file: string) => [...readFileSync(join(__dirname, '..', file), 'utf-8')
+      .matchAll(/^```text\n([\s\S]*?)^```$/gm)].map(match => match[1]);
+    // A prompt is the same prompt when its first sentence matches, so an added line or footer is drift.
+    const firstSentence = (block: string) => block.replace(/\s+/g, ' ').trim().split(/(?<=[.:]) /)[0];
+    const readme = textBlocks('README.md');
+    const prompts = textBlocks('docs/prompts.md');
+    const pairs = readme.flatMap(block => prompts
+      .filter(other => firstSentence(other) === firstSentence(block) || other.split('\n')[0] === block.split('\n')[0])
+      .map(other => ({ readme: block, prompts: other })));
+    // Install, wiki, settings, queue, follow-ups, check, on, off and update are in both files.
+    expect(pairs.length).toBeGreaterThanOrEqual(9);
+    for (const pair of pairs) expect(pair.readme, firstSentence(pair.prompts)).toBe(pair.prompts);
+  });
 });

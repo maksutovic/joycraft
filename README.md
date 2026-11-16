@@ -113,6 +113,7 @@ consideration ([decision D6](docs/context/decision-log.md)).
 ```text
 We keep a wiki in <where>. Link it from the context map, and keep it up to date
 each time a feature is archived.
+Do not commit, publish, or ask me for API keys.
 ```
 
 ### Settings
@@ -120,9 +121,11 @@ each time a feature is archived.
 Joycraft works with no settings. To change one, say what you want:
 
 ```text
-Keep Joycraft's briefs and specs in working/features.
-Whenever a feature is archived, run our wiki sync script.
-The page docs/context/auction-rules.md describes src/auction. Flag it when that code changes.
+Change these Joycraft settings, and show me the change before you write it:
+- Keep Joycraft's briefs and specs in working/features, and finished features in working/archive.
+- Whenever a feature is archived, run our wiki sync script.
+- The page docs/context/auction-rules.md describes src/auction. Flag it when that code changes.
+Do not commit, publish, or ask me for API keys.
 ```
 
 The agent writes the change to `joycraft.yaml` at the project root, shows it to you
@@ -301,7 +304,8 @@ To see them, say:
 
 ```text
 Run Joycraft's gate check with `node .joycraft/runtime/gate.mjs check` and show me
-what it names. Change nothing yet.
+what it names. Change nothing yet. For each spec it names, tell me what you recommend.
+Do not commit, publish, or ask me for API keys.
 ```
 
 Do this also after you update an older project to 1.4.1 or later, because session
@@ -310,7 +314,9 @@ end now runs the same check.
 **Turn them on.** Say:
 
 ```text
-Turn on Joycraft's gates.
+Turn on Joycraft's gates. Show me the change to .claude/settings.json on a page,
+and write it only on my yes.
+Do not commit, publish, or ask me for API keys.
 ```
 
 The agent shows you the change to `.claude/settings.json` on a page. It writes the
@@ -320,7 +326,8 @@ also offers the gates one time.
 **Turn them off.** Say:
 
 ```text
-Turn off Joycraft's gates.
+Turn off Joycraft's gates. Remove only Joycraft's hook, and tell me what you removed.
+Do not commit, publish, or ask me for API keys.
 ```
 
 The agent removes Joycraft's hook. Your own hooks stay. If you remove Joycraft from
@@ -401,7 +408,9 @@ always your choice.
 This is an instruction the agent follows, so it can forget. To check yourself, ask:
 
 ```text
-Check for a Joycraft update.
+Check for a Joycraft update. If there is one, run
+`npx joycraft@latest update . --plan --json`, show me what changes, and update on my yes.
+Do not commit, publish, or ask me for API keys.
 ```
 
 ## Hosts

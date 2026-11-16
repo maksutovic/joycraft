@@ -49,6 +49,8 @@ and five smaller problems.
   and ran a missing file at each stop.
 - **`hook --off` tells the truth.** When `--on` created `.claude/settings.json`, `hook
   --off` deletes the file and now says so.
+- **One copy of each prompt.** The wiki, settings, gate and update prompts in the
+  README now match `docs/prompts.md` word for word, and a test fails when they differ.
 - **Shorter shipped text.** The shipped skills, agent files and references went from
   29,941 to 29,922 words.
 
