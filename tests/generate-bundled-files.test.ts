@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { execSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const ROOT = join(__dirname, '..');
@@ -100,6 +100,27 @@ describe('generate-bundled-files script', () => {
       templateLiteralLines,
       'Generated file should not contain backtick template literals for values',
     ).toEqual([]);
+  });
+  it('leaves an unchanged generated file alone, so a parallel reader never sees it empty', () => {
+    // The 1.4.0 release run failed here: this generator rewrote
+    // src/claude-skills/joycraft-decompose.md while another test file read it.
+    const generated = [
+      OUTPUT,
+      join(ROOT, 'src', 'check.mjs'),
+      ...['claude-skills', 'codex-skills', 'pi-skills', 'copilot-skills', 'omp-skills'].flatMap((tree) =>
+        readdirSync(join(ROOT, 'src', tree))
+          .filter((file) => file.endsWith('.md'))
+          .map((file) => join(ROOT, 'src', tree, file)),
+      ),
+    ];
+    const identity = () => generated.map((file) => {
+      const { ino, mtimeMs } = statSync(file);
+      return `${relative(ROOT, file)} ${ino} ${mtimeMs}`;
+    });
+    const before = identity();
+    execSync(`node ${SCRIPT}`, { cwd: ROOT });
+    expect(identity()).toEqual(before);
+    expect(readdirSync(join(ROOT, 'src', 'claude-skills')).filter((file) => file.endsWith('.tmp'))).toEqual([]);
   });
 });
 
