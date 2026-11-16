@@ -20,11 +20,12 @@ function fixture(observations: Array<any>) {
   let calls = 0;
   const logs: string[] = [];
   const timeouts: number[] = [];
+  const sleeps: number[] = [];
   return {
     options: {
-      ...expected, timeoutMs: 30, pollIntervalMs: 10,
+      ...expected, timeoutMs: 30, pollIntervalMs: 10, maxPollIntervalMs: 10,
       now: () => clock,
-      sleep: async (ms: number) => { clock += ms; },
+      sleep: async (ms: number) => { clock += ms; sleeps.push(ms); },
       log: (line: string) => logs.push(line),
       readMetadata: async ({ timeoutMs }: { timeoutMs: number }) => {
         timeouts.push(timeoutMs);
@@ -33,7 +34,8 @@ function fixture(observations: Array<any>) {
         return value;
       },
     },
-    logs, timeouts,
+    logs, timeouts, sleeps,
+    get clock() { return clock; },
     get calls() { return calls; },
   };
 }
@@ -118,6 +120,45 @@ describe('published package readiness', () => {
     const run = fixture([metadata(latest), metadata()]);
     await expect(verifyPublishedRelease(run.options)).rejects.toThrow(/not a stable version/i);
     expect(run.calls).toBe(1);
+  });
+
+  // 1.5.0 and 1.5.2: npm publish returned, the registry listed the version 7 min 11 s later.
+  it('waits through the registry lag seen on 1.5.0 and 1.5.2 with the default deadline', async () => {
+    const lagMs = (7 * 60 + 11) * 1000;
+    const run = fixture([]);
+    let reads = 0;
+    const result = await verifyPublishedRelease({
+      ...expected, now: run.options.now, sleep: run.options.sleep, log: run.options.log,
+      readMetadata: async () => {
+        reads++;
+        if (run.clock < lagMs) throw new Error('npm error code E404 npm error 404 No match found for version 0.7.14');
+        return metadata();
+      },
+    });
+    expect(result.version).toBe(expected.version);
+    expect(run.clock).toBeGreaterThanOrEqual(lagMs);
+    expect(run.clock).toBeLessThan(lagMs + 30_000);
+    expect(reads).toBeLessThan(30);
+    expect(run.logs.at(-1)).toMatch(/Publication verified after 7m\d\ds/);
+  });
+
+  it('backs off from 5 s to 30 s and gives up after 20 minutes with a rerun hint', async () => {
+    const run = fixture([new Error('npm error code E404 No match found for version 0.7.14')]);
+    const { timeoutMs, pollIntervalMs, maxPollIntervalMs, ...defaults } = run.options;
+    await expect(verifyPublishedRelease(defaults)).rejects.toThrow(
+      /deadline expired after 20m00s.*observed latest=missing.*publish itself succeeded.*GitHub release was not created.*Re-running the failed publish job is safe.*npm view joycraft@0\.7\.14/,
+    );
+    expect(run.sleeps.slice(0, 6)).toEqual([5000, 7500, 11250, 16875, 25313, 30000]);
+    expect(Math.max(...run.sleeps)).toBe(30_000);
+    expect(run.clock).toBe(20 * 60 * 1000);
+    expect(run.calls).toBeLessThan(50);
+    expect(run.timeouts.every(ms => ms > 0)).toBe(true);
+  });
+
+  it('rejects a maximum interval smaller than the first interval', async () => {
+    const run = fixture([metadata()]);
+    await expect(verifyPublishedRelease({ ...run.options, pollIntervalMs: 10, maxPollIntervalMs: 5 })).rejects.toThrow(/Maximum polling interval/);
+    expect(run.calls).toBe(0);
   });
 
   it.each([0, -1, NaN, Infinity])('rejects an invalid deadline %s before reading the registry', async (timeoutMs) => {

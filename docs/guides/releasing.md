@@ -1,6 +1,6 @@
 # Automatic npm releases
 
-Updated: 2026-09-07.
+Updated: 2026-11-16.
 
 Every push to `main` starts `.github/workflows/publish.yml`. Merging the product
 PR is the release authorization; there is no second release PR to approve.
@@ -60,16 +60,27 @@ fix merged to main starts a fresh automatic release.
 
 If npm accepted the tarball but the job failed afterward, a retry verifies the
 registry integrity and skips republishing. Publication verification polls exact-version
-metadata for up to five minutes, with online revalidation and five-second intervals.
-Each read is limited to 30 seconds or the remaining deadline, whichever is shorter.
-The logs record expected and observed `latest` values and integrity status.
+metadata for up to 20 minutes, with online revalidation. The first interval is five
+seconds; each next one is 1.5 times longer, up to 30 seconds. Each read is limited to
+30 seconds or the remaining deadline, whichever is shorter. The logs record the
+elapsed time, expected and observed `latest` values and integrity status.
+
+`npm publish` returns before the registry lists the new version. The registry's
+`time` field recorded 1.5.0 and 1.5.2 7 min 11 s after `npm publish` printed
+`+ joycraft@<version>`, and 1.5.1 after 2 min 8 s. Until then `npm view` answers
+E404 "No match found for version", from every read path. The old five-minute deadline
+failed the 1.5.0 and 1.5.2 runs although both releases were fine.
 Only matching package identity, integrity, and `latest` permit GitHub release creation.
 Identity mismatches and unsupported tags stop verification immediately.
 If another release has advanced `latest`,
 inspect the registry rather than moving the tag backward.
 
 Deadline expiry means verification is incomplete. It does not mean npm rejected
-the publication. Inspect the registry and reuse the retained artifact for recovery.
+the publication. Run `npm view joycraft@<version> version dist.integrity dist-tags.latest --prefer-online`.
+When it shows the version, re-run the failed publish job: it skips the publish
+and creates the GitHub release. If you re-run before the registry shows the version,
+the job tries `npm publish` again with the same tarball. npm never replaces a
+published version, so expect that attempt to fail; wait and re-run again.
 Reruns use the original commit's workflow and helpers. These retry fixes apply to
 runs started from the commit that contains them; older failed runs need all jobs rerun.
 
