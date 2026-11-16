@@ -68,8 +68,8 @@ export interface QueueSpec {
   /** Written by `completion.mjs submit` with the move to in-review; subject bindings leave it out, like status. */
   submitted?: { at: string };
   acceptedReport?: { path: string; sha256: string };
-  /** Explicit owner exception, mutually exclusive with acceptedReport; not a PASS. */
-  ownerAcceptance?: Receipt;
+  /** Explicit owner exception, mutually exclusive with acceptedReport; not a PASS. `legacy: true` names a LegacyAcceptance file (no review). */
+  ownerAcceptance?: Receipt & { legacy?: true };
   /** The feature's FeatureWaiver file, plus the UNVERIFIED report a tool-break waiver completed on; mutually exclusive with acceptedReport and ownerAcceptance. */
   waiver?: Receipt & { review?: Receipt };
 }
@@ -163,6 +163,20 @@ export interface ReviewFinding {
   summary: string;
   /** The reading the reviewer took for a case the spec does not decide. */
   assumption?: string;
+}
+/** The owner's own words accepting specs marked done with no review on record, as they are; written by `accept-owner --legacy`. The runtime checks the record, not who spoke. */
+export interface LegacyAcceptance {
+  schemaVersion: 1;
+  kind: 'legacy';
+  /** Project-relative; must equal --queue. */
+  queuePath: string;
+  /** The owner's verbatim words, nonempty. */
+  statement: string;
+  statedAt: string;
+  /** Equal to the --spec ids; each was done with no acceptance. */
+  specs: number[];
+  /** What the user said about why the specs stand as they are. */
+  reason: string;
 }
 /** Scoped human instruction recorded by the host; bindings do not authenticate its origin. */
 export interface OwnerAcceptance {

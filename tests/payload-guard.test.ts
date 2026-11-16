@@ -28,6 +28,11 @@ const FIELD_20_WORDS = 30033;
 const FIELD_21 = '522c756';
 const FIELD_21_WORDS = 29941;
 
+// The last commit on main whose payload was field-22 (1.5.1). field-23 must not
+// ship more words in skills, agent files and references (legacy-acceptance).
+const FIELD_22 = '23af2ca';
+const FIELD_22_WORDS = 29922;
+
 interface Bundle { label: string; files: Set<string>; read: (path: string) => string }
 
 function walk(dir: string): string[] {
@@ -136,10 +141,10 @@ describe('shipped payload text', () => {
     expect(bundle.files.has('.joycraft/references/gates.md')).toBe(true);
   });
 
-  it('[AC:vendored-runtime-owned-steps] pins field-22 and ships submit, evidence run and the queue check', () => {
+  it('[AC:vendored-runtime-owned-steps] pins field-23 and ships submit, evidence run and the queue check', () => {
     const pin = JSON.parse(readFileSync(join(payloadDir, 'PIN'), 'utf8'));
-    expect(pin.tag).toBe('field-22');
-    expect(pin.commit).toBe('96c591fe5dfe7c8c039182ba1ae1647f5dd62e88');
+    expect(pin.tag).toBe('field-23');
+    expect(pin.commit).toBe('991b6d1161e4c1f84141b772756fa424ce48bc32');
     const bundle = treeBundle();
     for (const path of ['.joycraft/runtime/completion.mjs', '.joycraft/runtime/evidence.mjs', '.joycraft/runtime/queue-check.mjs']) {
       expect(bundle.files.has(path), path).toBe(true);
@@ -181,18 +186,33 @@ describe('shipped payload text', () => {
     expect(payloadWords(revisionBundle(FIELD_20))).toBe(FIELD_20_WORDS);
   });
 
+  /** A git project with the shipped runtime and one queue whose specs are `done` with no acceptance. */
+  function doneSpecsProject(prefix: string, specIds: number[], extra: Record<string, unknown> = {}): string {
+    const project = mkdtempSync(join(tmpdir(), prefix));
+    execFileSync('git', ['init', '-q'], { cwd: project });
+    cpSync(join(payloadDir, '.joycraft'), join(project, '.joycraft'), { recursive: true });
+    writeFileSync(join(project, '.joycraft/installation.json'), JSON.stringify({ hosts: ['claude'] }));
+    const specs = join(project, 'docs/features/demo/specs');
+    mkdirSync(specs, { recursive: true });
+    for (const id of specIds) writeFileSync(join(specs, `0${id}-a.md`), `---\nid: ${id}\nstatus: done\n---\n# A\n`);
+    writeFileSync(join(specs, '.joycraft-spec-queue.json'), JSON.stringify({ schemaVersion: 1, feature: 'demo',
+      specs: specIds.map((id) => ({ id, file: `0${id}-a.md`, depends_on: [], status: 'done', mode: 'batch', ...extra, verification: {
+        inputs: [{ path: `docs/features/demo/specs/0${id}-a.md`, kind: 'requirement' }],
+        criteria: [{ id: 'a', requirement: { path: `docs/features/demo/specs/0${id}-a.md`, anchor: 'a' }, requiredKinds: ['runtime'] }] } })) }));
+    return project;
+  }
+
+  const queue = 'docs/features/demo/specs/.joycraft-spec-queue.json';
+  const decision = 'docs/features/demo/specs/legacy-acceptance.json';
+  const node = (project: string, args: string[]) => spawnSync(process.execPath, args, { cwd: project, encoding: 'utf8' });
+  function writeDecision(project: string, specs: number[]) {
+    writeFileSync(join(project, decision), JSON.stringify({ schemaVersion: 1, kind: 'legacy', queuePath: queue,
+      statement: 'accept them as they are', statedAt: '2026-11-16', specs, reason: 'marked done with no review on record' }, null, 2));
+  }
+
   it('[AC:vendored-open-issues] hook --on refuses over an unaccepted done spec, exits 2 and writes nothing', () => {
-    const project = mkdtempSync(join(tmpdir(), 'joycraft-gate-on-'));
+    const project = doneSpecsProject('joycraft-gate-on-', [1]);
     try {
-      cpSync(join(payloadDir, '.joycraft'), join(project, '.joycraft'), { recursive: true });
-      writeFileSync(join(project, '.joycraft/installation.json'), JSON.stringify({ hosts: ['claude'] }));
-      const specs = join(project, 'docs/features/demo/specs');
-      mkdirSync(specs, { recursive: true });
-      writeFileSync(join(specs, '01-a.md'), '---\nid: 1\nstatus: done\n---\n# A\n');
-      writeFileSync(join(specs, '.joycraft-spec-queue.json'), JSON.stringify({ schemaVersion: 1, feature: 'demo',
-        specs: [{ id: 1, file: '01-a.md', depends_on: [], status: 'done', mode: 'batch', verification: {
-          inputs: [{ path: 'docs/features/demo/specs/01-a.md', kind: 'requirement' }],
-          criteria: [{ id: 'a', requirement: { path: 'docs/features/demo/specs/01-a.md', anchor: 'a' }, requiredKinds: ['runtime'] }] } }] }));
       const result = spawnSync(process.execPath, ['.joycraft/runtime/gate.mjs', 'hook', '--on'], { cwd: project, encoding: 'utf8' });
       expect(result.status, result.stderr).toBe(2);
       expect(result.stderr).toMatch(/Do not ask the user/);
@@ -202,6 +222,60 @@ describe('shipped payload text', () => {
     } finally {
       rmSync(project, { recursive: true, force: true });
     }
+  });
+
+  it('[AC:vendored-legacy-acceptance] hook --plan asks one question about done specs with no acceptance', () => {
+    const project = doneSpecsProject('joycraft-gate-plan-', [1]);
+    try {
+      const result = node(project, ['.joycraft/runtime/gate.mjs', 'hook', '--plan']);
+      expect(JSON.parse(result.stdout).message).toMatch(/ask one question instead: accept them as they are, or send them back for review/);
+      expect(existsSync(join(project, '.claude/settings.json'))).toBe(false);
+    } finally {
+      rmSync(project, { recursive: true, force: true });
+    }
+  });
+
+  it('[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on', () => {
+    const project = doneSpecsProject('joycraft-legacy-', [1, 2]);
+    try {
+      writeDecision(project, [1, 2]);
+      const accepted = node(project, ['.joycraft/runtime/completion.mjs', 'accept-owner', '--legacy', '--queue', queue, '--spec', '1,2', '--decision', decision]);
+      expect(accepted.status, accepted.stderr).toBe(0);
+      const saved = JSON.parse(readFileSync(join(project, queue), 'utf8'));
+      expect(saved.specs.map((spec: { status: string; ownerAcceptance: { legacy: boolean } }) => [spec.status, spec.ownerAcceptance.legacy])).toEqual([['done', true], ['done', true]]);
+      expect(node(project, ['.joycraft/runtime/gate.mjs', 'check']).status).toBe(0);
+      const on = node(project, ['.joycraft/runtime/gate.mjs', 'hook', '--on']);
+      expect(on.status, on.stderr).toBe(0);
+      expect(readFileSync(join(project, '.claude/settings.json'), 'utf8')).toMatch(/gate\.mjs/);
+      writeFileSync(join(project, decision), '{}');
+      expect(node(project, ['.joycraft/runtime/gate.mjs', 'check']).status).toBe(2);
+    } finally {
+      rmSync(project, { recursive: true, force: true });
+    }
+  });
+
+  it('[AC:vendored-legacy-acceptance] accept-owner --legacy refuses a spec submitted for review and writes nothing', () => {
+    const project = doneSpecsProject('joycraft-legacy-refuse-', [1], { submitted: { at: '2026-11-16T00:00:00.000Z' } });
+    try {
+      writeDecision(project, [1]);
+      const before = readFileSync(join(project, queue), 'utf8');
+      const result = node(project, ['.joycraft/runtime/completion.mjs', 'accept-owner', '--legacy', '--queue', queue, '--spec', '1', '--decision', decision]);
+      expect(result.status).toBe(2);
+      expect(result.stderr).toMatch(/went through review/);
+      expect(readFileSync(join(project, queue), 'utf8')).toBe(before);
+    } finally {
+      rmSync(project, { recursive: true, force: true });
+    }
+  });
+
+  it('[AC:vendored-legacy-acceptance] ships no more words than field-22', () => {
+    const words = payloadWords(treeBundle());
+    expect(words, `${words} words; field-22 had ${FIELD_22_WORDS}`).toBeLessThanOrEqual(FIELD_22_WORDS);
+  });
+
+  it.runIf(hasRevision(FIELD_22))('[AC:vendored-legacy-acceptance] field-22 had the recorded word count', () => {
+    expect(JSON.parse(git(['show', `${FIELD_22}:payload/PIN`])).tag).toBe('field-22');
+    expect(payloadWords(revisionBundle(FIELD_22))).toBe(FIELD_22_WORDS);
   });
 
   it('[AC:vendored-open-issues] ships no more words than field-21', () => {

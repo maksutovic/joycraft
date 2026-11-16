@@ -284,6 +284,15 @@ function historicalDecision(root, queuePath, state, reconciliation) {
   }
   requireValue(isObject(owner) && isSha256(owner.sha256), `Spec ${state.spec.id} is not accepted`);
   const ownerPath = relativePath(owner.path);
+  if (owner.legacy === true) {
+    // Done before the gates and accepted as it is: the owner's words are the only record.
+    let ownerBytes;
+    try { ownerBytes = readLocal(root, ownerPath); } catch { ownerBytes = null; }
+    requireValue(ownerBytes !== null && sha256(ownerBytes) === owner.sha256, `Legacy acceptance decision is missing or changed: ${ownerPath}. Restore it from git; if you cannot, stop and tell the user`);
+    const decision = parseJson(ownerBytes, ownerPath);
+    validateOwnerAcceptance({ decision, decisionPath: ownerPath, state, legacy: true });
+    return { kind: 'legacy-acceptance', path: ownerPath, sha256: owner.sha256, report: null, receipts: [], limitations: [`accepted as it is by the owner, with no review: "${decision.statement}"`] };
+  }
   const ownerBytes = readLocal(root, ownerPath);
   requireValue(sha256(ownerBytes) === owner.sha256, `Owner acceptance is missing or changed: ${ownerPath}`);
   const decision = parseJson(ownerBytes, ownerPath);
@@ -362,7 +371,7 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
   const reconciliation = readReconciliation(root, feature, reconciliationPath);
   const evidence = [];
   for (const item of queue.specs ?? []) {
-    const state = readQueue({ root, queuePath, specId: item.id });
+    const state = readQueue({ root, queuePath, specId: item.id, criteria: item?.ownerAcceptance?.legacy !== true });
     evidence.push(historicalDecision(root, queuePath, state, reconciliation));
   }
   requireValue(Array.isArray(queue.specs) && queue.specs.length > 0 && queue.specs.every(spec => spec.status === 'done'), 'Every spec must be done before archiving the whole feature');

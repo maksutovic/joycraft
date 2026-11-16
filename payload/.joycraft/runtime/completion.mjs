@@ -176,9 +176,9 @@ export function recover({ root = process.cwd(), queuePath }) {
   return { status: 'restored', queuePath, specId: journal.specId };
 }
 
-async function writeCompletion({ root, queuePath, specId, state, status = 'done', metadataKey, metadata, validate, stableFiles }) {
+async function writeCompletion({ root, queuePath, specId, state, status = 'done', metadataKey, metadata, validate, stableFiles, specIds = [specId], criteria = true }) {
   const updatedQueue = structuredClone(state.queue);
-  Object.assign(updatedQueue.specs.find(spec => spec.id === specId), { status, [metadataKey]: metadata });
+  for (const id of specIds) Object.assign(updatedQueue.specs.find(spec => spec.id === id), { status, [metadataKey]: metadata });
   const journal = {
     schemaVersion: 1, queuePath, specId,
     files: [
@@ -203,7 +203,7 @@ async function writeCompletion({ root, queuePath, specId, state, status = 'done'
     // Catch overlapping worker edits during the two writes before accepting them.
     for (const file of journal.files) requireValue(sha256(readLocal(root, file.path)) === file.after.sha256, `Completion conflict: ${file.path} changed after write`);
     for (const stable of stableFiles) requireValue(sha256(readLocal(root, stable.path)) === stable.sha256, `${stable.label} changed during completion`);
-    validate(readQueue({ root, queuePath, specId }));
+    validate(readQueue({ root, queuePath, specId, criteria }));
     unlinkSync(pendingFile);
   } catch (error) {
     // Before the first write there is nothing to restore; a kept journal would
@@ -274,7 +274,13 @@ export async function submit({ root = process.cwd(), queuePath, specId }) {
  * JSON cannot authenticate that a human said it, so this validates only the
  * scoped binding and deliberately never treats the text as cryptographic proof.
  */
-export function validateOwnerAcceptance({ decision, decisionPath, state, report, reportPath, reportBytes }) {
+export function validateOwnerAcceptance({ decision, decisionPath, state, report, reportPath, reportBytes, legacy = false }) {
+  if (legacy) {
+    // A record marked legacy reads only a legacy decision that names this spec; it has no review.
+    validateLegacyDecision(decision, Array.isArray(decision?.specs) ? decision.specs : [], state.queuePath);
+    requireValue(decision.specs.includes(state.spec.id), `Legacy acceptance ${decisionPath} does not name spec ${state.spec.id}`);
+    return;
+  }
   decisionPath = relativePath(decisionPath);
   reportPath = relativePath(reportPath);
   requireValue(isObject(decision) && decision.schemaVersion === 1 && decision.kind === 'owner-acceptance', 'Owner acceptance needs schemaVersion 1 and kind owner-acceptance');
@@ -338,6 +344,65 @@ export async function acceptOwner({ root = process.cwd(), queuePath, specId, dec
     },
   });
   return { status: 'done', unchanged: false, ownerAcceptance, verdict: report.verdict, unresolved: report.unresolved, evidenceErrors, limitations: decision.limitations, implementationRevision: report.subject.implementationRevision };
+}
+
+const legacyFields = ['schemaVersion', 'kind', 'queuePath', 'statement', 'statedAt', 'specs', 'reason'];
+const idList = ids => [...ids].sort((left, right) => left - right).join(',');
+
+/**
+ * A legacy decision holds the owner's own words accepting specs that were done
+ * before the gates, as they are. It names no review. Like owner acceptance,
+ * local JSON cannot prove a human said them; this validates only the record.
+ */
+export function validateLegacyDecision(decision, specIds, queuePath) {
+  requireValue(isObject(decision) && decision.schemaVersion === 1 && decision.kind === 'legacy', 'Legacy acceptance needs schemaVersion 1 and kind legacy');
+  requireValue(decision.review === undefined, 'A legacy acceptance has no review field; a reviewed spec uses accept-owner without --legacy');
+  requireValue(Object.keys(decision).every(key => legacyFields.includes(key)), `Legacy acceptance has unknown fields; it has only ${legacyFields.join(', ')}`);
+  requireValue(nonempty(decision.queuePath) && relativePath(decision.queuePath) === relativePath(queuePath), `Legacy acceptance is for another queue (${decision.queuePath}); it must name ${queuePath}`);
+  requireValue(nonempty(decision.statement), "Legacy acceptance needs the owner's own words in statement");
+  requireValue(nonempty(decision.statedAt) && Number.isFinite(Date.parse(decision.statedAt)), 'Legacy acceptance needs a valid statedAt date');
+  requireValue(nonempty(decision.reason), 'Legacy acceptance needs a reason');
+  requireValue(Array.isArray(decision.specs) && decision.specs.length > 0 && decision.specs.every(Number.isSafeInteger) && new Set(decision.specs).size === decision.specs.length, 'Legacy acceptance specs must be distinct spec ids');
+  requireValue(idList(decision.specs) === idList(specIds), `Legacy acceptance specs (${idList(decision.specs)}) must equal the --spec ids (${idList(specIds)})`);
+}
+
+/**
+ * Accept specs that are done in queue and frontmatter with no acceptance, as
+ * they are, on the owner's own words. All or nothing: any other spec refuses
+ * with exit 2 before a write. The same decision again changes nothing.
+ */
+export async function acceptLegacy({ root = process.cwd(), queuePath, specIds, decisionPath }) {
+  try {
+    queuePath = relativePath(queuePath);
+    decisionPath = relativePath(decisionPath);
+    requireValue(specIds.length > 0 && new Set(specIds).size === specIds.length, 'Name each spec once');
+    assertNoJournal(root, queuePath);
+    const decisionBytes = readLocal(root, decisionPath);
+    validateLegacyDecision(parseJson(decisionBytes, decisionPath), specIds, queuePath);
+    const { gitIgnored } = await import('./evidence.mjs');
+    requireValue(!gitIgnored(root, decisionPath), `Git ignores the legacy decision ${decisionPath}; put it in the feature folder beside the queue and commit it`);
+    const ownerAcceptance = { path: decisionPath, sha256: sha256(decisionBytes), legacy: true };
+    // Returns the ids that still need the record; refuses any spec that cannot take it.
+    const pending = () => specIds.filter(id => {
+      const { spec, specPath, queue } = readQueue({ root, queuePath, specId: id, criteria: false });
+      requireValue(spec.status === 'done', `Spec ${id} is ${spec.status}; legacy acceptance is only for a spec that is done with no acceptance`);
+      requireValue(spec.submitted === undefined && visibleReports({ root, queuePath, specId: id }).length === 0, `Spec ${id} went through review; complete it with finalize-review or the normal owner acceptance`);
+      requireValue(decisionPath !== queuePath && !queue.specs.some(item => path.posix.join(path.posix.dirname(queuePath), item.file) === decisionPath) && !spec.verification.inputs.some(input => relativePath(input.path) === decisionPath), 'The legacy decision must be its own file, not a queue, spec or verification input');
+      if (canonical(spec.ownerAcceptance) === canonical(ownerAcceptance)) return false;
+      requireValue(spec.acceptedReport === undefined && spec.ownerAcceptance === undefined && spec.waiver === undefined, `Spec ${id} (${specPath}) already has an accepted report, owner acceptance or waiver; legacy acceptance cannot replace it`);
+      return true;
+    });
+    const todo = pending();
+    if (todo.length) {
+      await writeCompletion({
+        root, queuePath, specId: todo[0], specIds: todo, criteria: false, state: readQueue({ root, queuePath, specId: todo[0], criteria: false }),
+        metadataKey: 'ownerAcceptance', metadata: ownerAcceptance,
+        stableFiles: [{ path: decisionPath, sha256: ownerAcceptance.sha256, label: 'Legacy decision' }],
+        validate: () => { pending(); },
+      });
+    }
+    return { status: 'done', legacy: true, unchanged: todo.length === 0, specs: specIds, ownerAcceptance };
+  } catch (error) { throw refused(error); }
 }
 
 const waiverCovers = ['no-review', 'tool-break'];
@@ -539,8 +604,11 @@ export async function acceptWaiver({ root = process.cwd(), queuePath, specId, wa
 }
 
 function argumentsFor(argv) {
-  const [command, ...args] = argv;
-  requireValue(['snapshot', 'scope', 'submit', 'complete', 'finalize-review', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope|submit --queue <path> --spec <id> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
+  const [command, ...rest] = argv;
+  const legacy = command === 'accept-owner' && rest.includes('--legacy');
+  const args = legacy ? rest.filter(arg => arg !== '--legacy') : rest;
+  requireValue(args.length === rest.length - (legacy ? 1 : 0), 'Invalid or duplicate argument: --legacy');
+  requireValue(['snapshot', 'scope', 'submit', 'complete', 'finalize-review', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope|submit --queue <path> --spec <id> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-owner --legacy --queue <path> --spec <id>[,<id>...] --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
   const flags = {};
   for (let i = 0; i < args.length; i += 2) {
     requireValue(['--queue', '--spec', '--out', '--report', '--decision', '--waiver'].includes(args[i]) && nonempty(args[i + 1]) && flags[args[i]] === undefined, `Invalid or duplicate argument: ${args[i]}`);
@@ -549,12 +617,14 @@ function argumentsFor(argv) {
   const expected = command === 'recover' ? ['--queue'] : command === 'scope' || command === 'submit' ? ['--queue', '--spec'] : ['--queue', '--spec', command === 'snapshot' ? '--out' : command === 'accept-owner' ? '--decision' : command === 'accept-waiver' ? '--waiver' : '--report'];
   const optional = command === 'accept-waiver' ? ['--report'] : [];
   requireValue(expected.every(flag => flags[flag] !== undefined) && Object.keys(flags).every(flag => expected.includes(flag) || optional.includes(flag)), `Missing or unexpected arguments for ${command}`);
-  if (command !== 'recover') requireValue(/^(?:0|[1-9]\d*)$/.test(flags['--spec']) && Number.isSafeInteger(Number(flags['--spec'])), 'Spec ID must be a nonnegative integer');
-  return { command, flags };
+  const id = /^(?:0|[1-9]\d*)$/;
+  if (legacy) { if (!flags['--spec'].split(',').every(item => id.test(item) && Number.isSafeInteger(Number(item)))) throw refused(new Error('Spec IDs must be nonnegative integers separated by commas')); }
+  else if (command !== 'recover') requireValue(id.test(flags['--spec']) && Number.isSafeInteger(Number(flags['--spec'])), 'Spec ID must be a nonnegative integer');
+  return { command, flags, legacy };
 }
 
 export async function main(argv = process.argv.slice(2)) {
-  const { command, flags } = argumentsFor(argv);
+  const { command, flags, legacy } = argumentsFor(argv);
   const root = process.cwd();
   const queuePath = flags['--queue'];
   let result;
@@ -575,6 +645,7 @@ export async function main(argv = process.argv.slice(2)) {
     for (const id of result.untraced) process.stderr.write(`Warning: criterion ${id} has no [AC:${id}] test in the spec's check inputs\n`);
   } else if (command === 'recover') result = recover({ root, queuePath });
   else if (command === 'accept-waiver') result = await acceptWaiver({ root, queuePath, specId: Number(flags['--spec']), waiverPath: flags['--waiver'], reportPath: flags['--report'] });
+  else if (legacy) result = await acceptLegacy({ root, queuePath, specIds: flags['--spec'].split(',').map(Number), decisionPath: flags['--decision'] });
   else if (command === 'accept-owner') result = await acceptOwner({ root, queuePath, specId: Number(flags['--spec']), decisionPath: flags['--decision'] });
   else result = await complete({ root, queuePath, specId: Number(flags['--spec']), reportPath: flags['--report'] });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);

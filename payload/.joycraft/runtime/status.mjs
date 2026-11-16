@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { journalPath, visibleReports } from './completion.mjs';
+import { journalPath, validateOwnerAcceptance, visibleReports } from './completion.mjs';
 import { workPaths } from './config.mjs';
 import { reviewRoundKey } from './dispatch-start.mjs';
 import { briefDecisionRecords, isObject, localPath, nonempty, parseJson, readLocal, sha256, snapshot, specStatus, validateQueue } from './identity.mjs';
@@ -19,6 +19,16 @@ function queuePaths(root) {
   return readdirSync(home, { withFileTypes: true })
     .filter(entry => entry.isDirectory() && existsSync(path.join(home, entry.name, queueName)))
     .map(entry => `${featuresHome}/${entry.name}/${queueName}`).sort();
+}
+
+// A legacy acceptance has no review behind it, so its decision file must still hold the owner's words.
+function legacyIntact(root, queuePath, spec) {
+  try {
+    const bytes = readLocal(root, spec.ownerAcceptance.path);
+    if (sha256(bytes) !== spec.ownerAcceptance.sha256) return false;
+    validateOwnerAcceptance({ decision: parseJson(bytes, spec.ownerAcceptance.path), decisionPath: spec.ownerAcceptance.path, state: { spec, queuePath }, legacy: true });
+    return true;
+  } catch { return false; }
 }
 
 export const accepted = spec => spec.status === 'done' && (isObject(spec.acceptedReport) || isObject(spec.ownerAcceptance) || isObject(spec.waiver));
@@ -86,6 +96,7 @@ export function projectStatus({ root = process.cwd(), fix = false } = {}) {
   const problems = [];
   const questions = [];
   const unreadReports = [];
+  const legacyDecisions = [];
   for (const queuePath of queuePaths(root)) {
     const folder = path.posix.dirname(path.posix.dirname(queuePath));
     let queue;
@@ -111,13 +122,16 @@ export function projectStatus({ root = process.cwd(), fix = false } = {}) {
         } else drift.push({ feature: queue.feature, specId: spec.id, file: specPath, queue: spec.status, frontmatter, fixable, reason });
       }
       if (spec.status === 'done' && isObject(spec.acceptedReport)) questions.push(...followUps(root, queue.feature, spec, unreadReports));
+      if (spec.status === 'done' && spec.ownerAcceptance?.legacy === true && !legacyIntact(root, queuePath, spec)) {
+        legacyDecisions.push({ feature: queue.feature, specId: spec.id, file: specPath, path: spec.ownerAcceptance.path, reason: 'The legacy decision file is missing or changed.' });
+      }
       if (spec.status === 'in-review') questions.push(...heldDecisions(root, queue.feature, queuePath, spec));
       return row;
     });
     features.push({ feature: queue.feature, queuePath, pendingJournal, specs });
     if (queue.specs.every(spec => spec.status === 'done')) readyToArchive.push({ feature: queue.feature, folder, openDecisions: openDecisions(root, folder) });
   }
-  return { features, drift, fixed, readyToArchive, worktrees: worktreeCounts(root), problems, questions, unreadReports };
+  return { features, drift, fixed, readyToArchive, worktrees: worktreeCounts(root), problems, questions, unreadReports, legacyDecisions };
 }
 
 export async function main(argv = process.argv.slice(2)) {
@@ -129,7 +143,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
   const result = projectStatus({ root: path.resolve(flags['--root'] ?? '.'), fix: flags['--fix'] === true });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
-  if (result.drift.length || result.problems.length) process.exitCode = 2;
+  if (result.drift.length || result.problems.length || result.legacyDecisions.length) process.exitCode = 2;
   return result;
 }
 
