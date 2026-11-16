@@ -29,11 +29,23 @@ function newerVersion(actual, expected) {
   return false;
 }
 
+/**
+ * npm returns from `npm publish` before the registry lists the new version.
+ * The registry recorded 1.5.0 and 1.5.2 7 min 11 s after `npm publish` returned,
+ * and 1.5.1 after 2 min 8 s (the `time` field of the packument). The version is not
+ * in the registry's own record before then, so a cache-bypassing read cannot see it
+ * sooner. Wait long enough for that, with growing intervals so the log stays short.
+ */
+export const PUBLICATION_TIMEOUT_MS = 20 * 60 * 1000;
+export const FIRST_POLL_INTERVAL_MS = 5000;
+export const MAX_POLL_INTERVAL_MS = 30_000;
+
 /** Publication is already complete. Poll its visibility without publishing again. */
 export async function verifyPublishedRelease({
   packageName, version, integrity,
-  timeoutMs = 5 * 60 * 1000,
-  pollIntervalMs = 5000,
+  timeoutMs = PUBLICATION_TIMEOUT_MS,
+  pollIntervalMs = FIRST_POLL_INTERVAL_MS,
+  maxPollIntervalMs = MAX_POLL_INTERVAL_MS,
   readMetadata = readPublishedMetadata,
   now = Date.now,
   sleep: wait = sleep,
@@ -41,6 +53,7 @@ export async function verifyPublishedRelease({
 } = {}) {
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs <= 0) throw new Error('Publication timeout must be a positive integer');
   if (!Number.isSafeInteger(pollIntervalMs) || pollIntervalMs <= 0) throw new Error('Publication polling interval must be a positive integer');
+  if (!Number.isSafeInteger(maxPollIntervalMs) || maxPollIntervalMs < pollIntervalMs) throw new Error('Maximum polling interval must be an integer no smaller than the first interval');
   if (!packageName || typeof version !== 'string' || !/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version)) {
     throw new Error('Publication requires a package name and stable version');
   }
@@ -48,7 +61,9 @@ export async function verifyPublishedRelease({
   const expectedCheck = verifyExactVersionMetadata({ ...identity, metadata: { name: packageName, version, dist: { integrity } } });
   if (!expectedCheck.ok) throw new Error(`Invalid retained publication identity: ${expectedCheck.errors.join(', ')}`);
 
-  const deadline = now() + timeoutMs;
+  const started = now();
+  const deadline = started + timeoutMs;
+  let interval = pollIntervalMs;
   let attempts = 0;
   let observed = 'observed latest=missing, integrity=missing';
   while (now() < deadline) {
@@ -64,7 +79,7 @@ export async function verifyPublishedRelease({
     const actualIntegrity = metadata?.['dist.integrity'];
     observed = `observed latest=${latest ?? 'missing'}, integrity=${actualIntegrity === integrity ? 'matches' : actualIntegrity ? 'mismatch' : 'missing'}`;
     if (readError) observed += `, registry read failed: ${readError}`;
-    log(`Publication check ${attempts}: expected latest=${version}; ${observed}`);
+    log(`Publication check ${attempts} at ${seconds(now() - started)}: expected latest=${version}; ${observed}`);
 
     for (const [field, expected] of [['name', packageName], ['version', version], ['dist.integrity', integrity]]) {
       if (metadata?.[field] != null && metadata[field] !== expected) {
@@ -76,11 +91,26 @@ export async function verifyPublishedRelease({
     }
     if (newerVersion(latest, version)) throw new Error(`Registry latest ${latest} is newer than ${version}; no tag was changed`);
     const verified = verifyExactVersionMetadata({ ...identity, metadata: { name: metadata?.name, version: metadata?.version, dist: { integrity: actualIntegrity } } });
-    if (now() < deadline && latest === version && verified.ok) return { version, attempts };
+    if (now() < deadline && latest === version && verified.ok) {
+      log(`Publication verified after ${seconds(now() - started)}: ${packageName}@${version} with the retained integrity is latest.`);
+      return { version, attempts };
+    }
     const remaining = deadline - now();
-    if (remaining > 0) await wait(Math.min(pollIntervalMs, remaining));
+    if (remaining > 0) await wait(Math.min(interval, remaining));
+    interval = Math.min(maxPollIntervalMs, Math.ceil(interval * 1.5));
   }
-  throw new Error(`Publication verification deadline expired: expected latest=${version}; ${observed}. The package may already be published; reuse the retained artifact when retrying.`);
+  throw new Error([
+    `Publication verification deadline expired after ${seconds(timeoutMs)} and ${attempts} checks: expected latest=${version}; ${observed}.`,
+    `The publish itself succeeded: this check runs only after npm accepted the retained tarball or the registry already held its integrity.`,
+    `The registry has not shown ${packageName}@${version} with that integrity as latest yet, so the GitHub release was not created.`,
+    `Re-running the failed publish job is safe: it reuses the retained tarball, skips npm publish when the registry integrity matches, and npm never overwrites a version.`,
+    `Before re-running, check: npm view ${packageName}@${version} version dist.integrity dist-tags.latest --prefer-online`,
+  ].join(' '));
+}
+
+function seconds(ms) {
+  const total = Math.round(ms / 1000);
+  return total < 60 ? `${total}s` : `${Math.floor(total / 60)}m${String(total % 60).padStart(2, '0')}s`;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

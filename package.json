@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.5.2",
+  "version": "1.5.3",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -13,7 +13,7 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.5.2",
+    "release": "1.5.3",
     "summary": "When you turn on the gates, the agent names specs marked done with no review on record and asks one question: accept them as they are, or send them back for review. Your words are recorded verbatim in a file committed beside the queue.",
     "autoSafeEligible": false
   },

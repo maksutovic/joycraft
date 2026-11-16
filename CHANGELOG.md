@@ -7,6 +7,24 @@ claim that a release has shipped.
 
 ---
 
+## 1.5.3 — The release check waits for npm
+
+1.5.3 changes nothing in an installed project. Its payload and its update summary
+are those of 1.5.2, and the 1.5.2 entry below describes what you get.
+Payload: joycraft-prototype `field-23`.
+
+### Fixed
+
+- **The release run failed although the release was fine.** `npm publish` returns
+  before the registry lists the new version. The registry recorded 1.5.0 and 1.5.2
+  7 min 11 s after the publish, and the check stopped after five minutes. Each time
+  the GitHub release waited for a manual re-run. The check now waits up to 20
+  minutes, with intervals from 5 to 30 seconds. It still requires the published
+  name, version, integrity and `latest` tag before it creates the GitHub release.
+  When it does expire, it says that the publish succeeded and how to re-run.
+
+---
+
 ## 1.5.2 — Accept specs that were done before the gates
 
 In 1.5.1, turning on the gates sent every spec marked done with no review on record

@@ -22,6 +22,7 @@ last_updated_by: Maximilian Maksutovic
 | Test fixtures are stubs | Fixtures should mirror real-world manifest files (real package.json structures) | False confidence — tests pass but detection fails on real projects |
 | Absolute paths are fine in templates | All templates and skills must use project-relative paths | Templates break when copied into user projects |
 | CLAUDE.md and AGENTS.md carry equivalent instructions | They drift — this repo's own AGENTS.md was a stale TODO stub while CLAUDE.md held the real rules. Multi-tool layout now makes AGENTS.md the single source with CLAUDE.md as an `@AGENTS.md` import; only that structure prevents drift | Codex/Pi sessions run without the real boundaries (no scenarios rules, no branch flow) and nobody notices |
+| A successful `npm publish` means `npm view joycraft@<version>` sees it seconds later | npm returns before the registry lists the version. The registry recorded 1.5.0 and 1.5.2 7 min 11 s after `+ joycraft@<version>` (packument `time` field); a cache-bypassing read sees nothing sooner | A short verification deadline fails a good release and holds back the GitHub release; `scripts/verify-publication.mjs` waits 20 minutes |
 | Text in a shared `harness:claude\|codex` block is true for both harnesses | Shared blocks can encode one harness's behavior (decompose's handoff claimed subagent-per-spec — never true for Codex) | A harness ships instructions describing another harness's mechanics |
 
 ## Historical Incidents

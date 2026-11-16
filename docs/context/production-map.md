@@ -6,7 +6,7 @@
 
 | Service | Environment | URL/Endpoint | Impact if Corrupted |
 |---------|-------------|-------------|-------------------|
-| npm registry (joycraft) | Production | https://www.npmjs.com/package/joycraft | Published package used by all users — bad publish requires emergency unpublish/patch |
+| npm registry (joycraft) | Production | https://www.npmjs.com/package/joycraft | Published package used by all users — bad publish requires emergency unpublish/patch. A new version can take minutes to appear after `npm publish` returns (7 min 11 s for 1.5.2) |
 | GitHub repo | Production | https://github.com/maksutovic/joycraft | Public repo, PRs and issues visible to users |
 
 ## Secrets & Credentials
