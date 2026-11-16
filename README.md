@@ -289,10 +289,15 @@ It sends the agent back with the spec or file name and the next step. A spec tha
 **Why you want it.** Use the gates for long sessions and for sessions that you do
 not watch. A prompt tells the agent what to do, but a prompt is not a guarantee.
 With the gates on, Claude Code runs the check each time the agent tries to stop. The
-agent cannot stop until the problem is gone.
+agent cannot stop until the problem is gone. For a spec marked done with no accepted
+review, the agent sets the spec back to `in-review` without asking you.
 
 **Before you turn them on.** An older project can have specs marked done with no
-accepted review. The check sends each one back for a review. To see them first, say:
+accepted review. Turning on the gates runs the check first. The hook goes in only
+after a clean check. The agent sets each of these specs back to
+`in-review` itself, tells you what it changed, and checks again. It stops and asks
+you only about a file that it cannot read. A look at the problems first is optional.
+To see them, say:
 
 ```text
 Run Joycraft's gate check with `node .joycraft/runtime/gate.mjs check` and show me

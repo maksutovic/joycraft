@@ -147,8 +147,10 @@ Do not commit, publish, or ask me for API keys.
 
 ## Check the gates
 
-Do this before you turn the gates on, and after you update an older project to
-1.4.1 or later. The check names each spec that is marked done with no accepted review.
+This is optional. Turning on the gates runs the same check first, and the agent
+clears what it can. Use this prompt to look at the problems before you turn the gates
+on, and after you update an older project to 1.4.1 or later. The check names each
+spec that is marked done with no accepted review.
 
 ```text
 Run Joycraft's gate check with `node .joycraft/runtime/gate.mjs check` and show me
@@ -159,9 +161,11 @@ Do not commit, publish, or ask me for API keys.
 ## Turn on the gates
 
 With the gates on, Claude Code runs Joycraft's gate check each time the agent tries
-to stop. A spec marked done with no accepted review sends the agent back. The hook is
-for Claude Code only for now. On the other agents, the session-end skill runs the
-check. See [The gates](../README.md#the-gates-no-spec-is-done-without-an-accepted-review).
+to stop. A spec marked done with no accepted review sends the agent back, and the
+agent sets that spec back to `in-review` without asking you. Turning on the gates runs
+the check first. The agent clears each problem it can and tells you what it changed.
+Then it shows you the change. The hook is for Claude Code only for now. On the other
+agents, the session-end skill runs the check. See [The gates](../README.md#the-gates-no-spec-is-done-without-an-accepted-review).
 
 ```text
 Turn on Joycraft's gates. Show me the change to .claude/settings.json on a page,
