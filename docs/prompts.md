@@ -1,8 +1,10 @@
 # Prompts
 
-Paste one of these into your coding agent, in your project. Each one has the agent look
-first, report to you, and change nothing until you say so. You never need to run a
-Joycraft command yourself; your agent runs them.
+Paste one of these into your coding agent, in your project. Most of them have the
+agent look first, report to you, and change nothing until you say so. "Start a queue
+and leave" is different: the agent builds the queue and commits its work while you
+are away, but not to the default branch. You never need to run a Joycraft command
+yourself. Your agent runs them.
 
 ## Install
 
@@ -116,7 +118,8 @@ Do not commit, publish, or ask me for API keys.
 ## Start a queue and leave
 
 The agent asks its questions before the queue starts. While you are away, work
-stops only for an answer that must come from you or for a broken project. A case
+stops only for an answer that must come from you or for a broken project. A broken
+tool that the agent cannot repair holds its spec, not the queue. A case
 that a spec does not decide becomes a follow-up question with the assumption the
 reviewer made. See
 [Running a queue while you are away](../README.md#running-a-queue-while-you-are-away).
@@ -126,13 +129,14 @@ Build <what you want> with Joycraft. I will be away while the queue runs.
 Before you start the queue, check it for gaps and ask me every question now.
 While I am away, stop only for an answer that must come from me or for a broken project.
 At session end, ask me each follow-up question with the assumption the reviewer made.
+Do not archive a feature until I have answered its follow-up questions.
 Do not commit to the default branch, push, publish, or ask me for API keys.
 ```
 
 ## Get the follow-up questions
 
-Use this before the feature is archived. After the archive, session end no longer
-lists its follow-up questions.
+The questions stay available until the feature is archived. Use this before the
+archive. After the archive, session end no longer lists its follow-up questions.
 
 ```text
 Run Joycraft's session end. Before you archive a feature, ask me each follow-up

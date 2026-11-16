@@ -71,6 +71,7 @@ describe('README.md', () => {
     for (const prompt of [
       'Build <what you want> with Joycraft. I will be away while the queue runs.',
       'At session end, ask me each follow-up question with the assumption the reviewer made.',
+      'Do not archive a feature until I have answered its follow-up questions.',
       "Run Joycraft's session end. Before you archive a feature, ask me each follow-up",
     ]) {
       expect(section).toContain(prompt);

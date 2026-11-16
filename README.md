@@ -197,8 +197,9 @@ changed.
 
 You can start a queue and leave. The agent asks its questions before the queue
 starts. Work stops only for an answer that must come from you or for a broken
-project. Other open points wait for you as a list of follow-up questions at session
-end. You do not run a command at any step.
+project. A broken tool that the agent cannot repair holds its spec, not the queue.
+Other open points wait for you as a list of follow-up questions at session end.
+You do not run a command at any step.
 
 **Before the queue starts.** The agent checks each spec for gaps that a program can
 find:
@@ -215,16 +216,25 @@ there.
 **While you are away.** A question holds a spec only for a mandatory answer: a
 case where two readings of the brief give opposite results for a stated criterion,
 or where a wrong guess cannot be undone. The specs that depend on it wait too. All
-other specs go on. The whole queue stops only for a broken project: it does not
-build or install, or the repository is broken. It also stops before a step that
-touches data or systems outside the project, such as a shared database or a deploy.
+other specs go on. Three other cases hold one spec and the specs that depend on
+it: a broken tool, a refused fourth review, or a second FAIL on the same criterion.
+The whole queue stops only for a broken project: it does not build or install, or
+the repository is broken. It also stops before a step that touches data or systems
+outside the project, such as a shared database or a deploy.
+
+Some hosts cannot start a separate reviewer context. On such a host, each spec
+stays `in-review`, and the specs that depend on it do not start while you are away.
+Specs that do not depend on it go on.
 
 **When you come back.** A case that the spec does not decide does not stop the
 queue. The reviewer takes the reading closest to your brief and writes down that
 assumption, and the spec can complete. At session end, the agent asks you each
 follow-up question with its spec. For a case the spec did not decide, the question
 gives the assumption the reviewer made. The agent also asks each mandatory question
-that holds a spec.
+that holds a spec. A spec that a broken tool, a refused fourth review or a second
+FAIL holds is not in this list of questions. Session end reports it with its
+status, `in-review`. For a refused review or a second FAIL, the spec has a note
+under `## Decision needed`.
 
 **Why you want it.** The questions come while you are there, so a queue does not
 wait hours for a small answer. A guess is not hidden: each one comes back to you as
@@ -237,11 +247,12 @@ Build <what you want> with Joycraft. I will be away while the queue runs.
 Before you start the queue, check it for gaps and ask me every question now.
 While I am away, stop only for an answer that must come from me or for a broken project.
 At session end, ask me each follow-up question with the assumption the reviewer made.
+Do not archive a feature until I have answered its follow-up questions.
 Do not commit to the default branch, push, publish, or ask me for API keys.
 ```
 
-**Get the follow-up questions.** You can ask for them again later, or in a new
-session:
+**Get the follow-up questions.** The questions stay available until the feature is
+archived. Before then, you can ask for them again later, or in a new session:
 
 ```text
 Run Joycraft's session end. Before you archive a feature, ask me each follow-up

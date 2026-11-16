@@ -50,6 +50,20 @@ broken project.
   SHA-256). At the limit, it ends the command and records `exitCode: null`. The run
   rule is now in `references/testing.md` only. The skills and agent files name the
   command.
+- **More refusals exit 2.** Every `completion.mjs submit`
+  refusal exits 2. A malformed finding or a `blocking` or `decision-needed` finding
+  makes `completion.mjs finalize-review` and `dispatch-preflight.mjs check-report`
+  exit 2, not 1. Their other refusals still exit 1.
+- **A submit record in the queue.** `submit` adds an optional `submitted: {at}`
+  record to the queue entry. Queue validation accepts only an `at` time. Subject
+  bindings leave it out, like `status`.
+- **No stale journal after an early failure.** When a completion write fails before
+  it writes either status file, the runtime removes the completion journal. The
+  error says that neither status file was written. Before, the kept journal blocked
+  the queue until a recovery.
+- **"Deferred until deploy" items are follow-up findings.** The reviewer lists each
+  item as a `follow-up` finding. Before, the report listed them as open for the
+  owner. They now come back as questions at session end.
 - **Shorter shipped text.** The shipped skills, agent files and references went from
   30,033 to 29,941 words, with the gates reference counted.
 - **README: Running a queue while you are away.** A new section under "The review
