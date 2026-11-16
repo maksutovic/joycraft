@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "feature": "enforced-gates",
+  "specs": [
+    {
+      "id": 4,
+      "file": "04-vendor-and-docs.md",
+      "depends_on": [],
+      "status": "in-review",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-12-enforced-gates/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-12-enforced-gates/specs/04-vendor-and-docs.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "vendored-field-19",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/04-vendor-and-docs.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "readme-gates-section",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/04-vendor-and-docs.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "release-fields",
+            "requirement": {
+              "path": "docs/features/2026-11-12-enforced-gates/specs/04-vendor-and-docs.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

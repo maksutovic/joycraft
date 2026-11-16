@@ -2,10 +2,50 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, realpathSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { assertReviewAllowed, visibleReports } from './completion.mjs';
 import { readLease } from './coordinator.mjs';
 import { prepareDispatch } from './dispatch-preflight.mjs';
 import { traceSpec } from './trace.mjs';
-import { localPath, readQueue, relativePath, requireValue, validateNativeActor } from './identity.mjs';
+import { canonical, isObject, localPath, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, validateNativeActor } from './identity.mjs';
+
+export const reviewLimit = 3;
+
+/** A review round is one distinct set of reviewed inputs: each bound input's
+ * path and normalized sha256. HEAD is left out (implementationRevision, and so
+ * subject.identity), so a commit that changes no input keeps the round. Status
+ * is already outside the normalized queue and spec hashes. Returns null for a
+ * report with no bound inputs. */
+export function reviewRoundKey(subject) {
+  const inputs = subject?.inputs;
+  if (!Array.isArray(inputs) || inputs.length === 0
+    || !inputs.every(input => isObject(input) && typeof input.path === 'string' && typeof input.sha256 === 'string')) return null;
+  const bound = inputs.map(input => ({ path: input.path, sha256: input.sha256 }))
+    .sort((left, right) => left.path.localeCompare(right.path, 'en'));
+  return `inputs:${sha256(canonical(bound))}`;
+}
+
+/** Earlier reviews of one spec, keyed by reviewRoundKey: repeat reviews of one
+ * set of inputs are one round. A report with no bound inputs is its own round,
+ * keyed by its path. The spec's own accepted PASS report is not a round. Reports
+ * are read from the worker root and the coordinator root, where visibleReports
+ * looks for them. */
+function earlierReviews({ roots, queuePath, spec }) {
+  const rounds = new Map();
+  for (const root of roots) {
+    for (const { path: file, report } of visibleReports({ root, queuePath, specId: spec.id })) {
+      const accepted = spec.acceptedReport;
+      if (report.verdict === 'PASS' && accepted?.path === file && sha256(readLocal(root, file)) === accepted.sha256) continue;
+      const shown = root === roots[0] ? file : path.join(root, file);
+      const key = reviewRoundKey(report.subject) ?? `path:${file}`;
+      rounds.set(key, [...(rounds.get(key) ?? []), shown]);
+    }
+  }
+  return rounds;
+}
+
+class ReviewLimitError extends Error {
+  constructor(message) { super(message); this.exitCode = 2; }
+}
 
 // The native hook runtime is optional; without it, startup takes the manual path.
 async function hookRuntime() {
@@ -40,7 +80,7 @@ export async function startDispatch(options, nativeEvent) {
   const rel = path.relative(root, parent);
   requireValue(rel !== '..' && !rel.startsWith(`..${path.sep}`) && !path.isAbsolute(rel), 'Packet output parent must stay inside the worker root');
   requireValue(gitIgnored(root, outPath), `Packet output must be git-ignored so it never becomes a scope path: ${outPath}; use .joycraft/local/packets/`);
-  const { queue } = readQueue({ root, queuePath: options.queuePath, specId: options.specId });
+  const { queue, queuePath, spec, specPath } = readQueue({ root, queuePath: options.queuePath, specId: options.specId });
   requireValue(options.role === 'implementer' || options.role === 'reviewer', 'Task startup role must be implementer or reviewer');
   // A claimed queue takes work only from its coordinator, so a second session's
   // instructions cannot reach this worker. An unclaimed queue keeps 1.0.0 behavior.
@@ -48,9 +88,26 @@ export async function startDispatch(options, nativeEvent) {
   requireValue(!lease || options.coordinatorSession === lease.sessionId,
     lease && `Queue ${queue.feature} is coordinated by session ${lease.sessionId}${lease.host ? ` on ${lease.host}` : ''}; pass --coordinator-session ${lease.sessionId} only when that session dispatched this task`);
   const coordinator = lease ? { sessionId: lease.sessionId, ...(lease.host ? { host: lease.host } : {}) } : null;
+  // A spec gets at most three reviews. A done spec keeps its earlier behavior, and
+  // a no-review waiver keeps its own refusal, so both are checked first.
+  let rounds;
+  if (options.role === 'reviewer' && spec.status !== 'done') {
+    const roots = [root];
+    if (options.coordinatorRoot !== undefined && existsSync(options.coordinatorRoot)) {
+      const coordinatorRoot = realpathSync(options.coordinatorRoot);
+      if (coordinatorRoot !== root) roots.push(coordinatorRoot);
+    }
+    for (const each of roots) assertReviewAllowed({ root: each, queuePath });
+    rounds = earlierReviews({ roots, queuePath, spec });
+    if (rounds.size > reviewLimit || (rounds.size === reviewLimit && !rounds.has(reviewRoundKey(snapshot({ root, queuePath, specId: spec.id }))))) {
+      throw new ReviewLimitError(`Review limit reached: ${queue.feature} spec ${spec.id} (${specPath}) has had ${rounds.size} reviews of different reviewed inputs (${[...rounds.values()].flat().join(', ')}); the limit is ${reviewLimit}. Do not start another review. Record the open findings under "## Decision needed" in ${specPath}, leave the spec in-review, and continue with independent ready work.`);
+    }
+  }
   // Change scope is opt-in per spec: startup never writes it, and a reviewer
   // without one reviews against the verification inputs alone.
   const packet = prepareDispatch({ ...options, outPath: output });
+  const review = rounds === undefined ? {}
+    : { reviewRound: rounds.size + (rounds.has(reviewRoundKey(packet.subject)) ? 0 : 1), reviewLimit };
   const runtime = await hookRuntime();
   const config = runtime ? await runtime.readConfig(root) : { enabled: false };
   const hooks = config.enabled
@@ -62,7 +119,7 @@ export async function startDispatch(options, nativeEvent) {
     try { const { criteria, untraced, unknownTags, missingFiles, note } = traceSpec({ root, queuePath: options.queuePath, specId: options.specId }); trace = { criteria, untraced, unknownTags, missingFiles, ...(note ? { note } : {}) }; }
     catch (error) { trace = { error: error.message }; }
   }
-  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...(trace ? { trace } : {}),
+  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(trace ? { trace } : {}),
     ready: !config.enabled || hooks.eligible === true };
 }
 
@@ -109,5 +166,5 @@ export async function main(argv = process.argv.slice(2)) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  main().catch(error => { process.stderr.write(`Task startup stopped: ${error.message}\n`); process.exitCode = 1; });
+  main().catch(error => { process.stderr.write(`Task startup stopped: ${error.message}\n`); process.exitCode = error instanceof ReviewLimitError ? 2 : 1; });
 }

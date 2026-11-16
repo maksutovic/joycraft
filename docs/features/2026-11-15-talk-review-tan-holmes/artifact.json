@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "talk-review-tan-holmes",
+  "title": "Two talks, four choices for the next release",
+  "summary": "Lauren Tan: fix the code and the checks before the prose; verification is the main step. Ben Holmes: agents hide their workarounds; read the traces. A four-member Fable 5.2 panel tested twelve candidates against Joycraft 1.3.0 and enforced-gates. It cut or backlogged nine and found three things I had missed. Verdict: ship enforced-gates, make it remove more than it adds, and let the runtime take over hand-done steps next. Full analysis: docs/research/2026-11-15-tan-holmes-talks-digest.md.",
+  "decisionIds": [
+    "dead-reference-scope",
+    "review-cap",
+    "gate-on-all-harnesses",
+    "next-feature"
+  ]
+}

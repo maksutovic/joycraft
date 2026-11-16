@@ -191,8 +191,11 @@ export async function exportBundle({ sourceRoot, targetRoot, check = false, hook
     const bytes = await readFile(join(source, path));
     return harness === 'claude' && path.endsWith('.md') ? Buffer.from(bytes.toString('utf8').replaceAll('.agents/skills/', '.claude/skills/')) : bytes;
   };
-  // Native hooks are optional; their installer loads only when hooks are requested.
-  const hookInstaller = hooks ? await import('./install-hooks.mjs') : null;
+  // Native hooks are optional and not part of every bundle. Their installer
+  // loads only when hooks are requested and it is present beside this script.
+  const hookInstallerUrl = new URL('./install-hooks.mjs', import.meta.url);
+  if (hooks && !(await statOrNull(fileURLToPath(hookInstallerUrl)))) throw new Error('Native hooks are not part of this bundle; export with --without-hooks');
+  const hookInstaller = hooks ? await import(hookInstallerUrl) : null;
   if (hooks && !files.includes(hookInstaller.hookRuntimePath)) throw new Error('The source bundle has no hook runtime');
   const installed = await readInstallationManifest(target);
   const legacy = upgrade ? await legacyPlan(target, installed, new Set(files.map(destinationPath))) : { archive: [], conflicts: [] };

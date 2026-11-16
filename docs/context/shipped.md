@@ -1,5 +1,5 @@
 ---
-last_updated: 2026-11-03
+last_updated: 2026-11-15
 last_updated_by: Maximilian Maksutovic
 ---
 
@@ -9,6 +9,7 @@ last_updated_by: Maximilian Maksutovic
 
 | Date | Feature | What shipped | Where (paths) | PR | Owner |
 |------|---------|--------------|----------------|----|-------|
+| 2026-11-15 | enforced-gates | 1.4.0: gate check (`gate.mjs check`: a `done` spec with no acceptance, or queue/spec drift, exits 2 with its next step on stderr); Claude Code Stop hook on request ("Turn on Joycraft's gates" / "Turn off Joycraft's gates"); session end runs the check on every harness; reviewer startup prints the review round and refuses a fourth (a round is one distinct set of reviewed inputs); seven dead paths and unshipped hook/ranker text removed from shipped skills and references; payload guard test; README gates section; removing Joycraft turns the gate hook off first (field-20) | `payload/.joycraft/runtime/{gate,dispatch-start,status}.mjs`, `payload/.joycraft/references/{gates,dispatch,context,retro,setup,architecture,settings,worktrees}.md`, `payload/scripts/export.mjs`, `payload/.agents/skills/joycraft-{entry,implement,verify,testing,session-end,context}/`, `tests/payload-guard.test.ts`, `README.md`, `docs/prompts.md` | — | Maximilian Maksutovic |
 | 2026-11-03 | prompt-first-docs | 1.3.0: settings, wiki and uninstall by request (`references/settings.md`, field-18); prompts replace manual commands in README, install and migration guides; 0.7 guides archived | `payload/.joycraft/references/settings.md`, `payload/.agents/skills/joycraft-entry/`, `README.md`, `docs/{install,prompts,migrating-from-0.7}.md`, `docs/archive/guides-0.7/` | — | Maximilian Maksutovic |
 | 2026-11-03 | question-dialogue (prototype #19) | 1.2.1: question style (pacing, surface) set at setup and per feature; question fields (context, example, tradeoff, recommended); Simplified Technical English and wait-what re-pitch; review-tools `record --none` (field-16) | `payload/.joycraft/runtime/artifacts/{decisions,preferences,cli,model}.mjs`, `payload/.joycraft/assets/artifacts/kit.{js,css}`, `payload/.joycraft/references/{artifacts,setup,workflow}.md`, `payload/.agents/skills/joycraft-entry/` | — | Maximilian Maksutovic |
 | 2026-11-03 | review-loop-tools (#88) | 1.2.0: tool-agnostic review loop: hint-list discovery per package, record v2 + local host tools, setup-only conversation with user-scope installs on yes, agreed limits not UNVERIFIED, per-feature waiver (no-review blocks reviewer dispatch), tool-break hold (field-15) | `payload/.joycraft/runtime/{review-tools,completion,dispatch-preflight,evidence}.mjs`, `payload/.joycraft/references/{setup,completion,testing,dispatch}.md`, `payload/.agents/skills/joycraft-{entry,implement,verify}/` | — | Maximilian Maksutovic |

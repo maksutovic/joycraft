@@ -29,4 +29,25 @@ describe('README.md', () => {
     const guide = readFileSync(migrationGuide, 'utf-8');
     expect(guide).toContain('docs/features/');
   });
+
+  it('[AC:readme-gates-section] has a gates section under The review loop with both prompts and its limits', () => {
+    const readme = readFileSync(join(__dirname, '..', 'README.md'), 'utf-8');
+    const loop = readme.indexOf('\n## The review loop\n');
+    const gates = readme.indexOf('\n### The gates');
+    expect(loop).toBeGreaterThan(-1);
+    expect(gates).toBeGreaterThan(loop);
+    expect(gates).toBeLessThan(readme.indexOf('\n## ', loop + 1));
+    const end = readme.indexOf('\n## ', gates + 1);
+    const section = readme.slice(gates, end === -1 ? undefined : end);
+    expect(section).toContain("Turn on Joycraft's gates.");
+    expect(section).toContain("Turn off Joycraft's gates.");
+    expect(section).toContain('What the gates do not do');
+    expect(section).toMatch(/Claude Code only for now/);
+    expect(section).toMatch(/session-end\s+skill runs the check/);
+    expect(section).toMatch(/no CI check/i);
+    expect(section).toMatch(/fourth review is refused/i);
+    const prompts = readFileSync(join(__dirname, '..', 'docs', 'prompts.md'), 'utf-8');
+    expect(prompts).toContain("Turn on Joycraft's gates.");
+    expect(prompts).toContain("Turn off Joycraft's gates.");
+  });
 });

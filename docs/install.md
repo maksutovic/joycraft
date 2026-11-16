@@ -25,7 +25,9 @@ the host you are running inside as the default.
 | Codex, Pi, Oh My Pi, GitHub Copilot CLI, OpenCode | `.agents/skills/joycraft-*` | Trust the folder when the host asks |
 | All | The runtime in `.joycraft/` and `.joycraft/installation.json` | Commit them with your project |
 
-Joycraft 1.0 installs no hooks and changes no host settings.
+Joycraft 1.0 installs no hooks and changes no host settings. Later, you can ask for
+one Claude Code hook, the gate hook: see
+[The gates](../README.md#the-gates-no-spec-is-done-without-an-accepted-review).
 
 ## 3. First use
 
@@ -63,7 +65,8 @@ Ask your agent; each has a prompt in [Prompts](prompts.md):
 - **Check the install.** "Check my Joycraft install."
 - **Remove Joycraft.** "Remove Joycraft from this project." The agent removes the
   files listed in `.joycraft/installation.json` and then `.joycraft/`, after you see
-  the list. Your `AGENTS.md`, `CLAUDE.md`, `docs/` and `joycraft.yaml` stay.
+  the list. If the gates are on, it first removes Joycraft's gate hook from
+  `.claude/settings.json`. Your `AGENTS.md`, `CLAUDE.md`, `docs/` and `joycraft.yaml` stay.
 
 ## CLI reference
 

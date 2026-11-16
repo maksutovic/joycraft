@@ -8,11 +8,6 @@ compatibility: Requires Node.js 22+ and the installed .joycraft runtime for the 
 
 Use this skill when pausing or finishing an authorized queue session.
 
-On Claude `SessionEnd`, write only the local session summary and deduplicate the
-transition record. Do not call an API or archive from that hook. On other hosts,
-use their metrics/manual or portable summary path when available; never infer a
-Claude lifecycle event from a generic session boundary.
-
 Read each touched queue and report the real state of every affected spec: `todo`, `in-review`, or `done`. `done` must have either an accepted PASS report receipt or a completion-helper owner-acceptance record bound to a current failed or unverified report; a commit, PASS command, or implementer assertion is not acceptance. Keep blocked or failed dependency branches explicit while identifying independent ready work that can continue next.
 
 If the session stops or restarts a concurrent run, report its recorded
@@ -20,8 +15,7 @@ coordinator ownership, captured refs, known worker trees, leases, locks, and
 runtime processes. Release only resources demonstrably owned by that run;
 retain ambiguous merges, locks, processes, and trees for diagnosis. Do not
 force local state to a remote tip. Start a replacement only from the durable
-run journal and a newly printed dispatch plan. This guidance describes the
-project/native runtime boundary; it does not enforce lifecycle behavior.
+run journal and a newly printed dispatch plan.
 
 For each completed spec, report the implementation revision, independent reviewer session ID, report and receipt paths, actual commands and outcomes, visual inspection status where required, and known limitations. For owner-accepted work, also report the owner-acceptance record and its inherited limits as `done, owner-accepted with <limits>`; preserve the original `FAIL` or `UNVERIFIED` report rather than calling it PASS or verified. List each spec completed under a feature waiver as `done, waived by the user: "<instruction>"`, with any report's real verdict; never call it reviewed or verified.
 
@@ -29,12 +23,13 @@ If a completion operation failed or was interrupted, do not declare success or h
 
 Leave enough project-relative paths and next actions for another session to resume the autonomous ready authorized queue without recreating settled context or decisions.
 
-Before ending the session, run `node .joycraft/runtime/status.mjs`. Repair
-lagging frontmatter of accepted specs with `--fix`; report any other drift and
-any feature listed as ready to archive. Then preview
-`node .joycraft/runtime/worktrees.mjs prune` and apply it with `--apply`: it
-removes only clean, integrated trees of done specs and keeps failed, blocked or
-unknown trees with their reason. Report kept trees and their size from `list`.
+Before ending, run `node .joycraft/runtime/status.mjs --fix` (repairs lagging
+frontmatter of accepted specs, lists features ready to archive) and
+`node .joycraft/runtime/gate.mjs check`. Do the step each gate message names,
+such as a completing command. Tell the user each message you could not clear.
+Then preview `node .joycraft/runtime/worktrees.mjs prune` and apply it with
+`--apply`: it removes only clean, integrated trees of done specs and keeps the
+rest with their reason. Report kept trees and their size from `list`.
 When this session coordinated a queue and no work on it remains, release the
 lease with `node .joycraft/runtime/coordinator.mjs release --queue <queue> --session <your-session-id>`. See [worker isolation](../../../.joycraft/references/worktrees.md)
 when the session used parallel mutable workers.

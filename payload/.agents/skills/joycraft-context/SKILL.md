@@ -20,16 +20,15 @@ node .joycraft/runtime/context/cli.mjs --query "<current request>"
 Narrow discovery with `--paths docs/context src/relevant-area` when the relevant
 area is known. Retrieval excludes `docs/archive/` unless historical material is
 specifically needed; add `--history` to inspect it as reading context, never as
-current authority. An optional model ranker orders the results when it is
-installed; otherwise they come in local-search order. Read `.joycraft/references/context.md` for output
+current authority. Results come in local-search order. Read `.joycraft/references/context.md` for output
 and failure details.
 
-Read useful ranked source files and follow their relevant links. Scores guide
-reading order; low scores do not remove files or define task scope. Check omitted,
-unreadable and unranked reasons; a provider failure still leaves local references.
+Read useful source files and follow their relevant links. Local scores guide
+reading order; low scores do not remove files or define task scope. Check omitted
+and unreadable reasons.
 Refine the query or paths when local keyword matching misses a known dependency.
 When the requested change has an unclear state, data, or responsibility seam,
-trace the actual counterpart sources beyond the ranked list: for example, the
+trace the actual counterpart sources beyond the result list: for example, the
 owner alongside its callers, readers, writers, or persistence boundary. Add
 discovered sources to the work's declared inputs and report any unresolved
 coverage. Read `.joycraft/references/architecture.md` only for that

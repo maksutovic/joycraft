@@ -75,11 +75,24 @@ describe('1.0 guides', () => {
 });
 
 describe('1.0 release notes', () => {
-  it('the published summary belongs to this version and is one short line', () => {
+  // [AC:release-fields] version, joycraft.release and the summary move together.
+  it('[AC:release-fields] the published summary belongs to this version and is one short line', () => {
     const pkg = JSON.parse(read('package.json'));
     expect(pkg.joycraft.release).toBe(pkg.version);
     expect(pkg.joycraft.summary.length).toBeLessThanOrEqual(300);
     expect(pkg.joycraft.summary).not.toMatch(/\n/);
+  });
+
+  it('[AC:release-fields] the release descriptor, changelog entry and payload tag agree', () => {
+    const pkg = JSON.parse(read('package.json'));
+    expect(JSON.parse(read('src/joycraft-release.json')).releaseVersion).toBe(pkg.version);
+    const changelog = read('CHANGELOG.md');
+    const start = changelog.indexOf(`\n## ${pkg.joycraft.release} — `);
+    expect(start, `CHANGELOG.md has no ${pkg.joycraft.release} entry`).toBeGreaterThan(-1);
+    const entry = changelog.slice(start, changelog.indexOf('\n## ', start + 1));
+    const tag = JSON.parse(read('payload/PIN')).tag;
+    expect(entry).toContain(`Payload: joycraft-prototype \`${tag}\`.`);
+    expect(read('docs/context/decision-log.md')).toMatch(/revisits Fable-native harness D4/);
   });
 
   it('the changelog has a Breaking section and the feedback channel exists', () => {
