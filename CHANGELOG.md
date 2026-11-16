@@ -7,6 +7,24 @@ claim that a release has shipped.
 
 ---
 
+## 1.4.1 — The gates release, on npm
+
+1.4.0 was merged but was not published: its release run failed on a test race.
+1.4.1 is the first version on npm that has the gates. Its payload and its update
+summary are those of 1.4.0, and the 1.4.0 entry below describes what you get.
+Payload: joycraft-prototype `field-20`.
+
+### Fixed
+
+- **A test race stopped the 1.4.0 release.** Two tests run
+  `scripts/generate-bundled-files.mjs` in the repository, and each run wrote
+  every generated skill file again. A test in a second worker read
+  `src/claude-skills/joycraft-decompose.md` while it was empty. The generator now
+  writes a file only when its content changes, and replaces it in one step. This
+  changes nothing in an installed project.
+
+---
+
 ## 1.4.0 — Gates that hold
 
 Joycraft's rule is that only an accepted review completes a spec. Up to 1.3.0 that
