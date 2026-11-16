@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { BACKUP_ROOT, MANIFEST_PATH, readManifest } from './install-v1.js';
@@ -13,6 +14,24 @@ export interface RollbackPlan {
   remove: string[];
   edited: string[];
   blocked: string[];
+  /** Joycraft's gate Stop hook is in .claude/settings.json, the runtime that runs it goes, and no settings backup will replace the file. */
+  gateHook: boolean;
+}
+
+const SETTINGS = '.claude/settings.json';
+const GATE = '.joycraft/runtime/gate.mjs';
+/** The command gate.mjs writes for its Stop hook (its `hookCommand`; a test keeps the two equal). */
+export const GATE_HOOK_COMMAND = 'node "$CLAUDE_PROJECT_DIR"/.joycraft/runtime/gate.mjs check --root "$CLAUDE_PROJECT_DIR"';
+
+/** Whether the settings file holds the gate Stop hook, by the rule gate.mjs uses to decide `hook --off` has work to do. */
+function gateHookIn(root: string): boolean {
+  const file = join(root, SETTINGS);
+  if (!existsSync(file)) return false;
+  let data: any;
+  try { data = JSON.parse(readFileSync(file, 'utf8').replace(/^\uFEFF/, '')); } catch { return false; }
+  const stop = data?.hooks?.Stop;
+  return Array.isArray(stop) && stop.some((group: any) => Array.isArray(group?.hooks)
+    && group.hooks.some((hook: any) => hook?.type === 'command' && hook.command === GATE_HOOK_COMMAND));
 }
 
 function inside(root: string, path: string): string {
@@ -60,13 +79,15 @@ export function planRollback(dir: string, stamp?: string, { force = false } = {}
     if (existsSync(inside(root, from)) && !removing.has(from)) blocked.push(from);
     else restore.push(from);
   }
-  return { root, backup, restore, remove, edited, blocked };
+  const gateHook = !record.settingsBackup && removing.has(GATE) && gateHookIn(root);
+  return { root, backup, restore, remove, edited, blocked, gateHook };
 }
 
 export function formatRollback(plan: RollbackPlan): string {
   return [
     `Roll back to before ${plan.backup}:`,
     `  restore ${plan.restore.length} 0.7 file(s) · remove ${plan.remove.length} 1.0 file(s)`,
+    ...(plan.gateHook ? [`  remove Joycraft's gate Stop hook from ${SETTINGS}; the runtime it runs is removed`] : []),
     ...plan.edited.map((path) => `  kept, edited after the migration (use --force to remove): ${path}`),
     ...plan.blocked.map((path) => `  not restored, a file is already there: ${path}`),
     `  The backup stays in ${plan.backup}.`,
@@ -83,6 +104,12 @@ function prune(root: string, path: string): void {
 export function applyRollback(plan: RollbackPlan): void {
   const { root } = plan;
   const record = JSON.parse(readFileSync(join(root, plan.backup, MIGRATION_RECORD), 'utf8')) as Record07;
+  // Before the runtime goes, its own `hook --off` takes the gate Stop hook out of the user's settings,
+  // so no hook is left to run a missing file. With a settings backup, the restore below replaces the file.
+  if (plan.gateHook && existsSync(join(root, GATE))) {
+    const off = spawnSync(process.execPath, [join(root, GATE), 'hook', '--off', '--root', root], { cwd: root, encoding: 'utf8' });
+    if (off.status !== 0) throw new Error(`Could not remove Joycraft's gate Stop hook from ${SETTINGS}; nothing was rolled back. ${off.stderr.trim()}`);
+  }
   for (const path of plan.remove) { rmSync(inside(root, path), { force: true }); prune(root, path); }
   // Files the 1.0 install replaced (for example .gitignore) come back from its own backup.
   if (record.installBackup) {
