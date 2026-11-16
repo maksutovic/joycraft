@@ -61,8 +61,9 @@ export function checkGates(root = process.cwd()) {
       const file = path.posix.join(path.posix.dirname(feature.queuePath), spec.file);
       failures.push({ kind: 'unaccepted-done', feature: feature.feature, specId: spec.id, file, queuePath: feature.queuePath,
         message: `Joycraft gate: ${feature.feature} spec ${spec.id} (${file}) is done with no accepted report, owner acceptance or waiver. `
-          + 'Set it back to in-review in the queue and the spec, get an independent review, then complete it with '
-          + `node .joycraft/runtime/completion.mjs finalize-review --queue ${feature.queuePath} --spec ${spec.id} --report <report.json>` });
+          + 'Set it back to in-review in the queue and spec. Do not ask the user: it restores the true status. '
+          + 'With no current PASS report, get an independent review, then complete it with '
+          + `node .joycraft/runtime/completion.mjs finalize-review --queue ${feature.queuePath} --spec ${spec.id} --report <file>` });
     }
   }
   const owner = new Map(status.features.flatMap(feature => feature.specs.map(row => [row.file, feature])));
@@ -78,8 +79,8 @@ export function checkGates(root = process.cwd()) {
 // hook subcommand edits its text in place, so every byte it does not own keeps
 // its value. Joycraft's hook is the one whose command is exactly hookCommand.
 // Claude Code sends the agent back only when a Stop hook exits 2, with the
-// reason on stderr; `check` does that and reads nothing from stdin, so the
-// result is the same when the event says stop_hook_active.
+// reason on stderr; `check` does that. The exit code is the same when the
+// event says stop_hook_active; only one line is added to the reason.
 export const settingsFile = '.claude/settings.json';
 export const hookCommand = 'node "$CLAUDE_PROJECT_DIR"/.joycraft/runtime/gate.mjs check --root "$CLAUDE_PROJECT_DIR"';
 const hookGroup = { hooks: [{ type: 'command', command: hookCommand }] };
@@ -225,13 +226,14 @@ function readState(root) {
   try { return JSON.parse(readFileSync(localPath(root, stateFile), 'utf8')); } catch { return null; }
 }
 
-const byHand = 'Run the check by hand: node .joycraft/runtime/gate.mjs check';
+// A hook added over an open problem would refuse every stop until the problem is cleared.
+const clearFirst = 'Joycraft gate: nothing was written. Clear each problem above, then turn the gates on again.';
 
 /** `hook --plan|--on|--off`: show, add or remove Joycraft's Stop hook in `.claude/settings.json`. */
 export function hook(root, action) {
   if (action !== 'off' && !claudeHost(root)) {
     return { change: 'none', claude: false,
-      message: `The gate hook is for Claude Code only for now, and .joycraft/installation.json lists no claude host. Nothing was written. ${byHand}` };
+      message: 'The gate hook is for Claude Code only for now. Nothing was written. On this host, session end runs the same check.' };
   }
   if (action === 'off') {
     const { file, before, data } = readSettings(root);
@@ -241,8 +243,12 @@ export function hook(root, action) {
       return { file: settingsFile, change: 'none', message: `Joycraft's Stop hook is not in ${settingsFile}. Nothing was changed.` };
     }
     if (state?.after === before) {
-      if (state.before === null) rmSync(file); else writeFileSync(file, state.before);
       rmSync(localPath(root, stateFile));
+      if (state.before === null) {
+        rmSync(file);
+        return { file: settingsFile, change: 'removed', message: `Removed ${settingsFile}: hook --on created it, and it held only Joycraft's Stop hook.` };
+      }
+      writeFileSync(file, state.before);
       return { file: settingsFile, change: 'removed', message: `Removed Joycraft's Stop hook from ${settingsFile}. Every other line is as it was.` };
     }
     // No usable record: say what was cut, and claim nothing about the bytes before --on.
@@ -254,15 +260,19 @@ export function hook(root, action) {
   }
   const plan = planHook(root);
   if (plan.change === 'none') return { file: settingsFile, change: 'none', message: `Joycraft's Stop hook is already in ${settingsFile}. Nothing was changed.` };
+  const problems = checkGates(root).failures.map(item => item.message);
   if (action === 'plan') {
-    return { file: settingsFile, change: 'add', command: hookCommand, before: plan.before, after: plan.after,
-      message: `Plan only; nothing was written. Show this change to the user and run gate.mjs hook --on on their yes.` };
+    return { file: settingsFile, change: 'add', command: hookCommand, ...(problems.length ? { problems } : {}), before: plan.before, after: plan.after,
+      message: problems.length
+        ? 'Plan only; nothing was written. hook --on refuses until the gate check finds none. Clear each problem you can by its next step, tell the user what you changed, then plan again.'
+        : `Plan only; nothing was written. Show this change to the user and run gate.mjs hook --on on their yes.` };
   }
+  if (problems.length) return { file: settingsFile, change: 'none', problems, message: clearFirst };
   mkdirSync(path.dirname(plan.file), { recursive: true });
   writeFileSync(localPath(root, settingsFile, true), plan.after);
   writeState(root, { file: settingsFile, before: plan.before, after: plan.after });
   return { file: settingsFile, change: 'added',
-    message: `Added Joycraft's Stop hook to ${settingsFile}. Claude Code now runs the gate check each time it ends a reply. Turn it off with: node .joycraft/runtime/gate.mjs hook --off` };
+    message: `Added Joycraft's Stop hook to ${settingsFile}. Claude Code now runs the gate check each time it ends a reply. To turn it off, the user says "Turn off Joycraft's gates".` };
 }
 
 export function main(argv = process.argv.slice(2)) {
@@ -280,6 +290,12 @@ export function main(argv = process.argv.slice(2)) {
     }
     if (action === undefined) throw new Error(usage);
     const result = hook(path.resolve(root ?? '.'), action);
+    // --on over open problems: the same exit 2 and stderr lines as the check, then what to do.
+    if (action === 'on' && result.problems) {
+      process.stderr.write(`${[...result.problems, result.message].join('\n')}\n`);
+      process.exitCode = 2;
+      return result;
+    }
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     process.exitCode = 0;
     return result;
@@ -295,14 +311,36 @@ export function main(argv = process.argv.slice(2)) {
   }
   const result = checkGates(path.resolve(flags.root ?? '.'));
   const lines = [...(flags.verbose ? result.skipped.map(item => item.message) : []), ...result.failures.map(item => item.message)];
-  if (lines.length) process.stderr.write(`${lines.join('\n')}\n`);
   process.exitCode = result.failures.length ? 2 : 0;
-  return result;
+  // Every stop is checked, also a repeated one; a repeated one only gets one more line.
+  const write = () => { if (lines.length) process.stderr.write(`${lines.join('\n')}\n`); return result; };
+  if (!result.failures.length) return write();
+  return stopEvent().then(event => {
+    if (event?.stop_hook_active === true) lines.push(blockedAgain);
+    return write();
+  });
+}
+
+const blockedAgain = 'Joycraft gate: this stop was blocked before for the same reason. Do the step now; do not ask the user again.';
+
+/** The Stop event Claude Code writes on stdin, or null: no event within a short wait, a terminal, or not JSON. */
+function stopEvent(waitMs = 1000) {
+  if (process.stdin.isTTY) return Promise.resolve(null);
+  return new Promise(resolve => {
+    let text = '';
+    const done = value => { clearTimeout(timer); process.stdin.removeAllListeners(); process.stdin.destroy(); resolve(value); };
+    const timer = setTimeout(() => done(null), waitMs);
+    process.stdin.setEncoding('utf8');
+    process.stdin.on('data', chunk => { text += chunk; });
+    process.stdin.on('end', () => { try { done(JSON.parse(text)); } catch { done(null); } });
+    process.stdin.on('error', () => done(null));
+  });
 }
 
 // Node runs the main module from its real path; a hook may name it through a symlinked project path.
 const invoked = (() => { try { return realpathSync(process.argv[1]); } catch { return null; } })();
 if (invoked && import.meta.url === pathToFileURL(invoked).href) {
   const prefix = process.argv[2] === 'hook' ? 'Gate hook stopped' : 'Gate check stopped';
-  try { main(); } catch (error) { process.stderr.write(`${prefix}: ${error.message}\n`); process.exitCode = 1; }
+  const stopped = error => { process.stderr.write(`${prefix}: ${error.message}\n`); process.exitCode = 1; };
+  try { Promise.resolve(main()).catch(stopped); } catch (error) { stopped(error); }
 }

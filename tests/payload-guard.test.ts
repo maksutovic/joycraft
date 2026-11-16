@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { cpSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, posix, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -22,6 +22,11 @@ const FIELD_18_WORDS = 30434;
 // fewer words in skills, agent files and references (runtime-owned-steps spec 5).
 const FIELD_20 = 'c3db626';
 const FIELD_20_WORDS = 30033;
+
+// The last commit on main whose payload was field-21 (1.5.0). field-22 must not
+// ship more words in skills, agent files and references (open-issues).
+const FIELD_21 = '522c756';
+const FIELD_21_WORDS = 29941;
 
 interface Bundle { label: string; files: Set<string>; read: (path: string) => string }
 
@@ -131,10 +136,10 @@ describe('shipped payload text', () => {
     expect(bundle.files.has('.joycraft/references/gates.md')).toBe(true);
   });
 
-  it('[AC:vendored-runtime-owned-steps] pins field-21 and ships submit, evidence run and the queue check', () => {
+  it('[AC:vendored-runtime-owned-steps] pins field-22 and ships submit, evidence run and the queue check', () => {
     const pin = JSON.parse(readFileSync(join(payloadDir, 'PIN'), 'utf8'));
-    expect(pin.tag).toBe('field-21');
-    expect(pin.commit).toBe('905489efbd89190321d9b50abfd0551854f79159');
+    expect(pin.tag).toBe('field-22');
+    expect(pin.commit).toBe('96c591fe5dfe7c8c039182ba1ae1647f5dd62e88');
     const bundle = treeBundle();
     for (const path of ['.joycraft/runtime/completion.mjs', '.joycraft/runtime/evidence.mjs', '.joycraft/runtime/queue-check.mjs']) {
       expect(bundle.files.has(path), path).toBe(true);
@@ -147,7 +152,7 @@ describe('shipped payload text', () => {
     expect(run('queue-check.mjs', []).stderr).toMatch(/queue-check\.mjs --queue <queue>/);
   });
 
-  it('[AC:vendored-runtime-owned-steps] evidence run exits 0 once recorded and keeps the real exit code in command.exitCode', () => {
+  it('[AC:vendored-open-issues] evidence run exits 1 when the command fails, writes the receipt and keeps the real exit code in command.exitCode', () => {
     const project = mkdtempSync(join(tmpdir(), 'joycraft-evidence-run-'));
     try {
       execFileSync('git', ['init', '-q'], { cwd: project });
@@ -155,7 +160,7 @@ describe('shipped payload text', () => {
       writeFileSync(join(project, '.gitignore'), 'receipts/\n');
       const result = spawnSync(process.execPath, ['.joycraft/runtime/evidence.mjs', 'run', '--receipt', 'receipts/run.txt', '--',
         process.execPath, '-e', "console.log('CI=' + process.env.CI); process.exit(3)"], { cwd: project, encoding: 'utf8' });
-      expect(result.status).toBe(0);
+      expect(result.status).toBe(1);
       const observation = JSON.parse(result.stdout);
       expect(observation.command.exitCode).toBe(3);
       expect(observation.timeoutMs).toBe(300000);
@@ -174,6 +179,39 @@ describe('shipped payload text', () => {
   it.runIf(hasRevision(FIELD_20))('[AC:vendored-runtime-owned-steps] field-20 had the recorded word count', () => {
     expect(JSON.parse(git(['show', `${FIELD_20}:payload/PIN`])).tag).toBe('field-20');
     expect(payloadWords(revisionBundle(FIELD_20))).toBe(FIELD_20_WORDS);
+  });
+
+  it('[AC:vendored-open-issues] hook --on refuses over an unaccepted done spec, exits 2 and writes nothing', () => {
+    const project = mkdtempSync(join(tmpdir(), 'joycraft-gate-on-'));
+    try {
+      cpSync(join(payloadDir, '.joycraft'), join(project, '.joycraft'), { recursive: true });
+      writeFileSync(join(project, '.joycraft/installation.json'), JSON.stringify({ hosts: ['claude'] }));
+      const specs = join(project, 'docs/features/demo/specs');
+      mkdirSync(specs, { recursive: true });
+      writeFileSync(join(specs, '01-a.md'), '---\nid: 1\nstatus: done\n---\n# A\n');
+      writeFileSync(join(specs, '.joycraft-spec-queue.json'), JSON.stringify({ schemaVersion: 1, feature: 'demo',
+        specs: [{ id: 1, file: '01-a.md', depends_on: [], status: 'done', mode: 'batch', verification: {
+          inputs: [{ path: 'docs/features/demo/specs/01-a.md', kind: 'requirement' }],
+          criteria: [{ id: 'a', requirement: { path: 'docs/features/demo/specs/01-a.md', anchor: 'a' }, requiredKinds: ['runtime'] }] } }] }));
+      const result = spawnSync(process.execPath, ['.joycraft/runtime/gate.mjs', 'hook', '--on'], { cwd: project, encoding: 'utf8' });
+      expect(result.status, result.stderr).toBe(2);
+      expect(result.stderr).toMatch(/Do not ask the user/);
+      expect(result.stderr).toMatch(/nothing was written/);
+      expect(existsSync(join(project, '.claude/settings.json'))).toBe(false);
+      expect(existsSync(join(project, '.joycraft/local/gate-hook.json'))).toBe(false);
+    } finally {
+      rmSync(project, { recursive: true, force: true });
+    }
+  });
+
+  it('[AC:vendored-open-issues] ships no more words than field-21', () => {
+    const words = payloadWords(treeBundle());
+    expect(words, `${words} words; field-21 had ${FIELD_21_WORDS}`).toBeLessThanOrEqual(FIELD_21_WORDS);
+  });
+
+  it.runIf(hasRevision(FIELD_21))('[AC:vendored-open-issues] field-21 had the recorded word count', () => {
+    expect(JSON.parse(git(['show', `${FIELD_21}:payload/PIN`])).tag).toBe('field-21');
+    expect(payloadWords(revisionBundle(FIELD_21))).toBe(FIELD_21_WORDS);
   });
 
   it('every relative link and named reference or runtime path is shipped', () => {

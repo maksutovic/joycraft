@@ -265,6 +265,8 @@ export async function main(args = process.argv.slice(2)) {
   const result = await runEvidence({ receipt: flags['--receipt'], argv: rest.slice(end + 1),
     timeoutMs: flags['--timeout-ms'] === undefined ? defaultTimeoutMs : Number(flags['--timeout-ms']) });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  // The receipt is written either way; a failed, killed or timed-out command exits 1. Exit 2 is only for a refusal.
+  if (result.command.exitCode !== 0) process.exitCode = 1;
   return result;
 }
 

@@ -2,11 +2,11 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { applyInstall, doctor, planInstall, readManifest } from '../src/install-v1.js';
 import { detectLegacy, migrateLegacy, planLegacy, recoverLegacy } from '../src/legacy-07.js';
-import { applyRollback, planRollback } from '../src/rollback.js';
+import { applyRollback, formatRollback, GATE_HOOK_COMMAND, planRollback } from '../src/rollback.js';
 import { detectHost } from '../src/payload.js';
 
 const repo = join(__dirname, '..');
@@ -218,5 +218,98 @@ describe('spec 15: rollback', () => {
     expect(treeHash(dir)).toBe(before);
     applyRollback(planRollback(dir));
     expect(readFileSync(join(dir, edited), 'utf8')).toBe('// my change\n');
+  });
+
+  const gate = (dir: string, flag: string) => spawnSync(process.execPath, ['.joycraft/runtime/gate.mjs', 'hook', flag], { cwd: dir, encoding: 'utf8' });
+  const userSettings = '{\n  "model": "opus",\n  "hooks": {\n    "Stop": [\n      { "hooks": [ { "type": "command", "command": "echo my-own-stop" } ] }\n    ]\n  },\n  "permissions": { "allow": ["Bash(ls)"] }\n}\n';
+
+  it('the rollback rule for the gate hook is the one gate.mjs writes', async () => {
+    const mod = await import(join(repo, 'payload/.joycraft/runtime/gate.mjs'));
+    expect(GATE_HOOK_COMMAND).toBe(mod.hookCommand);
+  });
+
+  it('gates on with no settings backup: rollback removes only the gate Stop hook', () => {
+    const dir = fixture07('0.7.17');
+    // Settings without 0.7 hooks: the migration leaves them alone and keeps no backup.
+    writeFileSync(join(dir, '.claude/settings.json'), userSettings);
+    migrateLegacy(planLegacy(dir));
+    expect(gate(dir, '--on').status).toBe(0);
+    const on = readFileSync(join(dir, '.claude/settings.json'), 'utf8');
+    expect(on).toContain(JSON.stringify(GATE_HOOK_COMMAND));
+    const plan = planRollback(dir);
+    expect(formatRollback(plan)).toContain("remove Joycraft's gate Stop hook from .claude/settings.json");
+    applyRollback(plan);
+    const after = readFileSync(join(dir, '.claude/settings.json'), 'utf8');
+    expect(after).not.toContain('gate.mjs');
+    expect(after).toBe(userSettings);
+    expect(JSON.parse(after).hooks.Stop[0].hooks[0].command).toBe('echo my-own-stop');
+    expect(existsSync(join(dir, '.joycraft/runtime/gate.mjs'))).toBe(false);
+  });
+
+  it('gates on with no settings backup and no state record: the hook is cut, other bytes stay', () => {
+    const dir = fixture07('0.7.17');
+    writeFileSync(join(dir, '.claude/settings.json'), userSettings);
+    migrateLegacy(planLegacy(dir));
+    expect(gate(dir, '--on').status).toBe(0);
+    rmSync(join(dir, '.joycraft/local/gate-hook.json'));
+    applyRollback(planRollback(dir));
+    const after = readFileSync(join(dir, '.claude/settings.json'), 'utf8');
+    expect(after).not.toContain('gate.mjs');
+    expect(JSON.parse(after)).toEqual(JSON.parse(userSettings));
+  });
+
+  it('every module gate.mjs loads, directly or not, is in .joycraft/runtime/', () => {
+    const runtime = join(repo, 'payload/.joycraft/runtime');
+    const seen = new Set<string>(); const queue = ['gate.mjs'];
+    while (queue.length) {
+      const file = queue.pop()!;
+      if (seen.has(file)) continue;
+      seen.add(file);
+      for (const [, spec] of readFileSync(join(runtime, file), 'utf8').matchAll(/(?:^|\n)\s*(?:import|export)[^'"]*?from\s*['"]([^'"]+)['"]/g)) {
+        if (spec.startsWith('node:')) continue;
+        expect(spec, `${file} imports ${spec}`).toMatch(/^\.\//);
+        expect(relative(runtime, join(runtime, dirname(file), spec)).startsWith('..')).toBe(false);
+        queue.push(relative(runtime, join(runtime, dirname(file), spec)));
+      }
+    }
+    expect(seen.size).toBeGreaterThan(1);
+  });
+
+  it('gates on, gate.mjs edited and kept: rollback still removes the hook, since its imports go', () => {
+    const dir = fixture07('0.7.17');
+    writeFileSync(join(dir, '.claude/settings.json'), userSettings);
+    migrateLegacy(planLegacy(dir));
+    expect(gate(dir, '--on').status).toBe(0);
+    const gateFile = join(dir, '.joycraft/runtime/gate.mjs');
+    writeFileSync(gateFile, `${readFileSync(gateFile, 'utf8')}\n// my change\n`);
+    const plan = planRollback(dir);
+    expect(plan.edited).toContain('.joycraft/runtime/gate.mjs');
+    expect(plan.remove).toContain('.joycraft/runtime/identity.mjs');
+    expect(formatRollback(plan)).toContain("remove Joycraft's gate Stop hook from .claude/settings.json");
+    applyRollback(plan);
+    expect(readFileSync(join(dir, '.claude/settings.json'), 'utf8')).toBe(userSettings);
+    expect(readFileSync(gateFile, 'utf8')).toContain('// my change');
+  });
+
+  it('gates on with a settings backup: rollback restores the backup as before', () => {
+    const dir = fixture07('0.7.17');
+    const original = readFileSync(join(dir, '.claude/settings.json'), 'utf8');
+    migrateLegacy(planLegacy(dir));
+    expect(gate(dir, '--on').status).toBe(0);
+    const plan = planRollback(dir);
+    expect(plan.gateHook).toBe(false);
+    expect(formatRollback(plan)).not.toContain('gate Stop hook');
+    applyRollback(plan);
+    expect(readFileSync(join(dir, '.claude/settings.json'), 'utf8')).toBe(original);
+  });
+
+  it('no settings file: rollback runs without error and writes none', () => {
+    const dir = fixture07('0.7.17');
+    rmSync(join(dir, '.claude/settings.json'));
+    migrateLegacy(planLegacy(dir));
+    const plan = planRollback(dir);
+    expect(plan.gateHook).toBe(false);
+    expect(() => applyRollback(plan)).not.toThrow();
+    expect(existsSync(join(dir, '.claude/settings.json'))).toBe(false);
   });
 });
