@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -13,8 +13,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.4.1",
-    "summary": "Gates: say \"Turn on Joycraft's gates\" and Claude Code cannot stop while a spec is done without an accepted review; session end runs the same check on every agent, and a fourth review is refused.",
+    "release": "1.5.0",
+    "summary": "Start a queue and leave: the agent asks its questions before the queue starts and stops only for a mandatory answer or a broken project. At session end, it asks you the other open points as follow-up questions.",
     "autoSafeEligible": false
   },
   "scripts": {

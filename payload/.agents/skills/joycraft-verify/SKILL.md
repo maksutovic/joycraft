@@ -50,25 +50,27 @@ Review scope as well as behavior: determine whether the listed inputs and criter
 
 Create a schema-v1 verification report tied to that subject, using the shared fields in [.joycraft/contracts/types.d.ts](../../../.joycraft/contracts/types.d.ts). For every declared criterion, provide PASS observations for its required evidence kinds. Keep unfiltered command output and its real exit status in hashed, project-relative receipts. A source scan supports only structural observations. Visual observations require a reviewer-inspected render plus route, state, viewport, interactions, and outcomes. Take evidence with the package's recorded tool, start command and evidence command from the packet's `reviewLoop` (`section`: the `Review loop` section of `AGENTS.md`; `local`: this machine's host tools), within that tool's `canShow`. A claim beyond `canShow`, or in a package the user skipped, is an agreed limit, not `UNVERIFIED`: check what the agreed tool can show, say in plain words how you checked, and leave what is left to the parent agent. A picture-only tool gives `interactions: []`. `UNVERIFIED` means a check that should have run and did not: the tool broke, the app did not start, or a render was saved but not inspected. On a tool break, first repair with what the user agreed to: restart the dev server, free the port, relaunch the browser or simulator, retry once. A repair never installs, upgrades or reconfigures anything. If it still fails, record `UNVERIFIED` with `cause: 'tool-break'` and the reason. Mark a failing result or an unresolved concern as `FAIL` or `UNVERIFIED` truthfully.
 
-Run each test command once in single-run mode with `CI=1` and a 300000 ms
-timeout; follow [running tests](../../../.joycraft/references/testing.md#running-tests)
-when one times out. Record an unresolved hang as `UNVERIFIED` with its receipt.
+Run each test command with
+`node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command>`;
+see [running tests](../../../.joycraft/references/testing.md#running-tests). Record an unresolved hang as `UNVERIFIED` with its receipt.
 
 Run the dispatch helper's `check-report` before completion. It reuses the same
 subject, receipt, and evidence validators without changing a queue status. If
 it rejects a packaging or report problem, return the correction to this same
 reviewer; do not invent observations or replace the independent identity.
 
-Items under a spec's "Deferred until deploy" section are not criteria. Do not
-fail or hold the spec for them; list them in the report as open for the owner.
+Items under a spec's "Deferred until deploy" section are not criteria; list
+each as a `follow-up` finding for the owner.
 
-Report every finding with a severity and the criterion it touches. A finding
-blocks only when it shows a stated criterion failing, or a reproducible
-correctness defect or regression in the changed code, with file:line or a
-receipt. A case the spec does not decide is "decision needed" for the
-coordinator, not a FAIL. A probe outside the spec's named check set is a
-non-blocking follow-up unless it regresses against the base. Name the class of a
-defect once; do not repeat a finding from an earlier round as new.
+Findings rule: give each `findings` entry its `class`, `origin`, and `criterion`
+or `at` (file:line or receipt). `blocking` is only a failing stated criterion or
+a reproducible defect or regression in the changed code. A case the spec does
+not decide is a `follow-up`: take the reading closest to the brief's intent,
+recorded as `assumption`. `decision-needed` is only for two readings that give
+opposite verdicts on a stated criterion, or a guess that cannot be undone; it
+holds this spec and its dependents, never the queue. A probe outside the named
+checks is a `follow-up` unless it regresses. Never repeat an earlier round's
+finding as new.
 
 Set a PASS verdict only when scope is reviewed, all required evidence is sufficient, and no blocking finding or unresolved UNVERIFIED evidence remains. Then run guarded completion:
 

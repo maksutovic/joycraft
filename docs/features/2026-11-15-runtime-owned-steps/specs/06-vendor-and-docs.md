@@ -1,6 +1,6 @@
 ---
 id: 6
-status: todo
+status: in-review
 ---
 # Outcome
 
@@ -10,7 +10,7 @@ who runs queues while away. Brief: [goals](../brief.md#goals).
 ## acceptance
 
 - The payload is the new field build. Check: `payload/PIN` names the tag that
-  carries specs 1 to 5; `completion.mjs submit`, `evidence.mjs run` and
+  carries specs 1 to 5 and 7 (`field-21`); `completion.mjs submit`, `evidence.mjs run` and
   `queue-check.mjs` exist in `payload/.joycraft/runtime/`;
   `pnpm test && pnpm typecheck` pass (`[AC:vendored-runtime-owned-steps]`).
 - The README says what a user sees. Check: under "The review loop", in plain
@@ -33,9 +33,8 @@ scorecard and the escape rate (backlog).
 
 ## Implementation and verification scope
 
-This repository: `node scripts/vendor-payload.mjs --tag <field-N>`,
+This repository: `node scripts/vendor-payload.mjs --tag field-21`,
 `README.md`, `docs/prompts.md` if a prompt changes, `CHANGELOG.md`,
 `package.json`, `docs/context/decision-log.md`, `docs/context/shipped.md`, the
-update summary source. Depends on specs 1 to 5. Assumes enforced-gates (1.4.0)
-has shipped, so this is 1.5.0 on `field-20`; use the real next numbers if that
-changes. Run `/release-docs-sync` before the pull request.
+update summary source. Depends on specs 1 to 5 and 7. Enforced-gates (1.4.0) is merged on
+`field-20`, so this is 1.5.0 on `field-21`. Run `/release-docs-sync` before the pull request.

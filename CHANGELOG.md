@@ -7,6 +7,86 @@ claim that a release has shipped.
 
 ---
 
+## 1.5.0 — Queues that run while you are away
+
+People start a queue and leave. Up to 1.4.0, the agent did three steps by hand. It
+set a spec to `in-review` with two edits. It built each test receipt itself. It held
+a spec for each case that the spec did not decide. This release moves these steps
+into the runtime. Work now stops only for an answer that must come from you or for a
+broken project.
+
+### What's new
+
+- **Questions before the queue starts.**
+  `node .joycraft/runtime/queue-check.mjs --queue <queue>` finds four kinds of gaps
+  before the first dispatch. An acceptance
+  bullet has no `Check:` in plain text. An input file is missing and is not planned
+  work. A dependency names a spec that is not in the queue, or makes a cycle. An open
+  brief decision affects a queued spec. The command exits 2 and names each gap. Each
+  message tells the agent to add the gap to the brief as an open decision and to ask
+  you now. The command only reports. The decompose skill runs it before it hands on
+  the queue. The implement skill runs it before the first dispatch.
+- **A follow-up does not block.** A review report can carry an optional `findings`
+  list. Each finding has a class: `blocking`, `decision-needed` or `follow-up`. A
+  follow-up does not block a PASS. A blocking or decision-needed finding refuses
+  completion and names the finding. A case that the spec does not decide is a
+  follow-up. The reviewer takes the reading closest to the brief's intent and records
+  it as `assumption`. A decision-needed finding is only for two readings that give
+  opposite verdicts on a stated criterion, or for a guess that cannot be undone. It
+  holds that spec and its dependents, not the queue. A report with no `findings`
+  completes as before.
+- **Questions at session end.** `status.mjs` lists the follow-up findings of accepted
+  reports and the decision-needed findings of current reports, each with its spec.
+  The session-end skill tells the agent to ask you each one.
+- **One command sends a spec to review.**
+  `completion.mjs submit --queue <queue> --spec <id>` sets the queue entry and the
+  spec frontmatter to `in-review` in one journaled write. It warns about each criterion with no `[AC:<id>]` test and still
+  exits 0. It refuses a `done` spec and a spec with a dependency that is not done.
+  The implement skill and the implementer agent use it instead of two hand edits.
+- **One command runs a test and writes its receipt.**
+  `evidence.mjs run --receipt <path> -- <command>` runs the project's command once
+  with no shell, `CI=1` and a 300000 ms limit. It saves the raw output to a new receipt. It prints
+  the observation's `command` (argv and real exit code) and `receipts` (path and
+  SHA-256). At the limit, it ends the command and records `exitCode: null`. The run
+  rule is now in `references/testing.md` only. The skills and agent files name the
+  command.
+- **More refusals exit 2.** Every `completion.mjs submit`
+  refusal exits 2. A malformed finding or a `blocking` or `decision-needed` finding
+  makes `completion.mjs finalize-review` and `dispatch-preflight.mjs check-report`
+  exit 2, not 1. Their other refusals still exit 1.
+- **A submit record in the queue.** `submit` adds an optional `submitted: {at}`
+  record to the queue entry. Queue validation accepts only an `at` time. Subject
+  bindings leave it out, like `status`.
+- **No stale journal after an early failure.** When a completion write fails before
+  it writes either status file, the runtime removes the completion journal. The
+  error says that neither status file was written. Before, the kept journal blocked
+  the queue until a recovery.
+- **"Deferred until deploy" items are follow-up findings.** The reviewer lists each
+  item as a `follow-up` finding. Before, the report listed them as open for the
+  owner. They now come back as questions at session end.
+- **Shorter shipped text.** The shipped skills, agent files and references went from
+  30,033 to 29,941 words, with the gates reference counted.
+- **README: Running a queue while you are away.** A new section under "The review
+  loop" says what you see now and gives two prompts. The prompts are also in
+  [Prompts](docs/prompts.md).
+
+### What it does not do
+
+- No test-sensitivity check. A criterion can still pass on a test that only the
+  implementing agent wrote. This check is first in the backlog.
+- `evidence.mjs run` exits 0 after it records the run. A failed command does not
+  change that exit code. Read the outcome in `command.exitCode`. The exit code is 2
+  only for a refusal before the command starts.
+- The queue check finds only the gaps that a program can find. The agent still reads
+  each spec for the rest. The check does not stop a dispatch.
+- After a feature is archived, `status.mjs` no longer lists its follow-up questions.
+- Submit does not stop a hand edit of a status. The gate check still finds the
+  drift.
+
+Payload: joycraft-prototype `field-21`.
+
+---
+
 ## 1.4.1 — The gates release, on npm
 
 1.4.0 was merged but was not published: its release run failed on a test race.

@@ -138,6 +138,8 @@ anything:
 - **Status.** It runs the gate check (below). The check finds specs marked done with
   no accepted review and specs whose text disagrees with the queue. It also finds
   features that are finished but not archived.
+- **Questions.** It asks you each follow-up question that the reviews left. See
+  [Running a queue while you are away](#running-a-queue-while-you-are-away).
 - **Worktrees.** It removes its worker worktrees once their spec is done and merged.
   It keeps anything unfinished, unmerged or not made by Joycraft, and says why.
 - **One coordinator.** One session coordinates each queue, so a second session's
@@ -191,6 +193,84 @@ counts as evidence; your project keeps its own tools.
 After an update, the agent checks the review loop again and asks only about what
 changed.
 
+### Running a queue while you are away
+
+You can start a queue and leave. The agent asks its questions before the queue
+starts. Work stops only for an answer that must come from you or for a broken
+project. A broken tool that the agent cannot repair holds its spec, not the queue.
+Other open points wait for you as a list of follow-up questions at session end.
+You do not run a command at any step.
+
+**Before the queue starts.** The agent checks each spec for gaps that a program can
+find:
+
+- An acceptance criterion has no check.
+- A spec names an input file that does not exist and is not planned work.
+- A spec depends on a spec that is not in the queue, or two specs depend on each
+  other.
+- A question in the brief is still open, and a queued spec needs its answer.
+
+The agent adds each gap to the brief as a question and asks you while you are still
+there.
+
+**While you are away.** A question holds a spec only for a mandatory answer: a
+case where two readings of the brief give opposite results for a stated criterion,
+or where a wrong guess cannot be undone. The specs that depend on it wait too. All
+other specs go on. Three other cases hold one spec and the specs that depend on
+it: a broken tool, a refused fourth review, or a second FAIL on the same criterion.
+The whole queue stops only for a broken project: it does not build or install, or
+the repository is broken. It also stops before a step that touches data or systems
+outside the project, such as a shared database or a deploy.
+
+Some hosts cannot start a separate reviewer context. On such a host, each spec
+stays `in-review`, and the specs that depend on it do not start while you are away.
+Specs that do not depend on it go on.
+
+**When you come back.** A case that the spec does not decide does not stop the
+queue. The reviewer takes the reading closest to your brief and writes down that
+assumption, and the spec can complete. At session end, the agent asks you each
+follow-up question with its spec. For a case the spec did not decide, the question
+gives the assumption the reviewer made. The agent also asks each mandatory question
+that holds a spec. A spec that a broken tool, a refused fourth review or a second
+FAIL holds is not in this list of questions. Session end reports it with its
+status, `in-review`. For a refused review or a second FAIL, the spec has a note
+under `## Decision needed`.
+
+**Why you want it.** The questions come while you are there, so a queue does not
+wait hours for a small answer. A guess is not hidden: each one comes back to you as
+a question.
+
+**Start a queue and leave.** Say:
+
+```text
+Build <what you want> with Joycraft. I will be away while the queue runs.
+Before you start the queue, check it for gaps and ask me every question now.
+While I am away, stop only for an answer that must come from me or for a broken project.
+At session end, ask me each follow-up question with the assumption the reviewer made.
+Do not archive a feature until I have answered its follow-up questions.
+Do not commit to the default branch, push, publish, or ask me for API keys.
+```
+
+**Get the follow-up questions.** The questions stay available until the feature is
+archived. Before then, you can ask for them again later, or in a new session:
+
+```text
+Run Joycraft's session end. Before you archive a feature, ask me each follow-up
+question from its reviews, with the spec and the assumption the reviewer made, and
+each question that holds a spec.
+Do not commit, publish, or ask me for API keys.
+```
+
+**What it does not do.**
+
+- The queue check finds only the gaps that a program can find. The agent reads each
+  spec for the rest, for example a criterion that needs work from a later spec.
+- An assumption can be wrong. You see it at session end, after the spec is done.
+- After a feature is archived, session end no longer lists its follow-up questions.
+  The reviews stay in the archive.
+- A criterion can still pass on a test that only the implementing agent wrote.
+  Joycraft does not yet check that the test fails for broken behavior.
+
 ### The gates: no spec is done without an accepted review
 
 Joycraft's rule is that only an accepted review completes a spec. Without the
@@ -219,8 +299,8 @@ Run Joycraft's gate check with `node .joycraft/runtime/gate.mjs check` and show 
 what it names. Change nothing yet.
 ```
 
-Do this also after you update an older project to 1.4.1, because session end now
-runs the same check.
+Do this also after you update an older project to 1.4.1 or later, because session
+end now runs the same check.
 
 **Turn them on.** Say:
 
@@ -252,7 +332,8 @@ the project, the agent removes this hook first.
 **A fourth review is refused.** On every agent, one spec gets at most three
 reviews. A round is one set of reviewed inputs, so a new review of the same code
 does not count again. Reviewer startup prints the round and refuses a fourth
-review. The agent then records `## Decision needed` in the spec and asks you.
+review. The agent then records `## Decision needed` in the spec and holds that spec.
+The specs that do not depend on it go on.
 
 ## Answering questions: the decision page
 
@@ -344,6 +425,8 @@ in [Prompts](docs/prompts.md):
 | Change a setting | "Keep Joycraft's specs in working/features." |
 | Connect your wiki | "Link our wiki and keep it up to date." |
 | Clean up | "Clean up the docs and the workspace." |
+| Start a queue and leave | "Build <what you want> with Joycraft. I will be away while the queue runs." |
+| Get the follow-up questions | "Run Joycraft's session end and ask me each follow-up question." |
 | Turn the gates on | "Turn on Joycraft's gates." |
 | Turn the gates off | "Turn off Joycraft's gates." |
 | Undo the 1.0 upgrade | "Undo this project's upgrade to Joycraft 1.0." |

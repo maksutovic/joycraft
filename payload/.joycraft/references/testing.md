@@ -21,30 +21,30 @@ end-to-end requirement follows from these examples.
 
 ### Running tests
 
-Run focused checks once, in the runner's non-interactive single-run mode (for
-example `vitest run`, `jest --watchAll=false`, or the project script with that
-flag passed through) with `CI=1` set. Never start watch mode. Give each test
-command a 300000 ms tool timeout or the project's available supervisor. A
-timeout while other test runs share the machine is not yet a hang: rerun once,
-alone, with fewer workers. If it times out again, stop leftover test processes
-and report the condition with the command; do not keep rerunning. Never wait
-in a foreground loop (`until …; do sleep`, `kill -0`, polling a log): start a
-long command in the background, keep working, and act on its completion
-notice. If a shared lock or verify slot stays busy for more than 5 minutes,
-stop and report it instead of waiting. Never give a verdict while your own
-command is still running. A
-reviewer may reuse a suite receipt bound to the same revision instead of
-rerunning it. A bug fix needs a meaningful failing regression only when one
-can distinguish the repaired fault. Ordinary edits do not require ritual red/green.
+Run each test command once, in single-run mode with `CI=1` and a 300000 ms
+timeout, through
+`node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command...>`
+(`--timeout-ms <n>` changes the limit). It uses no shell and saves raw stdout
+and stderr to a new git-ignored or feature-folder receipt. Never start watch
+mode. Copy the printed `command` and `receipts` into the observation; exit 0
+only means the run was recorded. At the limit it ends the process group:
+`exitCode: null`, `timedOut: true`. Set the host tool timeout to at least this
+limit. A shorter default (for example 120000 ms) ends the wrapper before the
+child. A timeout during parallel runs is not yet a hang: rerun once, alone,
+with fewer workers. If it times out again, report it
+with the receipt; do not keep rerunning. Never wait in a foreground loop
+(`until …; do sleep`, `kill -0`, polling a log): start a long command in the
+background, keep working, and act on its completion notice. If a shared lock
+or verify slot stays busy over 5 minutes, stop and report it. Never
+give a verdict while your own command is still running. A reviewer may reuse
+a suite receipt bound to the same revision. A bug fix needs a meaningful
+failing regression only when one can distinguish the repaired fault.
 
 ## Commands and receipt records
 
-For `test` and `command` observations, `command.argv` records the executed command
-and `command.exitCode` records its actual outcome. `null` means unavailable.
-Keep raw stdout/stderr, including failure output, in a receipt; do not substitute
-grepped success text or a pipeline's final status for the command outcome. A
-nonzero or missing status cannot support PASS. Do not claim a process finished
-while it is still running.
+In `test` and `command` observations, `command.exitCode` is the actual outcome;
+`null` means unavailable. Never substitute grepped success text or a
+pipeline's final status for it. A nonzero or missing status cannot support PASS.
 
 Each observation has at least one supporting receipt with a project-relative path
 and SHA-256. A receipt may be raw command output, inspection notes, an image, or a

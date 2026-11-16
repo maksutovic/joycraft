@@ -1,5 +1,6 @@
-import { execFileSync } from 'node:child_process';
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { cpSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join, posix, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -16,6 +17,11 @@ const payloadDir = process.env.JOYCRAFT_PAYLOAD_GUARD_ROOT ?? join(root, 'payloa
 // the guard finds the dead paths it was written for. Skipped in a shallow clone.
 const FIELD_18 = '92146bb';
 const FIELD_18_WORDS = 30434;
+
+// The last commit on main whose payload was field-20 (1.4.0). field-21 must ship
+// fewer words in skills, agent files and references (runtime-owned-steps spec 5).
+const FIELD_20 = 'c3db626';
+const FIELD_20_WORDS = 30033;
 
 interface Bundle { label: string; files: Set<string>; read: (path: string) => string }
 
@@ -123,6 +129,51 @@ describe('shipped payload text', () => {
     const bundle = treeBundle();
     expect(bundle.files.has('.joycraft/runtime/gate.mjs')).toBe(true);
     expect(bundle.files.has('.joycraft/references/gates.md')).toBe(true);
+  });
+
+  it('[AC:vendored-runtime-owned-steps] pins field-21 and ships submit, evidence run and the queue check', () => {
+    const pin = JSON.parse(readFileSync(join(payloadDir, 'PIN'), 'utf8'));
+    expect(pin.tag).toBe('field-21');
+    expect(pin.commit).toBe('905489efbd89190321d9b50abfd0551854f79159');
+    const bundle = treeBundle();
+    for (const path of ['.joycraft/runtime/completion.mjs', '.joycraft/runtime/evidence.mjs', '.joycraft/runtime/queue-check.mjs']) {
+      expect(bundle.files.has(path), path).toBe(true);
+      expect(Object.keys(pin.files)).toContain(path);
+    }
+    expect(bundle.read('.joycraft/runtime/completion.mjs')).toMatch(/\bsubmit\b/);
+    const run = (script: string, args: string[]) => spawnSync(process.execPath, [join(payloadDir, '.joycraft/runtime', script), ...args], { encoding: 'utf8' });
+    expect(run('completion.mjs', ['submit']).stderr).toMatch(/arguments for submit/);
+    expect(run('evidence.mjs', []).stderr).toMatch(/evidence\.mjs run --receipt <path>/);
+    expect(run('queue-check.mjs', []).stderr).toMatch(/queue-check\.mjs --queue <queue>/);
+  });
+
+  it('[AC:vendored-runtime-owned-steps] evidence run exits 0 once recorded and keeps the real exit code in command.exitCode', () => {
+    const project = mkdtempSync(join(tmpdir(), 'joycraft-evidence-run-'));
+    try {
+      execFileSync('git', ['init', '-q'], { cwd: project });
+      cpSync(join(payloadDir, '.joycraft'), join(project, '.joycraft'), { recursive: true });
+      writeFileSync(join(project, '.gitignore'), 'receipts/\n');
+      const result = spawnSync(process.execPath, ['.joycraft/runtime/evidence.mjs', 'run', '--receipt', 'receipts/run.txt', '--',
+        process.execPath, '-e', "console.log('CI=' + process.env.CI); process.exit(3)"], { cwd: project, encoding: 'utf8' });
+      expect(result.status).toBe(0);
+      const observation = JSON.parse(result.stdout);
+      expect(observation.command.exitCode).toBe(3);
+      expect(observation.timeoutMs).toBe(300000);
+      expect(observation.receipts[0].path).toBe('receipts/run.txt');
+      expect(readFileSync(join(project, 'receipts/run.txt'), 'utf8')).toContain('CI=1');
+    } finally {
+      rmSync(project, { recursive: true, force: true });
+    }
+  });
+
+  it('[AC:vendored-runtime-owned-steps] ships fewer words than field-20', () => {
+    const words = payloadWords(treeBundle());
+    expect(words, `${words} words; field-20 had ${FIELD_20_WORDS}`).toBeLessThan(FIELD_20_WORDS);
+  });
+
+  it.runIf(hasRevision(FIELD_20))('[AC:vendored-runtime-owned-steps] field-20 had the recorded word count', () => {
+    expect(JSON.parse(git(['show', `${FIELD_20}:payload/PIN`])).tag).toBe('field-20');
+    expect(payloadWords(revisionBundle(FIELD_20))).toBe(FIELD_20_WORDS);
   });
 
   it('every relative link and named reference or runtime path is shipped', () => {

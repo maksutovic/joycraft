@@ -47,6 +47,7 @@ export function validateReview({ root = process.cwd(), report, state, reportPath
   validateIndependentReview(report);
   requireValue(['PASS', 'FAIL', 'UNVERIFIED'].includes(report.verdict), 'Report verdict must be PASS, FAIL or UNVERIFIED');
   requireValue(Array.isArray(report.unresolved) && report.unresolved.every(nonempty), 'Report unresolved findings must be an array of nonempty strings');
+  validateFindings(report, state.spec.verification.criteria);
   requireValue(nonempty(report.createdAt) && Number.isFinite(Date.parse(report.createdAt)), 'Report needs a valid createdAt timestamp');
   requireValue(Array.isArray(report.flows) && report.flows.length > 0, 'Report needs flow evidence');
   const subject = report.subject;
@@ -71,8 +72,53 @@ export function validateReview({ root = process.cwd(), report, state, reportPath
   }
 }
 
+const refused = error => Object.assign(error, { exitCode: 2 });
+const findingClasses = ['blocking', 'decision-needed', 'follow-up'];
+const findingOrigins = ['new', 'pre-existing', 'unknown'];
+const findingFields = ['id', 'class', 'origin', 'criterion', 'at', 'summary', 'assumption'];
+
+/**
+ * The optional `findings` list keeps the report at schemaVersion 1; a report
+ * without it is read as before. A malformed finding is refused with exit 2 and
+ * the field named, so the reviewer can correct the report.
+ */
+function validateFindings(report, criteria) {
+  if (report.findings === undefined) return;
+  const check = (condition, field, message) => { if (!condition) throw refused(new Error(`Report ${field} ${message}; correct the report and run check-report again`)); };
+  check(Array.isArray(report.findings), 'findings', 'must be an array');
+  const ids = new Set();
+  report.findings.forEach((finding, index) => {
+    const at = `findings[${index}]`;
+    check(isObject(finding), at, 'must be an object');
+    for (const key of Object.keys(finding)) check(findingFields.includes(key), `${at}.${key}`, `is not a finding field (${findingFields.join(', ')})`);
+    check(nonempty(finding.id) && !ids.has(finding.id), `${at}.id`, 'must be a nonempty id, unique in the report');
+    ids.add(finding.id);
+    check(findingClasses.includes(finding.class), `${at}.class`, `must be ${findingClasses.join(', ')}`);
+    check(findingOrigins.includes(finding.origin), `${at}.origin`, `must be ${findingOrigins.join(', ')}`);
+    check(nonempty(finding.summary), `${at}.summary`, 'must be a nonempty string');
+    for (const key of ['criterion', 'at', 'assumption']) check(finding[key] === undefined || nonempty(finding[key]), `${at}.${key}`, 'must be a nonempty string when given');
+    check(finding.criterion === undefined || criteria.some(item => item.id === finding.criterion), `${at}.criterion`, `names no criterion of this spec: ${finding.criterion}`);
+    check(finding.class === 'follow-up' || finding.criterion !== undefined || finding.at !== undefined, `${at}.criterion`, `or .at is required for a ${finding.class} finding`);
+  });
+}
+
+const findingPlace = finding => [finding.criterion && `criterion ${finding.criterion}`, finding.at].filter(Boolean).join(', ');
+
+/** A blocking or decision-needed finding refuses completion with exit 2; a follow-up never does. */
+function refuseHeldFindings(report, specId) {
+  const named = cls => (report.findings ?? []).filter(finding => finding.class === cls).map(finding => `${finding.id} (${findingPlace(finding)})`);
+  const blocking = named('blocking');
+  const decisions = named('decision-needed');
+  const reasons = [
+    ...(blocking.length ? [`blocking finding ${blocking.join(', ')}: fix it and get a fresh review`] : []),
+    ...(decisions.length ? [`decision-needed finding ${decisions.join(', ')}: spec ${specId} stays in-review and only its dependents wait; continue independent specs, ask the user, then get a fresh review`] : []),
+  ];
+  if (reasons.length) throw refused(new Error(`Report has ${reasons.join('; ')}`));
+}
+
 function validatePassingReport(root, report, state, reportPath) {
   validateReview({ root, report, state, reportPath });
+  refuseHeldFindings(report, state.spec.id);
   requireValue(report.verdict === 'PASS', 'Report verdict must be PASS; FAIL or UNVERIFIED cannot complete a spec');
   requireValue(report.unresolved.length === 0, 'Report has unresolved review findings');
 }
@@ -130,13 +176,13 @@ export function recover({ root = process.cwd(), queuePath }) {
   return { status: 'restored', queuePath, specId: journal.specId };
 }
 
-async function writeCompletion({ root, queuePath, specId, state, metadataKey, metadata, validate, stableFiles }) {
+async function writeCompletion({ root, queuePath, specId, state, status = 'done', metadataKey, metadata, validate, stableFiles }) {
   const updatedQueue = structuredClone(state.queue);
-  Object.assign(updatedQueue.specs.find(spec => spec.id === specId), { status: 'done', [metadataKey]: metadata });
+  Object.assign(updatedQueue.specs.find(spec => spec.id === specId), { status, [metadataKey]: metadata });
   const journal = {
     schemaVersion: 1, queuePath, specId,
     files: [
-      { path: state.specPath, before: state.specBytes, after: Buffer.from(state.status.replace('done')) },
+      { path: state.specPath, before: state.specBytes, after: Buffer.from(state.status.replace(status)) },
       { path: queuePath, before: state.queueBytes, after: Buffer.from(`${JSON.stringify(updatedQueue, null, 2)}\n`) },
     ].map(file => ({ path: file.path, before: { sha256: sha256(file.before), base64: file.before.toString('base64') }, after: { sha256: sha256(file.after), base64: file.after.toString('base64') } })),
   };
@@ -144,12 +190,14 @@ async function writeCompletion({ root, queuePath, specId, state, metadataKey, me
   try { saveExclusive(pendingFile, `${JSON.stringify(journal, null, 2)}\n`); } catch (error) {
     throw new Error(`${error.message}. ${recoveryHint(queuePath)}`);
   }
+  let written = 0;
   try {
     for (const stable of stableFiles) requireValue(sha256(readLocal(root, stable.path)) === stable.sha256, `${stable.label} changed during completion`);
     for (const file of journal.files) requireValue(sha256(readLocal(root, file.path)) === file.before.sha256, `Completion conflict: ${file.path} changed during validation`);
     validate(state);
     for (const file of journal.files) {
       requireValue(sha256(readLocal(root, file.path)) === file.before.sha256, `Completion conflict: ${file.path} changed before write`);
+      written += 1;
       replaceFile(root, file.path, Buffer.from(file.after.base64, 'base64'));
     }
     // Catch overlapping worker edits during the two writes before accepting them.
@@ -158,6 +206,12 @@ async function writeCompletion({ root, queuePath, specId, state, metadataKey, me
     validate(readQueue({ root, queuePath, specId }));
     unlinkSync(pendingFile);
   } catch (error) {
+    // Before the first write there is nothing to restore; a kept journal would
+    // only block the queue, or fail recovery over another writer's edit.
+    if (written === 0) {
+      unlinkSync(pendingFile);
+      throw new Error(`${error.message}. Neither status file was written.`);
+    }
     let restoration = 'The original statuses were restored.';
     try { restore(root, journal); } catch (restoreError) { restoration = restoreError.message; }
     throw new Error(`${error.message}. ${restoration} ${recoveryHint(queuePath)}`);
@@ -184,6 +238,35 @@ export async function complete({ root = process.cwd(), queuePath, specId, report
     validate: currentState => validatePassingReport(root, report, currentState, reportPath),
   });
   return { status: 'done', unchanged: false, acceptedReport, implementationRevision: report.subject.implementationRevision };
+}
+
+/**
+ * Move a todo spec whose dependencies are done to in-review: both status
+ * surfaces in one journaled write, plus a `submitted` record that subject
+ * bindings leave out, like status. An in-review spec is left unchanged. A
+ * criterion with no [AC:id] test is returned as a warning, never a refusal.
+ * Every refusal carries exitCode 2.
+ */
+export async function submit({ root = process.cwd(), queuePath, specId }) {
+  try {
+    queuePath = relativePath(queuePath);
+    assertNoJournal(root, queuePath);
+    const state = readQueue({ root, queuePath, specId });
+    if (state.spec.status === 'in-review') return { status: 'in-review', unchanged: true, untraced: [] };
+    requireValue(state.spec.status === 'todo', `Spec ${specId} is done; submit moves only a todo spec to in-review`);
+    const requireDependencies = current => {
+      const unmet = current.spec.depends_on.filter(id => current.queue.specs.find(spec => spec.id === id).status !== 'done');
+      requireValue(unmet.length === 0, `Spec ${specId} depends on spec ${unmet.join(', spec ')}, which is not done`);
+    };
+    requireDependencies(state);
+    const { traceSpec } = await import('./trace.mjs');
+    const { untraced } = traceSpec({ root, queuePath, specId });
+    await writeCompletion({
+      root, queuePath, specId, state, status: 'in-review', metadataKey: 'submitted', metadata: { at: new Date().toISOString() },
+      stableFiles: [], validate: requireDependencies,
+    });
+    return { status: 'in-review', unchanged: false, untraced };
+  } catch (error) { throw refused(error); }
 }
 
 /**
@@ -457,13 +540,13 @@ export async function acceptWaiver({ root = process.cwd(), queuePath, specId, wa
 
 function argumentsFor(argv) {
   const [command, ...args] = argv;
-  requireValue(['snapshot', 'scope', 'complete', 'finalize-review', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope --queue <path> --spec <id> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
+  requireValue(['snapshot', 'scope', 'submit', 'complete', 'finalize-review', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope|submit --queue <path> --spec <id> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
   const flags = {};
   for (let i = 0; i < args.length; i += 2) {
     requireValue(['--queue', '--spec', '--out', '--report', '--decision', '--waiver'].includes(args[i]) && nonempty(args[i + 1]) && flags[args[i]] === undefined, `Invalid or duplicate argument: ${args[i]}`);
     flags[args[i]] = args[i + 1];
   }
-  const expected = command === 'recover' ? ['--queue'] : command === 'scope' ? ['--queue', '--spec'] : ['--queue', '--spec', command === 'snapshot' ? '--out' : command === 'accept-owner' ? '--decision' : command === 'accept-waiver' ? '--waiver' : '--report'];
+  const expected = command === 'recover' ? ['--queue'] : command === 'scope' || command === 'submit' ? ['--queue', '--spec'] : ['--queue', '--spec', command === 'snapshot' ? '--out' : command === 'accept-owner' ? '--decision' : command === 'accept-waiver' ? '--waiver' : '--report'];
   const optional = command === 'accept-waiver' ? ['--report'] : [];
   requireValue(expected.every(flag => flags[flag] !== undefined) && Object.keys(flags).every(flag => expected.includes(flag) || optional.includes(flag)), `Missing or unexpected arguments for ${command}`);
   if (command !== 'recover') requireValue(/^(?:0|[1-9]\d*)$/.test(flags['--spec']) && Number.isSafeInteger(Number(flags['--spec'])), 'Spec ID must be a nonnegative integer');
@@ -487,6 +570,9 @@ export async function main(argv = process.argv.slice(2)) {
     assertNoJournal(root, queuePath);
     const current = snapshot({ root, queuePath, specId: Number(flags['--spec']) });
     result = { queuePath: current.queuePath, specId: current.specId, changeScope: current.binding?.changeScope ?? null };
+  } else if (command === 'submit') {
+    result = await submit({ root, queuePath, specId: Number(flags['--spec']) });
+    for (const id of result.untraced) process.stderr.write(`Warning: criterion ${id} has no [AC:${id}] test in the spec's check inputs\n`);
   } else if (command === 'recover') result = recover({ root, queuePath });
   else if (command === 'accept-waiver') result = await acceptWaiver({ root, queuePath, specId: Number(flags['--spec']), waiverPath: flags['--waiver'], reportPath: flags['--report'] });
   else if (command === 'accept-owner') result = await acceptOwner({ root, queuePath, specId: Number(flags['--spec']), decisionPath: flags['--decision'] });
@@ -496,5 +582,5 @@ export async function main(argv = process.argv.slice(2)) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  main().catch(error => { process.stderr.write(`Completion stopped: ${error.message}\n`); process.exitCode = 1; });
+  main().catch(error => { process.stderr.write(`Completion stopped: ${error.message}\n`); process.exitCode = error.exitCode ?? 1; });
 }

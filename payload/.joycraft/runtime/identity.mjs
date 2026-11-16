@@ -184,6 +184,9 @@ export function validateQueue(queue, { select } = {}) {
       if (input.state !== undefined) requireValue(input.state === 'absent' && input.kind !== 'requirement', `Verification input ${inputPath} at index ${inputIndex} may use state: absent only for code, check or fixture inputs`);
     }
     if (spec.verification.changeScope !== undefined) validateChangeScope(spec.verification.changeScope, relativePath);
+    if (spec.submitted !== undefined) {
+      requireValue(isObject(spec.submitted) && Object.keys(spec.submitted).every(key => key === 'at') && nonempty(spec.submitted.at) && Number.isFinite(Date.parse(spec.submitted.at)), `Invalid submit record for spec ${spec.id}`);
+    }
     if (spec.acceptedReport !== undefined) {
       requireValue(isObject(spec.acceptedReport) && isSha256(spec.acceptedReport.sha256), `Invalid accepted report for spec ${spec.id}`);
       relativePath(spec.acceptedReport.path);
@@ -240,10 +243,11 @@ export function subjectIdentity(subject) {
   return sha256(canonical(fields));
 }
 
-/** Queue status and completion receipt metadata do not change reviewed requirements. */
+/** Queue status, the submit record and completion receipt metadata do not change reviewed requirements. */
 function queueSpecRequirements(spec) {
   const requirements = { ...spec };
   delete requirements.status;
+  delete requirements.submitted;
   delete requirements.acceptedReport;
   delete requirements.ownerAcceptance;
   delete requirements.waiver;

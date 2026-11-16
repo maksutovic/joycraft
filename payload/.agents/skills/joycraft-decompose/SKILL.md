@@ -27,9 +27,9 @@ environment can show is not a criterion; list it under the spec's "Deferred unti
 deploy" section instead. Include the brief, spec and exact
 relevant code, test/configuration and fixture paths as verification inputs. Plan
 paths explicitly and update them when implementation reveals more relevant files.
-Inputs are present by default. Declare a deletion only as an explicit
+Declare a deletion only as an explicit
 non-requirement input with `state: 'absent'`; a rename needs the old absent input
-and the new present one. A requirement cannot be absent. Change scope is opt-in:
+and the new present one. Change scope is opt-in:
 add `verification.changeScope` only when a spec needs a scope check, with an
 explicit full base SHA recorded before implementation. Give any unrelated changed
 path a narrow path-and-reason exclusion; do not turn a broad branch or directory
@@ -54,12 +54,13 @@ between the intended behavior and the coupled path. Use
 check; omit this detail for a simple local edit. It does not replace the brief as
 the authority for product behavior.
 
-Before queueing, check each spec; a spec that fails this check does not enter
-the queue and goes back to the brief as an open decision: every acceptance bullet has a `Check:` and
-open-input rules name their check set, costlier error and threshold; no
-criterion depends on an unbuilt spec; cited evidence files exist; runtime and
-visual criteria carry their environment recipe or are deferred; settled rulings
-are quoted with their ID. Check coverage against the original request and
+Before handing the queue on, run
+`node .joycraft/runtime/queue-check.mjs --queue <queue>` and act on each gap it
+names. Then check what it cannot; a failing spec goes back to the brief as an
+open decision: open-input rules name their check set, costlier error and
+threshold; no criterion depends on an unbuilt spec; runtime and visual criteria
+carry their environment recipe or are deferred; settled rulings are quoted with
+their ID. Check coverage against the original request and
 resolved answers, not just the spec list. Retain visible pending choices and dependencies. Pass the ready queue
 to `joycraft-implement`, which continues authorized work without per-spec approval.
 For native execution, hand off raw sources and the selected queue/spec to the

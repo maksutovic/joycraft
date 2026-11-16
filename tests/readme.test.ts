@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -49,5 +50,36 @@ describe('README.md', () => {
     const prompts = readFileSync(join(__dirname, '..', 'docs', 'prompts.md'), 'utf-8');
     expect(prompts).toContain("Turn on Joycraft's gates.");
     expect(prompts).toContain("Turn off Joycraft's gates.");
+  });
+
+  it('[AC:readme-away-from-keyboard] says under The review loop what a user away from the queue sees, with its prompts', () => {
+    const readme = readFileSync(join(__dirname, '..', 'README.md'), 'utf-8');
+    const loop = readme.indexOf('\n## The review loop\n');
+    const away = readme.indexOf('\n### Running a queue while you are away\n');
+    expect(loop).toBeGreaterThan(-1);
+    expect(away).toBeGreaterThan(loop);
+    expect(away).toBeLessThan(readme.indexOf('\n## ', loop + 1));
+    const section = readme.slice(away, readme.indexOf('\n### ', away + 1));
+    expect(section).toMatch(/asks its questions before the queue\s+starts/);
+    expect(section).toMatch(/Work stops only for an answer that must come from you or for a broken\s+project/);
+    expect(section).toMatch(/follow-up\s+question/);
+    expect(section).toMatch(/assumption the reviewer made/);
+    expect(section).toMatch(/You do not run a command/);
+    const prose = section.replace(/```[\s\S]*?```/g, '');
+    expect(prose).not.toMatch(/node \.joycraft|npx |\.mjs/);
+    const prompts = readFileSync(join(__dirname, '..', 'docs', 'prompts.md'), 'utf-8');
+    for (const prompt of [
+      'Build <what you want> with Joycraft. I will be away while the queue runs.',
+      'At session end, ask me each follow-up question with the assumption the reviewer made.',
+      'Do not archive a feature until I have answered its follow-up questions.',
+      "Run Joycraft's session end. Before you archive a feature, ask me each follow-up",
+    ]) {
+      expect(section).toContain(prompt);
+      expect(prompts).toContain(prompt);
+    }
+    const lint = spawnSync('python3', [join(__dirname, '..', 'scripts', 'ste-lint.py'), '-'], { input: prose, encoding: 'utf-8' });
+    if (lint.error) return; // python3 is absent: the ste-lint test skips the same way.
+    const violations = JSON.parse(lint.stdout).violations;
+    for (const kind of ['contraction', 'semicolon', 'banned_modal', 'latin_abbrev', 'slop_word']) expect(violations[kind], kind).toBe(0);
   });
 });

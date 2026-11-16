@@ -1,3 +1,10 @@
+import { execFileSync, spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { closeSync, createReadStream, existsSync, fsyncSync, mkdirSync, openSync, realpathSync, unlinkSync } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
 const kinds = new Set(['runtime', 'visual', 'structural']);
 const methods = new Set(['test', 'command', 'browser', 'manual', 'source']);
 const results = new Set(['PASS', 'FAIL', 'UNVERIFIED']);
@@ -138,4 +145,131 @@ export function validateEvidence(report, criteria) {
     }
   }
   return { ok: errors.length === 0, errors };
+}
+
+export const defaultTimeoutMs = 300000;
+const graceMs = 2000;
+const usage = 'Usage: evidence.mjs run --receipt <path> [--timeout-ms <n>] -- <command> [args...]';
+
+const refusal = message => Object.assign(new Error(message), { exitCode: 2 });
+const refuse = (condition, message) => { if (!condition) throw refusal(message); };
+
+function gitIgnored(root, relative) {
+  try {
+    execFileSync('git', ['check-ignore', '-q', '--', relative], { cwd: root, stdio: 'ignore' });
+    return true;
+  } catch { return false; } // 1: not ignored; anything else: git cannot say, so not ignored.
+}
+
+/** Signal the process group led by pid; false once the group is gone. */
+function signalGroup(pid, signal) {
+  try { process.kill(-pid, signal); return true; } catch (error) {
+    if (error.code === 'ESRCH' || error.code === 'EPERM') return false;
+    throw error;
+  }
+}
+
+/** SIGTERM the group, then SIGKILL whatever is left after the grace period. */
+async function endGroup(pid) {
+  if (!signalGroup(pid, 'SIGTERM')) return;
+  for (const deadline = Date.now() + graceMs; Date.now() < deadline;) {
+    await new Promise(resolve => setTimeout(resolve, 50));
+    if (!signalGroup(pid, 0)) return;
+  }
+  signalGroup(pid, 'SIGKILL');
+}
+
+/** A new receipt path inside the project that git ignores or that sits in a
+ * feature folder under the configured features home. Refuses with exit 2. */
+async function receiptFile(root, receipt) {
+  const { localPath, relativePath } = await import('./identity.mjs');
+  let relative, file;
+  try { relative = relativePath(receipt); file = localPath(root, relative, true); }
+  catch (error) { throw refusal(`Receipt must be a new project-relative path inside the project: ${error.message}`); }
+  refuse(!existsSync(file), `Receipt already exists: ${relative}; use a fresh receipt path`);
+  const { workPaths } = await import('./config.mjs');
+  let features;
+  try { features = workPaths(root).features.split('/'); } catch (error) { throw refusal(error.message); }
+  const parts = relative.split('/');
+  const featureFolder = parts.length > features.length + 1 && features.every((part, index) => parts[index] === part)
+    && existsSync(path.join(root, ...parts.slice(0, features.length + 1)));
+  refuse(featureFolder || gitIgnored(root, relative),
+    `Receipt must be git-ignored or inside a feature folder under ${features.join('/')}/: ${relative}`);
+  mkdirSync(path.dirname(file), { recursive: true });
+  const inside = path.relative(realpathSync(root), realpathSync(path.dirname(file)));
+  refuse(inside === '' || (inside !== '..' && !inside.startsWith(`..${path.sep}`) && !path.isAbsolute(inside)), `Receipt must stay inside the project: ${relative}`);
+  return { relative, file };
+}
+
+/**
+ * Run the project's own command once, without a shell, with CI=1 and a time
+ * limit. The child's stdout and stderr both go straight to one new receipt
+ * file, in the order the child wrote them, as `cmd > receipt 2>&1` would.
+ * Returns the observation's `command` and `receipts`, plus `timedOut`,
+ * `timeoutMs` and the ending `signal` when there was one. A timeout ends the
+ * child's process group (POSIX) or the child (Windows) and gives exitCode null.
+ * Every refusal happens before the child starts and carries exitCode 2.
+ */
+export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = defaultTimeoutMs, argv }) {
+  refuse(Array.isArray(argv) && argv.length > 0 && argv.every(value => typeof value === 'string') && argv[0] !== '', `A command is needed after --. ${usage}`);
+  refuse(Number.isSafeInteger(timeoutMs) && timeoutMs > 0 && timeoutMs <= 2 ** 31 - 1, `--timeout-ms must be a whole number of milliseconds from 1 to ${2 ** 31 - 1}`);
+  const { relative, file } = await receiptFile(root, receipt);
+  let fd;
+  try { fd = openSync(file, 'wx', 0o644); }
+  catch (error) { throw refusal(error.code === 'EEXIST' ? `Receipt already exists: ${relative}; use a fresh receipt path` : `Cannot create receipt ${relative}: ${error.message}`); }
+  const posix = process.platform !== 'win32';
+  let child;
+  try {
+    child = spawn(argv[0], argv.slice(1), { cwd: root, env: { ...process.env, CI: '1' }, stdio: ['ignore', fd, fd], detached: posix, windowsHide: true });
+    await new Promise((resolve, reject) => { child.once('spawn', resolve); child.once('error', reject); });
+  } catch (error) {
+    closeSync(fd);
+    unlinkSync(file);
+    throw refusal(`Could not start ${argv[0]}: ${error.message}`);
+  }
+  // The child runs in its own group, so pass on a stop that reaches only this process.
+  const stop = signal => { if (posix) signalGroup(child.pid, 'SIGKILL'); else child.kill('SIGKILL'); process.exit(128 + (os.constants.signals[signal] ?? 1)); };
+  const signals = ['SIGINT', 'SIGTERM', 'SIGHUP'];
+  for (const signal of signals) process.on(signal, stop);
+  let timedOut = false;
+  const exited = new Promise(resolve => child.once('exit', (code, signal) => resolve({ code, signal })));
+  const timer = setTimeout(() => { timedOut = true; if (posix) endGroup(child.pid); else child.kill('SIGKILL'); }, timeoutMs);
+  const { code, signal } = await exited;
+  clearTimeout(timer);
+  // Leftover processes in the group would keep writing to the receipt after it is hashed.
+  if (posix) await endGroup(child.pid);
+  for (const each of signals) process.off(each, stop);
+  try { fsyncSync(fd); } finally { closeSync(fd); }
+  const digest = createHash('sha256');
+  for await (const chunk of createReadStream(file)) digest.update(chunk);
+  return {
+    command: { argv: [...argv], exitCode: timedOut ? null : code },
+    receipts: [{ path: relative, sha256: digest.digest('hex') }],
+    timedOut, timeoutMs, ...(signal ? { signal } : {}),
+  };
+}
+
+export async function main(args = process.argv.slice(2)) {
+  const [command, ...rest] = args;
+  refuse(command === 'run', usage);
+  const end = rest.indexOf('--');
+  refuse(end !== -1, `A command is needed after --. ${usage}`);
+  const flags = {};
+  for (let index = 0; index < end; index += 2) {
+    const key = rest[index]; const value = rest[index + 1];
+    refuse(['--receipt', '--timeout-ms'].includes(key) && index + 1 < end && typeof value === 'string' && value !== '' && flags[key] === undefined, `Invalid or duplicate argument: ${key}. ${usage}`);
+    flags[key] = value;
+  }
+  refuse(flags['--receipt'] !== undefined, `--receipt is required. ${usage}`);
+  refuse(flags['--timeout-ms'] === undefined || /^[1-9]\d*$/.test(flags['--timeout-ms']), '--timeout-ms must be a whole number of milliseconds');
+  const result = await runEvidence({ receipt: flags['--receipt'], argv: rest.slice(end + 1),
+    timeoutMs: flags['--timeout-ms'] === undefined ? defaultTimeoutMs : Number(flags['--timeout-ms']) });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  return result;
+}
+
+// Node runs the main module from its real path; resolve symlinks before comparing.
+const invoked = (() => { try { return realpathSync(process.argv[1]); } catch { return null; } })();
+if (invoked && import.meta.url === pathToFileURL(invoked).href) {
+  main().catch(error => { process.stderr.write(`Evidence run stopped: ${error.message}\n`); process.exitCode = error.exitCode ?? 1; });
 }

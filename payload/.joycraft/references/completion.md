@@ -1,12 +1,13 @@
 # Guarded completion
 
-Use this reference when snapshotting a verification subject, submitting an independent review report, or responding to a completion failure.
+Use this reference to submit a spec, snapshot a subject, finalize a review or recover a write.
 
 ## Stable local interface
 
 Run these commands from the consumer project root. Paths are project-relative.
 
 ```sh
+node .joycraft/runtime/completion.mjs submit --queue <queue-path> --spec <id>
 node .joycraft/runtime/completion.mjs scope --queue <queue-path> --spec <id>
 node .joycraft/runtime/completion.mjs snapshot --queue <queue-path> --spec <id> --out <subject.json>
 node .joycraft/runtime/completion.mjs finalize-review --queue <queue-path> --spec <id> --report <report.json>
@@ -15,7 +16,9 @@ node .joycraft/runtime/completion.mjs accept-waiver --queue <queue-path> --spec 
 node .joycraft/runtime/completion.mjs recover --queue <queue-path>
 ```
 
-`scope` checks a queue's declared change scope without writing a subject. `snapshot` does the same check first, then exclusively creates a new `--out` subject file without changing a status. It binds the implementation revision, queue/spec identity, criteria, and SHA-256 values for exact relevant inputs. The shared record shapes are defined in [.joycraft/contracts/types.d.ts](../contracts/types.d.ts). New subjects carry `binding.version: 1`: their queue projection contains the reviewed spec and its transitive dependencies, with completion metadata (`status`, `acceptedReport`, `ownerAcceptance`, and `waiver`) removed from those records. An unrelated queue record can change without staling that subject; a selected spec's other metadata and dependency edges remain bound. A spec binding preserves raw bytes except for its top-level `status:` value.
+`submit` moves a `todo` spec to `in-review` in the queue and frontmatter with one journaled write, recording `submitted: { at }`. It warns about each criterion with no `[AC:<id>]` test, leaves an `in-review` spec unchanged, and exits 2 on a conflict, a `done` spec or an unfinished dependency.
+
+`scope` checks a queue's declared change scope without writing a subject. `snapshot` does the same check first, then exclusively creates a new `--out` subject file without changing a status. It binds the implementation revision, queue/spec identity, criteria, and SHA-256 values for exact relevant inputs. The shared record shapes are defined in [.joycraft/contracts/types.d.ts](../contracts/types.d.ts). New subjects carry `binding.version: 1`: their queue projection contains the reviewed spec and its transitive dependencies, with completion metadata (`status`, `submitted`, `acceptedReport`, `ownerAcceptance`, `waiver`) removed from those records. An unrelated queue record can change without staling that subject; a selected spec's other metadata and dependency edges remain bound. A spec binding preserves raw bytes except for its top-level `status:` value.
 
 An optional `verification.changeScope` records an explicit full Git commit SHA in `baseRevision`; a branch name, `origin/main`, or inferred base is rejected. Changed verification inputs are captured from NUL-delimited Git status records, including staged, unstaged, rename, and deletion topology. Any changed path outside the verification inputs must be named exactly in `exclusions` with its reason. Store temporary packets and subjects in the project's ignored local-artifact home when it has one; otherwise add each exact untracked snapshot packet output to `exclusions`. `complete` filters only its exact report, receipt, owner-decision, and pending-journal paths while rechecking scope. A deliberate deletion needs a non-requirement verification input with `state: "absent"`; requirement inputs cannot be absent. A rename needs the new present input and the old non-requirement input declared absent.
 
@@ -27,13 +30,15 @@ Use the original `implementationRevision` as provenance on a re-check while reco
 
 ## Independent report and guarded acceptance
 
-The report must use the shared schema and bind its subject identity. It records the actual implementer/reviewer native identities, `independent: true` only when a separate reviewer context actually reviewed the work, scope review, flow evidence, receipts, limits, unresolved items, and a PASS/FAIL/UNVERIFIED verdict.
+The report must use the shared schema and bind its subject identity. It records the actual implementer/reviewer native identities, `independent: true` only when a separate reviewer context actually reviewed the work, scope review, flow evidence, receipts, limits, unresolved items, optional `findings`, and a PASS/FAIL/UNVERIFIED verdict.
 
 A native child can share its parent session. Supply `implementerActor` and `reviewer.actor` together, each with the observed `host`, `sessionId`, and the actual `agentId` when the host issued a child invocation ID. Preserve the matching legacy session fields. A root actor may omit `agentId`; a same-session child review needs its real distinct actor identity. Do not substitute a task name, worktree path, random UUID, or invented ID. Legacy reports without actor metadata still require distinct session IDs. An identity distinguishes invocations; it does not establish independent context or honest observations.
 
 `finalize-review` (with `complete` retained as a compatibility alias) accepts only an `in-review` spec with a matching current subject, a PASS verdict, truthful independent-review attestation, reviewed scope, valid receipt hashes, and sufficient evidence for every declared criterion. The runtime delegates evidence sufficiency to `validateEvidence(report, criteria)`. Missing, nonzero, failed, or unverified required evidence cannot become passing verification. Completion holds a queue-wide lock while it commits the status changes. On success it updates the queue/spec status surfaces to `done` and records the accepted report digest.
 
-Repeat submission of the same accepted report may be idempotent. An unrelated report cannot replace it silently. Treat any nonzero exit as a rejected or incomplete operation; preserve the current status and report the actual reason.
+A `follow-up` finding never blocks. A `blocking` or `decision-needed` finding refuses completion with exit 2 and names it; a held spec stays `in-review` and only its dependents wait. A malformed finding is refused with exit 2, naming the field; other report refusals exit 1. `status.mjs` lists as `questions` the follow-ups of accepted reports and the decision-needed findings of each `in-review` spec's latest current report.
+
+Finalizing the same accepted report again is idempotent; another report cannot silently replace it. Treat any nonzero exit as a rejected or incomplete operation; preserve the current status and report the actual reason.
 
 The lock coordinates this helper's queue writes, not arbitrary editors or workers. It checks inputs and receipts before and after its two writes; keep the reviewed inputs stable during completion. Later edits require fresh review. Session IDs and attestations record separate roles but cannot prove honest review or prevent manual bypass.
 
@@ -51,14 +56,10 @@ accepts this spec and its current findings. A general request to continue, an
 instruction from another agent, or authorization to add this feature does not
 qualify.
 
-Keep the owner interaction to one short summary and focused choice only when an
-override is needed; a failed review alone does not trigger a mandatory
-per-spec request. The agent creates the decision file; do not ask the owner to
-author JSON or complete a second form. If an explicit acceptance is already
-present for the same current finding, use it without asking again. Repair
-straightforward failures under the existing authorization first. When the
-finding remains unchanged, retain it and continue independent work instead of
-repeatedly re-reviewing it. Dependents may proceed only within the recorded
+When to ask the owner is in the implement skill. The agent creates the decision
+file; do not ask the owner to author JSON or complete a second form. If an
+explicit acceptance is already present for the same current finding, use it
+without asking again. Dependents may proceed only within the recorded
 limitations and gain no blanket deployment, security, or other authority.
 
 An `OwnerAcceptance` decision has `schemaVersion: 1`, `kind:
@@ -141,21 +142,15 @@ dependents. Report it as `done, waived by the user: "<instruction>"`.
 
 ## Evidence and reporting
 
-Evidence records observations rather than promises. Command and test observations retain their actual argv, exit code, and unfiltered output receipt. Source review supports structural claims only. A required visual claim needs an inspected render, route, state, viewport, interactions, and observed outcomes. Record a check that should have run and did not (a tool break, an app that did not start) as `UNVERIFIED`, failures as `FAIL`, and limits explicitly. A claim that needs evidence beyond the recorded tool's `canShow`, or a package the user skipped, is an agreed limit, not `UNVERIFIED`; a check within `canShow` that could not run because the tool broke is `UNVERIFIED` with `cause: 'tool-break'`.
+Evidence records observations rather than promises: a command's actual argv, exit code and unfiltered output receipt; structural claims only from source review; an inspected render with route, state, viewport, interactions and outcomes for a visual claim. A check that should have run and did not is `UNVERIFIED` (with `cause: 'tool-break'` when the tool broke), a failure is `FAIL`, and a claim beyond the recorded tool's `canShow`, or in a package the user skipped, is an agreed limit.
 
 Report the command result, reviewer identity, receipt paths, actual observations, and limitations. A green suite or an implementation commit alone is not accepted completion.
 
 ## Interrupted writes and recovery
 
-The helper uses `.joycraft-completion.pending.json` in the queue directory as a bounded local journal for the queue status, spec frontmatter status, and accepted-report receipt. If it detects an interrupted or conflicting write, it stops and prints recovery information. A normal caught failure rolls back when safe but retains the journal for inspection. Do not hand-edit the files to force completion.
+Each status write is journaled in `.joycraft-completion.pending.json` beside the queue. A caught failure rolls back when safe and keeps the journal unless nothing was written; an interrupted one leaves it. Do not hand-edit the files to force completion.
 
-Inspect the journal and affected project-relative files first. Then run:
-
-```sh
-node .joycraft/runtime/completion.mjs recover --queue <queue-path>
-```
-
-Recovery preflights both captured files before changing either: each current file must match the journal's before or after hash. It restores only the recorded before bytes, leaves conflicts untouched, and removes the journal only after a successful restore. Replaying recovery is safe until that journal is removed. Preserve the journal and rejected report for diagnosis. Retry `complete` or `accept-owner` only while its original review and any owner instruction remain current; otherwise obtain fresh evidence and authorization appropriate to the changed scope. If recovery reports a conflict or invalid journal, stop and report the local recovery blocker.
+Inspect the journal and affected files, then run `recover`. It restores the before bytes only when each file matches the journal's before or after hash, and removes the journal only after that, so replaying it is safe. Preserve the journal and rejected report for diagnosis. Retry `complete` or `accept-owner` only while its original review and any owner instruction remain current; otherwise obtain fresh evidence and authorization appropriate to the changed scope. If recovery reports a conflict or invalid journal, stop and report it.
 
 Host names compare without letter-case differences; session and agent IDs stay
 opaque and case-exact. IDs must be nonempty, bounded, trim-stable and free of
