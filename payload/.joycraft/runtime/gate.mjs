@@ -66,6 +66,10 @@ export function checkGates(root = process.cwd()) {
           + `node .joycraft/runtime/completion.mjs finalize-review --queue ${feature.queuePath} --spec ${spec.id} --report <file>` });
     }
   }
+  for (const item of status.legacyDecisions) {
+    failures.push({ kind: 'legacy-decision', feature: item.feature, specId: item.specId, file: item.file,
+      message: `Joycraft gate: ${item.feature} spec ${item.specId} (${item.file}) was accepted as done before the gates, but its decision file ${item.path} is missing or changed. Restore it from git; if you cannot, stop and tell the user.` });
+  }
   const owner = new Map(status.features.flatMap(feature => feature.specs.map(row => [row.file, feature])));
   for (const item of status.drift) {
     const step = driftStep(item, owner.get(item.file));
@@ -228,6 +232,8 @@ function readState(root) {
 
 // A hook added over an open problem would refuse every stop until the problem is cleared.
 const clearFirst = 'Joycraft gate: nothing was written. Clear each problem above, then turn the gates on again.';
+// Turning the gates on is the one time the user is present for an unaccepted done spec.
+const askOnce = ' The user is here, so for the done specs with no acceptance ask one question instead: accept them as they are, or send them back for review.';
 
 /** `hook --plan|--on|--off`: show, add or remove Joycraft's Stop hook in `.claude/settings.json`. */
 export function hook(root, action) {
@@ -260,14 +266,16 @@ export function hook(root, action) {
   }
   const plan = planHook(root);
   if (plan.change === 'none') return { file: settingsFile, change: 'none', message: `Joycraft's Stop hook is already in ${settingsFile}. Nothing was changed.` };
-  const problems = checkGates(root).failures.map(item => item.message);
+  const failures = checkGates(root).failures;
+  const problems = failures.map(item => item.message);
+  const ask = failures.some(item => item.kind === 'unaccepted-done') ? askOnce : '';
   if (action === 'plan') {
     return { file: settingsFile, change: 'add', command: hookCommand, ...(problems.length ? { problems } : {}), before: plan.before, after: plan.after,
       message: problems.length
-        ? 'Plan only; nothing was written. hook --on refuses until the gate check finds none. Clear each problem you can by its next step, tell the user what you changed, then plan again.'
+        ? `Plan only; nothing was written. hook --on refuses until the gate check finds none. Clear each problem you can by its next step, tell the user what you changed, then plan again.${ask}`
         : `Plan only; nothing was written. Show this change to the user and run gate.mjs hook --on on their yes.` };
   }
-  if (problems.length) return { file: settingsFile, change: 'none', problems, message: clearFirst };
+  if (problems.length) return { file: settingsFile, change: 'none', problems, message: clearFirst + ask };
   mkdirSync(path.dirname(plan.file), { recursive: true });
   writeFileSync(localPath(root, settingsFile, true), plan.after);
   writeState(root, { file: settingsFile, before: plan.before, after: plan.after });

@@ -34,6 +34,11 @@
             ]
           }
         ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-02-install-entry-files/specs/legacy-acceptance.json",
+        "sha256": "3336cfbaedb1b65e010efe8f393270f3f019696c9758218a2af53f42cd997135",
+        "legacy": true
       }
     },
     {
@@ -68,6 +73,11 @@
             ]
           }
         ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-02-install-entry-files/specs/legacy-acceptance.json",
+        "sha256": "3336cfbaedb1b65e010efe8f393270f3f019696c9758218a2af53f42cd997135",
+        "legacy": true
       }
     },
     {
@@ -105,6 +115,11 @@
             ]
           }
         ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-02-install-entry-files/specs/legacy-acceptance.json",
+        "sha256": "3336cfbaedb1b65e010efe8f393270f3f019696c9758218a2af53f42cd997135",
+        "legacy": true
       }
     },
     {
@@ -176,6 +191,11 @@
             ]
           }
         ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-02-install-entry-files/specs/legacy-acceptance.json",
+        "sha256": "3336cfbaedb1b65e010efe8f393270f3f019696c9758218a2af53f42cd997135",
+        "legacy": true
       }
     },
     {
@@ -212,6 +232,11 @@
             ]
           }
         ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-02-install-entry-files/specs/legacy-acceptance.json",
+        "sha256": "3336cfbaedb1b65e010efe8f393270f3f019696c9758218a2af53f42cd997135",
+        "legacy": true
       }
     },
     {
@@ -246,6 +271,11 @@
             ]
           }
         ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-02-install-entry-files/specs/legacy-acceptance.json",
+        "sha256": "3336cfbaedb1b65e010efe8f393270f3f019696c9758218a2af53f42cd997135",
+        "legacy": true
       }
     },
     {
@@ -281,6 +311,11 @@
             ]
           }
         ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-02-install-entry-files/specs/legacy-acceptance.json",
+        "sha256": "3336cfbaedb1b65e010efe8f393270f3f019696c9758218a2af53f42cd997135",
+        "legacy": true
       }
     },
     {
@@ -318,6 +353,11 @@
             ]
           }
         ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-02-install-entry-files/specs/legacy-acceptance.json",
+        "sha256": "3336cfbaedb1b65e010efe8f393270f3f019696c9758218a2af53f42cd997135",
+        "legacy": true
       }
     },
     {
@@ -362,6 +402,11 @@
             ]
           }
         ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-02-install-entry-files/specs/legacy-acceptance.json",
+        "sha256": "3336cfbaedb1b65e010efe8f393270f3f019696c9758218a2af53f42cd997135",
+        "legacy": true
       }
     },
     {
@@ -398,6 +443,11 @@
             ]
           }
         ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-02-install-entry-files/specs/legacy-acceptance.json",
+        "sha256": "3336cfbaedb1b65e010efe8f393270f3f019696c9758218a2af53f42cd997135",
+        "legacy": true
       }
     }
   ]

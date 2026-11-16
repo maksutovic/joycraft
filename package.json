@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -13,8 +13,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.5.1",
-    "summary": "Turning on the gates now checks first, and the agent fixes what it can before the hook goes in. When the gate blocks a stop, the agent restores the spec without asking you. A failed test run exits 1. Rolling back the 1.0 upgrade also removes the gate hook.",
+    "release": "1.5.2",
+    "summary": "When you turn on the gates, the agent names specs marked done with no review on record and asks one question: accept them as they are, or send them back for review. Your words are recorded verbatim in a file committed beside the queue.",
     "autoSafeEligible": false
   },
   "scripts": {

@@ -193,7 +193,7 @@ export function validateQueue(queue, { select } = {}) {
     }
     if (spec.ownerAcceptance !== undefined) {
       requireValue(spec.acceptedReport === undefined, `Spec ${spec.id} cannot have both a PASS acceptance and an owner acceptance`);
-      requireValue(isObject(spec.ownerAcceptance) && isSha256(spec.ownerAcceptance.sha256), `Invalid owner acceptance for spec ${spec.id}`);
+      requireValue(isObject(spec.ownerAcceptance) && isSha256(spec.ownerAcceptance.sha256) && [undefined, true].includes(spec.ownerAcceptance.legacy), `Invalid owner acceptance for spec ${spec.id}`);
       relativePath(spec.ownerAcceptance.path);
     }
     if (spec.waiver !== undefined) {
@@ -224,11 +224,12 @@ export function specStatus(bytes) {
   return { status, replace: value => text.slice(0, valueIndex) + value + text.slice(valueIndex + status.length) };
 }
 
-export function readQueue({ root = process.cwd(), queuePath, specId }) {
+/** `criteria: false` skips the criteria check, for a spec accepted as done before the gates. */
+export function readQueue({ root = process.cwd(), queuePath, specId, criteria = true }) {
   queuePath = relativePath(queuePath);
   const queueBytes = readLocal(root, queuePath);
   const queue = parseJson(queueBytes, queuePath);
-  validateQueue(queue, { select: item => item.id === specId });
+  validateQueue(queue, { select: item => criteria && item.id === specId });
   const spec = queue.specs.find(item => item.id === specId);
   requireValue(spec, `Spec ${specId} does not exist in queue`);
   const specPath = path.posix.join(path.posix.dirname(queuePath), spec.file);

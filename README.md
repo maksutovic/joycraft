@@ -280,11 +280,12 @@ Joycraft's rule is that only an accepted review completes a spec. Without the
 gates, this rule is an instruction in a skill. An agent can forget the rule or skip
 it, for example late in a long session. The gates make the rule a check.
 
-**What the gate stops.** The gate check finds three problems:
+**What the gate stops.** The gate check finds four problems:
 
 - A spec is marked done with no accepted review, no acceptance from you and no waiver.
 - A spec has one status in the queue and a different status in the spec file.
 - Joycraft cannot read a queue file or a spec file.
+- You accepted old specs as they are, and the file with your words is missing or changed.
 
 It sends the agent back with the spec or file name and the next step. A spec that waits at
 `in-review` is not a problem.
@@ -292,15 +293,25 @@ It sends the agent back with the spec or file name and the next step. A spec tha
 **Why you want it.** Use the gates for long sessions and for sessions that you do
 not watch. A prompt tells the agent what to do, but a prompt is not a guarantee.
 With the gates on, Claude Code runs the check each time the agent tries to stop. The
-agent cannot stop until the problem is gone. For a spec marked done with no accepted
-review, the agent sets the spec back to `in-review` without asking you.
+agent cannot stop until the problem is gone. The hook can stop the agent at a spec
+marked done with no accepted review. Then the agent sets the spec back to `in-review`
+without asking you.
 
 **Before you turn them on.** An older project can have specs marked done with no
-accepted review. Turning on the gates runs the check first. The hook goes in only
-after a clean check. The agent sets each of these specs back to
-`in-review` itself, tells you what it changed, and checks again. It stops and asks
-you only about a file that it cannot read. A look at the problems first is optional.
-To see them, say:
+review on record, from the time before the gates. Turning on the gates runs the check
+first. The hook goes in only after a clean check. The agent names these specs and asks
+you one question: accept them as they are, or send them back for review.
+
+- If you accept them, the agent writes your words, exactly as you said them, in a
+  decision file beside the queue. Commit that file. The agent then accepts the specs
+  with one command. The specs stay done.
+- If you send them back, the agent sets each spec back to `in-review`.
+
+The command refuses a spec that was submitted for review or that has a review report.
+The runtime checks only the record. It cannot check that you said the words in the
+file. The agent fixes the other problems itself, tells you what it changed, and checks
+again. It stops and asks you only about a file that it cannot read. A look at the
+problems first is optional. To see them, say:
 
 ```text
 Run Joycraft's gate check with `node .joycraft/runtime/gate.mjs check` and show me

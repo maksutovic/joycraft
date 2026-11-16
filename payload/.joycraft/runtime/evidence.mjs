@@ -154,7 +154,7 @@ const usage = 'Usage: evidence.mjs run --receipt <path> [--timeout-ms <n>] -- <c
 const refusal = message => Object.assign(new Error(message), { exitCode: 2 });
 const refuse = (condition, message) => { if (!condition) throw refusal(message); };
 
-function gitIgnored(root, relative) {
+export function gitIgnored(root, relative) {
   try {
     execFileSync('git', ['check-ignore', '-q', '--', relative], { cwd: root, stdio: 'ignore' });
     return true;

@@ -7,6 +7,48 @@ claim that a release has shipped.
 
 ---
 
+## 1.5.2 — Accept specs that were done before the gates
+
+In 1.5.1, turning on the gates sent every spec marked done with no review on record
+back to `in-review`. The agent did this itself. A project that used Joycraft before
+the gates has such specs, and they shipped long ago. Now you choose.
+
+### What's new
+
+- **Turning on the gates asks one question.** The agent names each spec marked done
+  with no review on record. It asks you: accept them as they are, or send them back
+  for review? If you send them back, the agent sets them back to `in-review`, as
+  before.
+- **Your words are the record.** If you accept, the agent writes a decision file in
+  the feature folder beside the queue. The file holds your words exactly as you said
+  them, the date, the spec ids and the reason. Commit the file. The agent then runs
+  `completion.mjs accept-owner --legacy`. The specs stay done, and each one records the
+  file and its hash. The same file again changes nothing.
+- **Reviewed specs are refused.** A spec that was submitted for review or has a
+  review report makes the command refuse the whole call. Nothing is written. The
+  command also refuses a decision file that git ignores.
+- **A changed file is a problem.** `status.mjs` and the gate check report a decision
+  file that is missing or changed. The message says to restore it from git.
+- **Unattended stops do not change.** When the Stop hook blocks a stop, no user is
+  there. The message still tells the agent to set the spec back to `in-review` without
+  asking.
+- **Shorter shipped text.** The shipped skills, agent files and references went from
+  29,922 to 29,919 words.
+
+### Known limits
+
+- The runtime checks only the record. It cannot tell an old done spec from one that
+  an agent set to done today. It cannot check who said the words in the file. Your
+  words are the whole guard.
+- Only Claude Code's turn-on offers the question. On other agents, session end does
+  not offer it.
+- An untracked decision file passes. In a project that is not a Git repository,
+  nothing checks whether git ignores the file.
+
+Payload: joycraft-prototype `field-23`.
+
+---
+
 ## 1.5.1 — Gates that turn on safely, and fixes from the live check
 
 In 1.5.0, "Turn on Joycraft's gates" did not run the gate check first. It added the
