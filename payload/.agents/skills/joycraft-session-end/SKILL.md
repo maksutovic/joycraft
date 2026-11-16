@@ -28,6 +28,9 @@ frontmatter of accepted specs, lists features ready to archive) and
 `node .joycraft/runtime/gate.mjs check`. Do the step each gate message names,
 such as a completing command. Tell the user each message you could not clear.
 Ask the user each status `questions` entry (findings rule: `$joycraft-verify`).
+Write each answer where it lasts: a decision in the decision log; a requested
+change in a new spec or the held spec. Never archive a feature whose question
+the user asked to wait.
 Then preview `node .joycraft/runtime/worktrees.mjs prune` and apply it with
 `--apply`: it removes only clean, integrated trees of done specs and keeps the
 rest with their reason. Report kept trees and their size from `list`.
@@ -48,7 +51,7 @@ project. Put its findings on the session-end page with the rest of the report an
 apply only the fixes the user approves there. With no findings, say so in one
 line.
 
-When independent reports suggest a reusable failure lesson, use the compact, conditional process in [recurring failure guidance](../../../.joycraft/references/recurring-failures.md): keep only a source-linked shortlist in active task material, inspect current sources before relying on history, and route any proposed lesson as exact next-worker inputs through the existing dispatch path.
+When independent reports suggest a reusable failure lesson, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md).
 
 ## Session-end archival
 

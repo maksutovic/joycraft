@@ -7,6 +7,67 @@ claim that a release has shipped.
 
 ---
 
+## 1.5.1 — Gates that turn on safely, and fixes from the live check
+
+In 1.5.0, "Turn on Joycraft's gates" did not run the gate check first. It added the
+Stop hook over any open problem. In a project with old specs marked done and no
+accepted review, that hook stopped Claude Code from ending a reply. A live Claude Code
+run found a second problem: with a spec hand-edited to `done`, the agent asked the
+user what to do, and the hook blocked it nine times in a row. This release fixes both,
+and five smaller problems.
+
+### What's new
+
+- **Turning on the gates checks first.** `gate.mjs hook --on` runs the gate check
+  first. While the check finds a problem, it writes nothing, exits 2 and prints each
+  problem with its next step. `hook --plan` lists the same problems. The agent clears
+  what it can itself: it sets a spec marked done with no accepted review back to
+  `in-review`, tells you what it changed and plans again. It stops and asks you only
+  about a file that does not parse.
+- **The gate message says to act, not to ask.** The message names a `done` spec with
+  no accepted review. It tells the agent to set the spec back to `in-review` without
+  asking you. This only restores the true status. When the hook blocks the same stop
+  again, the message adds one line: do the step now and do not ask the user again.
+  Every stop is still checked.
+- **No command for you on other agents.** On another agent, `hook --on` says that the
+  hook is for Claude Code only for now. It also says that session end runs the same
+  check. It no longer tells you to run a command. On Claude Code, the success message
+  gives the phrase "Turn off Joycraft's gates" instead of a command.
+- **A failed test run exits 1.** A command that fails, is killed or times out now
+  makes `evidence.mjs run` exit 1. Before, it exited 0. It still writes the receipt,
+  and `command.exitCode` still holds the real exit code. Exit 2 is still only for a
+  refusal before the command starts.
+- **At queue end.** Sometimes no spec in the queue can start, because each remaining
+  spec is held or waits on a held spec. Then the agent runs session end without
+  waiting for you. Session end writes down each answer you give to a follow-up
+  question: a decision goes to the decision log, a requested change goes to a new spec
+  or the held spec. It does not archive a feature whose question you asked to wait.
+- **Rollback removes the gate hook.** "Undo this project's upgrade to Joycraft 1.0"
+  (`joycraft rollback`) now removes Joycraft's gate Stop hook from
+  `.claude/settings.json`. Two conditions apply: rollback removes runtime files that
+  the hook needs, and no settings backup replaces the file. Before, the hook stayed
+  and ran a missing file at each stop.
+- **`hook --off` tells the truth.** When `--on` created `.claude/settings.json`, `hook
+  --off` deletes the file and now says so.
+- **Shorter shipped text.** The shipped skills, agent files and references went from
+  29,941 to 29,922 words.
+
+### Checked live
+
+In a real Claude Code 2.1.325 session with the gates on, a spec hand-edited to `done`
+blocked every stop. The agent received the gate message. With the spec at `in-review`,
+the session ended normally.
+
+### Known limits
+
+- If an edited `gate.mjs` cannot run `hook --off`, rollback refuses. Remove the hook
+  from `.claude/settings.json` by hand, then run the rollback again.
+- Rollback can leave `.joycraft/local/.gitignore` behind.
+
+Payload: joycraft-prototype `field-22`.
+
+---
+
 ## 1.5.0 — Queues that run while you are away
 
 People start a queue and leave. Up to 1.4.0, the agent did three steps by hand. It

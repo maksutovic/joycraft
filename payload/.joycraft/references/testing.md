@@ -26,13 +26,14 @@ timeout, through
 `node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command...>`
 (`--timeout-ms <n>` changes the limit). It uses no shell and saves raw stdout
 and stderr to a new git-ignored or feature-folder receipt. Never start watch
-mode. Copy the printed `command` and `receipts` into the observation; exit 0
-only means the run was recorded. At the limit it ends the process group:
+mode. Copy the printed `command` and `receipts` into the observation. It exits
+1 when the command fails, is killed or times out, and still writes the
+receipt; exit 2 means it refused to run. At the limit it ends the process group:
 `exitCode: null`, `timedOut: true`. Set the host tool timeout to at least this
 limit. A shorter default (for example 120000 ms) ends the wrapper before the
 child. A timeout during parallel runs is not yet a hang: rerun once, alone,
-with fewer workers. If it times out again, report it
-with the receipt; do not keep rerunning. Never wait in a foreground loop
+with fewer workers. If it times out again, report it with the receipt; do
+not keep rerunning. Never wait in a foreground loop
 (`until …; do sleep`, `kill -0`, polling a log): start a long command in the
 background, keep working, and act on its completion notice. If a shared lock
 or verify slot stays busy over 5 minutes, stop and report it. Never
@@ -73,8 +74,7 @@ The validator does not inspect receipt contents, execute commands, determine
 whether inputs are representative, or discover omitted dependencies/requirements.
 The independent reviewer checks those judgments against the actual brief/spec.
 Completion separately checks current identity, receipt hashes, review independence,
-scope review and verdict before changing status. Tests of this validator protect
-its mechanical boundary; they are not an independent judge of a product outcome.
+scope review and verdict before changing status.
 
 ## Visual observations and the repair loop
 

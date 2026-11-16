@@ -32,7 +32,7 @@ implementer` with its actual native identity before any tasked edit or mutation.
 The coordinator runs that start itself only when it is the implementer actor.
 Use the returned packet only when `ready` is true.
 
-If existing independent reports reveal a possible recurring failure, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md) before carrying it forward: inspect the current scoped sources and actual counterpart path or journey, then provide any proposed lesson as exact inputs through the existing dispatch flow. A verified repair may establish its local project fact; a broader method benefit remains pending later reuse.
+If existing independent reports reveal a possible recurring failure, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md) before carrying it forward.
 
 Before the first dispatch, claim the queue with your actual host session ID and
 pass it as `--coordinator-session` to every startup:
@@ -126,6 +126,8 @@ delivery; never push with a promise to verify later or hide failure in a shell
 chain. This command cannot replace independent review or authorize a push.
 
 After review and completion, continue with the next ready authorized spec.
+When no spec can start, that is, each remaining spec is held or waits on a
+held spec, run `$joycraft-session-end` without waiting for the user.
 Report blockers and the next action first, then measured progress. Tell the user
 when a run stops or planned work is omitted, with the reason and retained state;
 explain any needed external setting and its effect. Give concise stage updates
