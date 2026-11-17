@@ -1,0 +1,692 @@
+{
+  "schemaVersion": 1,
+  "feature": "canonical-entry-file",
+  "specs": [
+    {
+      "id": 1,
+      "file": "01-entry-check-command.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "entry-clean-silent",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "entry-dead-path",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "entry-ci-mode",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "entry-policy-independent",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "entry-worktree-silent",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "file": "02-entry-checks.md",
+      "depends_on": [
+        1
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "temporal-advisory",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "script-name-gate",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "codex-bytes-gate",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "import-gate",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "entry-size-outside-rules",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "cleanup-reference-rows",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "file": "03-tidy-setting.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "tidy-project-setting",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "tidy-user-default",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "tidy-user-write",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "tidy-settings-row",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "tidy-setup-question",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "file": "04-cleanup-dispositions.md",
+      "depends_on": [
+        3
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "freeze-policies-removed",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "dispositions-table",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "tidy-follows-setting",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "ruling-definition",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "one-writer",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "cleanup-words-cut",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "file": "05-now-page.md",
+      "depends_on": [
+        2,
+        4
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "now-page-shape",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "now-map-row",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "now-exempt",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "holds-print",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "holds-first-action",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "now-old",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "session-end-now",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "archive-removes-now",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "file": "06-rules-rewrite.md",
+      "depends_on": [
+        4,
+        5
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "rewrite-steps",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "rewrite-one-yes",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "no-limit-lexicon",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "rules-markers",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "pin-check",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "tidy-uses-pin",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "file": "07-managed-block.md",
+      "depends_on": [
+        6
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "block-printed",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "block-gate",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "wiring-accepts-block",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "setup-places-block",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "canonical-shape",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "setup-words-cut",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "file": "08-vendor-and-release.md",
+      "depends_on": [
+        7
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-17-canonical-entry-file/specs/08-vendor-and-release.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "vendored-field-build",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/08-vendor-and-release.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "payload-words-not-up",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/08-vendor-and-release.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "readme-entry-section",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/08-vendor-and-release.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "release-fields",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/08-vendor-and-release.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "release-checklist-line",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/08-vendor-and-release.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "payload-entry-check",
+            "requirement": {
+              "path": "docs/features/2026-11-17-canonical-entry-file/specs/08-vendor-and-release.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
