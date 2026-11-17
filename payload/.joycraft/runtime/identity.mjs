@@ -224,6 +224,9 @@ export function specStatus(bytes) {
   return { status, replace: value => text.slice(0, valueIndex) + value + text.slice(valueIndex + status.length) };
 }
 
+/** Whether a feature folder is named for a queue feature: the feature, optionally after a YYYY-MM-DD- date. */
+export const featureFolderMatches = (folder, feature) => folder === feature || (/^\d{4}-\d{2}-\d{2}-/.test(folder) && folder.slice(11) === feature);
+
 /** `criteria: false` skips the criteria check, for a spec accepted as done before the gates. */
 export function readQueue({ root = process.cwd(), queuePath, specId, criteria = true }) {
   queuePath = relativePath(queuePath);

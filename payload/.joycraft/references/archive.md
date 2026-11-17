@@ -4,6 +4,10 @@
 It runs only from a host-asserted `session-end` boundary. A queue transition,
 review, hook event, or ordinary verification must never invoke it.
 
+`--feature` takes the queue's `feature` or the folder name:
+`docs/features/<feature>` or `docs/features/YYYY-MM-DD-<feature>`. Two dated
+matches stop it; pass a folder name. `<slug>` below is the folder name.
+
 Prepare a project-relative attestation file:
 
 ```json
@@ -200,7 +204,7 @@ then atomically moves `docs/features/<slug>` to
 feature stay live. Reports and receipts outside the feature are copied under
 the archive record's `evidence/` directory. `archive-replay.json` maps each
 original path to its moved, copied or restored byte-identical record. Historical links in
-the moved files retain their original text; consumers must treat them as history.
+the moved files retain their original text; treat them as history.
 
 The staging directory receives `archive-recovery.json` before any copy or move,
 and the marker remains in the final archive as immutable move provenance. If an
@@ -208,9 +212,9 @@ interruption prevents the final rename, the runtime tries to restore the source
 directory. If that restore cannot prove the source is back and staging no longer
 holds the feature, it retains the staged directory and its recovery manifest for
 manual recovery. A collision or changed byte fails without accepting new
-completion. A repeat is idempotent only when the existing replay manifest names
-the feature and every archived mapped byte still matches; otherwise it requires
-manual reconciliation.
+completion. A repeat is idempotent only when the replay manifest names
+the feature and every mapped byte still matches; otherwise reconcile it
+manually.
 
 ## After-archive hook
 
@@ -223,8 +227,7 @@ hooks:
 
 After a successful `--apply`, the runtime runs it once from the project root with
 `JOYCRAFT_FEATURE`, `JOYCRAFT_ARCHIVE_PATH` and `JOYCRAFT_SOURCE_PATH` set, and reports
-its exit code and output tail under `afterArchive`. Use it to update a project wiki
-or run a doc audit such as docaudit. A failing hook does not undo the archive;
-report it and fix the hook. A repeat of an existing archive does not run it again.
-`paths.features` and `paths.archive` in the same file move the working and archive
-folders; the defaults are `docs/features` and `docs/archive`.
+its exit code and output tail under `afterArchive`. Use it to update a wiki
+or run a doc audit. A failing hook does not undo the archive;
+report and fix it. A repeat does not run it again.
+`paths.features` and `paths.archive` there move both folders.

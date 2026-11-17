@@ -7,6 +7,45 @@ claim that a release has shipped.
 
 ---
 
+## 1.5.4 — Archive finds a dated feature folder
+
+Session-end archive could not run on a common folder shape. A feature in
+`docs/features/2026-11-17-corpus-report` whose queue says `"feature": "corpus-report"`
+failed both ways: `--feature corpus-report` found no folder, and
+`--feature 2026-11-17-corpus-report` did not match the queue. A field trial on
+2026-11-17 found this in two agent runs. No shipped text said the two names must be
+equal. Payload: joycraft-prototype `field-24`.
+
+### Fixed
+
+- **A dated folder archives.** A feature folder is named for its queue `feature`,
+  optionally after a date: `<feature>` or `YYYY-MM-DD-<feature>`. `archive.mjs
+  --feature` takes the queue's `feature` or the folder name and finds the folder. The
+  archive keeps the folder name: `docs/archive/2026-11-17-corpus-report`.
+- **Your records do not change.** No folder is renamed and no queue field is
+  rewritten. The queue's `feature` stays the name in the archive record. An archive
+  made before 1.5.4 still replays.
+- **Two matches stop.** When two dated folders match one feature name, the command
+  stops, names both and moves nothing. Give it one folder name. A folder with the
+  exact name is used before a dated one, as before.
+- **The queue check reports a wrong folder name.** `queue-check.mjs` reports a queue
+  whose folder is not its `feature`, with or without a date. You see it before the
+  first dispatch and not at session end.
+- **The shipped text did not grow.** The shipped skills, agent files and references
+  stay at 29,919 words.
+
+### Known limits
+
+- After `docs/features/example` is archived, `--feature example` finds a finished
+  `docs/features/2026-11-17-example` that is still in the working folder and archives
+  it. To repeat the first archive, wait until the second folder is archived too.
+- The queue check does not look one folder deeper (`docs/features/group/x/specs/`),
+  and it skips the folder check when `joycraft.yaml` cannot be read.
+- `workflow.md` and the decompose skill still say only `docs/features/<slug>/`. The
+  queue check line states the rule.
+
+---
+
 ## 1.5.3 — The release check waits for npm
 
 1.5.3 changes nothing in an installed project. Its payload and its update summary
