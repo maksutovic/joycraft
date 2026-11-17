@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "canonical-entry-file",
+  "title": "AGENTS.md without the questions",
+  "summary": "Cleanup asked you 9 questions because the skill has two policies: do not touch a rule, and change nothing before a yes. Three research agents read the Anthropic and OpenAI guidance and the measured evidence. A five-seat panel then tested a design against the real AGENTS.md of the field project. All five voted to adopt it with amendments. Result: Joycraft fixes everything that is not a rule with no question, a script proves that no rule changed, and one silent check tells a session when the file needs work. On that file, 9 questions become about 2 (the panel's estimate, not yet run). All three decisions are answered. The brief records what we settled in dialogue: tidy is a setting, rules are rewritten once with every limit kept, and AGENTS.md holds nothing temporal (one map row points at now.md). Full verdict: docs/research/2026-11-17-entry-file-sota-panel-verdict.md.",
+  "decisionIds": ["tidy-consent", "long-rules", "brief-rows"]
+}
