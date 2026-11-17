@@ -2,7 +2,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { boundQueueForSubject, briefDecisionRecords, canonical, isObject, isSha256, localPath, nonempty, normalizedQueueForSubject, parseJson, readLocal, readQueue, relativePath, requireValue, scopedRequirementForSubject, sha256, specStatus, subjectIdentity, validateIndependentReview } from './identity.mjs';
+import { boundQueueForSubject, briefDecisionRecords, canonical, featureFolderMatches, isObject, isSha256, localPath, nonempty, normalizedQueueForSubject, parseJson, readLocal, readQueue, relativePath, requireValue, scopedRequirementForSubject, sha256, specStatus, subjectIdentity, validateIndependentReview } from './identity.mjs';
 import { validateEvidence } from './evidence.mjs';
 import { validateOwnerAcceptance, validateWaiver } from './completion.mjs';
 import { readConfig, workPaths } from './config.mjs';
@@ -12,8 +12,28 @@ const featureName = value => {
   return value;
 };
 // Folders come from joycraft.yaml (paths.features / paths.archive); defaults are docs/features and docs/archive.
-const archivePath = (root, feature) => `${workPaths(root).archive}/${feature}`;
-const featurePath = (root, feature) => `${workPaths(root).features}/${feature}`;
+// A feature folder is named for its queue feature, optionally after a YYYY-MM-DD- date.
+const archivePath = (root, folder) => `${workPaths(root).archive}/${folder}`;
+const featurePath = (root, folder) => `${workPaths(root).features}/${folder}`;
+const featureFolder = queuePath => path.posix.dirname(path.posix.dirname(queuePath));
+
+/**
+ * The folder a --feature value names: the folder with that exact name, else the one
+ * folder named YYYY-MM-DD-<value>. A working folder is preferred to an archived one,
+ * so a repeat of a finished archive resolves the same way as its first run.
+ */
+function resolveFolder(root, name) {
+  const { features, archive } = workPaths(root);
+  for (const home of [features, archive]) {
+    const local = path.join(realpathSync(root), home);
+    const names = existsSync(local) ? readdirSync(local).filter(entry => !entry.startsWith('.')) : [];
+    if (names.includes(name)) return name;
+    const dated = names.filter(entry => entry !== name && featureFolderMatches(entry, name)).sort();
+    requireValue(dated.length <= 1, `Feature ${name} matches more than one folder in ${home}: ${dated.join(', ')}. Pass one of these folder names as --feature`);
+    if (dated.length === 1) return dated[0];
+  }
+  throw new Error(`No feature folder for ${name}: looked for ${name} and YYYY-MM-DD-${name} in ${features} and ${archive}`);
+}
 
 function localDirectory(root, relative) {
   relative = relativePath(relative);
@@ -82,8 +102,8 @@ const isDecisionAnswered = decision => ['clarified', 'assigned'].includes(decisi
  * record naming the answered owner decisions that authorized it, and the record's before
  * and after hashes must equal that commit's parent and own brief bytes.
  */
-function briefAmendments(root, feature, briefPath, later) {
-  const recordPath = `${featurePath(root, feature)}/brief-amendments.json`;
+function briefAmendments(root, source, briefPath, later) {
+  const recordPath = `${source}/brief-amendments.json`;
   const changed = `Original requirement changed after acceptance: ${briefPath}`;
   requireValue(existsSync(localPath(root, recordPath, true)), `${changed} (no ${recordPath} records its amendments)`);
   const record = parseJson(readLocal(root, recordPath), recordPath);
@@ -119,9 +139,9 @@ function validateReconciliation(record, feature) {
   }
 }
 
-function readReconciliation(root, feature, file) {
+function readReconciliation(root, source, feature, file) {
   if (file === undefined) return undefined;
-  requireValue(file === `${featurePath(root, feature)}/archive-reconciliation.json`, 'Use the feature archive-reconciliation.json for the explicit override');
+  requireValue(file === `${source}/archive-reconciliation.json`, 'Use the feature archive-reconciliation.json for the explicit override');
   const bytes = readLocal(root, file), record = parseJson(bytes, file);
   validateReconciliation(record, feature);
   return { path: file, sha256: sha256(bytes), record, used: new Set() };
@@ -133,7 +153,7 @@ function reconciledRequirement(root, state, review, input, project, reconciliati
   requireValue(index >= 0, `Archive reconciliation does not cover ${review.path}: ${input.path}`);
   const entry = reconciliation.record.entries[index];
   requireValue(sha256(readLocal(root, input.path)) === entry.currentSha256, `Archive reconciliation is stale: ${input.path}`);
-  const record = historicalRequirement(root, state.queue.feature, input, project, ['none', 'requirement-scope', 'queue-scope', 'queue-status', 'spec-status'], entry.acceptedCommit);
+  const record = historicalRequirement(root, featureFolder(state.queuePath), input, project, ['none', 'requirement-scope', 'queue-scope', 'queue-status', 'spec-status'], entry.acceptedCommit);
   reconciliation.used.add(index);
   return { ...record, ...(input.normalization === 'queue-scope' ? { specId: state.spec.id } : {}), reconciliationEntry: index, reconciliationSha256: reconciliation.sha256 };
 }
@@ -145,7 +165,7 @@ function reconciledRequirement(root, state, review, input, project, reconciliati
  * also needs an owner-decision amendment for each of those commits. The accepted bytes are
  * restored into the archive, so the original requirement is preserved, not reclassified.
  */
-function historicalRequirement(root, feature, input, project, normalizations = ['none', 'requirement-scope'], acceptedCommit) {
+function historicalRequirement(root, source, input, project, normalizations = ['none', 'requirement-scope'], acceptedCommit) {
   const changed = `Original requirement changed after acceptance: ${input.path}`;
   requireValue(gitRoot(root), `${changed} (no git history proves the accepted version)`);
   requireValue(gitIn(root, ['status', '--porcelain', '--', input.path]).trim() === '', `${changed} (commit its current version first)`);
@@ -163,7 +183,7 @@ function historicalRequirement(root, feature, input, project, normalizations = [
   const later = gitIn(root, ['log', '--full-history', '--topo-order', '--format=%H', '--reverse', `${accepted}..HEAD`, '--', input.path]).split('\n').filter(Boolean);
   const raw = committedBytes(root, accepted, input.path);
   const record = { path: input.path, normalization: input.normalization ?? 'none', ...(input.scope !== undefined ? { scope: input.scope } : {}), acceptedSha256: input.sha256, acceptedCommit: accepted, restoredSha256: sha256(raw), laterCommits: later };
-  if (input.path === `${featurePath(root, feature)}/brief.md`) record.amendments = briefAmendments(root, feature, input.path, later);
+  if (input.path === `${source}/brief.md`) record.amendments = briefAmendments(root, source, input.path, later);
   return record;
 }
 
@@ -202,7 +222,7 @@ function historicalReport(root, queuePath, state, review, { ownerAccepted = fals
   const reviewedSpec = reviewedQueue.specs.find(spec => spec.id === state.spec.id);
   requireValue(reviewedSpec && reviewedSpec.file === state.spec.file && canonical(report.subject.criteria) === canonical(reviewedSpec.verification.criteria), `Accepted report criteria differ from the archived spec: ${reportPath}`);
   const declaredSpecPaths = new Set([...state.queue.specs, ...reviewedQueue.specs].map(spec => path.posix.join(path.posix.dirname(queuePath), spec.file)));
-  for (const required of [state.specPath, `${featurePath(root, state.queue.feature)}/brief.md`, ...report.subject.criteria.map(item => relativePath(item.requirement.path))]) {
+  for (const required of [state.specPath, `${featureFolder(queuePath)}/brief.md`, ...report.subject.criteria.map(item => relativePath(item.requirement.path))]) {
     requireValue(inputs.some(input => isObject(input) && input.path === required && input.kind === 'requirement' && isSha256(input.sha256)), `Accepted report omits original requirement ${required}: ${reportPath}`);
   }
   const requirement = (input, project) => {
@@ -214,9 +234,9 @@ function historicalReport(root, queuePath, state, review, { ownerAccepted = fals
     requireValue(input.path !== queuePath && !declaredSpecPaths.has(input.path), `Original requirement changed after acceptance: ${input.path}`);
     const key = canonical(input);
     const explicit = reconciliation?.record.entries.some(entry => entry.report.path === review.path && entry.path === input.path && entry.normalization === input.normalization);
-    if (!history.has(key)) history.set(key, explicit ? reconciledRequirement(root, state, review, input, project, reconciliation) : historicalRequirement(root, state.queue.feature, input, project));
+    if (!history.has(key)) history.set(key, explicit ? reconciledRequirement(root, state, review, input, project, reconciliation) : historicalRequirement(root, featureFolder(queuePath), input, project));
   };
-  for (const input of inputs.filter(input => isObject(input) && input.kind === 'requirement' && (bound !== undefined || input.path.startsWith(`${featurePath(root, state.queue.feature)}/`)))) {
+  for (const input of inputs.filter(input => isObject(input) && input.kind === 'requirement' && (bound !== undefined || input.path.startsWith(`${featureFolder(queuePath)}/`)))) {
     // The queue was checked above. Only an explicit, hash-bound reconciliation can
     // preserve a changed acceptance record; normal requirement fallback cannot.
     if (input.path === queuePath) {
@@ -304,15 +324,15 @@ function historicalDecision(root, queuePath, state, reconciliation) {
 
 function fileDigest(root, relative) { return { path: relative, sha256: sha256(readLocal(root, relative)) }; }
 
-function existingArchive(root, feature) {
-  const destination = archivePath(root, feature);
+function existingArchive(root, folder) {
+  const destination = archivePath(root, folder), source = featurePath(root, folder);
   const manifestPath = `${destination}/archive-replay.json`;
   const manifest = parseJson(readLocal(root, manifestPath), manifestPath);
-  requireValue(isObject(manifest) && manifest.schemaVersion === 1 && manifest.kind === 'joycraft-archive-replay' && manifest.feature === feature && manifest.source === featurePath(root, feature) && Array.isArray(manifest.files), `Archive destination is not a valid archive for ${feature}: ${destination}`);
+  requireValue(isObject(manifest) && manifest.schemaVersion === 1 && manifest.kind === 'joycraft-archive-replay' && typeof manifest.feature === 'string' && featureFolderMatches(folder, manifest.feature) && manifest.source === source && Array.isArray(manifest.files), `Archive destination is not a valid archive for ${folder}: ${destination}`);
   if (manifest.reconciliation !== undefined) {
     const proof = manifest.reconciliation;
-    requireValue(isObject(proof) && proof.path === `${featurePath(root, feature)}/archive-reconciliation.json` && isSha256(proof.sha256), 'Archived reconciliation metadata is malformed');
-    validateReconciliation(proof.record, feature);
+    requireValue(isObject(proof) && proof.path === `${source}/archive-reconciliation.json` && isSha256(proof.sha256), 'Archived reconciliation metadata is malformed');
+    validateReconciliation(proof.record, manifest.feature);
     const ledger = manifest.files.find(file => file.operation === 'moved' && file.originalPath === proof.path && file.sha256 === proof.sha256);
     requireValue(ledger && sha256(readLocal(root, ledger.archivedPath)) === proof.sha256 && canonical(parseJson(readLocal(root, ledger.archivedPath), proof.path)) === canonical(proof.record), 'Archived reconciliation paper trail is missing or changed');
     requireValue(manifest.historical?.acceptanceRecordsReconciled === true, 'Archived reconciliation must remain visibly labeled');
@@ -343,14 +363,15 @@ function existingArchive(root, feature) {
 }
 
 export function previewArchiveFeature({ root = process.cwd(), feature, phase, attestation, reconciliation: reconciliationPath }) {
-  feature = featureName(feature);
+  const name = featureName(feature);
   requireValue(phase === 'session-end', 'Archive is allowed only during phase=session-end');
-  const source = featurePath(root, feature), destination = archivePath(root, feature);
+  const folder = resolveFolder(root, name);
+  const source = featurePath(root, folder), destination = archivePath(root, folder);
   const parsedAttestation = parseAttestation(root, attestation);
   if (existsSync(projectTarget(root, destination))) {
     requireValue(!existsSync(projectTarget(root, source)), `Archive destination already exists while live source remains: ${destination}`);
-    const existing = existingArchive(root, feature);
-    return { schemaVersion: 1, feature, phase, source, destination, attestation: parsedAttestation, existing: true, manifest: existing.manifestPath, historical: existing.manifest.historical };
+    const existing = existingArchive(root, folder);
+    return { schemaVersion: 1, feature: existing.manifest.feature, phase, source, destination, attestation: parsedAttestation, existing: true, manifest: existing.manifestPath, historical: existing.manifest.historical };
   }
   plainDirectory(root, source);
   const queuePath = `${source}/specs/.joycraft-spec-queue.json`;
@@ -367,8 +388,10 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
   requireValue(queues.length === 1 && queues[0] === queuePath, `Unexpected alternate queue in feature archive: ${queues.filter(item => item !== queuePath).join(', ') || 'missing canonical queue'}`);
   requireValue(!existsSync(localPath(root, `${source}/specs/.joycraft-completion.pending.json`, true)), 'A pending completion journal blocks archival; recover it first');
   const queue = parseJson(readLocal(root, queuePath), queuePath);
-  requireValue(queue.feature === feature, `Queue feature does not match ${feature}`);
-  const reconciliation = readReconciliation(root, feature, reconciliationPath);
+  // The queue's feature stays the identity of the record; the folder only locates it.
+  requireValue(typeof queue.feature === 'string' && featureFolderMatches(folder, queue.feature), `Queue feature does not match its folder ${source}: name the folder for the feature (${queue.feature}), optionally after a YYYY-MM-DD- date`);
+  feature = queue.feature;
+  const reconciliation = readReconciliation(root, source, feature, reconciliationPath);
   const evidence = [];
   for (const item of queue.specs ?? []) {
     const state = readQueue({ root, queuePath, specId: item.id, criteria: item?.ownerAcceptance?.legacy !== true });
@@ -428,7 +451,7 @@ export function archiveFeature(options) {
   // Revalidate every input immediately before changing paths, so a preview cannot race a writer.
   const fresh = previewArchiveFeature({ ...options, root, apply: false });
   requireValue(canonical({ ...plan, attestation: undefined }) === canonical({ ...fresh, attestation: undefined }), 'Archive inputs changed after preview; rerun the session-end preflight');
-  const stage = `${workPaths(root).archive}/.${plan.feature}.staging-${process.pid}-${Date.now()}`;
+  const stage = `${workPaths(root).archive}/.${path.posix.basename(plan.destination)}.staging-${process.pid}-${Date.now()}`;
   const stageLocal = projectTarget(root, stage), destinationLocal = projectTarget(root, plan.destination), sourceLocal = localDirectory(root, plan.source);
   requireValue(!existsSync(stageLocal) && !existsSync(destinationLocal), 'Archive collision detected before move');
   mkdirSync(stageLocal, { recursive: true, mode: 0o700 });
@@ -482,7 +505,7 @@ function runAfterArchive(root, plan) {
 
 function argumentsFor(argv) {
   const [command, ...args] = argv;
-  requireValue(command === 'archive', 'Usage: archive.mjs archive --feature <slug> --phase session-end --attestation <path> [--reconciliation <path>] [--apply]');
+  requireValue(command === 'archive', 'Usage: archive.mjs archive --feature <feature or folder name> --phase session-end --attestation <path> [--reconciliation <path>] [--apply]');
   const flags = {};
   for (let index = 0; index < args.length; index += 1) {
     if (args[index] === '--apply') { requireValue(flags['--apply'] === undefined, 'Duplicate --apply'); flags['--apply'] = true; continue; }

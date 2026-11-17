@@ -1,7 +1,8 @@
 import { existsSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { briefDecisionRecords, isObject, localPath, parseJson, readLocal, relativePath, validateQueue } from './identity.mjs';
+import { workPaths } from './config.mjs';
+import { briefDecisionRecords, featureFolderMatches, isObject, localPath, parseJson, readLocal, relativePath, validateQueue } from './identity.mjs';
 
 // Before the first dispatch, find the queue gaps a program can decide, so each
 // goes back to the brief as a question while the user is present. It reports;
@@ -276,7 +277,15 @@ export function checkQueue({ root = process.cwd(), queuePath }) {
   }
 
   const folder = path.posix.dirname(queuePath);
-  const briefPath = path.posix.join(path.posix.dirname(folder), 'brief.md');
+  const featureFolder = path.posix.dirname(folder);
+  // Session-end archive finds a feature by its folder name, so a working queue
+  // whose folder is named for something else can never be archived.
+  let featuresHome = null;
+  try { featuresHome = workPaths(root).features; } catch { /* A broken joycraft.yaml is reported by config.mjs. */ }
+  if (queuePath === `${featuresHome}/${path.posix.basename(featureFolder)}/specs/.joycraft-spec-queue.json` && !featureFolderMatches(path.posix.basename(featureFolder), queue.feature)) {
+    gap('feature-folder', null, featureFolder, `has feature "${queue.feature}", but its folder is ${featureFolder}; session-end archive finds a feature only in a folder named ${queue.feature} or YYYY-MM-DD-${queue.feature}.`);
+  }
+  const briefPath = path.posix.join(featureFolder, 'brief.md');
   const decisions = existsSync(localPath(root, briefPath, true)) ? briefDecisionRecords(readLocal(root, briefPath), briefPath) : [];
   const open = decisions.filter(record => isObject(record) && record.status === 'open' && typeof record.id === 'string');
 

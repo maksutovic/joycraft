@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, posix, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -32,6 +32,10 @@ const FIELD_21_WORDS = 29941;
 // ship more words in skills, agent files and references (legacy-acceptance).
 const FIELD_22 = '23af2ca';
 const FIELD_22_WORDS = 29922;
+
+// field-23 (1.5.2, 1.5.3) shipped this many words. field-24 must not ship more
+// (archive-dated-folder).
+const FIELD_23_WORDS = 29919;
 
 interface Bundle { label: string; files: Set<string>; read: (path: string) => string }
 
@@ -141,10 +145,10 @@ describe('shipped payload text', () => {
     expect(bundle.files.has('.joycraft/references/gates.md')).toBe(true);
   });
 
-  it('[AC:vendored-runtime-owned-steps] pins field-23 and ships submit, evidence run and the queue check', () => {
+  it('[AC:vendored-runtime-owned-steps] pins field-24 and ships submit, evidence run and the queue check', () => {
     const pin = JSON.parse(readFileSync(join(payloadDir, 'PIN'), 'utf8'));
-    expect(pin.tag).toBe('field-23');
-    expect(pin.commit).toBe('991b6d1161e4c1f84141b772756fa424ce48bc32');
+    expect(pin.tag).toBe('field-24');
+    expect(pin.commit).toBe('637956d7e5a5a149551372f4826be474e8badc27');
     const bundle = treeBundle();
     for (const path of ['.joycraft/runtime/completion.mjs', '.joycraft/runtime/evidence.mjs', '.joycraft/runtime/queue-check.mjs']) {
       expect(bundle.files.has(path), path).toBe(true);
@@ -266,6 +270,56 @@ describe('shipped payload text', () => {
     } finally {
       rmSync(project, { recursive: true, force: true });
     }
+  });
+
+  it('[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name', () => {
+    const project = doneSpecsProject('joycraft-dated-archive-', [1]);
+    try {
+      // The field shape: docs/features/2026-11-17-demo with "feature": "demo".
+      const folder = 'docs/features/2026-11-17-demo';
+      renameSync(join(project, 'docs/features/demo'), join(project, folder));
+      const datedQueue = `${folder}/specs/.joycraft-spec-queue.json`;
+      writeFileSync(join(project, datedQueue), readFileSync(join(project, datedQueue), 'utf8').replaceAll('docs/features/demo/', `${folder}/`));
+      writeFileSync(join(project, folder, 'brief.md'), '# Demo\n');
+      const datedDecision = `${folder}/specs/legacy-acceptance.json`;
+      writeFileSync(join(project, datedDecision), JSON.stringify({ schemaVersion: 1, kind: 'legacy', queuePath: datedQueue,
+        statement: 'accept them as they are', statedAt: '2026-11-17', specs: [1], reason: 'marked done with no review on record' }, null, 2));
+      expect(node(project, ['.joycraft/runtime/queue-check.mjs', '--queue', datedQueue]).stderr).not.toMatch(/its folder is/);
+      const accepted = node(project, ['.joycraft/runtime/completion.mjs', 'accept-owner', '--legacy', '--queue', datedQueue, '--spec', '1', '--decision', datedDecision]);
+      expect(accepted.status, accepted.stderr).toBe(0);
+      mkdirSync(join(project, 'docs/context'), { recursive: true });
+      writeFileSync(join(project, 'docs/context/decision-log.md'), '# Decisions\n');
+      writeFileSync(join(project, 'attestation.json'), JSON.stringify({ schemaVersion: 1, phase: 'session-end',
+        host: { sessionId: 'host', quiescent: true, activeWorkers: [], dependentWork: [] }, durableContext: { carried: true, references: ['docs/context/decision-log.md'] } }));
+      const archive = (feature: string) => node(project, ['.joycraft/runtime/archive.mjs', 'archive', '--feature', feature, '--phase', 'session-end', '--attestation', 'attestation.json', '--apply']);
+      const first = archive('demo');
+      expect(first.status, first.stderr).toBe(0);
+      expect(JSON.parse(first.stdout)).toMatchObject({ status: 'archived', destination: 'docs/archive/2026-11-17-demo' });
+      expect(existsSync(join(project, folder))).toBe(false);
+      const manifest = JSON.parse(readFileSync(join(project, 'docs/archive/2026-11-17-demo/archive-replay.json'), 'utf8'));
+      expect([manifest.feature, manifest.source]).toEqual(['demo', folder]);
+      for (const name of ['demo', '2026-11-17-demo']) expect(JSON.parse(archive(name).stdout).unchanged, name).toBe(true);
+    } finally {
+      rmSync(project, { recursive: true, force: true });
+    }
+  });
+
+  it('[AC:vendored-archive-dated-folder] queue-check reports a folder that is not named for its queue feature', () => {
+    const project = doneSpecsProject('joycraft-folder-gap-', [1]);
+    try {
+      renameSync(join(project, 'docs/features/demo'), join(project, 'docs/features/2026-11-17-checkout'));
+      const moved = 'docs/features/2026-11-17-checkout/specs/.joycraft-spec-queue.json';
+      const result = node(project, ['.joycraft/runtime/queue-check.mjs', '--queue', moved]);
+      expect(result.status, result.stderr).toBe(2);
+      expect(result.stderr).toMatch(/has feature "demo", but its folder is docs\/features\/2026-11-17-checkout; session-end archive finds a feature only in a folder named demo or YYYY-MM-DD-demo\./);
+    } finally {
+      rmSync(project, { recursive: true, force: true });
+    }
+  });
+
+  it('[AC:vendored-archive-dated-folder] ships no more words than field-23', () => {
+    const words = payloadWords(treeBundle());
+    expect(words, `${words} words; field-23 had ${FIELD_23_WORDS}`).toBeLessThanOrEqual(FIELD_23_WORDS);
   });
 
   it('[AC:vendored-legacy-acceptance] ships no more words than field-22', () => {
