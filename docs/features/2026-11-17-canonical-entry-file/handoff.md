@@ -21,7 +21,7 @@
 2. `entry.tidy` is a setting: `auto`, `ask-once`, `review`, with a default for each user. The owner wants `auto` for himself.
 3. Rules are rewritten once per project. The agent finds the safety rules and shows one list: kept, moves, removed. It writes on one yes, for every setting. That list is the only stop in the life of a project. After it, the rules sit between markers and a tidy cannot change them.
 4. AGENTS.md holds nothing temporal. One map row points at `docs/context/now.md`, the only page where dated entries live. Session end checks it every time and empties it when nothing is current.
-5. One deterministic check, silent when clean, runs at the start of each coordinator session and each queue, at session end and in CI. At the start it prints only the holds. Workers, subagents and linked worktrees never check or edit an entry file.
+5. One deterministic check, silent when clean, runs at the start of each coordinator session and each queue, at session end and in CI. At the start it prints only the holds. Workers and subagents never edit an entry file. A linked worktree is checked like any other checkout.
 6. Vendor guidance reaches projects through Joycraft's managed block and the checker. Joycraft never migrates a user's rule text.
 
 ## What the owner changed on 2026-11-17

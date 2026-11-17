@@ -24,7 +24,7 @@ what will move or be removed and they can say yes or no".
   (safety rules kept, text that moves and where, text removed), as
   `artifacts.md#showing-a-page` says; write nothing before a yes; this is the
   same for every `entry.tidy` value; on a no, add only the markers; never do
-  the rewrite in an unattended run, a worker or a linked worktree
+  the rewrite in an unattended run or in a worker
   (`[AC:rewrite-one-yes]`).
 - No word list ships. Check: no shipped skill or reference has a list of limit
   words, and no runtime file classifies a sentence as a rule

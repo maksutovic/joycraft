@@ -37,7 +37,8 @@ edge case".
   `## Holds` and one under `## Open work`;
   `node .joycraft/runtime/entry-check.mjs start --root <fixture>` prints two
   lines, each `Hold: <text>`, and exits 0. With no entry under `## Holds`, and
-  with no `now.md`, it prints nothing. In a linked worktree it prints nothing
+  with no `now.md`, it prints nothing. In a linked worktree it prints the same
+  lines, from the `now.md` of that checkout
   (`tests/cleanup/entry-check.test.mjs`, `[AC:holds-print]`).
 - The first action and the queue claim both show them. Check: with
   `update.policy: off`, `node .joycraft/runtime/update-check.mjs check` prints

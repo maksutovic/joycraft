@@ -34,8 +34,8 @@ standing dispositions replaces the two freeze policies, and the tidy follows
   does not stop work. It says that a hold is not a ruling
   (`[AC:ruling-definition]`).
 - One writer. Check: `SKILL.md` says that only an attended coordinator session
-  tidies an entry file; a worker, a subagent or a session in a linked worktree
-  changes no entry file and returns proposed map rows in its report; an
+  tidies an entry file; a worker or a subagent changes no entry file and
+  returns proposed map rows in its report (the checkout does not matter); an
   unattended run changes only the managed block and a dead path with one unique
   Git rename (`[AC:one-writer]`).
 - The two files are shorter. Check: `wc -w` of `SKILL.md` plus `cleanup.md` is

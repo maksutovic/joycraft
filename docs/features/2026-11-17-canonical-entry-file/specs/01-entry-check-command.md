@@ -28,10 +28,12 @@ Brief: [entry-check](../brief.md#entry-check).
 - The update policy does not hide it. Check: the `dead-path/` fixture with
   `.joycraft/local/preferences.json` set to `update.policy: off`; the command
   still exits 2 (`[AC:entry-policy-independent]`).
-- A linked worktree checks nothing. Check: a Git fixture with a linked worktree
-  made by `git worktree add`; the command run with `--root <linked tree>` exits
-  0 with empty output, and the same command in the main tree exits 2
-  (`[AC:entry-worktree-silent]`).
+- A linked worktree is checked like the main tree. Check: a Git fixture with a
+  linked worktree made by `git worktree add`; the command run with
+  `--root <linked tree>` gives the same findings and the same exit code 2 as
+  in the main tree (`[AC:entry-linked-worktree]`). Owner, 2026-11-17: "why
+  would worktrees matter?" The first form of this criterion said that a linked
+  worktree checks nothing.
 
 ## Not covered
 
@@ -46,7 +48,6 @@ Implemented in joycraft-prototype (the payload is vendored; never edit
 `entryReport({ root })` that filters `cleanupReport` from
 `.joycraft/runtime/cleanup.mjs` to findings whose `path` is `AGENTS.md` or
 `CLAUDE.md`, plus `unmapped` and `orphan`. Gate checks: `missing-path`,
-`broken-link`. Every other check is advisory. The linked-tree test reuses the
-detection in `.joycraft/runtime/coordinator.mjs` (`mainTree`). `cleanup.mjs`
+`broken-link`. Every other check is advisory. `cleanup.mjs`
 output and exit codes do not change. An unexpected error exits 1, not 2.
 `tests/cleanup/entry-check.test.mjs`; fixtures under `fixtures/entry-check/`.

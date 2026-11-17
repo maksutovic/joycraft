@@ -254,7 +254,7 @@ The cleanup skill loses its two freeze policies and gains one table of standing 
 
 A **ruling** is the only thing asked: a fact inside a rule that the repository disproves, when the correction changes what is permitted, and a conflict between a rule and the code. Rulings do not stop work. Each is written once to the backlog with its evidence. A hold is not a ruling: it moves to `now.md` and stays in force until someone removes it.
 
-One writer: an attended coordinator session. Workers, subagents and linked worktrees never check or edit an entry file; they return proposed map rows in their report. An unattended run changes only the managed block and uniquely renamed paths.
+One writer: an attended coordinator session. Workers and subagents never edit an entry file; they return proposed map rows in their report. An unattended run changes only the managed block and uniquely renamed paths. The checkout does not matter: the check, the holds and the tidy work the same in a linked worktree (owner, 2026-11-17: "this only for fixing AGENTS.md with cleanup why would worktrees matter?"). An earlier draft of this brief said that a linked worktree checks nothing; that treated the place where a person works as a worker.
 
 ## pinned-rules
 
