@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-entry-check-command.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -74,6 +74,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-17T20:19:40.556Z"
       }
     },
     {
