@@ -1,6 +1,6 @@
 ---
 id: 9
-status: todo
+status: in-review
 ---
 # Outcome
 
@@ -22,9 +22,9 @@ specs 3, 5 and 6 added.
   `joycraft:rules` or `entry-pin`; `entry-size` counts every word of the file
   (`tests/cleanup/entry-check.test.mjs`, `[AC:no-pin]`).
 - No tidy setting. Check: `config.mjs` reports no `entry` key and has no
-  `user` command; a `joycraft.yaml` with an `entry:` key still loads, and the
-  key is ignored, so a project that set it does not break; no shipped file
-  names `entry.tidy` (`tests/config/config.test.mjs`, `[AC:no-tidy-setting]`).
+  `user` command; an `entry:` key in `joycraft.yaml` is an unknown key, as
+  before this feature (no released version read it); no shipped file names
+  `entry.tidy` (`tests/config/config.test.mjs`, `[AC:no-tidy-setting]`).
 - The date check is an advisory that names records. Check: a date or a dated
   pointer in an entry file gives one `temporal` advisory whose `fix` names the
   decision log, a log page and the backlog, and not a now page; `--ci` exits 0

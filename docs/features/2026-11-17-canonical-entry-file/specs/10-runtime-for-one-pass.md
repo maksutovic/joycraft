@@ -1,6 +1,6 @@
 ---
 id: 10
-status: todo
+status: in-review
 ---
 # Outcome
 
@@ -15,9 +15,9 @@ change lost, and Joycraft's block tells every agent how to use the map. Brief:
   names a sibling as `` `other.md` `` or `` `sub/other.md` `` counts as a
   reference to that sibling, so the sibling is not reported `orphan`
   (`tests/cleanup/cleanup.test.mjs`, `[AC:mention-from-page]`).
-- A record needs no map row. Check: a page with `type: log` or
-  `type: history` gives no `orphan` and no `unmapped` finding
-  (`[AC:record-needs-no-row]`).
+- History needs no map row. Check: a page with `type: history` gives no
+  `orphan` and no `unmapped` finding; a `type: log` page still needs its row
+  in the records part of the map (`[AC:record-needs-no-row]`).
 - Lost lines are listed. Check: `entry-check.mjs lost --base <rev>` prints,
   as JSON, each non-blank line of a tracked Markdown file at `<rev>` under the
   context folder or in an entry file that no Markdown file of the project
