@@ -235,7 +235,40 @@ The first three decisions are answered `custom`, with the owner's notes. The own
 
 The owner's direction for every open detail (`limit-guard`, `now-age`): design for the usual entry file, which is stale and has weak guidance. Do not add machinery for a rare file shape.
 
+## one-pass
+
+Design change, 2026-11-18. Six trials on a field project and a second panel of seven seats (`docs/research/2026-11-18-one-pass-cleanup-panel-verdict.md`) showed that the design in `tidy`, `pinned-rules` and `map-rows` cannot change an entry file that is mostly rules, and that an entry file cannot be cleaned without the pages behind its map. The owner approved this section on 2026-11-18. Where it disagrees with a section below, this section wins.
+
+Owner, 2026-11-18: the entry file "should be quite light weight, provide just enough context for an agent to gather the context it needs specifically on a task, which is the whole intention of the context map"; "only changing the agents.md without the context map makes zero sense it has to be done in tandem"; "we must be insured that sub agents have plenty of context".
+
+**One pass, pages and entry file together.** Cleanup is a dialogue with the owner, run when he asks for it. The steps:
+
+1. Read the entry file and every page behind its map. Find what reads those files: tests, scripts, open specs and queues.
+2. Analyze, read only. Two lenses for each statement: is it true now (checked against the code and Git), and is it in the right place. Each page has a kind: a guide (current rules and facts for one topic), or a record (a log or history).
+3. One round of questions. The agent asks only what grants or removes a permission, lifts a hold, or deletes the owner's material. Every other choice is a recommendation on one review page, which the owner can veto.
+4. Fix the pages.
+5. Write the entry file last: identity, rules, Joycraft's block, the map.
+6. Run the checks and the project's own gates. One commit.
+
+**Permission ledger.** Before the commit the agent lists every line that permits, forbids, stops or holds, old against new. Each change names the owner's answer that allows it. A change with no answer is put back or asked. A grant keeps the owner's words and scope. A rule, a stop or a hold is never retired by recommendation, and a question about one hold does not retire the general rule behind it. A permission and its limits stay together. This replaces the rules markers and the byte pin.
+
+**Nothing temporal in the entry file or in a guide.** Owner, 2026-11-18: "cleanup does a good job of removing any/all temporal stuff from the important places like AGENTS.md and essential context map pointers". A date, a status, progress, a finished plan or "who said it and when" moves to the record that owns it: a decision to the decision log, an operation to its log, open work to the backlog or a handoff. A hold that is in force is a rule: it stays in the entry file as one present-tense line, and its date and reason go to the decision log. There is no `now.md`.
+
+**The map has two parts.** Guides: one row for each page, written as "read when <situation>". Records: the decision log and other logs and history. A record is an audit trail. An agent searches it to learn why or when, or to check for a regression; it does not read a record at the start of a session, and no row tells it to. A current rule that lives only in a record moves to a guide.
+
+**Workers get the entry file.** The worker packet names it. A map row that matches the next step binds, and a rule that a worker must obey has a line in the rules: "Read `<page>` before <action>."
+
+**Facts yield to the code; rules do not.** Joycraft's block says so.
+
+**Session end stays cheap.** Session end runs the report and the mechanical fixes only: Joycraft's block, a dead path with one rename target. It never changes rule text or a page. There is no `entry.tidy` setting.
+
+**Cut from the first design:** `now.md` with its hold lines and age check; the rules markers and the byte pin; the `entry.tidy` setting and the user default. The date check stays as an advisory, because it finds the temporal text that the owner wants gone; it no longer names `now.md`. The managed-block check becomes an advisory.
+
+**Measures, set before the release run.** The release stops when a run of the shipped skill text alone, on a clean clone of the field project: shows a permission change with no owner answer in its ledger; misses more than a quarter of the 38 known findings; or needs more than two rounds of questions. It also stops when the field project's own gate fails where the commit before passed; when a second, small repository gets a longer entry file or more than 3 questions; when a worker does worse with the new files than with the old on a task that needs a moved rule; or when an update from 1.5.4 leaves an old Joycraft line beside the block. These replace the two kill criteria of the first verdict: a dialogue cannot have a median of one question, and the ledger makes every permission change approve-first.
+
 ## tidy
+
+Replaced by `one-pass` (2026-11-18), except the row wording and the one-writer rule.
 
 `tidy-consent`, settled: tidy is a setting, `entry.tidy`, with three values. `auto`: never ask; tidy and report in one line (the one-time rules list in `pinned-rules` is the only exception). `ask-once`, the built-in default: the first attended tidy asks one question and records `auto` or `review` for the project. `review`: show one diff page for each tidy. A user-level default applies to every project of that user, so an owner who sets `auto` once is never asked. A new user with no default is asked once at setup. The recorded setting is the explicit confirmation that Joycraft's never-overwrite boundary requires.
 
@@ -257,6 +290,8 @@ A **ruling** is the only thing asked: a fact inside a rule that the repository d
 One writer: an attended coordinator session. Workers and subagents never edit an entry file; they return proposed map rows in their report. An unattended run changes only the managed block and uniquely renamed paths. The checkout does not matter: the check, the holds and the tidy work the same in a linked worktree (owner, 2026-11-17: "this only for fixing AGENTS.md with cleanup why would worktrees matter?"). An earlier draft of this brief said that a linked worktree checks nothing; that treated the place where a person works as a worker.
 
 ## pinned-rules
+
+Replaced by `one-pass` (2026-11-18): no markers, no pin. Kept for the record.
 
 `long-rules`, settled: the owner rejected all three options ("these all sound bad"). The agreed way shortens a rule without moving any limit out of the entry file.
 
@@ -290,6 +325,8 @@ The managed block is Joycraft's text between markers. The runtime prints it and 
 Setup writes a new AGENTS.md in the same shape: identity, commands, rules, the managed block, the map as `| Read when | Document |`. An existing file keeps its headings and the column order of its map.
 
 ## map-rows
+
+Replaced by `one-pass` (2026-11-18): there is no `now.md`. The first bullet still holds.
 
 `brief-rows`, settled by the owner's principle: AGENTS.md is a lasting entry point, not a scratchpad. It holds nothing temporal.
 

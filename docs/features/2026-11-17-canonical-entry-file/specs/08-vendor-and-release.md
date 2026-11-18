@@ -4,31 +4,32 @@ status: todo
 ---
 # Outcome
 
-The next Joycraft minor release ships the canonical entry file: the payload is
+Joycraft 1.6.0 ships the canonical entry file and the one-pass cleanup: the payload is
 the new field build, it has no more words than the last one, and the docs tell
-a user how to turn tidying on and what it does. Brief:
-[goals](../brief.md#goals), [scope](../brief.md#scope-and-limits).
+a user how to ask for a cleanup and what it does. Brief:
+[one-pass](../brief.md#one-pass), [scope](../brief.md#scope-and-limits). It starts only
+after spec 12 passes and the owner says go.
 
 ## acceptance
 
 - The payload is the new field build. Check: `payload/PIN` names the field tag
-  that carries specs 1 to 7; `payload/.joycraft/runtime/entry-check.mjs` and
-  `payload/.joycraft/templates/now.md` exist; `pnpm test && pnpm typecheck`
+  that carries specs 1 to 11; `payload/.joycraft/runtime/entry-check.mjs`
+  exists and `payload/.joycraft/templates/now.md` does not; `pnpm test && pnpm typecheck`
   pass (`[AC:vendored-field-build]`).
 - The payload did not grow. Check: `tests/payload-guard.test.ts` has a
   `FIELD_24_WORDS` constant, counted with the guard's own counter on the
   field-24 payload, and fails when the shipped skills, agent files and
   references have more words than that (`[AC:payload-words-not-up]`).
 - A user can find it. Check: the README has a section "Keeping AGENTS.md
-  current" that says in plain words: what a tidy changes and what it never
-  changes (a rule, after the one list); the three `entry.tidy` values; the
-  prompts "Tidy my AGENTS.md", "Tidy AGENTS.md without asking me, in all my
-  projects" and "Show me each AGENTS.md tidy first"; what `now.md` is; and the
-  CI line `node .joycraft/runtime/entry-check.mjs --ci`. `docs/prompts.md` has
-  the three prompts. `scripts/ste-lint.py` passes on the new prose
+  current" that says in plain words: that a cleanup covers the entry file and
+  the pages behind its map in one pass; what it asks the owner (permissions,
+  holds, deleting his material) and that it changes no rule without his
+  answer; the prompt "Clean up my AGENTS.md and context pages"; and the CI
+  line `node .joycraft/runtime/entry-check.mjs --ci`. `docs/prompts.md` has
+  the prompt. `scripts/ste-lint.py` passes on the new prose
   (`[AC:readme-entry-section]`).
 - The release fields move together. Check: `package.json` `version` and
-  `joycraft.release` are the next minor version, the CHANGELOG has an entry
+  `joycraft.release` are 1.6.0, the CHANGELOG has an entry
   for it with the release summary, and `docs/context/shipped.md` has its row
   (`[AC:release-fields]`).
 - Vendor guidance is re-read at release time. Check: `docs/guides/releasing.md`
