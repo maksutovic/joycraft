@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "source": "joycraft-prototype",
-  "tag": "field-25",
-  "commit": "02e00074536c919845807390fa2d8d09e046c099",
+  "tag": "field-26",
+  "commit": "ee3ab75f06fe9d5bec13f9e8770ca4f23358447e",
   "files": {
-    ".agents/skills/joycraft-cleanup/SKILL.md": "291dc7f06b020c1ddcaabbf894033522d8484c62640e768c5c9ace6bf38e9475",
+    ".agents/skills/joycraft-cleanup/SKILL.md": "cd60ae78c157056564b4e2181f65efc0b9b3734ea211895db475ccaa4bd6e06a",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
     ".agents/skills/joycraft-decompose/SKILL.md": "53519b5fc73c4b668256fc21d044df16544a4ff46eeb63d21c83c53df4bb8061",
     ".agents/skills/joycraft-entry/SKILL.md": "7abed7e4f03720dc3a36ffe6a1ba454b85ecb22f69d886bf3c2a107a0209cc26",
@@ -26,7 +26,7 @@
     ".joycraft/references/architecture.md": "4e225ba23ed72d3d7b1af9bfceeb708583eede79978c294724b917ad94674be9",
     ".joycraft/references/archive.md": "fdaae382a94c15c10f390b123afe8354b84b1a3b54e65b328ac990a497456eaf",
     ".joycraft/references/artifacts.md": "bb36f39972c80090ed9dd6b5c767e5b5f5cbf7947759c6726a5abb05b088c88d",
-    ".joycraft/references/cleanup.md": "f659548b2206c8af8843bfd73dcc636c1add0b4e4bc5b3d735385b90ccf5b3ee",
+    ".joycraft/references/cleanup.md": "3a3edc7fdf58f1b62d698d2fba751d162672cfc80bd684f3e7b1e780d42f4eee",
     ".joycraft/references/completion.md": "698e67984a959744f40bb0b221c953665d4558c046f4faea55dc6c7162e4cb0d",
     ".joycraft/references/context.md": "b94dd48a427aaafe826116bac100375cbae565b1ba3239fd7812c56eac724577",
     ".joycraft/references/delivery.md": "1afc417ee3922ebf5e84c0ae87796d6cb6305679c0257ed38a35f396949de5e8",

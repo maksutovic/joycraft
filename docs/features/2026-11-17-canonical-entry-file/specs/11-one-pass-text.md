@@ -43,7 +43,7 @@ other shipped text agrees with it. Brief: [one-pass](../brief.md#one-pass).
 
 ## Not covered
 
-A script that judges rule text. A word target for an entry file.
+A script that judges rule text.
 
 ## Implementation and verification scope
 
@@ -62,3 +62,12 @@ the question policy on 2026-11-18 after a run with 39 line-level questions
 method is the one of the best trial"). joycraft-prototype commits `d3989e1` and
 `83beff3` made the change. The check now names the questions by theme and the
 seven things to find on each page.
+
+"Not covered" named a word target for an entry file. The brief withdrew the
+ruling "no word target", and the reference has an aim of half the words, so
+that line is gone.
+
+A first review of this spec, on the payload `field-25`, failed two checks: the
+reference did not say that a hold in force stays as one rule, and it did not
+say what a host with no subagents does. joycraft-prototype commit `ee3ab75`
+(`field-26`) added both sentences. The checks are as they were.

@@ -15,8 +15,7 @@ they are clean. `--ci` prints one line for each gate finding (G below) and exits
 | `codex-bytes` (G) | `AGENTS.md` files from the root to one folder over 32,768 bytes together, the Codex limit |
 | `import` (G) | An `@path` line in an entry file (not `@AGENTS.md` in `CLAUDE.md`), or `AGENTS.override.md` |
 
-Every other check says what it found in its `detail`. Fenced code blocks are
-ignored. `missing-path` skips globs, placeholders, URLs, paths outside the
+`missing-path` skips globs, placeholders, URLs, paths outside the
 project and paths that Git ignores. A record rightly names removed paths and
 working material, so it is exempt from `missing-path` and `working-link`: a
 page with `type: log` or `type: history` frontmatter, `decision-log.md` and
@@ -66,9 +65,7 @@ from the code:
   one row for each log, "search when you need why or when, or to check a
   regression". Move a rule or a fact out of a row before you shorten it.
 
-Everything else moves to the page that owns its topic: a procedure, a
-checklist, a description of how the code works, a tool list, a preference for
-one part of the code. Delete only what the code, a config file or a check
+Everything else moves to the page that owns its topic. Delete only what the code, a config file or a check
 already states, or what is false.
 
 A permission and its limits stay together: both in the entry file, or both on
@@ -137,7 +134,9 @@ when the code is silent, or whether old material may be deleted.
 Do not ask about single lines either: the owner cannot research each one.
 Group these into at most eight questions, each about one policy. Stops (what
 an agent must ask before) and holds are always two of them: never drop one by
-recommendation. A question says what the pages say now, gives two to four
+recommendation. A hold that the owner keeps is one present-tense rule: in the
+entry file when it is general, on the owning guide when it is about one item.
+Its date and reason go to the decision log. A question says what the pages say now, gives two to four
 policies with your recommendation, and says how many lines it settles. The
 answer is a policy: apply it to each line of its theme. Record each question
 as a decision of a cleanup brief under `paths.features` and ask it in the
@@ -146,11 +145,11 @@ is a recommendation: show them as a page that the owner can veto.
 
 ## The steps
 
-A person asks for this pass. Above about 20,000 words of pages, first state
+Above about 20,000 words of pages, first state
 the word count and the cost (about 25 tokens for each word). Then split the
 work into parts: the entry files are one part, and the pages are groups of
 about 20,000 words. One agent does each part, in parallel where the host has
-subagents and one after another where it has none. A coordinator, the session
+subagents and one after another where it has none. A small set is one part. A coordinator, the session
 that talks to the owner, runs the steps.
 
 1. **List.** Each page with its kind and size. Find what parses these files:
@@ -172,7 +171,8 @@ that talks to the owner, runs the steps.
    agent commits.
 6. **Check.** Give each finding a final status: fixed, left for the owner,
    or not done and why. Then an agent that wrote no edit checks the changed
-   guides against the code; fix what it finds once. Make the permission
+   guides against the code (with no subagents: read them again yourself);
+   fix what it finds once. Make the permission
    ledger. Run
    `entry-check.mjs lost --base HEAD` and account for each line. Run `cleanup.mjs`,
    `wiring.mjs`, `entry-check.mjs --ci` and the project's gates. Offer one commit.

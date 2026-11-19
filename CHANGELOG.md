@@ -15,7 +15,7 @@ showed two more things: an entry file cannot be cleaned without the pages behind
 map, and a question for each line makes the owner do the research. This release
 rebuilds the cleanup as one pass over the entry file and its pages. It also adds a
 check for entry files and makes the artifact engine render documents.
-Payload: joycraft-prototype `field-25`.
+Payload: joycraft-prototype `field-26`.
 
 ### Added
 
@@ -66,7 +66,8 @@ Payload: joycraft-prototype `field-25`.
   or fixes one named line and each copy of its claim.
 - **Nothing temporal in an entry file or a guide.** A date, a status or a finished
   plan moves to the record that owns it. The agent asks about holds and does not
-  drop one on its own recommendation.
+  drop one on its own recommendation. A hold that the owner keeps is one rule, in
+  the entry file or on the guide that owns its item.
 - **The map has two parts.** A guide has a "read when" row. A record (a decision
   log, an operations log) has a "search when" row. No row tells an agent to read a
   record at the start of a session.
@@ -78,7 +79,7 @@ Payload: joycraft-prototype `field-25`.
 - **One engine for each page.** Each page for a person comes from the artifact
   engine. The agent no longer writes its own HTML page for a setup diff or a report.
 - **The shipped text did not grow.** The shipped skills, agent files and references
-  stay at 29,919 words.
+  have 29,915 words. The limit is the 29,919 words of the last release.
 
 ### Measured
 
@@ -94,6 +95,10 @@ On the last trial run, on a clean clone of a field project:
 
 In the run before that one, an update from 1.5.4 left no old Joycraft line beside
 the block.
+
+A review found two sentences missing from the cleanup reference, and they were
+added after these runs: the sentence about a hold that the owner keeps, and the
+rule for a host with no subagents. No run measured the text with them.
 
 ### Not verified
 

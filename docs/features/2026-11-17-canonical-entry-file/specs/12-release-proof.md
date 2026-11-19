@@ -53,3 +53,10 @@ both repositories. This record comes from the session that showed him the page.
 | A small second repository | Failed on an earlier skill text: the entry file went from 292 to 473 words, 162 of them Joycraft's block that the repository never had, and the run asked 5 questions. Not run again on the final text |
 | A worker with the new files against the old | Not run |
 | An update from 1.5.4 leaves no old Joycraft line | Passed in the run before the last one. In the last run the block was left unplaced, because one owner question was open |
+
+The runs above used the payload `field-25`. After them, a review of spec 11
+found two sentences missing from the cleanup reference, and `field-26` added
+them: a hold that the owner keeps is one present-tense rule with a home, and a
+host with no subagents reads the changed guides again itself. In the measured
+run the owner's answer was to remove all holds, so that run did not use the
+hold sentence. No run measured the text of `field-26`.

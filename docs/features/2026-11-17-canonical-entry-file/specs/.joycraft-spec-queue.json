@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-entry-check-command.md",
       "depends_on": [],
-      "status": "done",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -20,10 +20,6 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
             "kind": "requirement"
-          },
-          {
-            "path": "payload/PIN",
-            "kind": "code"
           },
           {
             "path": "payload/.joycraft/runtime/entry-check.mjs",
@@ -89,10 +85,6 @@
       },
       "submitted": {
         "at": "2026-11-17T20:19:40.556Z"
-      },
-      "acceptedReport": {
-        "path": "docs/features/2026-11-17-canonical-entry-file/reviews/spec-01-review.json",
-        "sha256": "41e81c88a5ad2748b5aa500864b574169b2199cf7ded0eb09f6930eb957322ea"
       }
     },
     {
@@ -115,10 +107,6 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
             "kind": "requirement"
-          },
-          {
-            "path": "payload/PIN",
-            "kind": "code"
           },
           {
             "path": "payload/.joycraft/runtime/cleanup.mjs",
@@ -220,10 +208,6 @@
             "kind": "requirement"
           },
           {
-            "path": "payload/PIN",
-            "kind": "code"
-          },
-          {
             "path": "payload/.joycraft/runtime/config.mjs",
             "kind": "code"
           },
@@ -269,10 +253,6 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
             "kind": "requirement"
-          },
-          {
-            "path": "payload/PIN",
-            "kind": "code"
           },
           {
             "path": "payload/.agents/skills/joycraft-cleanup/SKILL.md",
@@ -333,10 +313,6 @@
             "kind": "requirement"
           },
           {
-            "path": "payload/PIN",
-            "kind": "code"
-          },
-          {
             "path": "payload/.joycraft/runtime/entry-check.mjs",
             "kind": "code"
           },
@@ -393,10 +369,6 @@
             "kind": "requirement"
           },
           {
-            "path": "payload/PIN",
-            "kind": "code"
-          },
-          {
             "path": "payload/.joycraft/runtime/entry-check.mjs",
             "kind": "code"
           },
@@ -446,10 +418,6 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
             "kind": "requirement"
-          },
-          {
-            "path": "payload/PIN",
-            "kind": "code"
           },
           {
             "path": "payload/.joycraft/runtime/entry-check.mjs",
@@ -557,10 +525,6 @@
             "kind": "requirement"
           },
           {
-            "path": "payload/PIN",
-            "kind": "code"
-          },
-          {
             "path": "payload/.joycraft/runtime/entry-check.mjs",
             "kind": "code"
           },
@@ -659,10 +623,6 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/10-runtime-for-one-pass.md",
             "kind": "requirement"
-          },
-          {
-            "path": "payload/PIN",
-            "kind": "code"
           },
           {
             "path": "payload/.joycraft/runtime/cleanup.mjs",
@@ -765,10 +725,6 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
             "kind": "requirement"
-          },
-          {
-            "path": "payload/PIN",
-            "kind": "code"
           },
           {
             "path": "payload/.agents/skills/joycraft-cleanup/SKILL.md",

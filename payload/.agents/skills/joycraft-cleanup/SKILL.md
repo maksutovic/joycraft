@@ -35,8 +35,7 @@ Read [cleanup reference](../../../.joycraft/references/cleanup.md) first.
 
 Follow the reference: the steps, in order. Code proves what is implemented,
 not what was intended. Never delete a context page to clear a finding; merge
-or redirect it. Remove an unknown worktree only after checking it for
-unmerged work.
+or redirect it.
 
 ## Hand off
 

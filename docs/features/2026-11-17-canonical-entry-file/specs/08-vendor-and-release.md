@@ -90,5 +90,5 @@ The owner or an attended session checks these with the published version. Spec
 
 ## State, 2026-11-18
 
-The work of this spec is in the release pull request 104: payload `field-25`,
+The work of this spec is in the release pull request 104: payload `field-26`,
 the tests, the docs and the release fields.

@@ -37,7 +37,7 @@ const FIELD_22_WORDS = 29922;
 // (archive-dated-folder).
 const FIELD_23_WORDS = 29919;
 
-// field-24 (1.5.4) shipped this many words. field-25 must not ship more
+// field-24 (1.5.4) shipped this many words. field-26 must not ship more
 // (canonical-entry-file spec 8).
 const FIELD_24_WORDS = 29919;
 
@@ -149,10 +149,10 @@ describe('shipped payload text', () => {
     expect(bundle.files.has('.joycraft/references/gates.md')).toBe(true);
   });
 
-  it('[AC:vendored-runtime-owned-steps] pins field-25 and ships submit, evidence run and the queue check', () => {
+  it('[AC:vendored-runtime-owned-steps] pins field-26 and ships submit, evidence run and the queue check', () => {
     const pin = JSON.parse(readFileSync(join(payloadDir, 'PIN'), 'utf8'));
-    expect(pin.tag).toBe('field-25');
-    expect(pin.commit).toBe('02e00074536c919845807390fa2d8d09e046c099');
+    expect(pin.tag).toBe('field-26');
+    expect(pin.commit).toBe('ee3ab75f06fe9d5bec13f9e8770ca4f23358447e');
     const bundle = treeBundle();
     for (const path of ['.joycraft/runtime/completion.mjs', '.joycraft/runtime/evidence.mjs', '.joycraft/runtime/queue-check.mjs']) {
       expect(bundle.files.has(path), path).toBe(true);
