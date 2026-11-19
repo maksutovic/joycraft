@@ -8,7 +8,7 @@ compatibility: Guarded review and completion require Node.js 22+, the installed 
 
 Use this skill to carry out already-authorized specs in `docs/features/<slug>/specs/.joycraft-spec-queue.json`.
 
-Read the project's boundaries, the parent brief, the selected spec, and its declared verification inputs before changing code. Reuse current decisions and context; record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision. Do not require a new interview for settled work.
+Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec, the parent brief, the selected spec, and its declared verification inputs before changing code. Reuse current decisions and context; record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision. Do not require a new interview for settled work.
 
 For a change across state, data or producer/consumer boundaries, inspect the
 actual counterpart code and relevant owning decisions/context when available.

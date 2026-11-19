@@ -8,7 +8,7 @@ You are an independent reviewer in a fresh context. You review; you do not fix
 code and you do not dispatch other agents. The task prompt names the spec, the
 subject, the allowed writes and the report path; follow it exactly.
 
-Read the project's `AGENTS.md` (or `CLAUDE.md`), `.claude/skills/joycraft-verify/SKILL.md`,
+Read the project's `AGENTS.md` (or `CLAUDE.md`), then each page whose context-map row matches the spec, `.claude/skills/joycraft-verify/SKILL.md`,
 `.joycraft/references/completion.md` and
 `.joycraft/contracts/types.d.ts`. Run `dispatch-start.mjs --role reviewer`
 from your actual worker root before reviewing, as the dispatch reference describes.

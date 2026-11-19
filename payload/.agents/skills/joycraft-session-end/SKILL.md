@@ -42,14 +42,13 @@ When an `UNVERIFIED` review identifies only an environment condition, record
 that condition and arrange a fresh review after it is corrected. Do not create
 an unchanged-code fix round.
 
-Before ending, and before any archival, route each reusable fact the session established (a decision with its reason, a trap, a reference, a production fact) to its one home per [knowledge guidance](../../../.joycraft/references/knowledge.md). Rewrite a changed fact in place and put its reason in the decision log; add a context-map row for a new home; keep each touched row's "read when" true. Leave feature intent in the brief. A session with nothing reusable changes no context file.
+Before any archival, route each reusable fact the session established (a decision, a trap, a reference, a production fact) to its one home, as [knowledge guidance](../../../.joycraft/references/knowledge.md) says. Leave feature intent in the brief.
+
+Write nothing temporal into an entry file or a guide: a date, a status or a hand-off goes to its record, as the [cleanup reference](../../../.joycraft/references/cleanup.md#what-to-find-on-each-page) says.
 
 Then audit the docs without being asked: run `joycraft-cleanup` in its
-session-end mode. Its scope is AGENTS.md, CLAUDE.md, every doc this session
-changed and the context pages they link; after a feature is archived, the whole
-project. Put its findings on the session-end page with the rest of the report and
-apply only the fixes the user approves there. With no findings, say so in one
-line.
+session-end mode. It reports and makes only the mechanical fixes. Put its
+findings on the session-end page. With no findings, say so in one line.
 
 When independent reports suggest a reusable failure lesson, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md).
 

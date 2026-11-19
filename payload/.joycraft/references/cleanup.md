@@ -1,141 +1,196 @@
 # Cleanup checks
 
-`cleanup.mjs` reports; it never edits. Each finding has `check`, `path`, often
-`line`, a `detail` and a suggested `fix`. `skipped` lists checks it could not run.
+`cleanup.mjs` reports; it never edits. Each finding has `check`, `path`,
+`detail` and `fix`.
+`entry-check.mjs` prints the findings about entry files, and nothing when
+they are clean. `--ci` prints one line for each gate finding (G below) and exits 2.
 
-| Check | Finds | Usual fix |
-|---|---|---|
-| `unarchived` | A feature whose specs are all `done` but is still in `paths.features` | Carry durable facts into the context home, then archive at session end |
-| `status-drift` | Spec frontmatter that disagrees with the queue | `status.mjs --fix` for accepted done specs; otherwise reconcile by hand |
-| `working-link` | `AGENTS.md`, `CLAUDE.md` or a context page linking into `paths.features` or `paths.archive` | Move the fact into the context home and link that |
-| `broken-link` | A Markdown link to a file that does not exist | Fix or remove the link |
-| `orphan` | A context page that nothing in `AGENTS.md`, `CLAUDE.md` or the context home mentions | Add a context-map row with a "read when", or merge the page |
-| `missing-path` | A backticked project path in `AGENTS.md`, `CLAUDE.md` or a context page that does not exist | Point it at the current path, or drop the line |
-| `unmapped` | A context page that only other context pages mention; no entry file links or names it | Add a context-map row with a "read when", or merge the page |
-| `entry-size` | `AGENTS.md` or `CLAUDE.md` over `cleanup.entryWords` words (default 1000) | Move detail into context pages; leave a map row for each |
-| `impact-drift` | A page mapped in `cleanup.impact` whose code changed in commits after the page last changed | Read the change; update the page, or commit it unchanged when still true |
-| `stale-after` | An OKF `stale_after` date that has passed | Recheck, then move the date or mark the page `deprecated` |
-| `deprecated-link` | A link to a page marked `status: deprecated` | Link the current page |
-| `frontmatter-unreadable` | Page frontmatter in YAML that cleanup cannot read, so its `status` and `stale_after` go unchecked | Use plain `key: value` lines, lists and quoted strings |
-| `unknown-worktree` | A linked worktree that `worktrees.mjs` did not create | Check for unmerged work, then remove with approval |
-
-Fenced code blocks are ignored. Inline, reference-style and `<angle>` links count.
-Backticked paths such as `` `docs/context/x.md` `` count as references for
-`orphan`, `unmapped` and `working-link`. `broken-link` checks Markdown links;
-`missing-path` checks backticked spans that read as project paths: they contain a
-`/` and end in `/`, have a file extension, or start with an existing top-level
-folder. It skips spans with spaces, globs (`*`), placeholders (`<slug>`, `[slug]`,
-`{x}`, `$VAR`, `...`), URLs and other `:` forms, and absolute, `~` or `../` paths.
-A path in a context page may be relative to the project root or to the page.
-History pages are exempt from `missing-path`, because they rightly name paths that
-were later removed: a page whose frontmatter has `type: log` or `type: history`,
-and any file named `decision-log.md` or `shipped*.md`. Their links are still
-checked.
-
-The impact map lives in `joycraft.yaml`:
-
-```yaml
-cleanup:
-  impact:
-    - source: src/auction/**
-      docs: [docs/context/auction-rules.md]
-```
-
-`*` matches within a folder and `**` across folders. A page with no commit yet is
-skipped. Pages may carry OKF frontmatter (`type`, `status`, `stale_after`,
-`verified`); cleanup reads `status` and `stale_after` when present, and `type`
-for the history exemption above.
-
-## Doc roles
-
-Inventory gives every in-scope doc one role:
-
-- **entry**: `AGENTS.md` and `CLAUDE.md`, loaded every session.
-- **required**: an entry doc says to read it.
-- **reference**: read when a task needs it; it gets a context-map row.
-- **historical**: kept for lookup, not guidance; it gets no map row.
-
-## The six rot patterns
-
-From doc-cleanup. Test every in-scope doc for each; a doc claim is a hypothesis
-and the code is the evidence.
-
-1. **Completed-work logs.** Finished checklists, phase logs, implementation
-   narratives, post-mortems and verification transcripts presented as guidance.
-2. **Executed plans.** A shipped plan still written as intent, with its
-   superseded analysis and rejected options.
-3. **Internal contradictions.** One fact with two values, a stale table corrected
-   by a note below it, dated addenda that reverse earlier text.
-4. **Stale claims.** Renamed symbols, changed constants, wrong line numbers, work
-   called unmerged after it landed.
-5. **Dead paths.** Missing files, old machine paths, moved repositories, removed
-   tools.
-6. **Authority drift.** A "source of truth" that no longer matches the code or a
-   later decision.
-
-Each phase has an end:
-- **Inventory** ends when every in-scope Markdown file has a role and every entry
-  pointer is resolved, dead or external.
-- **Diagnose** ends when every inventoried file has an evidence-backed finding or
-  is marked clean. Files `cleanup.mjs` did not flag still get read.
-- **Report** ends when the user can approve, reject or amend each change without
-  more investigation.
-- **Execute** ends when each approved finding has a diff or a stated reason for
-  none, and each retained claim was re-checked.
-
-## Trimming an entry file
-
-`AGENTS.md` and `CLAUDE.md` load into every session. They keep the project's
-identity (a line or two on what it is), its rules, the Joycraft lines and the
-context map. Propose moving the rest into context pages, each with a map row:
-
-| In the entry file | Move to |
+| Check | Finds |
 |---|---|
-| Key-files or module tables | A codebase reference page, e.g. `docs/context/codebase.md` |
-| Folder trees and architecture maps | The same page, or `docs/context/architecture.md` |
-| Data-flow and code walkthroughs | The same page, beside the files they walk through |
-| Setup, build, test and release workflows | `docs/context/workflow.md`; keep one test-command line in the entry if the rules need it |
-| Gotchas and traps that are not rules | The project's traps page (see knowledge guidance), each as a short imperative |
+| `broken-link` (G) | A Markdown link to a file that does not exist |
+| `missing-path` (G) | A backticked project path in an entry file or context page that does not exist |
+| `entry-size` | An entry file over `cleanup.entryWords` words (default 1000) |
+| `temporal` | A date (`YYYY-MM-DD`) or a link to a dated file in an entry file, outside code spans |
+| `script-name` (G) | A package script that an entry file names and no `package.json` defines |
+| `codex-bytes` (G) | `AGENTS.md` files from the root to one folder over 32,768 bytes together, the Codex limit |
+| `import` (G) | An `@path` line in an entry file (not `@AGENTS.md` in `CLAUDE.md`), or `AGENTS.override.md` |
 
-Reuse a page the map already has before creating one, and create a page only
-with the content it receives. Rules never move and are never reworded,
-reordered or reformatted: ALWAYS / ASK FIRST / NEVER lists and any other section
-that says what an agent must or must not do (release rules, holdout or
-confidentiality rules). If a rule is also stale, report it as a finding for the
-user to decide; do not fix it as part of the trim. After a move, the entry file
-names each new page in the map, and `cleanup.mjs` reports no `unmapped` or
-`orphan` page for it.
+Every other check says what it found in its `detail`. Fenced code blocks are
+ignored. `missing-path` skips globs, placeholders, URLs, paths outside the
+project and paths that Git ignores. A record rightly names removed paths and
+working material, so it is exempt from `missing-path` and `working-link`: a
+page with `type: log` or `type: history` frontmatter, `decision-log.md` and
+`shipped*.md`. `entry-check.mjs lost --base <rev>` lists the lines
+that a change dropped.
 
-## Execution playbook
+## One pass
 
-Re-check each factual claim against the code immediately before writing it.
+`AGENTS.md` is the entry file: it is loaded in every session. Its Context Map
+points at the pages that hold everything else. Both grow and go stale
+together, so clean them together: text that leaves the entry file must land
+on a page that is true, findable and short enough to read. The pages are every file that a map
+row names, the context pages with no row, and the nested entry files.
 
-- **Archive history worth finding again.** Put a verbatim copy, or a clearly
-  bounded extract, under `paths.archive` with a source-and-date name, and record
-  the source path and Git blob hash in the report. Git history alone is enough
-  when nobody will look for it. A finished feature folder is archived only
-  through the session-end path (`archive.md`), after its durable facts reach the
-  context home.
-- **Rewrite live guidance as current facts**, following
-  [knowledge guidance](knowledge.md): rewrite in place, reason to the decision
-  log, no addenda. Live pages never link the archive (`working-link`); record
-  each archive mapping in the cleanup report and the commit message instead.
-- **Point to authorities.** Name the owning schema, config or source file instead
-  of copying values that change.
-- **Condense completed work.** Replace a finished checklist with its outcome;
-  keep open items in their original words.
-- **Preserve traps.** Keep each recurring gotcha as a short imperative before
-  moving the story of how it was found.
-- **Banner unresolved drift.** When the code and a contract-like doc disagree and
-  the repository does not show which governs, add a short banner naming the
-  mismatch and the authority in force; do not rewrite the contract.
-- **Repair entry docs.** Fix dead reading pointers and stale claims, apply the
-  approved trim, and keep the required-reading set small.
+The aim:
 
-## Verify
+- The entry file is light: just enough for an agent to gather the context
+  that its task needs.
+- Each page is true, holds one topic, and is no longer than its job needs.
+- Stale data goes. Rules that no longer earn their place go.
+- Workers and subagents still get enough context for their task. If a light
+  entry file or a split page would starve them, say so.
 
-Every relative link in touched files resolves; archives match their sources
-byte for byte (extracts match their recorded bounds); load-bearing content found
-in diagnosis survives in live guidance, with rules byte-identical; the diff holds
-only approved Markdown changes; no new contradiction appears across touched docs;
-`cleanup.mjs` reports nothing new.
+## Two lenses
+
+Give every statement two verdicts.
+
+1. **Truth.** Check it against the repository as it is now: code, config,
+   scripts, tests, Git history. It is true, false, stale (was true), or not
+   checkable.
+2. **Place.** Does it belong where it is, for the reader who meets it there?
+   If not, name the place that owns it.
+
+## The entry file
+
+The entry file holds only what an agent needs in every session and cannot get
+from the code:
+
+- **Identity:** two or three sentences.
+- **Rules:** short imperative sentences, one rule for each bullet. A rule
+  stays in the entry file when a mistake would do harm that is hard to undo,
+  or when no code, config or check can show it. A rule of that kind stays in
+  full, even when it is long, limits included. No procedure, no checklist, no
+  list of examples, no history, no "who said it and when".
+- **Joycraft's block.**
+- **The Context Map:** one row for each guide, "read when <situation>"; then
+  one row for each log, "search when you need why or when, or to check a
+  regression". Move a rule or a fact out of a row before you shorten it.
+
+Everything else moves to the page that owns its topic: a procedure, a
+checklist, a description of how the code works, a tool list, a preference for
+one part of the code. Delete only what the code, a config file or a check
+already states, or what is false.
+
+A permission and its limits stay together: both in the entry file, or both on
+one page with one line in the entry file, "Read `<page>` before <action>."
+Write that line for each rule that a worker must obey.
+
+Aim for at most half of the current word count, and fewer when that does no
+harm. The target never outranks a rule that must stay in full.
+
+## Kinds of page
+
+Decide the kind of each page first. The kind sets what "good" means.
+
+- **Guide.** The current rules, facts and how-to for one topic. It holds only
+  what is true now. It opens with what the page is for and its rules. A
+  reader that a map row sends can read all of it. Aim for under 1,500 words;
+  over 3,000 words is a finding.
+- **Log** (`type: log`). A dated record: decisions, operations, what shipped.
+  It is an audit trail: an agent searches it to learn why or
+  when, or to check for a regression, and never reads it at the start. A
+  current rule or current state that lives only in a log is misplaced: check
+  that no later row reversed it, then state it in a guide; the log keeps the
+  dated record.
+- **History** (`type: history`). A postmortem or an old plan, kept for
+  lookup. It gets no map row unless a current rule depends on it; then the
+  rule moves to a guide.
+
+A page that is two kinds at once, current rules on top of a long dated log,
+is the most common defect. Split it: the guide part becomes a short page with
+its own map row, and the log part stays as a log. A log only gains text: for
+a wrong or replaced row, add one sentence at its end that names what replaced
+it.
+
+## What to find on each page
+
+1. **False and stale statements**, each with evidence (file and line, or
+   commit).
+2. **Contradictions**: with the entry file, with another page, or inside the
+   page. Say which side the code supports. When the code cannot settle it, it
+   is a question for the owner.
+3. **Misplaced content**: history inside a guide; a current rule buried in a
+   log; anything temporal (a date, a status, paused, open, in progress, who
+   decided); a copy of something that another place owns. Name the one home
+   for each: a decision and its reason go to the decision log, an operation
+   or a status to its log, open work to the backlog (default `docs/backlog/`)
+   or a handoff.
+4. **Shape.** What does a reader that this page's map row sends need, and how
+   much must it read to get it? Propose the smallest change that fixes it:
+   reorder, split, merge or move.
+5. **Rules on the page.** List each permission, prohibition and "ask first".
+   Does it agree with the entry file? Is it still in force? A rule that is
+   obsolete, duplicated, contradicted, or that guards something that no
+   longer exists is a candidate to retire.
+6. **What this page should receive from the entry file.** Which of its rules,
+   procedures and details belong to this page's topic? Is the page ready to
+   hold them?
+7. **Enough for a worker.** Would a worker that reads only a light entry file
+   and this page have what it needs to act safely? Say what is missing.
+
+## Questions for the owner
+
+Do not guess whether a hold or a pause is still in force, whether a rule
+still says what the owner wants, which of two conflicting statements wins
+when the code is silent, or whether old material may be deleted.
+
+Do not ask about single lines either: the owner cannot research each one.
+Group these into at most eight questions, each about one policy. Stops (what
+an agent must ask before) and holds are always two of them: never drop one by
+recommendation. A question says what the pages say now, gives two to four
+policies with your recommendation, and says how many lines it settles. The
+answer is a policy: apply it to each line of its theme. Record each question
+as a decision of a cleanup brief under `paths.features` and ask it in the
+project's [question style](artifacts.md#asking-questions). Every other choice
+is a recommendation: show them as a page that the owner can veto.
+
+## The steps
+
+A person asks for this pass. Above about 20,000 words of pages, first state
+the word count and the cost (about 25 tokens for each word). Then split the
+work into parts: the entry files are one part, and the pages are groups of
+about 20,000 words. One agent does each part, in parallel where the host has
+subagents and one after another where it has none. A coordinator, the session
+that talks to the owner, runs the steps.
+
+1. **List.** Each page with its kind and size. Find what parses these files:
+   `git grep -l` each file name in tests, scripts, open specs and queues, and
+   read what each one pins. Make no change that breaks one without saying so.
+2. **Analyze, read only.** Run `cleanup.mjs`. Each part's agent finds the
+   seven things on its pages and writes its numbered findings, its plan and
+   its questions. No project file changes.
+3. **Ask one round.** The coordinator merges the questions into themes, asks
+   them, and waits. With no answer, the lines of that theme stay in their
+   words.
+4. **Apply.** The agent that analyzed a part edits it: it knows the pages.
+   Each agent edits only the files of its own part and writes every other
+   change as a request: the file, the exact old text, the exact new text, and
+   why. Fix a false statement in each place that states it: `git grep --untracked`
+   the claim. Each answer goes to the decision log in the owner's words.
+5. **Write the entry file last.** The coordinator writes it from the answers
+   and applies the requests. No other agent changes an entry file, and no
+   agent commits.
+6. **Check.** Give each finding a final status: fixed, left for the owner,
+   or not done and why. Then an agent that wrote no edit checks the changed
+   guides against the code; fix what it finds once. Make the permission
+   ledger. Run
+   `entry-check.mjs lost --base HEAD` and account for each line. Run `cleanup.mjs`,
+   `wiring.mjs`, `entry-check.mjs --ci` and the project's gates. Offer one commit.
+
+On request, check the guides again, or fix a line that a person names
+and each copy of its claim.
+
+## Permission ledger
+
+Before the commit, take from the diff and the `lost` report every line that
+permits, forbids, stops or holds and that the pass changed, moved or removed:
+the old text beside the new. For each, name the owner's answer that decided
+it. List first each line where you read an answer onto something that the
+owner did not name. Put back a change that no answer decides, and list it as
+not covered. Show the ledger with the result.
+
+- A grant keeps the owner's words and scope. Add nothing to it.
+- The code settles a fact, not a rule. Report a rule that the code breaks; do
+  not remove it.
+- Change a test or a script only where it pins text that the pass moved, and
+  list each such change.

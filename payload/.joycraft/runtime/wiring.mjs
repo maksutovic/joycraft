@@ -3,13 +3,31 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { workPaths } from './config.mjs';
 
-// A report-only check that the project's entry files carry Joycraft: the
-// update-check line, a context map with at least one project row, and (when
+// A report-only check that the project's entry files carry Joycraft: Joycraft's
+// lines (the managed block), a context map with at least one project row, and (when
 // Claude Code is installed) a CLAUDE.md that imports AGENTS.md, unless AGENTS.md
 // itself imports CLAUDE.md. It never edits a file; the agent writes the missing
 // pieces after talking with the person. `findings` decide the exit code;
 // `advice` (areas setup has not mapped yet) never does.
 const read = (root, file) => { try { return readFileSync(path.join(root, file), 'utf8'); } catch { return null; } };
+
+// Joycraft's own lines in AGENTS.md: one block between markers, the same for
+// every project. This is the one definition. The runtime prints it
+// (entry-check.mjs block) and checks it; the agent places it. A release that
+// changes Joycraft's lines changes this text and nothing else in the file.
+export const managedOpen = '<!-- joycraft:managed -->';
+export const managedClose = '<!-- /joycraft:managed -->';
+const managedLines = [
+  'First action in each session: run `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow `.joycraft/references/update.md`.',
+  'Ask a person to answer or approve anything only through Joycraft\'s decision artifact (`node .joycraft/runtime/artifacts/cli.mjs`, see `.joycraft/references/artifacts.md#asking-questions`), in the project\'s question style. Every page that shows a person a document, a question or a decision comes from that engine: never write your own HTML page for one. Show every other document a person must read (a plan, spec set, report or review) as an engine page (`--doc`), never only as Markdown in chat, where the person works (see `.joycraft/references/artifacts.md#showing-a-page`), and say where it is.',
+  'A Context Map row that matches your next step binds: read that page first, and again after a compaction or in a new agent. A record (a log or history) is an audit trail: search it to learn why or when; do not read it at the start.',
+  'When a fact here disagrees with the code, trust the code and report it. A rule holds even when the code breaks it.',
+];
+export const managedBlock = [managedOpen, ...managedLines.map(line => `- ${line}`), managedClose].join('\n');
+// The command that every version of Joycraft's first-action line names.
+const firstAction = 'update-check.mjs check';
+// Words of the older loose lines that the block replaced.
+const olderLines = [firstAction, 'never only as Markdown in chat'];
 
 function claudeInstalled(root, hosts) {
   if (Array.isArray(hosts)) return hosts.includes('claude');
@@ -75,6 +93,25 @@ function rowTargets(row, definitions = new Map()) {
     .map(target => path.posix.normalize(target));
 }
 
+/**
+ * Where Joycraft's lines are in an entry file: `block` (the exact block),
+ * `changed` (markers with other text between them, or one marker), `loose`
+ * (the older lines with no markers) or `none`. `line` is the 1-based line of
+ * the opening marker or of the loose first-action line.
+ */
+export function managedState(text) {
+  const lines = proseLines(text ?? '').map(line => line.trimEnd());
+  const open = lines.indexOf(managedOpen), close = lines.indexOf(managedClose);
+  if (open !== -1 || close !== -1) {
+    const exact = open !== -1 && close > open && lines.slice(open, close + 1).join('\n') === managedBlock;
+    // An older loose line outside the markers says the same thing twice.
+    const beside = lines.findIndex((line, index) => (index < open || index > close) && olderLines.some(words => line.includes(words)));
+    return { state: exact ? 'block' : 'changed', line: (open === -1 ? close : open) + 1, ...(beside === -1 ? {} : { loose: beside + 1 }) };
+  }
+  const loose = lines.findIndex(line => line.includes(firstAction));
+  return loose === -1 ? { state: 'none', line: null } : { state: 'loose', line: loose + 1 };
+}
+
 const imports = (text, file) => text !== null && proseLines(text).some(line => new RegExp(`^\\s*@(\\./)?${file.replace('.', '\\.')}\\s*$`).test(line));
 
 /** True when AGENTS.md is CLAUDE.md (a symlink) or imports it, so Claude Code reads both without a reciprocal import. */
@@ -112,8 +149,8 @@ export function checkWiring(root, { hosts } = {}) {
   if (agents === null) {
     findings.push({ check: 'no-agents-md', path: 'AGENTS.md', detail: 'The project has no AGENTS.md, so agents get no Joycraft lines and no context map.', fix: "Ask the agent to set up Joycraft's context map (see .joycraft/references/setup.md)." });
   } else {
-    if (!agents.includes('update-check.mjs check')) {
-      findings.push({ check: 'no-joycraft-lines', path: 'AGENTS.md', detail: 'AGENTS.md has no `node .joycraft/runtime/update-check.mjs check` line, so sessions do not start with Joycraft.', fix: 'Add the Joycraft lines from .joycraft/references/setup.md with a targeted edit.' });
+    if (managedState(agents).state === 'none') {
+      findings.push({ check: 'no-joycraft-lines', path: 'AGENTS.md', detail: "AGENTS.md has no Joycraft block, so sessions do not start with Joycraft.", fix: 'Put the output of `node .joycraft/runtime/entry-check.mjs block` in AGENTS.md with a targeted edit.' });
     }
     const map = contextMap(agents);
     if (map === null) {

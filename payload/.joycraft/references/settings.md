@@ -52,8 +52,8 @@ On "uninstall Joycraft" or "remove Joycraft":
    since install marked as edited, Joycraft's Stop hook in `.claude/settings.json`
    when the gates are on, and `.joycraft/` itself. Say what stays: `AGENTS.md`,
    `CLAUDE.md`, `docs/` and `joycraft.yaml` are theirs.
-3. Offer to remove the Joycraft lines from `AGENTS.md` and `CLAUDE.md` (the context
-   map rows that point into `.joycraft/`, and the Joycraft rules). Show that diff
+3. Offer to remove the Joycraft lines from `AGENTS.md` and `CLAUDE.md` (the managed
+   block, and the context map rows that point into `.joycraft/`). Show that diff
    separately.
 4. On the user's yes, first run `node .joycraft/runtime/gate.mjs hook --off`. It
    removes Joycraft's Stop hook. When the gates are off, it changes nothing. Then

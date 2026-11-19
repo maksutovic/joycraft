@@ -4,33 +4,41 @@ status: todo
 ---
 # Outcome
 
-Joycraft 1.6.0 ships the canonical entry file and the one-pass cleanup: the payload is
-the new field build, it has no more words than the last one, and the docs tell
-a user how to ask for a cleanup and what it does. Brief:
-[one-pass](../brief.md#one-pass), [scope](../brief.md#scope-and-limits). It starts only
-after spec 12 passes and the owner says go.
+Joycraft 1.6.0 ships the entry check, the one-pass cleanup and the artifact
+engine's document pages: the payload is the new field build, it has no more
+words than the last one, and the docs tell a user how to ask for a cleanup and
+what it does. Brief: [one-pass](../brief.md#one-pass),
+[scope](../brief.md#scope-and-limits). The owner said go on 2026-11-18, after a
+confirmation run of the cleanup. Spec 12 did not run every measure; the pull
+request names each measure that was not run.
 
 ## acceptance
 
 - The payload is the new field build. Check: `payload/PIN` names the field tag
-  that carries specs 1 to 11; `payload/.joycraft/runtime/entry-check.mjs`
-  exists and `payload/.joycraft/templates/now.md` does not; `pnpm test && pnpm typecheck`
-  pass (`[AC:vendored-field-build]`).
+  that carries specs 1 to 11 and the document pages of the artifact engine;
+  `payload/.joycraft/runtime/entry-check.mjs` exists; no shipped file is or
+  names `now.md`, and no shipped file names `entry.tidy`;
+  `pnpm test && pnpm typecheck` pass (`[AC:vendored-field-build]`).
 - The payload did not grow. Check: `tests/payload-guard.test.ts` has a
   `FIELD_24_WORDS` constant, counted with the guard's own counter on the
   field-24 payload, and fails when the shipped skills, agent files and
   references have more words than that (`[AC:payload-words-not-up]`).
 - A user can find it. Check: the README has a section "Keeping AGENTS.md
   current" that says in plain words: that a cleanup covers the entry file and
-  the pages behind its map in one pass; what it asks the owner (permissions,
-  holds, deleting his material) and that it changes no rule without his
-  answer; the prompt "Clean up my AGENTS.md and context pages"; and the CI
-  line `node .joycraft/runtime/entry-check.mjs --ci`. `docs/prompts.md` has
-  the prompt. `scripts/ste-lint.py` passes on the new prose
-  (`[AC:readme-entry-section]`).
+  the pages behind its map in one pass; that it asks at most eight questions,
+  each about one policy, on one page; that it shows a permission ledger before
+  the commit and changes no permission without an answer or a recommendation
+  that the owner can veto; that it gives each finding a final status and can
+  check again on request; that session end only reports and makes mechanical
+  fixes; the prompt "Clean up my AGENTS.md and context pages"; and the CI line
+  `node .joycraft/runtime/entry-check.mjs --ci`. The README also says that
+  each page for a person comes from the artifact engine, and that a document
+  page shows images and Mermaid diagrams. `docs/prompts.md` has the prompt.
+  `scripts/ste-lint.py` passes on the new prose (`[AC:readme-entry-section]`).
 - The release fields move together. Check: `package.json` `version` and
-  `joycraft.release` are 1.6.0, the CHANGELOG has an entry
-  for it with the release summary, and `docs/context/shipped.md` has its row
+  `joycraft.release` are 1.6.0, `joycraft.summary` describes this release,
+  `src/joycraft-release.json` has `releaseVersion` 1.6.0, the CHANGELOG has an
+  entry for it, and `docs/context/shipped.md` has its row
   (`[AC:release-fields]`).
 - Vendor guidance is re-read at release time. Check: `docs/guides/releasing.md`
   has one checklist line: read the Claude Code memory docs and the Codex
@@ -38,8 +46,9 @@ after spec 12 passes and the owner says go.
   changed (`[AC:release-checklist-line]`).
 - The brief's fixture goals hold on the vendored payload. Check: on a fixture
   project with a dead path in `AGENTS.md`, `entry-check.mjs --ci` exits 2; on a
-  clean fixture it prints nothing; a block with one changed word fails and the
-  rest of the file is not named (`tests/payload-entry-check.test.ts`,
+  clean fixture it prints nothing; a block with one changed word gives one
+  `managed-block` advisory and `--ci` exits 0; `entry-check.mjs block` prints
+  Joycraft's lines (`tests/payload-entry-check.test.ts`,
   `[AC:payload-entry-check]`).
 
 ## Not covered
@@ -49,27 +58,32 @@ repository is tidied with the released version first, as a later change.
 
 ## Implementation and verification scope
 
-This repository: `payload/` (vendored, with a new pin exported as
-`docs/context/traps.md` in joycraft-prototype says), `tests/payload-guard.test.ts`,
-new `tests/payload-entry-check.test.ts`, `README.md`, `docs/prompts.md`,
-`CHANGELOG.md`, `package.json`, `docs/context/shipped.md`,
-`docs/guides/releasing.md`. Run `pnpm install && pnpm build` before `pnpm test`
-in a fresh worktree. Run `/release-docs-sync` before `gh pr create`. The owner
-merges; a merge to `main` publishes to npm.
+This repository: `payload/` (vendored with `scripts/vendor-payload.mjs` from
+the new field tag), `tests/payload-guard.test.ts`, new
+`tests/payload-entry-check.test.ts`, `README.md`, `docs/prompts.md`,
+`CHANGELOG.md`, `package.json`, `src/joycraft-release.json`,
+`docs/context/shipped.md`, `docs/guides/releasing.md`. Run
+`pnpm install && pnpm build` before `pnpm test` in a fresh worktree. Run
+`/release-docs-sync` before `gh pr create`. The owner merges; a merge to `main`
+publishes to npm.
 
 ## Deferred until deploy
 
-The field run needs the published version in the field project. The owner or
-an attended session checks these after the release, against the
-[pre-committed measurements](../../../research/2026-11-17-entry-file-sota-panel-verdict.md#pre-committed-measurements):
+The owner or an attended session checks these with the published version. The
+first four were not verified before the release:
 
-- A cleanup run on the field file asks at most 2 questions (baseline 9), and
-  none is about shape, placement, duplicates, map wording or unmapped pages.
-- The rules list is shown one time; after the yes, no date, status or dated
-  link remains in the entry file outside a code span, and its rows to dated
-  briefs and handoffs are `now.md` entries behind one row.
-- A session end that closes the last open item leaves `now.md` with its two
-  headings and no entry.
-- Over 10 runs: median questions at most 1; owner reverts of tidy commits at
-  most 1; no hold missed by a session or a queue. A lost or changed safety rule
-  returns the tidy default to `review`.
+- A cleanup result passes the own test gate of a field project.
+- A worker does no worse with the cleaned files than with the old files, on
+  three harnesses, on a task that needs a moved rule.
+- The final skill text, on a small second repository, gives an entry file
+  that is not longer and asks at most 3 questions.
+- A document page with a Mermaid diagram renders inside a live Claude
+  artifact.
+- An update from 1.5.4 leaves no old Joycraft line beside the block.
+
+## State, 2026-11-18
+
+The work of this spec is in the release pull request: payload `field-25`, the
+tests, the docs and the release fields. `pnpm test` and `pnpm typecheck` pass.
+The status stays `todo`: `completion.mjs submit` refuses this spec while spec 12
+is not done, and no review of it is on record.

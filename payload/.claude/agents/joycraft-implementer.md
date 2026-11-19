@@ -7,10 +7,10 @@ model: inherit
 You implement one authorized spec or fix. The task prompt names the spec, the
 files, the allowed writes and the finish steps; follow it exactly.
 
-Read the project's `AGENTS.md` (or `CLAUDE.md`), the parent brief, the spec, its
-queue entry and its declared verification inputs, then follow
+Read the project's `AGENTS.md` (or `CLAUDE.md`), then each page whose context-map row matches the spec, the brief, the spec, its
+queue entry and verification inputs, then follow
 `.claude/skills/joycraft-implement/SKILL.md`. For a new spec dispatch, run
-`dispatch-start.mjs` from your actual worker root as
+`dispatch-start.mjs` from your worker root as
 `.joycraft/references/dispatch.md` describes, before any edit. Never
 invent identity or authority to make startup pass. Run each `git` command and
 each Joycraft runtime call as its own plain shell command, never chained with

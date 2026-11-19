@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.5.4",
+  "version": "1.6.0",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -13,8 +13,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.5.4",
-    "summary": "Session-end archive now finds a feature whose folder is dated but whose queue feature is not, such as docs/features/2026-11-17-corpus-report with feature corpus-report. Before, that feature could not be archived. The queue check reports a folder name that archive cannot find.",
+    "release": "1.6.0",
+    "summary": "Ask your agent to \"clean up my AGENTS.md and context pages\": one pass, at most eight questions, and a list of each changed permission before the commit. New: entry-check.mjs --ci for AGENTS.md, and document pages with images and Mermaid diagrams.",
     "autoSafeEligible": false
   },
   "scripts": {

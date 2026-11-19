@@ -101,6 +101,7 @@ html[data-jca-theme] body { margin: 0; background: var(--canvas); color: var(--i
 .jca-note::placeholder { color: var(--muted); opacity: 1; }
 .jca-note:disabled { opacity: 1; color: var(--muted); }
 .jca-save-one { margin-top: .7rem; }
+.jca-change { margin-top: .4rem; }
 .jca-section-title { margin-top: 2.7rem; padding-top: 1.4rem; border-top: 1px solid var(--line); }
 .jca-comparison, .jca-review { margin: 1rem 0; padding: 1rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .jca-comparison h2 { font-size: 1.3rem; }
@@ -114,4 +115,43 @@ html[data-jca-theme] body { margin: 0; background: var(--canvas); color: var(--i
 .jca-review h3 { margin: .1rem 0 .4rem; font-size: 1rem; }
 .jca-footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .82rem; }
 .jca-copy-fallback { width: 100%; min-height: 10rem; margin-top: 1rem; padding: .75rem; border: 2px solid var(--accent); border-radius: 8px; color: var(--ink); background: var(--input); font-family: ui-monospace, monospace; font-size: .78rem; }
+/* A document rendered from Markdown. With decisions on the same page, it comes before them. */
+html[data-jca-theme] body > .jca-doc + main > .joycraft-artifact { margin-top: 0; }
+.jca-doc-body { overflow-wrap: anywhere; }
+.jca-doc-body h1 { max-width: none; }
+.jca-doc-body h2 { margin: 2rem 0 .7rem; padding-top: 1.1rem; border-top: 1px solid var(--line); font-size: clamp(1.3rem, 3vw, 1.7rem); }
+.jca-doc-body h3, .jca-doc-body h4, .jca-doc-body h5, .jca-doc-body h6 { margin: 1.5rem 0 .5rem; font-size: 1.05rem; line-height: 1.3; }
+.jca-doc-body h5, .jca-doc-body h6 { color: var(--muted); font-size: .92rem; }
+.jca-doc-body p, .jca-doc-body ul, .jca-doc-body ol, .jca-doc-body blockquote, .jca-doc-body pre, .jca-doc-table { margin: .8rem 0; }
+.jca-doc-body ul, .jca-doc-body ol { padding-left: 1.5rem; }
+.jca-doc-body li { margin: .25rem 0; }
+.jca-doc-body li > ul, .jca-doc-body li > ol { margin: .25rem 0; }
+.jca-doc-body a { color: var(--accent); }
+.jca-doc-body a:hover { color: var(--accent-hover); }
+.jca-doc-body a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.jca-doc-ref { border-bottom: 1px dotted var(--control-line); }
+.jca-doc-body code { padding: .1em .32em; border-radius: 4px; background: var(--surface); font: .88em/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.jca-doc-body pre, .jca-diagram pre { padding: .8rem 1rem; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); overflow-wrap: normal; }
+.jca-doc-body pre code, .jca-diagram pre code { padding: 0; background: none; font: .84rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+.jca-doc-image { display: block; max-width: 100%; height: auto; margin: .8rem 0; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.jca-diagram { margin: .8rem 0; overflow-x: auto; }
+.jca-diagram pre { margin: 0; color: var(--ink); }
+.jca-diagram pre[hidden] { display: none; }
+.jca-diagram-drawing svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.jca-diagram-note { margin: 0 0 .4rem; color: var(--caution); font-size: .88rem; }
+.jca-doc-meta { color: var(--muted); }
+.jca-doc-diff code { display: block; min-width: max-content; }
+.jca-doc-diff span { display: block; padding: 0 .3rem; }
+.jca-doc-add { background: var(--accent-soft); }
+.jca-doc-del { color: var(--error); background: var(--error-bg); }
+.jca-doc-hunk, .jca-doc-file { color: var(--muted); }
+.jca-doc-file { font-weight: 700; }
+.jca-doc-body blockquote { margin-left: 0; padding: .1rem 1rem; border-left: 3px solid var(--accent); color: var(--muted); }
+.jca-doc-body hr { margin: 1.6rem 0; border: 0; border-top: 1px solid var(--line); }
+.jca-doc-table { overflow-x: auto; }
+.jca-doc-body table { width: 100%; border-collapse: collapse; font-size: .92rem; overflow-wrap: normal; }
+.jca-doc-body th, .jca-doc-body td { padding: .45rem .7rem; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+.jca-doc-body th { background: var(--surface); font-weight: 700; }
+.jca-doc-body .jca-doc-right { text-align: right; }
+.jca-doc-body .jca-doc-center { text-align: center; }
 @media (max-width: 520px) { .joycraft-artifact { margin: 0; padding: 1.2rem; border: 0; border-radius: 0; } .jca-actions button { flex: 1 1 40%; } }

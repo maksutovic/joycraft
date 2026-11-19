@@ -29,3 +29,19 @@ scratch clone, and its results stay out of this repository.
 
 Scratch clones only. The report is a rendered page for the owner, kept outside
 both repositories.
+
+## State, 2026-11-18
+
+The status stays `todo`: this spec did not finish as written.
+
+- Run: the shipped text alone, on a clean clone of a field project. It asked 8
+  questions in one round. It changed no permission outside the owner's answers
+  and the recommendations that he did not veto. Of 134 known false or stale
+  statements, it fixed 81% before the closing loop and 84% after it.
+- Not run: the field project's own gate on a cleanup result. A worker test on
+  three harnesses. The final skill text on a small second repository. Mermaid
+  rendering inside a live Claude artifact.
+- The owner said to ship on 2026-11-18 with these not run
+  (`docs/context/decision-log.md`). No report page with one row for each measure
+  is on record in this repository, and the owner did not waive this spec by name.
+  Spec 8 names the open measures under "Deferred until deploy".

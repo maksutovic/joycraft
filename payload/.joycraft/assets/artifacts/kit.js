@@ -20,6 +20,15 @@
 
   function text(value) { return document.createTextNode(value == null ? '' : String(value)); }
 
+  // Detail text is plain text. A fenced `mermaid` block in it is a diagram: the page's
+  // diagram script draws the figure, and the source shows when it cannot.
+  function detailNodes(value) {
+    return String(value).split(/^```mermaid[ \t]*\n([\s\S]*?)\n```[ \t]*$/m).map(function (part, index) {
+      if (index % 2) return node('figure', { class: 'jca-diagram' }, [node('pre', {}, [node('code', { text: part })])]);
+      return part.trim() ? node('p', { text: part.trim() }) : null;
+    });
+  }
+
   function responseMap(responses) {
     return (responses || []).reduce(function (map, response) {
       if (response && response.id && response.answer) map[response.id] = { answer: response.answer, note: response.note || '' };
@@ -98,8 +107,19 @@
     var message = transport ? 'Loading saved responses…' : 'Read-only preview. A response transport is not available.';
     var messageKind = transport ? 'quiet' : 'notice';
 
+    // Saved decisions that the person opened again with "Change answer", by id.
+    var changing = Object.create(null);
+    function canChange(question) {
+      return writable && question.status === 'clarified' && Boolean(transport && transport.changesAnswers === true);
+    }
     function isReadOnly(question) {
+      if (question.status === 'clarified' && changing[question.id] && canChange(question)) return false;
       return !writable || ['clarified', 'settled', 'backlogged', 'discarded'].indexOf(question.status) !== -1;
+    }
+    // The page says so explicitly when a save replaces a recorded answer.
+    function outgoing(answer) {
+      var q = (model.questions || []).filter(function (candidate) { return candidate.id === answer.id; })[0];
+      return q && changing[q.id] && canChange(q) && q.answer !== answer.answer ? Object.assign({}, answer, { change: true }) : answer;
     }
     // A saved answer keeps its note open: the note can be added or changed and saved again.
     function canEditNote(question) {
@@ -144,8 +164,9 @@
       if (!answers.length) { setMessage('quiet', 'No new answers to save.'); render(); return; }
       saving = true; setMessage('quiet', 'Saving selected responses…'); render();
       try {
-        var result = await transport.save({ revision: revision, answers: answers });
+        var result = await transport.save({ revision: revision, answers: answers.map(outgoing) });
         if (destroyed) return;
+        answers.forEach(function (answer) { delete changing[answer.id]; });
         applyLoaded(result, Boolean(question), answers.map(function (answer) { return answer.id; }));
         if (sourceNotice && sourceNotice.conflict) sourceNotice.saved = true;
         setMessage('success', (result && result.message) || 'Saved in artifact — awaiting brief sync.');
@@ -346,12 +367,20 @@
       }
       if (question.details || (question.affected || []).length) {
         var detail = node('details', { class: 'jca-details' }, [node('summary', { text: 'More detail' })]);
-        if (question.details) detail.append(node('p', { text: question.details }));
+        if (question.details) detailNodes(question.details).forEach(function (part) { if (part) detail.append(part); });
         if ((question.affected || []).length) detail.append(node('p', { text: 'Affected: ' + question.affected.join(', ') }));
         body.append(detail);
       }
+      var reopened = !readOnly && question.status === 'clarified';
+      if (canChange(question)) {
+        body.append(node('button', { type: 'button', class: 'jca-change', id: 'jca-change-' + question.id, text: reopened ? 'Keep recorded answer' : 'Change answer', disabled: saving || loading, onclick: function () {
+          if (reopened) { delete changing[question.id]; draft[question.id] = Object.assign({ answer: '', note: '' }, saved[question.id]); setMessage('quiet', dirty() ? 'Unsaved changes.' : 'The recorded answer is kept.'); }
+          else { changing[question.id] = true; setMessage('quiet', 'Choose another option, then save.'); }
+          render();
+        } }));
+      }
       var fieldset = node('fieldset', { class: 'jca-options', disabled: readOnly });
-      fieldset.append(node('legend', { text: readOnly ? 'Responses are read-only' : 'Choose one response' }));
+      fieldset.append(node('legend', { text: reopened ? 'Choose another response' : !readOnly ? 'Choose one response' : canChange(question) ? 'Recorded response. Use Change answer to choose another.' : 'Responses are read-only' }));
       // The recommended option leads; "Something else" always closes the list.
       var rank = function (option) { return option.value === 'custom' ? 2 : option.recommended ? 0 : 1; };
       var ordered = (question.options || []).map(function (option, position) { return { option: option, position: position }; })
@@ -383,7 +412,7 @@
       note.addEventListener('input', function () { draft[question.id] = { answer: (draft[question.id] || {}).answer || '', note: note.value }; setMessage('quiet', 'Unsaved changes.'); syncLiveUi(); });
       body.append(noteLabel, note);
       if (question.answer && question.note) body.append(node('p', { class: 'jca-recorded', text: 'Brief note: ' + question.note }));
-      if (canEditNote(question)) body.append.apply(body, saveButton({ class: 'jca-save-one', text: readOnly ? 'Save note' : 'Save this response', onclick: function () { save(question); } }, saveOneBlocked(), 'jca-save-reason-' + question.id));
+      if (canEditNote(question)) body.append.apply(body, saveButton({ class: 'jca-save-one', text: readOnly ? 'Save note' : reopened ? 'Save changed answer' : 'Save this response', onclick: function () { save(question); } }, saveOneBlocked(), 'jca-save-reason-' + question.id));
       return body;
     }
     function renderComparison(comparison) {
@@ -437,6 +466,7 @@
       if ((model.reviews || []).length) { page.append(node('h2', { class: 'jca-section-title', text: 'Verification summary' })); model.reviews.forEach(function (item) { page.append(renderReview(item)); }); }
       page.append(node('footer', { class: 'jca-footer', text: writable ? (dirty() ? 'Unsaved response edits are on this page.' : countText() + '.') : 'Responses are read-only in this artifact.' }));
       root.append(page);
+      if (global.JoycraftDiagrams) global.JoycraftDiagrams.draw();
       if (focusedId) {
         var focusTarget = document.getElementById(focusedId);
         if (focusTarget && !focusTarget.disabled) focusTarget.focus({ preventScroll: true });

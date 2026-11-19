@@ -4,9 +4,8 @@ Run this after every install from the prompt, when the user asks ("set up
 Joycraft", "check the context map"), and whenever
 `node .joycraft/runtime/wiring.mjs --root .` exits 2. The CLI knows nothing
 about the project, so it writes nothing to `AGENTS.md` or `CLAUDE.md`; you build
-the context map from the repository and a short interview with the user. Many
-installs land in existing, sometimes large, projects, so the interview is part
-of every setup, not only a new project's. Work inside the current project. A
+the context map from the repository and a short interview with the user. The
+interview is part of every setup. Work inside the current project. A
 read-only request gets the findings reported, not written.
 
 ## Contents
@@ -21,11 +20,8 @@ read-only request gets the findings reported, not written.
 
 ## Set up the context map
 
-The context map in `AGENTS.md` is the project's memory index. Each row points to
-one home for one kind of knowledge and says when to read it, so an agent loads
-only what its work needs; the map then grows with every decision, trap and
-feature ([knowledge.md](knowledge.md)). A project without a real map gets
-nothing from Joycraft, so build it from the project, never from a template.
+The context map in `AGENTS.md` is the index of project memory
+([knowledge.md](knowledge.md)). Build it from the project, never from a template.
 
 **Nothing new, nothing done.** When `wiring.mjs` exits 0, every doc worth
 reading already has a row, and nothing the user told you or the audit found is
@@ -35,10 +31,10 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
 1. **Read and audit.** Read `AGENTS.md`, `CLAUDE.md`, the README and every doc
    they point to, then the other Markdown docs (skip dependencies, generated
    files, `.joycraft/` and installed skills). Run `joycraft-cleanup` steps 1–2
-   (inventory and diagnose) on what you read: it gives each doc a
-   [role](cleanup.md#doc-roles) and hands its findings back to you, with no
-   report page and no stop of its own. Check claims in entry and required docs
-   against the code; in reference docs, check only the claims the interview or
+   (read and analyze) on what you read: it gives each doc a
+   [kind](cleanup.md#kinds-of-page) and hands its findings back to you, with no
+   report page and no stop of its own. Check claims in the entry files and the pages they require
+   against the code; in other pages, check only the claims the interview or
    an audit finding touches. Inspect manifests, scripts and CI only to
    establish the stack and real commands; a declared command is unrun until
    executed. In a large repo, read the entry docs and their pointers first,
@@ -68,30 +64,24 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
    with no options. The brief is scratch:
    each answer then goes to its home in step 3. Stop when the user says enough. Never ask again
    what the user answered or a home already states. Keep the user's words apart
-   from your observations and assumptions. On a bare project, offer the
-   [kickoff](#kickoff-for-a-new-project) instead.
+   from your observations and assumptions. On a bare project, offer the [kickoff](#kickoff-for-a-new-project)
+   instead.
 3. **Propose.** Draft every change:
-   - **Joycraft lines** in `AGENTS.md`, each only when missing:
-     “First action in each session: run
-     `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow
-     `.joycraft/references/update.md`.” and “Show every document a person must
-     read or review (a brief, plan, spec set or review) as a rendered page,
-     never only as Markdown in chat: use the decision artifact
-     (`node .joycraft/runtime/artifacts/cli.mjs`, see
-     `.joycraft/references/artifacts.md`) for a brief, or an HTML page for any
-     other document. Show it where the person works (see
-     `.joycraft/references/artifacts.md#showing-a-page`) and say where it is.
-     Ask questions in the project's question style
-     (`.joycraft/references/artifacts.md#asking-questions`).” Replace an older
-     version of this line that lists a "set of questions", so it does not
-     override a chat question style.
-   - **The map**: one `## Context Map` table (`| Document | Read when |`). One
+   - **Joycraft's block** in `AGENTS.md`: when it is missing, put the output
+     of `node .joycraft/runtime/entry-check.mjs block` there. It replaces
+     older loose Joycraft lines.
+   - **The map**: one `## Context Map` table. One
      row per real home: each required or reference doc, and each home you
      create. A read-when names the work that needs the doc ("Changing how counts
      are stored"), not its topic. Add a row for
      `.joycraft/references/artifacts.md`, read when "showing a document or
-     questions to a person". Historical docs get no row. In an existing map,
-     append rows below the user's rows; never edit, reorder or reformat theirs.
+     questions to a person". A log (a decision log, an operations log) is a record: its row
+     says "search when you need why or when, or to check a regression", below
+     the guide rows. No row tells an agent to read a record
+     at the start. History gets no row. In an existing file,
+     keep the headings and the column order of the user's map, and add rows in
+     that order below the user's rows; setup never edits, reorders or
+     reformats theirs.
      Every row targets a file that exists after the write.
    - **Homes**, only with content, routed by [knowledge.md](knowledge.md).
    - **`CLAUDE.md`**, only when `.joycraft/installation.json` lists the
@@ -99,24 +89,27 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
      `## Claude Code` section; present without an `@AGENTS.md` line → add
      `@AGENTS.md` as line 1; present with it → leave it alone. When `AGENTS.md`
      already imports or defers to `CLAUDE.md`, add no reciprocal import.
-   - **Audit fixes** for the findings the user agreed to in the interview, made
-     as joycraft-cleanup step 4 says.
+   - **Audit fixes** for docs that are not entry files: the findings the user
+     agreed to in the interview. Setup adds to an entry file and does not
+     clean it. When the audit found much, offer the cleanup pass afterwards.
 
    Add lines, rows and pages. Do not reword, reformat, reorder or delete user
-   content: every existing line of `AGENTS.md` and `CLAUDE.md` survives. With
-   no `AGENTS.md`, create one with the purpose (or "unknown"), established
-   constraints, commands with their source, the Joycraft lines and the map. Keep
+   content: every line of the user in `AGENTS.md` and `CLAUDE.md` survives. With
+   no `AGENTS.md`, create one in this order: identity (the purpose, or
+   "unknown"), commands with their source, rules (established constraints), the
+   managed block, and the map as `| Read when | Document |`. Keep
    generic coding advice and tentative product ideas out; feature intent stays
    in its brief. Respect symlinks and managed files.
-4. **Show, then write.** Render the diff of every file you would change or
-   create, audit fixes included, as one HTML page under
-   `.joycraft/local/setup/`. Show it as [showing a page](artifacts.md#showing-a-page)
-   says, give its path, and write only on the
+4. **Show, then write.** Write the diff of every file you would change or
+   create, audit fixes included, as `diff` blocks in one Markdown file
+   under `.joycraft/local/setup/`. Render it with the artifact engine
+   (`--doc`) and show it as [showing a page](artifacts.md#showing-a-page)
+   says. Give its path, and write only on the
    user's yes; this page is setup's only approval stop. A request that
    already approves the files you propose counts as the yes.
 5. **Check.** `wiring.mjs` exits 0. `node .joycraft/runtime/cleanup.mjs`
    reports no `missing-path`, `unmapped`, `orphan` or `broken-link` for the
-   files you touched. Every original line of `AGENTS.md` and `CLAUDE.md` is
+   files you touched. Every line of the user in `AGENTS.md` and `CLAUDE.md` is
    still there. Fix what fails, then tell the user in a few lines which docs the
    map now reaches, which homes you created and what you have not read or do
    not know yet. Continue the original request.
@@ -295,14 +288,12 @@ Only the context homes are current project knowledge. `docs/features/` is workin
 material: a brief or spec there can be out of date until the feature is archived,
 and `docs/archive/` is history. Context retrieval and any project wiki or doc audit
 should treat both as non-authoritative and must not link to them as current
-truth. Joycraft ships no wiki; a project that keeps one keeps it in its own home
-and links it from the context map.
+truth.
 
 The brief retains decision authority under `workflow.md`; the context document
 and decision log must not become competing answer stores. Later accepted facts
 update their existing home; [knowledge.md](knowledge.md) owns how each fact is
-routed, changed in place and kept current. Repeating entry with no new knowledge should make
-no setup edits, create no duplicate links, and ask no repeated questions. There
+routed, changed in place and kept current. There
 is no setup-complete sentinel: useful source content, not a flag, determines
 whether context is available.
 

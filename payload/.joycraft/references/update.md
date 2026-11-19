@@ -27,7 +27,11 @@ Use the version from `latest`:
 2. Run `npx joycraft@<latest> update . --yes`. If `kind` is `migration`, this prints a
    migration plan and stops: show the plan and follow its steps with the user. Never
    apply a migration without the user's yes.
-3. Run `npx joycraft@<latest> doctor .`.
+3. Run `npx joycraft@<latest> doctor .`, then `node .joycraft/runtime/entry-check.mjs`.
+   When it reports `managed-block`, replace the block in `AGENTS.md` with the
+   output of `entry-check.mjs block` and remove each older Joycraft line that
+   the block replaces. This is the one entry-file edit that an unattended run
+   makes, besides a path with one unique Git rename.
 4. Tell the user in plain words what is different now. For a `minor` or
    `migration`, name what the user can now do or say, one line per release since
    the old version, from the release summaries the check listed (and the
