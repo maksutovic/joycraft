@@ -10,9 +10,10 @@ other shipped text agrees with it. Brief: [one-pass](../brief.md#one-pass).
 ## acceptance
 
 - The procedure is in the reference. Check: `.joycraft/references/cleanup.md`
-  has the six steps in order; the two lenses; the page kinds guide and record;
-  what an entry file holds; and "ask only what grants or removes a permission,
-  lifts a hold, or deletes the owner's material"
+  has the six steps in order; the two lenses; the page kinds; what an entry
+  file holds; the seven things to find on each page; and a section on the
+  questions for the owner: at most eight, each about one policy, with stops
+  and holds always two of them
   (`tests/cleanup/cleanup-text.test.mjs`, `[AC:one-pass-steps]`).
 - The ledger is required. Check: the reference says that before the commit the
   agent lists each line that permits, forbids, stops or holds, old against
@@ -51,3 +52,13 @@ joycraft-prototype: `.agents/skills/joycraft-cleanup/SKILL.md`,
 `settings.md`, `archive.md`, the session-end, entry and implement skills,
 `.claude/agents/`, `tests/cleanup/cleanup-text.test.mjs`,
 `tests/payload-budget.json`. New prose is ASD-STE100.
+
+## Amended, 2026-11-18
+
+`[AC:one-pass-steps]` quoted the sentence "ask only what grants or removes a
+permission, lifts a hold, or deletes the owner's material". The owner changed
+the question policy on 2026-11-18 after a run with 39 line-level questions
+(brief, section `one-pass`, "Few questions, thorough analysis" and "The shipped
+method is the one of the best trial"). joycraft-prototype commits `d3989e1` and
+`83beff3` made the change. The check now names the questions by theme and the
+seven things to find on each page.

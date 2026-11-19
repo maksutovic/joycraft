@@ -53,11 +53,3 @@ both repositories. This record comes from the session that showed him the page.
 | A small second repository | Failed on an earlier skill text: the entry file went from 292 to 473 words, 162 of them Joycraft's block that the repository never had, and the run asked 5 questions. Not run again on the final text |
 | A worker with the new files against the old | Not run |
 | An update from 1.5.4 leaves no old Joycraft line | Passed in the run before the last one. In the last run the block was left unplaced, because one owner question was open |
-
-## Status, 2026-11-18
-
-The status stays `todo`, with the owner's acceptance on record above.
-`completion.mjs submit` refuses this spec while spec 11 is not done, and specs
-1 to 11 are `in-review` with no review on record. Specs 3, 5 and 6, and some
-checks of specs 2, 4 and 7, describe parts that spec 9 cut, so a review of them
-as written cannot pass. The owner's acceptance names this spec only.

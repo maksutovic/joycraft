@@ -90,8 +90,5 @@ The owner or an attended session checks these with the published version. Spec
 
 ## State, 2026-11-18
 
-The work of this spec is in the release pull request: payload `field-25`, the
-tests, the docs and the release fields. `pnpm test` and `pnpm typecheck` pass.
-The status stays `todo`: `completion.mjs submit` refuses this spec while spec 12
-is not done, spec 12 cannot be submitted while spec 11 is not done, and no
-review of specs 1 to 11 is on record.
+The work of this spec is in the release pull request 104: payload `field-25`,
+the tests, the docs and the release fields.

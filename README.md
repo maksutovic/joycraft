@@ -194,7 +194,8 @@ The cleanup is one pass, and it is a dialogue with you:
   change that no answer decides. It does not remove a rule because the code breaks it.
 - **Nothing temporal.** A date, a status or a finished plan moves out of `AGENTS.md`
   and the guides to the record that owns it: the decision log, a log page or the
-  backlog. A hold that is in force stays in `AGENTS.md` as one rule.
+  backlog. The agent asks you about holds. It does not drop a hold on its own
+  recommendation.
 - **Each finding gets a final status.** The status is fixed, left for you, or not
   done, with the reason. The agent fixes a false statement in each place that
   states it. Then an agent that wrote no edit checks the changed pages against the code.

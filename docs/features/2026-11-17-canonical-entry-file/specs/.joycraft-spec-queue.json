@@ -20,6 +20,18 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/entry-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
           }
         ],
         "criteria": [
@@ -99,6 +111,22 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/entry-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/cleanup.md",
+            "kind": "code"
           }
         ],
         "criteria": [
@@ -143,7 +171,7 @@
             ]
           },
           {
-            "id": "entry-size-outside-rules",
+            "id": "entry-size-whole-file",
             "requirement": {
               "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
               "anchor": "acceptance"
@@ -186,57 +214,29 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/config.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/settings.md",
+            "kind": "code"
           }
         ],
         "criteria": [
           {
-            "id": "tidy-project-setting",
+            "id": "withdrawn-tidy-setting",
             "requirement": {
               "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
               "anchor": "acceptance"
             },
             "requiredKinds": [
               "runtime"
-            ]
-          },
-          {
-            "id": "tidy-user-default",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "runtime"
-            ]
-          },
-          {
-            "id": "tidy-user-write",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "runtime"
-            ]
-          },
-          {
-            "id": "tidy-settings-row",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "tidy-setup-question",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
             ]
           }
         ]
@@ -265,6 +265,18 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-cleanup/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/cleanup.md",
+            "kind": "code"
           }
         ],
         "criteria": [
@@ -279,47 +291,7 @@
             ]
           },
           {
-            "id": "dispositions-table",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "tidy-follows-setting",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "ruling-definition",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
             "id": "one-writer",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "cleanup-words-cut",
             "requirement": {
               "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
               "anchor": "acceptance"
@@ -355,81 +327,31 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/entry-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/update-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/coordinator.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
           }
         ],
         "criteria": [
           {
-            "id": "now-page-shape",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "now-map-row",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "now-exempt",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "runtime"
-            ]
-          },
-          {
-            "id": "holds-print",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "runtime"
-            ]
-          },
-          {
-            "id": "holds-first-action",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "runtime"
-            ]
-          },
-          {
-            "id": "now-old",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "runtime"
-            ]
-          },
-          {
-            "id": "session-end-now",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "archive-removes-now",
+            "id": "withdrawn-now-page",
             "requirement": {
               "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
               "anchor": "acceptance"
@@ -465,67 +387,33 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/entry-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/cleanup.md",
+            "kind": "code"
           }
         ],
         "criteria": [
           {
-            "id": "rewrite-steps",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "rewrite-one-yes",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "no-limit-lexicon",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "rules-markers",
+            "id": "withdrawn-rules-pin",
             "requirement": {
               "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
               "anchor": "acceptance"
             },
             "requiredKinds": [
               "runtime"
-            ]
-          },
-          {
-            "id": "pin-check",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "runtime"
-            ]
-          },
-          {
-            "id": "tidy-uses-pin",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
             ]
           }
         ]
@@ -554,6 +442,26 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/entry-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/wiring.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/update.md",
+            "kind": "code"
           }
         ],
         "criteria": [
@@ -568,7 +476,7 @@
             ]
           },
           {
-            "id": "block-gate",
+            "id": "block-finding",
             "requirement": {
               "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
               "anchor": "acceptance"
@@ -643,6 +551,34 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/09-cuts.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/entry-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/config.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/update-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/coordinator.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
           }
         ],
         "criteria": [
@@ -719,6 +655,26 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/10-runtime-for-one-pass.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/entry-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/wiring.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-preflight.mjs",
+            "kind": "code"
           }
         ],
         "criteria": [
@@ -805,6 +761,58 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-cleanup/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/cleanup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/update.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/knowledge.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/settings.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/archive.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-entry/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-implementer.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-reviewer.md",
+            "kind": "code"
           }
         ],
         "criteria": [
@@ -911,6 +919,10 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/12-release-proof.md",
             "kind": "requirement"
+          },
+          {
+            "path": "docs/context/decision-log.md",
+            "kind": "check"
           }
         ],
         "criteria": [
@@ -967,6 +979,46 @@
           {
             "path": "docs/features/2026-11-17-canonical-entry-file/specs/08-vendor-and-release.md",
             "kind": "requirement"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "package.json",
+            "kind": "code"
+          },
+          {
+            "path": "src/joycraft-release.json",
+            "kind": "code"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-entry-check.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "README.md",
+            "kind": "code"
+          },
+          {
+            "path": "docs/prompts.md",
+            "kind": "code"
+          },
+          {
+            "path": "CHANGELOG.md",
+            "kind": "code"
+          },
+          {
+            "path": "docs/context/shipped.md",
+            "kind": "code"
+          },
+          {
+            "path": "docs/guides/releasing.md",
+            "kind": "code"
           }
         ],
         "criteria": [

@@ -2,7 +2,31 @@
 id: 6
 status: in-review
 ---
-# Outcome
+# Withdrawn by spec 9
+
+This spec is withdrawn. It built the one-time rules rewrite, the rules markers
+and the byte pin. Spec 9 removed that, on the owner's decision of 2026-11-18
+(brief, section `one-pass`, "Cut from the first design"). joycraft-prototype
+commit `2b6fb72` added it and `c586d0d` removed it. No released version had it.
+
+The status `done` on this spec means that it is retired. It does not mean that
+the original outcome below was built or verified. A review of this spec checks
+one thing: that nothing it built ships.
+
+## acceptance
+
+- Nothing that this spec built ships. Check: `entry-check.mjs rules` and
+  `entry-check.mjs pin --record` are usage errors; no shipped file names
+  `joycraft:rules` or `entry-pin`; `entry-size` counts every word of the file
+  (spec 9, `[AC:no-pin]`, `tests/cleanup/entry-check.test.mjs`,
+  `tests/cleanup/cleanup.test.mjs` and `tests/cleanup/cleanup-text.test.mjs` in
+  joycraft-prototype) (`[AC:withdrawn-rules-pin]`).
+
+# Original spec, kept as a record
+
+The text below is the spec as it was. Its checks are not criteria.
+
+## Original outcome
 
 Each project gets one rewrite of its rules. The agent finds the safety rules,
 shows one list of what stays, what moves and what goes, and writes on one yes.
@@ -12,7 +36,7 @@ first, one yes"; `limit-guard` note (owner): "you should be able to review the
 agents.md, find the saftey rules, bring those tot he users attention or say
 what will move or be removed and they can say yes or no".
 
-## acceptance
+## Original acceptance
 
 - The rewrite is described one time. Check: `cleanup.md` has a section
   `## Rules rewrite` with the four sorting steps of the brief (a safety rule
@@ -47,7 +71,7 @@ what will move or be removed and they can say yes or no".
   owner's own edit of a rule is not a tidy and is never checked
   (`[AC:tidy-uses-pin]`).
 
-## Not covered
+## Original not covered
 
 A script that judges whether rule text is safe: there is none, by ruling
 `limit-guard`. A CI gate on rule text. A second rewrite: after the markers
@@ -55,7 +79,7 @@ exist, a rule that is stale or that the code disproves is a ruling in the
 backlog (spec 4), and only the owner changes it. Whether the agent's list is
 good on a real file is measured in the field run (spec 8, deferred).
 
-## Implementation and verification scope
+## Original implementation and verification scope
 
 Implemented in joycraft-prototype. `.joycraft/references/cleanup.md`,
 `.agents/skills/joycraft-cleanup/SKILL.md`,

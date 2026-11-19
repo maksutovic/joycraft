@@ -65,7 +65,8 @@ Payload: joycraft-prototype `field-25`.
   checks the changed guides against the code. On request, the agent checks again,
   or fixes one named line and each copy of its claim.
 - **Nothing temporal in an entry file or a guide.** A date, a status or a finished
-  plan moves to the record that owns it. A hold that is in force stays as one rule.
+  plan moves to the record that owns it. The agent asks about holds and does not
+  drop one on its own recommendation.
 - **The map has two parts.** A guide has a "read when" row. A record (a decision
   log, an operations log) has a "search when" row. No row tells an agent to read a
   record at the start of a session.

@@ -2,7 +2,33 @@
 id: 5
 status: in-review
 ---
-# Outcome
+# Withdrawn by spec 9
+
+This spec is withdrawn. It built `now.md`, its hold lines and its age check.
+Spec 9 removed that, on the owner's decision of 2026-11-18 (brief, section
+`one-pass`, "Cut from the first design"). joycraft-prototype commit `7406508`
+added it and `c586d0d` removed it. No released version had it.
+
+The status `done` on this spec means that it is retired. It does not mean that
+the original outcome below was built or verified. A review of this spec checks
+one thing: that nothing it built ships.
+
+## acceptance
+
+- Nothing that this spec built ships. Check: no file under `.agents/skills/`,
+  `.claude/agents/`, `.joycraft/references/`, `.joycraft/runtime/` or
+  `.joycraft/templates/` is or names `now.md`; `entry-check.mjs start` is a
+  usage error; `update-check.mjs check` and `coordinator.mjs claim` print no
+  `Hold:` line (spec 9, `[AC:no-now-page]`,
+  `tests/cleanup/cleanup-text.test.mjs` and
+  `tests/cleanup/entry-check.test.mjs` in joycraft-prototype)
+  (`[AC:withdrawn-now-page]`).
+
+# Original spec, kept as a record
+
+The text below is the spec as it was. Its checks are not criteria.
+
+## Original outcome
 
 Dated and temporary things have one home, `now.md`, behind one map row. Session
 end keeps it current, an archive removes its entries, each session and queue
@@ -12,7 +38,7 @@ sees the holds at its start, and an old entry gets one friendly remark. Brief:
 remark it to the user ... make it more collaborative ... this is just a extreme
 edge case".
 
-## acceptance
+## Original acceptance
 
 - The page has a fixed shape. Check: `.joycraft/templates/now.md` has the
   headings `## Holds` and `## Open work` and no entry. `knowledge.md` has a
@@ -62,14 +88,14 @@ edge case".
   the other and the headings (`tests/archive/archive.test.mjs`,
   `[AC:archive-removes-now]`).
 
-## Not covered
+## Original not covered
 
 A subagent or a worker gets no hold line: the coordinator that dispatches it
 does. A session that was compacted does not get the line again. Both are named
 limits; the field run counts missed holds (spec 8, deferred). Whether a hold is
 still in force is the owner's call and is never asked by age.
 
-## Implementation and verification scope
+## Original implementation and verification scope
 
 Implemented in joycraft-prototype. New `.joycraft/templates/now.md`;
 `.joycraft/references/knowledge.md` (routing table, the two exceptions),

@@ -16,17 +16,19 @@ writes Joycraft's lines, not the CLI) stays in force.
 - The runtime prints the block. Check:
   `node .joycraft/runtime/entry-check.mjs block` prints the text between
   `<!-- joycraft:managed -->` and `<!-- /joycraft:managed -->`, markers
-  included: the first-action line, the show-documents line, and "When a path,
-  command or description here disagrees with the code, trust the code and
-  report it. Rules hold even when the code breaks them." The output is the same
-  for every project (`tests/cleanup/entry-check.test.mjs`,
+  included, with four lines: the first-action line; the line that sends each
+  question, decision and document for a person through the artifact engine;
+  the map line; and "When a fact here disagrees with the code, trust the code
+  and report it. A rule holds even when the code breaks it." The output is the
+  same for every project (`tests/cleanup/entry-check.test.mjs`,
   `[AC:block-printed]`).
-- A different block is a gate finding. Check: a fixture whose block has one
+- A different block is a finding. Check: a fixture whose block has one
   changed word gives one `managed-block` finding whose `fix` names
-  `entry-check.mjs block`, and `--ci` exits 2. A fixture with the exact block
-  gives none. A fixture with no markers and the two older loose Joycraft lines
-  gives one `managed-block` finding that says to replace those lines with the
-  block (`[AC:block-gate]`).
+  `entry-check.mjs block`. The finding is an advisory, and `--ci` exits 0. A
+  fixture with the exact block gives none. A fixture with no markers and the
+  two older loose Joycraft lines gives one `managed-block` finding that says to
+  replace those lines with the block (`tests/cleanup/entry-check.test.mjs`,
+  the test tagged `[AC:block-advisory]`; `[AC:block-finding]`).
 - Wiring accepts the block. Check: `node .joycraft/runtime/wiring.mjs` exits 0
   for a project whose `AGENTS.md` has the block and no loose Joycraft line, and
   still exits 0 for a project with the loose lines
@@ -63,4 +65,18 @@ Implemented in joycraft-prototype. `.joycraft/runtime/entry-check.mjs`
 decide whether Joycraft's lines are present; they must read one definition of
 the block. Scenario: a project that has the block and no loose line passes
 both; a project with one changed word in the block passes wiring (the lines
-exist) and fails the entry check.
+exist) and gets one advisory from the entry check.
+
+## Amended, 2026-11-18
+
+Later work changed two checks of this spec on purpose, and they now have their
+current form:
+
+- `[AC:block-printed]` named three lines and an earlier wording of the last
+  one. Spec 10 `[AC:block-map-line]` added the map line and the present last
+  line (joycraft-prototype commit `c586d0d`). The work on the artifact engine
+  changed the second line (`382f2e3`, `b24a2a9`).
+- `[AC:block-gate]` said that a block that differs is a gate finding and that
+  `--ci` exits 2. Spec 9 `[AC:block-advisory]` made it an advisory, so that a
+  release that changes the block does not fail a project's CI (`c586d0d`). The
+  check is now `[AC:block-finding]`.
