@@ -1,0 +1,84 @@
+=== case 1: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/dead-path
+exit 2; expected 2
+--- stdout, 157 chars
+AGENTS.md:11 missing-path Names docs/context/gone.md, which does not exist.
+AGENTS.md:12 broken-link Links to docs/context/release.md, which does not exist.
+--- stderr, 0 chars
+stdout matches /\n/ 2 time(s); expected 2
+stdout matches /AGENTS\.md:11 missing-path Names docs/context/gone\.md, which does not exist\.\n/ 1 time(s); expected 1
+stdout matches /AGENTS\.md:12 broken-link Links to docs/context/release\.md, which does not exist\.\n/ 1 time(s); expected 1
+stdout matches /unmapped/ 0 time(s); expected 0
+stdout matches /[{}]/ 0 time(s); expected 0
+=== case 1 as expected
+=== case 2: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/advisory-unmapped
+exit 0; expected 0 with empty stdout and empty stderr
+--- stdout, 0 chars
+--- stderr, 0 chars
+=== case 2 as expected
+=== case 3: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/advisory-unmapped
+exit 0; expected 0
+--- stdout, 391 chars
+{
+  "gate": 0,
+  "advisory": 1,
+  "findings": [
+    {
+      "level": "advisory",
+      "check": "unmapped",
+      "path": "docs/context/notes.md",
+      "detail": "Only other docs/context/ pages mention this page; AGENTS.md and CLAUDE.md do not, so agents may not know when to read it.",
+      "fix": "Add a context-map row with a \"read when\", or merge it into a mapped page."
+    }
+  ]
+}
+--- stderr, 0 chars
+stdout matches /"check": "unmapped"/ 1 time(s); expected 1
+stdout matches /"level": "advisory"/ 1 time(s); expected 1
+stdout matches /"level": "gate"/ 0 time(s); expected 0
+=== case 3 as expected
+=== case 4: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/advisory-orphan
+exit 0; expected 0 with empty stdout and empty stderr
+--- stdout, 0 chars
+--- stderr, 0 chars
+=== case 4 as expected
+=== case 5: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/advisory-orphan
+exit 0; expected 0
+--- stdout, 372 chars
+{
+  "gate": 0,
+  "advisory": 1,
+  "findings": [
+    {
+      "level": "advisory",
+      "check": "orphan",
+      "path": "docs/context/unlisted.md",
+      "detail": "Nothing in AGENTS.md, CLAUDE.md or docs/context/ links to this page, so agents may never read it.",
+      "fix": "Add it to the context map with a \"read when\", or merge it into a linked page."
+    }
+  ]
+}
+--- stderr, 0 chars
+stdout matches /"check": "orphan"/ 1 time(s); expected 1
+stdout matches /"level": "advisory"/ 1 time(s); expected 1
+stdout matches /"level": "gate"/ 0 time(s); expected 0
+=== case 5 as expected
+=== case 6: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/claude-entry
+exit 2; expected 2
+--- stdout, 157 chars
+CLAUDE.md:11 missing-path Names docs/context/gone.md, which does not exist.
+CLAUDE.md:12 broken-link Links to docs/context/release.md, which does not exist.
+--- stderr, 0 chars
+stdout matches /\n/ 2 time(s); expected 2
+stdout matches /CLAUDE\.md:11 missing-path / 1 time(s); expected 1
+stdout matches /CLAUDE\.md:12 broken-link / 1 time(s); expected 1
+=== case 6 as expected
+=== case 7: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/dead-path --ci
+exit 2; expected 2
+--- stdout, 157 chars
+AGENTS.md:11 missing-path Names docs/context/gone.md, which does not exist.
+AGENTS.md:12 broken-link Links to docs/context/release.md, which does not exist.
+--- stderr, 0 chars
+stdout matches /\n/ 2 time(s); expected 2
+stdout matches /AGENTS\.md:11 missing-path / 1 time(s); expected 1
+stdout matches /AGENTS\.md:12 broken-link / 1 time(s); expected 1
+=== case 7 as expected

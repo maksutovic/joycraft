@@ -1,0 +1,33 @@
+Source scan for criterion permission-ledger. Each pattern is a regular expression matched against the file text with each run of whitespace made one space. present = must match; absent = must not match; info = printed only.
+
+[ok] before the commit, each line that permits, forbids, stops or holds, old against new
+  expect present in payload/.joycraft/references/cleanup.md ## Permission ledger (lines 183-197)
+  pattern /Before the commit, take from the diff and the .lost. report every line that permits, forbids, stops or holds and that the pass changed, moved or removed: the old text beside the new\./
+  match at payload/.joycraft/references/cleanup.md:185-187: Before the commit, take from the diff and the `lost` report every line that permits, forbids, stops or holds and that the pass changed, moved or removed: the old text beside the new.
+
+[ok] each change names the owner answer
+  expect present in payload/.joycraft/references/cleanup.md ## Permission ledger (lines 183-197)
+  pattern /For each, name the owner.s answer that decided it\./
+  match at payload/.joycraft/references/cleanup.md:187-188: For each, name the owner's answer that decided it.
+
+[ok] a change with no answer is put back
+  expect present in payload/.joycraft/references/cleanup.md ## Permission ledger (lines 183-197)
+  pattern /Put back a change that no answer decides, and list it as not covered\./
+  match at payload/.joycraft/references/cleanup.md:189-190: Put back a change that no answer decides, and list it as not covered.
+
+[ok] a grant keeps the owner words
+  expect present in payload/.joycraft/references/cleanup.md ## Permission ledger (lines 183-197)
+  pattern /A grant keeps the owner.s words and scope\. Add nothing to it\./
+  match at payload/.joycraft/references/cleanup.md:192: A grant keeps the owner's words and scope. Add nothing to it.
+
+[ok] the ledger is made in step 6, before the commit is offered
+  expect present in payload/.joycraft/references/cleanup.md ## The steps (lines 146-182)
+  pattern /6\. \*\*Check\.\*\*.*Make the permission ledger\..*Offer one commit\./
+  match at payload/.joycraft/references/cleanup.md:172-178: 6. **Check.** Give each finding a final status: fixed, left for the owner, or not done and why. Then an agent that wrote no edit checks the changed guides against the code (with no subagents: read the [...] s once. Make the permission ledger. Run `entry-check.mjs lost --base HEAD` and account for each line. Run `cleanup.mjs`, `wiring.mjs`, `entry-check.mjs --ci` and the project's gates. Offer one commit.
+
+[ok] with no answer, a theme stays as it is
+  expect present in payload/.joycraft/references/cleanup.md ## The steps (lines 146-182)
+  pattern /With no answer, the lines of that theme stay in their words\./
+  match at payload/.joycraft/references/cleanup.md:162-163: With no answer, the lines of that theme stay in their words.
+
+RESULT: each present and absent expectation holds

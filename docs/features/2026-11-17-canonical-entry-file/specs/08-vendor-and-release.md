@@ -1,6 +1,6 @@
 ---
 id: 8
-status: todo
+status: done
 ---
 # Outcome
 
@@ -9,9 +9,10 @@ engine's document pages: the payload is the new field build, it has no more
 words than the last one, and the docs tell a user how to ask for a cleanup and
 what it does. Brief: [one-pass](../brief.md#one-pass),
 [scope](../brief.md#scope-and-limits). The owner said go on 2026-11-18, after a
-confirmation run of the cleanup. Spec 12 did not run every measure; its
-"Result" section has each one, and the owner accepted that proof by name on
-2026-11-18.
+confirmation run of the cleanup. Not every measure of the brief was run. The
+[release proof](../../../research/2026-11-18-one-pass-cleanup-panel-verdict.md#release-proof)
+has each one, and the owner accepted it on 2026-11-18. The proof was spec 12
+of this queue until the owner said to delete that spec.
 
 ## acceptance
 
@@ -70,8 +71,8 @@ publishes to npm.
 
 ## Deferred until deploy
 
-The owner or an attended session checks these with the published version. Spec
-12 has the result of each measure before the release:
+The owner or an attended session checks these with the published version. The
+release proof has the result of each measure before the release:
 
 - A cleanup result passes the own test gate of a field project. Not run before
   the release.

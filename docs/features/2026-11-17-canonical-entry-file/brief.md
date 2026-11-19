@@ -207,6 +207,29 @@ decisions: [
       "entry-check"
     ],
     "note": "something of a hybrid, anything older than a week or so, can't the agent just remark it to the user e.g. \"Noticed we have some pending work we havne't fixed, do you want me to check ohn that? should we backlog?\" something like this, make it more collaborative, but also if session-end is doing it's job this SHOULD\"T be an issue, this is just a extreme edge case, again stop designing around the extreme edge cases"
+  },
+  {
+    "id": "owner-override-reviews",
+    "status": "clarified",
+    "question": "Does each remaining spec of this feature need an independent review before 1.6.0?",
+    "answer": "override",
+    "context": "The design changed while the queue ran. Spec 9 withdrew what specs 3, 5 and 6 built, and the cleanup text was rebuilt after trials, so the checks of several specs no longer matched what ships. On 2026-11-18 independent reviews were running for each spec. Spec 1 had a review that passed, and spec 11 had a review that failed.",
+    "options": [
+      {
+        "value": "review",
+        "label": "Review each spec",
+        "description": "Each spec gets an independent review before it is done.",
+        "tradeoff": "Each change to the text after a trial needs an amended spec and a new review."
+      },
+      {
+        "value": "override",
+        "label": "The owner approves the specs as they are",
+        "description": "The owner overrides the remaining reviews for 1.6.0. Refinement continues when the feature is tested on live projects.",
+        "tradeoff": "The specs closed this way have no independent review."
+      }
+    ],
+    "affected": [],
+    "note": "please ammend and correct the sessio nend review to state that this required alot of nuanced iteration that could not easily be tracked with specs, i override and approve the specs as is for 1.6.0 and that futher refienment and iteration will happen when this is tested on live projects"
   }
 ]
 ---
@@ -350,3 +373,15 @@ See `tidy` for row wording and `entry-check` for reach and the age check.
 - No stack-specific checks: a manifest check reads script names only.
 - The 106 dead paths in the field project's other pages belong to a whole-project cleanup, not to this feature.
 - Measurements and kill criteria are in the research verdict.
+
+## Owner override, 2026-11-18
+
+This feature needed a lot of nuanced iteration that the specs could not easily track. The owner overrode the remaining reviews and approved the specs as they are for 1.6.0. Further refinement and iteration will happen when the feature is tested on live projects. His words are the note of the decision `owner-override-reviews`. The coordinating session relayed them.
+
+What this means for the queue:
+
+- Spec 1 is done on an independent review that passed.
+- Spec 11 is done on the owner's acceptance. Its independent review failed on one check, and that finding stays open: the shipped reference puts a hold about one item on its guide, and this brief says that a hold in force stays in the entry file.
+- Specs 2, 4, 7, 9, 10 and 8 are closed on the owner's override, with no independent review.
+- Specs 3, 5 and 6 are withdrawn by spec 9 and are closed the same way. `done` on them means retired.
+- The owner also said: "just delete spec 12 and approve 8?" Spec 12 (the release proof) is deleted from the queue. Its measures and his acceptance of them are in `docs/research/2026-11-18-one-pass-cleanup-panel-verdict.md`, section "Release proof".

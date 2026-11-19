@@ -1,0 +1,6 @@
+payload/PIN: tag field-26, commit ee3ab75f06fe9d5bec13f9e8770ca4f23358447e, 85 files
+checkout ../prototype-canonical-entry-file: HEAD ee3ab75f06fe9d5bec13f9e8770ca4f23358447e, tags at HEAD: field-26
+checkout status --porcelain: empty (clean tree)
+files whose SHA-256 is not the PIN value in payload/ or in the checkout: 0
+.joycraft/runtime/entry-check.mjs: 6dbe9afa3d67ad2208094f02a120643a96772422e046e1c19d9e2d6dbe65acb1
+.joycraft/runtime/cleanup.mjs: 9ac873822a7bf509dca6d841d2253121f154da4b23ff16d149164e44162d4c61

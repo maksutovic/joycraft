@@ -1,0 +1,20 @@
+Source scan for criterion worker-reads-entry. Each pattern is a regular expression matched against the file text with each run of whitespace made one space. present = must match; absent = must not match; info = printed only.
+
+[ok] the implement skill
+  expect present in payload/.agents/skills/joycraft-implement/SKILL.md (lines 1-136)
+  pattern /Read the project.s entry file \(.AGENTS\.md.\), then each page whose context-map row matches the spec/
+  match at payload/.agents/skills/joycraft-implement/SKILL.md:11: Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec
+
+[info] files in payload/.claude/agents: joycraft-implementer.md, joycraft-reviewer.md
+
+[ok] the implementer definition
+  expect present in payload/.claude/agents/joycraft-implementer.md (lines 1-38)
+  pattern /Read the project.s .AGENTS\.md. \(or .CLAUDE\.md.\), then each page whose context-map row matches the spec/
+  match at payload/.claude/agents/joycraft-implementer.md:10: Read the project's `AGENTS.md` (or `CLAUDE.md`), then each page whose context-map row matches the spec
+
+[ok] the reviewer definition
+  expect present in payload/.claude/agents/joycraft-reviewer.md (lines 1-42)
+  pattern /Read the project.s .AGENTS\.md. \(or .CLAUDE\.md.\), then each page whose context-map row matches the spec/
+  match at payload/.claude/agents/joycraft-reviewer.md:11: Read the project's `AGENTS.md` (or `CLAUDE.md`), then each page whose context-map row matches the spec
+
+RESULT: each present and absent expectation holds

@@ -1,0 +1,33 @@
+Source scan for criterion one-agent-default. Each pattern is a regular expression matched against the file text with each run of whitespace made one space. present = must match; absent = must not match; info = printed only.
+
+[ok] one agent does a part; parts run one after another where the host has no subagents
+  expect present in payload/.joycraft/references/cleanup.md ## The steps (lines 146-182)
+  pattern /One agent does each part, in parallel where the host has subagents and one after another where it has none\./
+  match at payload/.joycraft/references/cleanup.md:151-152: One agent does each part, in parallel where the host has subagents and one after another where it has none.
+
+[ok] a small set is one part, so one agent does it
+  expect present in payload/.joycraft/references/cleanup.md ## The steps (lines 146-182)
+  pattern /A small set is one part\./
+  match at payload/.joycraft/references/cleanup.md:152: A small set is one part.
+
+[ok] the split into parts is for a set above about 20,000 words
+  expect present in payload/.joycraft/references/cleanup.md ## The steps (lines 146-182)
+  pattern /Above about 20,000 words of pages, first state the word count and the cost \(about 25 tokens for each word\)\. Then split the work into parts: the entry files are one part, and the pages are groups of about 20,000 words\./
+  match at payload/.joycraft/references/cleanup.md:148-151: Above about 20,000 words of pages, first state the word count and the cost (about 25 tokens for each word). Then split the work into parts: the entry files are one part, and the pages are groups of about 20,000 words.
+
+[ok] the reader of step 6 has a rule for a host with no subagents
+  expect present in payload/.joycraft/references/cleanup.md ## The steps (lines 146-182)
+  pattern /an agent that wrote no edit checks the changed guides against the code \(with no subagents: read them again yourself\)/
+  match at payload/.joycraft/references/cleanup.md:173-174: an agent that wrote no edit checks the changed guides against the code (with no subagents: read them again yourself)
+
+[info] the words "by default" or "One agent does it" in the reference
+  expect info in payload/.joycraft/references/cleanup.md (lines 1-197)
+  pattern /by default|One agent does it/
+  no match
+
+[info] the sentence about the coordinator
+  expect info in payload/.joycraft/references/cleanup.md ## The steps (lines 146-182)
+  pattern /A coordinator, the session that talks to the owner, runs the steps\./
+  match at payload/.joycraft/references/cleanup.md:152-153: A coordinator, the session that talks to the owner, runs the steps.
+
+RESULT: each present and absent expectation holds

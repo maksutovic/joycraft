@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "kind": "owner-acceptance",
+  "queuePath": "docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json",
+  "specId": 11,
+  "subjectIdentity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8",
+  "review": {
+    "path": "docs/features/2026-11-17-canonical-entry-file/reviews/spec-11-review.json",
+    "sha256": "4eb81287015f6ca888e51228a2a857496709dabb700e00d0bd90749e24ac0290"
+  },
+  "instruction": "please ammend and correct the sessio nend review to state that this required alot of nuanced iteration that could not easily be tracked with specs, i override and approve the specs as is for 1.6.0 and that futher refienment and iteration will happen when this is tested on live projects",
+  "limitations": [
+    "The review verdict is FAIL and stays FAIL. The check temporal-homes and the brief say that a hold in force stays in the entry file as one rule. The shipped reference (payload field-26) says: in the entry file when the hold is general, on the owning guide when it is about one item.",
+    "The owner gave this instruction on 2026-11-18 for all specs of the feature, after the first review of this spec failed and before this second review. He did not see this finding by name. The coordinating session relayed his words to the session that recorded them.",
+    "No run measured the text of field-26. The follow-up findings of the report stay open."
+  ],
+  "createdAt": "2026-11-19T04:27:57.000Z"
+}

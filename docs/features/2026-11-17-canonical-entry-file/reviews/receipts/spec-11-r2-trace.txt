@@ -1,0 +1,64 @@
+trace.mjs in this repository: exit code 2
+{
+  "queuePath": "docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json",
+  "specId": 11,
+  "files": [],
+  "criteria": [
+    {
+      "id": "one-pass-steps",
+      "tests": []
+    },
+    {
+      "id": "permission-ledger",
+      "tests": []
+    },
+    {
+      "id": "temporal-homes",
+      "tests": []
+    },
+    {
+      "id": "map-two-parts",
+      "tests": []
+    },
+    {
+      "id": "session-end-mechanical",
+      "tests": []
+    },
+    {
+      "id": "worker-reads-entry",
+      "tests": []
+    },
+    {
+      "id": "one-agent-default",
+      "tests": []
+    },
+    {
+      "id": "payload-words-not-up",
+      "tests": []
+    }
+  ],
+  "untraced": [
+    "one-pass-steps",
+    "permission-ledger",
+    "temporal-homes",
+    "map-two-parts",
+    "session-end-mechanical",
+    "worker-reads-entry",
+    "one-agent-default",
+    "payload-words-not-up"
+  ],
+  "unknownTags": [],
+  "missingFiles": [],
+  "note": "No check inputs are declared and no --tests glob was given."
+}
+
+
+tagged   one-pass-steps in the two prototype test files
+tagged   permission-ledger in the two prototype test files
+tagged   temporal-homes in the two prototype test files
+tagged   map-two-parts in the two prototype test files
+tagged   session-end-mechanical in the two prototype test files
+tagged   worker-reads-entry in the two prototype test files
+tagged   one-agent-default in the two prototype test files
+NO TAG   payload-words-not-up in the two prototype test files
+RESULT: as stated: trace exits 2 here; in the prototype tests 7 criteria have a tag and payload-words-not-up has none

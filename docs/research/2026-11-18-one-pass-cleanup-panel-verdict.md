@@ -48,3 +48,22 @@ Seven seats reviewed the trials and the plan, read only: owner sovereignty, dete
 ## What stays from the first design
 
 The entry check and its `--ci` gate (missing path, broken link, script name, Codex bytes, imports), the entry-size advisory, the date advisory, and Joycraft's managed block.
+
+## Release proof
+
+The measures of the brief (`docs/features/2026-11-17-canonical-entry-file/brief.md`, section `one-pass`, "Measures") were run on the built bundle before the release, on scratch clones of a field project. This section was spec 12 of the queue. The owner said on 2026-11-18 to delete that spec; its record is kept here.
+
+The owner saw a page with one row for each measure and one decision: "Do you accept the release proof (spec 12) as it stands?" He saved the answer "Accept: close spec 12 with these results". Before that he said: "if it really breaks or whatever we'll just do a fresh brief for 1.6.1 so no reason we can't just close this out for real before the merge". The page is kept outside both repositories. This record comes from the session that showed him the page.
+
+| Measure | Result |
+|---|---|
+| At most eight questions, each answerable from the page | 8 questions in one round. He could not answer one of them from the page. Fail on that one question |
+| No permission change that no answer decides | 0. Pass. A recommendation that he did not veto decided 8 changes. 2 readings of his answers were not marked as readings |
+| At least three quarters of the known false or stale statements fixed | 113 of 134 (84%) after the closing loop, 81% before it. Pass |
+| At most two rounds of questions | One. Pass |
+| The field project's own gate | Not run: the scratch clones have no dependencies |
+| A small second repository | Failed on an earlier skill text: the entry file went from 292 to 473 words, 162 of them Joycraft's block that the repository never had, and the run asked 5 questions. Not run again on the final text |
+| A worker with the new files against the old | Not run |
+| An update from 1.5.4 leaves no old Joycraft line | Passed in the run before the last one. In the last run the block was left unplaced, because one owner question was open |
+
+The runs used the payload `field-25`. After them, a review of spec 11 found two sentences missing from the cleanup reference, and `field-26` added them: a hold that the owner keeps is one present-tense rule with a home, and a host with no subagents reads the changed guides again itself. In the measured run the owner's answer was to remove all holds, so that run did not use the hold sentence. No run measured the text of `field-26`.

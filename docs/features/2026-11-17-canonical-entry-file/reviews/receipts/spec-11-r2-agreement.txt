@@ -1,0 +1,13 @@
+as stated  shipped files that name a cut part (now.md, entry.tidy, joycraft:rules, entry-pin, now-old): 0
+checks in the table of the reference (7): broken-link, missing-path, entry-size, temporal, script-name, codex-bytes, import
+checks that cleanup.mjs emits (18): broken-link, codex-bytes, deprecated-link, entry-size, frontmatter-unreadable, impact-drift, import, managed-block, missing-path, orphan, script-name, stale-after, status-drift, temporal, unarchived, unknown-worktree, unmapped, working-link
+as stated  checks that cleanup.mjs emits and the table does not list: 11: deprecated-link, frontmatter-unreadable, impact-drift, managed-block, orphan, stale-after, status-drift, unarchived, unknown-worktree, unmapped, working-link
+as stated  the reference has no sentence that says the table is partial (field-25 had "Every other check says what it found in its `detail`.")
+payload/.joycraft/references/cleanup.md:20: working material, so it is exempt from `missing-path` and `working-link`: a
+as stated  the reference names `working-link` in prose and its table does not list it
+payload/.agents/skills/joycraft-cleanup/SKILL.md:42: Report the changed files, the archive
+as stated  the skill hand-off asks for "the archive mappings"; the reference has no line with the word archive
+payload/.joycraft/runtime/cleanup.mjs:355: findings.push({ check: 'unknown-worktree', path: tree.path, detail: `A linked worktree${tree.branch ? ` on ${tree.branch}` : ''} that worktrees.mjs did not create.`, fix: 'Check it for unmerged work, then remove it with git worktree remove.' });
+NOT SO     the skill has no line about a worktree (field-25 had "Remove an unknown worktree only after checking it for unmerged work."); the fix text of the unknown-worktree finding in cleanup.mjs carries that caution
+payload/.joycraft/runtime/wiring.mjs:23: 'A Context Map row that matches your next step binds: read that page first, and again after a compaction or in a new agent. A record (a log or history) is an audit trail: search it to learn why or when; do not read it at the start.',
+RESULT: 1 statement(s) not so

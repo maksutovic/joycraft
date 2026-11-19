@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-entry-check-command.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -85,6 +85,10 @@
       },
       "submitted": {
         "at": "2026-11-17T20:19:40.556Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/reviews/spec-01-review.json",
+        "sha256": "e2a92f52e4ced2a2f5970a752e968d6613f377c92094d81029a7fefda0be79d1"
       }
     },
     {
@@ -93,7 +97,7 @@
       "depends_on": [
         1
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -186,13 +190,17 @@
       },
       "submitted": {
         "at": "2026-11-17T20:24:38.605Z"
+      },
+      "waiver": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/waiver.json",
+        "sha256": "9039b4c40ffdc20aefd34124aed06d0b05ae3801eb7ce3ed3368fd51524b8c39"
       }
     },
     {
       "id": 3,
       "file": "03-tidy-setting.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -231,6 +239,10 @@
       },
       "submitted": {
         "at": "2026-11-17T20:27:49.074Z"
+      },
+      "waiver": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/waiver.json",
+        "sha256": "9039b4c40ffdc20aefd34124aed06d0b05ae3801eb7ce3ed3368fd51524b8c39"
       }
     },
     {
@@ -239,7 +251,7 @@
       "depends_on": [
         3
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -288,6 +300,10 @@
       },
       "submitted": {
         "at": "2026-11-17T20:33:04.583Z"
+      },
+      "waiver": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/waiver.json",
+        "sha256": "9039b4c40ffdc20aefd34124aed06d0b05ae3801eb7ce3ed3368fd51524b8c39"
       }
     },
     {
@@ -297,7 +313,7 @@
         2,
         4
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -344,6 +360,10 @@
       },
       "submitted": {
         "at": "2026-11-17T20:38:11.761Z"
+      },
+      "waiver": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/waiver.json",
+        "sha256": "9039b4c40ffdc20aefd34124aed06d0b05ae3801eb7ce3ed3368fd51524b8c39"
       }
     },
     {
@@ -353,7 +373,7 @@
         4,
         5
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -396,6 +416,10 @@
       },
       "submitted": {
         "at": "2026-11-17T20:40:53.821Z"
+      },
+      "waiver": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/waiver.json",
+        "sha256": "9039b4c40ffdc20aefd34124aed06d0b05ae3801eb7ce3ed3368fd51524b8c39"
       }
     },
     {
@@ -404,7 +428,7 @@
       "depends_on": [
         6
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -501,6 +525,10 @@
       },
       "submitted": {
         "at": "2026-11-17T20:44:19.206Z"
+      },
+      "waiver": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/waiver.json",
+        "sha256": "9039b4c40ffdc20aefd34124aed06d0b05ae3801eb7ce3ed3368fd51524b8c39"
       }
     },
     {
@@ -509,7 +537,7 @@
       "depends_on": [
         7
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -601,6 +629,10 @@
             ]
           }
         ]
+      },
+      "waiver": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/waiver.json",
+        "sha256": "9039b4c40ffdc20aefd34124aed06d0b05ae3801eb7ce3ed3368fd51524b8c39"
       }
     },
     {
@@ -609,7 +641,7 @@
       "depends_on": [
         9
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -703,6 +735,10 @@
             ]
           }
         ]
+      },
+      "waiver": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/waiver.json",
+        "sha256": "9039b4c40ffdc20aefd34124aed06d0b05ae3801eb7ce3ed3368fd51524b8c39"
       }
     },
     {
@@ -711,7 +747,7 @@
       "depends_on": [
         10
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -857,75 +893,19 @@
             ]
           }
         ]
-      }
-    },
-    {
-      "id": 12,
-      "file": "12-release-proof.md",
-      "depends_on": [
-        11
-      ],
-      "status": "todo",
-      "mode": "batch",
-      "execution": {
-        "parallel": false
       },
-      "verification": {
-        "inputs": [
-          {
-            "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
-            "kind": "requirement"
-          },
-          {
-            "path": "docs/features/2026-11-17-canonical-entry-file/specs/12-release-proof.md",
-            "kind": "requirement"
-          },
-          {
-            "path": "docs/context/decision-log.md",
-            "kind": "check"
-          }
-        ],
-        "criteria": [
-          {
-            "id": "native-run",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/12-release-proof.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "runtime"
-            ]
-          },
-          {
-            "id": "measures-reported",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/12-release-proof.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          },
-          {
-            "id": "owner-accepts-proof",
-            "requirement": {
-              "path": "docs/features/2026-11-17-canonical-entry-file/specs/12-release-proof.md",
-              "anchor": "acceptance"
-            },
-            "requiredKinds": [
-              "structural"
-            ]
-          }
-        ]
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/reviews/spec-11-owner-acceptance.json",
+        "sha256": "ccaa8f78d328538871dab21e6c3ec208d80bfdb3268d92aa901470c3f885ca3d"
       }
     },
     {
       "id": 8,
       "file": "08-vendor-and-release.md",
       "depends_on": [
-        12
+        11
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -1043,6 +1023,13 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-19T04:28:24.980Z"
+      },
+      "waiver": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/waiver.json",
+        "sha256": "9039b4c40ffdc20aefd34124aed06d0b05ae3801eb7ce3ed3368fd51524b8c39"
       }
     }
   ]

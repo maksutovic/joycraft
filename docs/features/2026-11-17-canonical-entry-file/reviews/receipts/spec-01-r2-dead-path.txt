@@ -1,0 +1,242 @@
+=== case 1: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/dead-path
+exit 2; expected 2
+--- stdout, 886 chars
+{
+  "gate": 2,
+  "advisory": 1,
+  "findings": [
+    {
+      "level": "gate",
+      "check": "missing-path",
+      "path": "AGENTS.md",
+      "line": 11,
+      "detail": "Names docs/context/gone.md, which does not exist.",
+      "fix": "Point it at the current path, or remove the line if the thing is gone."
+    },
+    {
+      "level": "gate",
+      "check": "broken-link",
+      "path": "AGENTS.md",
+      "line": 12,
+      "detail": "Links to docs/context/release.md, which does not exist.",
+      "fix": "Fix the link or remove it."
+    },
+    {
+      "level": "advisory",
+      "check": "unmapped",
+      "path": "docs/context/notes.md",
+      "detail": "Only other docs/context/ pages mention this page; AGENTS.md and CLAUDE.md do not, so agents may not know when to read it.",
+      "fix": "Add a context-map row with a \"read when\", or merge it into a mapped page."
+    }
+  ]
+}
+--- stderr, 0 chars
+stdout matches /"check": "missing-path"/ 1 time(s); expected 1
+stdout matches /"check": "broken-link"/ 1 time(s); expected 1
+stdout matches /"level": "gate"/ 2 time(s); expected 2
+stdout matches /"path": "AGENTS.md"/ 2 time(s); expected 2
+stdout matches /"line": 11,/ 1 time(s); expected 1
+stdout matches /"line": 12,/ 1 time(s); expected 1
+stdout matches /Names docs/context/gone\.md/ 1 time(s); expected 1
+stdout matches /old\.js/ 0 time(s); expected 0
+=== case 1 as expected
+=== case 2: node payload/.joycraft/runtime/entry-check.mjs --root ../prototype-canonical-entry-file/fixtures/entry-check/dead-path
+exit 2; expected 2
+--- stdout, 886 chars
+{
+  "gate": 2,
+  "advisory": 1,
+  "findings": [
+    {
+      "level": "gate",
+      "check": "missing-path",
+      "path": "AGENTS.md",
+      "line": 11,
+      "detail": "Names docs/context/gone.md, which does not exist.",
+      "fix": "Point it at the current path, or remove the line if the thing is gone."
+    },
+    {
+      "level": "gate",
+      "check": "broken-link",
+      "path": "AGENTS.md",
+      "line": 12,
+      "detail": "Links to docs/context/release.md, which does not exist.",
+      "fix": "Fix the link or remove it."
+    },
+    {
+      "level": "advisory",
+      "check": "unmapped",
+      "path": "docs/context/notes.md",
+      "detail": "Only other docs/context/ pages mention this page; AGENTS.md and CLAUDE.md do not, so agents may not know when to read it.",
+      "fix": "Add a context-map row with a \"read when\", or merge it into a mapped page."
+    }
+  ]
+}
+--- stderr, 0 chars
+=== case 2 as expected
+=== case 3: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/unnamed-page
+exit 2; expected 2
+--- stdout, 1201 chars
+{
+  "gate": 2,
+  "advisory": 2,
+  "findings": [
+    {
+      "level": "gate",
+      "check": "missing-path",
+      "path": "AGENTS.md",
+      "line": 11,
+      "detail": "Names docs/context/gone.md, which does not exist.",
+      "fix": "Point it at the current path, or remove the line if the thing is gone."
+    },
+    {
+      "level": "gate",
+      "check": "broken-link",
+      "path": "AGENTS.md",
+      "line": 12,
+      "detail": "Links to docs/context/release.md, which does not exist.",
+      "fix": "Fix the link or remove it."
+    },
+    {
+      "level": "advisory",
+      "check": "orphan",
+      "path": "docs/context/lone.md",
+      "detail": "Nothing in AGENTS.md, CLAUDE.md or docs/context/ links to this page, so agents may never read it.",
+      "fix": "Add it to the context map with a \"read when\", or merge it into a linked page."
+    },
+    {
+      "level": "advisory",
+      "check": "unmapped",
+      "path": "docs/context/notes.md",
+      "detail": "Only other docs/context/ pages mention this page; AGENTS.md and CLAUDE.md do not, so agents may not know when to read it.",
+      "fix": "Add a context-map row with a \"read when\", or merge it into a mapped page."
+    }
+  ]
+}
+--- stderr, 0 chars
+stdout matches /"check": "missing-path"/ 1 time(s); expected 1
+stdout matches /"check": "broken-link"/ 1 time(s); expected 1
+stdout matches /"level": "gate"/ 2 time(s); expected 2
+stdout matches /old\.js/ 0 time(s); expected 0
+stdout matches /plan\.md/ 0 time(s); expected 0
+=== case 3 as expected
+=== case 4: node payload/.joycraft/runtime/cleanup.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/unnamed-page
+exit 2; expected 2
+--- stdout, 2252 chars
+{
+  "config": "defaults",
+  "paths": {
+    "features": "docs/features",
+    "archive": "docs/archive",
+    "context": "docs/context"
+  },
+  "counts": {
+    "broken-link": 2,
+    "missing-path": 3,
+    "unmapped": 1,
+    "orphan": 1
+  },
+  "findings": [
+    {
+      "check": "broken-link",
+      "path": "AGENTS.md",
+      "line": 12,
+      "detail": "Links to docs/context/release.md, which does not exist.",
+      "fix": "Fix the link or remove it."
+    },
+    {
+      "check": "broken-link",
+      "path": "docs/context/lone.md",
+      "line": 3,
+      "detail": "Links to docs/context/plan.md, which does not exist.",
+      "fix": "Fix the link or remove it."
+    },
+    {
+      "check": "missing-path",
+      "path": "AGENTS.md",
+      "line": 11,
+      "detail": "Names docs/context/gone.md, which does not exist.",
+      "fix": "Point it at the current path, or remove the line if the thing is gone."
+    },
+    {
+      "check": "missing-path",
+      "path": "docs/context/lone.md",
+      "line": 3,
+      "detail": "Names src/close/old.js, which does not exist.",
+      "fix": "Point it at the current path, or remove the line if the thing is gone."
+    },
+    {
+      "check": "missing-path",
+      "path": "docs/context/notes.md",
+      "line": 3,
+      "detail": "Names src/bids/old.js, which does not exist.",
+      "fix": "Point it at the current path, or remove the line if the thing is gone."
+    },
+    {
+      "check": "unmapped",
+      "path": "docs/context/notes.md",
+      "detail": "Only other docs/context/ pages mention this page; AGENTS.md and CLAUDE.md do not, so agents may not know when to read it.",
+      "fix": "Add a context-map row with a \"read when\", or merge it into a mapped page."
+    },
+    {
+      "check": "orphan",
+      "path": "docs/context/lone.md",
+      "detail": "Nothing in AGENTS.md, CLAUDE.md or docs/context/ links to this page, so agents may never read it.",
+      "fix": "Add it to the context map with a \"read when\", or merge it into a linked page."
+    }
+  ],
+  "skipped": [
+    {
+      "check": "script-name",
+      "reason": "No package.json; script names in other manifests are not checked."
+    },
+    {
+      "check": "unknown-worktree",
+      "reason": "Not a Git repository."
+    }
+  ]
+}
+--- stderr, 0 chars
+stdout matches /"check": "missing-path"/ 3 time(s); expected 3
+stdout matches /"check": "broken-link"/ 2 time(s); expected 2
+stdout matches /Names src/bids/old\.js/ 1 time(s); expected 1
+stdout matches /Names src/close/old\.js/ 1 time(s); expected 1
+stdout matches /Links to docs/context/plan\.md/ 1 time(s); expected 1
+=== case 4 as expected
+=== case 5: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/claude-entry
+exit 2; expected 2
+--- stdout, 548 chars
+{
+  "gate": 2,
+  "advisory": 0,
+  "findings": [
+    {
+      "level": "gate",
+      "check": "missing-path",
+      "path": "CLAUDE.md",
+      "line": 11,
+      "detail": "Names docs/context/gone.md, which does not exist.",
+      "fix": "Point it at the current path, or remove the line if the thing is gone."
+    },
+    {
+      "level": "gate",
+      "check": "broken-link",
+      "path": "CLAUDE.md",
+      "line": 12,
+      "detail": "Links to docs/context/release.md, which does not exist.",
+      "fix": "Fix the link or remove it."
+    }
+  ]
+}
+--- stderr, 0 chars
+stdout matches /"check": "missing-path"/ 1 time(s); expected 1
+stdout matches /"check": "broken-link"/ 1 time(s); expected 1
+stdout matches /"path": "CLAUDE.md"/ 2 time(s); expected 2
+stdout matches /"level": "gate"/ 2 time(s); expected 2
+=== case 5 as expected
+=== case 6: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/named-page-dead
+exit 0; expected 0 with empty stdout and empty stderr
+--- stdout, 0 chars
+--- stderr, 0 chars
+=== case 6 as expected
+stdout of case 1 equals stdout of case 2

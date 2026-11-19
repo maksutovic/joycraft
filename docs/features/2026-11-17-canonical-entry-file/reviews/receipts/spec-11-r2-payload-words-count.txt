@@ -1,0 +1,38 @@
+   376  payload/.agents/skills/joycraft-cleanup/SKILL.md
+   545  payload/.agents/skills/joycraft-context/SKILL.md
+   694  payload/.agents/skills/joycraft-decompose/SKILL.md
+  1286  payload/.agents/skills/joycraft-entry/SKILL.md
+  1388  payload/.agents/skills/joycraft-implement/SKILL.md
+   477  payload/.agents/skills/joycraft-retro/SKILL.md
+   874  payload/.agents/skills/joycraft-session-end/SKILL.md
+   473  payload/.agents/skills/joycraft-testing/SKILL.md
+   536  payload/.agents/skills/joycraft-ui-slice/SKILL.md
+  1354  payload/.agents/skills/joycraft-verify/SKILL.md
+   331  payload/.claude/agents/joycraft-implementer.md
+   372  payload/.claude/agents/joycraft-reviewer.md
+   816  payload/.joycraft/references/architecture.md
+  1718  payload/.joycraft/references/archive.md
+  1715  payload/.joycraft/references/artifacts.md
+  1867  payload/.joycraft/references/cleanup.md
+  1968  payload/.joycraft/references/completion.md
+  1134  payload/.joycraft/references/context.md
+   280  payload/.joycraft/references/delivery.md
+  1668  payload/.joycraft/references/dispatch.md
+   180  payload/.joycraft/references/doc-cleanup-LICENSE.md
+   497  payload/.joycraft/references/gates.md
+   587  payload/.joycraft/references/knowledge.md
+   295  payload/.joycraft/references/recurring-failures.md
+   657  payload/.joycraft/references/retro.md
+   502  payload/.joycraft/references/settings.md
+  3025  payload/.joycraft/references/setup.md
+  1328  payload/.joycraft/references/testing.md
+   539  payload/.joycraft/references/update.md
+  1056  payload/.joycraft/references/workflow.md
+  1377  payload/.joycraft/references/worktrees.md
+own count over the vendored payload (31 skills, agent files and references): 29915 words; limit 29919
+payloadWords(treeBundle("payload")) with the helper of the prototype: 29915
+payloadWords of the prototype checkout tree: 29915
+payloadWords at prototype tag field-24: 29919
+payloadWords at prototype tag field-25: 29919
+payloadWords at prototype tag field-26: 29915
+RESULT: 29915 <= 29919, and the three counts agree

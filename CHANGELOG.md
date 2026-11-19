@@ -108,6 +108,9 @@ rule for a host with no subagents. No run measured the text with them.
   292 to 473 words, 162 of them Joycraft's block. That run asked 5 questions. The
   final text was not run there.
 - Mermaid rendering was not checked inside a live Claude artifact.
+- Most specs of this feature have no independent review. One spec has a review
+  that passed. One has a review that failed on one check, and the owner accepted
+  it. The owner approved the others as they are.
 
 The owner accepted these results on 2026-11-18. A break in the field becomes a
 brief for 1.6.1.
