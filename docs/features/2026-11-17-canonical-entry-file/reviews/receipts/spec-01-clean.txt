@@ -1,0 +1,15 @@
+=== case 1: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/clean
+exit: 0 (expected 0) as expected
+--- stdout (0 chars) ---
+--- stderr (0 chars) ---
+=== end case 1
+=== case 2: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/clean
+exit: 0 (expected 0) as expected
+--- stdout (0 chars) ---
+--- stderr (0 chars) ---
+=== end case 2
+=== case 3: node payload/.joycraft/runtime/entry-check.mjs --root ../prototype-canonical-entry-file/fixtures/entry-check/clean
+exit: 0 (expected 0) as expected
+--- stdout (0 chars) ---
+--- stderr (0 chars) ---
+=== end case 3

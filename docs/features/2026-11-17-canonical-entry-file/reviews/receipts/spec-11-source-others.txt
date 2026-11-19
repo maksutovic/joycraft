@@ -1,0 +1,46 @@
+payload/.joycraft/references/setup.md:28:unrecorded, say in one line that Joycraft is already set up. Write nothing,
+payload/.joycraft/references/setup.md:33:   files, `.joycraft/` and installed skills). Run `joycraft-cleanup` steps 1–2
+payload/.joycraft/references/setup.md:59:   answer before you ask any other setup question. Record it with
+payload/.joycraft/references/setup.md:61:   for one feature later. Never ask again when a style is recorded. Then ask the
+payload/.joycraft/references/setup.md:75:     create. A read-when names the work that needs the doc ("Changing how counts
+payload/.joycraft/references/setup.md:77:     `.joycraft/references/artifacts.md`, read when "showing a document or
+payload/.joycraft/references/setup.md:78:     questions to a person". A log (a decision log, an operations log) is a record: its row
+payload/.joycraft/references/setup.md:80:     the guide rows. No row tells an agent to read a record
+payload/.joycraft/references/setup.md:83:     that order below the user's rows; setup never edits, reorders or
+payload/.joycraft/references/setup.md:100:   managed block, and the map as `| Read when | Document |`. Keep
+payload/.joycraft/references/setup.md:118:inspect the owner and its actual counterparts before recording guidance; read
+payload/.joycraft/references/setup.md:136:1. `kickoff.mjs start --root .` records what exists, so the check can prove what
+payload/.joycraft/references/setup.md:179:`record`. When the user says there is no app to review (for example one script
+payload/.joycraft/references/setup.md:180:with no manifest), record their words with `record --none "<reason>"`; a
+payload/.joycraft/references/setup.md:195:the user the printed `steps`. Then record the choice:
+payload/.joycraft/references/setup.md:198:node .joycraft/runtime/review-tools.mjs record --root . [--choose <package>=<tool>] [--command <package>=<command>] [--skip <tool>|<package>:<tool>|<package>] [--host <name> --host-tools <observed host tools>]
+payload/.joycraft/references/setup.md:201:`--choose` records the tool the user picked for a package (a hint id, or a
+payload/.joycraft/references/setup.md:202:found script with its `--command`); `'apps/*'=<tool>` records one shared harness
+payload/.joycraft/references/setup.md:207:that starts the app and the command that takes the evidence. Recording again
+payload/.joycraft/references/setup.md:211:(user skipped). With no network, the probes still run; offer the install later. For a CI-only project, record the CI job as the evidence
+payload/.joycraft/references/setup.md:217:request, confirm or research the tool, install it as above, and re-record only
+payload/.joycraft/references/setup.md:219:other rows stay. When the plan's `Changed since the recorded Review loop` names
+payload/.joycraft/references/setup.md:221:`recorded with v1; re-record to keep it`, confirm the table with the user and run
+payload/.joycraft/references/setup.md:222:record again, repeating any `--choose` or `--skip` the table shows; a v1 record
+payload/.joycraft/references/setup.md:228:large browser download, and install nothing without the user's yes. Record an
+payload/.joycraft/references/setup.md:261:resource-lease convention and record the owner, resource, and release condition.
+payload/.joycraft/references/setup.md:321:installation manifest `.joycraft/installation.json` records the installed bytes;
+payload/.agents/skills/joycraft-session-end/SKILL.md:11:Read each touched queue and report the real state of every affected spec: `todo`, `in-review`, or `done`. `done` must have either an accepted PASS report receipt or a completion-helper owner-acceptance record bound to a current failed or unverified report; a commit, PASS command, or implementer assertion is not acceptance. Keep blocked or failed dependency branches explicit while identifying independent ready work that can continue next.
+payload/.agents/skills/joycraft-session-end/SKILL.md:13:If the session stops or restarts a concurrent run, report its recorded
+payload/.agents/skills/joycraft-session-end/SKILL.md:20:For each completed spec, report the implementation revision, independent reviewer session ID, report and receipt paths, actual commands and outcomes, visual inspection status where required, and known limitations. For owner-accepted work, also report the owner-acceptance record and its inherited limits as `done, owner-accepted with <limits>`; preserve the original `FAIL` or `UNVERIFIED` report rather than calling it PASS or verified. List each spec completed under a feature waiver as `done, waived by the user: "<instruction>"`, with any report's real verdict; never call it reviewed or verified.
+payload/.agents/skills/joycraft-session-end/SKILL.md:41:When an `UNVERIFIED` review identifies only an environment condition, record
+payload/.agents/skills/joycraft-session-end/SKILL.md:47:Write nothing temporal into an entry file or a guide: a date, a status or a hand-off goes to its record, as the [cleanup reference](../../../.joycraft/references/cleanup.md#what-to-find-on-each-page) says.
+payload/.agents/skills/joycraft-session-end/SKILL.md:50:session-end mode. It reports and makes only the mechanical fixes. Put its
+payload/.agents/skills/joycraft-session-end/SKILL.md:66:historical owner-acceptance records bound to their retained failed/unverified
+payload/.agents/skills/joycraft-session-end/SKILL.md:80:the owner has authorized that resolution. Record the instruction, exact affected
+payload/.agents/skills/joycraft-implement/SKILL.md:11:Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec, the parent brief, the selected spec, and its declared verification inputs before changing code. Reuse current decisions and context; record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision. Do not require a new interview for settled work.
+payload/.agents/skills/joycraft-implement/SKILL.md:26:affected branch waits for review, environment repair or a recorded owner hold.
+payload/.agents/skills/joycraft-implement/SKILL.md:56:queue entry's `execution.parallel` to `false` before dispatch, recording why;
+payload/.agents/skills/joycraft-implement/SKILL.md:82:When a recorded tool breaks during a run (the dev server does not start, a
+payload/.agents/skills/joycraft-implement/SKILL.md:86:reconfigures anything; that needs the user's yes. If the repair fails, record an
+payload/.agents/skills/joycraft-implement/SKILL.md:113:instruction and nonempty limits in the decision record. A general
+payload/.claude/agents/joycraft-implementer.md:10:Read the project's `AGENTS.md` (or `CLAUDE.md`), then each page whose context-map row matches the spec, the brief, the spec, its
+payload/.claude/agents/joycraft-reviewer.md:11:Read the project's `AGENTS.md` (or `CLAUDE.md`), then each page whose context-map row matches the spec, `.claude/skills/joycraft-verify/SKILL.md`,
+payload/.claude/agents/joycraft-reviewer.md:34:Record findings by the findings rule in the verify skill.
+payload/.claude/agents/joycraft-reviewer.md:36:Take evidence with each package's recorded tool from the packet's `reviewLoop`,
+payload/.claude/agents/joycraft-reviewer.md:40:should have run and did not. Record only what you observed. Keep the final message

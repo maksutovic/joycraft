@@ -1,0 +1,22 @@
+=== case 1: node payload/.joycraft/runtime/entry-check.mjs --nope
+exit: 1 (expected 1) as expected
+--- stdout (0 chars) ---
+--- stderr (100 chars) ---
+Entry check stopped: Usage: entry-check.mjs [block | lost [--base <rev>]] [--ci] [--root <project>]
+=== end case 1
+=== case 2: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/bad-config
+exit: 1 (expected 1) as expected
+--- stdout (0 chars) ---
+--- stderr (96 chars) ---
+Entry check stopped: joycraft.yaml: cleanup.entryWords must be a positive whole number of words
+=== end case 2
+=== case 3: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/does-not-exist
+exit: 0 (expected 0) as expected
+--- stdout (0 chars) ---
+--- stderr (0 chars) ---
+=== end case 3
+=== case 4: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/does-not-exist
+exit: 0 (expected 0) as expected
+--- stdout (0 chars) ---
+--- stderr (0 chars) ---
+=== end case 4

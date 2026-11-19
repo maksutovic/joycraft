@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-entry-check-command.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -89,6 +89,10 @@
       },
       "submitted": {
         "at": "2026-11-17T20:19:40.556Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-17-canonical-entry-file/reviews/spec-01-review.json",
+        "sha256": "41e81c88a5ad2748b5aa500864b574169b2199cf7ded0eb09f6930eb957322ea"
       }
     },
     {

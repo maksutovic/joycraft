@@ -1,0 +1,242 @@
+payload/.joycraft/references/cleanup.md:1:# Cleanup checks
+payload/.joycraft/references/cleanup.md:2:
+payload/.joycraft/references/cleanup.md:3:`cleanup.mjs` reports; it never edits. Each finding has `check`, `path`,
+payload/.joycraft/references/cleanup.md:4:`detail` and `fix`.
+payload/.joycraft/references/cleanup.md:5:`entry-check.mjs` prints the findings about entry files, and nothing when
+payload/.joycraft/references/cleanup.md:6:they are clean. `--ci` prints one line for each gate finding (G below) and exits 2.
+payload/.joycraft/references/cleanup.md:7:
+payload/.joycraft/references/cleanup.md:8:| Check | Finds |
+payload/.joycraft/references/cleanup.md:9:|---|---|
+payload/.joycraft/references/cleanup.md:10:| `broken-link` (G) | A Markdown link to a file that does not exist |
+payload/.joycraft/references/cleanup.md:11:| `missing-path` (G) | A backticked project path in an entry file or context page that does not exist |
+payload/.joycraft/references/cleanup.md:12:| `entry-size` | An entry file over `cleanup.entryWords` words (default 1000) |
+payload/.joycraft/references/cleanup.md:13:| `temporal` | A date (`YYYY-MM-DD`) or a link to a dated file in an entry file, outside code spans |
+payload/.joycraft/references/cleanup.md:14:| `script-name` (G) | A package script that an entry file names and no `package.json` defines |
+payload/.joycraft/references/cleanup.md:15:| `codex-bytes` (G) | `AGENTS.md` files from the root to one folder over 32,768 bytes together, the Codex limit |
+payload/.joycraft/references/cleanup.md:16:| `import` (G) | An `@path` line in an entry file (not `@AGENTS.md` in `CLAUDE.md`), or `AGENTS.override.md` |
+payload/.joycraft/references/cleanup.md:17:
+payload/.joycraft/references/cleanup.md:18:Every other check says what it found in its `detail`. Fenced code blocks are
+payload/.joycraft/references/cleanup.md:19:ignored. `missing-path` skips globs, placeholders, URLs, paths outside the
+payload/.joycraft/references/cleanup.md:20:project and paths that Git ignores. A record rightly names removed paths and
+payload/.joycraft/references/cleanup.md:21:working material, so it is exempt from `missing-path` and `working-link`: a
+payload/.joycraft/references/cleanup.md:22:page with `type: log` or `type: history` frontmatter, `decision-log.md` and
+payload/.joycraft/references/cleanup.md:23:`shipped*.md`. `entry-check.mjs lost --base <rev>` lists the lines
+payload/.joycraft/references/cleanup.md:24:that a change dropped.
+payload/.joycraft/references/cleanup.md:25:
+payload/.joycraft/references/cleanup.md:26:## One pass
+payload/.joycraft/references/cleanup.md:27:
+payload/.joycraft/references/cleanup.md:28:`AGENTS.md` is the entry file: it is loaded in every session. Its Context Map
+payload/.joycraft/references/cleanup.md:29:points at the pages that hold everything else. Both grow and go stale
+payload/.joycraft/references/cleanup.md:30:together, so clean them together: text that leaves the entry file must land
+payload/.joycraft/references/cleanup.md:31:on a page that is true, findable and short enough to read. The pages are every file that a map
+payload/.joycraft/references/cleanup.md:32:row names, the context pages with no row, and the nested entry files.
+payload/.joycraft/references/cleanup.md:33:
+payload/.joycraft/references/cleanup.md:34:The aim:
+payload/.joycraft/references/cleanup.md:35:
+payload/.joycraft/references/cleanup.md:36:- The entry file is light: just enough for an agent to gather the context
+payload/.joycraft/references/cleanup.md:37:  that its task needs.
+payload/.joycraft/references/cleanup.md:38:- Each page is true, holds one topic, and is no longer than its job needs.
+payload/.joycraft/references/cleanup.md:39:- Stale data goes. Rules that no longer earn their place go.
+payload/.joycraft/references/cleanup.md:40:- Workers and subagents still get enough context for their task. If a light
+payload/.joycraft/references/cleanup.md:41:  entry file or a split page would starve them, say so.
+payload/.joycraft/references/cleanup.md:42:
+payload/.joycraft/references/cleanup.md:43:## Two lenses
+payload/.joycraft/references/cleanup.md:44:
+payload/.joycraft/references/cleanup.md:45:Give every statement two verdicts.
+payload/.joycraft/references/cleanup.md:46:
+payload/.joycraft/references/cleanup.md:47:1. **Truth.** Check it against the repository as it is now: code, config,
+payload/.joycraft/references/cleanup.md:48:   scripts, tests, Git history. It is true, false, stale (was true), or not
+payload/.joycraft/references/cleanup.md:49:   checkable.
+payload/.joycraft/references/cleanup.md:50:2. **Place.** Does it belong where it is, for the reader who meets it there?
+payload/.joycraft/references/cleanup.md:51:   If not, name the place that owns it.
+payload/.joycraft/references/cleanup.md:52:
+payload/.joycraft/references/cleanup.md:53:## The entry file
+payload/.joycraft/references/cleanup.md:54:
+payload/.joycraft/references/cleanup.md:55:The entry file holds only what an agent needs in every session and cannot get
+payload/.joycraft/references/cleanup.md:56:from the code:
+payload/.joycraft/references/cleanup.md:57:
+payload/.joycraft/references/cleanup.md:58:- **Identity:** two or three sentences.
+payload/.joycraft/references/cleanup.md:59:- **Rules:** short imperative sentences, one rule for each bullet. A rule
+payload/.joycraft/references/cleanup.md:60:  stays in the entry file when a mistake would do harm that is hard to undo,
+payload/.joycraft/references/cleanup.md:61:  or when no code, config or check can show it. A rule of that kind stays in
+payload/.joycraft/references/cleanup.md:62:  full, even when it is long, limits included. No procedure, no checklist, no
+payload/.joycraft/references/cleanup.md:63:  list of examples, no history, no "who said it and when".
+payload/.joycraft/references/cleanup.md:64:- **Joycraft's block.**
+payload/.joycraft/references/cleanup.md:65:- **The Context Map:** one row for each guide, "read when <situation>"; then
+payload/.joycraft/references/cleanup.md:66:  one row for each log, "search when you need why or when, or to check a
+payload/.joycraft/references/cleanup.md:67:  regression". Move a rule or a fact out of a row before you shorten it.
+payload/.joycraft/references/cleanup.md:68:
+payload/.joycraft/references/cleanup.md:69:Everything else moves to the page that owns its topic: a procedure, a
+payload/.joycraft/references/cleanup.md:70:checklist, a description of how the code works, a tool list, a preference for
+payload/.joycraft/references/cleanup.md:71:one part of the code. Delete only what the code, a config file or a check
+payload/.joycraft/references/cleanup.md:72:already states, or what is false.
+payload/.joycraft/references/cleanup.md:73:
+payload/.joycraft/references/cleanup.md:74:A permission and its limits stay together: both in the entry file, or both on
+payload/.joycraft/references/cleanup.md:75:one page with one line in the entry file, "Read `<page>` before <action>."
+payload/.joycraft/references/cleanup.md:76:Write that line for each rule that a worker must obey.
+payload/.joycraft/references/cleanup.md:77:
+payload/.joycraft/references/cleanup.md:78:Aim for at most half of the current word count, and fewer when that does no
+payload/.joycraft/references/cleanup.md:79:harm. The target never outranks a rule that must stay in full.
+payload/.joycraft/references/cleanup.md:80:
+payload/.joycraft/references/cleanup.md:81:## Kinds of page
+payload/.joycraft/references/cleanup.md:82:
+payload/.joycraft/references/cleanup.md:83:Decide the kind of each page first. The kind sets what "good" means.
+payload/.joycraft/references/cleanup.md:84:
+payload/.joycraft/references/cleanup.md:85:- **Guide.** The current rules, facts and how-to for one topic. It holds only
+payload/.joycraft/references/cleanup.md:86:  what is true now. It opens with what the page is for and its rules. A
+payload/.joycraft/references/cleanup.md:87:  reader that a map row sends can read all of it. Aim for under 1,500 words;
+payload/.joycraft/references/cleanup.md:88:  over 3,000 words is a finding.
+payload/.joycraft/references/cleanup.md:89:- **Log** (`type: log`). A dated record: decisions, operations, what shipped.
+payload/.joycraft/references/cleanup.md:90:  It is an audit trail: an agent searches it to learn why or
+payload/.joycraft/references/cleanup.md:91:  when, or to check for a regression, and never reads it at the start. A
+payload/.joycraft/references/cleanup.md:92:  current rule or current state that lives only in a log is misplaced: check
+payload/.joycraft/references/cleanup.md:93:  that no later row reversed it, then state it in a guide; the log keeps the
+payload/.joycraft/references/cleanup.md:94:  dated record.
+payload/.joycraft/references/cleanup.md:95:- **History** (`type: history`). A postmortem or an old plan, kept for
+payload/.joycraft/references/cleanup.md:96:  lookup. It gets no map row unless a current rule depends on it; then the
+payload/.joycraft/references/cleanup.md:97:  rule moves to a guide.
+payload/.joycraft/references/cleanup.md:98:
+payload/.joycraft/references/cleanup.md:99:A page that is two kinds at once, current rules on top of a long dated log,
+payload/.joycraft/references/cleanup.md:100:is the most common defect. Split it: the guide part becomes a short page with
+payload/.joycraft/references/cleanup.md:101:its own map row, and the log part stays as a log. A log only gains text: for
+payload/.joycraft/references/cleanup.md:102:a wrong or replaced row, add one sentence at its end that names what replaced
+payload/.joycraft/references/cleanup.md:103:it.
+payload/.joycraft/references/cleanup.md:104:
+payload/.joycraft/references/cleanup.md:105:## What to find on each page
+payload/.joycraft/references/cleanup.md:106:
+payload/.joycraft/references/cleanup.md:107:1. **False and stale statements**, each with evidence (file and line, or
+payload/.joycraft/references/cleanup.md:108:   commit).
+payload/.joycraft/references/cleanup.md:109:2. **Contradictions**: with the entry file, with another page, or inside the
+payload/.joycraft/references/cleanup.md:110:   page. Say which side the code supports. When the code cannot settle it, it
+payload/.joycraft/references/cleanup.md:111:   is a question for the owner.
+payload/.joycraft/references/cleanup.md:112:3. **Misplaced content**: history inside a guide; a current rule buried in a
+payload/.joycraft/references/cleanup.md:113:   log; anything temporal (a date, a status, paused, open, in progress, who
+payload/.joycraft/references/cleanup.md:114:   decided); a copy of something that another place owns. Name the one home
+payload/.joycraft/references/cleanup.md:115:   for each: a decision and its reason go to the decision log, an operation
+payload/.joycraft/references/cleanup.md:116:   or a status to its log, open work to the backlog (default `docs/backlog/`)
+payload/.joycraft/references/cleanup.md:117:   or a handoff.
+payload/.joycraft/references/cleanup.md:118:4. **Shape.** What does a reader that this page's map row sends need, and how
+payload/.joycraft/references/cleanup.md:119:   much must it read to get it? Propose the smallest change that fixes it:
+payload/.joycraft/references/cleanup.md:120:   reorder, split, merge or move.
+payload/.joycraft/references/cleanup.md:121:5. **Rules on the page.** List each permission, prohibition and "ask first".
+payload/.joycraft/references/cleanup.md:122:   Does it agree with the entry file? Is it still in force? A rule that is
+payload/.joycraft/references/cleanup.md:123:   obsolete, duplicated, contradicted, or that guards something that no
+payload/.joycraft/references/cleanup.md:124:   longer exists is a candidate to retire.
+payload/.joycraft/references/cleanup.md:125:6. **What this page should receive from the entry file.** Which of its rules,
+payload/.joycraft/references/cleanup.md:126:   procedures and details belong to this page's topic? Is the page ready to
+payload/.joycraft/references/cleanup.md:127:   hold them?
+payload/.joycraft/references/cleanup.md:128:7. **Enough for a worker.** Would a worker that reads only a light entry file
+payload/.joycraft/references/cleanup.md:129:   and this page have what it needs to act safely? Say what is missing.
+payload/.joycraft/references/cleanup.md:130:
+payload/.joycraft/references/cleanup.md:131:## Questions for the owner
+payload/.joycraft/references/cleanup.md:132:
+payload/.joycraft/references/cleanup.md:133:Do not guess whether a hold or a pause is still in force, whether a rule
+payload/.joycraft/references/cleanup.md:134:still says what the owner wants, which of two conflicting statements wins
+payload/.joycraft/references/cleanup.md:135:when the code is silent, or whether old material may be deleted.
+payload/.joycraft/references/cleanup.md:136:
+payload/.joycraft/references/cleanup.md:137:Do not ask about single lines either: the owner cannot research each one.
+payload/.joycraft/references/cleanup.md:138:Group these into at most eight questions, each about one policy. Stops (what
+payload/.joycraft/references/cleanup.md:139:an agent must ask before) and holds are always two of them: never drop one by
+payload/.joycraft/references/cleanup.md:140:recommendation. A question says what the pages say now, gives two to four
+payload/.joycraft/references/cleanup.md:141:policies with your recommendation, and says how many lines it settles. The
+payload/.joycraft/references/cleanup.md:142:answer is a policy: apply it to each line of its theme. Record each question
+payload/.joycraft/references/cleanup.md:143:as a decision of a cleanup brief under `paths.features` and ask it in the
+payload/.joycraft/references/cleanup.md:144:project's [question style](artifacts.md#asking-questions). Every other choice
+payload/.joycraft/references/cleanup.md:145:is a recommendation: show them as a page that the owner can veto.
+payload/.joycraft/references/cleanup.md:146:
+payload/.joycraft/references/cleanup.md:147:## The steps
+payload/.joycraft/references/cleanup.md:148:
+payload/.joycraft/references/cleanup.md:149:A person asks for this pass. Above about 20,000 words of pages, first state
+payload/.joycraft/references/cleanup.md:150:the word count and the cost (about 25 tokens for each word). Then split the
+payload/.joycraft/references/cleanup.md:151:work into parts: the entry files are one part, and the pages are groups of
+payload/.joycraft/references/cleanup.md:152:about 20,000 words. One agent does each part, in parallel where the host has
+payload/.joycraft/references/cleanup.md:153:subagents and one after another where it has none. A coordinator, the session
+payload/.joycraft/references/cleanup.md:154:that talks to the owner, runs the steps.
+payload/.joycraft/references/cleanup.md:155:
+payload/.joycraft/references/cleanup.md:156:1. **List.** Each page with its kind and size. Find what parses these files:
+payload/.joycraft/references/cleanup.md:157:   `git grep -l` each file name in tests, scripts, open specs and queues, and
+payload/.joycraft/references/cleanup.md:158:   read what each one pins. Make no change that breaks one without saying so.
+payload/.joycraft/references/cleanup.md:159:2. **Analyze, read only.** Run `cleanup.mjs`. Each part's agent finds the
+payload/.joycraft/references/cleanup.md:160:   seven things on its pages and writes its numbered findings, its plan and
+payload/.joycraft/references/cleanup.md:161:   its questions. No project file changes.
+payload/.joycraft/references/cleanup.md:162:3. **Ask one round.** The coordinator merges the questions into themes, asks
+payload/.joycraft/references/cleanup.md:163:   them, and waits. With no answer, the lines of that theme stay in their
+payload/.joycraft/references/cleanup.md:164:   words.
+payload/.joycraft/references/cleanup.md:165:4. **Apply.** The agent that analyzed a part edits it: it knows the pages.
+payload/.joycraft/references/cleanup.md:166:   Each agent edits only the files of its own part and writes every other
+payload/.joycraft/references/cleanup.md:167:   change as a request: the file, the exact old text, the exact new text, and
+payload/.joycraft/references/cleanup.md:168:   why. Fix a false statement in each place that states it: `git grep --untracked`
+payload/.joycraft/references/cleanup.md:169:   the claim. Each answer goes to the decision log in the owner's words.
+payload/.joycraft/references/cleanup.md:170:5. **Write the entry file last.** The coordinator writes it from the answers
+payload/.joycraft/references/cleanup.md:171:   and applies the requests. No other agent changes an entry file, and no
+payload/.joycraft/references/cleanup.md:172:   agent commits.
+payload/.joycraft/references/cleanup.md:173:6. **Check.** Give each finding a final status: fixed, left for the owner,
+payload/.joycraft/references/cleanup.md:174:   or not done and why. Then an agent that wrote no edit checks the changed
+payload/.joycraft/references/cleanup.md:175:   guides against the code; fix what it finds once. Make the permission
+payload/.joycraft/references/cleanup.md:176:   ledger. Run
+payload/.joycraft/references/cleanup.md:177:   `entry-check.mjs lost --base HEAD` and account for each line. Run `cleanup.mjs`,
+payload/.joycraft/references/cleanup.md:178:   `wiring.mjs`, `entry-check.mjs --ci` and the project's gates. Offer one commit.
+payload/.joycraft/references/cleanup.md:179:
+payload/.joycraft/references/cleanup.md:180:On request, check the guides again, or fix a line that a person names
+payload/.joycraft/references/cleanup.md:181:and each copy of its claim.
+payload/.joycraft/references/cleanup.md:182:
+payload/.joycraft/references/cleanup.md:183:## Permission ledger
+payload/.joycraft/references/cleanup.md:184:
+payload/.joycraft/references/cleanup.md:185:Before the commit, take from the diff and the `lost` report every line that
+payload/.joycraft/references/cleanup.md:186:permits, forbids, stops or holds and that the pass changed, moved or removed:
+payload/.joycraft/references/cleanup.md:187:the old text beside the new. For each, name the owner's answer that decided
+payload/.joycraft/references/cleanup.md:188:it. List first each line where you read an answer onto something that the
+payload/.joycraft/references/cleanup.md:189:owner did not name. Put back a change that no answer decides, and list it as
+payload/.joycraft/references/cleanup.md:190:not covered. Show the ledger with the result.
+payload/.joycraft/references/cleanup.md:191:
+payload/.joycraft/references/cleanup.md:192:- A grant keeps the owner's words and scope. Add nothing to it.
+payload/.joycraft/references/cleanup.md:193:- The code settles a fact, not a rule. Report a rule that the code breaks; do
+payload/.joycraft/references/cleanup.md:194:  not remove it.
+payload/.joycraft/references/cleanup.md:195:- Change a test or a script only where it pins text that the pass moved, and
+payload/.joycraft/references/cleanup.md:196:  list each such change.
+payload/.agents/skills/joycraft-cleanup/SKILL.md:1:---
+payload/.agents/skills/joycraft-cleanup/SKILL.md:2:name: joycraft-cleanup
+payload/.agents/skills/joycraft-cleanup/SKILL.md:3:description: Clean AGENTS.md and the context pages behind its map in one pass, as a dialogue with the owner - remove false, stale and temporal text, move detail to the page that owns it, and change no rule without the owner's answer. Use for "clean up my AGENTS.md", "clean up the docs", "audit the docs", "what in our docs is stale", "AGENTS.md is too long", or when cleanup.mjs reports findings. At a session end it only reports and makes the mechanical fixes.
+payload/.agents/skills/joycraft-cleanup/SKILL.md:4:compatibility: Requires Node.js 22+ and the installed .joycraft runtime. Git improves the code-drift and worktree checks.
+payload/.agents/skills/joycraft-cleanup/SKILL.md:5:---
+payload/.agents/skills/joycraft-cleanup/SKILL.md:6:
+payload/.agents/skills/joycraft-cleanup/SKILL.md:7:# Joycraft Cleanup
+payload/.agents/skills/joycraft-cleanup/SKILL.md:8:
+payload/.agents/skills/joycraft-cleanup/SKILL.md:9:Keep the entry files light and the pages behind the map true. Treat every doc
+payload/.agents/skills/joycraft-cleanup/SKILL.md:10:claim as a hypothesis and the repository as the evidence
+payload/.agents/skills/joycraft-cleanup/SKILL.md:11:([knowledge guidance](../../../.joycraft/references/knowledge.md)).
+payload/.agents/skills/joycraft-cleanup/SKILL.md:12:This method is adapted from doc-cleanup by aka-luan
+payload/.agents/skills/joycraft-cleanup/SKILL.md:13:([MIT](../../../.joycraft/references/doc-cleanup-LICENSE.md)), brought in by David Moshal.
+payload/.agents/skills/joycraft-cleanup/SKILL.md:14:
+payload/.agents/skills/joycraft-cleanup/SKILL.md:15:Read [cleanup reference](../../../.joycraft/references/cleanup.md) first.
+payload/.agents/skills/joycraft-cleanup/SKILL.md:16:
+payload/.agents/skills/joycraft-cleanup/SKILL.md:17:## Which run this is
+payload/.agents/skills/joycraft-cleanup/SKILL.md:18:
+payload/.agents/skills/joycraft-cleanup/SKILL.md:19:- **A person asks for a cleanup.** Do the
+payload/.agents/skills/joycraft-cleanup/SKILL.md:20:  [one pass](../../../.joycraft/references/cleanup.md#one-pass): the entry
+payload/.agents/skills/joycraft-cleanup/SKILL.md:21:  files and every page behind the map, together. When the person is away
+payload/.agents/skills/joycraft-cleanup/SKILL.md:22:  before the answers, leave the questions and the recommendations as a page
+payload/.agents/skills/joycraft-cleanup/SKILL.md:23:  and stop.
+payload/.agents/skills/joycraft-cleanup/SKILL.md:24:- **Session end calls this skill, or nobody asked** (a queue, a hook). Run
+payload/.agents/skills/joycraft-cleanup/SKILL.md:25:  `node .joycraft/runtime/cleanup.mjs`. Fix only what a script can check:
+payload/.agents/skills/joycraft-cleanup/SKILL.md:26:  replace Joycraft's block with the output of
+payload/.agents/skills/joycraft-cleanup/SKILL.md:27:  `node .joycraft/runtime/entry-check.mjs block` and remove an older Joycraft
+payload/.agents/skills/joycraft-cleanup/SKILL.md:28:  line beside it, and re-point a dead path that has one unique Git rename.
+payload/.agents/skills/joycraft-cleanup/SKILL.md:29:  Put the other findings on the session-end page in one list. Change no rule
+payload/.agents/skills/joycraft-cleanup/SKILL.md:30:  and no page, and do not start the pass.
+payload/.agents/skills/joycraft-cleanup/SKILL.md:31:- **Setup calls this skill.** Do steps 1 and 2 of the pass and hand the
+payload/.agents/skills/joycraft-cleanup/SKILL.md:32:  findings back to setup: no report page and no stop.
+payload/.agents/skills/joycraft-cleanup/SKILL.md:33:
+payload/.agents/skills/joycraft-cleanup/SKILL.md:34:## The pass
+payload/.agents/skills/joycraft-cleanup/SKILL.md:35:
+payload/.agents/skills/joycraft-cleanup/SKILL.md:36:Follow the reference: the steps, in order. Code proves what is implemented,
+payload/.agents/skills/joycraft-cleanup/SKILL.md:37:not what was intended. Never delete a context page to clear a finding; merge
+payload/.agents/skills/joycraft-cleanup/SKILL.md:38:or redirect it. Remove an unknown worktree only after checking it for
+payload/.agents/skills/joycraft-cleanup/SKILL.md:39:unmerged work.
+payload/.agents/skills/joycraft-cleanup/SKILL.md:40:
+payload/.agents/skills/joycraft-cleanup/SKILL.md:41:## Hand off
+payload/.agents/skills/joycraft-cleanup/SKILL.md:42:
+payload/.agents/skills/joycraft-cleanup/SKILL.md:43:Report the changed files, the archive
+payload/.agents/skills/joycraft-cleanup/SKILL.md:44:mappings, the ledger, what the project's own gates said, and the findings that
+payload/.agents/skills/joycraft-cleanup/SKILL.md:45:remain with their reasons. Approval to edit is not approval to commit: offer
+payload/.agents/skills/joycraft-cleanup/SKILL.md:46:one commit with a specific message, and commit when the user says yes.

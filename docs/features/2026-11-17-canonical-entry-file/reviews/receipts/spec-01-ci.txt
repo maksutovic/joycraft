@@ -1,0 +1,30 @@
+=== case 1: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/dead-path
+exit: 2 (expected 2) as expected
+--- stdout (157 chars) ---
+AGENTS.md:11 missing-path Names docs/context/gone.md, which does not exist.
+AGENTS.md:12 broken-link Links to docs/context/release.md, which does not exist.
+--- stderr (0 chars) ---
+=== end case 1
+=== case 2: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/advisory
+exit: 0 (expected 0) as expected
+--- stdout (0 chars) ---
+--- stderr (0 chars) ---
+=== end case 2
+=== case 3: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/advisory
+exit: 0 (expected 0) as expected
+--- stdout (372 chars) ---
+{
+  "gate": 0,
+  "advisory": 1,
+  "findings": [
+    {
+      "level": "advisory",
+      "check": "orphan",
+      "path": "docs/context/unlisted.md",
+      "detail": "Nothing in AGENTS.md, CLAUDE.md or docs/context/ links to this page, so agents may never read it.",
+      "fix": "Add it to the context map with a \"read when\", or merge it into a linked page."
+    }
+  ]
+}
+--- stderr (0 chars) ---
+=== end case 3
