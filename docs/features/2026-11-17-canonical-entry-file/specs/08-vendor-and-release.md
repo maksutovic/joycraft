@@ -9,8 +9,9 @@ engine's document pages: the payload is the new field build, it has no more
 words than the last one, and the docs tell a user how to ask for a cleanup and
 what it does. Brief: [one-pass](../brief.md#one-pass),
 [scope](../brief.md#scope-and-limits). The owner said go on 2026-11-18, after a
-confirmation run of the cleanup. Spec 12 did not run every measure; the pull
-request names each measure that was not run.
+confirmation run of the cleanup. Spec 12 did not run every measure; its
+"Result" section has each one, and the owner accepted that proof by name on
+2026-11-18.
 
 ## acceptance
 
@@ -69,21 +70,28 @@ publishes to npm.
 
 ## Deferred until deploy
 
-The owner or an attended session checks these with the published version. The
-first four were not verified before the release:
+The owner or an attended session checks these with the published version. Spec
+12 has the result of each measure before the release:
 
-- A cleanup result passes the own test gate of a field project.
+- A cleanup result passes the own test gate of a field project. Not run before
+  the release.
 - A worker does no worse with the cleaned files than with the old files, on
-  three harnesses, on a task that needs a moved rule.
+  three harnesses, on a task that needs a moved rule. Not run before the
+  release.
 - The final skill text, on a small second repository, gives an entry file
-  that is not longer and asks at most 3 questions.
+  that is not longer and asks at most 3 questions. An earlier text failed this
+  measure, and the final text was not run.
 - A document page with a Mermaid diagram renders inside a live Claude
-  artifact.
-- An update from 1.5.4 leaves no old Joycraft line beside the block.
+  artifact. Not checked before the release.
+- An update from 1.5.4 leaves no old Joycraft line beside the block. This
+  passed in one run before the release.
+- Each question of a cleanup can be answered from its page. In the last run
+  the owner could not answer one of 8 from the page.
 
 ## State, 2026-11-18
 
 The work of this spec is in the release pull request: payload `field-25`, the
 tests, the docs and the release fields. `pnpm test` and `pnpm typecheck` pass.
 The status stays `todo`: `completion.mjs submit` refuses this spec while spec 12
-is not done, and no review of it is on record.
+is not done, spec 12 cannot be submitted while spec 11 is not done, and no
+review of specs 1 to 11 is on record.

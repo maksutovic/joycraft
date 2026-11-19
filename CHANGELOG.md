@@ -81,17 +81,30 @@ Payload: joycraft-prototype `field-25`.
 
 ### Measured
 
-On the last trial run, on a clean clone of a field project, the cleanup asked 8
-questions. It changed no permission outside the owner's answers and the
-recommendations that the owner did not veto. Of 134 known false or stale
-statements, 81% were fixed before the closing loop and 84% after it.
+On the last trial run, on a clean clone of a field project:
+
+- The cleanup asked 8 questions in one round. The owner was not able to answer one
+  of them from its page.
+- No permission changed without an answer or a recommendation that the owner did
+  not veto. A recommendation decided 8 changes. The ledger did not mark 2 lines
+  where the agent read an answer onto a line that the owner did not name.
+- Of 134 known false or stale statements, 81% were fixed before the closing loop
+  and 84% (113) after it.
+
+In the run before that one, an update from 1.5.4 left no old Joycraft line beside
+the block.
 
 ### Not verified
 
 - No cleanup result was checked by the field project's own test gate.
 - No worker test on three harnesses compared the cleaned files with the old files.
-- The final skill text was not run again on a small second repository.
+- On a small second repository, an earlier skill text made the entry file longer:
+  292 to 473 words, 162 of them Joycraft's block. That run asked 5 questions. The
+  final text was not run there.
 - Mermaid rendering was not checked inside a live Claude artifact.
+
+The owner accepted these results on 2026-11-18. A break in the field becomes a
+brief for 1.6.1.
 
 ### Known limits
 

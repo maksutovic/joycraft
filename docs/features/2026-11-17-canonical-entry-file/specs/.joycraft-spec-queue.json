@@ -935,7 +935,7 @@
             ]
           },
           {
-            "id": "no-release",
+            "id": "owner-accepts-proof",
             "requirement": {
               "path": "docs/features/2026-11-17-canonical-entry-file/specs/12-release-proof.md",
               "anchor": "acceptance"
