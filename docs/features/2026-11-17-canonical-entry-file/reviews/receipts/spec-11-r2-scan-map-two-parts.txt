@@ -1,0 +1,53 @@
+Source scan for criterion map-two-parts. Each pattern is a regular expression matched against the file text with each run of whitespace made one space. present = must match; absent = must not match; info = printed only.
+
+[ok] reference: guides have read-when rows, logs have search-when rows
+  expect present in payload/.joycraft/references/cleanup.md ## The entry file (lines 52-77)
+  pattern /one row for each guide, "read when <situation>"; then one row for each log, "search when you need why or when, or to check a regression"/
+  match at payload/.joycraft/references/cleanup.md:64-66: one row for each guide, "read when <situation>"; then one row for each log, "search when you need why or when, or to check a regression"
+
+[ok] reference: a record is an audit trail, searched and not read at the start
+  expect present in payload/.joycraft/references/cleanup.md ## Kinds of page (lines 78-101)
+  pattern /It is an audit trail: an agent searches it to learn why or when, or to check for a regression, and never reads it at the start\./
+  match at payload/.joycraft/references/cleanup.md:87-88: It is an audit trail: an agent searches it to learn why or when, or to check for a regression, and never reads it at the start.
+
+[ok] setup.md: a guide row is a read-when
+  expect present in payload/.joycraft/references/setup.md ## Set up the context map (lines 21-121)
+  pattern /A read-when names the work that needs the doc/
+  match at payload/.joycraft/references/setup.md:75: A read-when names the work that needs the doc
+
+[ok] setup.md: a record is searched
+  expect present in payload/.joycraft/references/setup.md ## Set up the context map (lines 21-121)
+  pattern /A log \(a decision log, an operations log\) is a record: its row says "search when you need why or when, or to check a regression", below the guide rows\./
+  match at payload/.joycraft/references/setup.md:78-80: A log (a decision log, an operations log) is a record: its row says "search when you need why or when, or to check a regression", below the guide rows.
+
+[ok] setup.md: a record is not read at the start
+  expect present in payload/.joycraft/references/setup.md ## Set up the context map (lines 21-121)
+  pattern /No row tells an agent to read a record at the start\./
+  match at payload/.joycraft/references/setup.md:80-81: No row tells an agent to read a record at the start.
+
+[info] setup.md: the words "audit trail"
+  expect info in payload/.joycraft/references/setup.md (lines 1-330)
+  pattern /audit trail/
+  no match
+
+[ok] setup.md no longer has the sentence of field-24 ("never edit, reorder or reformat theirs")
+  expect absent in payload/.joycraft/references/setup.md (lines 1-330)
+  pattern /never edit, reorder or reformat theirs/
+  no match
+
+[ok] setup.md has no sentence that forbids an edit of the user rows in a cleanup
+  expect absent in payload/.joycraft/references/setup.md (lines 1-330)
+  pattern /(cleanup|clean-up)[^.]*(never|not)[^.]*(edit|change)[^.]*rows|rows[^.]*(never|not)[^.]*(edit|change)[^.]*(cleanup|clean-up)/
+  no match
+
+[info] setup.md: the sentence that is there now is about setup only
+  expect info in payload/.joycraft/references/setup.md ## Set up the context map (lines 21-121)
+  pattern /setup never edits, reorders or reformats theirs\./
+  match at payload/.joycraft/references/setup.md:83-84: setup never edits, reorders or reformats theirs.
+
+[info] setup.md: setup does not clean an entry file and offers the pass
+  expect info in payload/.joycraft/references/setup.md ## Set up the context map (lines 21-121)
+  pattern /Setup adds to an entry file and does not clean it\. When the audit found much, offer the cleanup pass afterwards\./
+  match at payload/.joycraft/references/setup.md:93-94: Setup adds to an entry file and does not clean it. When the audit found much, offer the cleanup pass afterwards.
+
+RESULT: each present and absent expectation holds

@@ -1,0 +1,23 @@
+✔ [AC:freeze-policies-removed] the skill and the reference no longer freeze every change (1.467708ms)
+✔ [AC:one-pass-steps] the reference has the aim, the two lenses, the entry file, the page kinds, the seven findings and the six steps (0.68875ms)
+✔ [AC:permission-ledger] no rule changes without an owner answer: the ledger lists each changed permission line, old against new (0.102542ms)
+✔ the questions are few and by theme, through the engine; stops and holds are always asked (0.337792ms)
+✔ [AC:temporal-homes] nothing temporal stays in an entry file or a guide; each kind has a record (0.456125ms)
+✔ [AC:map-two-parts] the map has guides to read and records to search; a record is not read at the start (0.70525ms)
+✔ [AC:session-end-mechanical] a session end reports and makes the mechanical fixes only; the pass runs on a person request (0.353625ms)
+✔ [AC:worker-reads-entry] a worker reads the entry file, then each page whose map row matches the spec (0.849792ms)
+✔ [AC:one-agent-default] the parts run in parallel where the host has subagents and one after another where it has none (0.081375ms)
+✔ [AC:no-now-page] [AC:no-pin] [AC:no-tidy-setting] no shipped file names the cut parts (8.429583ms)
+✔ the cleanup files are within their budgets, and each raise names this feature (0.555042ms)
+✔ [AC:setup-places-block] setup places the block and does not carry its text; an update replaces a block that differs (0.287125ms)
+✔ [AC:canonical-shape] a new AGENTS.md gets the canonical shape; an existing file keeps its headings and column order (0.299209ms)
+✔ [AC:setup-words-cut] setup.md is shorter than its field-24 budget of 3,115 words (0.413042ms)
+✔ the shipped words are not more than at field-24 (369.700875ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 422.501917

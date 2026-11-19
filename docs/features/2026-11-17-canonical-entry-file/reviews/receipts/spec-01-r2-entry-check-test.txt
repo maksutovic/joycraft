@@ -1,0 +1,21 @@
+✔ [AC:entry-clean-silent] a clean project prints nothing and exits 0 (97.582666ms)
+✔ [AC:entry-dead-path] a dead path and a broken link in an entry file are gate findings with their lines; exit 2 (204.251625ms)
+✔ [AC:entry-ci-mode] --ci prints one line for each gate finding and exits 2; an advisory finding alone is silent (338.096084ms)
+✔ [AC:entry-policy-independent] update.policy off does not hide the check (239.780875ms)
+✔ [AC:entry-linked-worktree] a linked worktree is checked like the main tree (1636.884042ms)
+✔ an unexpected error exits 1, and unknown arguments are refused (67.200375ms)
+✔ the checks marked (G) in the cleanup reference are the gate checks of the runtime (0.203209ms)
+✔ [AC:no-now-page] [AC:no-pin] start, rules and pin are no longer commands (138.06475ms)
+✔ [AC:lost-lines] lost lists the doc lines of the base revision that no Markdown file holds now (240.371792ms)
+✔ [AC:no-limit-lexicon] no shipped file lists limit words, and no runtime file sorts sentences into rules (7.166042ms)
+✔ [AC:block-printed] block prints the managed block, markers included, the same for every project (97.197417ms)
+✔ [AC:block-advisory] a block that differs is an advisory; the exact block is not; loose lines are (738.45275ms)
+✔ the wiring check and the entry check read one definition of the block (107.952042ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3962.375958

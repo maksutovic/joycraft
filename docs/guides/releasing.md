@@ -1,6 +1,6 @@
 # Automatic npm releases
 
-Updated: 2026-11-16.
+Updated: 2026-11-18.
 
 Every push to `main` starts `.github/workflows/publish.yml`. Merging the product
 PR is the release authorization; there is no second release PR to approve.
@@ -15,6 +15,11 @@ The summary is the one line the session-start update check shows users, and
 `tests/public-docs.test.ts` requires `joycraft.release` to equal the version. An
 automatic patch bump with stale notes fails that test in the publish run; 1.0.1's
 first publish failed this way on 2026-11-02.
+
+## Before a release that changes entry-file text
+
+- Read the Claude Code memory docs and the Codex `AGENTS.md` docs again. When they
+  changed, change Joycraft's managed block or an entry check to match.
 
 ## What runs automatically
 

@@ -1,0 +1,57 @@
+=== case 1: node ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean
+exit 0; expected 0 with empty stdout and empty stderr
+--- stdout, 0 chars
+--- stderr, 0 chars
+=== case 1 as expected
+=== case 2: node ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean
+exit 0; expected 0 with empty stdout and empty stderr
+--- stdout, 0 chars
+--- stderr, 0 chars
+=== case 2 as expected
+=== case 3: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean
+exit 0; expected 0 with empty stdout and empty stderr
+--- stdout, 0 chars
+--- stderr, 0 chars
+=== case 3 as expected
+=== case 4: node ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-dead-path/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-dead-path
+exit 2; expected 2
+--- stdout, 157 chars
+AGENTS.md:18 missing-path Names docs/context/gone.md, which does not exist.
+AGENTS.md:19 broken-link Links to docs/context/release.md, which does not exist.
+--- stderr, 0 chars
+stdout matches /\n/ 2 time(s); expected 2
+stdout matches /AGENTS\.md:18 missing-path Names docs/context/gone\.md/ 1 time(s); expected 1
+stdout matches /AGENTS\.md:19 broken-link Links to docs/context/release\.md/ 1 time(s); expected 1
+=== case 4 as expected
+=== case 5: node -e const fs=require("node:fs"),{createHash}=require("node:crypto");const [t]=process.argv.slice(1);for(const d of ["payload",t+"/installed-clean",t+"/installed-dead-path"])for(const f of ["entry-check.mjs","cleanup.mjs"])console.log(createHash("sha256").update(fs.readFileSync(`${d}/.joycraft/runtime/${f}`)).digest("hex"),`${d}/.joycraft/runtime/${f}`);console.log(fs.readFileSync(t+"/installed-clean/AGENTS.md","utf8")) ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa
+exit 0; expected 0
+--- stdout, 2321 chars
+6dbe9afa3d67ad2208094f02a120643a96772422e046e1c19d9e2d6dbe65acb1 payload/.joycraft/runtime/entry-check.mjs
+9ac873822a7bf509dca6d841d2253121f154da4b23ff16d149164e44162d4c61 payload/.joycraft/runtime/cleanup.mjs
+6dbe9afa3d67ad2208094f02a120643a96772422e046e1c19d9e2d6dbe65acb1 ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean/.joycraft/runtime/entry-check.mjs
+9ac873822a7bf509dca6d841d2253121f154da4b23ff16d149164e44162d4c61 ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean/.joycraft/runtime/cleanup.mjs
+6dbe9afa3d67ad2208094f02a120643a96772422e046e1c19d9e2d6dbe65acb1 ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-dead-path/.joycraft/runtime/entry-check.mjs
+9ac873822a7bf509dca6d841d2253121f154da4b23ff16d149164e44162d4c61 ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-dead-path/.joycraft/runtime/cleanup.mjs
+# Example project
+
+A small auction service. Run `npm test` before a commit.
+
+<!-- joycraft:managed -->
+- First action in each session: run `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow `.joycraft/references/update.md`.
+- Ask a person to answer or approve anything only through Joycraft's decision artifact (`node .joycraft/runtime/artifacts/cli.mjs`, see `.joycraft/references/artifacts.md#asking-questions`), in the project's question style. Every page that shows a person a document, a question or a decision comes from that engine: never write your own HTML page for one. Show every other document a person must read (a plan, spec set, report or review) as an engine page (`--doc`), never only as Markdown in chat, where the person works (see `.joycraft/references/artifacts.md#showing-a-page`), and say where it is.
+- A Context Map row that matches your next step binds: read that page first, and again after a compaction or in a new agent. A record (a log or history) is an audit trail: search it to learn why or when; do not read it at the start.
+- When a fact here disagrees with the code, trust the code and report it. A rule holds even when the code breaks it.
+<!-- /joycraft:managed -->
+
+## Context map
+
+| Read when | Document |
+|---|---|
+| Finding what the project is and who owns it | `docs/context/project.md` |
+| Changing how an auction closes | [auction rules](docs/context/rules.md) |
+
+--- stderr, 0 chars
+stdout matches /6dbe9afa3d67ad2208094f02a120643a96772422e046e1c19d9e2d6dbe65acb1/ 3 time(s); expected 3
+stdout matches /9ac873822a7bf509dca6d841d2253121f154da4b23ff16d149164e44162d4c61/ 3 time(s); expected 3
+stdout matches /joycraft:managed -->/ 2 time(s); expected 2
+=== case 5 as expected

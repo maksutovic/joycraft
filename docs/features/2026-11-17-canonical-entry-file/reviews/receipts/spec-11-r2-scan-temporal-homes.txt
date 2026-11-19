@@ -1,0 +1,42 @@
+Source scan for criterion temporal-homes. Each pattern is a regular expression matched against the file text with each run of whitespace made one space. present = must match; absent = must not match; info = printed only.
+
+[ok] a decision goes to the decision log
+  expect present in payload/.joycraft/references/cleanup.md ## What to find on each page (lines 102-127)
+  pattern /a decision and its reason go to the decision log/
+  match at payload/.joycraft/references/cleanup.md:112: a decision and its reason go to the decision log
+
+[ok] an operation or a status goes to its log
+  expect present in payload/.joycraft/references/cleanup.md ## What to find on each page (lines 102-127)
+  pattern /an operation or a status to its log/
+  match at payload/.joycraft/references/cleanup.md:112-113: an operation or a status to its log
+
+[ok] open work goes to the backlog or a handoff
+  expect present in payload/.joycraft/references/cleanup.md ## What to find on each page (lines 102-127)
+  pattern /open work to the backlog \(default .docs/backlog/.\) or a handoff/
+  match at payload/.joycraft/references/cleanup.md:113-114: open work to the backlog (default `docs/backlog/`) or a handoff
+
+[ok] a hold in force is one rule
+  expect present in payload/.joycraft/references/cleanup.md ## Questions for the owner (lines 128-145)
+  pattern /A hold that the owner keeps is one present-tense rule:[^.]*\./
+  match at payload/.joycraft/references/cleanup.md:137-138: A hold that the owner keeps is one present-tense rule: in the entry file when it is general, on the owning guide when it is about one item.
+
+[DIFF] the check as written: a hold in force stays in the entry file. The reference must give a hold in force no home outside the entry file
+  expect absent in payload/.joycraft/references/cleanup.md (lines 1-197)
+  pattern /on the owning guide when it is about one item/
+  match at payload/.joycraft/references/cleanup.md:138: on the owning guide when it is about one item
+
+[info] each sentence of the reference that names a hold or a pause
+  expect info in payload/.joycraft/references/cleanup.md (lines 1-197)
+  pattern /[^.]*\b([Hh]olds?|pause[ds]?)\b[^.]*\./
+  match at payload/.joycraft/references/cleanup.md:27-28:  Its Context Map points at the pages that hold everything else.
+  match at payload/.joycraft/references/cleanup.md:37:  - Each page is true, holds one topic, and is no longer than its job needs.
+  match at payload/.joycraft/references/cleanup.md:52-57:  ## The entry file The entry file holds only what an agent needs in every session and cannot get from the code: - **Identity:** two or three sentences.
+  match at payload/.joycraft/references/cleanup.md:82-83:  It holds only what is true now.
+  match at payload/.joycraft/references/cleanup.md:109-111:  **Misplaced content**: history inside a guide; a current rule buried in a log; anything temporal (a date, a status, paused, open, in progress, who decided); a copy of something that another place owns.
+  match at payload/.joycraft/references/cleanup.md:122-125: ** Which of its rules, procedures and details belong to this page's topic? Is the page ready to hold them? 7.
+  match at payload/.joycraft/references/cleanup.md:128-132:  ## Questions for the owner Do not guess whether a hold or a pause is still in force, whether a rule still says what the owner wants, which of two conflicting statements wins when the code is silent, or whether old material may be deleted.
+  match at payload/.joycraft/references/cleanup.md:135-137:  Stops (what an agent must ask before) and holds are always two of them: never drop one by recommendation.
+  match at payload/.joycraft/references/cleanup.md:137-138:  A hold that the owner keeps is one present-tense rule: in the entry file when it is general, on the owning guide when it is about one item.
+  match at payload/.joycraft/references/cleanup.md:183-187:  ## Permission ledger Before the commit, take from the diff and the `lost` report every line that permits, forbids, stops or holds and that the pass changed, moved or removed: the old text beside the new.
+
+RESULT: 1 expectation(s) do not hold

@@ -115,6 +115,17 @@ and context pages that no longer match the code. Show me the findings before you
 Do not commit, publish, or ask me for API keys.
 ```
 
+## Clean up AGENTS.md
+
+The agent cleans `AGENTS.md` and the pages behind its context map in one pass. It
+asks at most eight questions on one page, and it shows you each changed permission
+before the commit. See [Keeping AGENTS.md current](../README.md#keeping-agentsmd-current).
+
+```text
+Clean up my AGENTS.md and context pages.
+Do not commit, publish, or ask me for API keys.
+```
+
 ## Start a queue and leave
 
 The agent asks its questions before the queue starts. While you are away, work

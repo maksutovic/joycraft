@@ -181,8 +181,10 @@ function sameAnswer(decision, answer, note) {
 /**
  * Atomically save one or more canonical decision answers. Every response is
  * validated before the JSON spans are replaced, so failures leave `text` intact.
+ * `allowChange`: only the served page's own save sets it. A response with
+ * `change: true` then replaces a clarified answer: the person chose "Change answer".
  */
-export function saveAnswers(text, request) {
+export function saveAnswers(text, request, { allowChange = false } = {}) {
   const brief = readBrief(text);
   if (!request || typeof request !== 'object' || Array.isArray(request) || request.revision !== brief.revision || !Array.isArray(request.answers) || request.answers.length === 0) {
     throw new Error(request?.revision !== brief.revision ? 'Brief changed. Reload before choosing.' : 'Answers must be a non-empty array');
@@ -201,7 +203,8 @@ export function saveAnswers(text, request) {
     if (option.requiresNote && !nonempty(note)) throw new Error('This choice requires a note');
     if (sameAnswer(decision, response.answer, note)) continue;
     const noteOnly = decision.status === 'clarified' && decision.answer === response.answer;
-    if (!noteOnly && !['open', 'assigned'].includes(decision.status)) throw new Error('Reopen the decision explicitly before changing its answer.');
+    const changed = allowChange && response.change === true && decision.status === 'clarified';
+    if (!noteOnly && !changed && !['open', 'assigned'].includes(decision.status)) throw new Error('Reopen the decision explicitly before changing its answer. On a served page, the person does this with "Change answer".');
     const updated = { ...decision, answer: response.answer, status: 'clarified' };
     if (note === undefined || note === '') delete updated.note;
     else updated.note = note;

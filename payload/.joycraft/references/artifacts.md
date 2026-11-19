@@ -1,12 +1,14 @@
 # Decision artifacts
 
-Record every choice the user must make between options as a brief decision,
-then ask it in the user's [question style](#asking-questions): on this page or
-in chat. Also use a page for an editorial comparison of existing screenshots or
-a review summary. A page renders a selected view of the brief; the brief and
-queue remain the source of truth. Do not use one for a routine native question,
-a product UI slice whose real interaction must be explored, or a long
-questionnaire.
+The artifact engine builds every page that shows a person a document, a
+question or a decision. Never write your own HTML page for one, also when
+there are many questions. Record every choice the user must make between
+options as a brief decision, then ask it in the user's
+[question style](#asking-questions): on a page or in chat. The engine also
+renders a Markdown [document](#showing-a-page), a comparison of existing
+screenshots and a review summary. The brief and queue remain the source of
+truth. Do not use a page for a routine native question. A product UI slice
+whose real interaction must be explored stays in `joycraft-ui-slice`.
 
 ## Asking questions
 
@@ -64,13 +66,24 @@ The renderer is deterministic. Agents author a short view-data file, such as
 [`templates/artifact.json`](../templates/artifact.json), and link existing
 brief decisions, comparison images, and review reports. They do not write
 artifact CSS, JavaScript, or a second copy of the brief. Keep questions useful:
-one material choice can be enough. Use the existing product UI slice for a
-choice that depends on trying the actual product behavior.
+one material choice can be enough.
 
 ## Showing a page
 
-Every page a person must read or answer (a decision artifact, a setup diff, a
-review) is shown where they are working, and you always say its path:
+For a document with no decision (a report, a plan, a spec set, a setup diff),
+write Markdown and render it:
+
+```sh
+node .joycraft/runtime/artifacts/cli.mjs serve --doc <file.md> [--doc <file.md>]
+```
+
+`build` takes `--doc` too. With `--brief`, the documents come before the
+decisions. A fenced `diff` block shows added and removed lines in color. A
+Markdown image embeds its project file (PNG, JPEG, WebP or GIF). A fenced
+`mermaid` block draws a diagram, also in a decision's `details`; offline, the
+page shows its source. Raw HTML shows as text.
+
+Show each page where the person works, and always say its path:
 
 1. **The host has a viewer.** When your tools include one (the Claude Code
    desktop app's browser pane or artifact tool, an editor preview), open the
@@ -95,9 +108,10 @@ option first. Every question also offers "Something else" (value `custom`,
 note required), so the person can always answer in their own words; do not
 declare it unless you want different wording. The canonical answer remains an
 option `value`, including `custom`. A saved answer keeps its note box: the
-person can add or change the note and save again without reopening. Changing
-the chosen answer still needs a reopen. Store the human's exact words separately as that
-decision's note; never replace the canonical answer with free-form text.
+person can change the note and save again. To change a saved answer, the
+person uses **Change answer** on a served page; an import never replaces one.
+Store the human's exact words as that decision's note; never replace the
+canonical answer with free-form text.
 
 The view data has this shape:
 
@@ -128,24 +142,18 @@ The view data has this shape:
 All paths are exact, existing project-relative files. Image bytes are embedded
 in the rendered artifact. A review card derives its declared verdict and labels
 it as recorded and unvalidated; it neither supplies verification nor changes a
-queue status. Small editorial assets are appropriate for decision context,
-screenshot comparisons, and review summaries. Keep their content in the
-referenced files rather than copying it into view data.
+queue status.
 
 ## Theme
 
 Artifacts support `light` and `dark` themes. For each render, the CLI `--theme`
 choice wins over the view's optional `theme`, then `.joycraft/preferences.json` at
-`artifacts.theme`; the fallback is `light`. Use `--theme` for one render without
-changing the project preference. A request to use dark or light from now on is a
+`artifacts.theme`; the fallback is `light`. A request to use dark or light from now on is a
 per-project preference, set with:
 
 ```sh
 node .joycraft/runtime/artifacts/cli.mjs theme --set dark
 ```
-
-That command preserves other project preferences and changes only
-`artifacts.theme`.
 
 ## Colors
 
@@ -172,22 +180,19 @@ node .joycraft/runtime/artifacts/cli.mjs colors --reset
 
 `--set` refuses a palette whose text or controls would be hard to read and names
 each failing pair; adjust those colors and try again. `--reset` restores the kit
-colors. Colors are cosmetic like the theme. Add one link to the existing context map for the preference
+colors. Add one link to the existing context map for the preference
 file when recording a durable preference, if it is not already linked; do not
-copy the selected value into the map. Theme is cosmetic: it does not change
-brief answers, source or view binding, or Claude answer storage.
+copy the selected value into the map. Theme and colors are cosmetic: they do
+not change brief answers, source or view binding, or Claude answer storage.
 
 The renderer binds the resulting model to `source.path`, the current brief
 `source.revision`, and `source.viewRevision`. The view revision hashes the
 theme-independent view data together with every selected image and review-report
 byte. Local save and import check both revisions, so a changed screenshot,
-report, or selected view requires a refresh alongside a changed brief. The
-resulting model supplies
-selected brief decisions as questions, embedded image `src` data, and derived
-review results. Its response transport is separate from those canonical
-decisions: responses are drafts until the local save succeeds or a previewed
-import is explicitly applied. A runtime may identify its storage as brief,
-Claude, or memory; only brief persistence changes repository state.
+report, or selected view requires a refresh alongside a changed brief. A
+`--doc` document is outside both revisions. The response transport is separate
+from the canonical decisions: responses are drafts until the local save succeeds or a previewed
+import is explicitly applied. Only brief persistence changes repository state.
 
 ## Render and save
 
@@ -205,10 +210,9 @@ node .joycraft/runtime/artifacts/cli.mjs build \
   --mode claude|portable [--theme light|dark]
 ```
 
-`serve` saves an accepted local answer directly to the current brief. The UI
-keeps per-question Save and Save all actions, shows saved state only after a
-successful write, and allows optional notes where required. It validates the
-source path and revision, decision IDs, and option values before saving.
+`serve` saves an accepted local answer directly to the current brief. It
+validates the source path and revision, decision IDs, and option values before
+saving.
 
 `build` creates a self-contained HTML file suitable for a native Claude cloud
 artifact (`--mode claude`) or a portable download (`--mode portable`). It does

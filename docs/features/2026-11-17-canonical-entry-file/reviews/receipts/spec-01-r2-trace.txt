@@ -1,0 +1,67 @@
+=== case 1: node payload/.joycraft/runtime/trace.mjs --queue docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json --spec 1
+exit 2; expected 2
+--- stdout, 742 chars
+{
+  "queuePath": "docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json",
+  "specId": 1,
+  "files": [],
+  "criteria": [
+    {
+      "id": "entry-clean-silent",
+      "tests": []
+    },
+    {
+      "id": "entry-dead-path",
+      "tests": []
+    },
+    {
+      "id": "entry-ci-mode",
+      "tests": []
+    },
+    {
+      "id": "entry-policy-independent",
+      "tests": []
+    },
+    {
+      "id": "entry-linked-worktree",
+      "tests": []
+    }
+  ],
+  "untraced": [
+    "entry-clean-silent",
+    "entry-dead-path",
+    "entry-ci-mode",
+    "entry-policy-independent",
+    "entry-linked-worktree"
+  ],
+  "unknownTags": [],
+  "missingFiles": [],
+  "note": "No check inputs are declared and no --tests glob was given."
+}
+--- stderr, 0 chars
+stdout matches /"tests": \[\]/ 5 time(s); expected 5
+stdout matches /No check inputs are declared/ 1 time(s); expected 1
+=== case 1 as expected
+=== case 2: node -e for(const l of require("node:fs").readFileSync(process.argv[1],"utf8").split("\n"))if(l.startsWith("test("))console.log(l) ../prototype-canonical-entry-file/tests/cleanup/entry-check.test.mjs
+exit 0; expected 0
+--- stdout, 1318 chars
+test('[AC:entry-clean-silent] a clean project prints nothing and exits 0', t => {
+test('[AC:entry-dead-path] a dead path and a broken link in an entry file are gate findings with their lines; exit 2', t => {
+test('[AC:entry-ci-mode] --ci prints one line for each gate finding and exits 2; an advisory finding alone is silent', t => {
+test('[AC:entry-policy-independent] update.policy off does not hide the check', t => {
+test('[AC:entry-linked-worktree] a linked worktree is checked like the main tree', t => {
+test('an unexpected error exits 1, and unknown arguments are refused', t => {
+test('the checks marked (G) in the cleanup reference are the gate checks of the runtime', () => {
+test('[AC:no-now-page] [AC:no-pin] start, rules and pin are no longer commands', t => {
+test('[AC:lost-lines] lost lists the doc lines of the base revision that no Markdown file holds now', t => {
+test('[AC:no-limit-lexicon] no shipped file lists limit words, and no runtime file sorts sentences into rules', async () => {
+test('[AC:block-printed] block prints the managed block, markers included, the same for every project', t => {
+test('[AC:block-advisory] a block that differs is an advisory; the exact block is not; loose lines are', t => {
+test('the wiring check and the entry check read one definition of the block', t => {
+--- stderr, 0 chars
+stdout matches /\[AC:entry-clean-silent\]/ 1 time(s); expected 1
+stdout matches /\[AC:entry-dead-path\]/ 1 time(s); expected 1
+stdout matches /\[AC:entry-ci-mode\]/ 1 time(s); expected 1
+stdout matches /\[AC:entry-policy-independent\]/ 1 time(s); expected 1
+stdout matches /\[AC:entry-linked-worktree\]/ 1 time(s); expected 1
+=== case 2 as expected

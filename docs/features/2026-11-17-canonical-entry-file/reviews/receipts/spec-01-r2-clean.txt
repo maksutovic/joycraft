@@ -1,0 +1,20 @@
+=== case 1: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/clean
+exit 0; expected 0 with empty stdout and empty stderr
+--- stdout, 0 chars
+--- stderr, 0 chars
+=== case 1 as expected
+=== case 2: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/clean
+exit 0; expected 0 with empty stdout and empty stderr
+--- stdout, 0 chars
+--- stderr, 0 chars
+=== case 2 as expected
+=== case 3: node payload/.joycraft/runtime/entry-check.mjs --root ../prototype-canonical-entry-file/fixtures/entry-check/clean
+exit 0; expected 0 with empty stdout and empty stderr
+--- stdout, 0 chars
+--- stderr, 0 chars
+=== case 3 as expected
+=== case 4: (working folder ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/clean) node payload/.joycraft/runtime/entry-check.mjs
+exit 0; expected 0 with empty stdout and empty stderr
+--- stdout, 0 chars
+--- stderr, 0 chars
+=== case 4 as expected

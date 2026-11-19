@@ -1,0 +1,8 @@
+worktree /private/tmp/joycraft-review-spec01-r2-2F3ssa/git-main
+HEAD a8e1410f2b45e48c1802b3d6f8fd678c004f514f
+branch refs/heads/main
+
+worktree /private/tmp/joycraft-review-spec01-r2-2F3ssa/git-linked
+HEAD a8e1410f2b45e48c1802b3d6f8fd678c004f514f
+branch refs/heads/feature
+

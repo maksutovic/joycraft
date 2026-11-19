@@ -41,7 +41,8 @@
     return model.questions.reduce(function (index, question) { index[question.id] = question; return index; }, Object.create(null));
   }
 
-  function validateAnswers(model, answers, mutation) {
+  // allowChange: this transport can replace a saved answer when the person asks (`change: true`).
+  function validateAnswers(model, answers, mutation, allowChange) {
     if (!Array.isArray(answers)) fail('Answers must be an array.');
     var questions = questionIndex(model);
     var seen = new Set();
@@ -56,10 +57,12 @@
       if (note !== undefined && typeof note !== 'string') fail('Answer notes must be strings.');
       if (note !== undefined && note.length > MAX_NOTE_LENGTH) fail('Answer notes cannot exceed 4000 characters.');
       if (option.requiresNote && !nonempty(note)) fail('This answer requires a note.');
-      if (mutation && question.status === 'clarified' && question.answer !== response.answer) fail('Reopen this decision to change its answer. Its note can change at any time.');
+      var changes = mutation && question.status === 'clarified' && question.answer !== response.answer;
+      if (changes && !(allowChange && response.change === true)) fail('Reopen this decision to change its answer. Its note can change at any time.');
       seen.add(response.id);
       var answer = { id: response.id, answer: response.answer };
       if (note !== undefined && note !== '') answer.note = note;
+      if (changes) answer.change = true;
       return answer;
     });
   }
@@ -100,9 +103,9 @@
     if (revision !== model.source.revision) conflict('Source changed after this page loaded. Reload it before saving responses.', { revision: model.source.revision });
   }
 
-  function requestedAnswers(model, request) {
+  function requestedAnswers(model, request, allowChange) {
     if (!request || !Array.isArray(request.answers) || request.answers.length === 0) fail('Choose at least one response before saving.');
-    return validateAnswers(model, request.answers, true);
+    return validateAnswers(model, request.answers, true, allowChange);
   }
 
   function portable(model, options) {
@@ -152,11 +155,13 @@
       return result(model, payload.responses || [], payload.writable !== false, payload.message, 'brief');
     }
     return {
+      // The served page writes the brief directly, so the person can change a saved answer on it.
+      changesAnswers: true,
       load: async function () { return decoded(await call('/state', { method: 'GET', headers: headers() })); },
       save: async function (requestBody) {
         requestBody = requestBody || {};
         responseRevision(model, requestBody.revision);
-        var submitted = requestedAnswers(model, requestBody);
+        var submitted = requestedAnswers(model, requestBody, true);
         await call('/answers', { method: 'POST', headers: headers(), body: JSON.stringify(Object.assign({ revision: requestBody.revision, answers: submitted }, model.source.viewRevision === undefined ? {} : { viewRevision: model.source.viewRevision })) });
         var verified = decoded(await call('/state', { method: 'GET', headers: headers() }));
         var verifiedById = new Map(verified.responses.map(function (answer) { return [answer.id, answer]; }));

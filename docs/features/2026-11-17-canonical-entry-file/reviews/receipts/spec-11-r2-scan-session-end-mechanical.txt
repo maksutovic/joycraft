@@ -1,0 +1,38 @@
+Source scan for criterion session-end-mechanical. Each pattern is a regular expression matched against the file text with each run of whitespace made one space. present = must match; absent = must not match; info = printed only.
+
+[ok] the description does not say that the skill runs at every session end
+  expect absent in payload/.agents/skills/joycraft-cleanup/SKILL.md frontmatter (lines 1-4)
+  pattern /[Rr]uns? (the tidy )?at every session end|every session end|tidy/
+  no match
+
+[ok] the description says what a session end does
+  expect present in payload/.agents/skills/joycraft-cleanup/SKILL.md frontmatter (lines 1-4)
+  pattern /At a session end it only reports and makes the mechanical fixes\./
+  match at payload/.agents/skills/joycraft-cleanup/SKILL.md:3: At a session end it only reports and makes the mechanical fixes.
+
+[ok] the skill: a session end runs the report and the mechanical fixes only
+  expect present in payload/.agents/skills/joycraft-cleanup/SKILL.md ## Which run this is (lines 17-33)
+  pattern /\*\*Session end calls this skill, or nobody asked\*\* \(a queue, a hook\)\. Run .node \.joycraft/runtime/cleanup\.mjs.\. Fix only what a script can check:.*Change no rule and no page, and do not start the pass\./
+  match at payload/.agents/skills/joycraft-cleanup/SKILL.md:24-30: **Session end calls this skill, or nobody asked** (a queue, a hook). Run `node .joycraft/runtime/cleanup.mjs`. Fix only what a script can check: replace Joycraft's block with the output of `node .joyc [...] der Joycraft line beside it, and re-point a dead path that has one unique Git rename. Put the other findings on the session-end page in one list. Change no rule and no page, and do not start the pass.
+
+[ok] the skill: the full pass runs when a person asks
+  expect present in payload/.agents/skills/joycraft-cleanup/SKILL.md ## Which run this is (lines 17-33)
+  pattern /\*\*A person asks for a cleanup\.\*\* Do the \[one pass\]/
+  match at payload/.agents/skills/joycraft-cleanup/SKILL.md:19-20: **A person asks for a cleanup.** Do the [one pass]
+
+[info] the skill itself: a statement of the size of the pass
+  expect info in payload/.agents/skills/joycraft-cleanup/SKILL.md (lines 1-46)
+  pattern /word count|\bsize\b|\bcost\b/
+  no match
+
+[ok] the reference: the size is stated first (for a large set)
+  expect present in payload/.joycraft/references/cleanup.md ## The steps (lines 146-182)
+  pattern /Above about 20,000 words of pages, first state the word count and the cost \(about 25 tokens for each word\)\./
+  match at payload/.joycraft/references/cleanup.md:148-149: Above about 20,000 words of pages, first state the word count and the cost (about 25 tokens for each word).
+
+[ok] the session-end skill runs the cleanup skill in its session-end mode
+  expect present in payload/.agents/skills/joycraft-session-end/SKILL.md (lines 1-87)
+  pattern /run .joycraft-cleanup. in its session-end mode\. It reports and makes only the mechanical fixes\./
+  match at payload/.agents/skills/joycraft-session-end/SKILL.md:49-50: run `joycraft-cleanup` in its session-end mode. It reports and makes only the mechanical fixes.
+
+RESULT: each present and absent expectation holds

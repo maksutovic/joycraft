@@ -1,0 +1,35 @@
+387 .agents/skills/joycraft-cleanup/SKILL.md
+545 .agents/skills/joycraft-context/SKILL.md
+694 .agents/skills/joycraft-decompose/SKILL.md
+1286 .agents/skills/joycraft-entry/SKILL.md
+1388 .agents/skills/joycraft-implement/SKILL.md
+477 .agents/skills/joycraft-retro/SKILL.md
+874 .agents/skills/joycraft-session-end/SKILL.md
+473 .agents/skills/joycraft-testing/SKILL.md
+536 .agents/skills/joycraft-ui-slice/SKILL.md
+1354 .agents/skills/joycraft-verify/SKILL.md
+331 .claude/agents/joycraft-implementer.md
+372 .claude/agents/joycraft-reviewer.md
+816 .joycraft/references/architecture.md
+1718 .joycraft/references/archive.md
+1715 .joycraft/references/artifacts.md
+1860 .joycraft/references/cleanup.md
+1968 .joycraft/references/completion.md
+1134 .joycraft/references/context.md
+280 .joycraft/references/delivery.md
+1668 .joycraft/references/dispatch.md
+180 .joycraft/references/doc-cleanup-LICENSE.md
+497 .joycraft/references/gates.md
+587 .joycraft/references/knowledge.md
+295 .joycraft/references/recurring-failures.md
+657 .joycraft/references/retro.md
+502 .joycraft/references/settings.md
+3025 .joycraft/references/setup.md
+1328 .joycraft/references/testing.md
+539 .joycraft/references/update.md
+1056 .joycraft/references/workflow.md
+1377 .joycraft/references/worktrees.md
+tag field-25 commit 02e00074536c919845807390fa2d8d09e046c099
+payload text files 31
+total words 29919
+limit 29919

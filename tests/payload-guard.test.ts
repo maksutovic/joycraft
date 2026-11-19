@@ -37,6 +37,10 @@ const FIELD_22_WORDS = 29922;
 // (archive-dated-folder).
 const FIELD_23_WORDS = 29919;
 
+// field-24 (1.5.4) shipped this many words. field-26 must not ship more
+// (canonical-entry-file spec 8).
+const FIELD_24_WORDS = 29919;
+
 interface Bundle { label: string; files: Set<string>; read: (path: string) => string }
 
 function walk(dir: string): string[] {
@@ -145,10 +149,10 @@ describe('shipped payload text', () => {
     expect(bundle.files.has('.joycraft/references/gates.md')).toBe(true);
   });
 
-  it('[AC:vendored-runtime-owned-steps] pins field-24 and ships submit, evidence run and the queue check', () => {
+  it('[AC:vendored-runtime-owned-steps] pins field-26 and ships submit, evidence run and the queue check', () => {
     const pin = JSON.parse(readFileSync(join(payloadDir, 'PIN'), 'utf8'));
-    expect(pin.tag).toBe('field-24');
-    expect(pin.commit).toBe('637956d7e5a5a149551372f4826be474e8badc27');
+    expect(pin.tag).toBe('field-26');
+    expect(pin.commit).toBe('ee3ab75f06fe9d5bec13f9e8770ca4f23358447e');
     const bundle = treeBundle();
     for (const path of ['.joycraft/runtime/completion.mjs', '.joycraft/runtime/evidence.mjs', '.joycraft/runtime/queue-check.mjs']) {
       expect(bundle.files.has(path), path).toBe(true);
@@ -315,6 +319,11 @@ describe('shipped payload text', () => {
     } finally {
       rmSync(project, { recursive: true, force: true });
     }
+  });
+
+  it('[AC:payload-words-not-up] ships no more words than field-24', () => {
+    const words = payloadWords(treeBundle());
+    expect(words, `${words} words; field-24 had ${FIELD_24_WORDS}`).toBeLessThanOrEqual(FIELD_24_WORDS);
   });
 
   it('[AC:vendored-archive-dated-folder] ships no more words than field-23', () => {

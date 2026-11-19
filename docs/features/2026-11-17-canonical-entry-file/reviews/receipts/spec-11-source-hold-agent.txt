@@ -1,0 +1,20 @@
+payload/.joycraft/references/cleanup.md:19:ignored. `missing-path` skips globs, placeholders, URLs, paths outside the
+payload/.joycraft/references/cleanup.md:29:points at the pages that hold everything else. Both grow and go stale
+payload/.joycraft/references/cleanup.md:38:- Each page is true, holds one topic, and is no longer than its job needs.
+payload/.joycraft/references/cleanup.md:40:- Workers and subagents still get enough context for their task. If a light
+payload/.joycraft/references/cleanup.md:55:The entry file holds only what an agent needs in every session and cannot get
+payload/.joycraft/references/cleanup.md:85:- **Guide.** The current rules, facts and how-to for one topic. It holds only
+payload/.joycraft/references/cleanup.md:113:   log; anything temporal (a date, a status, paused, open, in progress, who
+payload/.joycraft/references/cleanup.md:122:   Does it agree with the entry file? Is it still in force? A rule that is
+payload/.joycraft/references/cleanup.md:127:   hold them?
+payload/.joycraft/references/cleanup.md:133:Do not guess whether a hold or a pause is still in force, whether a rule
+payload/.joycraft/references/cleanup.md:139:an agent must ask before) and holds are always two of them: never drop one by
+payload/.joycraft/references/cleanup.md:152:about 20,000 words. One agent does each part, in parallel where the host has
+payload/.joycraft/references/cleanup.md:153:subagents and one after another where it has none. A coordinator, the session
+payload/.joycraft/references/cleanup.md:186:permits, forbids, stops or holds and that the pass changed, moved or removed:
+payload/.joycraft/references/setup.md:178:hold the apps and pass them as `--packages <dir,dir>` to `plan`, `install` and
+payload/.joycraft/references/setup.md:254:Do not copy files by default, including secrets, credentials, browser profiles,
+payload/.joycraft/references/setup.md:277:Which home holds which kind of fact, and when to create one, is in
+payload/.joycraft/references/setup.md:293:The brief retains decision authority under `workflow.md`; the context document
+payload/.joycraft/references/knowledge.md:48:2. If no home holds that kind of fact, create the page with the fact and add a
+payload/.joycraft/references/knowledge.md:55:holds a dated addendum or "superseded" note (`node .joycraft/runtime/cleanup.mjs`

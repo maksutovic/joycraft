@@ -49,7 +49,7 @@ describe('spec 10: init, update and doctor report an unwired project', () => {
     const result = run(dir, 'init', '.', '--harness', 'claude', '--yes');
     expect(result.status, result.stderr).toBe(0);
     expect(result.stdout).toContain(`"${WIRING_SENTENCE}"`);
-    expect(result.stdout).toMatch(/update-check\.mjs check/);
+    expect(result.stdout).toMatch(/AGENTS\.md has no Joycraft block/);
     expect(result.stdout).toMatch(/Context Map/);
     expect(result.stdout).toMatch(/@AGENTS\.md/);
     expect(bytes(dir, 'AGENTS.md')).toBe(UNWIRED_AGENTS);

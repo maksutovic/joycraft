@@ -1,0 +1,22 @@
+payload/PIN: source joycraft-prototype, tag field-26, commit ee3ab75f06fe9d5bec13f9e8770ca4f23358447e
+ok   prototype checkout HEAD is ee3ab75f06fe9d5bec13f9e8770ca4f23358447e
+ok   prototype tag field-26 is commit ee3ab75f06fe9d5bec13f9e8770ca4f23358447e
+ok   prototype checkout has 0 changed or untracked paths
+ok   85 files in PIN; payload files whose SHA-256 differs from PIN: 0
+ok   prototype files at HEAD whose SHA-256 differs from PIN: 0
+ok   files under payload/ that PIN does not list: 0
+ok   this repository HEAD is 24c0dffe0777fc6b9e6ff4ababe911b421d5dd94; subject implementationRevision is 24c0dffe0777fc6b9e6ff4ababe911b421d5dd94
+ok   subject input docs/features/2026-11-17-canonical-entry-file/brief.md has its bound SHA-256
+ok   subject input payload/.agents/skills/joycraft-cleanup/SKILL.md has its bound SHA-256
+ok   subject input payload/.agents/skills/joycraft-entry/SKILL.md has its bound SHA-256
+ok   subject input payload/.agents/skills/joycraft-implement/SKILL.md has its bound SHA-256
+ok   subject input payload/.agents/skills/joycraft-session-end/SKILL.md has its bound SHA-256
+ok   subject input payload/.claude/agents/joycraft-implementer.md has its bound SHA-256
+ok   subject input payload/.claude/agents/joycraft-reviewer.md has its bound SHA-256
+ok   subject input payload/.joycraft/references/archive.md has its bound SHA-256
+ok   subject input payload/.joycraft/references/cleanup.md has its bound SHA-256
+ok   subject input payload/.joycraft/references/knowledge.md has its bound SHA-256
+ok   subject input payload/.joycraft/references/settings.md has its bound SHA-256
+ok   subject input payload/.joycraft/references/setup.md has its bound SHA-256
+ok   subject input payload/.joycraft/references/update.md has its bound SHA-256
+RESULT: all comparisons equal

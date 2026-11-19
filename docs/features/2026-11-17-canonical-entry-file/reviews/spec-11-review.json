@@ -1,0 +1,793 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "24c0dffe0777fc6b9e6ff4ababe911b421d5dd94",
+    "queuePath": "docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json",
+    "specId": 11,
+    "specPath": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+    "criteria": [
+      {
+        "id": "one-pass-steps",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "permission-ledger",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "temporal-homes",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "map-two-parts",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "session-end-mechanical",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "worker-reads-entry",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "one-agent-default",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "payload-words-not-up",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+        "kind": "requirement",
+        "sha256": "a28e231dae041602febccf9c8178d4f4e2fa11a952685f2c7beab3afe33c7986",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "aef2d65054f0235dd7b4071be6234235ed3c2d5948213b80ffa96344695ce595",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+        "kind": "requirement",
+        "sha256": "26068f4d842112ccc634d32576b2f091b512b135ee40ad8ce454afaff4c15088",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-cleanup/SKILL.md",
+        "kind": "code",
+        "sha256": "cd60ae78c157056564b4e2181f65efc0b9b3734ea211895db475ccaa4bd6e06a",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-entry/SKILL.md",
+        "kind": "code",
+        "sha256": "7abed7e4f03720dc3a36ffe6a1ba454b85ecb22f69d886bf3c2a107a0209cc26",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+        "kind": "code",
+        "sha256": "752637fb60af0af4ceabb5c999665894f9d6d3c6a352dfb4e06d6e662acb2949",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+        "kind": "code",
+        "sha256": "4c8dd2b1596f5f91e8032e5fa778625bd9b86b7c77733206ddf2d924a86e962c",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.claude/agents/joycraft-implementer.md",
+        "kind": "code",
+        "sha256": "7bfdd7786f7f43827e83f03c43d1d4a99e27c13bbe868c4bd77ef40c9e9fdaf2",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.claude/agents/joycraft-reviewer.md",
+        "kind": "code",
+        "sha256": "bdf8624fb12f9bb55bf349240ec289fc369d5632fce610be05422677eafe93e8",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/archive.md",
+        "kind": "code",
+        "sha256": "fdaae382a94c15c10f390b123afe8354b84b1a3b54e65b328ac990a497456eaf",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/cleanup.md",
+        "kind": "code",
+        "sha256": "3a3edc7fdf58f1b62d698d2fba751d162672cfc80bd684f3e7b1e780d42f4eee",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/knowledge.md",
+        "kind": "code",
+        "sha256": "a08a117a5d0ae65a45dfd8ab3f3da92dd3c7aeedaa09ae1d71ddf3d6528c7f95",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/settings.md",
+        "kind": "code",
+        "sha256": "db0448a0c53f6ee24c6cf90cef5335618cb9a7030cd904309194380e5c9f0b72",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "44296ac3f15fbc3d99faeac6ed69f777a93ba8d7d825606c57911752e0ce206a",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/update.md",
+        "kind": "code",
+        "sha256": "556d8894f46419d856e8b4e4cf0b6cf9761bbc0200df1d7cbea373f9783628d9",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          9,
+          10,
+          11
+        ]
+      },
+      "governing": []
+    },
+    "identity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8"
+  },
+  "implementerSessionId": "7b20329f-0b26-4c62-abe8-68cdb4bfb321",
+  "reviewer": {
+    "sessionId": "c4d4cf80-f74b-4a01-bbd5-c093b4bd3e0e",
+    "independent": true,
+    "scopeReviewed": true,
+    "actor": {
+      "host": "claude",
+      "sessionId": "c4d4cf80-f74b-4a01-bbd5-c093b4bd3e0e",
+      "agentId": "a310d70be4a91485a"
+    }
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "spec-11-r2-one-pass-steps",
+      "subjectIdentity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8",
+      "criteria": [
+        "one-pass-steps"
+      ],
+      "representativeInput": "payload/.joycraft/references/cleanup.md, the bound input, all 196 lines read. Sections: One pass, Two lenses, The entry file, Kinds of page, What to find on each page, Questions for the owner, The steps.",
+      "expected": "The reference has the six steps in order; the two lenses; the page kinds; what an entry file holds; the seven things to find on each page; and a section on the questions for the owner: at most eight, each about one policy, with stops and holds always two of them.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "The reference has each part that the check names. The six steps are numbered 1 to 6 in this order at payload/.joycraft/references/cleanup.md:155-178 (List; Analyze, read only; Ask one round; Apply; Write the entry file last; Check), and there is no seventh. The two lenses, Truth and Place, are at 42-50. The page kinds Guide, Log and History are at 78-100. What an entry file holds (Identity, Rules, Joycraft's block, the Context Map) is at 52-76. The seven things to find on each page are numbered 1 to 7 at 102-126, and there is no eighth. The section \"Questions for the owner\" is at 128-144; it says \"Group these into at most eight questions, each about one policy\" (135) and \"Stops (what an agent must ask before) and holds are always two of them: never drop one by recommendation\" (135-137). The six steps agree with the six steps of the brief, section one-pass. The scan is an inline node driver, run through evidence.mjs. It prints each matched text with its file and line numbers. It exited 0: each expectation holds.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-one-pass-steps.txt",
+              "sha256": "6dd09651eb12f104d048053c2c6e4dbdea73bf5fff22745cfa368a448eb4651b"
+            }
+          ]
+        },
+        {
+          "kind": "structural",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test \"[AC:one-pass-steps] the reference has the aim, the two lenses, the entry file, the page kinds, the seven findings and the six steps\" passed. The file run had 15 tests: 15 pass, 0 fail, 0 skipped; exit code 0. The test asserts the order of the six steps and of the seven things, the two lenses, the four parts of the entry file and the three kinds. The untagged test \"the questions are few and by theme, through the engine; stops and holds are always asked\" asserts the two sentences on the questions, and it passed in the same run.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-cleanup-text-test.txt",
+              "sha256": "25d7f3feeae26428c08f05af19853dd3cb8d440c58a29df8652873fa09f3d669"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/cleanup-text.test.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "A reading of the shipped text only. No run of the skill text on a project.",
+        "The tests are not vendored. They ran in the joycraft-prototype checkout beside this repository. Receipt spec-11-r2-pin-match.txt shows that its HEAD is the commit in payload/PIN (ee3ab75, tag field-26), that its tree has no change, and that each of the 85 files in payload/ has the SHA-256 in PIN.",
+        "The brief (one-pass, step 3) says that the agent decides what the owner does not answer by an order of authority. The reference has no such order; the scan shows no match. No check of spec 11 names it. See finding r1-brief-order-of-authority."
+      ]
+    },
+    {
+      "id": "spec-11-r2-permission-ledger",
+      "subjectIdentity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8",
+      "criteria": [
+        "permission-ledger"
+      ],
+      "representativeInput": "payload/.joycraft/references/cleanup.md, section \"Permission ledger\" (183-196) and step 6 of \"The steps\" (172-178).",
+      "expected": "The reference says that before the commit the agent lists each line that permits, forbids, stops or holds, old against new; that each change names the owner's answer; that a change with no answer is put back or asked; and that a grant keeps the owner's words.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "Each of the four statements is in the section. payload/.joycraft/references/cleanup.md:185-187: \"Before the commit, take from the diff and the `lost` report every line that permits, forbids, stops or holds and that the pass changed, moved or removed: the old text beside the new.\" 187-188: \"For each, name the owner's answer that decided it.\" 189-190: \"Put back a change that no answer decides, and list it as not covered.\" 192: \"A grant keeps the owner's words and scope. Add nothing to it.\" Step 6 (172-178) says \"Make the permission ledger\" before \"Offer one commit\". Step 3 (162-163) says \"With no answer, the lines of that theme stay in their words.\" The scan is an inline node driver, run through evidence.mjs. It prints each matched text with its file and line numbers. It exited 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-permission-ledger.txt",
+              "sha256": "862293792c0ef550dac170eee0055ab74dc927885ab8d3875a90cc2bd5a039a7"
+            }
+          ]
+        },
+        {
+          "kind": "structural",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test \"[AC:permission-ledger] no rule changes without an owner answer: the ledger lists each changed permission line, old against new\" passed. The file run had 15 tests: 15 pass, 0 fail, 0 skipped; exit code 0. The test asserts each of the four sentences quoted in the source observation.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-cleanup-text-test.txt",
+              "sha256": "25d7f3feeae26428c08f05af19853dd3cb8d440c58a29df8652873fa09f3d669"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/cleanup-text.test.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "A reading of the shipped text only. No run of the skill text on a project.",
+        "The tests are not vendored. They ran in the joycraft-prototype checkout beside this repository. Receipt spec-11-r2-pin-match.txt shows that its HEAD is the commit in payload/PIN (ee3ab75, tag field-26), that its tree has no change, and that each of the 85 files in payload/ has the SHA-256 in PIN."
+      ]
+    },
+    {
+      "id": "spec-11-r2-temporal-homes",
+      "subjectIdentity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8",
+      "criteria": [
+        "temporal-homes"
+      ],
+      "representativeInput": "payload/.joycraft/references/cleanup.md, all 196 lines read; each sentence with \"hold\" or \"pause\" listed. The brief, section one-pass, paragraph \"Nothing temporal in the entry file or in a guide\" (docs/features/2026-11-17-canonical-entry-file/brief.md:261). The history of the hold sentence in joycraft-prototype.",
+      "expected": "The reference says where each kind goes: a decision to the decision log, an operation or status to its log, open work to the backlog or a handoff, and a hold in force stays in the entry file as one rule.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "FAIL",
+          "actual": "Three of the four homes are as the check says, at payload/.joycraft/references/cleanup.md:112-114: \"a decision and its reason go to the decision log, an operation or a status to its log, open work to the backlog (default `docs/backlog/`) or a handoff\". The fourth differs from the check. The check says: \"a hold in force stays in the entry file as one rule\". The reference says at 137-139: \"A hold that the owner keeps is one present-tense rule: in the entry file when it is general, on the owning guide when it is about one item. Its date and reason go to the decision log.\" So the reference gives a hold about one item a home that is not the entry file: a pass that follows this text moves such a hold out of the entry file, or leaves it on a page. No other sentence of the reference names the home of a hold; the scan lists each sentence with \"hold\" or \"pause\". The brief has no such exception (docs/features/2026-11-17-canonical-entry-file/brief.md:261): \"A hold that is in force is a rule: it stays in the entry file as one present-tense line, and its date and reason go to the decision log.\" History that I read in joycraft-prototype with git log and git show: commit c586d0d, made at the same time as the spec, said \"In force: one rule in the entry file, in the present tense\"; commit 0e09b24 changed that to the split between a general hold and a hold on one item; commit 83beff3 removed the row; commit ee3ab75 (field-26) put the split back. Neither the brief nor the section \"Amended\" of the spec records a word of the owner for the split, and that section says \"The checks are as they were.\" The scan is an inline node driver, run through evidence.mjs. It prints each matched text with its file and line numbers. It exited 1: the first four expectations hold (three homes, and a kept hold is one rule), and the expectation that the reference gives a hold in force no home outside the entry file does not hold. The test \"[AC:temporal-homes] nothing temporal stays in an entry file or a guide; each kind has a record\" passed (exit 0), but at tests/cleanup/cleanup-text.test.mjs:119-120 it asserts the sentence with the split, so it is green on a text that differs from the check.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-temporal-homes.txt",
+              "sha256": "6b0ca78a095d705903a8c57641a08d22a55434cebbea988ae768cd87111bb7c8"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-cleanup-text-test.txt",
+              "sha256": "25d7f3feeae26428c08f05af19853dd3cb8d440c58a29df8652873fa09f3d669"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "A reading of the shipped text only. No run of the skill text on a project.",
+        "The tests are not vendored. They ran in the joycraft-prototype checkout beside this repository. Receipt spec-11-r2-pin-match.txt shows that its HEAD is the commit in payload/PIN (ee3ab75, tag field-26), that its tree has no change, and that each of the 85 files in payload/ has the SHA-256 in PIN.",
+        "The first three clauses of the check pass; the fourth fails for a hold about one item only. A general hold is as the check says.",
+        "The release proof in docs/research/2026-11-18-one-pass-cleanup-panel-verdict.md says that no run measured the text of field-26, and that in the measured run the owner removed all holds. So no run has used the hold sentence."
+      ]
+    },
+    {
+      "id": "spec-11-r2-map-two-parts",
+      "subjectIdentity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8",
+      "criteria": [
+        "map-two-parts"
+      ],
+      "representativeInput": "payload/.joycraft/references/cleanup.md, sections \"The entry file\" and \"Kinds of page\". payload/.joycraft/references/setup.md, all 329 lines read; section \"Set up the context map\", step 3. The same file at tag field-24 of joycraft-prototype, for the sentence that the check says is gone.",
+      "expected": "The reference and setup.md say that guides have \"read when\" rows and that a record is an audit trail, searched and not read at the start; setup.md no longer says that the agent never edits the user's rows during a cleanup.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "The reference: payload/.joycraft/references/cleanup.md:64-66 says \"one row for each guide, \"read when <situation>\"; then one row for each log, \"search when you need why or when, or to check a regression\"\"; 87-88 says of a log \"It is an audit trail: an agent searches it to learn why or when, or to check for a regression, and never reads it at the start.\" setup.md: payload/.joycraft/references/setup.md:75 says \"A read-when names the work that needs the doc\"; 78-80 says \"A log (a decision log, an operations log) is a record: its row says \"search when you need why or when, or to check a regression\", below the guide rows.\"; 80-81 says \"No row tells an agent to read a record at the start.\" setup.md does not have the words \"audit trail\"; it has the rule that the words stand for (see finding r1-setup-no-audit-trail-words, from round 1). The sentence of field-24 (\"append rows below the user's rows; never edit, reorder or reformat theirs\", setup.md:94 at that tag) is gone. The sentence there now is about setup only (83-84: \"setup never edits, reorders or reformats theirs\"), and 93-94 says \"Setup adds to an entry file and does not clean it. When the audit found much, offer the cleanup pass afterwards.\" No sentence of setup.md forbids an edit of the user's rows in a cleanup. The scan is an inline node driver, run through evidence.mjs. It prints each matched text with its file and line numbers. It exited 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-map-two-parts.txt",
+              "sha256": "0edb9e88b7d676d65fc5ac594339745493e35ae4ac68496a09662dc0b1759981"
+            }
+          ]
+        },
+        {
+          "kind": "structural",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test \"[AC:map-two-parts] the map has guides to read and records to search; a record is not read at the start\" passed. The file run had 15 tests: 15 pass, 0 fail, 0 skipped; exit code 0. The test asserts the two sentences of the reference and four sentences of setup.md. It does not assert the words \"audit trail\" in setup.md.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-cleanup-text-test.txt",
+              "sha256": "25d7f3feeae26428c08f05af19853dd3cb8d440c58a29df8652873fa09f3d669"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/cleanup-text.test.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "A reading of the shipped text only. No run of the skill text on a project.",
+        "The tests are not vendored. They ran in the joycraft-prototype checkout beside this repository. Receipt spec-11-r2-pin-match.txt shows that its HEAD is the commit in payload/PIN (ee3ab75, tag field-26), that its tree has no change, and that each of the 85 files in payload/ has the SHA-256 in PIN."
+      ]
+    },
+    {
+      "id": "spec-11-r2-session-end-mechanical",
+      "subjectIdentity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8",
+      "criteria": [
+        "session-end-mechanical"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-cleanup/SKILL.md, all 45 lines read: the description (line 3) and the section \"Which run this is\" (17-32). payload/.joycraft/references/cleanup.md:148-149. payload/.agents/skills/joycraft-session-end/SKILL.md:49-51.",
+      "expected": "The description of the cleanup skill no longer says that it runs the tidy at every session end; the skill says that a session end runs the report and the mechanical fixes only, and that the full pass runs on the owner's request and states its size first.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "The description (payload/.agents/skills/joycraft-cleanup/SKILL.md:3) has no \"every session end\" and no \"tidy\"; it ends \"At a session end it only reports and makes the mechanical fixes.\" The skill, 24-30: \"Session end calls this skill, or nobody asked (a queue, a hook). Run `node .joycraft/runtime/cleanup.mjs`. Fix only what a script can check: replace Joycraft's block [...] and re-point a dead path that has one unique Git rename. [...] Change no rule and no page, and do not start the pass.\" The skill, 19-21: \"A person asks for a cleanup. Do the one pass\". The skill file itself has no sentence on the size of the pass. The reference, which the skill says to read first (15) and to follow (36), says at payload/.joycraft/references/cleanup.md:148-149: \"Above about 20,000 words of pages, first state the word count and the cost (about 25 tokens for each word).\" The session-end skill (49-51) says \"run `joycraft-cleanup` in its session-end mode. It reports and makes only the mechanical fixes.\" I pass the last clause of the check on the reading in finding r1-size-statement-conditional, which is from round 1 and still holds: the skill and the reference that it reads first are one text, and a size statement for a large set meets \"states its size first\". Commit c586d0d of joycraft-prototype, made at the same time as the spec, had the same condition in the same place (\"For a large set of pages, first state the word count and the cost\"). The scan is an inline node driver, run through evidence.mjs. It prints each matched text with its file and line numbers. It exited 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-session-end-mechanical.txt",
+              "sha256": "0f25f39384c2aaf74f6aaa007a410a953b3b027b0d72f27efd46b4bf09912d68"
+            }
+          ]
+        },
+        {
+          "kind": "structural",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test \"[AC:session-end-mechanical] a session end reports and makes the mechanical fixes only; the pass runs on a person request\" passed. The file run had 15 tests: 15 pass, 0 fail, 0 skipped; exit code 0. The test asserts the description, the session-end sentences of the skill, the size sentence of the reference and the paragraph of the session-end skill. It has no assertion that the skill says that a person asks for the pass; see finding session-end-test-lost-person-assertion.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-cleanup-text-test.txt",
+              "sha256": "25d7f3feeae26428c08f05af19853dd3cb8d440c58a29df8652873fa09f3d669"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/cleanup-text.test.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "A reading of the shipped text only. No run of the skill text on a project.",
+        "The tests are not vendored. They ran in the joycraft-prototype checkout beside this repository. Receipt spec-11-r2-pin-match.txt shows that its HEAD is the commit in payload/PIN (ee3ab75, tag field-26), that its tree has no change, and that each of the 85 files in payload/ has the SHA-256 in PIN.",
+        "The skill says \"A person asks\", and the check says \"the owner's request\"."
+      ]
+    },
+    {
+      "id": "spec-11-r2-worker-reads-entry",
+      "subjectIdentity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8",
+      "criteria": [
+        "worker-reads-entry"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-implement/SKILL.md:11; the two files in payload/.claude/agents/ (joycraft-implementer.md, joycraft-reviewer.md), which are all the worker definitions in payload/PIN.",
+      "expected": "The implement skill and each worker definition say: read the entry file, then each page whose map row matches the spec.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "payload/.agents/skills/joycraft-implement/SKILL.md:11: \"Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec\". payload/.claude/agents/joycraft-implementer.md:10 and payload/.claude/agents/joycraft-reviewer.md:11: \"Read the project's `AGENTS.md` (or `CLAUDE.md`), then each page whose context-map row matches the spec\". The folder payload/.claude/agents has these two files and no other. The scan is an inline node driver, run through evidence.mjs. It prints each matched text with its file and line numbers. It exited 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-worker-reads-entry.txt",
+              "sha256": "65b2569eca2a3a8488606fb03fa16b7bdc90c1e9714b80ef61fc1e37e25284c7"
+            }
+          ]
+        },
+        {
+          "kind": "structural",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test \"[AC:worker-reads-entry] a worker reads the entry file, then each page whose map row matches the spec\" passed. The file run had 15 tests: 15 pass, 0 fail, 0 skipped; exit code 0. The test asserts the phrase in the implement skill and in both worker definitions.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-cleanup-text-test.txt",
+              "sha256": "25d7f3feeae26428c08f05af19853dd3cb8d440c58a29df8652873fa09f3d669"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/cleanup-text.test.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "A reading of the shipped text only. No run of the skill text on a project.",
+        "The tests are not vendored. They ran in the joycraft-prototype checkout beside this repository. Receipt spec-11-r2-pin-match.txt shows that its HEAD is the commit in payload/PIN (ee3ab75, tag field-26), that its tree has no change, and that each of the 85 files in payload/ has the SHA-256 in PIN."
+      ]
+    },
+    {
+      "id": "spec-11-r2-one-agent-default",
+      "subjectIdentity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8",
+      "criteria": [
+        "one-agent-default"
+      ],
+      "representativeInput": "payload/.joycraft/references/cleanup.md, section \"The steps\": the paragraph before the steps (148-153) and step 6 (172-178). Commit c586d0d of joycraft-prototype, for the text that the check was written with.",
+      "expected": "The reference says one agent by default, and that parts run one after another where the host has no subagents.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "payload/.joycraft/references/cleanup.md:148-153: \"Above about 20,000 words of pages, first state the word count and the cost (about 25 tokens for each word). Then split the work into parts: the entry files are one part, and the pages are groups of about 20,000 words. One agent does each part, in parallel where the host has subagents and one after another where it has none. A small set is one part. A coordinator, the session that talks to the owner, runs the steps.\" Step 6 (173-174): \"an agent that wrote no edit checks the changed guides against the code (with no subagents: read them again yourself)\". So the second clause of the check is there in its words. For the first clause, the reference does not have the words \"by default\" or \"One agent does it\"; it says that one agent does each part and that a small set is one part, so one agent does a small set, and only a set above about 20,000 words is split. No step needs a second agent on a host with no subagents. I read this as \"one agent by default\"; see finding one-agent-default-in-two-sentences for what the text leaves open. The scan is an inline node driver, run through evidence.mjs. It prints each matched text with its file and line numbers. It exited 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-one-agent-default.txt",
+              "sha256": "566bc88a40abe41175a4f60aecc814da2e1b4726c2d417a4167e29c155ac7e4a"
+            }
+          ]
+        },
+        {
+          "kind": "structural",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test \"[AC:one-agent-default] the parts run in parallel where the host has subagents and one after another where it has none\" passed. The file run had 15 tests: 15 pass, 0 fail, 0 skipped; exit code 0. The test asserts the sentence on parts, \"A small set is one part\", and the rule of step 6 for a host with no subagents.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-cleanup-text-test.txt",
+              "sha256": "25d7f3feeae26428c08f05af19853dd3cb8d440c58a29df8652873fa09f3d669"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/cleanup-text.test.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "A reading of the shipped text only. No run of the skill text on a project.",
+        "The tests are not vendored. They ran in the joycraft-prototype checkout beside this repository. Receipt spec-11-r2-pin-match.txt shows that its HEAD is the commit in payload/PIN (ee3ab75, tag field-26), that its tree has no change, and that each of the 85 files in payload/ has the SHA-256 in PIN."
+      ]
+    },
+    {
+      "id": "spec-11-r2-payload-words-not-up",
+      "subjectIdentity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8",
+      "criteria": [
+        "payload-words-not-up"
+      ],
+      "representativeInput": "The 31 shipped skills, agent files and references (the payloadText filter of tests/payload-bundle.mjs), counted in payload/ and in the prototype checkout at the commit in payload/PIN. Limit: 29,919 words.",
+      "expected": "tests/payload-budget.test.mjs passes and the shipped words are at most 29,919.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "tests/payload-budget.test.mjs: 4 tests, 4 pass, 0 fail, 0 skipped; exit code 0. Each shipped file is within its budget, and each raise has a one-line reason.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-payload-budget-test.txt",
+              "sha256": "f70181974476b3687dc6208b4da8677fa9a48025714c7cf6e2aa7b3b0f853dd4"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/payload-budget.test.mjs"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test \"the shipped words are not more than at field-24\" passed and was not skipped: the prototype tree has at most 29,919 words, and tag field-24 has 29,919. Exit code 0. The test has no tag [AC:payload-words-not-up]; see finding r1-untraced-payload-words.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-cleanup-text-test.txt",
+              "sha256": "25d7f3feeae26428c08f05af19853dd3cb8d440c58a29df8652873fa09f3d669"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/cleanup-text.test.mjs"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "An inline node driver counted the vendored bytes under payload/ with its own copy of the file filter and the word rule (split on white space): 31 files, 29,915 words. The helper of the prototype gave 29,915 for payload/ and 29,915 for the prototype tree; tags field-24 and field-25 have 29,919 and tag field-26 has 29,915. 29,915 is at most 29,919. Exit code 0. Receipt spec-11-r2-payload-words.txt is an earlier run of the same driver with the same output, byte for byte.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-payload-words-count.txt",
+              "sha256": "1a611e6b772b23eab18d7c4b4d0a6c9d62fd22dc8665d28c9def490b7ed2e6f8"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-payload-words.txt",
+              "sha256": "1a611e6b772b23eab18d7c4b4d0a6c9d62fd22dc8665d28c9def490b7ed2e6f8"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const fs=require(\"fs\");\nconst limit=29919;\nconst pin=JSON.parse(fs.readFileSync(\"payload/PIN\",\"utf8\"));\nconst isText=p=>/^\\.agents\\/skills\\/joycraft-[^/]+\\/SKILL\\.md$/.test(p)||/^\\.claude\\/agents\\/[^/]+\\.md$/.test(p)||/^\\.joycraft\\/references\\/.+\\.md$/.test(p);\nconst count=t=>t.split(/\\s+/).filter(Boolean).length;\nconst files=Object.keys(pin.files).filter(isText).sort();\nlet own=0; for(const f of files){ const n=count(fs.readFileSync(\"payload/\"+f,\"utf8\")); own+=n; console.log(String(n).padStart(6)+\"  payload/\"+f); }\nconsole.log(\"own count over the vendored payload (\"+files.length+\" skills, agent files and references): \"+own+\" words; limit \"+limit);\nimport(\"../prototype-canonical-entry-file/tests/payload-bundle.mjs\").then(m=>{\n  const viaPayload=m.payloadWords(m.treeBundle(\"payload\"));\n  const viaProto=m.payloadWords(m.treeBundle());\n  console.log(\"payloadWords(treeBundle(\\\"payload\\\")) with the helper of the prototype: \"+viaPayload);\n  console.log(\"payloadWords of the prototype checkout tree: \"+viaProto);\n  for(const tag of [\"field-24\",\"field-25\",\"field-26\"]) console.log(\"payloadWords at prototype tag \"+tag+\": \"+(m.hasRevision(tag)?m.payloadWords(m.revisionBundle(tag)):\"tag not available\"));\n  const ok=own<=limit&&viaPayload===own&&viaProto===own;\n  console.log(ok?\"RESULT: \"+own+\" <= \"+limit+\", and the three counts agree\":\"RESULT: not as expected\"); process.exit(ok?0:1);\n});"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "The count is of words in skills, agent files and references. Runtime code and templates are not in the count, as in tests/payload-bundle.mjs."
+      ]
+    },
+    {
+      "id": "spec-11-r2-other-shipped-texts",
+      "subjectIdentity": "e4354f3967a1723d4508d3116e50ebd64492521254347b687044c7dfb5bb17a8",
+      "criteria": [
+        "map-two-parts",
+        "session-end-mechanical",
+        "worker-reads-entry"
+      ],
+      "representativeInput": "The outcome sentence of the spec: \"every other shipped text agrees with it\". All 85 files in payload/PIN searched for the cut parts; the links of the 31 shipped skills, agent files and references; the bound inputs update.md, knowledge.md, settings.md, archive.md and the entry skill read for a sentence that contradicts the one pass; the whole test suite of joycraft-prototype at the PIN commit.",
+      "expected": "No shipped text names a part that the design cut or contradicts the procedure, each link of the changed texts has a target, and the change breaks no test of the prototype.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "No file in payload/PIN names now.md, entry.tidy, joycraft:rules, entry-pin or now-old. The 82 relative Markdown links in the 31 shipped skills, agent files and references have a target file, and the 40 with a heading anchor have that heading; this covers cleanup.md#one-pass, cleanup.md#what-to-find-on-each-page, cleanup.md#kinds-of-page and artifacts.md#asking-questions. update.md:31-34 agrees with the session-end mode of the skill: an unattended run replaces the block and re-points a path with one unique Git rename. Joycraft's block in wiring.mjs:23 says that a record is an audit trail that is searched and not read at the start. I found no sentence in update.md, knowledge.md, settings.md, archive.md or the entry skill that contradicts the one pass. Three texts do not fit and are follow-up findings: the table of checks in the reference is partial and no longer says so, the skill hand-off asks for \"the archive mappings\", and (not a finding) the skill lost the sentence \"Remove an unknown worktree only after checking it for unmerged work\", which the fix text of the unknown-worktree finding in cleanup.mjs:355 still carries. Both scans are inline node drivers run through evidence.mjs; both exited 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-agreement-2.txt",
+              "sha256": "988db1836e91b64880208b06ec0ec5e6b4c127dc4468319ba9eeb0057073b438"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-links-payload-text.txt",
+              "sha256": "ccd98e0da78f9cf10256f832f63ca8e04a52307fea6bfe3f6cda379774a7f081"
+            }
+          ]
+        },
+        {
+          "kind": "structural",
+          "method": "test",
+          "result": "PASS",
+          "actual": "An inline node driver ran `node --test` in the prototype checkout and printed the exit code and the full output: exit code 0; 841 tests, 841 pass, 0 fail, 0 skipped. After the run the checkout still had no changed or untracked path (git status, read only).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-prototype-suite.txt",
+              "sha256": "5b3d3fc55d56e2aeb5ad9cbcebc6f16adf8bd32264c7a42bf67f1e1f6319d5a2"
+            },
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+              "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "\nconst cp=require(\"child_process\");\nconst r=cp.spawnSync(\"node\",[\"--test\"],{cwd:\"../prototype-canonical-entry-file\",encoding:\"utf8\",env:{...process.env,CI:\"1\"},maxBuffer:256*1024*1024});\nconsole.log(\"node --test in ../prototype-canonical-entry-file: exit code \"+r.status+(r.signal?\" signal \"+r.signal:\"\"));\nconst out=(r.stdout||\"\")+(r.stderr||\"\");\nconst lines=out.split(\"\\n\");\nconst failing=lines.filter(l=>/^\\s*(\u2716|not ok)/.test(l));\nconsole.log(\"failing test lines: \"+failing.length); for(const l of failing) console.log(l);\nconsole.log(lines.filter(l=>/^\u2139 /.test(l)).join(\"\\n\"));\nconsole.log(\"---- full output ----\"); console.log(out);\nprocess.exit(r.status===0?0:1);\n"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "This flow is a probe outside the eight named checks.",
+        "Two earlier receipts of these probes exited 1 because of mistakes in my own probe, not because of the payload: spec-11-r2-links.txt also read the templates, whose two links to kickoff-notes.md are right only after a template is copied to docs/context/; spec-11-r2-agreement.txt expected no line with \"worktree\" in the skill, and the compatibility line has that word. I ran both again with the mistake corrected and cite only the second runs.",
+        "payload/.joycraft/references/artifacts.md changed between field-24 and field-26 and is not a bound input of any spec in this queue. The questions section of the reference links its heading \"Asking questions\", which exists. No check of spec 11 depends on its content, so I did not review it."
+      ]
+    }
+  ],
+  "unresolved": [
+    "temporal-homes: the reference gives a hold about one item a home on its guide; the check and the brief say that a hold in force stays in the entry file."
+  ],
+  "findings": [
+    {
+      "id": "hold-home-not-only-the-entry-file",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "temporal-homes",
+      "at": "payload/.joycraft/references/cleanup.md:137-138",
+      "summary": "The check says that the reference says \"a hold in force stays in the entry file as one rule\". The reference says: \"A hold that the owner keeps is one present-tense rule: in the entry file when it is general, on the owning guide when it is about one item.\" So a hold about one item gets a home outside the entry file. The brief (one-pass, brief.md:261) has no such exception: \"it stays in the entry file as one present-tense line\". The text made with the spec (joycraft-prototype c586d0d) said \"one rule in the entry file\"; commit 0e09b24 added the split, and ee3ab75 (field-26) put it back after round 1. No word of the owner for the split is in the brief or the spec. The test [AC:temporal-homes] asserts the sentence with the split (tests/cleanup/cleanup-text.test.mjs:119-120), so it is green on this text. To pass: the reference keeps each hold in force in the entry file, or the owner amends the check and the brief to permit a hold on one item on its guide. Round 1 failed this check because the sentence was absent; this finding is about the sentence that field-26 added."
+    },
+    {
+      "id": "session-end-test-lost-person-assertion",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "session-end-mechanical",
+      "at": "../prototype-canonical-entry-file/tests/cleanup/cleanup-text.test.mjs:138-151",
+      "summary": "Commit ee3ab75 removed \"A person asks for this pass.\" from the reference and from the assertion at line 148. The test title still says \"the pass runs on a person request\", but no assertion now checks it. The skill still says it (SKILL.md:19: \"A person asks for a cleanup\"), so the check holds on the text; the test asserts less than the check."
+    },
+    {
+      "id": "one-agent-default-in-two-sentences",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "one-agent-default",
+      "at": "payload/.joycraft/references/cleanup.md:148-153",
+      "summary": "The reference does not say \"one agent by default\" in one sentence. A reader gets it from \"One agent does each part\" and \"A small set is one part\". It does not say how small a small set is (the 20,000 words of the sentence before are the only number), and it does not say that the coordinator is that one agent on a host that has subagents. Above about 20,000 words the split follows the statement of the cost with no wait for a yes; the text made with the spec (c586d0d) said \"on a yes\".",
+      "assumption": "\"One agent does each part\" with \"A small set is one part\" means that one agent does the pass unless the set is above about 20,000 words. The text that the check was written with also had fan-out for a large set."
+    },
+    {
+      "id": "check-table-partial",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/cleanup.md:8-22",
+      "summary": "The table of checks in the reference lists 7 checks; cleanup.mjs emits 18. Commit ee3ab75 removed the sentence that said so (\"Every other check says what it found in its `detail`.\"). Line 20 names `working-link`, which the table does not list, and setup.md:110-111, the context skill and update.md:31 name `unmapped`, `orphan` and `managed-block`, which the reference no longer defines. Receipt: spec-11-r2-agreement-2.txt."
+    },
+    {
+      "id": "skill-archive-mappings-leftover",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-cleanup/SKILL.md:42-43",
+      "summary": "The hand-off of the skill asks for \"the archive mappings\". The reference no longer has a step that archives anything (commit 83beff3 removed the execution playbook), so the term has nothing behind it."
+    },
+    {
+      "id": "r1-size-statement-conditional",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "criterion": "session-end-mechanical",
+      "at": "payload/.joycraft/references/cleanup.md:148-149",
+      "summary": "From round 1; it still holds. The check says that the skill says the full pass \"runs on the owner's request and states its size first\". The size statement is in the reference, not in SKILL.md, and it applies only \"Above about 20,000 words of pages\". The skill says \"A person asks\", not \"the owner\".",
+      "assumption": "The skill and the reference that it reads first are one text, and a size statement for a large set meets the check. The text made with the spec (c586d0d) had the same condition."
+    },
+    {
+      "id": "r1-setup-no-audit-trail-words",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "criterion": "map-two-parts",
+      "at": "payload/.joycraft/references/setup.md:78-81",
+      "summary": "From round 1; it still holds. The check says that the reference and setup.md say that a record is an audit trail. Only the reference has those words (cleanup.md:87). setup.md says that a log is a record with a \"search when ...\" row and that no row tells an agent to read a record at the start.",
+      "assumption": "The rule (searched, and not read at the start) is what the check needs; the words \"audit trail\" in setup.md are not."
+    },
+    {
+      "id": "r1-brief-order-of-authority",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "at": "payload/.joycraft/references/cleanup.md:128-144",
+      "summary": "From round 1; it still holds. The brief (one-pass, step 3 and \"Permission ledger\") says that the agent decides what the owner does not answer by an order of authority, and that a ledger line names the owner's answer or that order. The reference has no order of authority: a conflict that the code cannot settle is a question (106-108, 130-132), and the ledger takes only an owner's answer (187-190). The brief sentence \"a question about one hold does not retire the general rule behind it\" also has no sentence in the reference. No check of spec 11 asks for these.",
+      "assumption": "The shipped rule is the stricter one for permissions, so I take it as within the brief. The owner should say if the order of authority must come back."
+    },
+    {
+      "id": "r1-untraced-payload-words",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "criterion": "payload-words-not-up",
+      "at": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-trace.txt",
+      "summary": "From round 1; it still holds. No test has the tag [AC:payload-words-not-up]; the untagged test \"the shipped words are not more than at field-24\" and tests/payload-budget.test.mjs cover the check. In this repository trace.mjs reports all eight criteria as untraced (exit 2), because the tests are in joycraft-prototype and the queue declares no check input; in the two prototype test files the other seven criteria have a tag."
+    }
+  ],
+  "createdAt": "2026-11-19T04:27:05.208Z",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "7b20329f-0b26-4c62-abe8-68cdb4bfb321"
+  }
+}

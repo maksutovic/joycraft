@@ -1,0 +1,12 @@
+✔ [AC:budget-below-field-20] the shipped skills, agent files and references have fewer words than field-20 (377.629584ms)
+✔ [AC:budget-growth-needs-reason] each shipped file is within its budget, and a raise needs a one-line reason (343.192ms)
+✔ [AC:tool-timeout-restored] Running tests asks for a host tool timeout at least as long as the run limit, and the budget records why testing.md grew (2.611917ms)
+✔ [AC:budget-not-shipped] the budget file is not in the vendor filter or the exported bundle (73.88025ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 829.839

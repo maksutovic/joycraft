@@ -150,13 +150,11 @@ anything:
 - **Stale knowledge.** It reports finished features not archived, context pages that
   link to working material, broken, missing or unmapped pages, an AGENTS.md over its
   word budget, and pages whose code changed.
-- The doc audit, based on [doc-cleanup](https://github.com/aka-luan/doc-cleanup),
-  runs at every session end without being asked. It covers AGENTS.md, CLAUDE.md, the
-  docs the session changed and the pages they link; after a feature is archived, the
-  whole project. It checks each claim against the code, keeps your rules and traps,
-  puts its findings on the session-end page, and changes nothing until you approve.
-  Ask your agent to "clean up the docs" for a full audit at any time.
-- **Wiring.** It checks that AGENTS.md has the Joycraft lines and a real context map,
+- **Doc audit.** The audit, based on [doc-cleanup](https://github.com/aka-luan/doc-cleanup),
+  runs at every session end without being asked. It puts its findings on the
+  session-end page and makes only the mechanical fixes. It changes no rule and no
+  page. For the full pass, see [Keeping AGENTS.md current](#keeping-agentsmd-current).
+- **Wiring.** It checks that AGENTS.md has Joycraft's block and a real context map,
   and that CLAUDE.md imports it.
 
 Tests name the acceptance criterion they check, `[AC:<criterion-id>]`, so the
@@ -166,6 +164,62 @@ finding for the reviewer, not an automatic FAIL.
 If your docs are step-by-step procedures, the agent can offer
 [Doc Detective](https://docs.doc-detective.com) to run them as tests. It is opt-in:
 the agent says what it does not cover and installs nothing without your yes.
+
+### Keeping AGENTS.md current
+
+`AGENTS.md` is loaded in every session, so it must stay short and true. The file and
+the pages behind its map go out of date together. When the file is long or old, ask
+for a cleanup:
+
+```text
+Clean up my AGENTS.md and context pages.
+Do not commit, publish, or ask me for API keys.
+```
+
+The cleanup is one pass, and it is a dialogue with you:
+
+- **The file and its pages together.** The agent reads `AGENTS.md` and every page
+  behind its map. It checks each statement two ways: is it true now, against the
+  code and Git, and is it in the right place. Text that leaves `AGENTS.md` moves to
+  the page that owns its topic. For a large project, the agent tells you the size
+  and the cost first.
+- **At most eight questions, on one page.** Each question is about one policy and
+  not about one line. Two examples: have the rules for what the agent does without
+  asking changed, and which of two rules that disagree is in force. Two of the
+  questions are always about what the agent must ask before, and about holds. Every
+  other choice is a recommendation, and you can veto it.
+- **A permission ledger.** Before the commit, the agent lists each line that
+  permits, forbids, stops or holds and that the pass changed. The old text is
+  beside the new text, with the answer that decided it. The agent puts back a
+  change that no answer decides. It does not remove a rule because the code breaks it.
+- **Nothing temporal.** A date, a status or a finished plan moves out of `AGENTS.md`
+  and the guides to the record that owns it: the decision log, a log page or the
+  backlog. The agent asks you about holds. It does not drop a hold on its own
+  recommendation. A hold that you keep stays as one rule, in `AGENTS.md` or on
+  the page that owns its item.
+- **Each finding gets a final status.** The status is fixed, left for you, or not
+  done, with the reason. The agent fixes a false statement in each place that
+  states it. Then an agent that wrote no edit checks the changed pages against the code.
+- **One commit, on your yes.**
+
+One pass does not find everything. Ask the agent to check the pages again. You can
+also name one line that is wrong, and the agent fixes that line and each copy of
+its claim.
+
+Between cleanups, three things keep the file right:
+
+- **Session end only reports.** It lists what it found and makes two mechanical
+  fixes. When a release changed Joycraft's block, it replaces the block. When Git
+  shows one file that a dead path was renamed to, it corrects the path.
+- **Joycraft's block.** Joycraft's own lines in `AGENTS.md` are between two markers,
+  `<!-- joycraft:managed -->`. After an update, the agent replaces only that block.
+  Your text stays as it is.
+- **A check for CI.** Run `node .joycraft/runtime/entry-check.mjs --ci`. It reads
+  `AGENTS.md` and `CLAUDE.md`. It prints one line for each dead path, broken link,
+  `@` import and package script that does not exist. It also prints a line for
+  `AGENTS.md` files over the Codex limit of 32,768 bytes. Then it exits with code 2.
+  On a clean project it prints nothing. A date in the file and a block that differs
+  are notes for the agent. They do not fail CI.
 
 ## The review loop
 
@@ -372,11 +426,20 @@ Ask me one question at a time, in chat, for this feature.
 A consequential question gives the context, the question, two to four options each
 with an example and a trade-off, and the agent's recommendation with its reason. On
 the decision page, you pick an answer, or "Something else" and say what you want,
-add a note if you want, and save. You can add or change a note after saving. If the
+add a note if you want, and save. You can add or change a note after saving. To
+change a saved answer, use **Change answer** on the page. If the
 brief changes while the page is open, the page names the questions that changed and
 keeps your other answers. In chat or on the page, the answers go into the brief, so
 the agent does not ask again. If a question is not clear, say "wait, what?" and the
 agent explains it again with more context.
+
+**One engine for every page.** Each page that shows you a document, a question or a
+decision comes from Joycraft's artifact engine. The agent does not write its own
+HTML page. A report, a plan, a spec set or a setup diff is a Markdown file that the
+engine renders as a document page. A document page shows a diff in color, images
+from your project (PNG, JPEG, WebP or GIF) and Mermaid diagrams. A page with a
+diagram loads the Mermaid script from cdnjs, and only that exact file. With no
+network, the page shows the source text of the diagram.
 
 **Colors.** The page uses a light or dark theme. To match your project, ask:
 

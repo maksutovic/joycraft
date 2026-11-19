@@ -7,6 +7,127 @@ claim that a release has shipped.
 
 ---
 
+## 1.6.0 — One-pass cleanup of AGENTS.md, an entry check, and document pages
+
+A cleanup run on a field project on 2026-11-17 asked its owner 9 questions about
+one `AGENTS.md`, most of them about shape and placement. Trials on that project
+showed two more things: an entry file cannot be cleaned without the pages behind its
+map, and a question for each line makes the owner do the research. This release
+rebuilds the cleanup as one pass over the entry file and its pages. It also adds a
+check for entry files and makes the artifact engine render documents.
+Payload: joycraft-prototype `field-26`.
+
+### Added
+
+- **An entry check.** `node .joycraft/runtime/entry-check.mjs` reports on
+  `AGENTS.md` and `CLAUDE.md` and never edits them. On clean files it prints
+  nothing. `--ci` prints one line for each gate finding and exits 2. The gate
+  findings are a dead path, a broken link, a package script that no `package.json`
+  defines, and an `@` import or an `AGENTS.override.md`. `AGENTS.md` files over the
+  Codex limit of 32,768 bytes are a gate finding too. A date in an entry file, a
+  context page with no map row and a Joycraft block that differs are advisories.
+  They do not fail CI.
+- **Joycraft's block.** Joycraft's own lines in `AGENTS.md` are between
+  `<!-- joycraft:managed -->` markers. `entry-check.mjs block` prints them. Setup
+  places the block, and after an update the agent replaces only the block and
+  removes an older loose Joycraft line beside it. The block has two new lines. One
+  says that a context-map row that matches the next step binds. The other says that
+  a fact yields to the code where they disagree, but a rule does not.
+- **Lost lines.** `entry-check.mjs lost --base <rev>` lists each line that a change
+  to the docs dropped, so each drop is a choice.
+- **Document pages.** `artifacts/cli.mjs serve --doc <file.md>` and `build --doc`
+  render a Markdown file as a page: a report, a plan, a spec set or a setup diff. A
+  fenced `diff` block shows added and removed lines in color. A Markdown image
+  embeds its project file (PNG, JPEG, WebP or GIF). A fenced `mermaid` block draws a
+  diagram, also in the details of a decision.
+- **Change answer.** On a served decision page, **Change answer** replaces a saved
+  answer. Before, a saved answer needed a reopen by the agent.
+- **A prompt.** "Clean up my AGENTS.md and context pages" is in the README and in
+  `docs/prompts.md`.
+
+### Changed
+
+- **Cleanup is one pass, and a dialogue.** The agent reads the entry file and every
+  page behind its map together. It gives each statement two verdicts: is it true
+  now, and is it in the right place. Each page is a guide or a record, and the
+  agent looks for seven things on each page. It fixes the pages first and writes
+  the entry file last, with half the words as its aim.
+- **Few questions, by theme.** The agent asks at most eight questions in one round,
+  on the decision page. Each is about one policy and not about one line. Stops and
+  holds are always two of them. Every other choice is a recommendation that the
+  owner can veto.
+- **A permission ledger.** Before the commit, the agent lists each line that
+  permits, forbids, stops or holds and that the pass changed. Each line shows the
+  old text, the new text and the answer that decided it. The agent puts back a
+  change that no answer decides.
+- **The pass closes its own loop.** Each finding gets a final status. A false
+  statement is fixed in each place that states it. An agent that wrote no edit
+  checks the changed guides against the code. On request, the agent checks again,
+  or fixes one named line and each copy of its claim.
+- **Nothing temporal in an entry file or a guide.** A date, a status or a finished
+  plan moves to the record that owns it. The agent asks about holds and does not
+  drop one on its own recommendation. A hold that the owner keeps is one rule, in
+  the entry file or on the guide that owns its item.
+- **The map has two parts.** A guide has a "read when" row. A record (a decision
+  log, an operations log) has a "search when" row. No row tells an agent to read a
+  record at the start of a session.
+- **Session end only reports.** It lists the findings and makes the mechanical
+  fixes: Joycraft's block, and a dead path with one unique Git rename. Before, it
+  ran the full doc audit and asked for approval of each fix.
+- **Workers get the entry file.** The worker packet lists `AGENTS.md` first for the
+  implementer and the reviewer.
+- **One engine for each page.** Each page for a person comes from the artifact
+  engine. The agent no longer writes its own HTML page for a setup diff or a report.
+- **The shipped text did not grow.** The shipped skills, agent files and references
+  have 29,915 words. The limit is the 29,919 words of the last release.
+
+### Measured
+
+On the last trial run, on a clean clone of a field project:
+
+- The cleanup asked 8 questions in one round. The owner was not able to answer one
+  of them from its page.
+- No permission changed without an answer or a recommendation that the owner did
+  not veto. A recommendation decided 8 changes. The ledger did not mark 2 lines
+  where the agent read an answer onto a line that the owner did not name.
+- Of 134 known false or stale statements, 81% were fixed before the closing loop
+  and 84% (113) after it.
+
+In the run before that one, an update from 1.5.4 left no old Joycraft line beside
+the block.
+
+A review found two sentences missing from the cleanup reference, and they were
+added after these runs: the sentence about a hold that the owner keeps, and the
+rule for a host with no subagents. No run measured the text with them.
+
+### Not verified
+
+- No cleanup result was checked by the field project's own test gate.
+- No worker test on three harnesses compared the cleaned files with the old files.
+- On a small second repository, an earlier skill text made the entry file longer:
+  292 to 473 words, 162 of them Joycraft's block. That run asked 5 questions. The
+  final text was not run there.
+- Mermaid rendering was not checked inside a live Claude artifact.
+- Most specs of this feature have no independent review. One spec has a review
+  that passed. One has a review that failed on one check, and the owner accepted
+  it. The owner approved the others as they are.
+
+The owner accepted these results on 2026-11-18. A break in the field becomes a
+brief for 1.6.1.
+
+### Known limits
+
+- One pass does not fix every false statement. The repeat on request is the way to
+  the rest.
+- A page with a diagram loads the Mermaid script from cdnjs, pinned by an integrity
+  value. With no network, the page shows the source text of the diagram.
+- The cleanup is a method that the agent follows. No script enforces the eight
+  questions or the ledger.
+- `now.md`, rule markers with a byte pin, and an `entry.tidy` setting were built and
+  cut before this release. No released version had them.
+
+---
+
 ## 1.5.4 — Archive finds a dated feature folder
 
 Session-end archive could not run on a common folder shape. A feature in

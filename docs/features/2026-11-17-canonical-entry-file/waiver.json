@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "kind": "feature-waiver",
+  "queuePath": "docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json",
+  "covers": [
+    "no-review"
+  ],
+  "instruction": "i override and approve the specs as is for 1.6.0",
+  "decision": "owner-override-reviews",
+  "source": {
+    "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+    "sha256": "44d40bec4b77a4a35d3eb842d48b17ff4f123c0ce36490cc921a32c3120c727e"
+  },
+  "createdAt": "2026-11-19T04:28:18.000Z"
+}

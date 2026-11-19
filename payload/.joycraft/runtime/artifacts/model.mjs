@@ -3,6 +3,7 @@ import { lstat, mkdir, open, readFile, realpath, rename, unlink } from 'node:fs/
 import { dirname, extname, join, resolve, sep } from 'node:path';
 import { questionsFromBrief, saveAnswers } from './decisions.mjs';
 import { artifactTheme, checkedTheme, artifactColors } from './preferences.mjs';
+import { renderDocument } from './document.mjs';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
 const string = value => typeof value === 'string' && value.trim().length > 0;
@@ -45,15 +46,55 @@ function parseJSON(bytes, path) {
   catch { throw new Error(`Invalid JSON: ${path}`); }
 }
 
-export async function loadArtifact({ root = process.cwd(), brief, view, mode = 'local', theme: themeOverride }) {
-  projectPath(brief);
+/** Markdown files a person only reads, rendered by the engine. They are shown as they are
+ * now and stay out of the view revision: an answer binds to the brief, not to a document.
+ * An image embeds under the rules of a comparison image (project path, type, 8 MB each,
+ * 16 MB for the page). One that fails a rule stays as text: a report must still render. */
+async function loadDocuments(root, docs) {
+  if (!Array.isArray(docs) || docs.length > 20) throw new Error('Show at most 20 documents on one page');
+  const documents = [], embedded = new Map();
+  let imageBytes = 0;
+  for (const path of docs) {
+    if (extname(projectPath(path)).toLowerCase() !== '.md') throw new Error(`A document is a Markdown file (.md): ${path}`);
+    const text = (await readProjectFile(root, path)).toString('utf8');
+    let rendered = renderDocument(text);
+    const images = new Map(), imagesNotShown = [];
+    for (const target of rendered.images) {
+      if (!embedded.has(target)) {
+        let src = null;
+        try {
+          const type = imageTypes[extname(projectPath(target)).toLowerCase()];
+          const bytes = type ? await readProjectFile(root, target, 8_000_000) : null;
+          if (bytes && imageBytes + bytes.length <= 16_000_000) { imageBytes += bytes.length; src = `data:${type};base64,${bytes.toString('base64')}`; }
+        } catch { /* not a plain project file: it stays as text */ }
+        embedded.set(target, src);
+      }
+      if (embedded.get(target)) images.set(target, embedded.get(target));
+      else imagesNotShown.push(target);
+    }
+    if (images.size) rendered = renderDocument(text, { images });
+    documents.push({ path, title: rendered.title, html: rendered.html, diagrams: rendered.diagrams, ...(imagesNotShown.length ? { imagesNotShown } : {}) });
+  }
+  return documents;
+}
+
+export async function loadArtifact({ root = process.cwd(), brief, view, docs = [], mode = 'local', theme: themeOverride }) {
+  if (brief !== undefined || !docs.length) projectPath(brief);
   if (!['local', 'claude', 'portable'].includes(mode)) throw new Error('Artifact mode must be local, claude or portable');
+  if (themeOverride !== undefined) checkedTheme(themeOverride, 'Theme');
+  const documents = await loadDocuments(root, docs);
+  if (brief === undefined) {
+    // Documents only: a static page with no questions, no view and no answer storage.
+    if (view !== undefined) throw new Error('A view selects decisions of a brief: supply --brief with --view');
+    const theme = themeOverride ?? await artifactTheme(root) ?? 'light';
+    const colors = (await artifactColors(root))?.[theme];
+    return { model: { schemaVersion: 1, artifactId: `document-${hash(docs.join('\n')).slice(0, 16)}`, title: documents[0].title || documents[0].path, summary: '', theme, ...(colors ? { colors } : {}), documents, questions: [], comparisons: [], reviews: [], mode }, text: '' };
+  }
   const text = (await readProjectFile(root, brief)).toString('utf8');
   const definition = view ? parseJSON(await readProjectFile(root, view), view) : { schemaVersion: 1, title: 'Your decisions' };
   if (!object(definition) || definition.schemaVersion !== 1 || !string(definition.title)) throw new Error('View needs schemaVersion: 1 and a title');
   for (const field of ['title', 'summary']) if (definition[field] !== undefined && (typeof definition[field] !== 'string' || definition[field].length > 8_000)) throw new Error(`Invalid view ${field}`);
   if (definition.theme !== undefined) checkedTheme(definition.theme, 'View theme');
-  if (themeOverride !== undefined) checkedTheme(themeOverride, 'Theme');
   const artifactId = definition.artifactId ?? `decisions-${hash(brief).slice(0, 16)}`;
   if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(artifactId)) throw new Error('artifactId must be a short alphanumeric slug');
   const { revision, questions } = questionsFromBrief(text, definition.decisionIds);
@@ -97,10 +138,10 @@ export async function loadArtifact({ root = process.cwd(), brief, view, mode = '
   const theme = themeOverride ?? definition.theme ?? await artifactTheme(root) ?? 'light';
   // Colors are display-only too: they stay out of the view revision.
   const colors = (await artifactColors(root))?.[theme];
-  return { model: { schemaVersion: 1, artifactId, title: definition.title, summary: definition.summary ?? '', theme, ...(colors ? { colors } : {}), source: { path: brief, revision, viewRevision }, questions, comparisons, reviews, mode }, text };
+  return { model: { schemaVersion: 1, artifactId, title: definition.title, summary: definition.summary ?? '', theme, ...(colors ? { colors } : {}), source: { path: brief, revision, viewRevision }, ...(documents.length ? { documents } : {}), questions, comparisons, reviews, mode }, text };
 }
 
-export function localState(model) {
+export function localState({ documents, ...model }) {
   return { model, responses: model.questions.filter(q => q.answer !== null).map(q => ({ id: q.id, answer: q.answer, ...(q.note === undefined ? {} : { note: q.note }) })), writable: true, storage: 'brief', message: 'Answers save directly to your brief.' };
 }
 
@@ -142,13 +183,14 @@ export async function persistResponses({ root = process.cwd(), brief, view, enve
   return { applied: apply, changed: updated !== text, source: model.source, answers: request.answers };
 }
 
-export async function saveLocal({ root = process.cwd(), brief, view, theme, request }) {
-  const { model, text } = await loadArtifact({ root, brief, view, theme });
+export async function saveLocal({ root = process.cwd(), brief, view, docs, theme, request }) {
+  const { model, text } = await loadArtifact({ root, brief, view, docs, theme });
   if (request?.viewRevision !== model.source.viewRevision) throw new Error('Artifact view changed. Refresh the screenshots and questions before saving.');
   if (!request || !Array.isArray(request.answers) || request.answers.some(answer => !model.questions.some(q => q.id === answer?.id))) throw new Error('Responses must name only decisions displayed in this artifact');
-  const updated = saveAnswers(text, request);
+  // The served page is the person's own: only here can an explicit change replace a saved answer.
+  const updated = saveAnswers(text, request, { allowChange: true });
   await replaceBrief(root, brief, text, updated);
-  return localState((await loadArtifact({ root, brief, view, theme })).model);
+  return localState((await loadArtifact({ root, brief, view, docs, theme })).model);
 }
 
 export async function writeArtifact({ root = process.cwd(), path, html }) {

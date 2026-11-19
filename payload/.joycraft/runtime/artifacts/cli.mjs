@@ -7,14 +7,20 @@ import { briefQuestionStyle, effectiveQuestionStyle, parseQuestionStyle, project
 
 export async function main(argv, root = process.cwd()) {
   const [command, ...args] = argv;
-  const flags = command === 'serve' ? ['--brief', '--view', '--theme'] : command === 'build' ? ['--brief', '--view', '--out', '--mode', '--theme'] : command === 'import' ? ['--brief', '--view', '--responses', '--apply'] : command === 'theme' ? ['--set'] : command === 'colors' ? ['--set', '--reset'] : command === 'questions' ? ['--brief', '--set', '--clear'] : [];
-  if (!flags.length) throw new Error('Use serve --brief <path> [--view <path>] [--theme light|dark], build --brief <path> [--view <path>] --out <path> --mode claude|portable [--theme light|dark], import --brief <path> [--view <path>] --responses <path> [--apply], theme --set light|dark, colors --set <colors.json> | --reset, or questions [--brief <path>] [--set pacing=one-at-a-time|page,surface=chat|artifact | --clear]');
+  const flags = command === 'serve' ? ['--brief', '--view', '--doc', '--theme'] : command === 'build' ? ['--brief', '--view', '--doc', '--out', '--mode', '--theme'] : command === 'import' ? ['--brief', '--view', '--responses', '--apply'] : command === 'theme' ? ['--set'] : command === 'colors' ? ['--set', '--reset'] : command === 'questions' ? ['--brief', '--set', '--clear'] : [];
+  if (!flags.length) throw new Error('Use serve [--brief <path> [--view <path>]] [--doc <file.md>]... [--theme light|dark], build [--brief <path> [--view <path>]] [--doc <file.md>]... --out <path> --mode claude|portable [--theme light|dark], import --brief <path> [--view <path>] --responses <path> [--apply], theme --set light|dark, colors --set <colors.json> | --reset, or questions [--brief <path>] [--set pacing=one-at-a-time|page,surface=chat|artifact | --clear]');
   const values = {};
+  // --doc repeats: each Markdown file is one document on the page, in the order given.
+  const docs = [];
   for (let i = 0; i < args.length; i += 1) {
     const flag = args[i];
     if (!flags.includes(flag) || Object.hasOwn(values, flag)) throw new Error(`Unknown or repeated argument: ${flag}`);
     if (flag === '--apply' || flag === '--reset' || flag === '--clear') values[flag] = true;
-    else { if (!args[i + 1] || args[i + 1].startsWith('--')) throw new Error(`Missing value for ${flag}`); values[flag] = args[++i]; }
+    else {
+      if (!args[i + 1] || args[i + 1].startsWith('--')) throw new Error(`Missing value for ${flag}`);
+      if (flag === '--doc') docs.push(args[++i]);
+      else values[flag] = args[++i];
+    }
   }
   if (command === 'theme') {
     if (!values['--set']) throw new Error('Theme needs --set light|dark');
@@ -57,18 +63,21 @@ export async function main(argv, root = process.cwd()) {
     console.log(JSON.stringify({ path: '.joycraft/preferences.json', colors: preferences.artifacts.colors ?? 'kit defaults' }, null, 2));
     return preferences;
   }
-  if (!values['--brief']) throw new Error('Supply --brief as a path relative to the project root');
-  const options = { root, brief: values['--brief'], view: values['--view'], theme: values['--theme'] };
+  if (!values['--brief'] && !docs.length) throw new Error(command === 'import' ? 'Supply --brief as a path relative to the project root' : 'Supply --brief or --doc as a path relative to the project root');
+  const options = { root, brief: values['--brief'], view: values['--view'], theme: values['--theme'], ...(docs.length ? { docs } : {}) };
+  // An image that is not a plain project image file shows as text: name it, so the author can correct the path.
+  const imagesNotShown = model => (model.documents ?? []).flatMap(document => document.imagesNotShown ?? []);
   if (command === 'serve') {
     const server = await startArtifact(options);
-    console.log(`Artifact: ${server.url}\nAnswers save directly to ${options.brief}. Stop with Ctrl-C.`);
+    const notShown = imagesNotShown((await loadArtifact(options)).model);
+    console.log(`Artifact: ${server.url}\n${notShown.length ? `Images shown as text (not a PNG, JPEG, WebP or GIF file in the project, or too large): ${notShown.join(', ')}\n` : ''}${options.brief ? `Answers save directly to ${options.brief}.` : 'This page is read-only: it shows the documents as they are now.'} Stop with Ctrl-C.`);
     return server;
   }
   if (command === 'build') {
     if (!values['--out'] || !['claude', 'portable'].includes(values['--mode'])) throw new Error('Build needs --out <project-relative-path> and --mode claude|portable');
     const { model } = await loadArtifact({ ...options, mode: values['--mode'] });
     const path = await writeArtifact({ root, path: values['--out'], html: await renderArtifact(model) });
-    console.log(JSON.stringify({ path, mode: model.mode, source: model.source, instruction: model.mode === 'claude' ? 'Use the available Claude host artifact tools to create or update an HTML artifact from these bytes. This command has not published or uploaded it.' : 'Open the HTML, fill answers, then export responses for import. This file cannot update the brief by itself.' }, null, 2));
+    console.log(JSON.stringify({ path, mode: model.mode, source: model.source, ...(docs.length ? { documents: docs } : {}), ...(imagesNotShown(model).length ? { imagesNotShown: imagesNotShown(model) } : {}), instruction: model.mode === 'claude' ? 'Use the available Claude host artifact tools to create or update an HTML artifact from these bytes. This command has not published or uploaded it.' : model.source ? 'Open the HTML, fill answers, then export responses for import. This file cannot update the brief by itself.' : 'Open the HTML. It is a read-only copy of the documents as they were at this build.' }, null, 2));
     return { path, model };
   }
   if (!values['--responses']) throw new Error('Import needs --responses <project-relative-path>');

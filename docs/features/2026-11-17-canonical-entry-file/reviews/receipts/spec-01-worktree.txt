@@ -1,0 +1,84 @@
+=== case 1: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/git-main
+exit: 2 (expected 2) as expected
+--- stdout (886 chars) ---
+{
+  "gate": 2,
+  "advisory": 1,
+  "findings": [
+    {
+      "level": "gate",
+      "check": "missing-path",
+      "path": "AGENTS.md",
+      "line": 11,
+      "detail": "Names docs/context/gone.md, which does not exist.",
+      "fix": "Point it at the current path, or remove the line if the thing is gone."
+    },
+    {
+      "level": "gate",
+      "check": "broken-link",
+      "path": "AGENTS.md",
+      "line": 12,
+      "detail": "Links to docs/context/release.md, which does not exist.",
+      "fix": "Fix the link or remove it."
+    },
+    {
+      "level": "advisory",
+      "check": "unmapped",
+      "path": "docs/context/notes.md",
+      "detail": "Only other docs/context/ pages mention this page; AGENTS.md and CLAUDE.md do not, so agents may not know when to read it.",
+      "fix": "Add a context-map row with a \"read when\", or merge it into a mapped page."
+    }
+  ]
+}
+--- stderr (0 chars) ---
+=== end case 1
+=== case 2: node payload/.joycraft/runtime/entry-check.mjs --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/git-linked
+exit: 2 (expected 2) as expected
+--- stdout (886 chars) ---
+{
+  "gate": 2,
+  "advisory": 1,
+  "findings": [
+    {
+      "level": "gate",
+      "check": "missing-path",
+      "path": "AGENTS.md",
+      "line": 11,
+      "detail": "Names docs/context/gone.md, which does not exist.",
+      "fix": "Point it at the current path, or remove the line if the thing is gone."
+    },
+    {
+      "level": "gate",
+      "check": "broken-link",
+      "path": "AGENTS.md",
+      "line": 12,
+      "detail": "Links to docs/context/release.md, which does not exist.",
+      "fix": "Fix the link or remove it."
+    },
+    {
+      "level": "advisory",
+      "check": "unmapped",
+      "path": "docs/context/notes.md",
+      "detail": "Only other docs/context/ pages mention this page; AGENTS.md and CLAUDE.md do not, so agents may not know when to read it.",
+      "fix": "Add a context-map row with a \"read when\", or merge it into a mapped page."
+    }
+  ]
+}
+--- stderr (0 chars) ---
+=== end case 2
+=== case 3: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/git-main
+exit: 2 (expected 2) as expected
+--- stdout (157 chars) ---
+AGENTS.md:11 missing-path Names docs/context/gone.md, which does not exist.
+AGENTS.md:12 broken-link Links to docs/context/release.md, which does not exist.
+--- stderr (0 chars) ---
+=== end case 3
+=== case 4: node payload/.joycraft/runtime/entry-check.mjs --ci --root ../../../../../../tmp/joycraft-review-spec01-QPCKL3/git-linked
+exit: 2 (expected 2) as expected
+--- stdout (157 chars) ---
+AGENTS.md:11 missing-path Names docs/context/gone.md, which does not exist.
+AGENTS.md:12 broken-link Links to docs/context/release.md, which does not exist.
+--- stderr (0 chars) ---
+=== end case 4
+stdout of case 1 equals stdout of case 2
+stdout of case 3 equals stdout of case 4

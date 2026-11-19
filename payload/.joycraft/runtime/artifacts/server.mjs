@@ -3,8 +3,8 @@ import { randomBytes } from 'node:crypto';
 import { loadArtifact, localState, saveLocal } from './model.mjs';
 import { renderArtifact } from './render.mjs';
 
-export async function startArtifact({ root = process.cwd(), brief, view, theme, port = 0 }) {
-  const args = { root, brief, view, theme };
+export async function startArtifact({ root = process.cwd(), brief, view, docs, theme, port = 0 }) {
+  const args = { root, brief, view, docs, theme };
   await loadArtifact(args);
   const token = randomBytes(24).toString('hex');
   let url;
@@ -31,6 +31,8 @@ export async function startArtifact({ root = process.cwd(), brief, view, theme, 
         response.setHeader('Content-Security-Policy', `default-src 'none'; script-src 'nonce-${token}'; style-src 'unsafe-inline'; connect-src 'self'; img-src data:; base-uri 'none'; frame-ancestors 'none'; form-action 'none'`);
         return send(200, await renderArtifact((await loadArtifact(args)).model, { token }), 'text/html');
       }
+      // A page of documents only has no answers to load or save.
+      if (!brief) return send(404, { error: 'Not found' });
       if (request.method === 'GET' && path === '/state') return send(200, localState((await loadArtifact(args)).model));
       if (request.method === 'POST' && path === '/answers') {
         if (request.headers.origin !== url || request.headers['x-artifact-token'] !== token) return send(403, { error: 'Invalid origin or token' });

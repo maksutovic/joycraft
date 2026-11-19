@@ -1,0 +1,996 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "24c0dffe0777fc6b9e6ff4ababe911b421d5dd94",
+    "queuePath": "docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json",
+    "specId": 1,
+    "specPath": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+    "criteria": [
+      {
+        "id": "entry-clean-silent",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "entry-dead-path",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "entry-ci-mode",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "entry-policy-independent",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "entry-linked-worktree",
+        "requirement": {
+          "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+        "kind": "requirement",
+        "sha256": "a28e231dae041602febccf9c8178d4f4e2fa11a952685f2c7beab3afe33c7986",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "1ae269601d6acab45b5c3f0933c944792051be5ae8fc49f80c6479494600b313",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+        "kind": "requirement",
+        "sha256": "197606bd08fb31b95e7c535e8ec3d64f0ff4944af05959572293b6a981625ea5",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "9ac873822a7bf509dca6d841d2253121f154da4b23ff16d149164e44162d4c61",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/entry-check.mjs",
+        "kind": "code",
+        "sha256": "6dbe9afa3d67ad2208094f02a120643a96772422e046e1c19d9e2d6dbe65acb1",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1
+        ]
+      },
+      "governing": []
+    },
+    "identity": "11bb9fe35477de9a1c47a9d8b2c996e90920994ee48937d5c4589cdc153e5851"
+  },
+  "implementerSessionId": "7b20329f-0b26-4c62-abe8-68cdb4bfb321",
+  "reviewer": {
+    "sessionId": "c4d4cf80-f74b-4a01-bbd5-c093b4bd3e0e",
+    "independent": true,
+    "scopeReviewed": true,
+    "actor": {
+      "host": "claude",
+      "sessionId": "c4d4cf80-f74b-4a01-bbd5-c093b4bd3e0e",
+      "agentId": "adc5e5fa35faca59a"
+    }
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "clean-project-silent",
+      "criteria": [
+        "entry-clean-silent"
+      ],
+      "representativeInput": "A copy of fixtures/entry-check/clean (AGENTS.md with one backticked path and one link, both present; two context pages) at ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/clean, which is not in a Git repository; the same fixture in place in the checkout, which is in one; and a copy with the vendored .joycraft folder and the managed block of this version in AGENTS.md. Command: node payload/.joycraft/runtime/entry-check.mjs --root <fixture>.",
+      "expected": "Exit code 0; stdout and stderr empty.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "The shipped payload command, run directly on the temp copy of the clean fixture, exited 0. evidence.mjs sends stdout and stderr to the one receipt file, and that file has 0 bytes.",
+          "command": {
+            "argv": [
+              "node",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/clean"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-clean-direct.txt",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Four cases, each exit 0 with stdout 0 chars and stderr 0 chars: the temp copy; the temp copy with --ci; the fixture in place in the checkout (inside a Git repository); and the temp copy as the working folder with no --root (the driver resolves the script path for that case). The recorded argv is an inline driver (node -e). It starts each case with no shell, prints the case, its real exit code, its stdout and its stderr to the receipt, and exits 0 only when each exit code is the expected one, each count of a pattern in stdout is the expected one, and each named pair of stdouts is byte-equal. The exit codes of entry-check.mjs are in the receipt, not in command.exitCode.",
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const {spawnSync}=require(\"node:child_process\"),path=require(\"node:path\");let a=process.argv.slice(1),same=[],cases=[],cur=[];if(a[0].startsWith(\"same=\")){same=a.shift().slice(5).split(\";\").map(p=>p.split(\",\").map(Number))}for(const x of a){if(x===\"::\"){cases.push(cur);cur=[]}else cur.push(x)}cases.push(cur);let ok=true;const outs=[];cases.forEach(([want,...args],i)=>{let cwd,err;const counts=[];for(;;){if(args[0].startsWith(\"cwd=\")){cwd=args.shift().slice(4)}else if(args[0].startsWith(\"err=\")){err=args.shift().slice(4)}else if(args[0].startsWith(\"n=\")){const s=args.shift().slice(2),k=s.indexOf(\":\");counts.push([Number(s.slice(0,k)),s.slice(k+1)])}else break}const empty=want.endsWith(\"E\"),code=parseInt(want,10);console.log(`=== case ${i+1}: ${cwd?`(working folder ${cwd}) `:\"\"}node ${args.join(\" \")}`);const r=spawnSync(process.execPath,cwd?[path.resolve(args[0]),...args.slice(1)]:args,{encoding:\"utf8\",cwd});outs.push(r.stdout);let pass=r.status===code&&(!empty||(r.stdout===\"\"&&r.stderr===\"\"));console.log(`exit ${r.status}; expected ${code}${empty?\" with empty stdout and empty stderr\":\"\"}`);console.log(`--- stdout, ${r.stdout.length} chars`);process.stdout.write(r.stdout);console.log(`--- stderr, ${r.stderr.length} chars`);process.stdout.write(r.stderr);for(const [n,re] of counts){const got=(r.stdout.match(new RegExp(re,\"g\"))||[]).length;console.log(`stdout matches /${re}/ ${got} time(s); expected ${n}`);pass=pass&&got===n}if(err){const hit=new RegExp(err).test(r.stderr);console.log(`stderr ${hit?\"matches\":\"DOES NOT MATCH\"} /${err}/`);pass=pass&&hit}console.log(`=== case ${i+1} ${pass?\"as expected\":\"DIFFERENT\"}`);ok=ok&&pass});for(const [i,j] of same){const eq=outs[i-1]===outs[j-1];ok=ok&&eq;console.log(`stdout of case ${i} ${eq?\"equals\":\"DIFFERS FROM\"} stdout of case ${j}`)}process.exit(ok?0:1)",
+              "--",
+              "0E",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/clean",
+              "::",
+              "0E",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/clean",
+              "::",
+              "0E",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../prototype-canonical-entry-file/fixtures/entry-check/clean",
+              "::",
+              "0E",
+              "cwd=../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/clean",
+              "payload/.joycraft/runtime/entry-check.mjs"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-clean.txt",
+              "sha256": "28c3b439196658339693874ffd285a906a57c8f4f9d217a693d0144d278de5dd"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "A clean project that looks like an installed one is also silent: the clean fixture plus a copy of payload/.joycraft and the output of \"entry-check.mjs block\" placed in AGENTS.md. Run with the copied runtime (same SHA-256 as payload for entry-check.mjs and cleanup.mjs, printed in the receipt) with and without --ci, and with the payload runtime: each exit 0, stdout and stderr 0 chars. The same build on the dead-path fixture exits 2 with the two gate lines at AGENTS.md:18 and :19. The recorded argv is an inline driver (node -e). It starts each case with no shell, prints the case, its real exit code, its stdout and its stderr to the receipt, and exits 0 only when each exit code is the expected one, each count of a pattern in stdout is the expected one, and each named pair of stdouts is byte-equal. The exit codes of entry-check.mjs are in the receipt, not in command.exitCode.",
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const {spawnSync}=require(\"node:child_process\"),path=require(\"node:path\");let a=process.argv.slice(1),same=[],cases=[],cur=[];if(a[0].startsWith(\"same=\")){same=a.shift().slice(5).split(\";\").map(p=>p.split(\",\").map(Number))}for(const x of a){if(x===\"::\"){cases.push(cur);cur=[]}else cur.push(x)}cases.push(cur);let ok=true;const outs=[];cases.forEach(([want,...args],i)=>{let cwd,err;const counts=[];for(;;){if(args[0].startsWith(\"cwd=\")){cwd=args.shift().slice(4)}else if(args[0].startsWith(\"err=\")){err=args.shift().slice(4)}else if(args[0].startsWith(\"n=\")){const s=args.shift().slice(2),k=s.indexOf(\":\");counts.push([Number(s.slice(0,k)),s.slice(k+1)])}else break}const empty=want.endsWith(\"E\"),code=parseInt(want,10);console.log(`=== case ${i+1}: ${cwd?`(working folder ${cwd}) `:\"\"}node ${args.join(\" \")}`);const r=spawnSync(process.execPath,cwd?[path.resolve(args[0]),...args.slice(1)]:args,{encoding:\"utf8\",cwd});outs.push(r.stdout);let pass=r.status===code&&(!empty||(r.stdout===\"\"&&r.stderr===\"\"));console.log(`exit ${r.status}; expected ${code}${empty?\" with empty stdout and empty stderr\":\"\"}`);console.log(`--- stdout, ${r.stdout.length} chars`);process.stdout.write(r.stdout);console.log(`--- stderr, ${r.stderr.length} chars`);process.stdout.write(r.stderr);for(const [n,re] of counts){const got=(r.stdout.match(new RegExp(re,\"g\"))||[]).length;console.log(`stdout matches /${re}/ ${got} time(s); expected ${n}`);pass=pass&&got===n}if(err){const hit=new RegExp(err).test(r.stderr);console.log(`stderr ${hit?\"matches\":\"DOES NOT MATCH\"} /${err}/`);pass=pass&&hit}console.log(`=== case ${i+1} ${pass?\"as expected\":\"DIFFERENT\"}`);ok=ok&&pass});for(const [i,j] of same){const eq=outs[i-1]===outs[j-1];ok=ok&&eq;console.log(`stdout of case ${i} ${eq?\"equals\":\"DIFFERS FROM\"} stdout of case ${j}`)}process.exit(ok?0:1)",
+              "--",
+              "0E",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean",
+              "::",
+              "0E",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean",
+              "::",
+              "0E",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-clean",
+              "::",
+              "2",
+              "n=2:\\n",
+              "n=1:AGENTS\\.md:18 missing-path Names docs/context/gone\\.md",
+              "n=1:AGENTS\\.md:19 broken-link Links to docs/context/release\\.md",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-dead-path/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/installed-dead-path",
+              "::",
+              "0",
+              "n=3:6dbe9afa3d67ad2208094f02a120643a96772422e046e1c19d9e2d6dbe65acb1",
+              "n=3:9ac873822a7bf509dca6d841d2253121f154da4b23ff16d149164e44162d4c61",
+              "n=2:joycraft:managed -->",
+              "-e",
+              "const fs=require(\"node:fs\"),{createHash}=require(\"node:crypto\");const [t]=process.argv.slice(1);for(const d of [\"payload\",t+\"/installed-clean\",t+\"/installed-dead-path\"])for(const f of [\"entry-check.mjs\",\"cleanup.mjs\"])console.log(createHash(\"sha256\").update(fs.readFileSync(`${d}/.joycraft/runtime/${f}`)).digest(\"hex\"),`${d}/.joycraft/runtime/${f}`);console.log(fs.readFileSync(t+\"/installed-clean/AGENTS.md\",\"utf8\"))",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-installed-layout.txt",
+              "sha256": "cf6a84ba38b0a758b77fd60eab84b44b186c4d689e33c85fe4f3a8fae1cdf0e2"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "node --test on tests/cleanup/entry-check.test.mjs of the checkout: 13 of 13 tests passed, 0 failed. \"[AC:entry-clean-silent] a clean project prints nothing and exits 0\" passed. Its one assertion is deepEqual([status, stdout, stderr], [0, \"\", \"\"]) on a copy of the clean fixture, which is the whole check.",
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/entry-check.test.mjs"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-entry-check-test.txt",
+              "sha256": "db334c2d0deb62eb67906c688f56307887e9c01e484b2d2c66070e947d79325a"
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "The tagged tests and the fixtures are in the joycraft-prototype checkout (../prototype-canonical-entry-file) at commit ee3ab75f06fe9d5bec13f9e8770ca4f23358447e, tag field-26, the commit in payload/PIN; they are not vendored. The test file starts the checkout copy of the runtime, not payload/. Receipt spec-01-r2-pin-match.txt shows that each of the 85 files of payload/PIN has the PIN SHA-256 in payload/ and in that checkout, and that the checkout tree is clean.",
+        "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa is a throwaway folder that I made under the system temp directory from copies of the checkout fixtures; I removed it after the review."
+      ],
+      "subjectIdentity": "11bb9fe35477de9a1c47a9d8b2c996e90920994ee48937d5c4589cdc153e5851"
+    },
+    {
+      "id": "dead-path-gate",
+      "criteria": [
+        "entry-dead-path"
+      ],
+      "representativeInput": "A copy of fixtures/entry-check/dead-path: AGENTS.md line 11 names `docs/context/gone.md` and line 12 links docs/context/release.md, and neither file exists; docs/context/notes.md, which only project.md links and no entry file names, names the dead path `src/bids/old.js`. A second copy (unnamed-page) adds docs/context/lone.md, which nothing links, with a dead path and a broken link. A third project (claude-entry) has the same two dead lines in CLAUDE.md and no AGENTS.md.",
+      "expected": "JSON on stdout with one missing-path and one broken-link finding for AGENTS.md, each with its line; exit code 2; no dead path of a context page that no entry file names.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Case 1 (payload command on the temp copy): exit 2, stderr 0 chars, stdout is JSON { gate: 2, advisory: 1, findings }: level gate, check missing-path, path AGENTS.md, line 11, \"Names docs/context/gone.md, which does not exist.\"; level gate, check broken-link, path AGENTS.md, line 12, \"Links to docs/context/release.md, which does not exist.\"; and one advisory unmapped finding for docs/context/notes.md. The driver counted exactly one missing-path, one broken-link, two gate levels, two \"path\": \"AGENTS.md\", one line 11, one line 12, and no \"old.js\". Case 2 (the fixture in place in the checkout): exit 2 and byte-equal stdout. Case 3 (unnamed-page): exit 2; the output gains only an advisory orphan for lone.md; still one missing-path and one broken-link, no \"old.js\", no \"plan.md\". Case 4 (cleanup.mjs on the same folder): 3 missing-path and 2 broken-link findings, so the three dead references of notes.md and lone.md exist for cleanup and entry-check.mjs leaves them out. Case 5 (claude-entry): exit 2, the same two gate findings with path CLAUDE.md. Case 6 (a page that AGENTS.md does name, with a dead path and a broken link in it): exit 0 and no output; the report keeps only findings whose file is an entry file. The recorded argv is an inline driver (node -e). It starts each case with no shell, prints the case, its real exit code, its stdout and its stderr to the receipt, and exits 0 only when each exit code is the expected one, each count of a pattern in stdout is the expected one, and each named pair of stdouts is byte-equal. The exit codes of entry-check.mjs are in the receipt, not in command.exitCode.",
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const {spawnSync}=require(\"node:child_process\"),path=require(\"node:path\");let a=process.argv.slice(1),same=[],cases=[],cur=[];if(a[0].startsWith(\"same=\")){same=a.shift().slice(5).split(\";\").map(p=>p.split(\",\").map(Number))}for(const x of a){if(x===\"::\"){cases.push(cur);cur=[]}else cur.push(x)}cases.push(cur);let ok=true;const outs=[];cases.forEach(([want,...args],i)=>{let cwd,err;const counts=[];for(;;){if(args[0].startsWith(\"cwd=\")){cwd=args.shift().slice(4)}else if(args[0].startsWith(\"err=\")){err=args.shift().slice(4)}else if(args[0].startsWith(\"n=\")){const s=args.shift().slice(2),k=s.indexOf(\":\");counts.push([Number(s.slice(0,k)),s.slice(k+1)])}else break}const empty=want.endsWith(\"E\"),code=parseInt(want,10);console.log(`=== case ${i+1}: ${cwd?`(working folder ${cwd}) `:\"\"}node ${args.join(\" \")}`);const r=spawnSync(process.execPath,cwd?[path.resolve(args[0]),...args.slice(1)]:args,{encoding:\"utf8\",cwd});outs.push(r.stdout);let pass=r.status===code&&(!empty||(r.stdout===\"\"&&r.stderr===\"\"));console.log(`exit ${r.status}; expected ${code}${empty?\" with empty stdout and empty stderr\":\"\"}`);console.log(`--- stdout, ${r.stdout.length} chars`);process.stdout.write(r.stdout);console.log(`--- stderr, ${r.stderr.length} chars`);process.stdout.write(r.stderr);for(const [n,re] of counts){const got=(r.stdout.match(new RegExp(re,\"g\"))||[]).length;console.log(`stdout matches /${re}/ ${got} time(s); expected ${n}`);pass=pass&&got===n}if(err){const hit=new RegExp(err).test(r.stderr);console.log(`stderr ${hit?\"matches\":\"DOES NOT MATCH\"} /${err}/`);pass=pass&&hit}console.log(`=== case ${i+1} ${pass?\"as expected\":\"DIFFERENT\"}`);ok=ok&&pass});for(const [i,j] of same){const eq=outs[i-1]===outs[j-1];ok=ok&&eq;console.log(`stdout of case ${i} ${eq?\"equals\":\"DIFFERS FROM\"} stdout of case ${j}`)}process.exit(ok?0:1)",
+              "--",
+              "same=1,2",
+              "2",
+              "n=1:\"check\": \"missing-path\"",
+              "n=1:\"check\": \"broken-link\"",
+              "n=2:\"level\": \"gate\"",
+              "n=2:\"path\": \"AGENTS.md\"",
+              "n=1:\"line\": 11,",
+              "n=1:\"line\": 12,",
+              "n=1:Names docs/context/gone\\.md",
+              "n=0:old\\.js",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/dead-path",
+              "::",
+              "2",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../prototype-canonical-entry-file/fixtures/entry-check/dead-path",
+              "::",
+              "2",
+              "n=1:\"check\": \"missing-path\"",
+              "n=1:\"check\": \"broken-link\"",
+              "n=2:\"level\": \"gate\"",
+              "n=0:old\\.js",
+              "n=0:plan\\.md",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/unnamed-page",
+              "::",
+              "2",
+              "n=3:\"check\": \"missing-path\"",
+              "n=2:\"check\": \"broken-link\"",
+              "n=1:Names src/bids/old\\.js",
+              "n=1:Names src/close/old\\.js",
+              "n=1:Links to docs/context/plan\\.md",
+              "payload/.joycraft/runtime/cleanup.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/unnamed-page",
+              "::",
+              "2",
+              "n=1:\"check\": \"missing-path\"",
+              "n=1:\"check\": \"broken-link\"",
+              "n=2:\"path\": \"CLAUDE.md\"",
+              "n=2:\"level\": \"gate\"",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/claude-entry",
+              "::",
+              "0E",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/named-page-dead"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-dead-path.txt",
+              "sha256": "5a34746af7fc2da4bb6756ce472e72581ea83485119f9158add24147078f28c7"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "node --test on tests/cleanup/entry-check.test.mjs of the checkout: 13 of 13 tests passed, 0 failed. \"[AC:entry-dead-path] a dead path and a broken link in an entry file are gate findings with their lines; exit 2\" passed. It asserts exit 2, that the gate findings are exactly broken-link:AGENTS.md:12 and missing-path:AGENTS.md:11, that the missing-path detail names docs/context/gone.md, that every missing-path finding has path AGENTS.md, that notes.md has only an advisory unmapped finding, and that entryReport({ root }) equals the printed JSON.",
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/entry-check.test.mjs"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-entry-check-test.txt",
+              "sha256": "db334c2d0deb62eb67906c688f56307887e9c01e484b2d2c66070e947d79325a"
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "The tagged tests and the fixtures are in the joycraft-prototype checkout (../prototype-canonical-entry-file) at commit ee3ab75f06fe9d5bec13f9e8770ca4f23358447e, tag field-26, the commit in payload/PIN; they are not vendored. The test file starts the checkout copy of the runtime, not payload/. Receipt spec-01-r2-pin-match.txt shows that each of the 85 files of payload/PIN has the PIN SHA-256 in payload/ and in that checkout, and that the checkout tree is clean.",
+        "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa is a throwaway folder that I made under the system temp directory from copies of the checkout fixtures; I removed it after the review.",
+        "The page that holds the unnamed dead path is still in the output, as an advisory unmapped or orphan finding. The spec asks for those two checks (\"plus unmapped and orphan\"); the dead path itself is not in the output."
+      ],
+      "subjectIdentity": "11bb9fe35477de9a1c47a9d8b2c996e90920994ee48937d5c4589cdc153e5851"
+    },
+    {
+      "id": "ci-mode-lines",
+      "criteria": [
+        "entry-ci-mode"
+      ],
+      "representativeInput": "The dead-path copy with --ci (before and after --root); two advisory-only projects made from the clean fixture: advisory-unmapped (docs/context/notes.md, which only project.md links) and advisory-orphan (docs/context/unlisted.md, which nothing links), each with --ci and without; claude-entry with --ci.",
+      "expected": "With --ci on dead-path: stdout has one line for each gate finding in the form AGENTS.md:<line> <check> <detail>, not JSON; exit code 2. With --ci on a project whose only finding is advisory (a context page with no map row): no output, exit code 0.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Case 1 (--ci, dead-path): exit 2, stderr 0 chars, stdout is exactly two lines, \"AGENTS.md:11 missing-path Names docs/context/gone.md, which does not exist.\" and \"AGENTS.md:12 broken-link Links to docs/context/release.md, which does not exist.\"; no brace and no \"unmapped\" in stdout, so the advisory finding of that fixture is not printed and the output is not JSON. Case 7 (--root before --ci): the same. Cases 2 and 4 (--ci on advisory-unmapped and on advisory-orphan): exit 0, stdout 0 chars, stderr 0 chars. Cases 3 and 5 (the same two projects without --ci): exit 0 and JSON with one advisory finding (unmapped, orphan) and no gate finding, so each project does have an advisory finding and nothing else. Case 6 (claude-entry, --ci): exit 2 and the two lines with CLAUDE.md:11 and CLAUDE.md:12. The recorded argv is an inline driver (node -e). It starts each case with no shell, prints the case, its real exit code, its stdout and its stderr to the receipt, and exits 0 only when each exit code is the expected one, each count of a pattern in stdout is the expected one, and each named pair of stdouts is byte-equal. The exit codes of entry-check.mjs are in the receipt, not in command.exitCode.",
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const {spawnSync}=require(\"node:child_process\"),path=require(\"node:path\");let a=process.argv.slice(1),same=[],cases=[],cur=[];if(a[0].startsWith(\"same=\")){same=a.shift().slice(5).split(\";\").map(p=>p.split(\",\").map(Number))}for(const x of a){if(x===\"::\"){cases.push(cur);cur=[]}else cur.push(x)}cases.push(cur);let ok=true;const outs=[];cases.forEach(([want,...args],i)=>{let cwd,err;const counts=[];for(;;){if(args[0].startsWith(\"cwd=\")){cwd=args.shift().slice(4)}else if(args[0].startsWith(\"err=\")){err=args.shift().slice(4)}else if(args[0].startsWith(\"n=\")){const s=args.shift().slice(2),k=s.indexOf(\":\");counts.push([Number(s.slice(0,k)),s.slice(k+1)])}else break}const empty=want.endsWith(\"E\"),code=parseInt(want,10);console.log(`=== case ${i+1}: ${cwd?`(working folder ${cwd}) `:\"\"}node ${args.join(\" \")}`);const r=spawnSync(process.execPath,cwd?[path.resolve(args[0]),...args.slice(1)]:args,{encoding:\"utf8\",cwd});outs.push(r.stdout);let pass=r.status===code&&(!empty||(r.stdout===\"\"&&r.stderr===\"\"));console.log(`exit ${r.status}; expected ${code}${empty?\" with empty stdout and empty stderr\":\"\"}`);console.log(`--- stdout, ${r.stdout.length} chars`);process.stdout.write(r.stdout);console.log(`--- stderr, ${r.stderr.length} chars`);process.stdout.write(r.stderr);for(const [n,re] of counts){const got=(r.stdout.match(new RegExp(re,\"g\"))||[]).length;console.log(`stdout matches /${re}/ ${got} time(s); expected ${n}`);pass=pass&&got===n}if(err){const hit=new RegExp(err).test(r.stderr);console.log(`stderr ${hit?\"matches\":\"DOES NOT MATCH\"} /${err}/`);pass=pass&&hit}console.log(`=== case ${i+1} ${pass?\"as expected\":\"DIFFERENT\"}`);ok=ok&&pass});for(const [i,j] of same){const eq=outs[i-1]===outs[j-1];ok=ok&&eq;console.log(`stdout of case ${i} ${eq?\"equals\":\"DIFFERS FROM\"} stdout of case ${j}`)}process.exit(ok?0:1)",
+              "--",
+              "2",
+              "n=2:\\n",
+              "n=1:AGENTS\\.md:11 missing-path Names docs/context/gone\\.md, which does not exist\\.\\n",
+              "n=1:AGENTS\\.md:12 broken-link Links to docs/context/release\\.md, which does not exist\\.\\n",
+              "n=0:unmapped",
+              "n=0:[{}]",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/dead-path",
+              "::",
+              "0E",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/advisory-unmapped",
+              "::",
+              "0",
+              "n=1:\"check\": \"unmapped\"",
+              "n=1:\"level\": \"advisory\"",
+              "n=0:\"level\": \"gate\"",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/advisory-unmapped",
+              "::",
+              "0E",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/advisory-orphan",
+              "::",
+              "0",
+              "n=1:\"check\": \"orphan\"",
+              "n=1:\"level\": \"advisory\"",
+              "n=0:\"level\": \"gate\"",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/advisory-orphan",
+              "::",
+              "2",
+              "n=2:\\n",
+              "n=1:CLAUDE\\.md:11 missing-path ",
+              "n=1:CLAUDE\\.md:12 broken-link ",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/claude-entry",
+              "::",
+              "2",
+              "n=2:\\n",
+              "n=1:AGENTS\\.md:11 missing-path ",
+              "n=1:AGENTS\\.md:12 broken-link ",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/dead-path",
+              "--ci"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-ci.txt",
+              "sha256": "e5a05631770339ed447115e51ba3dbc5a1e890a9430ad2cdf73c0edc2806e924"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "The shipped payload command with --ci, run directly on advisory-unmapped, exited 0. The receipt holds stdout and stderr together and has 0 bytes.",
+          "command": {
+            "argv": [
+              "node",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/advisory-unmapped"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-ci-advisory-direct.txt",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "node --test on tests/cleanup/entry-check.test.mjs of the checkout: 13 of 13 tests passed, 0 failed. \"[AC:entry-ci-mode] --ci prints one line for each gate finding and exits 2; an advisory finding alone is silent\" passed. It asserts exit 2 and the two exact lines for dead-path, and [0, \"\", \"\"] with --ci for the clean fixture plus one unlisted page, whose only finding it first shows to be an advisory orphan.",
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/entry-check.test.mjs"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-entry-check-test.txt",
+              "sha256": "db334c2d0deb62eb67906c688f56307887e9c01e484b2d2c66070e947d79325a"
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "The tagged tests and the fixtures are in the joycraft-prototype checkout (../prototype-canonical-entry-file) at commit ee3ab75f06fe9d5bec13f9e8770ca4f23358447e, tag field-26, the commit in payload/PIN; they are not vendored. The test file starts the checkout copy of the runtime, not payload/. Receipt spec-01-r2-pin-match.txt shows that each of the 85 files of payload/PIN has the PIN SHA-256 in payload/ and in that checkout, and that the checkout tree is clean.",
+        "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa is a throwaway folder that I made under the system temp directory from copies of the checkout fixtures; I removed it after the review.",
+        "A gate finding that has no line prints as \"<path> <check> <detail>\" with no \":<line>\" (payload/.joycraft/runtime/entry-check.mjs line 86). Such findings belong to the checks of spec 2 (codex-bytes, AGENTS.override.md); the fixtures of this check have none."
+      ],
+      "subjectIdentity": "11bb9fe35477de9a1c47a9d8b2c996e90920994ee48937d5c4589cdc153e5851"
+    },
+    {
+      "id": "update-policy-off",
+      "criteria": [
+        "entry-policy-independent"
+      ],
+      "representativeInput": "A copy of the dead-path fixture with .joycraft/local/preferences.json = {\"update\":{\"policy\":\"off\"}} (policy-off), beside the dead-path copy without that file.",
+      "expected": "The command still exits 2.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "With the policy file: exit 2 without --ci (two gate findings) and exit 2 with --ci (two lines). Each stdout is byte-equal to the run on the copy without the file (886 chars of JSON; 157 chars of lines). Case 5 prints the file that was in place: {\"update\":{\"policy\":\"off\"}}. The recorded argv is an inline driver (node -e). It starts each case with no shell, prints the case, its real exit code, its stdout and its stderr to the receipt, and exits 0 only when each exit code is the expected one, each count of a pattern in stdout is the expected one, and each named pair of stdouts is byte-equal. The exit codes of entry-check.mjs are in the receipt, not in command.exitCode.",
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const {spawnSync}=require(\"node:child_process\"),path=require(\"node:path\");let a=process.argv.slice(1),same=[],cases=[],cur=[];if(a[0].startsWith(\"same=\")){same=a.shift().slice(5).split(\";\").map(p=>p.split(\",\").map(Number))}for(const x of a){if(x===\"::\"){cases.push(cur);cur=[]}else cur.push(x)}cases.push(cur);let ok=true;const outs=[];cases.forEach(([want,...args],i)=>{let cwd,err;const counts=[];for(;;){if(args[0].startsWith(\"cwd=\")){cwd=args.shift().slice(4)}else if(args[0].startsWith(\"err=\")){err=args.shift().slice(4)}else if(args[0].startsWith(\"n=\")){const s=args.shift().slice(2),k=s.indexOf(\":\");counts.push([Number(s.slice(0,k)),s.slice(k+1)])}else break}const empty=want.endsWith(\"E\"),code=parseInt(want,10);console.log(`=== case ${i+1}: ${cwd?`(working folder ${cwd}) `:\"\"}node ${args.join(\" \")}`);const r=spawnSync(process.execPath,cwd?[path.resolve(args[0]),...args.slice(1)]:args,{encoding:\"utf8\",cwd});outs.push(r.stdout);let pass=r.status===code&&(!empty||(r.stdout===\"\"&&r.stderr===\"\"));console.log(`exit ${r.status}; expected ${code}${empty?\" with empty stdout and empty stderr\":\"\"}`);console.log(`--- stdout, ${r.stdout.length} chars`);process.stdout.write(r.stdout);console.log(`--- stderr, ${r.stderr.length} chars`);process.stdout.write(r.stderr);for(const [n,re] of counts){const got=(r.stdout.match(new RegExp(re,\"g\"))||[]).length;console.log(`stdout matches /${re}/ ${got} time(s); expected ${n}`);pass=pass&&got===n}if(err){const hit=new RegExp(err).test(r.stderr);console.log(`stderr ${hit?\"matches\":\"DOES NOT MATCH\"} /${err}/`);pass=pass&&hit}console.log(`=== case ${i+1} ${pass?\"as expected\":\"DIFFERENT\"}`);ok=ok&&pass});for(const [i,j] of same){const eq=outs[i-1]===outs[j-1];ok=ok&&eq;console.log(`stdout of case ${i} ${eq?\"equals\":\"DIFFERS FROM\"} stdout of case ${j}`)}process.exit(ok?0:1)",
+              "--",
+              "same=1,3;2,4",
+              "2",
+              "n=2:\"level\": \"gate\"",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/policy-off",
+              "::",
+              "2",
+              "n=2:\\n",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/policy-off",
+              "::",
+              "2",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/dead-path",
+              "::",
+              "2",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/dead-path",
+              "::",
+              "0",
+              "n=1:\"policy\":\"off\"",
+              "-e",
+              "process.stdout.write(require(\"node:fs\").readFileSync(process.argv[1],\"utf8\"))",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/policy-off/.joycraft/local/preferences.json"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-policy.txt",
+              "sha256": "01d8f700b25b6504ed37244714d468550eefa2300d3ddeba9129d481d70abc52"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "node --test on tests/cleanup/entry-check.test.mjs of the checkout: 13 of 13 tests passed, 0 failed. \"[AC:entry-policy-independent] update.policy off does not hide the check\" passed. It writes the same preferences file into a copy of dead-path and asserts exit 2 with and without --ci.",
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/entry-check.test.mjs"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-entry-check-test.txt",
+              "sha256": "db334c2d0deb62eb67906c688f56307887e9c01e484b2d2c66070e947d79325a"
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "The tagged tests and the fixtures are in the joycraft-prototype checkout (../prototype-canonical-entry-file) at commit ee3ab75f06fe9d5bec13f9e8770ca4f23358447e, tag field-26, the commit in payload/PIN; they are not vendored. The test file starts the checkout copy of the runtime, not payload/. Receipt spec-01-r2-pin-match.txt shows that each of the 85 files of payload/PIN has the PIN SHA-256 in payload/ and in that checkout, and that the checkout tree is clean.",
+        "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa is a throwaway folder that I made under the system temp directory from copies of the checkout fixtures; I removed it after the review.",
+        "Read in the source, not run: payload/.joycraft/runtime/update-check.mjs lines 106-108 read update.policy from .joycraft/local/preferences.json, the path that the check names, and return nothing when it is \"off\". In entry-check.mjs and the 14 runtime modules that it loads (cleanup, wiring, config, identity, status, worktrees, completion, coordinator, dispatch-start, dispatch-preflight, review-tools, scope, trace, evidence), the only match for \"preferences\" or \"policy\" is the comment at entry-check.mjs line 4. I did not run update-check.mjs to show that this file silences the update notice: it needs an installation manifest and the network."
+      ],
+      "subjectIdentity": "11bb9fe35477de9a1c47a9d8b2c996e90920994ee48937d5c4589cdc153e5851"
+    },
+    {
+      "id": "linked-worktree-same",
+      "criteria": [
+        "entry-linked-worktree"
+      ],
+      "representativeInput": "Two throwaway Git repositories under ../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa. git-main: the dead-path fixture, git init, one commit, and a linked tree made by \"git worktree add -b feature\" at git-linked. git2-main: the same, plus a .gitignore line \"local/\", an AGENTS.md row that names `local/state.json`, and that file present in the main tree only, with a linked tree at git2-linked. The command with --root at each tree, with and without --ci.",
+      "expected": "The linked tree gives the same findings and the same exit code 2 as the main tree.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Main tree and linked tree: exit 2 and exit 2, and the whole JSON stdout is byte-equal (gate 2, advisory 1: missing-path AGENTS.md:11, broken-link AGENTS.md:12, unmapped docs/context/notes.md). With --ci: exit 2 and exit 2, byte-equal stdout of two lines. stderr is empty in every run. Cases 5 and 6: the linked tree as the working folder with no --root gives the same exit 2 and byte-equal stdout (the driver resolves the script path for these two cases). Cases 7 and 8: cleanup.mjs reports the linked tree as unknown-worktree in the main tree and not in the linked tree; that finding is not in the entry-check output of either tree. The recorded argv is an inline driver (node -e). It starts each case with no shell, prints the case, its real exit code, its stdout and its stderr to the receipt, and exits 0 only when each exit code is the expected one, each count of a pattern in stdout is the expected one, and each named pair of stdouts is byte-equal. The exit codes of entry-check.mjs are in the receipt, not in command.exitCode.",
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const {spawnSync}=require(\"node:child_process\"),path=require(\"node:path\");let a=process.argv.slice(1),same=[],cases=[],cur=[];if(a[0].startsWith(\"same=\")){same=a.shift().slice(5).split(\";\").map(p=>p.split(\",\").map(Number))}for(const x of a){if(x===\"::\"){cases.push(cur);cur=[]}else cur.push(x)}cases.push(cur);let ok=true;const outs=[];cases.forEach(([want,...args],i)=>{let cwd,err;const counts=[];for(;;){if(args[0].startsWith(\"cwd=\")){cwd=args.shift().slice(4)}else if(args[0].startsWith(\"err=\")){err=args.shift().slice(4)}else if(args[0].startsWith(\"n=\")){const s=args.shift().slice(2),k=s.indexOf(\":\");counts.push([Number(s.slice(0,k)),s.slice(k+1)])}else break}const empty=want.endsWith(\"E\"),code=parseInt(want,10);console.log(`=== case ${i+1}: ${cwd?`(working folder ${cwd}) `:\"\"}node ${args.join(\" \")}`);const r=spawnSync(process.execPath,cwd?[path.resolve(args[0]),...args.slice(1)]:args,{encoding:\"utf8\",cwd});outs.push(r.stdout);let pass=r.status===code&&(!empty||(r.stdout===\"\"&&r.stderr===\"\"));console.log(`exit ${r.status}; expected ${code}${empty?\" with empty stdout and empty stderr\":\"\"}`);console.log(`--- stdout, ${r.stdout.length} chars`);process.stdout.write(r.stdout);console.log(`--- stderr, ${r.stderr.length} chars`);process.stdout.write(r.stderr);for(const [n,re] of counts){const got=(r.stdout.match(new RegExp(re,\"g\"))||[]).length;console.log(`stdout matches /${re}/ ${got} time(s); expected ${n}`);pass=pass&&got===n}if(err){const hit=new RegExp(err).test(r.stderr);console.log(`stderr ${hit?\"matches\":\"DOES NOT MATCH\"} /${err}/`);pass=pass&&hit}console.log(`=== case ${i+1} ${pass?\"as expected\":\"DIFFERENT\"}`);ok=ok&&pass});for(const [i,j] of same){const eq=outs[i-1]===outs[j-1];ok=ok&&eq;console.log(`stdout of case ${i} ${eq?\"equals\":\"DIFFERS FROM\"} stdout of case ${j}`)}process.exit(ok?0:1)",
+              "--",
+              "same=1,2;3,4;1,5;3,6",
+              "2",
+              "n=2:\"level\": \"gate\"",
+              "n=1:\"check\": \"missing-path\"",
+              "n=1:\"check\": \"broken-link\"",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git-main",
+              "::",
+              "2",
+              "n=2:\"level\": \"gate\"",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git-linked",
+              "::",
+              "2",
+              "n=2:\\n",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git-main",
+              "::",
+              "2",
+              "n=2:\\n",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git-linked",
+              "::",
+              "2",
+              "cwd=../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git-linked",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "::",
+              "2",
+              "cwd=../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git-linked",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "::",
+              "2",
+              "n=1:\"check\": \"unknown-worktree\"",
+              "payload/.joycraft/runtime/cleanup.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git-main",
+              "::",
+              "2",
+              "n=0:\"check\": \"unknown-worktree\"",
+              "payload/.joycraft/runtime/cleanup.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git-linked"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-worktree.txt",
+              "sha256": "fe03771b9244301748079c094da16aac333693d62c7390213b63127639cc233e"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "git worktree list --porcelain in git-main shows two trees on one commit: git-main on refs/heads/main and git-linked on refs/heads/feature. So git-linked is a linked worktree made by git worktree add.",
+          "command": {
+            "argv": [
+              "git",
+              "-C",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git-main",
+              "worktree",
+              "list",
+              "--porcelain"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-worktree-list.txt",
+              "sha256": "3e3b3ac1743270bbc87cd6fb02a3ce4e97163a22c9c9baf6acd85243ecc46000"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "A case nearer to a real project: AGENTS.md names a path that Git ignores, and the file is in the main tree only (case 5 prints \"main true linked false\"). Both trees: exit 2, byte-equal JSON with the same two gate findings, and no finding about local/state.json; the same with --ci. Case 6 prints the worktree list of that repository (two trees, the second on refs/heads/feature). The recorded argv is an inline driver (node -e). It starts each case with no shell, prints the case, its real exit code, its stdout and its stderr to the receipt, and exits 0 only when each exit code is the expected one, each count of a pattern in stdout is the expected one, and each named pair of stdouts is byte-equal. The exit codes of entry-check.mjs are in the receipt, not in command.exitCode.",
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const {spawnSync}=require(\"node:child_process\"),path=require(\"node:path\");let a=process.argv.slice(1),same=[],cases=[],cur=[];if(a[0].startsWith(\"same=\")){same=a.shift().slice(5).split(\";\").map(p=>p.split(\",\").map(Number))}for(const x of a){if(x===\"::\"){cases.push(cur);cur=[]}else cur.push(x)}cases.push(cur);let ok=true;const outs=[];cases.forEach(([want,...args],i)=>{let cwd,err;const counts=[];for(;;){if(args[0].startsWith(\"cwd=\")){cwd=args.shift().slice(4)}else if(args[0].startsWith(\"err=\")){err=args.shift().slice(4)}else if(args[0].startsWith(\"n=\")){const s=args.shift().slice(2),k=s.indexOf(\":\");counts.push([Number(s.slice(0,k)),s.slice(k+1)])}else break}const empty=want.endsWith(\"E\"),code=parseInt(want,10);console.log(`=== case ${i+1}: ${cwd?`(working folder ${cwd}) `:\"\"}node ${args.join(\" \")}`);const r=spawnSync(process.execPath,cwd?[path.resolve(args[0]),...args.slice(1)]:args,{encoding:\"utf8\",cwd});outs.push(r.stdout);let pass=r.status===code&&(!empty||(r.stdout===\"\"&&r.stderr===\"\"));console.log(`exit ${r.status}; expected ${code}${empty?\" with empty stdout and empty stderr\":\"\"}`);console.log(`--- stdout, ${r.stdout.length} chars`);process.stdout.write(r.stdout);console.log(`--- stderr, ${r.stderr.length} chars`);process.stdout.write(r.stderr);for(const [n,re] of counts){const got=(r.stdout.match(new RegExp(re,\"g\"))||[]).length;console.log(`stdout matches /${re}/ ${got} time(s); expected ${n}`);pass=pass&&got===n}if(err){const hit=new RegExp(err).test(r.stderr);console.log(`stderr ${hit?\"matches\":\"DOES NOT MATCH\"} /${err}/`);pass=pass&&hit}console.log(`=== case ${i+1} ${pass?\"as expected\":\"DIFFERENT\"}`);ok=ok&&pass});for(const [i,j] of same){const eq=outs[i-1]===outs[j-1];ok=ok&&eq;console.log(`stdout of case ${i} ${eq?\"equals\":\"DIFFERS FROM\"} stdout of case ${j}`)}process.exit(ok?0:1)",
+              "--",
+              "same=1,2;3,4",
+              "2",
+              "n=2:\"level\": \"gate\"",
+              "n=0:local/state",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git2-main",
+              "::",
+              "2",
+              "n=2:\"level\": \"gate\"",
+              "n=0:local/state",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git2-linked",
+              "::",
+              "2",
+              "n=2:\\n",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git2-main",
+              "::",
+              "2",
+              "n=2:\\n",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git2-linked",
+              "::",
+              "0",
+              "n=1:main true linked false",
+              "-e",
+              "const fs=require(\"node:fs\");process.stdout.write(`main ${fs.existsSync(process.argv[1]+\"/git2-main/local/state.json\")} linked ${fs.existsSync(process.argv[1]+\"/git2-linked/local/state.json\")}`)",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa",
+              "::",
+              "0",
+              "n=2:worktree /",
+              "n=1:branch refs/heads/feature",
+              "-e",
+              "process.stdout.write(require(\"node:child_process\").execFileSync(\"git\",[\"-C\",process.argv[1],\"worktree\",\"list\",\"--porcelain\"],{encoding:\"utf8\"}))",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/git2-main"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-worktree-ignored-path-2.txt",
+              "sha256": "c100ff95fdaa72cdd7e8f91260bcdcfa243cfe335c9b5eac1129e215e31f79d7"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "node --test on tests/cleanup/entry-check.test.mjs of the checkout: 13 of 13 tests passed, 0 failed. \"[AC:entry-linked-worktree] a linked worktree is checked like the main tree\" passed. It asserts exit 2 in the linked tree, equal exit codes of the two trees with and without --ci, the two gate findings in the linked tree, and equal --ci stdout. It does not compare the whole JSON of the two trees; the command observations above do.",
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/entry-check.test.mjs"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-entry-check-test.txt",
+              "sha256": "db334c2d0deb62eb67906c688f56307887e9c01e484b2d2c66070e947d79325a"
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "The tagged tests and the fixtures are in the joycraft-prototype checkout (../prototype-canonical-entry-file) at commit ee3ab75f06fe9d5bec13f9e8770ca4f23358447e, tag field-26, the commit in payload/PIN; they are not vendored. The test file starts the checkout copy of the runtime, not payload/. Receipt spec-01-r2-pin-match.txt shows that each of the 85 files of payload/PIN has the PIN SHA-256 in payload/ and in that checkout, and that the checkout tree is clean.",
+        "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa is a throwaway folder that I made under the system temp directory from copies of the checkout fixtures; I removed it after the review.",
+        "The receipt spec-01-r2-worktree-ignored-path.txt (without -2) is an earlier run of the same cases in which my driver had a wrong pattern for the worktree list and exited 1. The six cases of entry-check.mjs gave the same results in it. It is not evidence in this report; the -2 receipt is the rerun.",
+        "Both trees had the same committed files. A file that is untracked, not ignored, and present in one tree only would rightly give different findings; I did not test that."
+      ],
+      "subjectIdentity": "11bb9fe35477de9a1c47a9d8b2c996e90920994ee48937d5c4589cdc153e5851"
+    },
+    {
+      "id": "sources-and-scope-statements",
+      "criteria": [
+        "entry-clean-silent",
+        "entry-dead-path",
+        "entry-ci-mode",
+        "entry-policy-independent",
+        "entry-linked-worktree"
+      ],
+      "representativeInput": "payload/PIN against payload/ and against the joycraft-prototype checkout; the cleanup test file of the checkout; trace.mjs for spec 1; the error cases of entry-check.mjs (an unknown argument, --root with no value, an unreadable joycraft.yaml, an unparseable spec queue, CRLF line ends, a --root that does not exist).",
+      "expected": "Supporting observations for all five checks: the reviewed bytes are the pinned ones, the bound cleanup.mjs passes its own tests, each criterion has a tagged test, and an unexpected error exits 1, not 2. None of them is by itself the evidence for a criterion; each criterion has its own flow above.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "payload/PIN names tag field-26 and commit ee3ab75f06fe9d5bec13f9e8770ca4f23358447e with 85 files. The checkout HEAD is that commit, tag field-26 points at it, and git status --porcelain is empty. 0 of the 85 files differ from the PIN SHA-256, in payload/ or in the checkout. entry-check.mjs is 6dbe9afa... and cleanup.mjs is 9ac87382..., the two hashes in the subject. The recorded argv is an inline node -e script that computes this and exits 0 only when all of it holds.",
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const fs=require(\"node:fs\"),path=require(\"node:path\"),{createHash}=require(\"node:crypto\"),{execFileSync}=require(\"node:child_process\");const proto=\"../prototype-canonical-entry-file\";const pin=JSON.parse(fs.readFileSync(\"payload/PIN\",\"utf8\"));const sha=f=>{try{return createHash(\"sha256\").update(fs.readFileSync(f)).digest(\"hex\")}catch{return \"missing\"}};const git=(...a)=>execFileSync(\"git\",[\"-C\",proto,...a],{encoding:\"utf8\"});const head=git(\"rev-parse\",\"HEAD\").trim(),tags=git(\"tag\",\"--points-at\",\"HEAD\").trim().split(\"\\n\"),dirty=git(\"status\",\"--porcelain=v1\",\"--untracked-files=all\");let bad=0;const names=Object.keys(pin.files);for(const name of names){const a=sha(path.join(\"payload\",name)),b=sha(path.join(proto,name));if(a!==pin.files[name]||b!==pin.files[name]){bad+=1;console.log(`DIFFERENT ${name}: PIN ${pin.files[name]} payload ${a} checkout ${b}`)}}console.log(`payload/PIN: tag ${pin.tag}, commit ${pin.commit}, ${names.length} files`);console.log(`checkout ${proto}: HEAD ${head}, tags at HEAD: ${tags.join(\", \")}`);console.log(`checkout status --porcelain: ${dirty===\"\"?\"empty (clean tree)\":\"NOT CLEAN\\n\"+dirty}`);console.log(`files whose SHA-256 is not the PIN value in payload/ or in the checkout: ${bad}`);for(const name of [\".joycraft/runtime/entry-check.mjs\",\".joycraft/runtime/cleanup.mjs\"])console.log(`${name}: ${sha(path.join(\"payload\",name))}`);process.exit(bad===0&&head===pin.commit&&tags.includes(pin.tag)&&dirty===\"\"?0:1)"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-pin-match.txt",
+              "sha256": "9fb4d24275b79cd0aa656d5cc33e4967455bc8f3df2567f7c7b60270920bfd57"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "node --test on tests/cleanup/cleanup.test.mjs of the checkout: 25 of 25 tests passed, 0 failed. entryReport filters cleanupReport, so this shows that the bound cleanup.mjs behaves as its own tests state.",
+          "command": {
+            "argv": [
+              "node",
+              "--test",
+              "../prototype-canonical-entry-file/tests/cleanup/cleanup.test.mjs"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-cleanup-test.txt",
+              "sha256": "c122b9de8d879e299d42bbb1426cd9283ac9b60bae0da324b4e629c6c68e2037"
+            }
+          ]
+        },
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Case 1: trace.mjs for spec 1 in this repository exits 2 and lists all five criteria as untraced, with the note \"No check inputs are declared and no --tests glob was given\": the queue binds no test file, because the tests are not vendored. Case 2: the test() lines of tests/cleanup/entry-check.test.mjs in the checkout; each of the five criterion tags is on exactly one test. The recorded argv is an inline driver (node -e). It starts each case with no shell, prints the case, its real exit code, its stdout and its stderr to the receipt, and exits 0 only when each exit code is the expected one, each count of a pattern in stdout is the expected one, and each named pair of stdouts is byte-equal. The exit codes of entry-check.mjs are in the receipt, not in command.exitCode.",
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const {spawnSync}=require(\"node:child_process\"),path=require(\"node:path\");let a=process.argv.slice(1),same=[],cases=[],cur=[];if(a[0].startsWith(\"same=\")){same=a.shift().slice(5).split(\";\").map(p=>p.split(\",\").map(Number))}for(const x of a){if(x===\"::\"){cases.push(cur);cur=[]}else cur.push(x)}cases.push(cur);let ok=true;const outs=[];cases.forEach(([want,...args],i)=>{let cwd,err;const counts=[];for(;;){if(args[0].startsWith(\"cwd=\")){cwd=args.shift().slice(4)}else if(args[0].startsWith(\"err=\")){err=args.shift().slice(4)}else if(args[0].startsWith(\"n=\")){const s=args.shift().slice(2),k=s.indexOf(\":\");counts.push([Number(s.slice(0,k)),s.slice(k+1)])}else break}const empty=want.endsWith(\"E\"),code=parseInt(want,10);console.log(`=== case ${i+1}: ${cwd?`(working folder ${cwd}) `:\"\"}node ${args.join(\" \")}`);const r=spawnSync(process.execPath,cwd?[path.resolve(args[0]),...args.slice(1)]:args,{encoding:\"utf8\",cwd});outs.push(r.stdout);let pass=r.status===code&&(!empty||(r.stdout===\"\"&&r.stderr===\"\"));console.log(`exit ${r.status}; expected ${code}${empty?\" with empty stdout and empty stderr\":\"\"}`);console.log(`--- stdout, ${r.stdout.length} chars`);process.stdout.write(r.stdout);console.log(`--- stderr, ${r.stderr.length} chars`);process.stdout.write(r.stderr);for(const [n,re] of counts){const got=(r.stdout.match(new RegExp(re,\"g\"))||[]).length;console.log(`stdout matches /${re}/ ${got} time(s); expected ${n}`);pass=pass&&got===n}if(err){const hit=new RegExp(err).test(r.stderr);console.log(`stderr ${hit?\"matches\":\"DOES NOT MATCH\"} /${err}/`);pass=pass&&hit}console.log(`=== case ${i+1} ${pass?\"as expected\":\"DIFFERENT\"}`);ok=ok&&pass});for(const [i,j] of same){const eq=outs[i-1]===outs[j-1];ok=ok&&eq;console.log(`stdout of case ${i} ${eq?\"equals\":\"DIFFERS FROM\"} stdout of case ${j}`)}process.exit(ok?0:1)",
+              "--",
+              "2",
+              "n=5:\"tests\": \\[\\]",
+              "n=1:No check inputs are declared",
+              "payload/.joycraft/runtime/trace.mjs",
+              "--queue",
+              "docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json",
+              "--spec",
+              "1",
+              "::",
+              "0",
+              "n=1:\\[AC:entry-clean-silent\\]",
+              "n=1:\\[AC:entry-dead-path\\]",
+              "n=1:\\[AC:entry-ci-mode\\]",
+              "n=1:\\[AC:entry-policy-independent\\]",
+              "n=1:\\[AC:entry-linked-worktree\\]",
+              "-e",
+              "for(const l of require(\"node:fs\").readFileSync(process.argv[1],\"utf8\").split(\"\\n\"))if(l.startsWith(\"test(\"))console.log(l)",
+              "../prototype-canonical-entry-file/tests/cleanup/entry-check.test.mjs"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-trace.txt",
+              "sha256": "ce289cfa4005ea01ce453bbde3716f529e0e60e96741fac4c7819c59019b4a87"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "An unknown argument and --root with no value: exit 1, stdout empty, stderr \"Entry check stopped: Usage: entry-check.mjs ...\". A joycraft.yaml with cleanup.entryWords: 0: exit 1 with and without --ci, stderr \"Entry check stopped: joycraft.yaml: cleanup.entryWords must be a positive whole number of words\". So an unexpected error exits 1, not 2, as the scope section of the spec says. An unparseable spec queue under docs/features does not stop the check (exit 2, the two gate findings). AGENTS.md with CRLF line ends gives the same two --ci lines. A --root that does not exist: exit 0 and no output, with and without --ci. The recorded argv is an inline driver (node -e). It starts each case with no shell, prints the case, its real exit code, its stdout and its stderr to the receipt, and exits 0 only when each exit code is the expected one, each count of a pattern in stdout is the expected one, and each named pair of stdouts is byte-equal. The exit codes of entry-check.mjs are in the receipt, not in command.exitCode.",
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "const {spawnSync}=require(\"node:child_process\"),path=require(\"node:path\");let a=process.argv.slice(1),same=[],cases=[],cur=[];if(a[0].startsWith(\"same=\")){same=a.shift().slice(5).split(\";\").map(p=>p.split(\",\").map(Number))}for(const x of a){if(x===\"::\"){cases.push(cur);cur=[]}else cur.push(x)}cases.push(cur);let ok=true;const outs=[];cases.forEach(([want,...args],i)=>{let cwd,err;const counts=[];for(;;){if(args[0].startsWith(\"cwd=\")){cwd=args.shift().slice(4)}else if(args[0].startsWith(\"err=\")){err=args.shift().slice(4)}else if(args[0].startsWith(\"n=\")){const s=args.shift().slice(2),k=s.indexOf(\":\");counts.push([Number(s.slice(0,k)),s.slice(k+1)])}else break}const empty=want.endsWith(\"E\"),code=parseInt(want,10);console.log(`=== case ${i+1}: ${cwd?`(working folder ${cwd}) `:\"\"}node ${args.join(\" \")}`);const r=spawnSync(process.execPath,cwd?[path.resolve(args[0]),...args.slice(1)]:args,{encoding:\"utf8\",cwd});outs.push(r.stdout);let pass=r.status===code&&(!empty||(r.stdout===\"\"&&r.stderr===\"\"));console.log(`exit ${r.status}; expected ${code}${empty?\" with empty stdout and empty stderr\":\"\"}`);console.log(`--- stdout, ${r.stdout.length} chars`);process.stdout.write(r.stdout);console.log(`--- stderr, ${r.stderr.length} chars`);process.stdout.write(r.stderr);for(const [n,re] of counts){const got=(r.stdout.match(new RegExp(re,\"g\"))||[]).length;console.log(`stdout matches /${re}/ ${got} time(s); expected ${n}`);pass=pass&&got===n}if(err){const hit=new RegExp(err).test(r.stderr);console.log(`stderr ${hit?\"matches\":\"DOES NOT MATCH\"} /${err}/`);pass=pass&&hit}console.log(`=== case ${i+1} ${pass?\"as expected\":\"DIFFERENT\"}`);ok=ok&&pass});for(const [i,j] of same){const eq=outs[i-1]===outs[j-1];ok=ok&&eq;console.log(`stdout of case ${i} ${eq?\"equals\":\"DIFFERS FROM\"} stdout of case ${j}`)}process.exit(ok?0:1)",
+              "--",
+              "1",
+              "err=^Entry check stopped: Usage: entry-check\\.mjs",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--nope",
+              "::",
+              "1",
+              "err=^Entry check stopped: Usage: entry-check\\.mjs",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "::",
+              "1",
+              "err=^Entry check stopped: joycraft\\.yaml: cleanup\\.entryWords",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/bad-config",
+              "::",
+              "1",
+              "err=^Entry check stopped: joycraft\\.yaml: cleanup\\.entryWords",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/bad-config",
+              "::",
+              "2",
+              "n=2:\"level\": \"gate\"",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/bad-queue",
+              "::",
+              "2",
+              "n=2:\\n",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/crlf",
+              "::",
+              "0E",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/does-not-exist",
+              "::",
+              "0E",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--ci",
+              "--root",
+              "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa/does-not-exist"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-errors.txt",
+              "sha256": "99dee4f32e8aeb0d114b55dafbc827a8a7e3ae9a3e24267db790740978265935"
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "The tagged tests and the fixtures are in the joycraft-prototype checkout (../prototype-canonical-entry-file) at commit ee3ab75f06fe9d5bec13f9e8770ca4f23358447e, tag field-26, the commit in payload/PIN; they are not vendored. The test file starts the checkout copy of the runtime, not payload/. Receipt spec-01-r2-pin-match.txt shows that each of the 85 files of payload/PIN has the PIN SHA-256 in payload/ and in that checkout, and that the checkout tree is clean.",
+        "../../../../../../tmp/joycraft-review-spec01-r2-2F3ssa is a throwaway folder that I made under the system temp directory from copies of the checkout fixtures; I removed it after the review.",
+        "The subject binds entry-check.mjs and cleanup.mjs. The other runtime modules that the command loads are not bound inputs of this spec; payload/PIN pins them, and the pin-match receipt shows that they are the pinned bytes. cleanup.mjs main() is the same text as at the commit that added entry-check.mjs (ec20c63 in the checkout): exit 2 on any finding, 1 on an error. Its report has more checks now, from specs 2, 7, 9 and 10.",
+        "I read the round-1 report (spec-01-review-round-1.json) after I had read the spec, the brief and the two bound files, to know which findings are not new. I used none of its receipts. Between its commit (02e0007, field-25) and field-26 the checkout diff touches four files; none is entry-check.mjs, cleanup.mjs, the entry-check test or a fixture."
+      ],
+      "subjectIdentity": "11bb9fe35477de9a1c47a9d8b2c996e90920994ee48937d5c4589cdc153e5851"
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "R1-F1-missing-root-is-clean",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "at": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-errors.txt",
+      "summary": "From round 1 (F1), still true on field-26: a --root that does not exist, or a project with no AGENTS.md and no CLAUDE.md, is \"clean\": exit 0 and no output, also with --ci (cases 7 and 8 of the receipt). A CI job with a wrong --root passes without a word.",
+      "assumption": "The spec does not decide this case. Reading taken: a project with no entry file has nothing to check, which fits the owner direction to add no machinery for a rare case."
+    },
+    {
+      "id": "R1-F2-worktree-test-compares-gate-only",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "criterion": "entry-linked-worktree",
+      "at": "tests/cleanup/entry-check.test.mjs:86 (joycraft-prototype)",
+      "summary": "From round 1 (F2), still true on field-26: the check says \"the same findings\"; the tagged test (lines 86-92) compares the exit codes, the gate findings of the linked tree and the --ci stdout, not the whole JSON of the two trees. My direct runs show byte-equal JSON, so the criterion holds; the test could assert run(tree).stdout === run(root).stdout."
+    },
+    {
+      "id": "R1-F3-trace-finds-no-tests-here",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "at": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-trace.txt",
+      "summary": "From round 1 (F3), still true on field-26: trace.mjs for spec 1 in this repository reports all five criteria untraced, because the queue binds no test file and the tests are not vendored. Each of the five has exactly one test with its [AC:<id>] tag in tests/cleanup/entry-check.test.mjs of the pinned commit, and each passed."
+    },
+    {
+      "id": "R1-F4-spec-scope-text-older-than-code",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "at": "payload/.joycraft/runtime/entry-check.mjs:16",
+      "summary": "From round 1 (F4), still true on field-26: the section \"Implementation and verification scope\" of spec 1 says that the gate checks are missing-path and broken-link and that the report keeps findings whose path is AGENTS.md or CLAUDE.md. The shipped file has five gate checks (line 16 adds script-name, codex-bytes, import), keeps findings by base name, so also an AGENTS.md in a folder below and AGENTS.override.md (lines 14 and 24), and has two more commands, block and lost (line 67). Specs 2, 7 and 10 of this queue ask for these. No acceptance check of spec 1 is affected.",
+      "assumption": "The later specs of the queue govern these lines; spec 1 is judged on its five acceptance checks."
+    }
+  ],
+  "createdAt": "2026-11-19T04:21:57.739Z",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "7b20329f-0b26-4c62-abe8-68cdb4bfb321"
+  }
+}

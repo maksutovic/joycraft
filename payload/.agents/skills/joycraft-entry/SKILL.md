@@ -112,9 +112,10 @@ page, connect their wiki, see their settings or remove Joycraft, follow
 **Gates by request.** When the user asks to turn Joycraft's gates on or off, or
 what they do, follow [gates](../../../.joycraft/references/gates.md).
 
-**Show documents as pages.** A brief, plan, spec set or review that the user must
-read or approve is also rendered, never left as Markdown in chat: the decision
-artifact for a brief, an HTML page for anything else. Show it as
+**Show documents as pages.** A brief, plan, spec set, report or review that the
+user must read or approve is also rendered, never left as Markdown in chat. The
+artifact engine builds each page: decisions from the brief, any other document
+with `--doc`. Never write your own HTML page for one. Show it as
 [showing a page](../../../.joycraft/references/artifacts.md#showing-a-page) says and give its path.
 If the project's `AGENTS.md` lacks this rule or its context-map row for
 `.joycraft/references/artifacts.md`, add them as `setup.md` describes.

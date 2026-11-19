@@ -1,0 +1,63 @@
+Source scan for criterion one-pass-steps. Each pattern is a regular expression matched against the file text with each run of whitespace made one space. present = must match; absent = must not match; info = printed only.
+
+[ok] the six steps, in order
+  expect present in payload/.joycraft/references/cleanup.md ## The steps (lines 146-182)
+  pattern /1\. \*\*List\.\*\*.*2\. \*\*Analyze, read only\.\*\*.*3\. \*\*Ask one round\.\*\*.*4\. \*\*Apply\.\*\*.*5\. \*\*Write the entry file last\.\*\*.*6\. \*\*Check\.\*\*/
+  match at payload/.joycraft/references/cleanup.md:155-172: 1. **List.** Each page with its kind and size. Find what parses these files: `git grep -l` each file name in tests, scripts, open specs and queues, and read what each one pins. Make no change that bre [...] g in the owner's words. 5. **Write the entry file last.** The coordinator writes it from the answers and applies the requests. No other agent changes an entry file, and no agent commits. 6. **Check.**
+
+[ok] no seventh step
+  expect absent in payload/.joycraft/references/cleanup.md ## The steps (lines 146-182)
+  pattern /7\. \*\*/
+  no match
+
+[ok] the two lenses
+  expect present in payload/.joycraft/references/cleanup.md ## Two lenses (lines 42-51)
+  pattern /1\. \*\*Truth\.\*\*.*2\. \*\*Place\.\*\*/
+  match at payload/.joycraft/references/cleanup.md:46-49: 1. **Truth.** Check it against the repository as it is now: code, config, scripts, tests, Git history. It is true, false, stale (was true), or not checkable. 2. **Place.**
+
+[ok] no third lens
+  expect absent in payload/.joycraft/references/cleanup.md ## Two lenses (lines 42-51)
+  pattern /3\. \*\*/
+  no match
+
+[ok] the page kinds
+  expect present in payload/.joycraft/references/cleanup.md ## Kinds of page (lines 78-101)
+  pattern /\*\*Guide\.\*\*.*\*\*Log\*\* \(.type: log.\)\..*\*\*History\*\* \(.type: history.\)\./
+  match at payload/.joycraft/references/cleanup.md:82-92: **Guide.** The current rules, facts and how-to for one topic. It holds only what is true now. It opens with what the page is for and its rules. A reader that a map row sends can read all of it. Aim fo [...] . A current rule or current state that lives only in a log is misplaced: check that no later row reversed it, then state it in a guide; the log keeps the dated record. - **History** (`type: history`).
+
+[ok] what an entry file holds
+  expect present in payload/.joycraft/references/cleanup.md ## The entry file (lines 52-77)
+  pattern /The entry file holds only what an agent needs in every session and cannot get from the code: - \*\*Identity:\*\*.*- \*\*Rules:\*\*.*- \*\*Joycraft.s block\.\*\*.*- \*\*The Context Map:\*\*/
+  match at payload/.joycraft/references/cleanup.md:54-64: The entry file holds only what an agent needs in every session and cannot get from the code: - **Identity:** two or three sentences. - **Rules:** short imperative sentences, one rule for each bullet.  [...] f that kind stays in full, even when it is long, limits included. No procedure, no checklist, no list of examples, no history, no "who said it and when". - **Joycraft's block.** - **The Context Map:**
+
+[ok] the seven things to find, in order
+  expect present in payload/.joycraft/references/cleanup.md ## What to find on each page (lines 102-127)
+  pattern /1\. \*\*False and stale statements\*\*.*2\. \*\*Contradictions\*\*.*3\. \*\*Misplaced content\*\*.*4\. \*\*Shape\.\*\*.*5\. \*\*Rules on the page\.\*\*.*6\. \*\*What this page should receive from the entry file\.\*\*.*7\. \*\*Enough for a worker\.\*\*/
+  match at payload/.joycraft/references/cleanup.md:104-125: 1. **False and stale statements**, each with evidence (file and line, or commit). 2. **Contradictions**: with the entry file, with another page, or inside the page. Say which side the code supports. W [...] to retire. 6. **What this page should receive from the entry file.** Which of its rules, procedures and details belong to this page's topic? Is the page ready to hold them? 7. **Enough for a worker.**
+
+[ok] no eighth thing
+  expect absent in payload/.joycraft/references/cleanup.md ## What to find on each page (lines 102-127)
+  pattern /8\. \*\*/
+  no match
+
+[ok] at most eight questions, each about one policy
+  expect present in payload/.joycraft/references/cleanup.md ## Questions for the owner (lines 128-145)
+  pattern /Group these into at most eight questions, each about one policy\./
+  match at payload/.joycraft/references/cleanup.md:135: Group these into at most eight questions, each about one policy.
+
+[ok] stops and holds are always two of the questions
+  expect present in payload/.joycraft/references/cleanup.md ## Questions for the owner (lines 128-145)
+  pattern /Stops \(what an agent must ask before\) and holds are always two of them: never drop one by recommendation\./
+  match at payload/.joycraft/references/cleanup.md:135-137: Stops (what an agent must ask before) and holds are always two of them: never drop one by recommendation.
+
+[ok] no question about one line
+  expect present in payload/.joycraft/references/cleanup.md ## Questions for the owner (lines 128-145)
+  pattern /Do not ask about single lines either/
+  match at payload/.joycraft/references/cleanup.md:134: Do not ask about single lines either
+
+[info] brief, step 3: an order of authority decides the rest (brief only; no check of spec 11 names it)
+  expect info in payload/.joycraft/references/cleanup.md (lines 1-197)
+  pattern /order of authority|newer guide wins|wins over a page/
+  no match
+
+RESULT: each present and absent expectation holds

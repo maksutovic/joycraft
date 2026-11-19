@@ -1,0 +1,8 @@
+ok   payload/.agents/skills/joycraft-cleanup/SKILL.md -> ../../../.joycraft/references/knowledge.md
+ok   payload/.agents/skills/joycraft-cleanup/SKILL.md -> ../../../.joycraft/references/doc-cleanup-LICENSE.md
+ok   payload/.agents/skills/joycraft-cleanup/SKILL.md -> ../../../.joycraft/references/cleanup.md
+ok   payload/.agents/skills/joycraft-cleanup/SKILL.md -> ../../../.joycraft/references/cleanup.md#one-pass
+ok   payload/.agents/skills/joycraft-session-end/SKILL.md -> ../../../.joycraft/references/cleanup.md#what-to-find-on-each-page
+ok   payload/.joycraft/references/cleanup.md -> artifacts.md#asking-questions
+ok   payload/.joycraft/references/setup.md -> cleanup.md#kinds-of-page
+82 relative Markdown links (40 with a heading anchor) in 31 shipped skills, agent files and references; dead file or heading targets: 0

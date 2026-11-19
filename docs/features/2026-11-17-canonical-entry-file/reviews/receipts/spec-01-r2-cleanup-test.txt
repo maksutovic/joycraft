@@ -1,0 +1,33 @@
+✔ a clean project has no findings (179.511208ms)
+✔ finds working links, broken links, orphans and unknown worktrees, and changes nothing (323.916375ms)
+✔ flags a context page whose mapped code changed after the page last changed (701.879125ms)
+✔ reads OKF stale_after and deprecated status from context pages (216.829625ms)
+✔ reports finished unarchived features in the configured features folder (181.001292ms)
+✔ the CLI exits 2 when there are findings (225.267375ms)
+✔ code fences, reference links, angle links, bad escapes and unreadable frontmatter are handled (192.439167ms)
+✔ work folders inside the context home are not context pages (195.783917ms)
+✔ indented, longer and unclosed code fences hide their example links (213.104167ms)
+✔ missing-path reports backticked project paths that do not exist and skips globs, placeholders, URLs and code (273.70975ms)
+✔ missing-path skips history pages: type log or history, decision-log.md and shipped*.md (212.562041ms)
+✔ unmapped reports a context page only other context pages mention; orphan still covers unreferenced pages (304.601417ms)
+✔ entry-size reports an entry file over the word budget, configurable as cleanup.entryWords (300.191958ms)
+✔ pre-#87 AGENTS.md: reports the reference pointer, unmapped ledger pages and the size (801.176042ms)
+✔ an @-import line in an entry file maps the page it imports (402.789333ms)
+✔ a ~1 MB entry file with many code spans is checked in well under a few seconds (237.608083ms)
+✔ [AC:temporal-advisory] [AC:temporal-names-records] a date and a link to a dated file in an entry file are temporal; a code span is not (201.6305ms)
+✔ [AC:script-name-gate] a package script that no package.json defines is a gate finding; no manifest skips the check (240.310875ms)
+✔ [AC:codex-bytes-gate] AGENTS.md files that Codex joins past 32,768 bytes are a gate finding for the deepest file (231.315875ms)
+✔ [AC:import-gate] an @ import and AGENTS.override.md are gate findings; @AGENTS.md in CLAUDE.md is not (163.437417ms)
+✔ [AC:no-pin] entry-size counts every word of the file; markers exempt nothing (39.299958ms)
+✔ [AC:cleanup-reference-rows] the cleanup reference has a row for each new check (0.290083ms)
+✔ [AC:mention-from-page] a page that names a sibling from its own folder references it (190.024625ms)
+✔ a record may link working material, and a path that Git ignores is not a dead path (327.315542ms)
+✔ [AC:record-needs-no-row] a history page needs no map row; a log still does (180.330333ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6583.4685
