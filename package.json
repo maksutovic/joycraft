@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -13,8 +13,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.6.0",
-    "summary": "Ask your agent to \"clean up my AGENTS.md and context pages\": one pass, at most eight questions, and a list of each changed permission before the commit. New: entry-check.mjs --ci for AGENTS.md, and document pages with images and Mermaid diagrams.",
+    "release": "1.6.1",
+    "summary": "Update now asks once whether to remove the old 0.7 shell guard, which blocks vendor installers like curl | bash. Remove backs it up; keep stops the question.",
     "autoSafeEligible": false
   },
   "scripts": {

@@ -1,6 +1,6 @@
 ---
 id: 1
-status: todo
+status: in-review
 ---
 # Outcome
 
@@ -32,7 +32,8 @@ nothing and does not ask again. Ships as 1.6.1. Brief:
   `.joycraft/installation.json` (`[AC:keep]`).
 - No answer without a person. Check: with no terminal and no flag, `update`
   prints the question and `--legacy-guard remove|keep` and changes nothing.
-  `--yes` alone keeps the guard and prints one line naming the flag.
+  `--yes` alone keeps the guard for that run, records nothing, and prints
+  one line naming the flag.
   `--legacy-guard remove --yes` removes it (`[AC:no-guess]`).
 - Migration asks the same question. Check: `init --migrate` on a 0.7
   project with the guard asks it; the guard is no longer always in `KEPT`
@@ -44,6 +45,12 @@ nothing and does not ask again. Ships as 1.6.1. Brief:
 
 A 1.x shell guard. Guards on other hosts. The field project's local allow
 list.
+
+## Verification
+
+`tests/legacy-guard.test.ts` covers each AC. The terminal question was also
+run by hand in a real terminal on the 0.7.17 fixture (answer `r`): the guard
+was removed and `.claude/hooks/` was gone.
 
 ## Implementation and verification scope
 
