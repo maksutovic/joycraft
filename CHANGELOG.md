@@ -7,6 +7,34 @@ claim that a release has shipped.
 
 ---
 
+## 1.6.1 — Update asks about the old 0.7 shell guard
+
+On 2026-11-19 a field project followed a vendor's agent handoff. The vendor
+documents one install command, `curl -fsSL <installer> | bash`, with a one-time
+code. The 0.7 shell guard blocked it, although the owner asked for the install,
+and the code expired before the install ran. 0.7 `harden` wrote that guard.
+1.x kept it after migration but never maintained it, and nothing said it was safe
+to remove. No payload change.
+Payload: joycraft-prototype `field-26`.
+
+### Changed
+
+- **One question about the guard.** `update` and `update --migrate` find
+  `.claude/hooks/joycraft/block-dangerous.sh`, its `deny-patterns.txt`, or a
+  settings entry that runs it, and ask once: remove or keep. Remove moves all
+  three to the update backup and takes the guard's hook out of
+  `.claude/settings.json`; other hooks and settings stay. `update --recover` and
+  `rollback` put them back. Keep changes nothing, is recorded in
+  `.joycraft/installation.json`, and update does not ask again.
+- **No answer without a person.** Without a terminal, answer with
+  `--legacy-guard remove` or `--legacy-guard keep`. `--yes` alone keeps the guard
+  for that run and asks again next time.
+- The migration no longer always keeps the guard; it asks the same question.
+
+To remove the guard now: `npx joycraft@latest update --legacy-guard remove --yes`.
+
+---
+
 ## 1.6.0 — One-pass cleanup of AGENTS.md, an entry check, and document pages
 
 A cleanup run on a field project on 2026-11-17 asked its owner 9 questions about

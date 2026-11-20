@@ -6,6 +6,7 @@ import { createInterface } from 'node:readline/promises';
 import { applyInstall, checkWiring, doctor, formatPlan, formatWiring, WIRING_SENTENCE, planInstall, readManifest, recordedHosts, recoverInstall } from './install-v1.js';
 import { detectLegacy, formatLegacyPlan, migrateLegacy, planLegacy, recoverLegacy } from './legacy-07.js';
 import { applyRollback, formatRollback, planRollback } from './rollback.js';
+import { GUARD_FLAG_HINT, guardQuestion, type GuardAnswer, type LegacyGuard } from './legacy-guard.js';
 import { detectHost, HOST_LABELS, HOSTS, parseHosts, type Host } from './payload.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -20,6 +21,7 @@ interface InstallOptions {
   keepCustom?: boolean;
   archiveCustom?: boolean;
   recover?: boolean;
+  legacyGuard?: string;
 }
 
 const interactive = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
@@ -64,6 +66,33 @@ async function approved(opts: InstallOptions, text: string, question: string): P
   return false;
 }
 
+/**
+ * The owner's answer about the 0.7 shell guard: the flag, else a terminal
+ * question. `--yes` alone keeps it this time and records nothing. With no
+ * terminal and no answer the result is 'stop': nothing may change.
+ */
+async function answerGuard(guard: LegacyGuard | null, opts: InstallOptions): Promise<GuardAnswer | undefined | 'stop'> {
+  if (!guard) return undefined;
+  if (opts.legacyGuard) {
+    if (opts.legacyGuard !== 'remove' && opts.legacyGuard !== 'keep') throw new Error(`--legacy-guard takes remove or keep, not ${opts.legacyGuard}`);
+    return opts.legacyGuard;
+  }
+  if (opts.yes) {
+    console.log(`Kept the old 0.7 shell guard (.claude/hooks/joycraft/) this time. ${GUARD_FLAG_HINT}`);
+    return undefined;
+  }
+  if (!interactive()) {
+    console.log(`${guardQuestion(guard)}\n${GUARD_FLAG_HINT}\n\nNothing changed.`);
+    process.exitCode = 1;
+    return 'stop';
+  }
+  console.log(guardQuestion(guard));
+  return /^r(emove)?$/i.test(await ask('[r/K] ')) ? 'remove' : 'keep';
+}
+
+const guardDone = (answer: GuardAnswer | undefined): string[] => answer === 'remove'
+  ? ['Removed the old 0.7 shell guard; it is in the backup.'] : answer === 'keep' ? ['Kept the old 0.7 shell guard as your file; update will not ask again.'] : [];
+
 async function install(dir: string, opts: InstallOptions, mode: 'init' | 'update'): Promise<void> {
   const root = resolve(dir);
   if (opts.recover) {
@@ -98,12 +127,15 @@ async function install(dir: string, opts: InstallOptions, mode: 'init' | 'update
         for (const path of plan.customized) if (/^k/i.test(await ask(`Customized ${path}: keep it in place or archive it? [k/A] `))) keep.push(path);
       }
     }
+    const guardAnswer = await answerGuard(plan.guard, opts);
+    if (guardAnswer === 'stop') return;
     if (!(await approved(opts, formatLegacyPlan(plan, false), 'Migrate to Joycraft 1.0?'))) return;
-    const result = migrateLegacy(plan, { keep });
+    const result = migrateLegacy(plan, { keep, guardAnswer });
     const wiring = await checkWiring(root);
     out(opts.json, { ...result, wiring }, [
       `Migrated to Joycraft ${plan.install.to.joycraft}. ${result.archived.length} 0.7 file(s) archived in ${result.backup}/.`,
       ...(result.keptCustom.length ? [`Kept in place: ${result.keptCustom.join(', ')}`] : []),
+      ...guardDone(guardAnswer),
       `Undo with: npx joycraft@latest rollback`,
       ...formatWiring(wiring),
     ].join('\n'));
@@ -124,7 +156,10 @@ async function install(dir: string, opts: InstallOptions, mode: 'init' | 'update
     out(opts.json, { ...plan, wiring }, [formatPlan(plan), ...formatWiring(wiring, '  ', { planned: true })].join('\n'));
     return;
   }
-  if (!plan.actions.some((action) => action.kind !== 'conflict') && !plan.gitignore.length) {
+  const guardAnswer = await answerGuard(plan.guard, opts);
+  if (guardAnswer === 'stop') return;
+  plan.guardAnswer = guardAnswer;
+  if (!plan.actions.some((action) => action.kind !== 'conflict') && !plan.gitignore.length && !guardAnswer) {
     const wiring = await checkWiring(root);
     out(opts.json, { status: 'noop', exitCode: 0, version: plan.to.joycraft, hosts, plan, wiring },
       [`Joycraft ${plan.to.joycraft} is up to date for ${hosts.join(', ')}.`, ...formatWiring(wiring)].join('\n'));
@@ -137,6 +172,7 @@ async function install(dir: string, opts: InstallOptions, mode: 'init' | 'update
   out(opts.json, { status: 'applied', exitCode: 0, version: plan.to.joycraft, hosts, ...result, wiring }, [
     `${installed ? 'Updated' : 'Installed'} Joycraft ${plan.to.joycraft} for ${hosts.join(', ')}: ${result.written.length} written, ${result.removed.length} removed.`,
     ...(result.backup ? [`Previous files are in ${result.backup}/.`] : []),
+    ...guardDone(guardAnswer),
     ...result.conflicts.map((path) => `Kept your file (not installed): ${path}`),
     ...(installed || wiring?.findings.length ? [] : ['Next: open your coding agent here and say what you want to build. Joycraft sets up the rest.']),
     ...formatWiring(wiring),
@@ -162,6 +198,7 @@ const installCommand = (name: 'init' | 'update', description: string) => program
   .option('--keep-custom', 'Migration: keep customized 0.7 files in place')
   .option('--archive-custom', 'Migration: archive customized 0.7 files with the rest')
   .option('--recover', 'Undo an interrupted update or migration')
+  .option('--legacy-guard <answer>', 'The old 0.7 shell guard: remove (backed up) or keep')
   .action(async (dir: string, opts: InstallOptions) => {
     try { await install(dir, opts, name); }
     catch (error) { console.error(`Error: ${(error as Error).message}`); process.exitCode = 1; }

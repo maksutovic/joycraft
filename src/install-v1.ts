@@ -1,12 +1,14 @@
-import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, renameSync, rmdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { detectGuard, withoutGuard, type GuardAnswer, type LegacyGuard } from './legacy-guard.js';
 import { filesForHosts, HOSTS, payloadRoot, readPin, sha256, type Host } from './payload.js';
 
 export const MANIFEST_PATH = '.joycraft/installation.json';
 export const JOURNAL_PATH = '.joycraft/local/update-journal.json';
 export const BACKUP_ROOT = '.joycraft-backups';
 const IGNORE_LINES = ['.joycraft/local/', '.joycraft-backups/'];
+const GUARD_SETTINGS = '.claude/settings.json';
 
 export interface InstalledManifest {
   schemaVersion: 1;
@@ -16,6 +18,8 @@ export interface InstalledManifest {
   harness: Host;
   hosts: Host[];
   files: { path: string; sha256: string }[];
+  /** The owner chose to keep the 0.7 shell guard; update does not ask again. */
+  legacyGuard?: 'kept';
 }
 
 export type Action =
@@ -33,6 +37,10 @@ export interface Plan {
   actions: Action[];
   unchanged: number;
   gitignore: string[];
+  /** The 0.7 shell guard, unless the owner already chose to keep it. */
+  guard: LegacyGuard | null;
+  /** The owner's answer for this run; without one the guard is left as it is. */
+  guardAnswer?: GuardAnswer;
 }
 
 function inside(root: string, path: string): string {
@@ -102,6 +110,7 @@ export function planInstall(dir: string, hosts: readonly Host[]): Plan {
     to: { tag: pin.tag, sourceRevision: pin.commit, joycraft: packageVersion() },
     actions, unchanged,
     gitignore: IGNORE_LINES.filter((line) => !present.has(line) && !present.has(`/${line}`)),
+    guard: installed?.legacyGuard === 'kept' ? null : detectGuard(root),
   };
 }
 
@@ -115,6 +124,7 @@ export function formatPlan(plan: Plan): string {
     lines.push(`  ${action.kind === 'conflict' ? 'CONFLICT (not Joycraft\'s, kept)' : action.kind === 'remove' ? 'remove edited (backed up)' : 'edited, backed up then replaced'}: ${action.path}`);
   }
   if (plan.gitignore.length) lines.push(`  .gitignore gains: ${plan.gitignore.join(' ')}`);
+  if (plan.guard) lines.push(`  old 0.7 shell guard (.claude/hooks/joycraft/): you choose remove or keep`);
   return lines.join('\n');
 }
 
@@ -142,8 +152,11 @@ export function applyInstall(plan: Plan, { backupName = `update-${stamp()}` } = 
   const { root } = plan;
   if (existsSync(join(root, JOURNAL_PATH))) throw new Error('An interrupted Joycraft update is pending; run `joycraft update --recover` first');
   const byPath = new Map(filesForHosts(plan.hosts).map((file) => [file.path, file]));
+  const previousManifest = readManifest(root);
   const backup = join(BACKUP_ROOT, backupName);
   const touched = plan.actions.filter((action) => action.kind !== 'conflict').map((action) => action.path);
+  const removeGuard = plan.guardAnswer === 'remove' && plan.guard ? plan.guard : null;
+  if (removeGuard) touched.push(...removeGuard.files, ...(removeGuard.settingsEntries ? [GUARD_SETTINGS] : []));
   const saved: string[] = [];
   for (const path of [...touched, MANIFEST_PATH, '.gitignore']) {
     const bytes = readBytes(root, path);
@@ -163,6 +176,11 @@ export function applyInstall(plan: Plan, { backupName = `update-${stamp()}` } = 
     writeFile(root, action.path, byPath.get(action.path)!.bytes);
     written.push(action.path);
   }
+  if (removeGuard) {
+    for (const path of removeGuard.files) { rmSync(inside(root, path)); removed.push(path); }
+    if (removeGuard.settingsEntries) writeFile(root, GUARD_SETTINGS, withoutGuard(readBytes(root, GUARD_SETTINGS)!.toString('utf8')));
+    for (const dir of ['.claude/hooks/joycraft', '.claude/hooks']) { try { rmdirSync(inside(root, dir)); } catch { break; } }
+  }
   if (plan.gitignore.length) {
     const ignore = readBytes(root, '.gitignore')?.toString('utf8') ?? '';
     writeFile(root, '.gitignore', `${ignore}${ignore && !ignore.endsWith('\n') ? '\n' : ''}${plan.gitignore.join('\n')}\n`);
@@ -174,6 +192,7 @@ export function applyInstall(plan: Plan, { backupName = `update-${stamp()}` } = 
   const manifest: InstalledManifest = {
     schemaVersion: 1, joycraft: plan.to.joycraft, tag: pin.tag, sourceRevision: pin.commit,
     harness: plan.hosts.includes('claude') ? 'claude' : plan.hosts[0], hosts: plan.hosts, files,
+    ...(plan.guardAnswer === 'keep' || (!plan.guard && previousManifest?.legacyGuard === 'kept') ? { legacyGuard: 'kept' as const } : {}),
   };
   writeFile(root, MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`);
   rmSync(join(root, JOURNAL_PATH));

@@ -2,6 +2,7 @@ import { copyFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSy
 import { dirname, join, resolve, sep } from 'node:path';
 import installInventory from './data/install-inventory.json';
 import { applyInstall, BACKUP_ROOT, formatPlan, planInstall, recoverInstall, type ApplyResult, type Plan } from './install-v1.js';
+import { type GuardAnswer, type LegacyGuard } from './legacy-guard.js';
 import { sha256, type Host } from './payload.js';
 
 export const MIGRATE_JOURNAL = '.joycraft/local/migrate-journal.json';
@@ -15,9 +16,9 @@ const ownedRoots = [/^\.(claude|agents|pi|github|omp|codex)\/skills\/joycraft-[^
   /^\.claude\/\.joycraft\/state\.json$/];
 // Bookkeeping of the old installer itself: archived, never asked about.
 const bookkeeping = /^(docs\/\.joycraft\/(check\.mjs|manifest\.json|state\.json|telemetry\.json)|\.claude\/\.joycraft\/state\.json)$/;
-// Project knowledge and the user's safeguard stay exactly where they are.
-export const KEPT = ['AGENTS.md', 'CLAUDE.md', 'docs/context/', 'docs/features/', 'docs/.joycraft/local/', '.claude/hooks/joycraft/block-dangerous.sh',
-  '.claude/hooks/joycraft/deny-patterns.txt', '.claude/settings.json'];
+// Project knowledge and settings stay exactly where they are. The 0.7 shell
+// guard stays too unless the owner answers remove (src/legacy-guard.ts).
+export const KEPT = ['AGENTS.md', 'CLAUDE.md', 'docs/context/', 'docs/features/', 'docs/.joycraft/local/', '.claude/settings.json'];
 const LEGACY_ONLY_SKILLS = ['add-context', 'add-fact', 'bugfix', 'collaborative-setup', 'decide', 'design', 'gather-context', 'harden', 'implement-feature',
   'implement-level5', 'interview', 'lockdown', 'new-feature', 'optimize', 'research', 'setup', 'spec-done', 'tune'];
 
@@ -78,6 +79,8 @@ export interface LegacyPlan {
   kept: string[];
   install: Plan;
   settings: { versionHookRemoved: number; safeguardResolved: number } | null;
+  /** The 0.7 shell guard; the owner chooses remove or keep. */
+  guard: LegacyGuard | null;
 }
 
 function isKnown(path: string, bytes: Buffer, manifest: any, state: any): boolean {
@@ -136,7 +139,7 @@ export function planLegacy(dir: string, hosts?: readonly Host[]): LegacyPlan {
   const install = planInstall(root, hosts?.length ? hosts : legacy.hosts);
   const moving = new Set(archive.concat(customized));
   install.actions = install.actions.map((action) => (action.kind === 'conflict' && moving.has(action.path) ? { kind: 'add', path: action.path } : action));
-  return { legacy, archive, customized, kept, install, settings };
+  return { legacy, archive, customized, kept, install, settings, guard: install.guard };
 }
 
 export function formatLegacyPlan(plan: LegacyPlan, nextStep = true): string {
@@ -146,9 +149,10 @@ export function formatLegacyPlan(plan: LegacyPlan, nextStep = true): string {
     `Archive to ${BACKUP_ROOT}/ (untouched 0.7 files): ${plan.archive.length}`,
     `Customized 0.7 files (you choose keep or archive; never lost): ${plan.customized.length}`,
     ...plan.customized.map((path) => `  ${path}`),
-    `Kept as they are: ${plan.kept.length} (AGENTS.md, CLAUDE.md, docs/context/, docs/features/, your safeguard and settings)`,
+    `Kept as they are: ${plan.kept.length} (AGENTS.md, CLAUDE.md, docs/context/, docs/features/, your settings)`,
+    ...(plan.guard ? [`Old 0.7 shell guard (.claude/hooks/joycraft/): you choose remove (backed up) or keep${plan.guard.changed ? '; it has your changes' : ''}`] : []),
     ...(plan.settings ? [`.claude/settings.json: remove ${plan.settings.versionHookRemoved} 0.7 version-check hook(s); resolve ${plan.settings.safeguardResolved} safeguard path(s) from the project root`] : []),
-    `Install 1.0: ${formatPlan(plan.install).split('\n').slice(1).join(' ').trim()}`,
+    `Install 1.0: ${formatPlan(plan.install).split('\n').slice(1).filter((line) => !line.includes('shell guard')).join(' ').trim()}`,
   ];
   if (nextStep) {
     lines.push('', 'Choose one:',
@@ -177,7 +181,7 @@ export interface MigrationResult { backup: string; archived: string[]; keptCusto
  * `recoverLegacy` puts an interrupted migration back. Files are moved, never
  * deleted; the 1.0 manifest is written last.
  */
-export function migrateLegacy(plan: LegacyPlan, { keep = [] as string[], stamp = new Date().toISOString().replace(/[:.]/g, '-') } = {}): MigrationResult {
+export function migrateLegacy(plan: LegacyPlan, { keep = [] as string[], guardAnswer = undefined as GuardAnswer | undefined, stamp = new Date().toISOString().replace(/[:.]/g, '-') } = {}): MigrationResult {
   const root = plan.install.root;
   if (existsSync(join(root, MIGRATE_JOURNAL))) throw new Error('An interrupted migration is pending; run `joycraft update --recover` first');
   const install = new Set(plan.install.actions.map((action) => action.path));
@@ -199,6 +203,7 @@ export function migrateLegacy(plan: LegacyPlan, { keep = [] as string[], stamp =
   }
   for (const { from, to } of moves) { move(root, from, to); pruneEmpty(root, from); }
   const fresh = planInstall(root, plan.install.hosts);
+  fresh.guardAnswer = guardAnswer;
   const result = applyInstall(fresh, { backupName: `migrate-${stamp}/install` });
   writeFileSync(join(root, backup, MIGRATION_RECORD), `${JSON.stringify({
     schemaVersion: 1, from: plan.legacy.version, to: fresh.to, moves, settingsBackup, installBackup: result.backup, created: result.written.filter((path) => !fresh.actions.some((action) => action.path === path && action.kind !== 'add')),

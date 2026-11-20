@@ -57,6 +57,14 @@ The migration is one recoverable step:
 - `.claude/settings.json`: the 0.7 version-check hook is removed, and your safeguard
   hook (`.claude/hooks/joycraft/block-dangerous.sh`) runs from the project root, so
   it also works in subfolders and worktrees. The old file is backed up first.
+- **The 0.7 shell guard** (`.claude/hooks/joycraft/`): the migration asks once
+  whether to remove it or keep it. 1.x does not maintain it. It matches command
+  text, so it is not a security boundary, and it blocks vendor installers that pipe
+  a script to a shell (`curl ... | bash`). Remove moves the script, the deny list
+  and its settings entry to the backup; `rollback` puts them back. Keep leaves them
+  as your files, and update does not ask again. Without a terminal, answer with
+  `--legacy-guard remove` or `--legacy-guard keep`. A 1.x project that still has
+  the guard gets the same question on its next `update`.
 - `.joycraft-backups/` is added to `.gitignore`.
 - The 1.0 manifest is written last. If the migration is interrupted, the agent runs
   `npx joycraft@latest update . --recover` to put the project back as it was.
@@ -69,7 +77,7 @@ These stay exactly as they are:
 - `docs/context/` (your project knowledge and decision log)
 - `docs/features/` (briefs, specs and queues)
 - `docs/.joycraft/local/` (including `replaced/`, the copies of files 0.7 replaced)
-- `.claude/hooks/joycraft/block-dangerous.sh` and `.claude/hooks/joycraft/deny-patterns.txt` (your safeguard)
+- The 0.7 shell guard, if you answer keep (see above)
 - `.claude/settings.json` (only the two hook changes above)
 
 **0.7 spec queues are read-only history.** 1.0 does not convert them. Finish or close
