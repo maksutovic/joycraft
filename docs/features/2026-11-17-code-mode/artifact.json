@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "code-mode",
+  "title": "Claude Code's Code Mode: two choices for Joycraft",
+  "summary": "Code Mode replaces Claude Code's tools with a JavaScript REPL: Claude writes code that makes many tool calls in one step, and only the result enters the context. The video reports about half the input tokens and 71% of the cost in the speaker's own runs; Anthropic gives no number. It is experimental, Claude-only and terminal-only: not `claude -p`, the Desktop app or cloud, and a project cannot turn it on. Joycraft's hooks should still fire, but a hook that cannot start refuses the tool call there. Verdict: make Joycraft safe with it, do not build on it. Nothing was run in Code Mode. Full analysis: docs/research/2026-11-17-claude-code-code-mode-digest.md.",
+  "decisionIds": [
+    "code-mode-posture",
+    "compat-scope"
+  ]
+}
