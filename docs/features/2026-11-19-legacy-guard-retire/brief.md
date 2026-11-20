@@ -44,7 +44,7 @@ A guard that nothing maintains must not stop them.
   the same question. The question says it has changes; the backup keeps them.
 - No guess without a person. A run with no terminal prints the question and
   the flag that answers it, and changes nothing. `--yes` alone keeps the
-  guard and prints one line about the flag.
+  guard for that run and asks again next time.
 - No replacement guard. 1.x does not take ownership of a deny list (owner
   rule "design for the 99%": the agent judges, the person says yes or no).
 
