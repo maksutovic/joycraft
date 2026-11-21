@@ -9,7 +9,7 @@ Parent: [brief](../brief.md), sections `age-out`. Decisions are answered; quote 
 ## acceptance
 
 - `cleanup.mjs age-out --days 14` lists working docs (Markdown under the docs root outside context, features, archive and backlog) whose last commit is older than 14 days, with count and age. Check: a fixture with docs last committed 20 and 5 days ago (GIT_COMMITTER_DATE) lists only the 20-day doc.
-- `--apply` moves each listed doc with `git mv` to `<archive>/working/<same path>` and commits nothing. Check: after apply the file exists under the archive path and `git status` shows renames.
+- `--apply` moves each listed doc with `git mv` to `<archive>/working/<path under the docs root>` (for example `docs/research/old.md` goes to `docs/archive/working/research/old.md`) and commits nothing. Check: after apply the file exists under the archive path and `git status` shows renames.
 - `cleanup.md` asks this as one question in the attended pass only, never at session end. Check: the reference names `age-out` in the attended pass section and the session-end skill does not.
 
 ## Not covered

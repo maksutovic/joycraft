@@ -755,6 +755,10 @@
           {
             "path": "payload/.joycraft/references/knowledge.md",
             "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
           }
         ],
         "criteria": [
@@ -790,6 +794,16 @@
           },
           {
             "id": "spec-12-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-12-5",
             "requirement": {
               "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
               "anchor": "acceptance"

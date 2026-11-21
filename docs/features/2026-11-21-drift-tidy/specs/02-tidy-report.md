@@ -8,7 +8,7 @@ Parent: [brief](../brief.md), sections `tidy-range`, `new-doc`, `end-commit`. De
 
 ## acceptance
 
-- `cleanup.mjs tidy` finds its base: on a branch, the merge base with the default branch (origin/HEAD, else main, else master); on the default branch, the older of 100 commits back or the first commit in the last 7 days, labelled `approximate: true`; `--base <ref>` overrides. Check: fixtures for a feature branch, a trunk-only repo and a squash-merged history print the expected base SHA.
+- `cleanup.mjs tidy` finds its base: on a branch, the merge base with the default branch (origin/HEAD, else main, else master); on the default branch, the first-parent commits of the last 7 days, at most 100 (whichever range is smaller, as the brief's `tidy-range` says), with the base the parent of the oldest one, labelled `approximate: true`; `--base <ref>` overrides. Check: fixtures for a feature branch, a trunk-only repo and a squash-merged history print the expected base SHA.
 - In a shallow clone or outside Git, tidy prints one `skipped` entry and exits 0. Check: a `git clone --depth 1` fixture and a plain folder each give `skipped` with a reason.
 - The `new-doc` finding lists Markdown files the range added under the docs root, outside paths.features, paths.archive and a backlog folder, grouped by folder with counts. Check: a range adding 3 files in `docs/research/x/`, 1 in `docs/notes/`, 1 in `docs/features/f/` and 1 in `docs/archive/a/` prints groups `docs/research/x` (3) and `docs/notes` (1) only.
 - The report shows at most 10 fixable findings, context pages first, then one `N more` line; output is JSON with `base`, `head`, `approximate`, `findings`, `more`, `skipped`. Check: a fixture with 14 findings shows 10 and `more: 4`.
