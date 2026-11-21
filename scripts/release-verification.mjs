@@ -301,8 +301,9 @@ export async function verifyConsumerInstallations({
   initArgs = ['init', '.', '--harness', 'claude,codex', '--yes'],
   // Since 1.0, init without --yes only previews and exits 1.
   previousInitArgs = ['init', '.', '--yes'],
-  // The prior release is 0.7.x: updating its fresh install is the 0.7 → 1.0
-  // migration. Its fixture holds only files the prior package generated.
+  // The prior release is the last published 1.x. `--migrate` and
+  // `--archive-custom` let the same step also cover a 0.7 install; on a 1.x
+  // install they change nothing. The fixture holds only generated files.
   updateArgs = ['update', '.', '--migrate', '--archive-custom', '--yes'],
 } = {}) {
   if (!packageName || !stableVersion(version) || !tarball || !previousTarball) throw new Error('Consumer verification requires package, candidate, and previous-version tarballs');
