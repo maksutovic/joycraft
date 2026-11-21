@@ -1,6 +1,8 @@
 # Token Discipline
 
-Joycraft's workflow produces file artifacts at every step — briefs, specs, discoveries, context docs. This means your conversation context is scaffolding, not the product. You can discard it after each phase without losing work.
+> [Back to README](../../README.md)
+
+Joycraft's workflow writes a file at every step: briefs, specs, review reports, context pages. This means your conversation context is scaffolding, not the product. You can discard it after each phase without losing work.
 
 ## Why It Matters
 
@@ -21,31 +23,37 @@ Not everything in your harness costs the same:
 
 | Component | When it loads | Token cost |
 |-----------|--------------|------------|
-| **Skills** (`.claude/skills/`, `.agents/skills/`) | On demand — only when invoked | Zero boot cost |
+| **Skills** (`.claude/skills/` for Claude Code, `.agents/skills/` for the other hosts) | On demand: only the name and description at boot, the body when used | Small boot cost |
 | **Plugins** | At session start | Loaded into context at boot |
-| **Hooks** | On trigger events | Minimal — shell commands, not context |
+| **Hooks** | On trigger events | Minimal: shell commands, not context |
 | **MCP servers** | At session start | Server definitions loaded at boot |
 
-Skills are Joycraft's primary mechanism precisely because they're lazy-loaded. A skill with 150 lines of instructions costs nothing until you invoke it. A plugin with 150 lines of system prompt costs that on every turn.
+Skills are Joycraft's main mechanism because they load on demand. A skill with 150
+lines of instructions costs almost nothing until the agent uses it. A plugin with
+150 lines of system prompt costs that on every turn.
 
-## What `/joycraft-optimize` Checks
+## Keep `AGENTS.md` short
 
-The optimize skill audits your session overhead and reports:
+`AGENTS.md` loads in every session, so every line in it costs tokens on every turn.
+Joycraft keeps it short: a few managed lines and a context map that links out to the
+pages in `docs/context/`. The agent reads a page only when its row applies.
 
-- **Harness file sizes** — CLAUDE.md and AGENTS.md against a 200-line threshold. Files over 200 lines should split reference content into `docs/`.
-- **Skill file sizes** — each skill against the same 200-line threshold.
-- **Plugin count** — installed vs enabled. Unused plugins are free to uninstall.
-- **MCP server count** — each server adds boot cost. Disable unused ones.
-- **Hook definitions** — listed for awareness, not flagged (hooks are lightweight).
+When `AGENTS.md` grows, ask for a cleanup. `joycraft-cleanup` removes false, stale
+and dated text, moves detail to the page that owns it, and changes no rule without
+your answer:
 
-The 200-line threshold is a guideline, not a hard limit. It reflects the point where a harness file starts competing with your actual work for context space.
+```text
+Clean up my AGENTS.md and context pages.
+Do not commit, publish, or ask me for API keys.
+```
 
-## Both Platforms
+## Every host
 
-These principles apply equally to Claude Code and Codex:
+These principles apply to every host Joycraft supports:
 
 - **Claude Code:** `/clear` to reset, skills in `.claude/skills/`, plugins and MCP in `~/.claude/settings.json`
 - **Codex:** `/new` to reset, skills in `.agents/skills/`, config in `~/.codex/config.toml`
+- **Pi, Oh My Pi, GitHub Copilot CLI, OpenCode:** start a new session to reset; skills in `.agents/skills/`
 
 ## Further Reading
 

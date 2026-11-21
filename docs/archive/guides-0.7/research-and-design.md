@@ -1,6 +1,8 @@
 # Research Isolation & Design Checkpoints
 
-> [Back to README](../../README.md)
+> **Archived.** This guide describes Joycraft 0.7. For 1.0, see the [README](../../../README.md) and [Prompts](../../prompts.md).
+
+> [Back to README](../../../README.md)
 
 These two skills were inspired by [Dex Horthy](https://x.com/dexhorthy)'s work at [HumanLayer](https://humanlayer.dev) on what went wrong with the Research-Plan-Implement (RPI) methodology and the evolution to [CRISPY](https://humanlayer.dev/blog) (Context, Research, Investigate, Structure, Plan, Yield).
 

@@ -1,5 +1,7 @@
 # Knowledge Lifecycle
 
+> **Archived.** This reference describes Joycraft 0.7. In 1.x, the shipped rule is [`payload/.joycraft/references/knowledge.md`](../../../payload/.joycraft/references/knowledge.md).
+
 > How a fact, discovery, or ledger row moves through its life once it's written — refresh it in place rather than minting a near-duplicate, and never delete unrecoverable content.
 
 ## The Five Verbs

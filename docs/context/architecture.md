@@ -49,7 +49,7 @@ payload/  ← the source of the installed skills, runtime and references; edit h
 | `docs/features/` | Working material: one folder per feature with brief, specs and queue |
 | `docs/discoveries/` | Session surprises worth remembering |
 | `docs/backlog/`, `docs/bugfixes/` | Deferred work; per-area bugfix specs |
-| `docs/guides/`, `docs/reference/` | How-to guides; cross-cutting reference (spec and knowledge lifecycles) |
+| `docs/guides/`, `docs/reference/` | How-to guides; contributor reference (spec status lifecycle, skill authoring). 0.7 guides are in `docs/archive/guides-0.7/` |
 | `docs/context/reference/` | Model profiles and other reference pages the context map links |
 | `docs/research/`, `docs/vision/`, `docs/plans/` | Research notes, north-star vision, planning docs |
 | `docs/specs/` | Legacy flat specs from before feature folders |
