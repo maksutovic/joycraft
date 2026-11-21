@@ -20,7 +20,7 @@
 - Test against multiple stack types (Node.js, Python, Rust, Go at minimum)
 - Push to feature branches after each commit
 - Open a PR when all specs in a feature are complete
-- Run `/release-docs-sync` before `gh pr create` — a PR that touches `src/` or `scripts/` must change CHANGELOG.md or carry a `Docs: none — <reason>` line in its body; a PreToolUse hook and the Docs Sync CI check both run `scripts/check-docs-sync.mjs` and block otherwise
+- Run `/release-docs-sync` before `gh pr create` — a PR that touches `src/`, `scripts/` or `payload/` must change CHANGELOG.md or carry a `Docs: none — <reason>` line in its body; a PreToolUse hook and the Docs Sync CI check both run `scripts/check-docs-sync.mjs` and block otherwise
 - Use descriptive branch names: feature/spec-name
 - Show Max every document to read, review or answer (brief, plan, spec set, review, questions) as a rendered page, never only as Markdown in chat: the decision artifact (`node payload/.joycraft/runtime/artifacts/cli.mjs serve --brief <brief.md> --view <artifact.json>`) for a brief or questions, an HTML artifact for anything else. Open it for Max.
 
@@ -58,6 +58,12 @@ From `package.json` scripts; all four ran green on 2026-11-02.
 pnpm install && pnpm build && pnpm typecheck && pnpm test
 pnpm build && node dist/cli.js init /tmp/test-project --yes   # try the CLI as npx would
 ```
+
+| Check | Command | Source |
+|---|---|---|
+| Focused test | `pnpm vitest run tests/<file>.test.ts` | vitest.config.ts |
+| Project gate | `pnpm test && pnpm typecheck` | package.json |
+| Full suite | CI: Test workflow on the PR (tarball gates, OS matrix, upgrade from the published release) | .github/workflows/test.yml |
 
 ## Execution Profile
 

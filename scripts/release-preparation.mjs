@@ -110,6 +110,7 @@ export function emitReleaseDescriptor({ cwd = process.cwd() } = {}) {
 export function isProductPath(file) {
   const normalized = String(file).replaceAll('\\', '/');
   return normalized.startsWith('src/')
+    || normalized.startsWith('payload/')
     || (normalized.startsWith('scripts/') && normalized !== 'scripts/release-preparation.mjs')
     || normalized === 'package.json'
     || normalized === 'pnpm-lock.yaml'

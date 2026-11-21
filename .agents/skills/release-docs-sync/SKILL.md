@@ -9,7 +9,7 @@ description: Joycraft maintainers only — before opening a PR, check whether th
 
 Joycraft releases automatically after merges to `main`. That pipeline does not write explanatory prose, so docs drift silently unless the PR that changes behaviour also changes the docs.
 
-Run this **before opening a PR**, while you still know what changed and why. After merge the version is already cut and the context is gone. `scripts/check-docs-sync.mjs` (a PreToolUse hook and the Docs Sync CI check) blocks a PR that changes `src/` or `scripts/` without a CHANGELOG.md change or a `Docs: none — <reason>` line in its body.
+Run this **before opening a PR**, while you still know what changed and why. After merge the version is already cut and the context is gone. `scripts/check-docs-sync.mjs` (a PreToolUse hook and the Docs Sync CI check) blocks a PR that changes `src/`, `scripts/` or `payload/` without a CHANGELOG.md change or a `Docs: none — <reason>` line in its body.
 
 ## Step 1: Read the Branch
 

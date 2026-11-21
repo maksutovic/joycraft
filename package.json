@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -11,8 +11,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.7.0",
-    "summary": "On Claude, Joycraft pages now publish as Claude artifacts you can share, with a document and its questions on one page. Prefer localhost? Ask your agent to switch pages to local.",
+    "release": "1.8.0",
+    "summary": "Agents now run focused tests while they work, the project gate once per spec, and the full suite once on the PR. Reviewers block weakened tests, and cleanup can review your tests and CI when you ask.",
     "autoSafeEligible": false
   },
   "scripts": {

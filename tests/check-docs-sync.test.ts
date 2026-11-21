@@ -16,7 +16,7 @@ describe('check-docs-sync gate', () => {
     expect(r.product).toEqual(['src/cli.ts']);
   });
 
-  it.each(['src/cli.ts', 'scripts/release-gates.mjs'])(
+  it.each(['src/cli.ts', 'scripts/release-gates.mjs', 'payload/.joycraft/references/testing.md'])(
     'treats %s as a product path',
     (f) => expect(evaluate([f], '').ok).toBe(false),
   );

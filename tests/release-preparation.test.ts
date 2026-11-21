@@ -76,6 +76,16 @@ describe('release preparation', () => {
     expect(JSON.parse(output)).toEqual(expect.objectContaining({ shouldPrepare: true, releaseSha: '0123456789012345678901234567890123456789' }));
   });
 
+  it('plans a release for a payload-only change', () => {
+    const plan = createReleasePreparationPlan({
+      changedFiles: ['payload/.joycraft/references/testing.md', 'payload/PIN'],
+      releaseSha: 'payload123',
+      version: '0.8.0',
+    });
+
+    expect(plan.shouldPrepare).toBe(true);
+  });
+
   it('does not plan a release for docs-only changes', () => {
     const plan = createReleasePreparationPlan({
       changedFiles: ['docs/guides/upgrading.md', 'README.md', 'CHANGELOG.md'],
