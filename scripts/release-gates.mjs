@@ -15,7 +15,7 @@ const STACKS = {
   rust: ['Cargo.toml', '[package]\nname = "app"\nversion = "0.1.0"\n'],
   go: ['go.mod', 'module example.com/app\n\ngo 1.23\n'],
 };
-const FIXTURES_07 = ['0.7.8', '0.7.10', '0.7.15', '0.7.17'];
+const FIXTURES_07 = ['0.7.0', '0.7.8', '0.7.10', '0.7.15', '0.7.17', 'mixed-0.7.2-0.7.17'];
 
 function treeHash(dir, skip = /^(\.joycraft-backups)(\/|$)/) {
   const hash = createHash('sha256');

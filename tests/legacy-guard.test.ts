@@ -9,7 +9,6 @@ import { detectGuard, GUARD_LIST, GUARD_SCRIPT, withoutGuard } from '../src/lega
 import { migrateLegacy, planLegacy } from '../src/legacy-07.js';
 import { applyRollback, planRollback } from '../src/rollback.js';
 import { sha256 } from '../src/payload.js';
-import { generateDenyPatternsFile, generateHookScript } from '../src/safeguard.js';
 
 // Feature legacy-guard-retire, spec 1: update and migrate ask the owner to
 // remove or keep the 0.7 shell guard.
@@ -17,9 +16,15 @@ const repo = join(__dirname, '..');
 // Its own build folder, so it never races the other CLI test files' builds.
 const cli = join(repo, '.test-dist-guard/cli.js');
 const dirs: string[] = [];
+// The stock 0.7 guard, as published 0.7.17 wrote it into a project.
+const fixture017 = join(repo, 'tests/fixtures/v07/0.7.17.tar.gz');
+let stockScript = '';
+let stockList = '';
 
 beforeAll(() => {
   execFileSync(join(repo, 'node_modules/.bin/tsup'), ['src/cli.ts', '--format', 'esm', '--platform', 'node', '--out-dir', '.test-dist-guard', '--no-config'], { cwd: repo, stdio: 'ignore' });
+  stockScript = execFileSync('tar', ['-xzOf', fixture017, `./${GUARD_SCRIPT}`], { encoding: 'utf8' });
+  stockList = execFileSync('tar', ['-xzOf', fixture017, `./${GUARD_LIST}`], { encoding: 'utf8' });
 }, 120000);
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
@@ -38,12 +43,12 @@ function write(dir: string, path: string, text: string): void {
 }
 
 /** A 1.x install that still has the stock 0.7 guard from before its migration. */
-function installedWithGuard(list = generateDenyPatternsFile()): string {
+function installedWithGuard(list = stockList): string {
   const dir = mkdtempSync(join(tmpdir(), 'joycraft-guard-'));
   dirs.push(dir);
   write(dir, 'package.json', '{"name":"app"}\n');
   expect(run(dir, 'init', '.', '--harness', 'claude', '--yes').status).toBe(0);
-  write(dir, GUARD_SCRIPT, generateHookScript());
+  write(dir, GUARD_SCRIPT, stockScript);
   write(dir, GUARD_LIST, list);
   write(dir, '.claude/settings.json', SETTINGS);
   return dir;
@@ -54,8 +59,9 @@ const guardFiles = (dir: string) => [GUARD_SCRIPT, GUARD_LIST, '.claude/settings
 describe('legacy-guard-retire spec 1', () => {
   it('fixtures are the published 0.7 bytes', () => {
     const known = (installInventory as { files: Record<string, string[]> }).files;
-    expect(known[GUARD_SCRIPT]).toContain(sha256(generateHookScript()));
-    expect(known[GUARD_LIST]).toContain(sha256(generateDenyPatternsFile()));
+    expect(stockScript.length).toBeGreaterThan(0);
+    expect(known[GUARD_SCRIPT]).toContain(sha256(stockScript));
+    expect(known[GUARD_LIST]).toContain(sha256(stockList));
   });
 
   it('[AC:detect] finds the script, the list or a settings entry; a project with none gets no question', () => {
@@ -78,7 +84,7 @@ describe('legacy-guard-retire spec 1', () => {
     expect(plain.stdout).toContain('does not maintain it');
     expect(plain.stdout).toContain('curl ... | bash');
     expect(plain.stdout).not.toContain('It has your changes');
-    const changed = run(installedWithGuard(`${generateDenyPatternsFile()}my-own-pattern\n`), 'update', '.');
+    const changed = run(installedWithGuard(`${stockList}my-own-pattern\n`), 'update', '.');
     expect(changed.stdout).toContain('It has your changes; the backup keeps them.');
   });
 
@@ -160,7 +166,7 @@ describe('legacy-guard-retire spec 1', () => {
   it('[AC:migrate] migration asks the same question; remove is undone by rollback', () => {
     const dir = mkdtempSync(join(tmpdir(), 'joycraft-guard-07-'));
     dirs.push(dir);
-    execFileSync('tar', ['-xzf', join(repo, 'tests/fixtures/v07/0.7.17.tar.gz'), '-C', dir]);
+    execFileSync('tar', ['-xzf', fixture017, '-C', dir]);
     const before = guardFiles(dir);
     expect(before[0]).not.toBe(null);
 
@@ -183,7 +189,7 @@ describe('legacy-guard-retire spec 1', () => {
   it('[AC:migrate] migration with keep records the answer', () => {
     const dir = mkdtempSync(join(tmpdir(), 'joycraft-guard-07-'));
     dirs.push(dir);
-    execFileSync('tar', ['-xzf', join(repo, 'tests/fixtures/v07/0.7.17.tar.gz'), '-C', dir]);
+    execFileSync('tar', ['-xzf', fixture017, '-C', dir]);
     const result = run(dir, 'update', '.', '--migrate', '--legacy-guard', 'keep', '--yes');
     expect(result.status, result.stderr).toBe(0);
     expect(read(dir, GUARD_SCRIPT)).not.toBe(null);
