@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -11,8 +11,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.8.0",
-    "summary": "Agents now run focused tests while they work, the project gate once per spec, and the full suite once on the PR. Reviewers block weakened tests, and cleanup can review your tests and CI when you ask.",
+    "release": "1.8.1",
+    "summary": "Session end can archive a finished feature again when its branch reached main through a merge commit.",
     "autoSafeEligible": false
   },
   "scripts": {

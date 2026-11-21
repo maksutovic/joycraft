@@ -7,7 +7,7 @@ claim that a release has shipped.
 
 ---
 
-## Unreleased — Archive accepts a merge that keeps the brief
+## 1.8.1 — Archive accepts a merge that keeps the brief
 
 Session-end archive failed for a feature whose brief changed after acceptance and
 whose branch then reached main through a merge commit. The merge's first parent has
