@@ -13,6 +13,9 @@ import { listWorktrees } from './worktrees.mjs';
 // `age-out --apply` moves files (git mv). The joycraft-cleanup skill tidies the
 // entry files and audits the other docs.
 const entryFiles = ['AGENTS.md', 'CLAUDE.md'];
+// Entry files by name at any depth, as entry-check.mjs counts them: tidy never edits one.
+const entryNames = [...entryFiles, 'AGENTS.override.md'];
+const isEntry = file => entryNames.includes(path.posix.basename(file));
 
 function markdownFiles(root, folder, skip = []) {
   const out = [];
@@ -474,7 +477,7 @@ const codeShaped = (word, span) => !/^[A-Z]{1,4}$/.test(word)
 
 /** Map-reached pages: the entry files and the context pages. */
 function mappedPages(root, { features, archive, context }) {
-  return [...entryFiles.filter(file => existsSync(path.join(root, file))), ...markdownFiles(root, context, [features, archive])];
+  return [...entryNames.filter(file => existsSync(path.join(root, file))), ...markdownFiles(root, context, [features, archive])];
 }
 
 /**
@@ -501,9 +504,9 @@ function goneSymbols(root, config, range, read) {
   requireValue(hits.status === 0 || hits.status === 1, `git grep failed: ${hits.stderr}`);
   const alive = new Set(hits.stdout.split('\n'));
   return named.filter(item => !alive.has(item.symbol)).map(({ file, line, symbol }) => ({
-    check: 'gone-symbol', path: file, line, symbol, fixable: !entryFiles.includes(file),
+    check: 'gone-symbol', path: file, line, symbol, fixable: !isEntry(file),
     detail: `Names ${symbol}, which this range removed from the code; no code at ${range.head.slice(0, 7)} has it.`,
-    fix: entryFiles.includes(file) ? 'Report it: tidy never edits an entry file.' : 'Fix this line to name the current code, or remove it.',
+    fix: isEntry(file) ? 'Report it: tidy never edits an entry file.' : 'Fix this line to name the current code, or remove it.',
   }));
 }
 
@@ -593,11 +596,22 @@ export function tidyReport({ root = process.cwd(), base, now = Date.now(), limit
   return out;
 }
 
+/** The diff of one file against HEAD as Git stores it: every byte as text, no driver, no textconv. */
+const rawDiff = (root, file, cached) => git(root, ['diff', ...(cached ? ['--cached'] : []), 'HEAD', '--text', '--no-textconv', '--no-ext-diff', '--no-color', '--no-renames', '-U0', '--', file], { raw: true });
+// A diff header that changes no line: a mode, a type (symlink or file) or binary content.
+const notLines = /^(?:old mode|new mode|new file mode|deleted file mode|Binary files|GIT binary patch)/m;
+/** A line names `symbol` as a whole word, with or without backticks; spaces inside a backticked span do not hide it. */
+const stillNames = (text, symbol) => new RegExp(`(?<![A-Za-z0-9_])${symbol}(?![A-Za-z0-9_])`)
+  .test(text.replace(/`([^`]*)`/g, (_, span) => span.replace(/\s+/g, '')));
+
 /**
  * tidy --verify: measure again on the working tree. Pass only when the changes
- * against HEAD, staged and unstaged, replace or delete nothing but lines that a
- * fixable finding at HEAD names, add no file, and clear each finding they touch;
- * then give the one commit message. An entry file is never a tidy edit.
+ * against HEAD replace or delete nothing but lines that a fixable finding at
+ * HEAD names, add no file, and clear each finding they touch (the new line no
+ * longer names the symbol as a word); then give the one commit message. The
+ * index must hold none or all of each touched file's change, so `git commit -a`
+ * (and a staged commit) commits the verified change. An entry file is never
+ * a tidy edit; a file Git hides (assume-unchanged, skip-worktree) is refused.
  */
 export function tidyVerify({ root = process.cwd(), base, now = Date.now() } = {}) {
   const config = readConfig(root);
@@ -609,34 +623,54 @@ export function tidyVerify({ root = process.cwd(), base, now = Date.now() } = {}
   const out = { status: 'clean', base: range.base, head: range.head, cleared: 0, remaining: after, refused: [], message: null };
   const names = args => git(root, args).split('\0').filter(Boolean);
   // The working tree and the index each against HEAD: a staged change hidden by the working tree still counts.
-  const views = [['diff', 'HEAD'], ['diff', '--cached', 'HEAD']];
-  const changed = [...new Set(views.flatMap(view => names([...view, '--name-only', '--no-renames', '-z'])))];
+  const changed = [...new Set([['diff', 'HEAD'], ['diff', '--cached', 'HEAD']].flatMap(view => names([...view, '--name-only', '--no-renames', '-z'])))];
   const untracked = names(['ls-files', '-z', '--others', '--exclude-standard']);
   for (const file of untracked) out.refused.push({ path: file, reason: 'An untracked file: tidy adds no file.' });
-  if (changed.length === 0 && untracked.length === 0) return out;
   const named = new Map();
-  for (const item of before) named.set(item.path, new Set([...(named.get(item.path) ?? []), item.line]));
+  // file -> line -> the gone symbols a finding at HEAD names there.
+  for (const item of before) {
+    if (!named.has(item.path)) named.set(item.path, new Map());
+    named.get(item.path).set(item.line, [...(named.get(item.path).get(item.line) ?? []), item.symbol]);
+  }
+  // assume-unchanged (lowercase tag) and skip-worktree (S) hide an edit from git diff and git commit -a.
+  for (const entry of names(['ls-files', '-v', '-z'])) {
+    const [tag, file] = [entry[0], entry.slice(2)];
+    if ((tag === 'S' || /[a-z]/.test(tag)) && (isEntry(file) || named.has(file) || changed.includes(file))) {
+      out.refused.push({ path: file, reason: 'Git hides changes to this file (assume-unchanged or skip-worktree): clear the bit with git update-index, then verify again.' });
+    }
+  }
+  if (changed.length === 0 && out.refused.length === 0) return out;
   let lines = 0;
   for (const file of changed) {
-    if (entryFiles.includes(path.posix.basename(file))) { out.refused.push({ path: file, reason: 'An entry file: tidy never edits one.' }); continue; }
+    if (isEntry(file)) { out.refused.push({ path: file, reason: 'An entry file: tidy never edits one.' }); continue; }
     if (!named.has(file)) { out.refused.push({ path: file, reason: 'No fixable tidy finding names this file.' }); continue; }
-    views.forEach((view, index) => {
-      for (const [, start, count = '1', newStart, newCount = '1'] of git(root, [...view, '-U0', '--no-color', '--no-ext-diff', '--', file]).matchAll(/^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/gm)) {
-        const first = Number(start), size = Number(count), added = Number(newCount);
-        const outside = size === 0 ? [first] : Array.from({ length: size }, (_, at) => first + at).filter(line => !named.get(file).has(line));
-        if (size === 0 || outside.length) { out.refused.push({ path: file, line: outside[0], reason: 'Edits a line that no finding names.' }); continue; }
-        if (added > size) { out.refused.push({ path: file, line: first, reason: 'Adds lines: a tidy edit only replaces or deletes the named lines.' }); continue; }
-        if (index > 0) continue;
-        lines += size;
-        // The edited lines, as they read now, must not still hold a finding.
-        const last = Number(newStart) + added - 1;
-        for (const item of after.filter(item => item.path === file && item.line >= Number(newStart) && item.line <= last)) {
-          out.refused.push({ path: file, line: item.line, reason: `The edit leaves the finding: it still names ${item.symbol ?? item.check}.` });
-        }
+    // Nothing staged, or all of it: then git commit -a and a staged commit hold the verified working tree.
+    const [diff, staged] = [rawDiff(root, file, false), rawDiff(root, file, true)];
+    if (staged && staged !== diff) { out.refused.push({ path: file, reason: 'The index holds part of the change: stage the whole fix (git add) or unstage it (git restore --staged), then verify again.' }); continue; }
+    if (notLines.test(diff)) { out.refused.push({ path: file, reason: 'Changes the file mode, type or binary content: a tidy edit only replaces or deletes named lines.' }); continue; }
+    const hunks = [...diff.matchAll(/^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@.*\n((?:[-+\\].*(?:\n|$))*)/gm)];
+    if (hunks.length === 0) { out.refused.push({ path: file, reason: 'The change shows no line hunk: a tidy edit only replaces or deletes named lines.' }); continue; }
+    for (const [, start, count = '1', newStart, newCount = '1', body] of hunks) {
+      const first = Number(start), size = Number(count), added = Number(newCount);
+      const outside = size === 0 ? [first] : Array.from({ length: size }, (_, at) => first + at).filter(line => !named.get(file).has(line));
+      if (size === 0 || outside.length) { out.refused.push({ path: file, line: outside[0], reason: 'Edits a line that no finding names.' }); continue; }
+      if (added > size) { out.refused.push({ path: file, line: first, reason: 'Adds lines: a tidy edit only replaces or deletes the named lines.' }); continue; }
+      lines += size;
+      // The edited lines, as they read now, must not still hold a finding or name a gone symbol.
+      const symbols = new Set(Array.from({ length: size }, (_, at) => named.get(file).get(first + at)).flat());
+      const fresh = body.split('\n').filter(line => line.startsWith('+')).map(line => line.slice(1));
+      for (const symbol of symbols) {
+        if (fresh.some(text => stillNames(text, symbol))) out.refused.push({ path: file, line: first, reason: `The edit leaves the finding: it still names ${symbol}.` });
       }
-    });
+      const last = Number(newStart) + added - 1;
+      for (const item of after.filter(item => item.path === file && item.line >= Number(newStart) && item.line <= last && !symbols.has(item.symbol))) {
+        out.refused.push({ path: file, line: item.line, reason: `The edit leaves the finding: it still names ${item.symbol ?? item.check}.` });
+      }
+    }
   }
   if (out.refused.length) return { ...out, status: 'refused' };
+  // Nothing cleared, nothing to commit.
+  if (lines === 0) return out;
   const key = item => `${item.check}\0${item.path}\0${item.symbol ?? item.line}`;
   const left = new Set(after.map(key));
   out.cleared = before.filter(item => !left.has(key(item))).length;
@@ -650,7 +684,7 @@ const projectFiles = /^(?:readme|changelog|contributing|license|licence|security
 
 /** Pages that the map reaches: the entry files at any depth, the context pages, and every page they link, name or @-import. */
 function mapReached(root, { features, archive, context }) {
-  const sources = [...new Set([...filesNamed(root, [...entryFiles, 'AGENTS.override.md']), ...markdownFiles(root, context, [features, archive])])];
+  const sources = [...new Set([...filesNamed(root, entryNames), ...markdownFiles(root, context, [features, archive])])];
   const reached = new Set(sources);
   for (const file of sources) {
     const text = readText(root, file);
@@ -680,7 +714,7 @@ export function ageOut({ root = process.cwd(), days, apply = false, now = Date.n
   const reached = mapReached(root, paths);
   const working = file => {
     const name = path.posix.basename(file);
-    return file.endsWith('.md') && !entryFiles.includes(name) && name !== 'AGENTS.override.md' && !projectFiles.test(name)
+    return file.endsWith('.md') && !entryNames.includes(name) && !projectFiles.test(name)
       && ![features, archive, context].some(folder => inside(file, folder)) && !reached.has(file)
       && !under(file).split('/').slice(0, -1).includes('backlog') && !name.toLowerCase().startsWith('backlog');
   };

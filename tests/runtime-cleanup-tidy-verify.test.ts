@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -20,7 +20,7 @@ afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: tru
 const guide = '# Guide\n\nThe widget loader.\n\nCall `getWidget()` to load one.\n';
 
 /** The gone-symbol fixture: the branch removes getWidget; the guide still names it at line 5. */
-function fixture() {
+function fixture(extra: (root: string) => void = () => {}) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-verify-')));
   dirs.push(root);
   git(root, 'init', '-q', '-b', 'main');
@@ -28,6 +28,7 @@ function fixture() {
   put(root, 'docs/context/guide.md', guide);
   put(root, 'docs/context/other.md', '# Other\n');
   put(root, 'AGENTS.md', '# A\n\n[guide](docs/context/guide.md)\n[other](docs/context/other.md)\n');
+  extra(root);
   save(root, 'init');
   git(root, 'checkout', '-q', '-b', 'feature');
   put(root, 'src/widget.ts', 'export const keep = 2;\n');
@@ -129,4 +130,73 @@ describe('tidy --verify review fixes', () => {
     expect(out.json.refused).toMatchObject([{ path: 'docs/context/guide.md', line: 5 }]);
     expect(out.json.message).toBeNull();
   });
+});
+
+describe('tidy --verify review-4 fixes', () => {
+  const rewrite = '# Rewritten\n\nNew rule: push to main.\nMore.\n';
+  const refusedAt = (out: { status: number; json: { refused: { path: string }[]; message: unknown; status: string } }, file: string) => {
+    expect(out.status).not.toBe(0);
+    expect(out.json.status).toBe('refused');
+    expect(out.json.refused.map(item => item.path)).toContain(file);
+    expect(out.json.message).toBeNull();
+  };
+  const cases: [string, (root: string) => void, ((root: string) => void)?][] = [
+    ['a page with a NUL byte', root => put(root, 'docs/context/guide.md', `# Rewritten\0\n${rewrite}`)],
+    ['.git/info/attributes *.md binary', root => { put(root, '.git/info/attributes', '*.md binary\n'); put(root, 'docs/context/guide.md', rewrite); }],
+    ['a textconv driver', root => { put(root, '.git/info/attributes', '*.md diff=x\n'); git(root, 'config', 'diff.x.textconv', 'true'); put(root, 'docs/context/guide.md', rewrite); }],
+    ['a committed .gitattributes *.md -diff', root => put(root, 'docs/context/guide.md', rewrite), root => put(root, '.gitattributes', '*.md -diff\n')],
+    ['a mode-only change of the named page', root => chmodSync(join(root, 'docs/context/guide.md'), 0o755)],
+    ['a mode change with the valid fix', root => { fixLine(root); chmodSync(join(root, 'docs/context/guide.md'), 0o755); }],
+  ];
+  for (const [name, edit, extra] of cases) {
+    it(`[review-4-1] a named page rewritten past the hunk reader is refused: ${name}`, () => {
+      const root = fixture(extra);
+      edit(root);
+      refusedAt(verify(root), 'docs/context/guide.md');
+    });
+  }
+
+  it('[review-4-1] a pass never prints "tidy 0 doc lines"', () => {
+    const root = fixture();
+    chmodSync(join(root, 'docs/context/guide.md'), 0o755);
+    expect(verify(root).json.message ?? '').not.toContain('tidy 0 doc lines');
+  });
+
+  it('[review-4-2] AGENTS.override.md is an entry file: its edit is refused', () => {
+    const root = fixture(r => put(r, 'docs/context/AGENTS.override.md', '# Override\n\nUse `getWidget()`.\n'));
+    put(root, 'docs/context/AGENTS.override.md', '# Override\n\nUse `keep`.\n');
+    refusedAt(verify(root), 'docs/context/AGENTS.override.md');
+  });
+
+  it('[review-4-3] an index that holds part of the change is refused; a fully staged fix passes', () => {
+    const root = fixture();
+    put(root, 'docs/context/guide.md', guide.replace('to load one.', 'to load two.'));
+    git(root, 'add', 'docs/context/guide.md');
+    fixLine(root);
+    const out = verify(root);
+    refusedAt(out, 'docs/context/guide.md');
+    expect(JSON.stringify(out.json.refused)).toMatch(/stage the whole fix/);
+    git(root, 'add', 'docs/context/guide.md');
+    expect(verify(root)).toMatchObject({ status: 0, json: { status: 'pass', cleared: 1 } });
+  });
+
+  for (const [name, line] of [['a space inside the backticks', 'Call `getWidget ()` to load one.'], ['no backticks', 'Call getWidget() to load one.'], ['inner spaces', 'Call `get Widget()` to load one.']]) {
+    it(`[review-4-4] a named line that still names the gone symbol is refused: ${name}`, () => {
+      const root = fixture();
+      put(root, 'docs/context/guide.md', guide.replace('Call `getWidget()` to load one.', line));
+      const out = verify(root);
+      refusedAt(out, 'docs/context/guide.md');
+      expect(JSON.stringify(out.json.refused)).toMatch(/still names getWidget/);
+    });
+  }
+
+  for (const bit of ['--assume-unchanged', '--skip-worktree']) {
+    it(`[review-4-5] an entry file with ${bit} is refused`, () => {
+      const root = fixture();
+      fixLine(root);
+      git(root, 'update-index', bit, 'AGENTS.md');
+      put(root, 'AGENTS.md', '# A hidden edit\n');
+      refusedAt(verify(root), 'AGENTS.md');
+    });
+  }
 });
