@@ -7,6 +7,20 @@ claim that a release has shipped.
 
 ---
 
+## Unreleased — Archive accepts a merge that keeps the brief
+
+Session-end archive failed for a feature whose brief changed after acceptance and
+whose branch then reached main through a merge commit. The merge's first parent has
+no brief, so the check `Brief amendment <merge> does not match its commit's brief
+bytes` could never pass, whatever `brief-amendments.json` said.
+
+### Fixed
+
+- **A merge that keeps a parent's brief needs no amendment.** `archive.mjs` skips a
+  merge commit whose brief equals one of its parents' briefs. Every other commit
+  after acceptance still needs its own entry, and the preview's `laterCommits` still
+  lists the merge. A merge that changes the brief still needs an entry.
+
 ## 1.8.0 — Tests in three tiers, and an opt-in test review
 
 On 1.7.0 the implementer ran the project's whole test, typecheck and lint set

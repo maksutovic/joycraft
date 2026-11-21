@@ -1,4 +1,5 @@
 ---
+type: log
 last_updated: 2026-11-18
 last_updated_by: Maximilian Maksutovic
 ---

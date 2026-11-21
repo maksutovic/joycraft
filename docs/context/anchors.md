@@ -1,9 +1,12 @@
 ---
+type: history
 last_updated: 2026-07-21
 last_updated_by: Maximilian Maksutovic
 ---
 
 # Confidence Anchors
+
+> History. A 0.7-era scale; no 1.x skill uses it, and `joycraft-decide` no longer exists.
 
 > A shared scale for how sure an authoring skill is about a claim it just made — self-scored at write time, audited later.
 

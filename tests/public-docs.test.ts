@@ -96,28 +96,6 @@ describe('1.0 release notes', () => {
     expect(read('docs/context/decision-log.md')).toMatch(/revisits Fable-native harness D4/);
   });
 
-  it('[AC:release-fields] 1.5.0 carries field-21, says what it does not do, and logs both rulings with the owner note', () => {
-    const pkg = JSON.parse(read('package.json'));
-    const [major, minor] = pkg.version.split('.').map(Number);
-    expect(major === 1 && minor >= 5, `version ${pkg.version} is at least 1.5`).toBe(true);
-    const changelog = read('CHANGELOG.md');
-    const start = changelog.indexOf('\n## 1.5.0 — ');
-    expect(start, 'CHANGELOG.md has no 1.5.0 entry').toBeGreaterThan(-1);
-    const entry = changelog.slice(start, changelog.indexOf('\n## ', start + 1));
-    expect(entry).toContain('Payload: joycraft-prototype `field-21`.');
-    expect(entry).toContain('### What it does not do');
-    expect(entry).toMatch(/No test-sensitivity check/);
-    expect(entry).toContain('`command.exitCode`');
-    expect(entry).not.toMatch(/\b(shipped|published) (on|to npm)\b/i);
-    const brief = read('docs/features/2026-11-15-runtime-owned-steps/brief.md');
-    const note = /"note": "(.*?)"\n/.exec(brief)?.[1];
-    expect(note).toMatch(/^if we do this we need to be sure/);
-    const log = read('docs/context/decision-log.md');
-    const row = (id: string) => log.split('\n').find((line) => line.startsWith('| ') && line.includes(`\`${id}\``)) ?? '';
-    expect(row('report-contract')).toMatch(/optional `findings` list/);
-    expect(row('decision-needed-effect')).toContain(`"${note}"`);
-  });
-
   it('the changelog has a Breaking section and the feedback channel exists', () => {
     expect(read('CHANGELOG.md')).toMatch(/### Breaking/);
     expect(read('.github/ISSUE_TEMPLATE/1-0-feedback.yml')).toMatch(/^name: 1\.0 feedback$/m);

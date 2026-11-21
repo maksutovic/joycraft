@@ -138,9 +138,7 @@ When an implementation worker finishes, the coordinator integrates its proposed
 bytes into the integration tree using the project's normal Git workflow and
 resolves any conflicts there. Run integration checks and prepare review from the
 final integrated bytes. A worker-tree test result is useful evidence, but it
-does not replace checks or review of the integrated result. Do not rerun a broad
-suite merely because a worker tree exists; reserve broad validation for the
-final integrated code when it is needed.
+does not replace checks or review of the integrated result.
 
 A worktree does not establish an independent reviewer context or current review
 evidence. Dispatch a reviewer through the existing separate-context policy, and

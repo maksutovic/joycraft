@@ -24,14 +24,13 @@ message.
 
 Write one focused test per acceptance `Check:`, taken from the spec rather than
 from your code, sized like neighboring tests. Tag each with its queue criterion
-ID as `[AC:<criterion-id>]` in the test name or a comment. Run each test command with
-`node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command>`; see
-`.joycraft/references/testing.md#running-tests`. Never wait in a
-foreground loop, never weaken an existing test, and never change the spec's acceptance:
-if a criterion or test looks wrong, report it as a spec gap.
+ID as `[AC:<criterion-id>]` in the test name or a comment. Run tests as
+`.joycraft/references/testing.md#running-tests` says: focused tests while you
+work. Never weaken an existing test or change the spec's acceptance. If a
+criterion or test looks wrong, report a spec gap.
 
 For a user-facing change, render and inspect it as `joycraft-testing` describes.
-Before you finish, run the project's test, typecheck and lint commands named
-in `AGENTS.md`, then `node .joycraft/runtime/completion.mjs submit`, commit by
+Before you finish a spec, run the project gate one time. For a review fix, run
+only the focused tests. Then `node .joycraft/runtime/completion.mjs submit`, commit by
 file name, and report each command, its exit status and the commit. Keep the final message short: what changed,
 checks and results, open gaps.

@@ -12,34 +12,42 @@ running it successfully does not turn its claim into runtime proof.
 | Module exports a specified contract | Inspect the export or compile a real consumer | Structural evidence; source presence cannot prove execution |
 | Narrow layout remains usable | Inspect the actual narrow render; operate relevant controls and inspect results | Screenshot capture alone is not inspection; appearance cannot establish durable persistence |
 
-An unchanged characterization can pass while a new regression fails. Red/green
-means the new assertion detects the right fault, not that every test must fail.
 Do not edit production code merely to manufacture red evidence; an isolated
-temporary copy or existing failing behavior can demonstrate sensitivity when
-useful. Record exactly what was exercised. No universal coverage target or
+temporary copy can show sensitivity. No universal coverage target or
 end-to-end requirement follows from these examples.
 
 ### Running tests
 
-Run each test command once, in single-run mode with `CI=1` and a 300000 ms
+Commands are in `AGENTS.md`. Run tests in three tiers:
+
+- **While you work:** run only the tests for the code you changed: one file,
+  package or name filter. If `AGENTS.md` names no focused command, find the
+  filter in the runner's help or the CI file, and report the command.
+- **Project gate:** run it one time on the final commit of a spec. A review
+  fix runs focused tests only. A commit that changes only Joycraft records
+  needs no test run.
+- **Full suite:** run it one time on the final integrated revision: in CI
+  when the project has CI, else locally before the push.
+
+A pass on a rerun is FLAKY, not PASS. Record a follow-up with both receipts
+and continue, unless the test covers this spec's criterion. Never add a
+retry, a sleep or a skip to get a pass. If an existing test or a criterion
+looks wrong, report `spec gap: test is wrong` with the reason; never edit,
+skip or delete it to pass.
+
+Run each command once, in single-run mode with `CI=1` and a 300000 ms
 timeout, through
-`node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command...>`
-(`--timeout-ms <n>` changes the limit). It uses no shell and saves raw stdout
-and stderr to a new git-ignored or feature-folder receipt. Never start watch
-mode. Copy the printed `command` and `receipts` into the observation. It exits
-1 when the command fails, is killed or times out, and still writes the
-receipt; exit 2 means it refused to run. At the limit it ends the process group:
-`exitCode: null`, `timedOut: true`. Set the host tool timeout to at least this
-limit. A shorter default (for example 120000 ms) ends the wrapper before the
-child. A timeout during parallel runs is not yet a hang: rerun once, alone,
-with fewer workers. If it times out again, report it with the receipt; do
-not keep rerunning. Never wait in a foreground loop
-(`until …; do sleep`, `kill -0`, polling a log): start a long command in the
-background, keep working, and act on its completion notice. If a shared lock
-or verify slot stays busy over 5 minutes, stop and report it. Never
-give a verdict while your own command is still running. A reviewer may reuse
-a suite receipt bound to the same revision. A bug fix needs a meaningful
-failing regression only when one can distinguish the repaired fault.
+`node .joycraft/runtime/evidence.mjs run --receipt <path>.log -- <command...>`
+(`--timeout-ms <n>` changes the limit). It uses no shell, saves raw output
+to a new git-ignored or feature-folder receipt, and prints the
+`revision` it ran on. Never start watch mode. Copy the printed `command`,
+`revision` and `receipts` into the observation. It exits 1 when the command
+fails, is killed or times out, and still writes the receipt; exit 2 means it
+refused to run. Set the host tool timeout to at least this limit. A timeout
+during parallel runs is not yet a hang: rerun once, alone. If it times out
+again, report it with the receipt. Never wait in a foreground loop: start a
+long command in the background and act on its completion notice. Never give
+a verdict while your own command is still running.
 
 ## Commands and receipt records
 
@@ -70,11 +78,8 @@ belong in diagnostic history; an acceptance report must contain the current
 observations after repair. Do not relabel a failure as resolved without rerunning
 the affected check against the current subject.
 
-The validator does not inspect receipt contents, execute commands, determine
-whether inputs are representative, or discover omitted dependencies/requirements.
-The independent reviewer checks those judgments against the actual brief/spec.
-Completion separately checks current identity, receipt hashes, review independence,
-scope review and verdict before changing status.
+The validator does not read receipts, run commands or find omitted
+requirements; the reviewer and completion check those.
 
 ## Visual observations and the repair loop
 
@@ -88,43 +93,29 @@ accessibility checks can support runtime observations without certifying visual
 appearance. Use a separate runtime observation when the claim includes durable
 state, backend effects or another behavior that appearance alone cannot prove.
 
-When a visual requirement specifically calls for restoration or comparison, name
-the actual visible element and its owning clarified requirement. Compare it with
-an accepted reference only when that reference is part of the requirement or is
-available and relevant to the comparison. This does not create a universal
-before/after gate.
+Compare a render with an accepted reference only when the requirement calls
+for it; name the visible element and its requirement.
 
-Take visual evidence with the package's recorded tool from the packet's
-`reviewLoop` (shared `section` plus `local` host tools), within its `canShow`.
-An empty `visual.interactions` list is appropriate for a static appearance-only
-claim or a tool whose `canShow` has no `interact`. A limit the user agreed to is
-not UNVERIFIED: the reviewer reports how it checked and the parent agent judges
-what is left. For an interactive requirement whose tool can interact, the
-reviewer must require the relevant actions and outcomes; the validator cannot
-infer them from a criterion id. A
-disabled control or error state can itself be an observed result; explain it.
+An empty `visual.interactions` list suits a static claim or a tool whose
+`canShow` has no `interact`. For an interactive requirement whose tool can
+interact, the reviewer requires the actions and outcomes. A disabled control
+or error state can itself be an observed result; explain it.
 
 When an inspection finds a scoped defect: retain the observation, fix it, render
 again, repeat affected interactions and inspect the result. If the fix changes a
 bound input, obtain a new subject and fresh affected observations before seeking
 completion. Keep the final flow concise and link prior diagnostics rather than
-copying a transcript. A recorded tool that stopped working (a browser that
-will not launch) is a tool break: an UNVERIFIED check with `cause: 'tool-break'`,
-not an agreed limit. A route the app does not serve can be an app defect and a
-FAIL. A command the host denies is not a tool break. None of these permits
-bypassing access controls or declaring visual PASS.
-Do not wrap, relay, or otherwise route around a denied command; ask the host for
-the legitimate correction. Continue independent work that remains possible.
+copying a transcript. A broken recorded tool is an UNVERIFIED check with
+`cause: 'tool-break'`; a command the host denies is not. A route the app
+does not serve can be a FAIL. Never
+route around a denied command; ask the host for the correction.
 
 ## Where checks run
 
-Read the project's owning CI and runtime policy before adding a check to CI.
-Local browser verification, routine CI checks and one-off data/media studies
-can have different environments and lifetimes. A required local visual check
-does not automatically belong in CI. Diagnose an environment-only UNVERIFIED
-result as an environment limitation, repair that setup, and rerun the affected
-review; do not send unchanged code through a speculative fix round. A genuine
-test race still needs a code/test diagnosis, not just a longer timeout.
+Read the project's CI policy before adding a check to CI; a local visual
+check does not belong there by default. Repair an environment-only
+UNVERIFIED result and rerun the review; do not send unchanged code through a
+fix round. A test race needs a diagnosis, not a longer timeout.
 
 ## Criterion tags
 

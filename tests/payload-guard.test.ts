@@ -13,32 +13,8 @@ import { describe, expect, it } from 'vitest';
 const root = join(__dirname, '..');
 const payloadDir = process.env.JOYCRAFT_PAYLOAD_GUARD_ROOT ?? join(root, 'payload');
 
-// The last commit on main whose payload was field-18 (1.3.0). Used to show that
-// the guard finds the dead paths it was written for. Skipped in a shallow clone.
-const FIELD_18 = '92146bb';
-const FIELD_18_WORDS = 30434;
-
-// The last commit on main whose payload was field-20 (1.4.0). field-21 must ship
-// fewer words in skills, agent files and references (runtime-owned-steps spec 5).
-const FIELD_20 = 'c3db626';
-const FIELD_20_WORDS = 30033;
-
-// The last commit on main whose payload was field-21 (1.5.0). field-22 must not
-// ship more words in skills, agent files and references (open-issues).
-const FIELD_21 = '522c756';
-const FIELD_21_WORDS = 29941;
-
-// The last commit on main whose payload was field-22 (1.5.1). field-23 must not
-// ship more words in skills, agent files and references (legacy-acceptance).
-const FIELD_22 = '23af2ca';
-const FIELD_22_WORDS = 29922;
-
-// field-23 (1.5.2, 1.5.3) shipped this many words. field-24 must not ship more
-// (archive-dated-folder).
-const FIELD_23_WORDS = 29919;
-
-// field-24 (1.5.4) shipped this many words. field-26 must not ship more
-// (canonical-entry-file spec 8).
+// field-24 (1.5.4) shipped this many words. The shipped payload must not grow
+// past it; this one cap replaces the caps of every older field build.
 const FIELD_24_WORDS = 29919;
 
 interface Bundle { label: string; files: Set<string>; read: (path: string) => string }
@@ -56,18 +32,6 @@ function treeBundle(): Bundle {
     files: new Set(walk(payloadDir).filter((path) => path !== 'PIN')),
     read: (path) => readFileSync(join(payloadDir, path), 'utf8'),
   };
-}
-
-const git = (args: string[]) => execFileSync('git', args, { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
-
-function hasRevision(revision: string): boolean {
-  try { git(['rev-parse', '--verify', '--quiet', `${revision}^{commit}`]); return true; } catch { return false; }
-}
-
-function revisionBundle(revision: string): Bundle {
-  const files = git(['ls-tree', '-r', '--name-only', revision, '--', 'payload/']).split('\n').filter(Boolean)
-    .map((path) => path.replace(/^payload\//, '')).filter((path) => path !== 'PIN');
-  return { label: revision, files: new Set(files), read: (path) => git(['show', `${revision}:payload/${path}`]) };
 }
 
 /** Shipped skills, agent files and references: the text an agent reads. */
@@ -132,16 +96,6 @@ const payloadWords = (bundle: Bundle, without: string[] = []) => payloadText(bun
   .filter(({ path }) => !without.includes(path))
   .reduce((sum, { text }) => sum + text.split(/\s+/).filter(Boolean).length, 0);
 
-const field18Dead = [
-  '.joycraft/references/hooks-claude.md',
-  '.joycraft/references/hooks-install.md',
-  '.joycraft/references/hooks-runtime.md',
-  '.joycraft/references/routing.md',
-  '.joycraft/runtime/hooks/cli.mjs',
-  '.joycraft/runtime/hooks/judge.mjs',
-  '.joycraft/runtime/hooks/metrics.mjs',
-];
-
 describe('shipped payload text', () => {
   it('[AC:vendored-field-19] ships the gate check and the gates reference', () => {
     const bundle = treeBundle();
@@ -183,16 +137,6 @@ describe('shipped payload text', () => {
     } finally {
       rmSync(project, { recursive: true, force: true });
     }
-  });
-
-  it('[AC:vendored-runtime-owned-steps] ships fewer words than field-20', () => {
-    const words = payloadWords(treeBundle());
-    expect(words, `${words} words; field-20 had ${FIELD_20_WORDS}`).toBeLessThan(FIELD_20_WORDS);
-  });
-
-  it.runIf(hasRevision(FIELD_20))('[AC:vendored-runtime-owned-steps] field-20 had the recorded word count', () => {
-    expect(JSON.parse(git(['show', `${FIELD_20}:payload/PIN`])).tag).toBe('field-20');
-    expect(payloadWords(revisionBundle(FIELD_20))).toBe(FIELD_20_WORDS);
   });
 
   /** A git project with the shipped runtime and one queue whose specs are `done` with no acceptance. */
@@ -327,31 +271,6 @@ describe('shipped payload text', () => {
     expect(words, `${words} words; field-24 had ${FIELD_24_WORDS}`).toBeLessThanOrEqual(FIELD_24_WORDS);
   });
 
-  it('[AC:vendored-archive-dated-folder] ships no more words than field-23', () => {
-    const words = payloadWords(treeBundle());
-    expect(words, `${words} words; field-23 had ${FIELD_23_WORDS}`).toBeLessThanOrEqual(FIELD_23_WORDS);
-  });
-
-  it('[AC:vendored-legacy-acceptance] ships no more words than field-22', () => {
-    const words = payloadWords(treeBundle());
-    expect(words, `${words} words; field-22 had ${FIELD_22_WORDS}`).toBeLessThanOrEqual(FIELD_22_WORDS);
-  });
-
-  it.runIf(hasRevision(FIELD_22))('[AC:vendored-legacy-acceptance] field-22 had the recorded word count', () => {
-    expect(JSON.parse(git(['show', `${FIELD_22}:payload/PIN`])).tag).toBe('field-22');
-    expect(payloadWords(revisionBundle(FIELD_22))).toBe(FIELD_22_WORDS);
-  });
-
-  it('[AC:vendored-open-issues] ships no more words than field-21', () => {
-    const words = payloadWords(treeBundle());
-    expect(words, `${words} words; field-21 had ${FIELD_21_WORDS}`).toBeLessThanOrEqual(FIELD_21_WORDS);
-  });
-
-  it.runIf(hasRevision(FIELD_21))('[AC:vendored-open-issues] field-21 had the recorded word count', () => {
-    expect(JSON.parse(git(['show', `${FIELD_21}:payload/PIN`])).tag).toBe('field-21');
-    expect(payloadWords(revisionBundle(FIELD_21))).toBe(FIELD_21_WORDS);
-  });
-
   it('every relative link and named reference or runtime path is shipped', () => {
     expect(deadReferences(treeBundle())).toEqual([]);
   });
@@ -360,16 +279,12 @@ describe('shipped payload text', () => {
     expect(unshippedText(treeBundle())).toEqual([]);
   });
 
-  it('is shorter than field-18, without the new gates reference', () => {
-    const words = payloadWords(treeBundle(), ['.joycraft/references/gates.md']);
-    expect(words, `${words} words; field-18 had ${FIELD_18_WORDS}`).toBeLessThan(FIELD_18_WORDS);
-  });
-
-  it.runIf(hasRevision(FIELD_18))('finds the seven dead paths and every term in the field-18 payload', () => {
-    const before = revisionBundle(FIELD_18);
-    expect(JSON.parse(git(['show', `${FIELD_18}:payload/PIN`])).tag).toBe('field-18');
-    expect([...new Set(deadReferences(before).map((item) => item.target))].sort()).toEqual(field18Dead);
-    expect([...new Set(unshippedText(before).map((item) => item.term))].sort()).toEqual(terms.map(([term]) => term).sort());
-    expect(payloadWords(before)).toBe(FIELD_18_WORDS);
+  it('finds a dead link, a dead named path and an unshipped term', () => {
+    const files: Record<string, string> = {
+      '.agents/skills/joycraft-demo/SKILL.md': 'See [routing](../../../.joycraft/references/routing.md) and `.joycraft/runtime/hooks/cli.mjs`.\nJev ranks the specs.\n',
+    };
+    const bundle: Bundle = { label: 'fixture', files: new Set(Object.keys(files)), read: (path) => files[path] };
+    expect([...new Set(deadReferences(bundle).map((item) => item.target))].sort()).toEqual(['.joycraft/references/routing.md', '.joycraft/runtime/hooks/cli.mjs']);
+    expect(unshippedText(bundle).map((item) => item.term)).toEqual(['Jev']);
   });
 });

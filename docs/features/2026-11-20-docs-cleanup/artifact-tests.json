@@ -1,0 +1,9 @@
+{
+ "schemaVersion": 1,
+ "artifactId": "test-review",
+ "title": "Test and CI review",
+ "summary": "Measured run, findings and one choice. Nothing changes until you save.",
+ "decisionIds": [
+  "test-review-apply"
+ ]
+}

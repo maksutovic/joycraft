@@ -1,6 +1,6 @@
 ---
 id: 2
-status: in-review
+status: done
 ---
 # Outcome
 
