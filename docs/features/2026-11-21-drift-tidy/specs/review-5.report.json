@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "84f0e5d79864438823822034f07436c0189aa2b3",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 5,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/05-trust-sentence.md",
+    "criteria": [
+      {
+        "id": "spec-5-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/05-trust-sentence.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-5-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/05-trust-sentence.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-5-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/05-trust-sentence.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "AGENTS.md",
+        "kind": "code",
+        "sha256": "20bc40f9de26a5ea63f8812365c15616b2a948eba9071939b1299f68338c9768",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "89151441c9ff33894d95bed14210f47ed365df02addf798380f3932abd18c0d8",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/05-trust-sentence.md",
+        "kind": "requirement",
+        "sha256": "c2e1f38c60c2c84cfc66290873fd5c85e52140fcc16e089a2e3632d61e1e7ba7",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/wiring.mjs",
+        "kind": "code",
+        "sha256": "732c77231e8c7ece45e419ce0abee0b322cd4da11276cd1cef59694ee502530b",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          5
+        ]
+      },
+      "governing": []
+    },
+    "identity": "14e9940c2497c1bb3a97fa3369eabc18af37b7cfaad97e5c0b1b84f3d8da7965"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "add5a4cc68ca18886"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "independent": true,
+    "scopeReviewed": true,
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a485cd7db549aa8c7"
+    }
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "block-prints-trust-line",
+      "subjectIdentity": "14e9940c2497c1bb3a97fa3369eabc18af37b7cfaad97e5c0b1b84f3d8da7965",
+      "criteria": [
+        "spec-5-1"
+      ],
+      "representativeInput": "node payload/.joycraft/runtime/entry-check.mjs block, run from the repository root at 3b6c101.",
+      "expected": "Exit 0; the block holds the line \"- Search the mapped pages first. A doc that no map row reaches is working material, not current truth.\" before the closing marker.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Exit 0. The receipt holds the 7-line block; line 6 is exactly \"- Search the mapped pages first. A doc that no map row reaches is working material, not current truth.\", line 7 is the closing marker. The other four lines are unchanged.",
+          "command": {
+            "argv": [
+              "node",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "block"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-block.log",
+              "sha256": "8aa6d271c6ab13d53deb89c675dc35138afcb2537c58ec4896aff13ce4de9aa7"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "vitest ran tests/runtime-trust-sentence.test.ts and tests/payload-entry-check.test.ts once in CI=1 mode: 2 files, 8 tests passed, exit 0. The [AC:spec-5-1] test is among them.",
+          "command": {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "tests/runtime-trust-sentence.test.ts",
+              "tests/payload-entry-check.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-tests.log",
+              "sha256": "c67701b13667897f572e7731084f6a4516a7468c81cef9b7f7c912b24581165a"
+            }
+          ]
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "old-block-reported-changed",
+      "subjectIdentity": "14e9940c2497c1bb3a97fa3369eabc18af37b7cfaad97e5c0b1b84f3d8da7965",
+      "criteria": [
+        "spec-5-2"
+      ],
+      "representativeInput": "A temp Git fixture whose AGENTS.md holds the managed block taken verbatim from this repository's AGENTS.md at 0b49bf9 (before the change), checked with node payload/.joycraft/runtime/entry-check.mjs --root <fixture>; plus managedState() from payload wiring.mjs on that same pre-change AGENTS.md.",
+      "expected": "One managed-block finding for the old block; managedState gives state \"changed\"; the current block gives no managed-block finding.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Old block: one advisory managed-block finding at AGENTS.md:3 (\"Joycraft's block differs from the one this version generates.\"). Current block: zero managed-block findings. Current block with only the trust line removed: one managed-block finding. The probe exits 0 only when all three match. (The fixtures have no .joycraft folder, so the entry-check also prints missing-path gate findings and exits 2 per case; these are unrelated to the managed block.)",
+          "command": {
+            "argv": [
+              "node",
+              "<scratchpad>/spec5/probe.mjs",
+              "<repo-root>",
+              "<scratchpad>/spec5/old-AGENTS.md"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-probe.log",
+              "sha256": "c74068f7e155705c3580f43015b80b68bcb3b2566fc87e30202aed4f50977651"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "managedState(pre-change AGENTS.md) = {\"state\":\"changed\",\"line\":5}; managedState(current AGENTS.md) = {\"state\":\"block\",\"line\":5}.",
+          "command": {
+            "argv": [
+              "node",
+              "<scratchpad>/spec5/state.mjs",
+              "<repo-root>",
+              "<scratchpad>/spec5/old-AGENTS.md"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-state.log",
+              "sha256": "49f029f2429c15d89cf5e25d70fc667dbfd7aaf76c243d1602754a710b2b1230"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "vitest ran tests/runtime-trust-sentence.test.ts and tests/payload-entry-check.test.ts once in CI=1 mode: 2 files, 8 tests passed, exit 0. The [AC:spec-5-2] test is among them.",
+          "command": {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "tests/runtime-trust-sentence.test.ts",
+              "tests/payload-entry-check.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-tests.log",
+              "sha256": "c67701b13667897f572e7731084f6a4516a7468c81cef9b7f7c912b24581165a"
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "The probe scripts live in the reviewer scratchpad, outside the repository; the receipts hold their full output."
+      ]
+    },
+    {
+      "id": "repo-agents-current",
+      "subjectIdentity": "14e9940c2497c1bb3a97fa3369eabc18af37b7cfaad97e5c0b1b84f3d8da7965",
+      "criteria": [
+        "spec-5-3"
+      ],
+      "representativeInput": "node payload/.joycraft/runtime/entry-check.mjs --root . on this repository at 3b6c101.",
+      "expected": "No managed-block finding for the repository AGENTS.md.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Exit 0 with empty output (receipt is 0 bytes): no finding of any kind, so no managed-block finding. AGENTS.md:10 holds the new line.",
+          "command": {
+            "argv": [
+              "node",
+              "payload/.joycraft/runtime/entry-check.mjs",
+              "--root",
+              "."
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-repo-root.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "payload/PIN matches payload/ (exit 0), so the pin was refreshed after the wiring.mjs edit.",
+          "command": {
+            "argv": [
+              "node",
+              "scripts/pin-payload.mjs",
+              "--check"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-pin.log",
+              "sha256": "423d69c177cfe4c1e8e2a1470ccfaffa5a844cacdd6c138ef337c6bb078e97e2"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "vitest ran tests/runtime-trust-sentence.test.ts and tests/payload-entry-check.test.ts once in CI=1 mode: 2 files, 8 tests passed, exit 0. The [AC:spec-5-3] test is among them.",
+          "command": {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "tests/runtime-trust-sentence.test.ts",
+              "tests/payload-entry-check.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-tests.log",
+              "sha256": "c67701b13667897f572e7731084f6a4516a7468c81cef9b7f7c912b24581165a"
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "The criterion names the payload entry-check; the installed .joycraft/runtime copy in this repo was not refreshed and still reports the block (see follow-up f-installed-copy)."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f-untraced",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "Reviewer startup trace lists spec-5-1, spec-5-2 and spec-5-3 as untraced: the queue entry declares no check input, so tests/runtime-trust-sentence.test.ts (which carries [AC:spec-5-1..3]) is not bound to the subject. The tests exist and pass; add the test file as a check input so trace and freshness see it."
+    },
+    {
+      "id": "f-installed-copy",
+      "class": "follow-up",
+      "origin": "new",
+      "at": ".joycraft/runtime/wiring.mjs:20",
+      "summary": "The repository's own installed .joycraft/runtime/wiring.mjs still has the old four-line managedLines, so the installed `node .joycraft/runtime/entry-check.mjs` reports an advisory managed-block finding at AGENTS.md:5 (receipt spec-05-probe.log, last section). AGENTS.md gives no rule to refresh installed copies, and the criterion names the payload check, so this is not blocking; it resolves when the repo next updates its install.",
+      "assumption": "Installed copies are refreshed by the release/update flow, not by this spec."
+    },
+    {
+      "id": "f-word-count",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/wiring.mjs:25",
+      "summary": "Per decision trust-sentence = new-line the block grows by about 18 words in every session; no block-size guard was added (that came only with the \"extend\" option, which was not chosen). Noted for the field report."
+    }
+  ],
+  "createdAt": "2026-11-21T23:31:17.559Z"
+}

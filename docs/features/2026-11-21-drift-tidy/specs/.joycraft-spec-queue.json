@@ -276,7 +276,7 @@
       "id": 5,
       "file": "05-trust-sentence.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "verification": {
         "inputs": [
@@ -332,6 +332,10 @@
       },
       "submitted": {
         "at": "2026-11-21T23:27:05.648Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-5.report.json",
+        "sha256": "df26a233cc984b74258ae1cdfcf754e4fcc967a13e14d3b84fb4fed112ae8f22"
       }
     },
     {
