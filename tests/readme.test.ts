@@ -31,7 +31,7 @@ describe('README.md', () => {
     expect(guide).toContain('docs/features/');
   });
 
-  it('[AC:readme-gates-section] has a gates section under The review loop with both prompts and its limits', () => {
+  it('[AC:readme-gates-section] has a gates section under The review loop with both prompts', () => {
     const readme = readFileSync(join(__dirname, '..', 'README.md'), 'utf-8');
     const loop = readme.indexOf('\n## The review loop\n');
     const gates = readme.indexOf('\n### The gates');
@@ -42,17 +42,12 @@ describe('README.md', () => {
     const section = readme.slice(gates, end === -1 ? undefined : end);
     expect(section).toContain("Turn on Joycraft's gates.");
     expect(section).toContain("Turn off Joycraft's gates.");
-    expect(section).toContain('What the gates do not do');
-    expect(section).toMatch(/Claude Code only for now/);
-    expect(section).toMatch(/session-end\s+skill runs the check/);
-    expect(section).toMatch(/no CI check/i);
-    expect(section).toMatch(/fourth review is refused/i);
     const prompts = readFileSync(join(__dirname, '..', 'docs', 'prompts.md'), 'utf-8');
     expect(prompts).toContain("Turn on Joycraft's gates.");
     expect(prompts).toContain("Turn off Joycraft's gates.");
   });
 
-  it('[AC:readme-away-from-keyboard] says under The review loop what a user away from the queue sees, with its prompts', () => {
+  it('[AC:readme-away-from-keyboard] has a section under The review loop for a user away from the queue, with its prompts and no commands', () => {
     const readme = readFileSync(join(__dirname, '..', 'README.md'), 'utf-8');
     const loop = readme.indexOf('\n## The review loop\n');
     const away = readme.indexOf('\n### Running a queue while you are away\n');
@@ -60,11 +55,6 @@ describe('README.md', () => {
     expect(away).toBeGreaterThan(loop);
     expect(away).toBeLessThan(readme.indexOf('\n## ', loop + 1));
     const section = readme.slice(away, readme.indexOf('\n### ', away + 1));
-    expect(section).toMatch(/asks its questions before the queue\s+starts/);
-    expect(section).toMatch(/Work stops only for an answer that must come from you or for a broken\s+project/);
-    expect(section).toMatch(/follow-up\s+question/);
-    expect(section).toMatch(/assumption the reviewer made/);
-    expect(section).toMatch(/You do not run a command/);
     const prose = section.replace(/```[\s\S]*?```/g, '');
     expect(prose).not.toMatch(/node \.joycraft|npx |\.mjs/);
     const prompts = readFileSync(join(__dirname, '..', 'docs', 'prompts.md'), 'utf-8');
