@@ -97,10 +97,8 @@ one entry; a merge keeping a parent's brief needs none. The before hash is at
 exactly once in the current brief's frontmatter JSON `decisions` array, have
 status `clarified` or `assigned`, and a nonempty answer. Do not manufacture an
 answer to unblock archival. The preview includes the validated amendments.
-These records explain historical changes; they do not prove a fresh review of
-the amended feature. Archival therefore does not require one report matching
-today's brief: a single report could cover only one scope and would not renew
-acceptance for the whole feature anyway.
+These records explain historical changes; they do not prove a fresh review, so
+archival does not require one report matching today's brief.
 
 Apply restores each accepted raw version under
 `evidence/requirements/<proof-hash>/<original-path>` in the archive. Different
@@ -166,17 +164,16 @@ version survives outside HEAD history (for example after a squash merge), an
 entry may also name `acceptedCommit` as a full Git commit ID. The blob at that
 exact commit must reproduce the original accepted hash; the helper never waives
 missing bytes. The current external requirement is copied into the archive too,
-so the recorded current hash remains verifiable. `laterCommits` means the path
-commits in the Git range `acceptedCommit..HEAD`; for a branched history this is
-not a claim that all those commits were chronologically later. `acceptedSha256` is copied from the original report's input;
+so the recorded current hash remains verifiable. `laterCommits` lists the path
+commits in `acceptedCommit..HEAD`, not necessarily later in time. `acceptedSha256` is copied from the original report's input;
 `currentSha256` pins raw current bytes, including acceptance metadata. One queue
 edit may therefore need many entries, one for each report whose dependency
 projection changed. Unchanged later reports need no entry. Duplicate, unused,
 uncovered or stale entries fail closed. A ledger's presence alone never enables
 the override, and its shape does not authenticate a human. The ledger itself may
 be uncommitted: preview pins its raw hash, apply rechecks it, and archival retains
-it byte-for-byte as part of the paper trail. Commit the resulting archive through
-the normal project delivery process. A renamed own spec or changed report subject
+it byte-for-byte as part of the paper trail. Commit the archive through normal
+delivery. A renamed own spec or changed report subject
 path still fails; this override reconciles contents, not acceptance identities.
 
 ```sh
@@ -215,6 +212,13 @@ manual recovery. A collision or changed byte fails without accepting new
 completion. A repeat is idempotent only when the replay manifest names
 the feature and every mapped byte still matches; otherwise reconcile it
 manually.
+
+## Archive as is
+
+On the owner's instruction, `--as-is --owner-instruction "<their words>"`
+archives a feature whose acceptance is incomplete: it moves the folder unchanged
+and writes `unverified.md` listing each spec not accepted, each missing receipt
+and the instruction verbatim. Report it as **archived as is, unverified**.
 
 ## After-archive hook
 
