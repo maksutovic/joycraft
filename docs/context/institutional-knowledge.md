@@ -28,7 +28,6 @@ last_updated_by: Maximilian Maksutovic
 - The project was originally called "Joysmith" (repo name) but the package is "Joycraft" — both names appear in various places
 - Skill namespacing was added after bare skill names (`tune`, `decompose`) collided with other Claude Code plugins in the wild
 - The CLAUDE.md merge logic (`improve-claude-md.ts`) is the most complex and dangerous code — it parses user files and must never destroy content
-- Level 5 autofix loop was validated end-to-end on 2026-03-25 with 18 holdout scenarios
 
 ## People & Ownership
 

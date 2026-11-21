@@ -1,6 +1,6 @@
 # Run tests, type checking and the release gates on every PR and push to main.
 # A PR also runs main's own gates, package validation and upgrade test on the
-# PR tarball: checks this change cannot edit (they replace the scenario holdout).
+# PR tarball: checks this change cannot edit.
 name: Test
 
 on:
