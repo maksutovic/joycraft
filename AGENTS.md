@@ -1,6 +1,6 @@
 # Joycraft
 
-**What:** The `joycraft` npm package. Its CLI installs and updates Joycraft, a skill bundle and small runtime for agent-led software work, in any project, for Claude Code, Codex, Pi, Oh My Pi, GitHub Copilot CLI and OpenCode. The skills and runtime it ships are vendored into `payload/` from joycraft-prototype.
+**What:** The `joycraft` npm package. Its CLI installs and updates Joycraft, a skill bundle and small runtime for agent-led software work, in any project, for Claude Code, Codex, Pi, Oh My Pi, GitHub Copilot CLI and OpenCode. The skills, runtime and references it ships live in `payload/`, which is their source: edit them there and run `node scripts/pin-payload.mjs`. joycraft-prototype is retired; never route a change through it.
 
 ---
 

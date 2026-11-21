@@ -7,6 +7,37 @@ claim that a release has shipped.
 
 ---
 
+## 1.7.0 — Claude artifact pages, and one page for a document and its questions
+
+On 1.6.1 an agent showed its findings on one page and the questions about them
+on a second page. Pages also always ran on a local server, although Claude can
+publish a private page that its owner can share.
+
+### Changed
+
+- **One page.** A document that has questions now shares a page with them:
+  the document first, then the decisions. The entry skill and the artifacts
+  reference say so.
+- **Claude artifacts by default on Claude.** When the agent has Claude's
+  artifact tool, it builds the page with `build --mode claude`, publishes it
+  as a private Claude artifact and gives you the link. Answers save in the
+  artifact's storage; the agent imports them into the brief when you say you
+  are done. Other hosts keep the local page.
+- **A setting to switch back.** Ask your agent to show pages locally, or run
+  `node .joycraft/runtime/artifacts/cli.mjs pages --set local`. `pages` alone
+  prints the current choice.
+- **Import takes a list.** `import --responses` accepts the per-decision
+  answers that Claude artifact storage keeps, as one JSON array, and refuses a
+  decision named twice.
+
+### Maintainers
+
+- `payload/` is now the source of the installed skills, runtime and
+  references. `scripts/pin-payload.mjs` replaces `scripts/vendor-payload.mjs`
+  and rewrites `payload/PIN`; joycraft-prototype is retired.
+
+---
+
 ## 1.6.1 — Update asks about the old 0.7 shell guard
 
 On 2026-11-19 a field project followed a vendor's agent handoff. The vendor

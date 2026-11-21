@@ -22,16 +22,16 @@ npx joycraft@latest init|update            (src/cli.ts)
   → else choose or reuse hosts; plan per file against .joycraft/installation.json
   → back up edited Joycraft files, never replace foreign ones, write the manifest last (src/install-v1.ts)
 
-payload/  ← scripts/vendor-payload.mjs --tag field-N (never edit by hand; fix joycraft-prototype and re-vendor)
+payload/  ← the source of the installed skills, runtime and references; edit here, then node scripts/pin-payload.mjs
 ```
 
 ## Key files
 
 | File | Purpose |
 |------|---------|
-| `src/payload.ts` + `src/install-v1.ts` | The vendored payload, host mapping, install/update plan and apply, doctor |
+| `src/payload.ts` + `src/install-v1.ts` | The payload, host mapping, install/update plan and apply, doctor |
 | `src/legacy-07.ts` + `src/rollback.ts` + `src/data/install-inventory.json` | 0.7 detection, migration and rollback; known 0.7 bytes from every published release |
-| `scripts/vendor-payload.mjs` + `scripts/release-gates.mjs` | Vendor the field build into `payload/`; G10 gates against the packed tarball |
+| `scripts/pin-payload.mjs` + `scripts/release-gates.mjs` | Rewrite `payload/PIN` after a payload edit (`--check` verifies it); G10 gates against the packed tarball |
 | `scripts/automatic-release.mjs` + `scripts/release-preparation.mjs` + `scripts/release-verification.mjs` | Version preparation, retained tarball, and consumer verification (the previous version's `init` runs with `--yes`) |
 | `scripts/verify-publication.mjs` + `scripts/release-report.mjs` | Registry visibility checks and report reuse across publish attempts |
 | `src/detect.ts` | Stack detection: a pure function, no side effects |
@@ -43,10 +43,10 @@ payload/  ← scripts/vendor-payload.mjs --tag field-N (never edit by hand; fix 
 
 | Folder | What lives here |
 |--------|-----------------|
-| `payload/` | The vendored 1.x skills, runtime and templates (generated; see above) |
+| `payload/` | The 1.x skills, runtime, references and templates (source; see above) |
 | `src/` | CLI and library (TypeScript) |
 | `src/arcade/` | Experimental playground |
-| `scripts/` | Release, vendoring, skill generation and sync, docs-sync gate, `ste-lint.py` |
+| `scripts/` | Release, payload pin, skill generation and sync, docs-sync gate, `ste-lint.py` |
 | `templates/`, `src/templates/` | 0.7 templates (`src/templates/` is bundled and copied to `docs/templates/`) |
 | `tests/` | Test suite; `tests/fixtures/` holds real-world manifest files per stack |
 | `docs/context/` | Current project knowledge (see the context map in `AGENTS.md`) |

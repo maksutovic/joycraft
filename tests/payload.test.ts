@@ -21,7 +21,7 @@ const text = (path: string) => readFileSync(join(payload, path), 'utf8');
 describe('vendored payload', () => {
   it('matches its PIN byte for byte', () => {
     const pin = JSON.parse(text('PIN'));
-    expect(pin.tag).toMatch(/^field-\d+$/);
+    expect(pin.tag).toMatch(/^(field-\d+|payload-[0-9a-f]{12})$/);
     expect(Object.keys(pin.files).sort()).toEqual(files());
     for (const path of files()) expect(createHash('sha256').update(readFileSync(join(payload, path))).digest('hex'), path).toBe(pin.files[path]);
   });
@@ -53,13 +53,8 @@ describe('vendored payload', () => {
     expect(paths.has('payload/.joycraft/runtime/completion.mjs')).toBe(true);
   });
 
-  it.runIf(Boolean(process.env.JOYCRAFT_PROTOTYPE_REPO))('re-vendoring the pinned tag gives identical bytes', async () => {
-    const { vendor } = await import('../scripts/vendor-payload.mjs');
-    const pin = JSON.parse(text('PIN'));
-    const dest = mkdtempSync(join(tmpdir(), 'joycraft-revendor-'));
-    try {
-      expect(vendor({ source: process.env.JOYCRAFT_PROTOTYPE_REPO, tag: pin.tag, dest: join(dest, 'payload') })).toEqual(pin);
-      expect(existsSync(join(dest, 'payload/PIN'))).toBe(true);
-    } finally { rmSync(dest, { recursive: true, force: true }); }
+  it('PIN is what scripts/pin-payload.mjs writes for these files', async () => {
+    const { pinFor } = await import('../scripts/pin-payload.mjs');
+    expect(JSON.parse(text('PIN'))).toEqual(pinFor());
   });
 });

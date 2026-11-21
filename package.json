@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -13,8 +13,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.6.1",
-    "summary": "Update now asks once whether to remove the old 0.7 shell guard, which blocks vendor installers like curl | bash. Remove backs it up; keep stops the question.",
+    "release": "1.7.0",
+    "summary": "On Claude, Joycraft pages now publish as Claude artifacts you can share, with a document and its questions on one page. Prefer localhost? Ask your agent to switch pages to local.",
     "autoSafeEligible": false
   },
   "scripts": {

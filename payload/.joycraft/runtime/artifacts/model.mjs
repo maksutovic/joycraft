@@ -177,7 +177,13 @@ export async function replaceBrief(root, path, before, after) {
 
 export async function persistResponses({ root = process.cwd(), brief, view, envelope, apply = false }) {
   const { model, text } = await loadArtifact({ root, brief, view });
-  const request = validateEnvelope(envelope, model);
+  // Claude artifact storage keeps one envelope per decision; a list of them imports as one.
+  const envelopes = Array.isArray(envelope) ? envelope : [envelope];
+  if (!envelopes.length) throw new Error('Responses must name only decisions displayed in this artifact');
+  const parts = envelopes.map(item => validateEnvelope(item, model));
+  const ids = parts.flatMap(part => part.answers.map(answer => answer.id));
+  if (new Set(ids).size !== ids.length) throw new Error('Responses name a decision more than once');
+  const request = { revision: model.source.revision, answers: parts.flatMap(part => part.answers) };
   const updated = saveAnswers(text, request);
   if (apply) await replaceBrief(root, brief, text, updated);
   return { applied: apply, changed: updated !== text, source: model.source, answers: request.answers };

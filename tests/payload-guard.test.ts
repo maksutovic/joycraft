@@ -149,10 +149,11 @@ describe('shipped payload text', () => {
     expect(bundle.files.has('.joycraft/references/gates.md')).toBe(true);
   });
 
-  it('[AC:vendored-runtime-owned-steps] pins field-26 and ships submit, evidence run and the queue check', () => {
+  it('[AC:vendored-runtime-owned-steps] pins the payload and ships submit, evidence run and the queue check', () => {
     const pin = JSON.parse(readFileSync(join(payloadDir, 'PIN'), 'utf8'));
-    expect(pin.tag).toBe('field-26');
-    expect(pin.commit).toBe('ee3ab75f06fe9d5bec13f9e8770ca4f23358447e');
+    // payload/ is the source since 1.7.0; scripts/pin-payload.mjs writes the tag.
+    expect(pin.source).toBe('joycraft');
+    expect(pin.tag).toMatch(/^payload-[0-9a-f]{12}$/);
     const bundle = treeBundle();
     for (const path of ['.joycraft/runtime/completion.mjs', '.joycraft/runtime/evidence.mjs', '.joycraft/runtime/queue-check.mjs']) {
       expect(bundle.files.has(path), path).toBe(true);

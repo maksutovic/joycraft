@@ -90,8 +90,9 @@ describe('1.0 release notes', () => {
     const start = changelog.indexOf(`\n## ${pkg.joycraft.release} — `);
     expect(start, `CHANGELOG.md has no ${pkg.joycraft.release} entry`).toBeGreaterThan(-1);
     const entry = changelog.slice(start, changelog.indexOf('\n## ', start + 1));
+    // Releases before payload/ became the source name the prototype tag they vendored.
     const tag = JSON.parse(read('payload/PIN')).tag;
-    expect(entry).toContain(`Payload: joycraft-prototype \`${tag}\`.`);
+    if (tag.startsWith('field-')) expect(entry).toContain(`Payload: joycraft-prototype \`${tag}\`.`);
     expect(read('docs/context/decision-log.md')).toMatch(/revisits Fable-native harness D4/);
   });
 
