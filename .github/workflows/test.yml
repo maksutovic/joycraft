@@ -1,4 +1,5 @@
-# Run tests, type checking and the release gates on every PR and push to main.
+# Run tests, type checking and the release gates on every PR. On main, publish.yml
+# calls this workflow for the pushed commit, so it does not also run on push.
 # A PR also runs main's own gates, package validation and upgrade test on the
 # PR tarball: checks this change cannot edit.
 name: Test
@@ -19,8 +20,6 @@ on:
         type: string
         default: ''
   pull_request:
-    branches: [main]
-  push:
     branches: [main]
 
 env:
