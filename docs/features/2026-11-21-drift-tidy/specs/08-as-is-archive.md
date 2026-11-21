@@ -1,6 +1,6 @@
 ---
 id: 8
-status: in-review
+status: done
 ---
 # An owner can archive an unfinished feature as is
 

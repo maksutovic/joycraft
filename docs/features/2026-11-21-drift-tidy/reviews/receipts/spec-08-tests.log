@@ -1,0 +1,15 @@
+$ node_modules/.bin/vitest run tests/runtime-archive-as-is.test.ts tests/runtime-archive-merge-amendment.test.ts
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-archive-as-is.test.ts (7 tests) 1108ms
+ ✓ tests/runtime-archive-merge-amendment.test.ts (2 tests) 1480ms
+   ✓ archive brief amendments across a merge commit > [AC:merge-keeps-parent-brief] a --no-ff merge into a main without the brief needs no amendment record  632ms
+   ✓ archive brief amendments across a merge commit > [AC:merge-changes-brief] a merge whose brief differs from every parent still needs its own record  848ms
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  15:35:37
+   Duration  1.73s (transform 66ms, setup 0ms, collect 42ms, tests 2.59s, environment 0ms, prepare 171ms)
+
+exit: 0

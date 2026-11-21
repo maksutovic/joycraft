@@ -1,0 +1,15 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-cleanup-gone-symbol.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2116[2mms[22m[39m
+   [33m[2m✓[22m[39m gone-symbol[2m > [22m[AC:spec-3-1] a name removed from code and still named in a context page is one finding at that line [33m 439[2mms[22m[39m
+   [33m[2m✓[22m[39m gone-symbol[2m > [22m[AC:spec-3-2] a name moved to another file in the range is not reported [33m 433[2mms[22m[39m
+   [33m[2m✓[22m[39m gone-symbol[2m > [22m[AC:spec-3-3] the same works for Python [33m 418[2mms[22m[39m
+   [33m[2m✓[22m[39m gone-symbol[2m > [22m[AC:spec-3-4] a hit in an entry file is fixable: false [33m 417[2mms[22m[39m
+   [33m[2m✓[22m[39m gone-symbol review fixes[2m > [22m[review-a-6] plain words and short capitals in backticks are not reported [33m 408[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 15:35:56
+[2m   Duration [22m 2.30s[2m (transform 17ms, setup 0ms, collect 15ms, tests 2.12s, environment 0ms, prepare 43ms)[22m
+
