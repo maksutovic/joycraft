@@ -1,15 +1,15 @@
 ---
-last_updated: 2026-11-02
+last_updated: 2026-11-20
 last_updated_by: Maximilian Maksutovic
 ---
 
 # Architecture
 
-> Where the code for each job lives. Moved out of `AGENTS.md` on 2026-11-02 and checked against `src/cli.ts` at 6c7781a. The code is the authority; fix this page when they disagree.
+> Where the code for each job lives. The code is the authority; fix this page when they disagree.
 
 ## The code
 
-The package ships `dist/cli.js` (`bin`, built from `src/cli.ts`) and `payload/`. It has no library export (`main`). `src/` holds only the CLI: `cli`, `install-v1`, `payload`, `legacy-07`, `legacy-guard` and `rollback`. The 0.7 updater, its skill and template trees and their generators were removed; they are in the 0.7 git tags.
+The package ships `dist/cli.js` (`bin`, built from `src/cli.ts`) and `payload/`. It has no library export (`main`). `src/` holds only the CLI: `cli`, `install-v1`, `payload`, `legacy-07`, `legacy-guard` and `rollback`, plus the release descriptor `joycraft-release.json`. The 0.7 updater, its skill and template trees and their generators were removed; they are in the 0.7 git tags.
 
 ## Install flow (1.x)
 

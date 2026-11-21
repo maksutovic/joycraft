@@ -1,0 +1,16 @@
+{
+ "schemaVersion": 1,
+ "artifactId": "docs-cleanup",
+ "title": "Docs cleanup and closing questions",
+ "summary": "Five cleanup questions by theme (stops and holds first), then the spec acceptance, the archive follow-ups and the worktrees. Every other change is a recommendation in the findings above: veto any in a note.",
+ "decisionIds": [
+  "stops",
+  "holds",
+  "always-rules",
+  "dead-pages",
+  "old-material",
+  "accept-testing-overhaul",
+  "cef-followups",
+  "worktrees"
+ ]
+}

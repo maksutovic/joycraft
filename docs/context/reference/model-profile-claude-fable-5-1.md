@@ -1,4 +1,10 @@
+---
+type: history
+---
+
 # Model Profile: Claude Fable 5.1
+
+> History. Steering for Claude Fable 5.1; the execution profile now runs other models. Re-check each block before you use it again.
 
 > Model-specific steering for Claude Fable 5.1 — the tested prompt blocks from
 > Anthropic's "Prompting Claude Fable 5.1" guide plus two operator rules, each
