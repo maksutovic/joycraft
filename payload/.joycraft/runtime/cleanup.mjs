@@ -29,7 +29,7 @@ function markdownFiles(root, folder, skip = []) {
   return out.sort();
 }
 
-const read = (root, file) => { try { return readFileSync(path.join(root, file), 'utf8'); } catch { return null; } };
+const readText = (root, file) => { try { return readFileSync(path.join(root, file), 'utf8'); } catch { return null; } };
 
 /**
  * Files named `names` anywhere in the project, as project-relative paths. Git
@@ -229,6 +229,7 @@ export const checkList = [
   ['unknown-worktree', 'report', 'A linked worktree that worktrees.mjs did not create'],
   // tidy only: range-scoped checks.
   ['tidy', 'report', 'tidy: the range cannot be read (shallow clone or no Git); everything else is skipped'],
+  ['gone-symbol', 'mechanical', 'tidy: a backticked name in a mapped page that the range removed from all code (report-only in an entry file)'],
   ['new-doc', 'report', 'tidy: Markdown the range added under the docs root, outside features, archive and backlog, by folder'],
 ];
 
@@ -249,7 +250,7 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   const referenced = new Set();
   const deprecated = new Set();
   for (const page of pages) {
-    const meta = frontmatter(read(root, page) ?? '');
+    const meta = frontmatter(readText(root, page) ?? '');
     if (meta?.unreadable) { findings.push({ check: 'frontmatter-unreadable', path: page, detail: `Frontmatter uses YAML that cleanup cannot read (${meta.unreadable}), so its status and stale_after are not checked.`, fix: 'Use plain key: value lines, lists and quoted strings in the frontmatter.' }); continue; }
     if (meta?.status === 'deprecated') deprecated.add(page);
     const staleAfter = meta?.stale_after == null ? NaN : Date.parse(String(meta.stale_after));
@@ -257,7 +258,7 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   }
   // Read and parse each file once; the checks below share the result.
   const parsed = new Map(authorities.map(file => {
-    const text = read(root, file) ?? '';
+    const text = readText(root, file) ?? '';
     return [file, { text, ...references(file, text) }];
   }));
   for (const file of authorities) {
@@ -338,7 +339,7 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   });
   if (named.length) {
     const manifests = filesNamed(root, ['package.json']);
-    const scripts = new Set(manifests.flatMap(file => { try { return Object.keys(JSON.parse(read(root, file)).scripts ?? {}); } catch { return []; } }));
+    const scripts = new Set(manifests.flatMap(file => { try { return Object.keys(JSON.parse(readText(root, file)).scripts ?? {}); } catch { return []; } }));
     if (manifests.length === 0) skipped.push({ check: 'script-name', reason: 'No package.json; script names in other manifests are not checked.' });
     else for (const item of named) {
       if (!scripts.has(item.script)) findings.push({ check: 'script-name', path: item.file, line: item.line, detail: `Names the package script ${item.script} (\`${item.span}\`), which no package.json defines.`, fix: 'Name a script that exists, or remove the command.' });
@@ -434,11 +435,49 @@ export function tidyRange(root, { base, now = Date.now() } = {}) {
   return { base: tryGit(root, ['rev-parse', '--verify', '--quiet', `${recent.at(-1)}^`]) ?? emptyTree, head, approximate: true };
 }
 
+// A generic identifier: 3+ word characters with a letter, in any language.
+const identifiers = text => (text.match(/[A-Za-z0-9_]{3,}/g) ?? []).filter(word => /[A-Za-z]/.test(word));
+const notMarkdown = ['--', '.', ':(exclude)*.md'];
+
+/** Map-reached pages: the entry files and the context pages. */
+function mappedPages(root, { features, archive, context }) {
+  return [...entryFiles.filter(file => existsSync(path.join(root, file))), ...markdownFiles(root, context, [features, archive])];
+}
+
+/**
+ * gone-symbol: identifiers on code lines the range removed that a mapped page
+ * still names in backticks, and that no code at HEAD has (one git grep -F -w).
+ */
+function goneSymbols(root, config, range, read) {
+  const diff = git(root, ['diff', '-U0', '--no-color', '--no-ext-diff', range.base, range.head, ...notMarkdown]);
+  const removed = new Set(diff.split('\n').filter(line => line.startsWith('-') && !line.startsWith('---')).flatMap(line => identifiers(line.slice(1))));
+  if (removed.size === 0) return [];
+  const named = [];
+  for (const file of mappedPages(root, config.paths)) {
+    const text = read(file);
+    if (text == null || historyPage(file, text)) continue;
+    for (const { span, line } of references(file, text).spans) {
+      if (/[\s/]/.test(span.trim())) continue;
+      for (const symbol of new Set(identifiers(span))) if (removed.has(symbol)) named.push({ file, line, symbol });
+    }
+  }
+  if (named.length === 0) return [];
+  const symbols = [...new Set(named.map(item => item.symbol))];
+  const hits = spawnSync('git', ['grep', '-F', '-w', '-o', '-h', '-I', '-f', '-', range.head, ...notMarkdown], { cwd: root, input: `${symbols.join('\n')}\n`, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  requireValue(hits.status === 0 || hits.status === 1, `git grep failed: ${hits.stderr}`);
+  const alive = new Set(hits.stdout.split('\n'));
+  return named.filter(item => !alive.has(item.symbol)).map(({ file, line, symbol }) => ({
+    check: 'gone-symbol', path: file, line, symbol, fixable: !entryFiles.includes(file),
+    detail: `Names ${symbol}, which this range removed from the code; no code at ${range.head.slice(0, 7)} has it.`,
+    fix: entryFiles.includes(file) ? 'Report it: tidy never edits an entry file.' : 'Fix this line to name the current code, or remove it.',
+  }));
+}
+
 /** Findings the range caused. `read(file)` gives a page's text (the working tree by default). */
-function rangeFindings(root, config, range) {
+function rangeFindings(root, config, range, read = file => readText(root, file)) {
   const { features, archive } = config.paths;
   const docs = docsRoot(config.paths);
-  const findings = [];
+  const findings = goneSymbols(root, config, range, read);
   // new-doc: Markdown the range added under the docs root, outside the work folders and the backlog.
   const added = git(root, ['diff', '--name-only', '--diff-filter=A', '-z', range.base, range.head, '--', docs]).split('\0')
     .filter(file => file.endsWith('.md') && !inside(file, features) && !inside(file, archive)

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-837e50d308ab",
-  "commit": "837e50d308ab46298a7f56518bc6735c9ff67577ba8bf25462663d0d0ddb2cf2",
+  "tag": "payload-3bfeeec48d80",
+  "commit": "3bfeeec48d805033ab0d698702c77987fdd4ce208c8137442e4ff247af5c8f16",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "1068f282272a60b8528a173be41c5727aaf152264bfa397e2de0255466d7f838",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -51,7 +51,7 @@
     ".joycraft/runtime/artifacts/preferences.mjs": "b9c6bcbd796c31096085d96dcfb9ac63c62f5d7c13670aa7fec6f1f7189bbe8c",
     ".joycraft/runtime/artifacts/render.mjs": "79d5a5628542ec87740096ef697fc1efa8649c5546ae72b449f43bc5c810035d",
     ".joycraft/runtime/artifacts/server.mjs": "b7e5efab7ef8afc060b56278e6bc7f21bff325ddd4f64a6dde8e1051647851ff",
-    ".joycraft/runtime/cleanup.mjs": "6c2578185d303f1314772b66bba32365d43f44a8dd0bfd7df8112dd94513b02c",
+    ".joycraft/runtime/cleanup.mjs": "ad0d1219ef157cd0ff5e0b0df02a59012ffd470809a714844a24196c11792ab8",
     ".joycraft/runtime/completion.mjs": "09c810cb10ff16a9f6f8637b90200ffc6e1837e5aa3cc3d1ade48f0c7b2a3bd4",
     ".joycraft/runtime/config.mjs": "72a536f3453dd73f65fdc243e2a13b562eee5a7ba59528adca4bde684307036a",
     ".joycraft/runtime/context/cli.mjs": "40adc206c8c3b7f4f5bedffb097d9ae1b0718f0586a055796e4987e9c3088eee",
