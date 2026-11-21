@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-78e33fb3920c",
-  "commit": "78e33fb3920c6a958639a8c20363950965a49e3bfe84821accda1e7b0f57ae85",
+  "tag": "payload-e2c0819a982a",
+  "commit": "e2c0819a982ac4cad6aa619dfefe9847d1a1d8128c725920ee296539168c716e",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "1068f282272a60b8528a173be41c5727aaf152264bfa397e2de0255466d7f838",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -26,7 +26,7 @@
     ".joycraft/references/architecture.md": "4e225ba23ed72d3d7b1af9bfceeb708583eede79978c294724b917ad94674be9",
     ".joycraft/references/archive.md": "c39ac10f7d37d70e2e42e598346623b49dd3521d37ae4d9fa9498b92b0b457c8",
     ".joycraft/references/artifacts.md": "e47d406e86318c6ecff5f752f8752f8233e08b12206b6771b13453279c0113ca",
-    ".joycraft/references/cleanup.md": "3a3edc7fdf58f1b62d698d2fba751d162672cfc80bd684f3e7b1e780d42f4eee",
+    ".joycraft/references/cleanup.md": "5f0f3f628d44df8872e8a909f820176cfa3afdb6aaf66fd9c9ab1365cbf2193d",
     ".joycraft/references/completion.md": "698e67984a959744f40bb0b221c953665d4558c046f4faea55dc6c7162e4cb0d",
     ".joycraft/references/context.md": "b94dd48a427aaafe826116bac100375cbae565b1ba3239fd7812c56eac724577",
     ".joycraft/references/delivery.md": "0bebe9db95ea3c2f40afddb522a77b42e900ca3221dae816cded64d029dc68fc",
@@ -51,7 +51,7 @@
     ".joycraft/runtime/artifacts/preferences.mjs": "b9c6bcbd796c31096085d96dcfb9ac63c62f5d7c13670aa7fec6f1f7189bbe8c",
     ".joycraft/runtime/artifacts/render.mjs": "79d5a5628542ec87740096ef697fc1efa8649c5546ae72b449f43bc5c810035d",
     ".joycraft/runtime/artifacts/server.mjs": "b7e5efab7ef8afc060b56278e6bc7f21bff325ddd4f64a6dde8e1051647851ff",
-    ".joycraft/runtime/cleanup.mjs": "9ac873822a7bf509dca6d841d2253121f154da4b23ff16d149164e44162d4c61",
+    ".joycraft/runtime/cleanup.mjs": "947621716d3afd6852371ea76b017aa085cbf379f00654a515d8da2b6a8682d9",
     ".joycraft/runtime/completion.mjs": "09c810cb10ff16a9f6f8637b90200ffc6e1837e5aa3cc3d1ade48f0c7b2a3bd4",
     ".joycraft/runtime/config.mjs": "72a536f3453dd73f65fdc243e2a13b562eee5a7ba59528adca4bde684307036a",
     ".joycraft/runtime/context/cli.mjs": "40adc206c8c3b7f4f5bedffb097d9ae1b0718f0586a055796e4987e9c3088eee",

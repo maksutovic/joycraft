@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -177,6 +177,13 @@ function historyPage(file, text) {
 
 const inside = (file, folder) => file === folder || file.startsWith(`${folder}/`);
 
+/** The paths of `paths` that Git ignores, from one `git check-ignore --stdin` call. */
+function gitIgnored(root, paths) {
+  if (paths.length === 0) return new Set();
+  const result = spawnSync('git', ['check-ignore', '-z', '--stdin'], { cwd: root, input: paths.join('\0'), encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 });
+  return new Set(result.status === 0 ? result.stdout.split('\0').filter(Boolean) : []);
+}
+
 function git(root, args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 }
@@ -193,11 +200,34 @@ function impactDrift(root, impact, findings, skipped) {
       const commits = git(root, ['log', '--format=%h', `${last}..HEAD`, '--', `:(glob)${entry.source}`]).split('\n').filter(Boolean);
       if (commits.length) {
         const files = [...new Set(git(root, ['diff', '--name-only', last, 'HEAD', '--', `:(glob)${entry.source}`]).split('\n').filter(Boolean))];
-        findings.push({ check: 'impact-drift', path: doc, detail: `${commits.length} commit(s) changed ${entry.source} after this page last changed: ${files.slice(0, 8).join(', ')}${files.length > 8 ? ', …' : ''}.`, fix: 'Read the changed code and update the page, or commit the page unchanged if it is still true.', commits });
+        findings.push({ check: 'impact-drift', path: doc, detail: `${commits.length} commit(s) changed ${entry.source} after this page last changed: ${files.slice(0, 8).join(', ')}${files.length > 8 ? ', …' : ''}.`, fix: 'Read the changed code and update the page, or, if it is still true, add a `verified: <today>` line to it.', commits });
       }
     }
   }
 }
+
+// Every check this script runs: id, kind, what it finds. `mechanical` means a
+// script can check the fix (session end may make it); `report` waits for a person.
+export const checkList = [
+  ['unarchived', 'report', 'A feature whose specs are all done, still in paths.features'],
+  ['status-drift', 'mechanical', 'A spec whose queue status and frontmatter status differ (status.mjs --fix)'],
+  ['frontmatter-unreadable', 'report', 'Context-page frontmatter that cleanup cannot parse'],
+  ['stale-after', 'report', 'A context page whose stale_after date has passed'],
+  ['working-link', 'report', 'A guide or entry file linking a feature or archive folder'],
+  ['deprecated-link', 'report', 'A link to a page marked status: deprecated'],
+  ['broken-link', 'report', 'A Markdown link to a file that does not exist'],
+  ['missing-path', 'mechanical', 'A backticked project path that does not exist and Git does not ignore (fixed when Git shows one rename)'],
+  ['unmapped', 'report', 'A context page that only other context pages mention'],
+  ['entry-size', 'report', 'An entry file over cleanup.entryWords words (default 1000)'],
+  ['temporal', 'report', 'A date or a link to a dated file in an entry file, outside code spans'],
+  ['script-name', 'report', 'A package script that an entry file names and no package.json defines'],
+  ['codex-bytes', 'report', 'AGENTS.md files from the root to one folder over 32,768 bytes, the Codex limit'],
+  ['managed-block', 'mechanical', "Joycraft's AGENTS.md block differs from entry-check.mjs block"],
+  ['import', 'report', 'An @path line in an entry file (not @AGENTS.md in CLAUDE.md), or AGENTS.override.md'],
+  ['orphan', 'report', 'A context page that nothing links to'],
+  ['impact-drift', 'report', 'A page in cleanup.impact whose mapped code changed after the page last changed'],
+  ['unknown-worktree', 'report', 'A linked worktree that worktrees.mjs did not create'],
+];
 
 /** Report stale working material, link problems, unmapped pages and code drift. */
 export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
@@ -246,7 +276,7 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   // read from the root or, in a context page, from the page's own folder.
   // History pages (a decision log, a shipped ledger) rightly name removed paths.
   const exists = relative => existsSync(path.join(root, relative));
-  const ignored = relative => { try { execFileSync('git', ['check-ignore', '-q', '--', relative], { cwd: root, stdio: 'ignore' }); return true; } catch { return false; } };
+  const missing = [];
   for (const file of authorities) {
     const { text, spans } = parsed.get(file);
     if (historyPage(file, text)) continue;
@@ -256,11 +286,13 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
       if (!target || seen.has(target)) continue;
       seen.add(target);
       const local = path.posix.normalize(path.posix.join(path.posix.dirname(file), target));
-      if (exists(target) || exists(local)) continue;
-      // A path that Git ignores is local or made at run time: its absence here says nothing.
-      if (ignored(target)) continue;
-      findings.push({ check: 'missing-path', path: file, line, detail: `Names ${target}, which does not exist.`, fix: 'Point it at the current path, or remove the line if the thing is gone.' });
+      if (!exists(target) && !exists(local)) missing.push({ file, line, target });
     }
+  }
+  // A path that Git ignores is local or made at run time: its absence here says nothing.
+  const ignored = gitIgnored(root, [...new Set(missing.map(item => item.target))]);
+  for (const { file, line, target } of missing) {
+    if (!ignored.has(target)) findings.push({ check: 'missing-path', path: file, line, detail: `Names ${target}, which does not exist.`, fix: 'Point it at the current path, or remove the line if the thing is gone.' });
   }
   // unmapped: a context page that only other context pages reference. An entry
   // file must link, name or @-import it, or agents reach it only by chance. Pages nothing
@@ -360,10 +392,21 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   return { config: config.source ?? 'defaults', paths: config.paths, counts, findings, skipped };
 }
 
+const usage = 'Usage: cleanup.mjs [--checks] [--root <project>]';
+
 export async function main(argv = process.argv.slice(2)) {
-  const index = argv.indexOf('--root');
-  requireValue(argv.length === 0 || (argv.length === 2 && index === 0), 'Usage: cleanup.mjs [--root <project>]');
-  const result = cleanupReport({ root: path.resolve(index === 0 ? argv[1] : '.') });
+  const args = [...argv];
+  const take = flag => { const at = args.indexOf(flag); if (at === -1) return undefined; const value = args[at + 1]; requireValue(value && !value.startsWith('--'), usage); args.splice(at, 2); return value; };
+  const has = flag => { const at = args.indexOf(flag); if (at !== -1) args.splice(at, 1); return at !== -1; };
+  const root = path.resolve(take('--root') ?? '.');
+  if (has('--checks')) {
+    requireValue(args.length === 0, usage);
+    const { gateChecks } = await import('./entry-check.mjs');
+    for (const [id, kind, finds] of checkList) process.stdout.write(`${id}\t${kind}${gateChecks.includes(id) ? ' gate' : ''}\t${finds}\n`);
+    return checkList;
+  }
+  requireValue(args.length === 0, usage);
+  const result = cleanupReport({ root });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (result.findings.length) process.exitCode = 2;
   return result;

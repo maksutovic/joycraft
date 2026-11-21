@@ -1,19 +1,9 @@
 # Cleanup checks
 
 `cleanup.mjs` reports; it never edits. Each finding has `check`, `path`,
-`detail` and `fix`.
-`entry-check.mjs` prints the findings about entry files, and nothing when
-they are clean. `--ci` prints one line for each gate finding (G below) and exits 2.
-
-| Check | Finds |
-|---|---|
-| `broken-link` (G) | A Markdown link to a file that does not exist |
-| `missing-path` (G) | A backticked project path in an entry file or context page that does not exist |
-| `entry-size` | An entry file over `cleanup.entryWords` words (default 1000) |
-| `temporal` | A date (`YYYY-MM-DD`) or a link to a dated file in an entry file, outside code spans |
-| `script-name` (G) | A package script that an entry file names and no `package.json` defines |
-| `codex-bytes` (G) | `AGENTS.md` files from the root to one folder over 32,768 bytes together, the Codex limit |
-| `import` (G) | An `@path` line in an entry file (not `@AGENTS.md` in `CLAUDE.md`), or `AGENTS.override.md` |
+`detail` and `fix`. `node .joycraft/runtime/cleanup.mjs --checks` lists every
+check, what it finds, and whether it is a gate. `entry-check.mjs` prints the
+findings about entry files; `--ci` prints the gate findings and exits 2.
 
 `missing-path` skips globs, placeholders, URLs, paths outside the
 project and paths that Git ignores. A record rightly names removed paths and
