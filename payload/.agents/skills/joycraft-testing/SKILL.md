@@ -36,21 +36,16 @@ than from the code, sized like neighboring tests. Do not commit tests of one-off
 run state. If a criterion or test looks wrong, or conflicts with a later owner
 decision, report a spec gap; never edit it to pass.
 
-Run each test command with
-`node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command>`;
-see [running tests](../../../.joycraft/references/testing.md#running-tests).
+Run tests in the tiers of
+[running tests](../../../.joycraft/references/testing.md#running-tests).
 
 Retain the executed command, actual exit status and unfiltered output. Describe
-what happened separately from what was expected. Bind observations and supporting
-receipt paths/hashes to the current verification subject. One flow can cover
-several criteria without repeating evidence. Scope each claim to what the check
-could observe, including limitations and any unresolved FAIL/UNVERIFIED result.
+what happened separately from what was expected. Scope each claim to what the
+check could observe.
 
 Read `.joycraft/references/testing.md` when selecting evidence kinds,
 writing flow records or deciding whether a check is sufficient. Shared record
 shapes are in `.joycraft/contracts/types.d.ts`.
 
-`validateEvidence(report, criteria)` in `.joycraft/runtime/evidence.mjs`
-checks declared evidence sufficiency. It cannot verify truthful observation,
-infer missing requirements or replace independent review. Send finished evidence
+Send finished evidence
 to `joycraft-verify`; acceptance and status changes use the completion helper.

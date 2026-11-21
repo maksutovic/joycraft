@@ -56,7 +56,7 @@ isolation cannot be obtained, replan the affected wave and set the current
 queue entry's `execution.parallel` to `false` before dispatch, recording why;
 then run it serially. Otherwise leave it unstarted.
 
-Implement the spec and run meaningful checks and any relevant rendered inspection during implementation. Do not defer ordinary checks to the batch boundary. Run each test command with `node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command>`; see [running tests](../../../.joycraft/references/testing.md#running-tests). Write one focused test per acceptance `Check:`, from the spec rather than the code, and tag it with its queue criterion ID as `[AC:<criterion-id>]` in the test name or a comment; if a criterion or test looks wrong, report a spec gap instead of editing it to pass. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
+Implement the spec and run meaningful checks and any relevant rendered inspection during implementation. Do not defer ordinary checks to the batch boundary. Run tests in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Write one focused test per acceptance `Check:`, from the spec rather than the code, and tag it with its queue criterion ID as `[AC:<criterion-id>]` in the test name or a comment; if a criterion or test looks wrong, report a spec gap instead of editing it to pass. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
 
 Honor the queue's commit mode. In `batch`, commit and review the independent ready
 wave at its boundary before advancing its dependents; do not wait for an entire
@@ -79,14 +79,9 @@ If a separate review context/capability is unavailable, leave the spec
 `in-review`; do not invent an ID to continue. This holds the claimed review,
 not unrelated authorized work.
 
-When a recorded tool breaks during a run (the dev server does not start, a
-port is taken, the browser or simulator crashes), repair it with what the user
-already agreed to: restart the dev server, free the port, relaunch the browser
-or simulator, then retry once. A repair never installs, upgrades or
-reconfigures anything; that needs the user's yes. If the repair fails, record an
-`UNVERIFIED` observation with `cause: 'tool-break'` and the reason, leave that
-spec `in-review`, and continue with the specs that do not depend on it. At the
-first hold, tell the user in the conversation while workers run: the spec, the
+When a recorded tool breaks during a run, repair and record it as
+`$joycraft-verify` says, leave that spec `in-review`, and continue with the
+specs that do not depend on it. At the first hold, tell the user the spec, the
 tool, the cause and the repair tried. The session-end summary lists every held
 spec again.
 
@@ -122,8 +117,9 @@ For authorized Git delivery, follow the project's verification and independent
 review policy on the final integrated revision before pushing it. Use
 [checked delivery](../../../.joycraft/references/delivery.md) for a
 fail-stop, revision-bound verifier/push when useful. A failed verifier stops
-delivery; never push with a promise to verify later or hide failure in a shell
-chain. This command cannot replace independent review or authorize a push.
+delivery. Push after each accepted spec. Open one PR when no spec can start,
+unless `AGENTS.md` says otherwise. Read CI one time; after a second red CI
+run, stop and report. This command cannot replace independent review or authorize a push.
 
 After review and completion, continue with the next ready authorized spec.
 When no spec can start, that is, each remaining spec is held or waits on a

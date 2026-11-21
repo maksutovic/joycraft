@@ -96,7 +96,8 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
    Add lines, rows and pages. Do not reword, reformat, reorder or delete user
    content: every line of the user in `AGENTS.md` and `CLAUDE.md` survives. With
    no `AGENTS.md`, create one in this order: identity (the purpose, or
-   "unknown"), commands with their source, rules (established constraints), the
+   "unknown"), commands with their source (focused test, project gate, full
+   suite), rules (established constraints), the
    managed block, and the map as `| Read when | Document |`. Keep
    generic coding advice and tentative product ideas out; feature intent stays
    in its brief. Respect symlinks and managed files.
