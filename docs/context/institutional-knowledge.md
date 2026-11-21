@@ -14,6 +14,7 @@ last_updated_by: Maximilian Maksutovic
 - Skills are namespaced `joycraft-*` to avoid collisions with other plugins
 - Discoveries are logged in `docs/discoveries/` — capture surprises, not routine work
 - Editing a PR body: `gh pr edit` fails in this repo (GraphQL Projects-classic deprecation error, edit silently not applied). Use `gh api repos/<owner>/<repo>/pulls/<N> -X PATCH -F body=@<file>` and verify with `gh pr view <N> --json body`
+- A command quoted in `README.md`, `docs/prompts.md` or the guides must also run in `scripts/release-gates.mjs`, or the "Release gates" step of the Test workflow fails ("Documented but never run"). Every `docs/prompts.md` block must say "Do not commit" (or "Do not post") and "API keys" (`tests/public-docs.test.ts`)
 
 ## Organizational Constraints
 
