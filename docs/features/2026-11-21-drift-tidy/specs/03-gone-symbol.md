@@ -1,6 +1,6 @@
 ---
 id: 3
-status: in-review
+status: done
 ---
 # gone-symbol finds guides that still name removed code
 
