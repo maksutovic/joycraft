@@ -597,9 +597,64 @@ export function tidyReport({ root = process.cwd(), base, now = Date.now(), limit
 }
 
 /** The diff of one file against HEAD as Git stores it: every byte as text, no driver, no textconv. */
-const rawDiff = (root, file, cached) => git(root, ['diff', ...(cached ? ['--cached'] : []), 'HEAD', '--text', '--no-textconv', '--no-ext-diff', '--no-color', '--no-renames', '-U0', '--', file], { raw: true });
+const rawDiff = (root, file, cached) => git(root, ['-c', 'diff.noprefix=false', '-c', 'diff.mnemonicPrefix=false', 'diff', ...(cached ? ['--cached'] : []), 'HEAD', '--text', '--no-textconv', '--no-ext-diff', '--no-color', '--no-renames', '-U0', '--', file], { raw: true });
 // A diff header that changes no line: a mode, a type (symlink or file) or binary content.
 const notLines = /^(?:old mode|new mode|new file mode|deleted file mode|Binary files|GIT binary patch)/m;
+// The lines of a file diff header: everything Git may print before the first hunk.
+const headerLine = /^(?:diff --git |index |--- |\+\+\+ |old mode |new mode |new file mode |deleted file mode |similarity index |dissimilarity index |rename from |rename to |copy from |copy to |Binary files |GIT binary patch)/;
+const hunkHeader = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/;
+
+/**
+ * Read a one-file `git diff` line by line. Lines split on "\n" only, so a CR,
+ * U+2028 or U+2029 inside a line stays inside it; text after the second `@@`
+ * (the funcname context) is never read. Body lines are taken by their first
+ * character and counted against the hunk header. Returns `{ hunks }`, each
+ * with its old and new ranges and its `removed` and `added` text (a trailing
+ * CR dropped), or `{ error }` when any line is not a kind Git prints, a hunk
+ * holds more or fewer lines than its header says, or the number of `@@` lines
+ * differs from the hunks read: the caller then refuses the file.
+ */
+export function parseDiff(diff) {
+  const lines = diff.split('\n');
+  if (lines.at(-1) === '') lines.pop();
+  const hunks = [];
+  let hunk = null, oldLeft = 0, newLeft = 0, files = 0;
+  const closed = () => !hunk || (oldLeft === 0 && newLeft === 0);
+  for (const [at, line] of lines.entries()) {
+    const where = `diff line ${at + 1}`;
+    if (line.startsWith('@@ ')) {
+      if (!closed()) return { error: `A hunk holds fewer lines than its header says (${where}).` };
+      const match = hunkHeader.exec(line);
+      if (!match || files !== 1) return { error: `A hunk header Git did not write (${where}).` };
+      const [, start, count = '1', newStart, newCount = '1'] = match;
+      hunk = { start: Number(start), count: Number(count), newStart: Number(newStart), newCount: Number(newCount), removed: [], added: [] };
+      [oldLeft, newLeft] = [hunk.count, hunk.newCount];
+      hunks.push(hunk);
+      continue;
+    }
+    const kind = line[0];
+    if (hunk && !closed() && (kind === '-' || kind === '+' || kind === ' ')) {
+      const text = line.slice(1).replace(/\r$/, '');
+      if (kind !== '+' && oldLeft-- <= 0) return { error: `A hunk holds more removed lines than its header says (${where}).` };
+      if (kind !== '-' && newLeft-- <= 0) return { error: `A hunk holds more added lines than its header says (${where}).` };
+      if (kind === '-') hunk.removed.push(text);
+      if (kind === '+') hunk.added.push(text);
+      continue;
+    }
+    if (hunk && kind === '\\' && line.startsWith('\\ ')) continue;
+    if (closed() && headerLine.test(line)) {
+      if (line.startsWith('diff --git ')) { files += 1; hunk = null; }
+      if (hunk || files !== 1) return { error: `A diff header line outside one file header (${where}).` };
+      continue;
+    }
+    return { error: `A diff line Git does not print in a hunk or header (${where}).` };
+  }
+  if (!closed()) return { error: 'A hunk holds fewer lines than its header says (end of diff).' };
+  const headers = lines.filter(line => line.startsWith('@@ ')).length;
+  if (headers !== hunks.length) return { error: `The diff has ${headers} hunk headers but ${hunks.length} hunks were read.` };
+  return { hunks };
+}
+
 /** A line names `symbol` as a whole word, with or without backticks; spaces inside a backticked span do not hide it. */
 const stillNames = (text, symbol) => new RegExp(`(?<![A-Za-z0-9_])${symbol}(?![A-Za-z0-9_])`)
   .test(text.replace(/`([^`]*)`/g, (_, span) => span.replace(/\s+/g, '')));
@@ -648,17 +703,17 @@ export function tidyVerify({ root = process.cwd(), base, now = Date.now() } = {}
     const [diff, staged] = [rawDiff(root, file, false), rawDiff(root, file, true)];
     if (staged && staged !== diff) { out.refused.push({ path: file, reason: 'The index holds part of the change: stage the whole fix (git add) or unstage it (git restore --staged), then verify again.' }); continue; }
     if (notLines.test(diff)) { out.refused.push({ path: file, reason: 'Changes the file mode, type or binary content: a tidy edit only replaces or deletes named lines.' }); continue; }
-    const hunks = [...diff.matchAll(/^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@.*\n((?:[-+\\].*(?:\n|$))*)/gm)];
+    const parsed = parseDiff(diff);
+    if (parsed.error) { out.refused.push({ path: file, reason: `The diff could not be read line by line: ${parsed.error}` }); continue; }
+    const { hunks } = parsed;
     if (hunks.length === 0) { out.refused.push({ path: file, reason: 'The change shows no line hunk: a tidy edit only replaces or deletes named lines.' }); continue; }
-    for (const [, start, count = '1', newStart, newCount = '1', body] of hunks) {
-      const first = Number(start), size = Number(count), added = Number(newCount);
+    for (const { start: first, count: size, newStart, newCount: added, added: fresh } of hunks) {
       const outside = size === 0 ? [first] : Array.from({ length: size }, (_, at) => first + at).filter(line => !named.get(file).has(line));
       if (size === 0 || outside.length) { out.refused.push({ path: file, line: outside[0], reason: 'Edits a line that no finding names.' }); continue; }
       if (added > size) { out.refused.push({ path: file, line: first, reason: 'Adds lines: a tidy edit only replaces or deletes the named lines.' }); continue; }
       lines += size;
       // The edited lines, as they read now, must not still hold a finding or name a gone symbol.
       const symbols = new Set(Array.from({ length: size }, (_, at) => named.get(file).get(first + at)).flat());
-      const fresh = body.split('\n').filter(line => line.startsWith('+')).map(line => line.slice(1));
       for (const symbol of symbols) {
         if (fresh.some(text => stillNames(text, symbol))) out.refused.push({ path: file, line: first, reason: `The edit leaves the finding: it still names ${symbol}.` });
       }

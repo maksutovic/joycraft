@@ -200,3 +200,57 @@ describe('tidy --verify review-4 fixes', () => {
     });
   }
 });
+
+describe('tidy --verify review-4-r2 fixes: the diff is read line by line', () => {
+  const refusedFor = (out: { status: number; json: { status: string; refused: { path: string; line?: number; reason: string }[]; message: unknown } }, line: number, reason: RegExp) => {
+    expect(out.status).not.toBe(0);
+    expect(out.json.status).toBe('refused');
+    expect(out.json.refused).toMatchObject([{ path: 'docs/context/guide.md', line }]);
+    expect(out.json.refused[0].reason).toMatch(reason);
+    expect(out.json.message).toBeNull();
+  };
+  const crlf = (text: string) => text.replace(/\n/g, '\r\n');
+  const ls = ' ';
+
+  it('[review-4-r2-1] LS1: a U+2028 funcname context does not hide an edit to an unnamed line', () => {
+    const page = `# Guide\n\nThe widget loader.\n\nCall \`getWidget()\` to load one.\nNote${ls}line.\nOld policy: ask before pushing.\n`;
+    const root = fixture(r => put(r, 'docs/context/guide.md', page));
+    put(root, 'docs/context/guide.md', page.replace('Call `getWidget()` to load one.', 'Read `keep` for the value.').replace('Old policy: ask before pushing.', 'New policy: push to main.'));
+    refusedFor(verify(root), 7, /no finding names/);
+  });
+
+  it('[review-4-r2-2] LS2: a named line that still names the gone symbol after U+2028 is refused', () => {
+    const root = fixture();
+    put(root, 'docs/context/guide.md', guide.replace('Call `getWidget()` to load one.', `Read \`keep\`.${ls}Call getWidget() still.`));
+    refusedFor(verify(root), 5, /still names getWidget/);
+  });
+
+  for (const [tag, line] of [['CR2', 'Call getWidget() to load one.'], ['CR3', 'Call `getWidget ()` to load one.']]) {
+    it(`[review-4-r2-3] ${tag}: on a CRLF page a named line that still names the gone symbol is refused`, () => {
+      const root = fixture(r => put(r, 'docs/context/guide.md', crlf(guide)));
+      put(root, 'docs/context/guide.md', crlf(guide.replace('Call `getWidget()` to load one.', line)));
+      refusedFor(verify(root), 5, /still names getWidget/);
+    });
+  }
+
+  it('[review-4-r2-4] a valid fix on a CRLF page and on a page with U+2028 still passes', () => {
+    for (const page of [crlf(guide), guide.replace('The widget loader.', `The widget${ls}loader.`)]) {
+      const root = fixture(r => put(r, 'docs/context/guide.md', page));
+      put(root, 'docs/context/guide.md', page.replace('Call `getWidget()` to load one.', 'Read `keep` for the value.'));
+      expect(verify(root)).toMatchObject({ status: 0, json: { status: 'pass', cleared: 1 } });
+    }
+  });
+
+  it('[review-4-r2-5] a diff whose hunk counts, headers or line kinds do not match is refused', async () => {
+    const { parseDiff } = await import(cleanup);
+    const head = 'diff --git a/docs/context/guide.md b/docs/context/guide.md\nindex 1111111..2222222 100644\n--- a/docs/context/guide.md\n+++ b/docs/context/guide.md\n';
+    expect(parseDiff(`${head}@@ -5 +5 @@ Note${ls}x\n-old\r\n+new\r\n`)).toMatchObject({ hunks: [{ start: 5, count: 1, removed: ['old'], added: ['new'] }] });
+    expect(parseDiff(`${head}@@ -5 +5 @@\n-old\n`).error).toMatch(/fewer lines/);
+    expect(parseDiff(`${head}@@ -5 +5 @@\n-old\n+new\n+more\n`).error).toMatch(/Git does not print|more added/);
+    expect(parseDiff(`${head}@@ -5,2 +5 @@\n-old\n+new\n-late\n`).error).toBeUndefined();
+    expect(parseDiff(`${head}@@ -5 +5 @@\n-old\nstray text\n+new\n`).error).toMatch(/Git does not print/);
+    expect(parseDiff(`${head}@@ -x +5 @@\n-old\n+new\n`).error).toMatch(/header Git did not write/);
+    expect(parseDiff(`${head}@@ -5 +5 @@\n-old\n+new\n${head}@@ -7 +7 @@\n-a\n+b\n`).error).toMatch(/outside one file header/);
+    expect(parseDiff(`@@ -5 +5 @@\n-old\n+new\n`).error).toMatch(/header Git did not write/);
+  });
+});
