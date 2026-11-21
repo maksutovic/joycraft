@@ -123,11 +123,18 @@ async function acquireLock(root, remote, branch) {
   await mkdir(dirname(lock), { recursive: true, mode: 0o700 });
   try { await takeLock(lock); return lock; } catch (error) { if (error.code !== 'EEXIST') throw error; }
   // Take over a dead holder's lock under a second exclusive directory, so two takers cannot both win.
+  // A takeover directory left by a dead taker is itself taken over once.
   const takeover = `${lock}.takeover`;
-  try { await mkdir(takeover, { recursive: false, mode: 0o700 }); } catch (error) { if (error.code === 'EEXIST') throw lockHeld(); throw error; }
+  const claim = async () => { try { await takeLock(takeover); return true; } catch (error) { if (error.code === 'EEXIST') return false; throw error; } };
+  if (!(await claim())) {
+    if (!(await deadHolder(takeover))) throw lockHeld();
+    await rm(takeover, { recursive: true, force: true });
+    if (!(await claim())) throw lockHeld();
+  }
   try {
     if (!(await deadHolder(lock))) throw lockHeld();
-    await rm(lock, { recursive: true, force: true }); await takeLock(lock);
+    await rm(lock, { recursive: true, force: true });
+    try { await takeLock(lock); } catch (error) { if (error.code === 'EEXIST') throw lockHeld(); throw error; }
     return lock;
   } finally { await rm(takeover, { recursive: true, force: true }); }
 }

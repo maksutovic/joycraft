@@ -161,13 +161,13 @@ export function gitIgnored(root, relative) {
   } catch { return false; } // 1: not ignored; anything else: git cannot say, so not ignored.
 }
 
-/** The HEAD commit (null outside Git or before the first commit) and whether the tree has changes. */
+/** The HEAD commit (null outside Git or before the first commit) and whether the tree has changes (null when Git cannot say). */
 export function revision(root) {
   const read = args => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
   let commit;
   try { commit = read(['rev-parse', '--verify', '-q', 'HEAD^{commit}']).trim(); } catch { return { commit: null, dirty: false }; }
-  let dirty = false;
-  try { dirty = read(['status', '--porcelain']).trim() !== ''; } catch { /* git cannot say; report clean */ }
+  let dirty = null;
+  try { dirty = read(['status', '--porcelain']).trim() !== ''; } catch { /* git cannot say: null, never a claimed clean tree */ }
   return { commit: /^[0-9a-f]{40}$/.test(commit) ? commit : null, dirty };
 }
 

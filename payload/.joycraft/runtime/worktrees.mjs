@@ -119,7 +119,7 @@ function citedReceipts(root, tree, report) {
 
 function evidenceOnlyHere(root, tree, spec) {
   const files = [spec.acceptedReport?.path, spec.ownerAcceptance?.path, spec.waiver?.path, spec.waiver?.review?.path,
-    ...citedReceipts(root, tree, spec.acceptedReport?.path)].filter(Boolean);
+    ...citedReceipts(root, tree, spec.acceptedReport?.path), ...citedReceipts(root, tree, spec.waiver?.review?.path)].filter(Boolean);
   return [...new Set(files)].filter(file => existsSync(path.join(tree, file)) && !existsSync(path.join(root, file)));
 }
 

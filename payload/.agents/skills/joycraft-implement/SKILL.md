@@ -114,12 +114,13 @@ security, or other blanket authority. Report it as `done, owner-accepted with
 <limits>`, never as PASS or verified.
 
 For authorized Git delivery, follow the project's verification and independent
-review policy on the final integrated revision before pushing it. Use
+review policy on the final integrated revision before the final push. Use
 [checked delivery](../../../.joycraft/references/delivery.md) for a
 fail-stop, revision-bound verifier/push when useful. A failed verifier stops
-delivery. Push after each accepted spec. Open one PR when no spec can start,
-unless `AGENTS.md` says otherwise. Read CI one time; after a second red CI
-run, stop and report. This command cannot replace independent review or authorize a push.
+delivery; `delivery.mjs` cannot replace independent review or authorize a
+push. Unless `AGENTS.md` says otherwise, push after each accepted spec, open
+one PR when no spec can start, and read CI after each push. After a second
+red CI run, stop and report.
 
 After review and completion, continue with the next ready authorized spec.
 When no spec can start, that is, each remaining spec is held or waits on a

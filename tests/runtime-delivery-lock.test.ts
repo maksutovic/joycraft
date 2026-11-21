@@ -51,6 +51,17 @@ describe('delivery lock holder', () => {
     expect(existsSync(`${lock}.takeover`)).toBe(false);
   });
 
+  it('[AC:lock-dead-takeover-taken] takes over a takeover directory that a dead taker left behind', async () => {
+    const { root, remote, first, lock } = fixture();
+    holder(lock, deadPid());
+    mkdirSync(`${lock}.takeover`);
+    holder(`${lock}.takeover`, deadPid());
+    const result = await push(root, first);
+    expect(result.ok).toBe(true);
+    expect(git(remote, 'rev-parse', 'refs/heads/feature').trim()).toBe(result.pushedSha);
+    expect(existsSync(`${lock}.takeover`)).toBe(false);
+  });
+
   it('[AC:lock-live-holder-refused] refuses a lock held by a live PID', async () => {
     const { root, first, lock } = fixture();
     holder(lock, process.pid);

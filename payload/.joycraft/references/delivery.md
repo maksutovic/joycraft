@@ -19,8 +19,8 @@ status and byte-count/digest metadata. Verifier output itself is drained without
 being retained or printed.
 
 For `push`, a cooperative lock keyed by remote and branch sits in Git's common
-directory. It records PID and host and breaks a lock only if its PID
-died on this host. It requires a clean tracked/index
+directory. It records PID and host, and takes a held lock only when that PID
+is not running on this host. It requires a clean tracked/index
 state, captures `HEAD`, the semantic index tree and tracked-file hashes, runs
 the explicit verifier argv without a shell, and rejects a nonzero result. It
 then proves those captured sources are unchanged before pushing the captured SHA

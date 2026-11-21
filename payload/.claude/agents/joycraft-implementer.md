@@ -26,8 +26,8 @@ Write one focused test per acceptance `Check:`, taken from the spec rather than
 from your code, sized like neighboring tests. Tag each with its queue criterion
 ID as `[AC:<criterion-id>]` in the test name or a comment. Run tests as
 `.joycraft/references/testing.md#running-tests` says: focused tests while you
-work. Never weaken an existing test or change the spec's acceptance; report a
-spec gap.
+work. Never weaken an existing test or change the spec's acceptance. If a
+criterion or test looks wrong, report a spec gap.
 
 For a user-facing change, render and inspect it as `joycraft-testing` describes.
 Before you finish a spec, run the project gate one time. For a review fix, run
