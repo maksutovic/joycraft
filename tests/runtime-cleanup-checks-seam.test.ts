@@ -63,3 +63,33 @@ describe('checks: in joycraft.yaml', () => {
     expect(readFileSync(join(joycraft, 'templates', 'joycraft.yaml'), 'utf8')).toMatch(/^# checks:/m);
   });
 });
+
+describe('checks: review fixes', () => {
+  const tidyJson = (root: string) => JSON.parse(node(root, [runtime('cleanup.mjs'), 'tidy']).stdout);
+
+  it('[review-a-5] stderr lines count, stack-trace lines do not', () => {
+    const root = project('checks:\n  - name: err\n    run: sh err.sh\n');
+    put(root, 'err.sh', 'echo "docs/context/guide.md:3: bad" >&2\necho "    at f (src/x.js:10:2)"\necho "Error at line: x.js:4: nope"\nexit 1\n');
+    const found = tidyJson(root).findings.filter((item: { check: string }) => item.check === 'err');
+    expect(found).toEqual([expect.objectContaining({ path: 'docs/context/guide.md', line: 3, detail: 'bad' })]);
+  });
+
+  it('[review-a-5] a check past its timeout is skipped, even when it pipes', () => {
+    const root = project('checks:\n  - name: hang\n    run: sleep 20 | cat\n    timeout: 1\n');
+    const started = Date.now();
+    const out = tidyJson(root);
+    expect(Date.now() - started).toBeLessThan(10000);
+    expect(out.skipped).toEqual(expect.arrayContaining([{ check: 'hang', reason: 'timed out after 1s' }]));
+    expect(out.findings.filter((item: { check: string }) => item.check === 'hang')).toEqual([]);
+  });
+
+  it('[review-a-5] config validates timeout', () => {
+    const root = project('checks:\n  - name: x\n    run: sh lint.sh\n    timeout: soon\n');
+    const out = node(root, [runtime('config.mjs')]);
+    expect(out.status).not.toBe(0);
+    expect(out.stderr).toMatch(/timeout must be a positive number of seconds/);
+    writeFileSync(join(root, 'joycraft.yaml'), 'checks:\n  - name: x\n    run: sh lint.sh\n    timeout: 30\n');
+    expect(JSON.parse(node(root, [runtime('config.mjs')]).stdout).checks).toEqual([{ name: 'x', run: 'sh lint.sh', timeout: 30 }]);
+    expect(readFileSync(join(joycraft, 'templates', 'joycraft.yaml'), 'utf8')).toMatch(/^#\s+timeout: \d+/m);
+  });
+});

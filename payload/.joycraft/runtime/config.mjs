@@ -164,10 +164,11 @@ export function readConfig(root = process.cwd()) {
     const label = `${configFile}: checks item ${index + 1}`;
     requireValue(isObject(entry) && typeof entry.name === 'string' && entry.name.trim(), `${label} needs name`);
     requireValue(typeof entry.run === 'string' && entry.run.trim(), `${label} (${entry.name}) needs run, the command to run`);
-    for (const key of Object.keys(entry)) requireValue(key === 'name' || key === 'run', `${label}: unknown setting ${key}`);
+    for (const key of Object.keys(entry)) requireValue(['name', 'run', 'timeout'].includes(key), `${label}: unknown setting ${key}`);
+    requireValue(entry.timeout == null || (typeof entry.timeout === 'number' && entry.timeout > 0 && Number.isFinite(entry.timeout)), `${label} (${entry.name}): timeout must be a positive number of seconds`);
   }
   return { source: configFile, paths, hooks, cleanup: { impact: impact.map(entry => ({ source: entry.source, docs: entry.docs.map(relativePath) })), entryWords },
-    checks: checks.map(({ name, run }) => ({ name, run })) };
+    checks: checks.map(({ name, run, timeout }) => ({ name, run, ...(timeout == null ? {} : { timeout }) })) };
 }
 
 /** Project-relative work folders for a project. */

@@ -114,3 +114,29 @@ describe('tidy reports', () => {
     expect(out.json.findings[0].path).toBe('docs/context');
   });
 });
+
+describe('tidy review fixes', () => {
+  it('[review-a-1] removing a 2.4 MB lockfile and a 2.4 MB source file does not overflow the Git buffer', () => {
+    const root = repo();
+    const big = Array.from({ length: 60000 }, (_, index) => `"package-${index}": "1.0.${index}",`).join('\n');
+    put(join(root, 'package-lock.json'), `${big}\n`);
+    put(join(root, 'src/data.ts'), `${big.replace(/"/g, "'")}\n`);
+    git(root, ['add', '.']); git(root, ['commit', '-q', '-m', 'big files']);
+    git(root, ['checkout', '-q', '-b', 'feature']);
+    git(root, ['rm', '-q', 'package-lock.json', 'src/data.ts']); git(root, ['commit', '-q', '-m', 'drop them']);
+    const out = tidy(root);
+    expect(out.json.base).toBe(git(root, ['merge-base', 'main', 'HEAD']));
+    expect(out.json.skipped).toEqual([]);
+  });
+
+  it('[review-a-7] a detached HEAD at the trunk tip reads the recent window, like the trunk', () => {
+    const root = repo();
+    commit(root, 'a.txt', 'main 1');
+    const head = commit(root, 'b.txt', 'main 2');
+    git(root, ['checkout', '-q', '--detach', 'main']);
+    const out = tidy(root).json;
+    expect(out.approximate).toBe(true);
+    expect(out.head).toBe(head);
+    expect(out.base).not.toBe(head);
+  });
+});

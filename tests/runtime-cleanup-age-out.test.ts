@@ -54,3 +54,62 @@ describe('age-out', () => {
     expect(readFileSync(join(payload, '.agents', 'skills', 'joycraft-session-end', 'SKILL.md'), 'utf8')).not.toContain('age-out');
   });
 });
+
+describe('age-out review fixes', () => {
+  const ageOutRaw = (root: string, args: string[]) => {
+    try { return { status: 0, json: ageOut(root, args) }; }
+    catch (error) { const e = error as { status: number; stderr: string }; return { status: e.status, json: null, stderr: e.stderr }; }
+  };
+
+  it('[review-a-1] about 3 MB of log names does not overflow the Git buffer', () => {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-age-out-big-')));
+    dirs.push(root);
+    git(root, ['init', '-q', '-b', 'main']);
+    const names = Array.from({ length: 2500 }, (_, index) => `docs/research/some-long-topic-folder/2026-10-01-research-note-number-${index}.md`);
+    for (let round = 0; round < 12; round += 1) {
+      for (const name of names) put(root, name, `# note ${round}\n`);
+      git(root, ['add', '.'], daysAgo(30)); git(root, ['commit', '-q', '-m', `c${round}`], daysAgo(30));
+    }
+    const out = ageOutRaw(root, ['--days', '14']);
+    expect(out.status).toBe(0);
+    expect(out.json.count).toBe(2500);
+  }, 60000);
+
+  it('[review-a-2] entry files, project files, mapped pages and backlog files are not working docs', () => {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-age-out-map-')));
+    dirs.push(root);
+    git(root, ['init', '-q', '-b', 'main']);
+    put(root, 'joycraft.yaml', 'paths:\n  features: features\n  archive: archive\n  context: context\n');
+    put(root, 'AGENTS.md', '# A\n\n| `guides/releasing.md` | Releasing |\n[setup](guides/setup.md)\n');
+    put(root, 'CLAUDE.md', '@AGENTS.md\n@guides/imported.md\n');
+    put(root, 'context/arch.md', '# Arch\n\nSee [deep](../guides/deep.md).\n');
+    for (const file of ['guides/releasing.md', 'guides/setup.md', 'guides/imported.md', 'guides/deep.md', 'pkg/AGENTS.md', 'pkg/CLAUDE.md', 'README.md', 'pkg/readme.md',
+      'CHANGELOG.md', 'CONTRIBUTING.md', 'LICENSE.md', 'SECURITY.md', 'CODE_OF_CONDUCT.md', 'notes/backlog-ideas.md', 'notes/backlog/item.md', 'notes/old.md']) put(root, file, '# x\n');
+    git(root, ['add', '.'], daysAgo(30)); git(root, ['commit', '-q', '-m', 'old'], daysAgo(30));
+    const out = ageOut(root, ['--days', '14']);
+    expect(out.docs.map((doc: { path: string }) => doc.path)).toEqual(['notes/old.md']);
+  });
+
+  it('[review-a-2] a dirty or missing doc is skipped, every other doc moves, and non-ASCII names work', () => {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-age-out-dirty-')));
+    dirs.push(root);
+    git(root, ['init', '-q', '-b', 'main']);
+    for (const file of ['docs/research/a.md', 'docs/research/b.md', 'docs/research/café.md', 'docs/research/c.md']) put(root, file, '# x\n');
+    put(root, 'docs/context/guide.md', '# g\n');
+    git(root, ['add', '.'], daysAgo(30)); git(root, ['commit', '-q', '-m', 'old'], daysAgo(30));
+    put(root, 'docs/research/a.md', '# edited\n');
+    rmSync(join(root, 'docs/research/b.md'));
+    const out = ageOutRaw(root, ['--days', '14', '--apply']);
+    expect(out.status).toBe(0);
+    expect(out.json.docs.map((doc: { path: string }) => doc.path).sort()).toEqual(['docs/research/c.md', 'docs/research/café.md']);
+    expect(out.json.skipped.map((item: { path: string }) => item.path).sort()).toEqual(['docs/research/a.md', 'docs/research/b.md']);
+    expect(existsSync(join(root, 'docs/archive/working/research/café.md'))).toBe(true);
+    expect(existsSync(join(root, 'docs/research/a.md'))).toBe(true);
+  });
+
+  it('[review-a-2] cleanup.md runs age-out before the final checks of the attended pass', () => {
+    const reference = readFileSync(join(payload, '.joycraft', 'references', 'cleanup.md'), 'utf8');
+    expect(reference.indexOf('cleanup.mjs age-out --days 14')).toBeGreaterThan(-1);
+    expect(reference.indexOf('cleanup.mjs age-out --days 14')).toBeLessThan(reference.indexOf('6. **Check.**'));
+  });
+});

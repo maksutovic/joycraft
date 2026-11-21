@@ -22,7 +22,9 @@ cleanup:
 
 # checks: your own doc or code checkers. `cleanup.mjs tidy` runs each one from
 # the project root; each output line `path:line: message` becomes a finding.
-# A command that is not installed is skipped.
+# A command that is not installed, or that runs past `timeout:` seconds
+# (default 120), is skipped.
 # checks:
 #   - name: markdownlint
 #     run: npx markdownlint-cli2 "docs/**/*.md"
+#     timeout: 300

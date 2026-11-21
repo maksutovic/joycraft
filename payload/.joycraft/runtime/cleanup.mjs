@@ -8,9 +8,10 @@ import { projectStatus } from './status.mjs';
 import { managedState } from './wiring.mjs';
 import { listWorktrees } from './worktrees.mjs';
 
-// A report-only sweep for stale project knowledge. Every check is deterministic:
-// files, links, frontmatter and Git history. It never edits a file; the
-// joycraft-cleanup skill tidies the entry files and audits the other docs.
+// A sweep for stale project knowledge. Every check is deterministic: files,
+// links, frontmatter and Git history. It reports and edits no file; only
+// `age-out --apply` moves files (git mv). The joycraft-cleanup skill tidies the
+// entry files and audits the other docs.
 const entryFiles = ['AGENTS.md', 'CLAUDE.md'];
 
 function markdownFiles(root, folder, skip = []) {
@@ -177,15 +178,36 @@ function historyPage(file, text) {
 
 const inside = (file, folder) => file === folder || file.startsWith(`${folder}/`);
 
-/** The paths of `paths` that Git ignores, from one `git check-ignore --stdin` call. */
+// Every Git call: raw non-ASCII names and room for a large diff or log.
+const gitArgs = args => ['-c', 'core.quotepath=false', ...args];
+const gitOptions = { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024 };
+
+/**
+ * The paths of `paths` that Git ignores, from one `git check-ignore --stdin`
+ * call. Git stops at a path it cannot check (in a submodule, beyond a
+ * symlink); the paths it did not answer are then checked one at a time.
+ */
 function gitIgnored(root, paths) {
   if (paths.length === 0) return new Set();
-  const result = spawnSync('git', ['check-ignore', '-z', '--stdin'], { cwd: root, input: paths.join('\0'), encoding: 'utf8', stdio: ['pipe', 'pipe', 'ignore'], maxBuffer: 64 * 1024 * 1024 });
-  return new Set(result.status === 0 ? result.stdout.split('\0').filter(Boolean) : []);
+  const result = spawnSync('git', ['check-ignore', '-z', '-v', '-n', '--stdin'], { cwd: root, input: paths.join('\0'), stdio: ['pipe', 'pipe', 'ignore'], ...gitOptions });
+  // -v -n: source, line, pattern and path for each path; an empty or `!` pattern is not ignored.
+  const fields = (result.stdout ?? '').split('\0');
+  const ignored = new Set(), answered = new Set();
+  for (let index = 0; index + 3 < fields.length; index += 4) {
+    answered.add(fields[index + 3]);
+    if (fields[index + 2] && !fields[index + 2].startsWith('!')) ignored.add(fields[index + 3]);
+  }
+  if (result.status === 0 || result.status === 1) return ignored;
+  for (const file of paths.filter(file => !answered.has(file))) {
+    if (spawnSync('git', ['check-ignore', '-q', '--', file], { cwd: root, stdio: 'ignore' }).status === 0) ignored.add(file);
+  }
+  return ignored;
 }
 
-function git(root, args) {
-  return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+// `raw` keeps leading spaces, which `git status --porcelain` output needs.
+function git(root, args, { raw = false } = {}) {
+  const out = execFileSync('git', gitArgs(args), { cwd: root, stdio: ['ignore', 'pipe', 'pipe'], ...gitOptions });
+  return raw ? out : out.trim();
 }
 
 /** Context pages whose mapped code changed in commits after the page last changed. */
@@ -219,7 +241,7 @@ export const checkList = [
   ['missing-path', 'mechanical', 'A backticked project path that does not exist and Git does not ignore (fixed when Git shows one rename)'],
   ['unmapped', 'report', 'A context page that only other context pages mention'],
   ['entry-size', 'report', 'An entry file over cleanup.entryWords words (default 1000)'],
-  ['temporal', 'report', 'A date or a link to a dated file in an entry file, outside code spans'],
+  ['temporal', 'report', 'A date (YYYY-MM-DD) or a link to a dated file in an entry file, outside code spans'],
   ['script-name', 'report', 'A package script that an entry file names and no package.json defines'],
   ['codex-bytes', 'report', 'AGENTS.md files from the root to one folder over 32,768 bytes, the Codex limit'],
   ['managed-block', 'mechanical', "Joycraft's AGENTS.md block differs from entry-check.mjs block"],
@@ -410,8 +432,8 @@ export function docsRoot({ features, archive, context }) {
 
 /**
  * The range tidy reads. On a branch: the merge base with the default branch.
- * On the default branch: the last 7 days or 100 commits, whichever is smaller
- * (approximate). `base` overrides. A shallow clone or no Git gives { skipped }.
+ * On the default branch, or detached on its tip: the last 7 days or 100
+ * commits, whichever is smaller (approximate). `base` overrides. A shallow clone or no Git gives { skipped }.
  */
 export function tidyRange(root, { base, now = Date.now() } = {}) {
   const head = tryGit(root, ['rev-parse', '--verify', '--quiet', 'HEAD']);
@@ -427,7 +449,8 @@ export function tidyRange(root, { base, now = Date.now() } = {}) {
   const branch = tryGit(root, ['symbolic-ref', '--quiet', '--short', 'HEAD']);
   if (trunk && branch !== trunk && branch !== trunk.replace(/^[^/]+\//, '')) {
     const fork = tryGit(root, ['merge-base', trunk, 'HEAD']);
-    if (fork) return { base: fork, head, approximate: false };
+    // A detached HEAD on the trunk (a CI checkout) has no range of its own: read it as the trunk.
+    if (fork && (branch || fork !== head)) return { base: fork, head, approximate: false };
   }
   const since = Math.floor((now - 7 * 24 * 3600 * 1000) / 1000);
   const recent = git(root, ['rev-list', '--first-parent', '--max-count=100', `--since=${since}`, 'HEAD']).split('\n').filter(Boolean);
@@ -438,6 +461,16 @@ export function tidyRange(root, { base, now = Date.now() } = {}) {
 // A generic identifier: 3+ word characters with a letter, in any language.
 const identifiers = text => (text.match(/[A-Za-z0-9_]{3,}/g) ?? []).filter(word => /[A-Za-z]/.test(word));
 const notMarkdown = ['--', '.', ':(exclude)*.md'];
+// Lockfiles name packages, not code: a large one removed must not cost a large diff.
+const lockfiles = ['package-lock.json', 'npm-shrinkwrap.json', 'pnpm-lock.yaml', 'yarn.lock', 'bun.lock', 'bun.lockb', 'Cargo.lock', 'Gemfile.lock',
+  'poetry.lock', 'uv.lock', 'Pipfile.lock', 'composer.lock', 'go.sum', 'mix.lock', 'Package.resolved', 'pubspec.lock'].map(name => `:(exclude,glob)**/${name}`);
+/**
+ * A backticked word names code only when it has an identifier's shape: an
+ * underscore, a digit, a capital after the first letter, or a call `name(`.
+ * Plain words (`get`, `data`, `the`) and short capitals (`TODO`) do not.
+ */
+const codeShaped = (word, span) => !/^[A-Z]{1,4}$/.test(word)
+  && (/[_\d]/.test(word) || /[A-Z]/.test(word.slice(1)) || new RegExp(`(?<![A-Za-z0-9_])${word}\\s*\\(`).test(span));
 
 /** Map-reached pages: the entry files and the context pages. */
 function mappedPages(root, { features, archive, context }) {
@@ -449,7 +482,8 @@ function mappedPages(root, { features, archive, context }) {
  * still names in backticks, and that no code at HEAD has (one git grep -F -w).
  */
 function goneSymbols(root, config, range, read) {
-  const diff = git(root, ['diff', '-U0', '--no-color', '--no-ext-diff', range.base, range.head, ...notMarkdown]);
+  // Binary files give one "Binary files differ" line, never their bytes.
+  const diff = git(root, ['diff', '-U0', '--no-color', '--no-ext-diff', '--no-textconv', range.base, range.head, ...notMarkdown, ...lockfiles]);
   const removed = new Set(diff.split('\n').filter(line => line.startsWith('-') && !line.startsWith('---')).flatMap(line => identifiers(line.slice(1))));
   if (removed.size === 0) return [];
   const named = [];
@@ -458,12 +492,12 @@ function goneSymbols(root, config, range, read) {
     if (text == null || historyPage(file, text)) continue;
     for (const { span, line } of references(file, text).spans) {
       if (/[\s/]/.test(span.trim())) continue;
-      for (const symbol of new Set(identifiers(span))) if (removed.has(symbol)) named.push({ file, line, symbol });
+      for (const symbol of new Set(identifiers(span))) if (removed.has(symbol) && codeShaped(symbol, span)) named.push({ file, line, symbol });
     }
   }
   if (named.length === 0) return [];
   const symbols = [...new Set(named.map(item => item.symbol))];
-  const hits = spawnSync('git', ['grep', '-F', '-w', '-o', '-h', '-I', '-f', '-', range.head, ...notMarkdown], { cwd: root, input: `${symbols.join('\n')}\n`, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  const hits = spawnSync('git', gitArgs(['grep', '-F', '-w', '-o', '-h', '-I', '-f', '-', range.head, ...notMarkdown]), { cwd: root, input: `${symbols.join('\n')}\n`, ...gitOptions });
   requireValue(hits.status === 0 || hits.status === 1, `git grep failed: ${hits.stderr}`);
   const alive = new Set(hits.stdout.split('\n'));
   return named.filter(item => !alive.has(item.symbol)).map(({ file, line, symbol }) => ({
@@ -490,17 +524,45 @@ function rangeFindings(root, config, range, read = file => readText(root, file))
   return findings;
 }
 
+// Runs one check command in its own process group, so a timeout stops the
+// whole pipeline (a shell does not pass the kill on). Exit 124 is the timeout.
+const runner = `
+const { spawn, spawnSync } = require('node:child_process');
+const [run, ms] = [process.argv[1], Number(process.argv[2])];
+const child = spawn(run, { shell: true, detached: process.platform !== 'win32', stdio: 'inherit' });
+const timer = setTimeout(() => {
+  if (process.platform === 'win32') spawnSync('taskkill', ['/pid', String(child.pid), '/T', '/F'], { stdio: 'ignore' });
+  else { try { process.kill(-child.pid, 'SIGKILL'); } catch { child.kill('SIGKILL'); } }
+  process.stderr.write('\\0joycraft-timeout\\n');
+  process.exit(124);
+}, ms);
+child.on('error', () => process.exit(127));
+child.on('exit', code => { clearTimeout(timer); process.exit(code ?? 1); });
+`;
+
+// `path:line: message`. The path starts with no space and holds none (a
+// Windows drive is allowed), so a stack-trace line ` at f (x.js:3:4)` is not one.
+const checkLine = /^((?:[A-Za-z]:[\\/])?[^\s:]+):(\d+):\s*(.*)$/gm;
+
 /**
- * The project's own checkers (joycraft.yaml checks:). Each output line
- * `path:line: message` is a finding; a command not found is skipped.
+ * The project's own checkers (joycraft.yaml checks:). Each line of stdout or
+ * stderr that reads `path:line: message` is a finding. A command not found,
+ * or one that runs past its timeout (default 120 seconds), is skipped.
  */
 function customChecks(root, checks, skipped) {
   const findings = [];
-  for (const { name, run } of checks) {
-    const result = spawnSync(run, { cwd: root, shell: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 10 * 60 * 1000, maxBuffer: 64 * 1024 * 1024 });
-    if (result.error?.code === 'ENOENT' || result.status === 127) { skipped.push({ check: name, reason: `Command not found: ${run}` }); continue; }
+  for (const { name, run, timeout = 120 } of checks) {
+    const result = spawnSync(process.execPath, ['-e', runner, run, String(timeout * 1000)],
+      { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: (timeout + 30) * 1000, maxBuffer: 64 * 1024 * 1024 });
+    const output = `${result.stdout ?? ''}\n${result.stderr ?? ''}`;
+    if (result.error?.code === 'ETIMEDOUT' || (result.status === 124 && (result.stderr ?? '').includes('\0joycraft-timeout'))) {
+      skipped.push({ check: name, reason: `timed out after ${timeout}s` }); continue;
+    }
+    if (result.error?.code === 'ENOENT' || result.status === 127 || /is not recognized as an internal or external command/.test(result.stderr ?? '')) {
+      skipped.push({ check: name, reason: `Command not found: ${run}` }); continue;
+    }
     let found = 0;
-    for (const [, file, line, message] of (result.stdout ?? '').matchAll(/^(.+?):(\d+):\s*(.*)$/gm)) {
+    for (const [, file, line, message] of output.matchAll(checkLine)) {
       found += 1;
       findings.push({ check: name, path: path.posix.normalize(file), line: Number(line), detail: message, fix: `Fix it as ${name} says, then run tidy again.`, fixable: false });
     }
@@ -532,8 +594,9 @@ export function tidyReport({ root = process.cwd(), base, now = Date.now(), limit
 }
 
 /**
- * tidy --verify: measure again on the working tree. Pass only when the diff
- * against HEAD edits nothing but lines that a fixable finding at HEAD names;
+ * tidy --verify: measure again on the working tree. Pass only when the changes
+ * against HEAD, staged and unstaged, replace or delete nothing but lines that a
+ * fixable finding at HEAD names, add no file, and clear each finding they touch;
  * then give the one commit message. An entry file is never a tidy edit.
  */
 export function tidyVerify({ root = process.cwd(), base, now = Date.now() } = {}) {
@@ -544,20 +607,34 @@ export function tidyVerify({ root = process.cwd(), base, now = Date.now() } = {}
   const before = rangeFindings(root, config, range, atHead).filter(item => item.fixable && item.line);
   const after = rangeFindings(root, config, range).filter(item => item.fixable);
   const out = { status: 'clean', base: range.base, head: range.head, cleared: 0, remaining: after, refused: [], message: null };
-  const changed = git(root, ['diff', '--name-only', '-z', 'HEAD']).split('\0').filter(Boolean);
-  if (changed.length === 0) return out;
+  const names = args => git(root, args).split('\0').filter(Boolean);
+  // The working tree and the index each against HEAD: a staged change hidden by the working tree still counts.
+  const views = [['diff', 'HEAD'], ['diff', '--cached', 'HEAD']];
+  const changed = [...new Set(views.flatMap(view => names([...view, '--name-only', '--no-renames', '-z'])))];
+  const untracked = names(['ls-files', '-z', '--others', '--exclude-standard']);
+  for (const file of untracked) out.refused.push({ path: file, reason: 'An untracked file: tidy adds no file.' });
+  if (changed.length === 0 && untracked.length === 0) return out;
   const named = new Map();
   for (const item of before) named.set(item.path, new Set([...(named.get(item.path) ?? []), item.line]));
   let lines = 0;
   for (const file of changed) {
     if (entryFiles.includes(path.posix.basename(file))) { out.refused.push({ path: file, reason: 'An entry file: tidy never edits one.' }); continue; }
     if (!named.has(file)) { out.refused.push({ path: file, reason: 'No fixable tidy finding names this file.' }); continue; }
-    for (const [, start, count = '1'] of git(root, ['diff', '-U0', '--no-color', '--no-ext-diff', 'HEAD', '--', file]).matchAll(/^@@ -(\d+)(?:,(\d+))? /gm)) {
-      const first = Number(start), size = Number(count);
-      const outside = size === 0 ? [first] : Array.from({ length: size }, (_, index) => first + index).filter(line => !named.get(file).has(line));
-      if (size === 0 || outside.length) out.refused.push({ path: file, line: outside[0], reason: 'Edits a line that no finding names.' });
-      else lines += size;
-    }
+    views.forEach((view, index) => {
+      for (const [, start, count = '1', newStart, newCount = '1'] of git(root, [...view, '-U0', '--no-color', '--no-ext-diff', '--', file]).matchAll(/^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/gm)) {
+        const first = Number(start), size = Number(count), added = Number(newCount);
+        const outside = size === 0 ? [first] : Array.from({ length: size }, (_, at) => first + at).filter(line => !named.get(file).has(line));
+        if (size === 0 || outside.length) { out.refused.push({ path: file, line: outside[0], reason: 'Edits a line that no finding names.' }); continue; }
+        if (added > size) { out.refused.push({ path: file, line: first, reason: 'Adds lines: a tidy edit only replaces or deletes the named lines.' }); continue; }
+        if (index > 0) continue;
+        lines += size;
+        // The edited lines, as they read now, must not still hold a finding.
+        const last = Number(newStart) + added - 1;
+        for (const item of after.filter(item => item.path === file && item.line >= Number(newStart) && item.line <= last)) {
+          out.refused.push({ path: file, line: item.line, reason: `The edit leaves the finding: it still names ${item.symbol ?? item.check}.` });
+        }
+      }
+    });
   }
   if (out.refused.length) return { ...out, status: 'refused' };
   const key = item => `${item.check}\0${item.path}\0${item.symbol ?? item.line}`;
@@ -568,27 +645,69 @@ export function tidyVerify({ root = process.cwd(), base, now = Date.now() } = {}
   return out;
 }
 
+// Project files by name, at any depth and with any extension: never working docs.
+const projectFiles = /^(?:readme|changelog|contributing|license|licence|security|code_of_conduct)(?:\.|$)/i;
+
+/** Pages that the map reaches: the entry files at any depth, the context pages, and every page they link, name or @-import. */
+function mapReached(root, { features, archive, context }) {
+  const sources = [...new Set([...filesNamed(root, [...entryFiles, 'AGENTS.override.md']), ...markdownFiles(root, context, [features, archive])])];
+  const reached = new Set(sources);
+  for (const file of sources) {
+    const text = readText(root, file);
+    if (text == null) continue;
+    const { links, mentions, nearby, imports } = references(file, text);
+    for (const ref of [...links, ...mentions, ...nearby, ...imports]) reached.add(ref.target);
+  }
+  return reached;
+}
+
 /**
- * age-out: working docs (Markdown under the docs root outside context, features,
- * archive and backlog) with no commit for `days` days. `apply` moves each with
- * git mv to <archive>/working/<its path under the docs root> and commits nothing.
+ * age-out: working docs with no commit for `days` days. A working doc is
+ * Markdown under the docs root that no map reaches: not an entry file, a
+ * README-like project file, a page in context, features or archive, a backlog
+ * folder or backlog* file, or a page linked, named or @-imported from an entry
+ * file or a context page. `apply` moves each with git mv to
+ * <archive>/working/<its path under the docs root> and commits nothing. A doc
+ * with uncommitted changes, missing from the working tree, or whose target
+ * exists is listed in `skipped` and not moved.
  */
 export function ageOut({ root = process.cwd(), days, apply = false, now = Date.now() } = {}) {
   requireValue(Number.isInteger(days) && days > 0, 'cleanup.mjs age-out: --days must be a positive whole number');
-  const { features, archive, context } = readConfig(root).paths;
-  const docs = docsRoot({ features, archive, context });
+  const paths = readConfig(root).paths;
+  const { features, archive, context } = paths;
+  const docs = docsRoot(paths);
   const under = file => (docs === '.' ? file : file.slice(docs.length + 1));
-  const tracked = git(root, ['ls-files', '-z', '--', docs]).split('\0').filter(file => file.endsWith('.md')
-    && ![features, archive, context].some(folder => inside(file, folder)) && !under(file).split('/').slice(0, -1).includes('backlog'));
+  const reached = mapReached(root, paths);
+  const working = file => {
+    const name = path.posix.basename(file);
+    return file.endsWith('.md') && !entryFiles.includes(name) && name !== 'AGENTS.override.md' && !projectFiles.test(name)
+      && ![features, archive, context].some(folder => inside(file, folder)) && !reached.has(file)
+      && !under(file).split('/').slice(0, -1).includes('backlog') && !name.toLowerCase().startsWith('backlog');
+  };
+  const tracked = git(root, ['ls-files', '-z', '--', docs]).split('\0').filter(file => file && working(file));
   const last = new Map();
-  for (const entry of git(root, ['log', '--format=%x00%ct', '--name-only', '--', docs]).split('\0').filter(Boolean)) {
+  for (const entry of git(root, ['log', '--format=%x00%ct', '--name-only', '--no-renames', '--', docs]).split('\0').filter(Boolean)) {
     const [time, ...files] = entry.split('\n').filter(Boolean);
     for (const file of files) if (!last.has(file)) last.set(file, Number(time) * 1000);
   }
-  const old = tracked.filter(file => last.has(file) && now - last.get(file) > days * 86400000)
-    .map(file => ({ path: file, days: Math.floor((now - last.get(file)) / 86400000), to: `${archive}/working/${under(file)}` }));
-  if (apply) for (const doc of old) { mkdirSync(path.join(root, path.dirname(doc.to)), { recursive: true }); git(root, ['mv', '--', doc.path, doc.to]); }
-  return { days, count: old.length, docs: old, applied: apply };
+  // Uncommitted: staged or unstaged changes; -z keeps non-ASCII names raw.
+  const dirty = new Set(git(root, ['status', '--porcelain', '-z', '--no-renames', '--untracked-files=no', '--', docs], { raw: true }).split('\0').filter(Boolean).map(line => line.slice(3)));
+  const skipped = [], old = [];
+  for (const file of tracked.filter(file => last.has(file) && now - last.get(file) > days * 86400000)) {
+    const doc = { path: file, days: Math.floor((now - last.get(file)) / 86400000), to: `${archive}/working/${under(file)}` };
+    if (dirty.has(file)) skipped.push({ path: file, reason: 'It has uncommitted changes.' });
+    else if (!existsSync(path.join(root, file))) skipped.push({ path: file, reason: 'It is missing from the working tree.' });
+    else if (existsSync(path.join(root, doc.to))) skipped.push({ path: file, reason: `${doc.to} already exists.` });
+    else old.push(doc);
+  }
+  // Every move is checked above, before the first git mv.
+  if (apply) {
+    for (const doc of old) {
+      mkdirSync(path.join(root, path.dirname(doc.to)), { recursive: true });
+      try { git(root, ['mv', '--', doc.path, doc.to]); doc.moved = true; } catch (error) { doc.moved = false; skipped.push({ path: doc.path, reason: `git mv failed: ${String(error.stderr ?? error.message).trim()}` }); }
+    }
+  }
+  return { days, count: old.length, docs: old, skipped, applied: apply };
 }
 
 const usage = 'Usage: cleanup.mjs [--checks | tidy [--base <ref>] [--verify] | age-out --days <n> [--apply]] [--root <project>]';

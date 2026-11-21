@@ -91,3 +91,35 @@ describe('cleanup lists its own checks', () => {
     expect(drift.fix).not.toMatch(/unchanged/);
   });
 });
+
+describe('cleanup review fixes', () => {
+  it('[review-a-4] a path beyond a symlink or in a submodule does not hide the other ignored paths', () => {
+    const root = repo();
+    put(join(root, '.gitignore'), 'ignored/\n');
+    mkdirSync(join(root, 'real'));
+    execFileSync('ln', ['-s', 'real', 'link'], { cwd: root });
+    const sub = join(root, 'sub');
+    mkdirSync(sub);
+    git(sub, 'init', '-q'); put(join(sub, 'a.txt'), 'a\n'); git(sub, 'add', '.'); git(sub, 'commit', '-q', '-m', 'sub');
+    put(join(root, 'AGENTS.md'), '# A\n\n- `link/gone.md`\n- `ignored/one.md`\n- `sub/gone.md`\n- `ignored/two.md`\n- `src/gone.ts`\n');
+    git(root, 'add', '.gitignore', 'link', 'AGENTS.md'); git(root, 'add', 'sub'); git(root, 'commit', '-q', '-m', 'docs');
+    const report = JSON.parse(run(root, []).stdout);
+    const missing = report.findings.filter((item: { check: string }) => item.check === 'missing-path').map((item: { detail: string }) => item.detail);
+    expect(missing.some((detail: string) => detail.includes('ignored/'))).toBe(false);
+    expect(missing.some((detail: string) => detail.includes('src/gone.ts'))).toBe(true);
+    expect(missing.some((detail: string) => detail.includes('link/gone.md'))).toBe(true);
+  });
+
+  it('[review-a-8] the header says only age-out --apply moves files', () => {
+    const source = readFileSync(cleanup, 'utf8');
+    expect(source.slice(0, 1200)).not.toMatch(/never edits a file/);
+    expect(source.slice(0, 1200)).toContain('age-out --apply');
+  });
+
+  it('[review-a-9] cleanup.md and --checks keep the entry-check and temporal wording', () => {
+    const text = readFileSync(reference, 'utf8').replace(/\s+/g, ' ');
+    expect(text).toContain('nothing when they are clean');
+    expect(text).toContain('one line for each gate finding');
+    expect(run(repo(), ['--checks']).stdout).toMatch(/^temporal\t.*YYYY-MM-DD/m);
+  });
+});

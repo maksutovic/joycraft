@@ -86,3 +86,47 @@ describe('tidy --verify', () => {
     expect(message).toContain(`\n\nJoycraft-Tidy: ${base}..${head}`);
   });
 });
+
+describe('tidy --verify review fixes', () => {
+  const refusedPaths = (out: { json: { refused: { path: string }[] } }) => out.json.refused.map(item => item.path);
+
+  it('[review-a-3] a hunk that replaces the named line and adds lines after it is refused', () => {
+    const root = fixture();
+    put(root, 'docs/context/guide.md', guide.replace('Call `getWidget()` to load one.', 'Read `keep` for the value.\nAlso a new paragraph.\nAnd another.'));
+    const out = verify(root);
+    expect(out.status).not.toBe(0);
+    expect(out.json.refused).toMatchObject([{ path: 'docs/context/guide.md', line: 5 }]);
+    expect(out.json.message).toBeNull();
+  });
+
+  it('[review-a-3] an untracked file is refused', () => {
+    const root = fixture();
+    fixLine(root);
+    put(root, 'docs/context/new.md', '# New\n');
+    const out = verify(root);
+    expect(out.status).not.toBe(0);
+    expect(refusedPaths(out)).toEqual(['docs/context/new.md']);
+    expect(out.json.message).toBeNull();
+  });
+
+  it('[review-a-3] a staged edit that the working tree hides is refused', () => {
+    const root = fixture();
+    put(root, 'docs/context/other.md', '# Other, staged\n');
+    git(root, 'add', 'docs/context/other.md');
+    put(root, 'docs/context/other.md', '# Other\n');
+    fixLine(root);
+    const out = verify(root);
+    expect(out.status).not.toBe(0);
+    expect(refusedPaths(out)).toEqual(['docs/context/other.md']);
+    expect(out.json.message).toBeNull();
+  });
+
+  it('[review-a-3] an edit to the named line that still names the gone symbol is refused', () => {
+    const root = fixture();
+    put(root, 'docs/context/guide.md', guide.replace('Call `getWidget()` to load one.', 'Call `getWidget()` to load a widget.'));
+    const out = verify(root);
+    expect(out.status).not.toBe(0);
+    expect(out.json.refused).toMatchObject([{ path: 'docs/context/guide.md', line: 5 }]);
+    expect(out.json.message).toBeNull();
+  });
+});

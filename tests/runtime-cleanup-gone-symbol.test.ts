@@ -71,3 +71,13 @@ describe('gone-symbol', () => {
     expect(found[0]).toMatchObject({ path: 'AGENTS.md', line: 3, fixable: false });
   });
 });
+
+describe('gone-symbol review fixes', () => {
+  it('[review-a-6] plain words and short capitals in backticks are not reported', () => {
+    const code = 'export function get() { return data; }\nconst data = true; // TODO the\nexport function getWidget() { return 1; }\nexport const keep = 2;\n';
+    const root = fixture('src/widget.ts', code, '# Guide\n\nUse `get`, `data`, `true`, `the` and `TODO`.\n\nCall `getWidget()` once.\n');
+    put(root, 'src/widget.ts', 'export const keep = 2;\n');
+    save(root, 'remove them');
+    expect(gone(root).map((item: { symbol: string }) => item.symbol)).toEqual(['getWidget']);
+  });
+});
