@@ -119,6 +119,30 @@ export function isProductPath(file) {
 }
 
 /**
+ * Decide whether a main push publishes: only when a product path differs from
+ * the newest v* release tag in its history. Comparing with the last release,
+ * not the previous push, keeps an unpublished product change publishable.
+ */
+export async function resolvePublishGate({ cwd = process.cwd(), currentSha = 'HEAD', run = defaultRun } = {}) {
+  const options = { cwd: resolve(cwd) };
+  let baseline;
+  try {
+    baseline = String((await run('git', ['describe', '--tags', '--abbrev=0', '--match', 'v[0-9]*.[0-9]*.[0-9]*', currentSha], options)).stdout ?? '').trim();
+  } catch {
+    baseline = '';
+  }
+  if (!baseline) return { shouldPublish: true, reason: 'no-release-tag', baseline: null, productFiles: [] };
+  const diff = await run('git', ['diff', '--name-only', baseline, currentSha], options);
+  const productFiles = String(diff.stdout ?? '').split(/\r?\n/).filter(Boolean).filter(isProductPath);
+  return {
+    shouldPublish: productFiles.length > 0,
+    reason: productFiles.length > 0 ? 'product-changed' : 'no-product-change',
+    baseline,
+    productFiles,
+  };
+}
+
+/**
  * Purely describes the release PR operation. The workflow uses this plan to
  * keep version preparation on a branch and never writes a version to main.
  */
@@ -662,7 +686,7 @@ function readOption(args, name) {
 
 async function main() {
   const [command, ...args] = process.argv.slice(2);
-  if (!command) throw new Error('Usage: release-preparation.mjs <emit-descriptor|prepare|prepare-branch|sync-pr|verify-commit|resolve-baseline|has-unprepared-product|plan|resolve-version|pack|validate-retained|publish-candidate>');
+  if (!command) throw new Error('Usage: release-preparation.mjs <emit-descriptor|publish-gate|prepare|prepare-branch|sync-pr|verify-commit|resolve-baseline|has-unprepared-product|plan|resolve-version|pack|validate-retained|publish-candidate>');
   if (command === 'emit-descriptor') {
     console.log(JSON.stringify(emitReleaseDescriptor(), null, 2));
     return;
@@ -684,6 +708,10 @@ async function main() {
   }
   if (command === 'verify-commit') {
     console.log(JSON.stringify(await verifyReleaseCommit({ releaseSha: readOption(args, '--release-sha') }), null, 2));
+    return;
+  }
+  if (command === 'publish-gate') {
+    console.log(JSON.stringify(await resolvePublishGate({ currentSha: readOption(args, '--current-sha') ?? 'HEAD' }), null, 2));
     return;
   }
   if (command === 'is-release-merge') {

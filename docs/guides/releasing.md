@@ -1,6 +1,6 @@
 # Automatic npm releases
 
-Updated: 2026-11-18.
+Updated: 2026-11-21.
 
 Every push to `main` starts `.github/workflows/publish.yml`. Merging the product
 PR is the release authorization; there is no second release PR to approve.
@@ -21,9 +21,23 @@ first publish failed this way on 2026-11-02.
 - Read the Claude Code memory docs and the Codex `AGENTS.md` docs again. When they
   changed, change Joycraft's managed block or an entry check to match.
 
+## A push that changes no product file publishes nothing
+
+The `gate` job runs `node scripts/release-preparation.mjs publish-gate`. It compares
+the pushed commit with the newest `v*` release tag in its history and publishes only
+when a product path (`isProductPath`: `src/`, `payload/`, `scripts/`, `package.json`,
+the lockfile and the build configs) differs. Otherwise `pack`, `compatibility` and
+`publish` are skipped and the run ends green: a docs-only merge needs no release
+fields. The comparison is with the last release, not the previous push, so a product
+change whose publish failed still publishes on the next merge. With no release tag,
+and for a `workflow_dispatch` retry, the gate always publishes. Before this gate,
+docs-only merges (PRs #107, #109, #110) ran `pack` with stale release fields and
+failed `[AC:release-fields]`.
+
 ## What runs automatically
 
-1. Check out the exact event commit and verify it belongs to `main`.
+1. Check out the exact event commit and verify it belongs to `main`. Stop here,
+   green, when the gate finds no product change since the last release tag.
 2. Read published npm versions and select an unused version. A deliberate higher
    source version is preserved; otherwise advance the highest published patch.
 3. Prepare package and release-descriptor versions in the runner, build, test,
