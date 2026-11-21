@@ -29,4 +29,4 @@ as one caused by `git status`, does not change the semantic index binding.
 
 An exit-zero verifier is only an observed command result, not an independent
 PASS or review. This helper is not a sandbox and cannot guarantee that external
-writers cooperate. It does not implement private-school pnpm/CI/storage policy.
+writers cooperate.
