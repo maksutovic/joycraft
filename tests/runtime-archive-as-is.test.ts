@@ -95,4 +95,36 @@ describe('archive as is', () => {
     expect(result.stderr).toContain('--owner-instruction');
     expect(existsSync(join(root, source))).toBe(true);
   });
+
+  it('[review-b-4] --as-is on a fully accepted feature is the normal archive: no unverified.md, not archived as is', () => {
+    const { root } = fixture();
+    const queue = JSON.parse(readFileSync(join(root, queuePath), 'utf8'));
+    queue.specs = queue.specs.slice(0, 1);
+    put(join(root, queuePath), JSON.stringify(queue, null, 2));
+    rmSync(join(root, `${source}/specs/02-b.md`));
+    const result = archive(root, '--as-is', '--owner-instruction', instruction, '--apply');
+    expect([result.status, result.stderr]).toEqual([0, '']);
+    const out = JSON.parse(result.stdout);
+    expect(out).toMatchObject({ status: 'archived', asIs: 'not-needed' });
+    expect(out.unverified).toBeUndefined();
+    expect(out.historical.archivedAsIs).toBeUndefined();
+    expect(existsSync(join(root, 'docs/archive/x/unverified.md'))).toBe(false);
+    const manifest = JSON.parse(readFileSync(join(root, 'docs/archive/x/archive-replay.json'), 'utf8'));
+    expect(manifest.asIs).toBeUndefined();
+    expect(manifest.historical.archivedAsIs).toBeUndefined();
+  });
+
+  it('[review-b-5] a repeat archive of an as-is archive names the unverified note', () => {
+    const { root } = fixture();
+    expect(archive(root, '--as-is', '--owner-instruction', instruction, '--apply').status).toBe(0);
+    expect(JSON.parse(archive(root, '--apply').stdout)).toMatchObject({ status: 'archived', unchanged: true, unverified: 'docs/archive/x/unverified.md' });
+  });
+
+  it('[review-b-9] --owner-instruction followed by a value that starts with -- stops with a message', () => {
+    const { root } = fixture();
+    const result = archive(root, '--as-is', '--owner-instruction', '--apply');
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('cannot start with --');
+    expect(existsSync(join(root, source))).toBe(true);
+  });
 });

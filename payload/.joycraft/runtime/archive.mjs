@@ -381,7 +381,7 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
   if (existsSync(projectTarget(root, destination))) {
     requireValue(!existsSync(projectTarget(root, source)), `Archive destination already exists while live source remains: ${destination}`);
     const existing = existingArchive(root, folder);
-    return { schemaVersion: 1, feature: existing.manifest.feature, phase, source, destination, attestation: parsedAttestation, existing: true, manifest: existing.manifestPath, historical: existing.manifest.historical };
+    return { schemaVersion: 1, feature: existing.manifest.feature, phase, source, destination, attestation: parsedAttestation, existing: true, manifest: existing.manifestPath, historical: existing.manifest.historical, ...(existing.manifest.asIs ? { unverified: existing.manifest.asIs.path } : {}) };
   }
   plainDirectory(root, source);
   const queuePath = `${source}/specs/.joycraft-spec-queue.json`;
@@ -414,6 +414,8 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
   if (asIs) requireValue(Array.isArray(queue.specs) && queue.specs.length > 0, 'The queue has no specs');
   else requireValue(Array.isArray(queue.specs) && queue.specs.length > 0 && queue.specs.every(spec => spec.status === 'done'), 'Every spec must be done before archiving the whole feature');
   if (reconciliation) requireValue(reconciliation.used.size === reconciliation.record.entries.length, 'Archive reconciliation contains unused or stale entries');
+  // Every spec holds its acceptance: as is changes nothing, so this is the normal archive.
+  if (asIs && unverified.length === 0) asIs = false;
   const copies = new Map();
   for (const decision of evidence) {
     for (const evidencePath of [decision.path, decision.report?.path, ...decision.receipts.map(receipt => receipt.path)].filter(Boolean)) {
@@ -497,8 +499,9 @@ function replayManifest(plan) {
 
 export function archiveFeature(options) {
   const plan = previewArchiveFeature(options);
-  if (plan.existing) return { status: 'archived', unchanged: true, destination: plan.destination, manifest: plan.manifest, historical: plan.historical };
-  if (options.apply !== true) return { status: 'preview', plan };
+  if (plan.existing) return { status: 'archived', unchanged: true, destination: plan.destination, manifest: plan.manifest, historical: plan.historical, ...(plan.unverified ? { unverified: plan.unverified } : {}) };
+  const notNeeded = options.asIs === true && !plan.asIs ? { asIs: 'not-needed' } : {};
+  if (options.apply !== true) return { status: 'preview', plan, ...notNeeded };
   const root = options.root ?? process.cwd();
   // Revalidate every input immediately before changing paths, so a preview cannot race a writer.
   const fresh = previewArchiveFeature({ ...options, root, apply: false });
@@ -541,7 +544,7 @@ export function archiveFeature(options) {
   let links;
   try { links = relinkLive(root, plan); } catch (error) { links = { error: error.message }; }
   const afterArchive = runAfterArchive(root, plan);
-  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), links, ...(afterArchive ? { afterArchive } : {}) };
+  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), ...notNeeded, links, ...(afterArchive ? { afterArchive } : {}) };
 }
 
 /** The common parent folder of the context, features and archive homes ('.' when they share none). */
@@ -554,13 +557,14 @@ function docsRoot(root) {
 
 const under = (file, folder) => folder === '.' || file === folder || file.startsWith(`${folder}/`);
 
-/** Live project files: Git's tracked and unignored files, or the docs root's files without Git. */
+/** Live project files: Git's tracked and unignored files, or the docs root's files without Git. Symlinks are skipped. */
 function liveFiles(root, docs) {
-  if (gitRoot(root)) return gitIn(root, ['ls-files', '-z', '--cached', '--others', '--exclude-standard']).split('\0').filter(file => file && existsSync(path.join(root, file)));
+  const plainFile = file => { try { return lstatSync(path.join(root, file)).isFile(); } catch { return false; } };
+  if (gitRoot(root)) return gitIn(root, ['ls-files', '-z', '--cached', '--others', '--exclude-standard']).split('\0').filter(file => file && plainFile(file));
   const files = [];
   const walk = relative => {
     const local = path.join(root, relative);
-    if (!existsSync(local)) return;
+    if (!existsSync(local) || lstatSync(local).isSymbolicLink()) return;
     for (const name of readdirSync(local)) {
       if (name.startsWith('.')) continue;
       const child = relative === '.' ? name : `${relative}/${name}`, stat = lstatSync(path.join(root, child));
@@ -571,14 +575,51 @@ function liveFiles(root, docs) {
   return files;
 }
 
+/** The [start, end) offsets of the inline code spans on one line. */
+function codeSpans(line) {
+  const spans = [];
+  for (let index = 0; index < line.length;) {
+    const open = /`+/g; open.lastIndex = index;
+    const start = open.exec(line);
+    if (!start) break;
+    const close = new RegExp(`(?<!\`)${start[0]}(?!\`)`, 'g'); close.lastIndex = start.index + start[0].length;
+    const end = close.exec(line);
+    if (!end) { index = start.index + start[0].length; continue; }
+    spans.push([start.index, end.index + end[0].length]);
+    index = end.index + end[0].length;
+  }
+  return spans;
+}
+
 /**
- * After a move: rewrite Markdown links into the moved folder in live docs under
- * the docs root (not the archive, not reports or receipts), and list, unedited,
- * live files that still name the folder in other words.
+ * Each line of Markdown, marked `code` inside a fenced or indented code block. A fence
+ * closes only on its own marker character, at least as long, as CommonMark says.
+ */
+function markdownLines(text) {
+  let fence = null, previous = 'blank';
+  return text.split('\n').map(line => {
+    const marker = /^ {0,3}(`{3,}|~{3,})/.exec(line)?.[1];
+    let code = true;
+    if (fence) { if (marker && marker[0] === fence[0] && marker.length >= fence.length && /^ {0,3}[`~]+\s*$/.test(line)) fence = null; }
+    else if (marker && !(marker[0] === '`' && line.trimStart().slice(marker.length).includes('`'))) fence = marker;
+    // An indented code block starts after a blank line; it cannot continue a paragraph.
+    else code = /^( {4}|\t)/.test(line) && line.trim() !== '' && previous !== 'text';
+    previous = line.trim() === '' ? 'blank' : code ? 'code' : 'text';
+    return { line, code };
+  });
+}
+
+const entryFile = file => ['AGENTS.md', 'CLAUDE.md'].includes(path.posix.basename(file));
+
+/**
+ * After a move: rewrite Markdown links into the moved folder in live docs under the docs
+ * root. Never rewrite the features or archive folders (working material and history whose
+ * receipts are pinned), reports, receipts or entry files; list those, and live files that
+ * name the folder in other words, unedited.
  */
 function relinkLive(root, plan) {
   const { source, destination } = plan;
-  const docs = docsRoot(root), archive = workPaths(root).archive;
+  const docs = docsRoot(root), { features, archive } = workPaths(root);
   const evidence = new Set([...plan.copiedEvidence.map(file => file.path), ...plan.evidence.flatMap(decision => [decision.path, decision.report?.path].filter(Boolean))]);
   const names = new RegExp(`(?<![\\w-])${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`);
   const result = { rewritten: [], namedInMarkdown: [], namedInOtherFiles: [] };
@@ -590,17 +631,19 @@ function relinkLive(root, plan) {
       if (names.test(text)) result.namedInOtherFiles.push(file);
       continue;
     }
-    const editable = under(file, docs) && !evidence.has(file);
-    let fenced = false, changed = false;
-    const lines = text.split('\n').map((line, index) => {
-      if (/^\s{0,3}(```|~~~)/.test(line)) { fenced = !fenced; return line; }
-      if (fenced || !editable) return line;
+    const editable = under(file, docs) && !under(file, features) && !evidence.has(file) && !entryFile(file);
+    let changed = false, links = false;
+    const lines = markdownLines(text).map(({ line, code }, index) => {
+      if (code) return line;
+      const spans = codeSpans(line);
       // Inline links `](target)` and reference definitions `[label]: target`.
-      return line.replace(/(\]\(\s*<?|^\s{0,3}\[[^\]]+\]:\s*<?)([^)\s>]+)/g, (match, lead, target) => {
+      return line.replace(/(\]\(\s*<?|^\s{0,3}\[[^\]]+\]:\s*<?)([^)\s>]+)/g, (match, lead, target, offset) => {
+        if (spans.some(([start, end]) => offset >= start && offset < end)) return match;
         if (/^[a-z][a-z\d+.-]*:/i.test(target) || target.startsWith('#') || target.startsWith('/')) return match;
         const [, bare, suffix] = /^([^#?]*)(.*)$/.exec(target);
         const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(file), bare)).replace(/\/$/, '');
         if (!under(resolved, source)) return match;
+        if (!editable) { links = true; return match; }
         const moved = `${destination}/feature${resolved.slice(source.length)}`;
         const link = `${path.posix.relative(path.posix.dirname(file), moved) || '.'}${bare.endsWith('/') ? '/' : ''}${suffix}`;
         result.rewritten.push({ path: file, line: index + 1, from: target, to: link });
@@ -610,7 +653,7 @@ function relinkLive(root, plan) {
     });
     const next = lines.join('\n');
     if (changed) writeFileSync(local, next);
-    if (names.test(next)) result.namedInMarkdown.push(file);
+    if (links || names.test(next)) result.namedInMarkdown.push(file);
   }
   return result;
 }
@@ -629,28 +672,56 @@ function runAfterArchive(root, plan) {
     ...(result.error ? { error: result.error.message } : {}), stdout: tail(result.stdout), stderr: tail(result.stderr) };
 }
 
+const preferencesFile = '.joycraft/preferences.json';
+
+/** The project's preferences (schemaVersion 1 when absent), refusing a symlinked path as preferences.mjs does. */
+function readPreferences(root) {
+  let current = realpathSync(root);
+  for (const part of preferencesFile.split('/')) {
+    current = path.join(current, part);
+    if (!existsSync(current)) return { schemaVersion: 1 };
+    const stat = lstatSync(current);
+    requireValue(!stat.isSymbolicLink() && (part === 'preferences.json' ? stat.isFile() : stat.isDirectory()), `Expected a plain project file: ${preferencesFile}`);
+  }
+  const preferences = parseJson(readFileSync(current), preferencesFile);
+  requireValue(isObject(preferences), `${preferencesFile} must contain an object`);
+  return preferences;
+}
+
 /**
- * Whether the project's `.ignore` lists the archive folder, so rg and similar
- * searches skip history. `apply` appends `<archive>/` once, creating the file.
+ * Whether the project's `.ignore` lists the archive folder, so rg and similar searches skip
+ * history: `present`, `declined` (the user said no), or `missing`. `apply` appends `<archive>/`
+ * once, creating the file; `decline` records the no in preferences, keeping other keys.
  */
-export function archiveIgnore({ root = process.cwd(), apply = false } = {}) {
+export function archiveIgnore({ root = process.cwd(), apply = false, decline = false } = {}) {
   const archive = workPaths(root).archive.replace(/\/+$/, '');
   const line = `${archive}/`, file = path.join(root, '.ignore');
   const text = existsSync(file) ? readFileSync(file, 'utf8') : null;
-  const listed = (text ?? '').split(/\r?\n/).map(item => item.trim().replace(/^\//, '').replace(/\/+$/, '')).includes(archive);
-  if (listed) return { file: '.ignore', line, status: 'present' };
-  if (!apply) return { file: '.ignore', line, status: 'missing' };
-  writeFileSync(file, `${text ?? ''}${text && !text.endsWith('\n') ? '\n' : ''}${line}\n`);
+  // Git strips trailing spaces but keeps leading ones, which are part of the pattern.
+  const pattern = item => item.replace(/\s+$/, '').replace(/^\.?\//, '').replace(/\/\*\*$/, '').replace(/\/+$/, '');
+  if ((text ?? '').split(/\r?\n/).map(pattern).includes(archive)) return { file: '.ignore', line, status: 'present' };
+  if (decline) {
+    const preferences = readPreferences(root);
+    const target = path.join(realpathSync(root), preferencesFile), temporary = `${target}.archive-${process.pid}`;
+    mkdirSync(path.dirname(target), { recursive: true });
+    writeFileSync(temporary, `${JSON.stringify({ ...preferences, archive: { ...(isObject(preferences.archive) ? preferences.archive : {}), ignore: 'declined' } }, null, 2)}\n`, { flag: 'wx', mode: 0o600 });
+    renameSync(temporary, target);
+    return { file: '.ignore', line, status: 'declined' };
+  }
+  if (!apply) return { file: '.ignore', line, status: readPreferences(root).archive?.ignore === 'declined' ? 'declined' : 'missing' };
+  const eol = text?.includes('\r\n') ? '\r\n' : '\n';
+  writeFileSync(file, `${text ?? ''}${text && !text.endsWith('\n') ? eol : ''}${line}${eol}`);
   return { file: '.ignore', line, status: 'added' };
 }
 
 function argumentsFor(argv) {
   const [command, ...args] = argv;
-  requireValue(command === 'archive', 'Usage: archive.mjs ignore --check | --apply, or archive.mjs archive --feature <feature or folder name> --phase session-end --attestation <path> [--reconciliation <path>] [--as-is --owner-instruction <text>] [--apply]');
+  requireValue(command === 'archive', 'Usage: archive.mjs ignore --check | --apply | --decline, or archive.mjs archive --feature <feature or folder name> --phase session-end --attestation <path> [--reconciliation <path>] [--as-is --owner-instruction <text>] [--apply]');
   const flags = {};
   for (let index = 0; index < args.length; index += 1) {
     if (['--apply', '--as-is'].includes(args[index])) { requireValue(flags[args[index]] === undefined, `Duplicate ${args[index]}`); flags[args[index]] = true; continue; }
     requireValue(['--feature', '--phase', '--attestation', '--reconciliation', '--owner-instruction'].includes(args[index]) && nonempty(args[index + 1]) && flags[args[index]] === undefined, `Invalid or duplicate argument: ${args[index]}`);
+    requireValue(args[index] !== '--owner-instruction' || !args[index + 1].startsWith('--'), '--owner-instruction needs the owner\'s words as its value; the text cannot start with --');
     flags[args[index]] = args[index + 1]; index += 1;
   }
   requireValue(flags['--feature'] && flags['--phase'] && flags['--attestation'], 'Archive needs --feature, --phase and --attestation');
@@ -660,8 +731,8 @@ function argumentsFor(argv) {
 
 export function main(argv = process.argv.slice(2)) {
   if (argv[0] === 'ignore') {
-    requireValue(argv.length === 2 && ['--check', '--apply'].includes(argv[1]), 'Usage: archive.mjs ignore --check | --apply');
-    const result = archiveIgnore({ apply: argv[1] === '--apply' });
+    requireValue(argv.length === 2 && ['--check', '--apply', '--decline'].includes(argv[1]), 'Usage: archive.mjs ignore --check | --apply | --decline');
+    const result = archiveIgnore({ apply: argv[1] === '--apply', decline: argv[1] === '--decline' });
     process.stdout.write(`${JSON.stringify(result)}\n`);
     return result;
   }

@@ -28,24 +28,24 @@ Prepare a project-relative attestation file:
 ```
 
 `quiescent` attests that no active worker and no unfinished work requiring the
-feature's live paths remains. The current Markdown context references must already exist outside `docs/features/` and
-`docs/archive/`; they demonstrate that constraints worth retaining were carried
-into current documentation, such as `AGENTS.md` or a custom context map. The
-attestation is an operational statement, not an approval.
+feature's live paths remains; it does not ask for a new human permission. The
+current Markdown context references must already exist outside `docs/features/`
+and `docs/archive/`, showing that constraints worth keeping were carried into
+current documentation. Reuse the project's existing home, such as `AGENTS.md` or
+a custom context map. The attestation is an operational statement, not a
+decision or approval authority.
 
 The preview validates the complete queue before any write: the canonical queue
-must be the only queue anywhere in the feature tree, all specs must be
+must be the only queue in the feature tree, all specs must be
 `done`, and each spec must have exactly one of an accepted PASS report, an
 explicit `ownerAcceptance` receipt, or a feature `waiver` receipt. A waiver
 keeps its record bytes, the user's quoted instruction as its limitation, and
 for a tool-break completion its UNVERIFIED `waiver.review` report and receipts. A normal accepted report must retain its
-PASS evidence. An owner-acceptance record is historical exception metadata:
-it binds the queue/spec/subject identity to a hashed independent review whose
-verdict remains `FAIL` or `UNVERIFIED`, carries nonempty limitations, and is
-not evidence that the review passed. The runtime validates the decision, review,
-subject bindings, receipts and historical requirement invariants, then preserves
-the decision, review, verdict and limitations in the replay manifest. Its
-shape cannot authenticate that a human issued it. Each report's independent-review shape must hold,
+PASS evidence. An owner-acceptance record binds the queue/spec/subject identity
+to a hashed independent review whose verdict stays `FAIL` or `UNVERIFIED`, with
+nonempty limitations; it is not evidence that the review passed, and its shape
+cannot authenticate a human. The runtime validates it and keeps the decision,
+review, verdict and limitations in the replay manifest. Each report's independent-review shape must hold,
 each report must describe its own archived queue/spec and original requirements,
 and every referenced receipt must still have its recorded bytes. A pending
 completion journal, a malformed/corrupt/FAIL report, unfinished work, missing
@@ -55,7 +55,7 @@ The runtime does not rerun historic suites or compare their code input hashes
 with live code, which later work may supersede. For
 a v1-bound report it still checks the selected queue/dependencies and selected
 governing requirement or decision records, while independent queue records and
-unselected decisions may change. Older reports retain their original whole-file
+unselected decisions may change. Older reports keep their whole-file
 archive checks. The archive records that this evidence is historical and does
 not renew current acceptance.
 
@@ -68,8 +68,7 @@ selector in a newer version is a mismatch, not permission to skip the check.
 The preview's `requirementHistory` lists the original path, normalization/scope,
 accepted hash, accepted commit, restored raw hash and subsequent path commits.
 The queue and every declared spec remain strict by default; the explicit
-reconciliation path below is the archive-only exception. Reports and receipts
-must always retain their recorded bytes. No committed match means no archive.
+reconciliation path below is the archive-only exception. No committed match means no archive.
 
 For the feature's own brief, also write
 `docs/features/<slug>/brief-amendments.json` from actual recorded owner decisions:
@@ -103,9 +102,8 @@ archival does not require one report matching today's brief.
 Apply restores each accepted raw version under
 `evidence/requirements/<proof-hash>/<original-path>` in the archive. Different
 accepted versions or scopes remain distinct. Replay entries use
-`operation: "restored-from-git"` and retain the proof in `requirement`; subsequent
-runs verify both the stored raw bytes and their accepted projection without
-needing live Git history. The current brief and its amendment ledger move with
+`operation: "restored-from-git"` and retain the proof in `requirement`; replay
+verifies the raw bytes and their accepted projection without live Git history. The current brief and its amendment ledger move with
 the feature, alongside the separately restored older brief versions.
 
 ## Archive reconciliation for a changed acceptance record
@@ -131,8 +129,8 @@ Under an owner-authorized resolution, use this separate archive-only override:
    for each changed report/input pair. An authorization already present in the
    task is enough; do not ask again just to record it. Never invent an instruction.
 4. Preview with `--reconciliation <record-path>`, inspect the restored versions
-   and the recorded resolution, then apply at the ordinary quiescent session-end
-   boundary. The same flag is required for the first apply.
+   and resolution, then apply with the same flag at the ordinary quiescent
+   session-end boundary.
 
 ```json
 {
@@ -167,12 +165,11 @@ missing bytes. The current external requirement is copied into the archive too,
 so the recorded current hash remains verifiable. `laterCommits` lists the path
 commits in `acceptedCommit..HEAD`, not necessarily later in time. `acceptedSha256` is copied from the original report's input;
 `currentSha256` pins raw current bytes, including acceptance metadata. One queue
-edit may therefore need many entries, one for each report whose dependency
-projection changed. Unchanged later reports need no entry. Duplicate, unused,
+edit may need an entry for each report whose dependency projection changed. Duplicate, unused,
 uncovered or stale entries fail closed. A ledger's presence alone never enables
-the override, and its shape does not authenticate a human. The ledger itself may
-be uncommitted: preview pins its raw hash, apply rechecks it, and archival retains
-it byte-for-byte as part of the paper trail. Commit the archive through normal
+the override, and its shape does not authenticate a human. The ledger may be
+uncommitted: preview pins its raw hash, apply rechecks it, and the archive keeps
+it byte-for-byte. Commit the archive through normal
 delivery. A renamed own spec or changed report subject
 path still fails; this override reconciles contents, not acceptance identities.
 
@@ -184,11 +181,11 @@ node .joycraft/runtime/archive.mjs archive --feature <slug> --phase session-end 
 The helper checks each original review against its restored queue projection and
 criteria, restores the exact accepted raw queue/spec bytes alongside the current
 files, and includes the ledger and its hash in preview/replay. The manifest says
-`historical.acceptanceRecordsReconciled: true` and still says
+`historical.acceptanceRecordsReconciled: true` and
 `currentAcceptanceRenewed: false`. Report it as **archived with reconciliation**,
-including the limitations, rather than a new verification PASS. Replay verifies
-the stored ledger, its connection to the restored evidence, raw hashes and
-normalized hashes without requiring live Git history. The helper does not edit
+with the limitations, never as a new PASS. Replay verifies
+the stored ledger, its link to the restored evidence and both hashes without
+live Git history. The helper does not edit
 briefs/specs/queues, statuses, report identities or review verdicts to make them
 agree. Missing/corrupt receipts, invalid reviews, unfinished work, an active host
 or a pending completion journal cannot be overridden.
@@ -198,17 +195,17 @@ then atomically moves `docs/features/<slug>` to
 `docs/archive/<slug>/feature`. Code, tests, and shared receipts outside the
 feature stay live. Reports and receipts outside the feature are copied under
 the archive record's `evidence/` directory. `archive-replay.json` maps each
-original path to its moved, copied or restored byte-identical record. Links in
-the moved files keep their text. Apply rewrites links into the folder in live
-Markdown under the docs root (not the archive, reports or receipts); `links`
-lists them and, unedited, other live files that name the folder.
+original path to its moved, copied or restored byte-identical record. Historical
+links in the moved files keep their text; treat them as history. Apply rewrites
+links into the folder only in live Markdown outside the features and archive
+folders, never in entry files, reports or receipts; `links` lists the rewrites
+and, unedited, other files that link or name the folder.
 
 The staging directory receives `archive-recovery.json` before any copy or move,
-and the marker remains in the final archive as immutable move provenance. If an
-interruption prevents the final rename, the runtime tries to restore the source
-directory. If that restore cannot prove the source is back and staging no longer
-holds the feature, it retains the staged directory and its recovery manifest for
-manual recovery. A collision or changed byte fails without accepting new
+and the marker remains in the final archive as immutable move provenance. If the
+final rename fails, the runtime restores the source directory; when it cannot
+prove that, it keeps the staged directory and its recovery manifest for manual
+recovery. A collision or changed byte fails without accepting new
 completion. A repeat is idempotent only when the replay manifest names
 the feature and every mapped byte still matches; otherwise reconcile it
 manually.
@@ -218,7 +215,8 @@ manually.
 On the owner's instruction, `--as-is --owner-instruction "<their words>"`
 archives a feature whose acceptance is incomplete: it moves the folder unchanged
 and writes `unverified.md` listing each spec not accepted, each missing receipt
-and the instruction verbatim. Report it as **archived as is, unverified**.
+and the instruction verbatim. Report it as **archived as is, unverified**. When
+every spec holds its acceptance, it is the normal archive (`asIs: "not-needed"`).
 
 ## After-archive hook
 
