@@ -183,7 +183,12 @@ export function checkWiring(root, { hosts } = {}) {
 export async function main(argv = process.argv.slice(2)) {
   const index = argv.indexOf('--root');
   if (!(argv.length === 0 || (argv.length === 2 && index === 0))) throw new Error('Usage: wiring.mjs [--root <project>]');
-  const result = checkWiring(path.resolve(index === 0 ? argv[1] : '.'));
+  const root = path.resolve(index === 0 ? argv[1] : '.');
+  const result = checkWiring(root);
+  // Start advice from the tidy range. Loaded here, so install and doctor stay file-only.
+  const { tidyAdvice } = await import('./entry-check.mjs');
+  const tidy = tidyAdvice({ root });
+  if (tidy) result.advice.push(tidy);
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (!result.wired) process.exitCode = 2;
   return result;

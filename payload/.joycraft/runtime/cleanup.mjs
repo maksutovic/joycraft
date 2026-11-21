@@ -509,12 +509,15 @@ function customChecks(root, checks, skipped) {
   return findings;
 }
 
-/** The tidy report: range findings, context pages first, at most `limit` of them. */
-export function tidyReport({ root = process.cwd(), base, now = Date.now(), limit = 10 } = {}) {
+/**
+ * The tidy report: range findings, context pages first, at most `limit` of them.
+ * `quick` (start advice) skips the project's own checkers and the standing count.
+ */
+export function tidyReport({ root = process.cwd(), base, now = Date.now(), limit = 10, quick = false } = {}) {
   const config = readConfig(root);
   const range = tidyRange(root, { base, now });
   const out = { base: range.base ?? null, head: range.head ?? null, approximate: range.approximate ?? false, findings: [], more: 0, standing: 0, skipped: [] };
-  const all = customChecks(root, config.checks, out.skipped);
+  const all = quick ? [] : customChecks(root, config.checks, out.skipped);
   if (range.skipped) out.skipped.push({ check: 'tidy', reason: range.skipped });
   else all.push(...rangeFindings(root, config, range));
   const rank = item => (inside(item.path, config.paths.context) ? 0 : 1);
@@ -522,7 +525,7 @@ export function tidyReport({ root = process.cwd(), base, now = Date.now(), limit
   out.findings = all.slice(0, limit);
   out.more = all.length - out.findings.length;
   out.all = all;
-  if (range.skipped) return out;
+  if (range.skipped || quick) return out;
   // Findings that the range did not cause fold into one count.
   out.standing = cleanupReport({ root, now }).findings.length;
   return out;

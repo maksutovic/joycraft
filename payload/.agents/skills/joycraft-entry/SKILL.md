@@ -20,7 +20,9 @@ The check's `advice` lists `unmapped-areas`: the areas setup has not read yet,
 kept under `## Not yet mapped` in the project context page. When a request
 touches a listed area, map that area first: read it, propose its map rows and
 homes, write them on the user's yes, and remove the area from the list. Advice
-alone does not start a full setup.
+alone does not start a full setup. A `tidy` advice item gives up to 3 lines
+about mapped doc lines that name removed code: tell the user its lines, and fix
+nothing at start.
 
 Read existing project instructions first. During an upgrade, inspect the installed
 manifest’s `legacyConflicts` and reconcile competing old skill discovery before
