@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "84f0e5d79864438823822034f07436c0189aa2b3",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 7,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/07-archive-links.md",
+    "criteria": [
+      {
+        "id": "spec-7-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/07-archive-links.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-7-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/07-archive-links.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-7-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/07-archive-links.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "46af075f5ea54ba964a9a7f9a5031bc7073c074e4eb4af707d31ffc27ffa5d60",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/07-archive-links.md",
+        "kind": "requirement",
+        "sha256": "0b1ee15d00dc35e583e4c10c4ad6fc4f2265fd0ab1e9a699a56f4012245eb14f",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/archive.md",
+        "kind": "code",
+        "sha256": "d450f5867ce517d076df4a967e501a07f47b64e148990a290b9443267d21adeb",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "d7725e5351d134043cd774aa174e057790a6dfe7e589ee43822a998a22cca499",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          6,
+          7
+        ]
+      },
+      "governing": []
+    },
+    "identity": "ba5a9e7431049ff810c94e0289bf468a049b850168e6fa41842c54cbafcabc1a"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "add5a4cc68ca18886"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "af40d0139f64b9446"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-7-1-context-link-rewritten",
+      "subjectIdentity": "ba5a9e7431049ff810c94e0289bf468a049b850168e6fa41842c54cbafcabc1a",
+      "criteria": [
+        "spec-7-1"
+      ],
+      "representativeInput": "Git fixture: done feature docs/features/x; docs/context/page.md with an inline link ../features/x/brief.md#goals and a reference definition ../features/x/specs/; archive --phase session-end --apply",
+      "expected": "Both links point at ../archive/x/feature/... after apply, the target exists, links.rewritten lists both",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test [AC:spec-7-1] passed (7/7 in the file): page bytes equal the expected rewrite, docs/context/../archive/x/feature/brief.md exists, links.rewritten has both entries with line numbers.",
+          "receipts": [
+            {
+              "path": ".joycraft/local/packets/spec-7-tests.log",
+              "sha256": "9e75b587618bbc7a6cc7b2d90e331e7e601958ef06216ee1b7e4dcf7a673761a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-archive-links.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Reviewer probe (CRLF page): angle-bracket target, a link with a title, a link to the folder itself, ./../ prefix with ?q#h, an image link and a page two folders deep were all rewritten to resolving archive paths; ../features/xy/ was left alone; CRLF kept; an untracked live doc was rewritten; a gitignored doc was untouched.",
+          "receipts": [
+            {
+              "path": ".joycraft/local/packets/spec-7-probe.log",
+              "sha256": "21ea8948ed00fdcc8b1db52cb667cfb749cc46ff94d096f208364d398bbb97b3"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "probe.mjs",
+              "payload/.joycraft/runtime/archive.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-7-2-mentions-listed-unchanged",
+      "subjectIdentity": "ba5a9e7431049ff810c94e0289bf468a049b850168e6fa41842c54cbafcabc1a",
+      "criteria": [
+        "spec-7-2"
+      ],
+      "representativeInput": "Fixture with src/a.ts naming docs/features/x/brief.md, docs/notes/n.md naming docs/features/x in backticks and prose, docs/notes/other.md naming docs/features/xy",
+      "expected": "namedInMarkdown = [docs/notes/n.md], namedInOtherFiles = [src/a.ts], both files byte-identical, xy not matched",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test [AC:spec-7-2] passed: lists match exactly and both files read back with the original bytes. Tests review-b-1 and review-b-6 also passed: a receipt under another feature and entry files (AGENTS.md, pkg/CLAUDE.md) are listed, not rewritten.",
+          "receipts": [
+            {
+              "path": ".joycraft/local/packets/spec-7-tests.log",
+              "sha256": "9e75b587618bbc7a6cc7b2d90e331e7e601958ef06216ee1b7e4dcf7a673761a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-archive-links.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-7-3-archive-untouched",
+      "subjectIdentity": "ba5a9e7431049ff810c94e0289bf468a049b850168e6fa41842c54cbafcabc1a",
+      "criteria": [
+        "spec-7-3"
+      ],
+      "representativeInput": "Fixture with docs/archive/old/feature/brief.md linking ../../../features/x/brief.md",
+      "expected": "Archived page byte-identical after apply; links.rewritten empty",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test [AC:spec-7-3] passed: archived page bytes unchanged and links.rewritten is []. Source review: relinkLive filters every file under paths.archive before reading it (archive.mjs:626).",
+          "receipts": [
+            {
+              "path": ".joycraft/local/packets/spec-7-tests.log",
+              "sha256": "9e75b587618bbc7a6cc7b2d90e331e7e601958ef06216ee1b7e4dcf7a673761a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-archive-links.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-test-not-input",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "tests/runtime-archive-links.test.ts is not a declared verification input (startup trace showed all three criteria untraced). trace.mjs --tests on that file maps spec-7-1/2/3 to lines 43, 55, 66. The reviewer used it as a check input; the queue was not edited."
+    },
+    {
+      "id": "f2-md-extension",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:630",
+      "summary": "Only files ending in lowercase .md are treated as Markdown. Probe: docs/notes/u.MD with a relative link into the feature was neither rewritten nor listed (it is not named by full path, so the non-Markdown list misses it too). Same for .markdown.",
+      "assumption": "The spec checks .md only; other extensions are rare."
+    },
+    {
+      "id": "f3-prose-full-path-only",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:624",
+      "summary": "Prose and non-Markdown mentions are found only by the full project-relative path (docs/features/x). A relative mention such as `../features/x` in prose, or a slug-only mention, is not listed.",
+      "assumption": "The spec checks the full path docs/features/x; that is the reading taken."
+    },
+    {
+      "id": "f4-reference-docs-root",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/archive.md:199",
+      "summary": "The reference says rewrites happen in live Markdown outside the features and archive folders, but does not say the rewrite is limited to the docs root (Markdown outside the docs root is listed, not rewritten, unless the docs root is the project root)."
+    },
+    {
+      "id": "f5-installed-copy",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": ".joycraft/runtime/archive.mjs",
+      "summary": "The repo's installed .joycraft/runtime/archive.mjs differs from payload/ (as do cleanup.mjs and wiring.mjs); payload/PIN matches payload/. Left to the release/install flow."
+    },
+    {
+      "id": "f6-co-implementer",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": "payload/.joycraft/runtime/archive.mjs",
+      "summary": "Spec 7 was implemented by lane-b-archive (agent add5a4cc68ca18886, commit 45afe9a) and then changed by fix-lane-b (agent a63ca5fcef335dbda, commit 5f0d3d2). implementerActor records lane-b-archive only. The test-file diff from 5f0d3d2 removed no assertion (only fixture refactoring) and added review-b-1/2/3/6 tests."
+    }
+  ],
+  "createdAt": "2026-11-21T23:33:34.917Z"
+}

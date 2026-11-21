@@ -414,7 +414,7 @@
       "depends_on": [
         6
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "verification": {
         "inputs": [
@@ -470,6 +470,10 @@
       },
       "submitted": {
         "at": "2026-11-21T23:30:34.146Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-7.report.json",
+        "sha256": "7dd15e824402291e96b9bc93657346ad4c87f727defa6ebdb17c2e06c0ceb649"
       }
     },
     {
@@ -478,7 +482,7 @@
       "depends_on": [
         7
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "verification": {
         "inputs": [
@@ -531,6 +535,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:33:56.429Z"
       }
     },
     {
