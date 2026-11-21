@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-check-listing.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "verification": {
         "inputs": [
@@ -72,6 +72,10 @@
       },
       "submitted": {
         "at": "2026-11-21T23:27:05.481Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-1.report.json",
+        "sha256": "e54d4ad60fb1d808518fb11311daf43b8c5e0c790ce8a14e33b2bd95ac84c9d7"
       }
     },
     {
@@ -80,7 +84,7 @@
       "depends_on": [
         1
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "verification": {
         "inputs": [
@@ -139,6 +143,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:31:31.704Z"
       }
     },
     {

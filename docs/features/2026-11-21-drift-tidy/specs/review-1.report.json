@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "3b6c101990e8f190af263ee71a79ca8fdc391a33",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 1,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+    "criteria": [
+      {
+        "id": "spec-1-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "efa60ca3de834411835aa76845389b02f814845495c01bd61ab5e669a455d35c",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+        "kind": "requirement",
+        "sha256": "c0acb89b18f8983f09aee63241f67092cffd11f474d8f6458bfcb856efd98acb",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/cleanup.md",
+        "kind": "code",
+        "sha256": "503f1243cc8ced1aa8d6388568a74b5b4b22e7c37a5a773688c6a47365116e44",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "f6075597f2f6e095f1420f886d8dc15979ec304c9d644644fb1aa1907bc073a1",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1
+        ]
+      },
+      "governing": []
+    },
+    "identity": "6132cf579dd09bd763f91f28d86f798e5376e462d7450d681b534a76360f92bf"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "afd1b8c28bd88308d"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-1-1-checks-listing",
+      "subjectIdentity": "6132cf579dd09bd763f91f28d86f798e5376e462d7450d681b534a76360f92bf",
+      "criteria": [
+        "spec-1-1"
+      ],
+      "representativeInput": "node payload/.joycraft/runtime/cleanup.mjs --checks",
+      "expected": "One line per check (id, report or mechanical, what it finds); the ids equal every check id the source emits.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-1] passed: printed ids match every `check: '<id>'` literal in cleanup.mjs, no duplicates, each line id<TAB>report|mechanical[ gate]<TAB>text.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+              "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-checks.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe A: --checks printed 21 lines (18 report checks plus tidy, gone-symbol, new-doc), exit 0; gate marks match entry-check gateChecks. A stray argument exits 1 with usage.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-probes.log",
+              "sha256": "4bfaaa003f2adb27aadda10148ea2cd74d80b312055fd985bb69b3a2779ed0f8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "spec1-probe.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "User-defined `checks:` entries emit their own names; those are not built-in ids and are not listed."
+      ]
+    },
+    {
+      "id": "spec-1-2-reference-sentence",
+      "subjectIdentity": "6132cf579dd09bd763f91f28d86f798e5376e462d7450d681b534a76360f92bf",
+      "criteria": [
+        "spec-1-2"
+      ],
+      "representativeInput": "payload/.joycraft/references/cleanup.md",
+      "expected": "No check table; one sentence names cleanup.mjs --checks; fewer words.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-2] passed: no table row names a check id, no `| Check |` header, the file contains `cleanup.mjs --checks`, under 1,867 words.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+              "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-checks.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "Reviewer read the file: the table is gone; `wc -w` gives 1788 words now vs 1867 at merge base 453c898.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+              "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889"
+            }
+          ]
+        }
+      ],
+      "limits": [
+        "The sentence says the listing shows whether a check is a gate; it does not mention the report/mechanical kind."
+      ]
+    },
+    {
+      "id": "spec-1-3-batched-check-ignore",
+      "subjectIdentity": "6132cf579dd09bd763f91f28d86f798e5376e462d7450d681b534a76360f92bf",
+      "criteria": [
+        "spec-1-3"
+      ],
+      "representativeInput": "Fixture pages with 200 and 500 backticked missing paths, half git-ignored",
+      "expected": "Only non-ignored paths reported; one check-ignore process.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-3] passed: 200 paths, 100 ignored -> 100 missing-path findings, all src/gone*.ts; logging git wrapper saw one check-ignore call.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+              "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-checks.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe B: 500 paths, 250 ignored -> 250 findings, 0 ignored reported, 1 check-ignore spawn counted at any argv position, 460 ms. Probe C: a negated `!ignored/keep.ts` pattern is still reported, ignored/drop.ts is filtered.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-probes.log",
+              "sha256": "4bfaaa003f2adb27aadda10148ea2cd74d80b312055fd985bb69b3a2779ed0f8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "spec1-probe.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Timing is one local run on macOS."
+      ]
+    },
+    {
+      "id": "spec-1-4-impact-drift-fix",
+      "subjectIdentity": "6132cf579dd09bd763f91f28d86f798e5376e462d7450d681b534a76360f92bf",
+      "criteria": [
+        "spec-1-4"
+      ],
+      "representativeInput": "Fixture with cleanup.impact src/** -> docs/context/guide.md and a later code commit",
+      "expected": "fix contains `verified:` and no longer says to commit the page unchanged.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-4] passed: fix contains `verified:` and does not match /unchanged/.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+              "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-checks.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe D: fix reads \"update the page, or, if it is still true, add a `verified: <today>` line to it\"; after committing a `verified:` line the impact-drift finding cleared, so the action is doable.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-probes.log",
+              "sha256": "4bfaaa003f2adb27aadda10148ea2cd74d80b312055fd985bb69b3a2779ed0f8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "spec1-probe.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-trace-inputs",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "The queue entry declares no check input, so startup trace lists all four criteria as untraced. With --tests tests/runtime-cleanup-checks.test.ts every criterion traces (lines 31, 43, 53, 80). Add the test file as a verification input."
+    },
+    {
+      "id": "f2-installed-copy",
+      "class": "follow-up",
+      "origin": "new",
+      "at": ".joycraft/runtime/cleanup.mjs:1",
+      "summary": "The installed dogfood copies .joycraft/runtime/cleanup.mjs and .joycraft/references/cleanup.md are unchanged on this branch and differ from payload/. The spec says to refresh installed copies if the change touches them; the coordinator should decide whether to sync them now or at update.",
+      "assumption": "Installed copies are refreshed by the update flow, so this does not fail a criterion."
+    },
+    {
+      "id": "f3-kind-wording",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/cleanup.md:5",
+      "summary": "The new sentence says --checks shows whether a check is a gate, but not the report/mechanical kind it also prints. One word change would make it exact."
+    },
+    {
+      "id": "f4-mechanical-labels",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:241",
+      "summary": "missing-path and managed-block are labelled mechanical; whether tidy --verify can actually check those fixes is outside spec 1. Confirm the labels match what spec 4 lets session end fix."
+    }
+  ],
+  "createdAt": "2026-11-21T23:31:12.476Z"
+}

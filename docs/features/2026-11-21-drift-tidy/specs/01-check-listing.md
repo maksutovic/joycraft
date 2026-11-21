@@ -1,6 +1,6 @@
 ---
 id: 1
-status: in-review
+status: done
 ---
 # Cleanup lists its own checks and checks ignores in one batch
 
