@@ -90,6 +90,7 @@ export async function runGates({ tarball, work = mkdtempSync(join(tmpdir(), 'joy
     });
   }
   check('0.7.17 with a customized skill survives', () => {
+    // joycraft-tune is a skill that 0.7.17 installed; migration must keep a user's edit to it.
     const dir = join(work, 'custom'); mkdirSync(dir, { recursive: true });
     execFileSync('tar', ['-xzf', join(root, 'tests/fixtures/v07/0.7.17.tar.gz'), '-C', dir]);
     writeFileSync(join(dir, '.claude/skills/joycraft-tune/SKILL.md'), 'my tune\n');
