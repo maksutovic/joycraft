@@ -1,156 +1,135 @@
 ---
 name: joycraft-implement
-description: Execute atomic specs with TDD — read spec, write failing tests, implement until green, wrap up and continue the queue
+description: Implement authorized Joycraft feature specs from a project queue, preserving dependencies and sending finished work to independent verification.
+compatibility: Guarded review and completion require Node.js 22+, the installed .joycraft runtime, and Git; ordinary implementation follows the project's own stack.
 ---
-At skill entry, run `node docs/.joycraft/check.mjs check --json --session <session-id>` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing or fails, continue the requested skill quietly without retrying setup. Offer updates only for display: true; current, postponed, off, and unknown stay quiet. If automaticUpdate is present, finish this skill, then run its exact command once from the project root: the candidate must verify every safety gate before applying. Other updates require approval. After an offer or automatic attempt, record it with `node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>`. Apply updates only at this workflow boundary; after success, reinvoke the skill or restart the session to load changed instructions.
 
+# Joycraft Implement
 
-# Implement Atomic Spec
+Use this skill to carry out already-authorized specs in `docs/features/<slug>/specs/.joycraft-spec-queue.json`.
 
-You have exactly one atomic spec file to execute. Your job is to implement it using strict TDD — tests first, confirm they fail, then implement until green.
+Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec, the parent brief, the selected spec, and its declared verification inputs before changing code. Reuse current decisions and context; record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision. Do not require a new interview for settled work.
 
-## Step 1: Parse Arguments
+For a change across state, data or producer/consumer boundaries, inspect the
+actual counterpart code and relevant owning decisions/context when available.
+Missing context permits explicit assumptions and progress on understood scope;
+it does not require an architecture document. Add discovered material sources
+and relevant existing decision/context paths to exact verification inputs before
+review, reporting unresolved coverage. See
+[focused discovery](../../../.joycraft/references/architecture.md)
+when the boundary is unclear; a local repair needs no architecture review.
 
-The user MUST provide a path. No path = stop immediately.
+Work the ready authorized queue autonomously. A `todo` spec is ready when every
+dependency is `done`; a merge or `in-review` status is insufficient. Dispatch
+preflight checks this against the actual queue. Preserve the limits of an
+explicitly owner-accepted dependency. Choose independent ready work while an
+affected branch waits for review, environment repair or a recorded owner hold.
+Keep unfinished independent work visible.
 
-**If no path was provided:**
+For normal native execution, the host launches the selected worker first. The
+child bootstraps from its actual root, then runs `dispatch-start.mjs --role
+implementer` with its actual native identity before any tasked edit or mutation.
+The coordinator runs that start itself only when it is the implementer actor.
+Use the returned packet only when `ready` is true.
 
-> No spec path provided. Provide a spec file or a feature directory:
-> `$joycraft-implement docs/features/<slug>/specs/spec-name.md`
-> or `$joycraft-implement docs/features/<slug>/`
+If existing independent reports reveal a possible recurring failure, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md) before carrying it forward.
 
-**If the path is a directory** (ends with `/` or does not end with `.md`):
+Before the first dispatch, claim the queue with your actual host session ID and
+pass it as `--coordinator-session` to every startup:
 
-Look for `specs/.joycraft-spec-queue.json` inside that directory. Read it. Find the **first `todo` spec whose dependencies are satisfied** (a dependency is satisfied once it is `in-review` or `done`). This matches what `joycraft-next-spec` serves. That single spec file is your target. Do NOT read any other specs.
-
-> Using spec queue: found [spec-file-name] as the next spec.
-
-If the directory has no queue or no `todo` specs:
-
-> No remaining specs found in [directory].
-
-**If the path is a file** ending in `.md`:
-
-Use it directly as the spec to implement.
-
-## Step 2: Read the Sibling README.md FIRST (if present)
-
-Before reading the spec itself, check for a sibling `README.md` in the same folder as the spec — i.e., `<spec-path>/../README.md`. This file is the wave-plan + spec-table that `$joycraft-decompose` writes per feature.
-
-- **If present:** Read the README first. It tells you the spec's position in the wave plan, its dependencies, and which sibling specs (in the same folder) need to be done before this one.
-- **If absent:** That's fine — proceed normally. The convention is forward-only and many legacy spec folders pre-date it.
-
-### Warn on Unmet Dependencies
-
-If the README shows that this spec depends on other specs in the same folder, check whether those dependencies are satisfied. A dependency is satisfied once its frontmatter `status:` is `in-review` or `done` (see `docs/reference/spec-status-lifecycle.md`) — a checkpoint chain progresses on `in-review` without waiting for session-end to graduate it to `done`. A dependency still at `todo` is unmet.
-
-If any dependency is **not** complete, tell the user:
-
-> "This spec lists unmet dependencies in the sibling README.md: [list]. Proceed anyway, or stop?"
-
-Wait for confirmation before continuing. The user might be deliberately running out of order (a hotfix, an exploration, etc.) — your job is to surface the warning, not to gate.
-
-## Step 3: Read and Understand the Spec
-
-1. **Read the spec file.** The spec is your execution contract — the Acceptance Criteria and Test Plan define "done."
-2. **Check the spec's Status field.** If it says "Complete," warn the user and ask if they want to re-implement or skip.
-3. **Read the Acceptance Criteria** — these are your success conditions.
-4. **Read the Test Plan** — this tells you exactly what tests to write and in what order.
-5. **Read the Constraints** — these are hard boundaries you must not violate.
-
-### Finding Additional Context
-
-Specs are designed to be self-contained, but if you need more context:
-
-- **Parent brief:** Linked in the spec's body (`> **Parent Brief:**` line). The new convention is `docs/features/<slug>/brief.md`. Read it for broader feature context.
-- **Related specs:** Live in the same directory (typically `docs/features/<slug>/specs/`). The sibling `README.md` (read in Step 2 above) is the index.
-- **Affected Files:** The spec's Affected Files table tells you which files to create or modify.
-
-
-### Before writing code against an external API:
-
-⚠️ If the spec references a third-party SDK or package, read its official documentation and type definitions FIRST. Never write a `declare module` stub for a package that actually exists — use the real package as a devDependency instead. The stub will make typecheck pass but the code will fail at runtime.
-
-## Step 4: Execute the TDD Cycle
-
-**This is not optional. Write tests FIRST.**
-
-### 3a. Write Tests (Red Phase)
-
-Using the spec's Test Plan:
-
-1. Write ALL tests listed in the Test Plan. Each Acceptance Criterion must have at least one test.
-2. Tests should call the actual function/endpoint — not a reimplementation or mock of the underlying library.
-3. Run the tests. **They MUST fail.** If any test passes immediately:
-   - Flag it — either the test isn't testing the right thing, or the code already exists.
-   - Investigate before proceeding. A test that passes before implementation is a test that proves nothing.
-
-### 3b. Implement (Green Phase)
-
-1. Follow the spec's Approach section for implementation strategy.
-2. Implement the minimum code needed to make tests pass.
-3. Run tests after each meaningful change — use the spec's Smoke Test for fast feedback.
-4. Continue until ALL tests pass.
-
-### 3c. Verify Acceptance Criteria
-
-Walk through every Acceptance Criterion in the spec:
-
-- [ ] Is each one met?
-- [ ] Does the build pass?
-- [ ] Do all tests pass?
-
-If any criterion is not met, keep implementing. Do not move on until all criteria are green.
-
-## Step 5: Handle Edge Cases
-
-Check the spec's Edge Cases table. For each scenario:
-
-- Verify the expected behavior is handled.
-- If the spec says "warn the user" or "prompt," make sure that path works.
-
-## Step 6: Wrap Up and Continue (mode-aware — do the wrap-up yourself)
-
-When the spec is implemented and all its tests pass, wrap up and advance according to the spec's **execution mode**. Read the `mode:` field from the spec's frontmatter (written by `joycraft-decompose`). If the spec has **no `mode:` field**, default to **`batch`** (back-compat with pre-mode specs). If the value is unrecognized, treat it as `batch` and note the unrecognized value.
-
-**You perform the wrap-up. You find the next spec. Do not stop to tell the human to run `$joycraft-spec-done` or to paste the next file path — those hand-backs carry zero information and break the feature's momentum.** Carry this through per the "Finish the Whole Task" block in `docs/templates/reference/model-profile-claude-fable-5-1.md`.
-
-### 6a. Per-spec wrap-up
-
-| Spec `mode:` | Wrap-up you perform now |
-|--------------|------------------------|
-| **batch** | **Status bump only**: set the spec to `in-review` in both systems (see below). No commit, no discovery stub — batch wraps once at feature end. (The bump is required: the queue treats a dependency as satisfied at `in-review`, so without it dependent specs would look blocked.) |
-| **checkpoint** / **isolated** | The full `joycraft-spec-done` wrap-up, performed by you (canonical definition: `.agents/skills/joycraft-spec-done/SKILL.md`): **(1)** bump status to `in-review` in both systems, **(2)** terse 2-line discovery stub at `docs/discoveries/YYYY-MM-DD-topic.md` ONLY if something contradicted the spec — usually skip, **(3)** commit `spec: <spec-name>` (implementation + status edits + stub, nothing unrelated), **(4)** no validation re-run, no push, no PR — those belong to `joycraft-session-end`. |
-
-**Both systems** means: the queue JSON (`joycraft-mark-done <spec-id> --to in-review <specs-dir>` if `.pi/scripts/joycraft/` is installed, else edit `.joycraft-spec-queue.json` directly) AND the spec file's `status:` frontmatter. Never `done` — the agent doesn't self-certify (`docs/reference/spec-status-lifecycle.md`).
-
-### 6b. Continue the queue (batch and checkpoint)
-
-Re-read `.joycraft-spec-queue.json` in the spec's directory and find the next `todo` spec whose dependencies are all `in-review`/`done` (same rule as Step 1). Then:
-
-- **Next ready spec exists** → announce one line — `Continuing: <next-spec> (spec N of M)` — and go back to Step 2 with it, in this same conversation.
-- **Remaining `todo` specs are all blocked** → stop and report which specs are blocked and on what.
-- **No `todo` specs remain** → this was the feature's last spec; go to 6d.
-- **No queue** (you were invoked with a bare spec file outside a queue) → report the spec complete and stop; there is nothing to continue from.
-
-### 6c. isolated — fresh context per spec
-
-A conversation cannot clear its own context, so after the wrap-up the fresh context comes from outside:
-
-- **Driver (recommended):** `$joycraft-implement-feature docs/features/<slug>/` runs the remaining queue in-session, interactive, no headless loop — and gives each `isolated`-mode spec the fresh-context subagent this mode calls for.
-- **Guided-manual:** tell the human to run `run `/clear` in the CLI, or press Cmd+N (Ctrl+N on Windows/Linux) for a new thread in the desktop/IDE app`, then re-invoke `$joycraft-implement <next-spec>`. (Always fine, no ToS/cost surprise.)
-- **Pi:** the `joycraft-implement-loop` driver automates it — a fresh `pi -p` process per spec. Nothing for you to do beyond the wrap-up; the loop advances.
-- **Headless (`claude -p` / `codex exec` loop):** opt-in only. **Surface the caveat, don't bury it:** unattended headless loops draw metered, full-rate API usage and carry a ToS posture the user must **knowingly opt into** (Anthropic meters `claude -p` from a separate full-rate pool; routing subscription OAuth through third-party harnesses is prohibited). The responsible default is Pi (BYO API key / open weights). Do not silently auto-run a subscription-backed headless loop.
-
-### 6d. Feature's last spec (any mode)
-
-Run the once-per-feature finisher yourself: invoke `$joycraft-session-end` (or read and follow `.agents/skills/joycraft-session-end/SKILL.md`). It carries its own gates — validation is mandatory and must pass before specs graduate `in-review → done`, and push/PR honor the project's AGENTS.md git autonomy rules — so running it automatically is safe.
-
-### Report
-
-After each spec's wrap-up, report before continuing — to the style contract in `docs/templates/reference/output-style.md`:
-
+```sh
+node .joycraft/runtime/coordinator.mjs claim --queue <queue> --session <your-session-id> --host <host>
 ```
-Spec complete: [spec name] · mode: [mode] · tests: [N] passing · [wrapped up + committed | status bumped (batch)]
-[Continuing: <next-spec> (spec N of M) | Feature complete — running session-end | Blocked: <specs + reasons>]
-```
+
+If another session holds the queue, stop and report the holder; use
+`--take-over` only when the user says that session has ended. Then run
+`node .joycraft/runtime/queue-check.mjs --queue <queue>`; act on each gap.
+
+For a spec marked `execution.parallel: true`, use a separate linked worktree for
+each concurrent mutator, including its build/cache state. Create it with
+`node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <your-session-id>`
+when the host has no native worktree isolation; never invent another folder. Its first action is
+the documented project bootstrap, before edits, stateful runtime work, or packet
+preparation. Dispatch from its actual root. Read [worker isolation](../../../.joycraft/references/worktrees.md)
+when parallel work, integration, cleanup, or resource capacity is in play. If
+isolation cannot be obtained, replan the affected wave and set the current
+queue entry's `execution.parallel` to `false` before dispatch, recording why;
+then run it serially. Otherwise leave it unstarted.
+
+Implement the spec and run meaningful checks and any relevant rendered inspection during implementation. Do not defer ordinary checks to the batch boundary. Run each test command with `node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command>`; see [running tests](../../../.joycraft/references/testing.md#running-tests). Write one focused test per acceptance `Check:`, from the spec rather than the code, and tag it with its queue criterion ID as `[AC:<criterion-id>]` in the test name or a comment; if a criterion or test looks wrong, report a spec gap instead of editing it to pass. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
+
+Honor the queue's commit mode. In `batch`, commit and review the independent ready
+wave at its boundary before advancing its dependents; do not wait for an entire
+dependency chain to be implemented. In `checkpoint`, commit each finished spec,
+integrate it, and review the integrated bytes before continuing. In `isolated`,
+also give each implementation spec an actual fresh agent context
+(`fork_turns: "none"` when spawning; in Claude Code the `joycraft-implementer`
+agent type when installed) with its raw requirements and project context. A worktree is operational isolation; it does not prove review independence.
+
+At the review boundary, invoke `$joycraft-verify`. Use the single native
+`dispatch-start.mjs --role reviewer` flow to snapshot the current subject,
+verify worker delivery, prepare and bind the bounded packet. Supply only
+observed host capabilities and raw current sources, including relevant coupled
+sources discovered during implementation; never a desired verdict or reasoning.
+It needs actual host session/agent identity and available current authority
+as described in [dispatch guidance](../../../.joycraft/references/dispatch.md).
+Write its packet or subject beneath a confirmed Git-ignored project-local
+directory, not among reviewed sources.
+If a separate review context/capability is unavailable, leave the spec
+`in-review`; do not invent an ID to continue. This holds the claimed review,
+not unrelated authorized work.
+
+When a recorded tool breaks during a run (the dev server does not start, a
+port is taken, the browser or simulator crashes), repair it with what the user
+already agreed to: restart the dev server, free the port, relaunch the browser
+or simulator, then retry once. A repair never installs, upgrades or
+reconfigures anything; that needs the user's yes. If the repair fails, record an
+`UNVERIFIED` observation with `cause: 'tool-break'` and the reason, leave that
+spec `in-review`, and continue with the specs that do not depend on it. At the
+first hold, tell the user in the conversation while workers run: the spec, the
+tool, the cause and the repair tried. The session-end summary lists every held
+spec again.
+
+A tool break stops the whole queue only when the project will not build or
+install, the worktree or repository is broken, or the next step would touch data
+or systems outside the project (a shared database, a deploy). Every other tool
+break is repair, then hold.
+
+Only the guarded completion path can move an `in-review` spec to `done`. Use its manual snapshot/complete commands only at an explicit non-native boundary; read [completion guidance](../../../.joycraft/references/completion.md) before doing so.
+
+When a current independent review is `FAIL` or `UNVERIFIED`, first fix
+straightforward failures within the existing authorization and obtain a fresh
+review. A spec gets at most three reviews: reviewer startup prints
+`reviewRound` and refuses a fourth. If startup refuses a review or a second FAIL
+on the same criterion occurs, send no further fix and never amend acceptance
+yourself: note it under `## Decision needed` in the spec, leave it `in-review`,
+and continue independent ready work. Treat a held `decision-needed` finding
+(`$joycraft-verify`) the same, without the note: `status.mjs` lists it. An owner can explicitly accept the
+current findings and their stated limits through `accept-owner`; that is a
+bounded exception, not a PASS or verified result. Do not ask merely because a
+review failed. Ask only when an explicit override is needed to proceed and a
+trusted human acceptance of this spec and these current findings is missing.
+Make one short summary and focused choice, then persist the owner's actual
+instruction and nonempty limits in the decision record. A general
+"continue" or "go," another agent's direction, or authorization to add this
+capability is not an acceptance of a spec. If the owner already explicitly
+accepted, proceed without reconfirming. Work that depends on the result may
+continue only within those accepted limits; it does not gain deployment,
+security, or other blanket authority. Report it as `done, owner-accepted with
+<limits>`, never as PASS or verified.
+
+For authorized Git delivery, follow the project's verification and independent
+review policy on the final integrated revision before pushing it. Use
+[checked delivery](../../../.joycraft/references/delivery.md) for a
+fail-stop, revision-bound verifier/push when useful. A failed verifier stops
+delivery; never push with a promise to verify later or hide failure in a shell
+chain. This command cannot replace independent review or authorize a push.
+
+After review and completion, continue with the next ready authorized spec.
+When no spec can start, that is, each remaining spec is held or waits on a
+held spec, run `$joycraft-session-end` without waiting for the user.
+Report blockers and the next action first, then measured progress. Tell the user
+when a run stops or planned work is omitted, with the reason and retained state;
+explain any needed external setting and its effect. Give concise stage updates
+during long work instead of only announcing passes. Never describe unavailable,
+failed, or uninspected evidence as passing.

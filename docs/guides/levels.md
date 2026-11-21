@@ -5,7 +5,6 @@
 ## The core idea
 
 - **The product:** Skills like `/joycraft-tune`, `/joycraft-new-feature`, and `/joycraft-interview` replace unstructured prompting with spec-driven development — you interview, you write specs, the agent executes — plus a harness (boundaries, context docs, skills) that gets better as you work.
-- **The experimental frontier:** For teams with the budget and infrastructure to maintain it, the `/joycraft-implement-level5` skill sets up an autonomous loop with holdout scenario testing, and on Pi the workflow can run fully headless. Powerful, but genuinely expensive to run and maintain with current models — treat it as a north star, not the next step.
 
 ## What are the levels?
 
@@ -17,17 +16,13 @@
 | 2 | Junior Developer | Prompt → iterate → fix → repeat | `/joycraft-tune` assesses where you are |
 | 3 | Developer as Manager | Your life is reviewing diffs | Behavioral boundaries in CLAUDE.md |
 | 4 | Developer as PM | You write specs, agent writes code | `/joycraft-new-feature` + `/joycraft-decompose` |
-| 5 | Software Factory | Specs in, validated software out | `/joycraft-implement-level5` (experimental) |
+| 5 | Software Factory | Specs in, validated software out | - |
 
 Most developers plateau at Level 2. Joycraft's job is to make you excellent at
 Levels 3-4: spec-driven development with a well-maintained harness. Level 5 is
 real — StrongDM proved it — but with current models it takes serious budget and
 a team to maintain, so Joycraft treats it as an experimental north star rather
 than the destination.
-
-## Level 5: The Autonomous Loop (experimental)
-
-Level 5 is where specs go in and validated software comes out — four GitHub Actions workflows, a separate scenarios repo, and two AI agents that can never see each other's work. It works, but budget for real token costs and ongoing scenario maintenance before committing to it. [Read the 0.7 guide →](../archive/guides-0.7/level-5-autonomy.md)
 
 ## Why This Exists
 

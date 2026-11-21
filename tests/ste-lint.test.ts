@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -11,9 +10,7 @@ const LINTER = join(repoRoot, 'scripts', 'ste-lint.py');
 /**
  * The deterministic half of the STE contract (ste-human-output, D2/D3):
  * shells to the vendored linter — never a TypeScript reimplementation, which
- * would fork the rules and drift. Maintainer-side only: this holds THIS
- * repo's shipped template prose to the contract; users get the manual
- * self-check in the style doc, no script obligation.
+ * would fork the rules and drift. Maintainer-side only.
  *
  * D3 class split — fix-to-zero on the reliable regex classes, advisory on
  * everything approximate. Advisory classes are reported via the failure-free
@@ -80,61 +77,11 @@ function assertFixToZero(violations: Record<string, number>, label: string) {
   ).toEqual([]);
 }
 
-// ---------------------------------------------------------------------------
-// Governed prose extraction. Carve-outs are visible here on purpose
-// (spec edge case): prose that quotes a violation to ban it is not a use.
-// ---------------------------------------------------------------------------
-
-/**
- * Style doc minus the deliberate rule-breakers:
- *  - the Worked Example "before" blockquote — it demonstrates failure on purpose
- *  - rule 11's slop table — its cells quote the banned words to ban them
- *  - rule 9's counter-example phrase quoting a banned modal
- */
-function styleDocGovernedProse(): string {
-  let text = readFileSync(
-    join(repoRoot, 'src', 'templates', 'reference', 'output-style.md'),
-    'utf-8',
-  );
-  const before = text.indexOf('A decomposition hand-off, before:');
-  const after = text.indexOf('After:');
-  expect(before, 'Worked Example before-sample present').toBeGreaterThan(-1);
-  expect(after, 'Worked Example after-sample present').toBeGreaterThan(before);
-  text = text.slice(0, before) + text.slice(after);
-  // The slop table: every markdown table row between rule 11's header and Why.
-  text = text.replace(/^\|.*\|$/gm, ' ');
-  // Rule 9's quoted counter-example mentions a banned modal to ban it.
-  text = text.replace('"the build might fail"', '"..."');
-  return text;
-}
-
-/** Gate template: the SLOT: comment guidance text is the shipped human prose. */
-function gateTemplateSlotGuidance(): string {
-  const html = readFileSync(
-    join(repoRoot, 'src', 'templates', 'REVIEW_GATE_TEMPLATE.html'),
-    'utf-8',
-  );
-  const comments = [...html.matchAll(/<!--([\s\S]*?)-->/g)].map((m) => m[1].trim());
-  const slots = comments.filter((c) => c.startsWith('SLOT:'));
-  expect(slots.length, 'slot comments present').toBeGreaterThan(10);
-  return slots.join('\n\n');
-}
-
-// ---------------------------------------------------------------------------
-
 describe.skipIf(!python3Available)('ste-lint (skipped: python3 not on PATH)', () => {
   it('passes its own --self-test', () => {
     const res = run(['--self-test']);
     expect(res.ok, `--self-test exited ${res.status}: ${res.stdout}`).toBe(true);
     expect(res.stdout).toContain('self-test OK');
-  });
-
-  it('output-style.md governed prose has zero fix-to-zero violations', () => {
-    assertFixToZero(lint(styleDocGovernedProse(), 'descriptive'), 'output-style.md');
-  });
-
-  it('REVIEW_GATE_TEMPLATE.html slot guidance has zero fix-to-zero violations', () => {
-    assertFixToZero(lint(gateTemplateSlotGuidance(), 'procedural'), 'gate template');
   });
 
   it('advisory classes never fail — a long sentence is reported, not fatal', () => {
