@@ -106,9 +106,21 @@ function ignoredEntries(tree) {
   return git(tree, ['status', '--ignored', '--porcelain']).split('\n').filter(line => line.startsWith('!! ')).map(line => line.slice(3));
 }
 
+// Receipts the accepted report cites; git deletes ignored ones with the tree.
+function citedReceipts(root, tree, report) {
+  if (!report) return [];
+  try {
+    const file = [tree, root].map(base => path.join(base, report)).find(existsSync);
+    const flows = JSON.parse(readFileSync(file, 'utf8')).flows;
+    return flows.flatMap(flow => flow.observations ?? []).flatMap(item => item.receipts ?? []).map(receipt => receipt?.path)
+      .filter(item => typeof item === 'string' && !path.isAbsolute(item) && !item.split('/').includes('..'));
+  } catch { return []; }
+}
+
 function evidenceOnlyHere(root, tree, spec) {
-  return [spec.acceptedReport?.path, spec.ownerAcceptance?.path, spec.waiver?.path, spec.waiver?.review?.path].filter(Boolean)
-    .filter(file => existsSync(path.join(tree, file)) && !existsSync(path.join(root, file)));
+  const files = [spec.acceptedReport?.path, spec.ownerAcceptance?.path, spec.waiver?.path, spec.waiver?.review?.path,
+    ...citedReceipts(root, tree, spec.acceptedReport?.path)].filter(Boolean);
+  return [...new Set(files)].filter(file => existsSync(path.join(tree, file)) && !existsSync(path.join(root, file)));
 }
 
 /** Every linked tree with its owner, spec status, merged and clean state. */
