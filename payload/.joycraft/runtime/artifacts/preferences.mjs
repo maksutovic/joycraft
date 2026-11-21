@@ -108,6 +108,30 @@ async function updatePreferences(root, change, section = 'artifacts') {
   return updated;
 }
 
+// Where a page shows on a Claude host with an artifact tool: a published Claude
+// artifact (default) or a local page on this machine.
+const pageTargets = new Set(['claude', 'local']);
+export const DEFAULT_PAGES = 'claude';
+
+export function checkedPages(value, source = 'Pages') {
+  if (!pageTargets.has(value)) throw new Error(`${source} must be claude or local`);
+  return value;
+}
+
+export async function artifactPages(root) {
+  let path;
+  try { path = await checkedPreferencePath(root); }
+  catch (error) { if (error.code === 'ENOENT') return { pages: DEFAULT_PAGES, source: 'default' }; throw error; }
+  const preferences = parsePreferences(await readFile(path));
+  const pages = preferences.artifacts?.pages;
+  return pages === undefined ? { pages: DEFAULT_PAGES, source: 'default' } : { pages: checkedPages(pages, 'Artifact preference pages'), source: preferencePath };
+}
+
+export async function setArtifactPages(root, pages) {
+  checkedPages(pages);
+  return updatePreferences(root, artifacts => ({ ...artifacts, pages }));
+}
+
 export async function setArtifactTheme(root, theme) {
   checkedTheme(theme, 'Theme');
   return updatePreferences(root, artifacts => ({ ...artifacts, theme }));

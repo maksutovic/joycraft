@@ -3,12 +3,12 @@ import { pathToFileURL } from 'node:url';
 import { loadArtifact, persistResponses, readProjectFile, replaceBrief, writeArtifact } from './model.mjs';
 import { renderArtifact } from './render.mjs';
 import { startArtifact } from './server.mjs';
-import { briefQuestionStyle, effectiveQuestionStyle, parseQuestionStyle, projectQuestionStyle, setArtifactColors, setArtifactTheme, setQuestionStyle, withBriefQuestionStyle } from './preferences.mjs';
+import { artifactPages, briefQuestionStyle, effectiveQuestionStyle, parseQuestionStyle, projectQuestionStyle, setArtifactColors, setArtifactPages, setArtifactTheme, setQuestionStyle, withBriefQuestionStyle } from './preferences.mjs';
 
 export async function main(argv, root = process.cwd()) {
   const [command, ...args] = argv;
-  const flags = command === 'serve' ? ['--brief', '--view', '--doc', '--theme'] : command === 'build' ? ['--brief', '--view', '--doc', '--out', '--mode', '--theme'] : command === 'import' ? ['--brief', '--view', '--responses', '--apply'] : command === 'theme' ? ['--set'] : command === 'colors' ? ['--set', '--reset'] : command === 'questions' ? ['--brief', '--set', '--clear'] : [];
-  if (!flags.length) throw new Error('Use serve [--brief <path> [--view <path>]] [--doc <file.md>]... [--theme light|dark], build [--brief <path> [--view <path>]] [--doc <file.md>]... --out <path> --mode claude|portable [--theme light|dark], import --brief <path> [--view <path>] --responses <path> [--apply], theme --set light|dark, colors --set <colors.json> | --reset, or questions [--brief <path>] [--set pacing=one-at-a-time|page,surface=chat|artifact | --clear]');
+  const flags = command === 'serve' ? ['--brief', '--view', '--doc', '--theme'] : command === 'build' ? ['--brief', '--view', '--doc', '--out', '--mode', '--theme'] : command === 'import' ? ['--brief', '--view', '--responses', '--apply'] : command === 'theme' ? ['--set'] : command === 'pages' ? ['--set'] : command === 'colors' ? ['--set', '--reset'] : command === 'questions' ? ['--brief', '--set', '--clear'] : [];
+  if (!flags.length) throw new Error('Use serve [--brief <path> [--view <path>]] [--doc <file.md>]... [--theme light|dark], build [--brief <path> [--view <path>]] [--doc <file.md>]... --out <path> --mode claude|portable [--theme light|dark], import --brief <path> [--view <path>] --responses <path> [--apply], theme --set light|dark, pages [--set claude|local], colors --set <colors.json> | --reset, or questions [--brief <path>] [--set pacing=one-at-a-time|page,surface=chat|artifact | --clear]');
   const values = {};
   // --doc repeats: each Markdown file is one document on the page, in the order given.
   const docs = [];
@@ -27,6 +27,13 @@ export async function main(argv, root = process.cwd()) {
     const preferences = await setArtifactTheme(root, values['--set']);
     console.log(JSON.stringify({ path: '.joycraft/preferences.json', theme: preferences.artifacts.theme }, null, 2));
     return preferences;
+  }
+  if (command === 'pages') {
+    // Where a page shows on a Claude host: claude (a published artifact, the default) or local.
+    if (values['--set']) await setArtifactPages(root, values['--set']);
+    const pages = await artifactPages(root);
+    console.log(JSON.stringify(pages, null, 2));
+    return pages;
   }
   if (command === 'questions') {
     // With --brief, --set and --clear change only that feature; without it, --set changes the project default.

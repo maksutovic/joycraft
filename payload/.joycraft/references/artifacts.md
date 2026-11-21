@@ -70,27 +70,29 @@ one material choice can be enough.
 
 ## Showing a page
 
-For a document with no decision (a report, a plan, a spec set, a setup diff),
-write Markdown and render it:
+Render Markdown with `--doc`. A document that has questions goes on one page
+with its brief, documents first: `serve --brief <brief> --doc <file.md>`.
+Never show a document and its questions on two pages. A fenced `diff` block
+shows added and removed lines in color. A Markdown image embeds its project
+file (PNG, JPEG, WebP or GIF). A fenced `mermaid` block draws a diagram, also
+in a decision's `details`; offline, the page shows its source. Raw HTML shows
+as text.
 
-```sh
-node .joycraft/runtime/artifacts/cli.mjs serve --doc <file.md> [--doc <file.md>]
-```
+Show each page where the person works, and always say its path or link.
+`node .joycraft/runtime/artifacts/cli.mjs pages` prints where pages go;
+`pages --set claude|local` records the person's choice.
 
-`build` takes `--doc` too. With `--brief`, the documents come before the
-decisions. A fenced `diff` block shows added and removed lines in color. A
-Markdown image embeds its project file (PNG, JPEG, WebP or GIF). A fenced
-`mermaid` block draws a diagram, also in a decision's `details`; offline, the
-page shows its source. Raw HTML shows as text.
-
-Show each page where the person works, and always say its path:
-
-1. **The host has a viewer.** When your tools include one (the Claude Code
-   desktop app's browser pane or artifact tool, an editor preview), open the
-   page there. Do not hand it to the system browser.
-2. **A person at a terminal, no viewer.** Open it in the system browser (`open`,
+1. **Claude with an artifact tool, `pages` is `claude` (default).** Run `build`
+   with `--mode claude` and `--out .joycraft/local/artifacts/<name>.html`,
+   publish that file with the artifact tool, and give the link. A page with
+   decisions declares the `db` and `user` capabilities. After the person
+   answers, list the `decisions` collection under `joycraft-artifacts/` with
+   the artifact data tool and import the documents' data as one JSON array.
+2. **Another viewer** (a browser pane, an editor preview): `serve` and open the
+   page there, not in the system browser.
+3. **A person at a terminal, no viewer.** Open it in the system browser (`open`,
    `xdg-open` or `start`).
-3. **No person watching.** In a non-interactive run (`claude -p`, `codex exec`,
+4. **No person watching.** In a non-interactive run (`claude -p`, `codex exec`,
    CI), open nothing; print the path. Signals: `CLAUDE_CODE_SESSION_ATTENDED=0`,
    `CODEX_CI=1`, `CI` set, or no terminal. These beat `CLAUDE_CODE_ENTRYPOINT`,
    which a nested run inherits from the app that started it.
@@ -241,16 +243,10 @@ revision, selected decision IDs, and declared option values before it persists
 them. Preserve supplied notes verbatim. Bring cloud answers back through an
 authorized host tool or exported JSON; do not invent a provider endpoint.
 
-Native Claude's currently observed `window.claude.use('db')` bridge can store
-scoped answer transport when that capability is present, but it is not a public
-SDK contract and may change. Claude transport uses a separate document for each
-decision, so answers to different questions do not overwrite each other. Two
-writers for the same decision are last-write-wins in that transport; importing
-still refuses to replace an already clarified canonical answer, except for an
-exact replay. Capability absence, sign-out, or unsupported hosts must leave the
-form usable with copy/download export and a visible memory-only state. Never
-claim an answer is cloud-saved, repository-synced, or persisted until the
-relevant observed write succeeds. Cloud storage never autosyncs the repository.
+Claude storage keeps one document per decision; import takes the list. Without
+storage (signed out, another host), the page keeps answers in memory and offers
+copy or download. Never claim an answer is saved until the observed write
+succeeds; Claude storage never updates the brief by itself.
 
 Reload the source before affected implementation. A saved answer informs work
 only within the existing authorization and does not mark specifications done.
