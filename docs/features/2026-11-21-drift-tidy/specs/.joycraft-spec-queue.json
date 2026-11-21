@@ -247,6 +247,10 @@
           {
             "path": "payload/.joycraft/runtime/cleanup.mjs",
             "kind": "code"
+          },
+          {
+            "path": "tests/runtime-cleanup-tidy-verify.test.ts",
+            "kind": "check"
           }
         ],
         "criteria": [
@@ -583,6 +587,10 @@
           {
             "path": "payload/.joycraft/references/cleanup.md",
             "kind": "code"
+          },
+          {
+            "path": "tests/runtime-cleanup-age-out.test.ts",
+            "kind": "check"
           }
         ],
         "criteria": [
@@ -652,6 +660,10 @@
           {
             "path": "payload/.joycraft/templates/joycraft.yaml",
             "kind": "code"
+          },
+          {
+            "path": "tests/runtime-cleanup-checks-seam.test.ts",
+            "kind": "check"
           }
         ],
         "criteria": [
@@ -728,6 +740,10 @@
           {
             "path": "payload/.agents/skills/joycraft-entry/SKILL.md",
             "kind": "code"
+          },
+          {
+            "path": "tests/runtime-start-advice.test.ts",
+            "kind": "check"
           }
         ],
         "criteria": [
@@ -811,6 +827,14 @@
           {
             "path": "payload/.joycraft/references/setup.md",
             "kind": "code"
+          },
+          {
+            "path": "tests/drift-tidy-text.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
           }
         ],
         "criteria": [
