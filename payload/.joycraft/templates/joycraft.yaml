@@ -19,3 +19,10 @@ cleanup:
   #    docs: [docs/context/auction-rules.md]
   # Word budget for AGENTS.md and CLAUDE.md; cleanup.mjs flags a longer file.
   # entryWords: 1000
+
+# checks: your own doc or code checkers. `cleanup.mjs tidy` runs each one from
+# the project root; each output line `path:line: message` becomes a finding.
+# A command that is not installed is skipped.
+# checks:
+#   - name: markdownlint
+#     run: npx markdownlint-cli2 "docs/**/*.md"

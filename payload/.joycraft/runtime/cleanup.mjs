@@ -490,18 +490,39 @@ function rangeFindings(root, config, range, read = file => readText(root, file))
   return findings;
 }
 
+/**
+ * The project's own checkers (joycraft.yaml checks:). Each output line
+ * `path:line: message` is a finding; a command not found is skipped.
+ */
+function customChecks(root, checks, skipped) {
+  const findings = [];
+  for (const { name, run } of checks) {
+    const result = spawnSync(run, { cwd: root, shell: true, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 10 * 60 * 1000, maxBuffer: 64 * 1024 * 1024 });
+    if (result.error?.code === 'ENOENT' || result.status === 127) { skipped.push({ check: name, reason: `Command not found: ${run}` }); continue; }
+    let found = 0;
+    for (const [, file, line, message] of (result.stdout ?? '').matchAll(/^(.+?):(\d+):\s*(.*)$/gm)) {
+      found += 1;
+      findings.push({ check: name, path: path.posix.normalize(file), line: Number(line), detail: message, fix: `Fix it as ${name} says, then run tidy again.`, fixable: false });
+    }
+    if (result.status !== 0 && found === 0) findings.push({ check: name, path: '.', detail: `${run} failed (exit ${result.status ?? result.signal}) with no path:line: output.`, fix: `Run ${run} and read its output.`, fixable: false });
+  }
+  return findings;
+}
+
 /** The tidy report: range findings, context pages first, at most `limit` of them. */
 export function tidyReport({ root = process.cwd(), base, now = Date.now(), limit = 10 } = {}) {
   const config = readConfig(root);
   const range = tidyRange(root, { base, now });
   const out = { base: range.base ?? null, head: range.head ?? null, approximate: range.approximate ?? false, findings: [], more: 0, standing: 0, skipped: [] };
-  if (range.skipped) { out.skipped.push({ check: 'tidy', reason: range.skipped }); return out; }
-  const all = rangeFindings(root, config, range);
+  const all = customChecks(root, config.checks, out.skipped);
+  if (range.skipped) out.skipped.push({ check: 'tidy', reason: range.skipped });
+  else all.push(...rangeFindings(root, config, range));
   const rank = item => (inside(item.path, config.paths.context) ? 0 : 1);
   all.sort((a, b) => rank(a) - rank(b) || a.path.localeCompare(b.path) || (a.line ?? 0) - (b.line ?? 0));
   out.findings = all.slice(0, limit);
   out.more = all.length - out.findings.length;
   out.all = all;
+  if (range.skipped) return out;
   // Findings that the range did not cause fold into one count.
   out.standing = cleanupReport({ root, now }).findings.length;
   return out;

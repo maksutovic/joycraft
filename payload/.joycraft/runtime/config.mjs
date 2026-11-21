@@ -11,6 +11,7 @@ export const defaults = Object.freeze({
   paths: Object.freeze({ features: 'docs/features', archive: 'docs/archive', context: 'docs/context' }),
   hooks: Object.freeze({}),
   cleanup: Object.freeze({ impact: Object.freeze([]), entryWords: 1000 }),
+  checks: Object.freeze([]),
 });
 
 function scalar(text, line) {
@@ -117,7 +118,7 @@ export function parseYaml(text) {
   return result;
 }
 
-const known = { paths: ['features', 'archive', 'context'], hooks: ['afterArchive'], cleanup: ['impact', 'entryWords'] };
+const known = { paths: ['features', 'archive', 'context'], hooks: ['afterArchive'], cleanup: ['impact', 'entryWords'], checks: null };
 
 /** Read joycraft.yaml (or return defaults) and validate every known field. */
 export function readConfig(root = process.cwd()) {
@@ -127,6 +128,7 @@ export function readConfig(root = process.cwd()) {
   requireValue(isObject(parsed), `${configFile} must be a map of settings`);
   for (const [section, value] of Object.entries(parsed)) {
     requireValue(Object.hasOwn(known, section), `${configFile}: unknown section ${section}; known sections are ${Object.keys(known).join(', ')}`);
+    if (section === 'checks') continue;
     requireValue(value === null || isObject(value), `${configFile}: ${section} must be a map`);
     for (const key of Object.keys(value ?? {})) requireValue(known[section].includes(key), `${configFile}: unknown setting ${section}.${key}`);
   }
@@ -155,7 +157,17 @@ export function readConfig(root = process.cwd()) {
   }
   const entryWords = parsed.cleanup?.entryWords ?? defaults.cleanup.entryWords;
   requireValue(Number.isInteger(entryWords) && entryWords > 0, `${configFile}: cleanup.entryWords must be a positive whole number of words`);
-  return { source: configFile, paths, hooks, cleanup: { impact: impact.map(entry => ({ source: entry.source, docs: entry.docs.map(relativePath) })), entryWords } };
+  // checks: the project's own doc or code checkers; tidy runs each one.
+  const checks = parsed.checks ?? [];
+  requireValue(Array.isArray(checks), `${configFile}: checks must be a list of name and run`);
+  for (const [index, entry] of checks.entries()) {
+    const label = `${configFile}: checks item ${index + 1}`;
+    requireValue(isObject(entry) && typeof entry.name === 'string' && entry.name.trim(), `${label} needs name`);
+    requireValue(typeof entry.run === 'string' && entry.run.trim(), `${label} (${entry.name}) needs run, the command to run`);
+    for (const key of Object.keys(entry)) requireValue(key === 'name' || key === 'run', `${label}: unknown setting ${key}`);
+  }
+  return { source: configFile, paths, hooks, cleanup: { impact: impact.map(entry => ({ source: entry.source, docs: entry.docs.map(relativePath) })), entryWords },
+    checks: checks.map(({ name, run }) => ({ name, run })) };
 }
 
 /** Project-relative work folders for a project. */
