@@ -1,4 +1,6 @@
-# Run tests and type checking on every PR and push to main
+# Run tests, type checking and the release gates on every PR and push to main.
+# A PR also runs main's own gates, package validation and upgrade test on the
+# PR tarball: checks this change cannot edit.
 name: Test
 
 on:
@@ -33,8 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     if: inputs.artifact_name == ''
     # Hard wall so a hung test fails in minutes, not the ~6h GitHub default.
-    # A healthy run is ~30s; 10m is generous headroom.
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,6 +73,52 @@ jobs:
 
       - name: Type check
         run: pnpm typecheck
+
+      - name: Name the candidate tarball
+        run: echo "TARBALL=$GITHUB_WORKSPACE/release-artifact/$(node -p "JSON.parse(require('fs').readFileSync('release-artifact/release-artifact.json','utf8')).tarball")" >> "$GITHUB_ENV"
+
+      - name: Release gates (named checks)
+        run: node scripts/release-gates.mjs --tarball "$TARBALL"
+
+      - name: Upgrade from the last published release
+        env:
+          JOYCRAFT_UPGRADE_TARBALL: ${{ env.TARBALL }}
+        run: pnpm exec vitest run tests/upgrade-from-published.test.ts
+
+      # Holdout: main's copies of the checks, run on this PR's tarball.
+      - name: Check out main's checks
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+          persist-credentials: false
+
+      - name: Main's release gates on this tarball
+        if: github.event_name == 'pull_request'
+        run: node base/scripts/release-gates.mjs --tarball "$TARBALL"
+
+      - name: Main's package validation on this tarball
+        if: github.event_name == 'pull_request'
+        working-directory: base
+        run: |
+          node scripts/validate-package.mjs \
+            --manifest "$GITHUB_WORKSPACE/release-artifact/release-artifact.json" \
+            --os ubuntu \
+            --node "$(node -p process.versions.node)" \
+            --output "$RUNNER_TEMP/base-validation.json"
+
+      - name: Main's upgrade test on this tarball
+        if: github.event_name == 'pull_request'
+        env:
+          JOYCRAFT_UPGRADE_TARBALL: ${{ env.TARBALL }}
+        run: |
+          if [ -f base/tests/upgrade-from-published.test.ts ]; then
+            cp base/tests/upgrade-from-published.test.ts tests/holdout-upgrade-from-published.test.ts
+            pnpm exec vitest run tests/holdout-upgrade-from-published.test.ts
+          else
+            echo "main has no upgrade test yet; this branch's copy ran above"
+          fi
 
   compatibility:
     name: Compatibility · ${{ matrix.os }} / Node ${{ matrix.node }}

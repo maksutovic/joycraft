@@ -1,0 +1,239 @@
+/** Contract v1. Paths are project-relative, except QueueSpec.file. */
+export type SpecStatus = 'todo' | 'in-review' | 'done';
+export type DecisionStatus = 'open' | 'clarified' | 'backlogged' | 'discarded' | 'assigned';
+export type Result = 'PASS' | 'FAIL' | 'UNVERIFIED';
+export type EvidenceKind = 'runtime' | 'visual' | 'structural';
+/** Presentation-only artifact theme. */
+export type ArtifactTheme = 'light' | 'dark';
+/** A source-bound, deterministic decision-artifact view. */
+export interface ArtifactView {
+  schemaVersion: 1;
+  artifactId?: string;
+  title: string;
+  summary?: string;
+  /** Overrides the project artifact theme for this view. */
+  theme?: ArtifactTheme;
+  decisionIds?: string[];
+  comparisons?: Array<{
+    title: string;
+    decisionId?: string;
+    images: Array<{ path: string; label: string; alt: string; caption?: string }>;
+  }>;
+  reviews?: Array<{ path: string; title?: string }>;
+}
+/** Current source identity for an artifact model or exported response envelope. */
+export interface ArtifactSource {
+  path: string;
+  /** SHA-256 of the exact current brief bytes. */
+  revision: string;
+  /** SHA-256 covering view data plus every selected image and review-report byte. */
+  viewRevision: string;
+}
+export interface ArtifactAnswer { id: string; answer: string; note?: string }
+/** Detached answers are drafts until a current source-bound import is applied. */
+export interface ArtifactResponseEnvelope {
+  schemaVersion: 1;
+  kind: 'joycraft-artifact-responses';
+  artifactId: string;
+  source: ArtifactSource;
+  answers: ArtifactAnswer[];
+}
+export interface Criterion {
+  id: string;
+  requirement: { path: string; anchor: string };
+  requiredKinds: EvidenceKind[];
+}
+export interface VerificationInput {
+  path: string;
+  kind: 'code' | 'requirement' | 'check' | 'fixture';
+  /** Deliberate removal of a non-requirement input; reappearance invalidates review. */
+  state?: 'absent';
+  /** Optional exact requirement scope; omitted means the whole file remains governing. */
+  scope?: { anchors?: string[]; decisionIds?: string[] };
+}
+export interface QueueSpec {
+  id: number;
+  file: string;
+  depends_on: number[];
+  status: SpecStatus;
+  mode: 'batch' | 'checkpoint' | 'isolated';
+  /** Concurrent mutable work requires a linked worker worktree; absent means legacy serial. */
+  execution?: { parallel: boolean };
+  verification: {
+    inputs: VerificationInput[];
+    criteria: Criterion[];
+    /** Captured before implementation; never infer it from a moving upstream branch. */
+    changeScope?: { baseRevision: string; exclusions?: Array<{ path: string; reason: string }> };
+  };
+  /** Written by `completion.mjs submit` with the move to in-review; subject bindings leave it out, like status. */
+  submitted?: { at: string };
+  acceptedReport?: { path: string; sha256: string };
+  /** Explicit owner exception, mutually exclusive with acceptedReport; not a PASS. `legacy: true` names a LegacyAcceptance file (no review). */
+  ownerAcceptance?: Receipt & { legacy?: true };
+  /** The feature's FeatureWaiver file, plus the UNVERIFIED report a tool-break waiver completed on; mutually exclusive with acceptedReport and ownerAcceptance. */
+  waiver?: Receipt & { review?: Receipt };
+}
+export interface SpecQueue { schemaVersion: 1; feature: string; specs: QueueSpec[] }
+export interface BoundInput extends VerificationInput {
+  sha256: string;
+  normalization: 'none' | 'spec-status' | 'queue-status' | 'queue-scope' | 'requirement-scope' | 'absent';
+}
+export interface VerificationSubject {
+  schemaVersion: 1;
+  /** SHA-256 of canonical fields except identity; retain original revision on re-check. */
+  identity: string;
+  implementationRevision: string;
+  queuePath: string;
+  specId: number;
+  specPath: string;
+  criteria: Criterion[];
+  inputs: BoundInput[];
+  /** Absent on legacy reports, which retain whole-file/whole-queue semantics. */
+  binding?: {
+    version: 1;
+    queue: { specIds: number[] };
+    governing: Array<{ path: string; anchors?: string[]; decisionIds?: string[] }>;
+    /** Changed-file coverage complements, but does not discover, semantic dependencies. */
+    changeScope?: {
+      baseRevision: string;
+      paths: Array<{ path: string; beforePath?: string; status: string; stages?: string[]; state: 'present' | 'deleted' }>;
+    };
+  };
+}
+export interface Receipt { path: string; sha256: string }
+export interface Observation {
+  kind: EvidenceKind;
+  method: 'test' | 'command' | 'browser' | 'manual' | 'source';
+  result: Result;
+  actual: string;
+  receipts: Receipt[];
+  /** Set only on an UNVERIFIED observation whose recorded tool did not work during the run. */
+  cause?: 'tool-break';
+  /** Mandatory for test/command observations; null means unavailable. */
+  command?: { argv: string[]; exitCode: number | null };
+  /** Mandatory for visual observations. Interactions name actual outcomes. */
+  visual?: {
+    route: string;
+    state: string;
+    viewport: { width: number; height: number };
+    inspected: boolean;
+    interactions: string[];
+  };
+}
+export interface FlowEvidence {
+  id: string;
+  subjectIdentity: string;
+  criteria: string[];
+  representativeInput: string;
+  expected: string;
+  observations: Observation[];
+  limits: string[];
+}
+/** Observed native host identity. A child may share its parent's sessionId. */
+export interface NativeActor {
+  host: string;
+  sessionId: string;
+  /** Actual host-issued agent/invocation ID; omit for a native root session. */
+  agentId?: string;
+}
+export interface VerificationReport {
+  schemaVersion: 1;
+  subject: VerificationSubject;
+  implementerSessionId: string;
+  /** Both actors must be supplied together; legacy reports keep distinct session IDs. */
+  implementerActor?: NativeActor;
+  reviewer: { sessionId: string; actor?: NativeActor; independent: boolean; scopeReviewed: boolean };
+  verdict: Result;
+  flows: FlowEvidence[];
+  unresolved: string[];
+  /** Optional; a report without it reads as before. */
+  findings?: ReviewFinding[];
+  createdAt: string;
+}
+/** A follow-up never blocks; a blocking or decision-needed finding refuses completion (exit 2). */
+export interface ReviewFinding {
+  /** Unique in the report. */
+  id: string;
+  class: 'blocking' | 'decision-needed' | 'follow-up';
+  origin: 'new' | 'pre-existing' | 'unknown';
+  /** A criterion id of the spec. A blocking or decision-needed finding needs `criterion` or `at`. */
+  criterion?: string;
+  /** file:line or a receipt path. */
+  at?: string;
+  summary: string;
+  /** The reading the reviewer took for a case the spec does not decide. */
+  assumption?: string;
+}
+/** The owner's own words accepting specs marked done with no review on record, as they are; written by `accept-owner --legacy`. The runtime checks the record, not who spoke. */
+export interface LegacyAcceptance {
+  schemaVersion: 1;
+  kind: 'legacy';
+  /** Project-relative; must equal --queue. */
+  queuePath: string;
+  /** The owner's verbatim words, nonempty. */
+  statement: string;
+  statedAt: string;
+  /** Equal to the --spec ids; each was done with no acceptance. */
+  specs: number[];
+  /** What the user said about why the specs stand as they are. */
+  reason: string;
+}
+/** Scoped human instruction recorded by the host; bindings do not authenticate its origin. */
+export interface OwnerAcceptance {
+  schemaVersion: 1;
+  kind: 'owner-acceptance';
+  queuePath: string;
+  specId: number;
+  subjectIdentity: string;
+  /** Current independent FAIL/UNVERIFIED report, retained without changing its verdict. */
+  review: Receipt;
+  /** Exact human instruction in its conversational scope, never inferred from general permission. */
+  instruction: string;
+  limitations: string[];
+  createdAt: string;
+}
+/**
+ * The user's own words, from one feature's interview, loosening that feature's queue only. Never covers a FAIL.
+ * Lives at `<feature folder>/waiver.json`. While it covers no-review, reviewer dispatch for the queue is refused.
+ */
+export interface FeatureWaiver {
+  schemaVersion: 1;
+  kind: 'feature-waiver';
+  queuePath: string;
+  /** Nonempty subset: complete without a review report, or with an UNVERIFIED report whose gaps are all tool breaks. */
+  covers: Array<'no-review' | 'tool-break'>;
+  /** The user's exact words: whole words of the named decision's note or answer, at least three. */
+  instruction: string;
+  /** Id of the clarified or assigned brief decision whose note holds the instruction. */
+  decision: string;
+  /** Receipt of the feature brief that holds the decision. */
+  source: Receipt;
+  createdAt: string;
+}
+export interface ValidationResult { ok: boolean; errors: string[] }
+export type Need = 'repair' | 'feature' | 'context' | 'decision' | 'ui-exploration' | 'implementation' | 'verification' | 'unknown';
+export type NextInteraction = 'continue' | 'inspect' | 'render-slice' | 'ask-focused' | 'verify' | 'abstain';
+export interface RoutingRequest {
+  schemaVersion: 1;
+  requestId: string;
+  text: string;
+  context: string;
+  openDecisionIds: string[];
+}
+export interface RoutingAdvice {
+  schemaVersion: 1;
+  requestId: string;
+  needs: Need[];
+  next: NextInteraction;
+  reason: string;
+  provenance: 'rules' | 'agent' | 'jev' | 'fallback';
+  confidence: number | null;
+  abstained: boolean;
+  fallbackReason: string | null;
+}
+export interface RoutingOptions {
+  mode: 'rules-only' | 'advisory' | 'live-advisory';
+  /** W08 owns the injected provider transport; secrets remain outside records. */
+  provider?: (request: RoutingRequest) => Promise<unknown>;
+  timeoutMs?: number;
+}

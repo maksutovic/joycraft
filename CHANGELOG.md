@@ -7,6 +7,66 @@ claim that a release has shipped.
 
 ---
 
+## 1.8.0 — Tests in three tiers, and an opt-in test review
+
+On 1.7.0 the implementer ran the project's whole test, typecheck and lint set
+for every spec and every review fix, and nothing told an agent which tests to
+run while it worked. A field report from a project that runs many agents in
+parallel, research on published practice and a review panel led to this
+release.
+
+### Changed
+
+- **Three test tiers.** While it works, an agent runs only the tests for the
+  code it changed. It runs the project gate one time on a spec's final commit;
+  a review fix runs focused tests only. The full suite runs one time on the
+  final integrated revision: in CI, or locally before the final push when the
+  project has no CI. A commit that changes only Joycraft records needs no run.
+- **Reviewers read test edits.** A removed assertion, a new skip or a changed
+  expected value with no reason in the spec is a blocking finding. A test that
+  looks wrong is reported as a spec gap, never edited to pass.
+- **Flaky is not a pass.** A pass on a rerun is FLAKY: the agent records a
+  follow-up and continues, unless the test covers the spec's criterion.
+- **One PR per queue.** Unless `AGENTS.md` says otherwise, the agent pushes
+  after each accepted spec, opens one PR when no spec can start, reads CI after
+  each push and stops after a second red run.
+- **Opt-in test review.** After a cleanup you ask for, `joycraft-cleanup`
+  offers to review your tests and CI: tests of code that does not ship,
+  change-detector tests, slow files, flaky tests, duplicate CI runs and missing
+  test commands. It recommends, and changes only what you approve. Ask for it
+  directly with "review our tests". Unattended cleanup never touches a test.
+- **Setup** records the focused-test, project-gate and full-suite commands in
+  `AGENTS.md`.
+
+### Fixed
+
+- Worker-tree prune keeps a tree when the accepted report or a waiver report
+  cites a receipt that exists only there. Gitignored screenshots were lost.
+- `evidence.mjs run` refuses a raw receipt named `.json` or `.jsonl` (use
+  `.log`), which `delivery.mjs check` could not parse, and prints the
+  `revision` (HEAD and dirty state) the command ran on.
+- The delivery lock records its holder. A later push takes it only when that
+  process is gone, instead of stopping until a person removes the lock.
+
+### Removed
+
+- The package no longer exports a library entry point (`main`). Its four 0.7
+  modules had no use in 1.x. The `joycraft` CLI is unchanged.
+
+### Maintainers
+
+- The 0.7 code, skill and template trees, generators and their 129 test files
+  are gone; the suite went from 162 files and 133 s to 27 files and about
+  10–20 s. The 0.7 migration keeps its inventory and gains 0.7.0 and
+  mixed-version fixtures.
+- This repo runs its own current Joycraft install.
+- `release-gates.yml` folded into the Test workflow. A PR also runs main's
+  release gates on its tarball and an upgrade from the published release.
+- The scenario dispatch workflows and `autofix.yml` are removed.
+- `payload/` is a product path for release preparation and the docs-sync gate.
+
+---
+
 ## 1.7.0 — Claude artifact pages, and one page for a document and its questions
 
 On 1.6.1 an agent showed its findings on one page and the questions about them

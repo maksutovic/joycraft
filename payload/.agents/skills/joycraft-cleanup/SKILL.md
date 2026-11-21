@@ -1,6 +1,6 @@
 ---
 name: joycraft-cleanup
-description: Clean AGENTS.md and the context pages behind its map in one pass, as a dialogue with the owner - remove false, stale and temporal text, move detail to the page that owns it, and change no rule without the owner's answer. Use for "clean up my AGENTS.md", "clean up the docs", "audit the docs", "what in our docs is stale", "AGENTS.md is too long", or when cleanup.mjs reports findings. At a session end it only reports and makes the mechanical fixes.
+description: Clean AGENTS.md and the context pages behind its map in one pass, as a dialogue with the owner - remove false, stale and temporal text, move detail to the page that owns it, and change no rule without the owner's answer. Use for "clean up my AGENTS.md", "clean up the docs", "audit the docs", "what in our docs is stale", "AGENTS.md is too long", "review our tests", or when cleanup.mjs reports findings. At a session end it only reports and makes the mechanical fixes.
 compatibility: Requires Node.js 22+ and the installed .joycraft runtime. Git improves the code-drift and worktree checks.
 ---
 
@@ -20,7 +20,9 @@ Read [cleanup reference](../../../.joycraft/references/cleanup.md) first.
   [one pass](../../../.joycraft/references/cleanup.md#one-pass): the entry
   files and every page behind the map, together. When the person is away
   before the answers, leave the questions and the recommendations as a page
-  and stop.
+  and stop. After the pass, offer the opt-in
+  [test review](../../../.joycraft/references/testing-review.md); when the
+  person asks only about tests, do only that.
 - **Session end calls this skill, or nobody asked** (a queue, a hook). Run
   `node .joycraft/runtime/cleanup.mjs`. Fix only what a script can check:
   replace Joycraft's block with the output of

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "testing-overhaul",
+  "title": "Testing overhaul: nine decisions",
+  "summary": "Research (3 web panels, 2 audits) and an adversarial Fable 5.2 panel are done. The ruling is first on this page. Answer the nine decisions; the agent builds the consensus specs A1–A7 without asking.",
+  "decisionIds": ["scenario-scope","autofix","receipt-depth","record-commits","queue-rhythm","cleanup-tests","main-exports","self-install","required-checks"]
+}

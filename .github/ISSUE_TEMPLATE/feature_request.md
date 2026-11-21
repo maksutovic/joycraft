@@ -15,9 +15,8 @@ Describe what you'd like to happen.
 **Which part of Joycraft does this affect?**
 - [ ] Skills (slash commands)
 - [ ] Templates (specs, briefs, workflows)
-- [ ] CLI (`init`, `upgrade`, `init-autofix`)
+- [ ] CLI (`init`, `update`, `rollback`, `doctor`)
 - [ ] CLAUDE.md / AGENTS.md generation
-- [ ] Level 5 / autofix loop
 - [ ] Documentation
 - [ ] Other
 

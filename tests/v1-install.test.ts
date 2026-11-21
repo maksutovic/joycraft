@@ -12,7 +12,9 @@ import { detectHost } from '../src/payload.js';
 const repo = join(__dirname, '..');
 // Its own build folder, so packaging tests that read dist/ never see a partial build.
 const cli = join(repo, '.test-dist/cli.js');
-const versions = ['0.7.8', '0.7.10', '0.7.15', '0.7.17'];
+// Real installs by published releases: the oldest 0.7, four later ones, and one
+// project that 0.7.2 installed and 0.7.9 then 0.7.17 updated (files from several releases).
+const versions = ['0.7.0', '0.7.8', '0.7.10', '0.7.15', '0.7.17', 'mixed-0.7.2-0.7.17'];
 const dirs: string[] = [];
 
 beforeAll(() => {
@@ -91,6 +93,23 @@ describe('spec 12: install and update from the payload', () => {
     expect(planInstall(dir, ['claude']).actions.some((action) => action.path === user)).toBe(false);
   });
 
+  it('AC2: init and update never change the bytes of AGENTS.md, CLAUDE.md or the user settings', () => {
+    const dir = stack('node');
+    const user = {
+      'AGENTS.md': '# My project\n\nMy own rules.\n',
+      'CLAUDE.md': '@AGENTS.md\n\nMy Claude notes.\n',
+      '.claude/settings.json': '{\n  "model": "opus",\n  "permissions": { "allow": ["Bash(ls)"] }\n}\n',
+    };
+    mkdirSync(join(dir, '.claude'), { recursive: true });
+    for (const [path, text] of Object.entries(user)) writeFileSync(join(dir, path), text);
+    const init = run(dir, 'init', '.', '--harness', 'claude,codex', '--yes');
+    expect(init.status, init.stderr).toBe(0);
+    for (const [path, text] of Object.entries(user)) expect(readFileSync(join(dir, path), 'utf8'), path).toBe(text);
+    const update = run(dir, 'update', '.', '--yes');
+    expect(update.status, update.stderr).toBe(0);
+    for (const [path, text] of Object.entries(user)) expect(readFileSync(join(dir, path), 'utf8'), path).toBe(text);
+  });
+
   it('AC3: the host choice is recorded and reused', () => {
     const dir = stack('node');
     expect(run(dir, 'init', '.', '--harness', 'pi,omp', '--yes').status).toBe(0);
@@ -141,6 +160,7 @@ describe('spec 14: migrate from 0.7', () => {
     const plan = planLegacy(dir);
     expect(plan.customized).toEqual([]);
     const agents = readFileSync(join(dir, 'AGENTS.md'), 'utf8');
+    const claude = readFileSync(join(dir, 'CLAUDE.md'), 'utf8');
     const result = migrateLegacy(plan);
     const installed = new Set(readManifest(dir)!.files.map((file) => file.path));
     for (const path of plan.archive) {
@@ -151,6 +171,7 @@ describe('spec 14: migrate from 0.7', () => {
     expect(detectLegacy(dir)).toBe(null);
     expect(doctor(dir).ok).toBe(true);
     expect(readFileSync(join(dir, 'AGENTS.md'), 'utf8')).toBe(agents);
+    expect(readFileSync(join(dir, 'CLAUDE.md'), 'utf8')).toBe(claude);
     expect(readFileSync(join(dir, '.gitignore'), 'utf8')).toMatch(/^\.joycraft-backups\/$/m);
     const settings = JSON.parse(readFileSync(join(dir, '.claude/settings.json'), 'utf8'));
     expect(JSON.stringify(settings)).not.toContain('joycraft-version-check');

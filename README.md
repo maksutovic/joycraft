@@ -45,7 +45,10 @@ bigger than one quick change:
    brief that ends with "Done when": the result you will accept. You approve it.
 2. **The agent splits the brief into specs.** A spec is one small step that it can
    build and test alone.
-3. **The agent builds each spec with tests.**
+3. **The agent builds each spec with tests.** While it works, it runs only the
+   tests for the code it changed. It runs your project gate one time per spec, and
+   the full suite one time on the PR (or locally, when you have no CI). It opens
+   one PR when the queue is done.
 4. **A second agent checks each spec.** It did not write the code. It reads the spec,
    runs the checks, and says PASS or FAIL. Only a PASS completes the spec. For a
    screen or page, it looks at the real result with the package's review tool
@@ -159,7 +162,9 @@ anything:
 
 Tests name the acceptance criterion they check, `[AC:<criterion-id>]`, so the
 reviewing agent can see which criteria have a test. A criterion with no test is a
-finding for the reviewer, not an automatic FAIL.
+finding for the reviewer, not an automatic FAIL. The reviewer also reads every
+edit to an existing test: a removed assertion, a new skip or a changed expected
+value with no reason in the spec blocks the spec.
 
 If your docs are step-by-step procedures, the agent can offer
 [Doc Detective](https://docs.doc-detective.com) to run them as tests. It is opt-in:
@@ -201,6 +206,11 @@ The cleanup is one pass, and it is a dialogue with you:
   done, with the reason. The agent fixes a false statement in each place that
   states it. Then an agent that wrote no edit checks the changed pages against the code.
 - **One commit, on your yes.**
+
+After the pass, the agent offers a review of your tests and CI: tests of code that
+no longer ships, tests that only check exact wording, slow and flaky tests,
+duplicate CI runs and missing test commands. It recommends and changes only what
+you approve. To ask for it directly, say "review our tests".
 
 One pass does not find everything. Ask the agent to check the pages again. You can
 also name one line that is wrong, and the agent fixes that line and each copy of

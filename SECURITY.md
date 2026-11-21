@@ -1,60 +1,61 @@
 # Security
 
-Joycraft is a scaffolding CLI. This page describes what it executes, how it
-constrains the AI agents that run alongside it, and where to report a problem.
+Joycraft is a CLI that installs agent skills and a small set of scripts into a
+project. This page says what it executes, how it keeps an AI agent in bounds,
+and where to report a problem.
 
 ## What Joycraft executes
 
-`npx joycraft init` and `npx joycraft upgrade` read and write files. That is the
-whole runtime.
+The CLI (`npx joycraft init`, `update`, `rollback`, `doctor`) reads and writes
+files. It never runs your code: no build, test, lint or install of your project.
 
-- It **reads** your manifest files (`package.json`, `pyproject.toml`, `Cargo.toml`,
-  `go.mod`, and friends) to detect your stack, and reads existing `CLAUDE.md`,
-  `AGENTS.md`, and Joycraft-installed files to decide what to update.
-- It **writes** markdown, skill, and template files into your repo, plus
-  `.gitignore` / `.gitattributes` lines (append-only — existing lines are never
-  rewritten or removed) and hidden upgrade state at `docs/.joycraft/state.json`.
-- It **never runs your code**: no build, test, lint, install, or arbitrary shell
-  command is executed on your behalf. Detected build/test commands are written
-  into your instruction files as text for a human or an agent to run later.
-- It **never runs git for you.** Where an operation would need git (for example
-  untracking previously committed harness files), Joycraft prints the command
-  and stops.
-- It **overwrites nothing without consent.** `init` skips files that already
-  exist; `upgrade` shows a diff for any file you customized and asks. `--force`
-  and `--yes` are the explicit opt-outs.
-- Its only runtime dependency is [commander](https://www.npmjs.com/package/commander)
-  for argument parsing. Network access is limited to the npm registry version
-  check that tells you a newer Joycraft exists.
+- It **reads** your manifest files (`package.json`, `pyproject.toml`,
+  `Cargo.toml`, `go.mod` and others), your `AGENTS.md` and `CLAUDE.md`, and its
+  own install manifest.
+- It **writes** skills to `.claude/skills/` or `.agents/skills/`, scripts and
+  templates to `.joycraft/`, and adds lines to `AGENTS.md`, `CLAUDE.md`,
+  `.gitignore` and `.gitattributes`. It never removes your lines from those files.
+- It **overwrites nothing of yours.** `init` and `update` show a plan first and
+  apply only with `--yes`. When `update` replaces a Joycraft file that you
+  edited, it saves your copy under `.joycraft-backups/` first. `rollback` undoes
+  a 0.7 → 1.0 migration from its backup.
+- Its only runtime dependency is
+  [commander](https://www.npmjs.com/package/commander). Its only network use is
+  the npm version check, at most once a day, which sends no project data.
 
-## Boundaries and deny patterns
+The installed scripts in `.joycraft/runtime/` run when your agent calls them.
+They run the commands the agent passes (for example your test command through
+`evidence.mjs`), and `delivery.mjs` pushes to Git only when the agent asks it to
+and its verifier passed. They run with the agent's permissions, inside your
+agent's own permission model.
 
-The files Joycraft installs exist to *narrow* what an AI coding agent will do in
-your repo — this is the "how do I keep it from going rogue" layer.
+## How Joycraft keeps the agent in bounds
 
-- **Behavioral boundaries.** The generated `AGENTS.md` / `CLAUDE.md` carries
-  ALWAYS / ASK FIRST / NEVER sections. `/joycraft-tune` runs a short risk
-  interview and writes rules specific to your project (what must never be
-  touched, what requires a human yes).
-- **Deny patterns.** `/joycraft-harden` promotes eligible prose rules into
-  machine-checked deny patterns enforced by the harness itself, so the rule
-  holds even when a model would drift past prose. Each pattern is stamped with
-  its provenance and a probation marker so you can audit and revert it.
-- **Git autonomy is a choice.** Tuning asks how much git authority the agent
-  gets. Push, force-push, branch deletion, and merges to the default branch are
-  ASK FIRST by default.
+- **Rules in `AGENTS.md`.** Setup records your project's rules: what the agent
+  must always do, ask first about, or never do. A cleanup changes a rule only on
+  your answer, and lists every changed rule in a permission ledger before the
+  commit.
+- **Questions go to you.** Every choice that changes scope, cost or what is
+  built is a decision you answer. An agent never answers it for you.
+- **Independent review.** A second agent that did not write the code checks
+  each spec. A spec is done only with an accepted review or your explicit
+  acceptance.
+- **The gate hook.** On Claude Code you can turn on one Stop hook that stops
+  the agent while a spec is not accepted. Joycraft adds no other hook and
+  changes no agent setting.
+- **Git authority is yours.** The agent pushes only where your project permits
+  it, and Joycraft never merges for you.
 - **Permission modes.** You do not need `--dangerously-skip-permissions` to run
   Joycraft's workflow. See [Permission modes](docs/guides/permission-modes.md).
-- **Boundaries are guidance, not a sandbox.** They constrain a cooperative
-  agent; they are not a security boundary against untrusted code or a
-  compromised model. Treat agent-authored changes as untrusted input and review
-  them — the harness is built to make that review cheap, not to remove it.
+- **Rules are guidance, not a sandbox.** They guide a cooperative agent. They do
+  not protect you from untrusted code or a compromised model. Review what an
+  agent changes; Joycraft makes that review cheap, it does not remove it.
 
 ## Your AI tool's own safety model
 
-Joycraft runs inside Claude Code, Codex, Pi, or GitHub Copilot, and each brings
-its own permission and sandboxing model. Those are the enforcing layer; read
-your tool's documentation for what it actually blocks:
+Joycraft runs inside Claude Code, Codex, Pi, Oh My Pi, GitHub Copilot CLI or
+OpenCode. Each has its own permission and sandbox model, and that model is the
+layer that enforces. Read your tool's documentation for what it blocks:
 
 - Claude Code — https://code.claude.com/docs
 - Anthropic trust and safety — https://www.anthropic.com/trust

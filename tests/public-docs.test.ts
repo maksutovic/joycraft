@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -130,13 +130,17 @@ describe('SECURITY.md', () => {
     expect(existsSync(join(repoRoot, 'SECURITY.md'))).toBe(true);
   });
 
-  it('states the execution model, the boundary/deny-pattern mechanism, and reporting', () => {
+  it('states the execution model, how the agent is kept in bounds, and reporting', () => {
     const security = read('SECURITY.md');
     expect(security).toMatch(/##\s+What Joycraft executes/i);
-    expect(security).toMatch(/##\s+Boundaries and deny patterns/i);
+    expect(security).toMatch(/##\s+How Joycraft keeps the agent in bounds/i);
     expect(security).toMatch(/##\s+Reporting a vulnerability/i);
-    expect(security).toMatch(/never runs your code/i);
-    expect(security).toMatch(/deny pattern/i);
+  });
+
+  it('names only skills that ship', () => {
+    const shipped = new Set(readdirSync(join(repoRoot, 'payload/.agents/skills')));
+    const named = [...read('SECURITY.md').matchAll(/(?<![.\w-])\/?(joycraft-[a-z0-9-]+)/g)].map((match) => match[1]);
+    expect(named.filter((name) => !shipped.has(name))).toEqual([]);
   });
 
   it('links to Claude Code documentation at the stable docs root', () => {
@@ -163,18 +167,12 @@ describe('intra-repo links resolve', () => {
     });
   }
 
-  it('relocated docs link back to files that exist', () => {
-    const guides = [
-      'docs/guides/setup-walkthrough.md',
-      'docs/guides/levels.md',
-      'docs/guides/platform-support.md',
-      'docs/guides/upgrading.md',
-      'docs/guides/git-tracking.md',
-      'docs/guides/migration-per-feature-layout.md',
-    ];
+  it('every guide and reference page links to files that exist', () => {
+    const guides = ['docs/guides', 'docs/reference'].flatMap((folder) => readdirSync(join(repoRoot, folder))
+      .filter((name) => name.endsWith('.md')).map((name) => `${folder}/${name}`));
+    expect(guides.length).toBeGreaterThan(0);
     const broken: string[] = [];
     for (const guide of guides) {
-      if (!existsSync(join(repoRoot, guide))) continue;
       for (const target of relativeLinks(read(guide))) {
         const [path] = target.split('#');
         if (!path) continue;

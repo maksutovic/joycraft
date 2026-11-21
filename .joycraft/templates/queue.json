@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "feature": "example-feature",
+  "specs": [
+    {
+      "id": 1,
+      "file": "01-outcome.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "batch",
+      "execution": { "parallel": false },
+      "verification": {
+        "inputs": [
+          { "path": "docs/features/example-feature/brief.md", "kind": "requirement" },
+          { "path": "docs/features/example-feature/specs/01-outcome.md", "kind": "requirement" }
+        ],
+        "criteria": [
+          {
+            "id": "outcome",
+            "requirement": { "path": "docs/features/example-feature/specs/01-outcome.md", "anchor": "acceptance" },
+            "requiredKinds": ["runtime"]
+          }
+        ]
+      }
+    }
+  ]
+}

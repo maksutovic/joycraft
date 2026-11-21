@@ -5,11 +5,11 @@ description: Joycraft maintainers only — before opening a PR, check whether th
 
 # Release Docs Sync (Joycraft Maintainers)
 
-**This is a repo-local skill.** It is not part of the Joycraft product and does not ship to npm — it lives in `src/local-skills/` and exists only to maintain Joycraft's own documentation. Do not reference it from any skill under `src/skills/`.
+**This is a repo-local skill.** It is not part of the Joycraft product and does not ship to npm. It is committed by hand in `.claude/skills/release-docs-sync/` and `.agents/skills/release-docs-sync/`; keep the two copies identical. Do not reference it from anything under `payload/`.
 
-Joycraft prepares a reviewed release PR from eligible merges to `main`. Its retained package reaches `latest` only after candidate verification and promotion. That pipeline does not write explanatory prose. Docs therefore drift silently: by 0.7.4 the CHANGELOG still stopped at 0.7.1, and `AGENTS.md`'s architecture map never learned that `src/copilot-skills/` existed.
+Joycraft releases automatically after merges to `main`. That pipeline does not write explanatory prose, so docs drift silently unless the PR that changes behaviour also changes the docs.
 
-Run this **before opening a PR**, while you still know what changed and why. After merge the version is already cut and the context is gone.
+Run this **before opening a PR**, while you still know what changed and why. After merge the version is already cut and the context is gone. `scripts/check-docs-sync.mjs` (a PreToolUse hook and the Docs Sync CI check) blocks a PR that changes `src/`, `scripts/` or `payload/` without a CHANGELOG.md change or a `Docs: none — <reason>` line in its body.
 
 ## Step 1: Read the Branch
 
@@ -28,36 +28,35 @@ Judge each independently. Most PRs need none of them, and saying so is a valid o
 
 ### CHANGELOG.md
 
-The file states its own rule: it records "the releases that changed how Joycraft *works*," not every published version. Many patch versions exist between entries by design.
+The file states its own rule: it records the releases that changed how Joycraft *works*, not every published version.
 
 Add an entry when the branch changes what a user experiences:
 
 - A new or removed skill, or a materially different workflow through an existing one
-- A new harness, or a change to what `init`/`upgrade` writes into a project
-- A changed default, a migration, or anything that alters an existing install on upgrade
-- A fix for behavior users could have observed and built around
+- A new host, or a change to what `init` or `update` writes into a project
+- A changed default, a migration, or anything that alters an existing install on update
+- A fix for behaviour users could have observed and built around
 
-Skip when the change is internal: refactors, test-only work, generated-file regeneration, CI, or docs.
+Skip when the change is internal: refactors, test-only work, CI, or docs.
 
-Match the existing format — `## <version> — <Title> (<date>)`, newest first, written as before → now → side-effects. Prose, not a bullet dump of commits. If the version is not cut yet, use an Unreleased entry. The reviewed release PR selects the version; do not invent a version for the feature PR.
+Match the existing format — `## <version> — <Title>`, newest first, written as before → now → side effects. Prose, not a bullet dump of commits. If the version is not cut yet, use an Unreleased entry; do not invent a version for the feature PR.
 
 ### AGENTS.md
 
-This is the shared agent-instruction file. Update when the branch changes something it describes:
+This is the shared agent-instruction file (`CLAUDE.md` imports it). Update it when the branch changes something it describes:
 
-- **Architecture map** — a new or removed directory under `src/`, `scripts/`, or `docs/`
-- **Key Files table** — a file whose role changed, or a new load-bearing one
-- **Behavioral Boundaries** — a new ALWAYS/ASK FIRST/NEVER rule the branch establishes
-- **Spec Status table** — specs that moved phase or status
+- **Behavioral Boundaries** — a new ALWAYS / ASK FIRST / NEVER rule the branch establishes, or one it makes false
+- **Commands** — a changed build, test or typecheck command
+- **Context Map** — a page that moved, or a new page an agent must read for a kind of task
 
-The architecture map is the row most often missed, because adding a directory rarely feels like a documentation change. It is.
+When the branch moves or adds a top-level folder, update `docs/context/architecture.md` too.
 
 ### README.md
 
-User-facing entry point. Update when the branch changes:
+User-facing entry point. Update it when the branch changes:
 
-- Installed harnesses, or what lands where in a user's project
-- CLI commands, flags, or their behavior
+- Supported hosts, or what lands where in a user's project
+- CLI commands, flags, or their behaviour
 - The skill list, or the workflow the README walks through
 
 ## Step 3: Write the Updates
@@ -66,15 +65,13 @@ Write them directly — do not summarize what you would write and stop.
 
 Match each file's established voice. The CHANGELOG is narrative prose explaining *why* a change matters. `AGENTS.md` is terse and directive. The README is instructional. Read the surrounding lines before adding to any of them.
 
-Follow the repo's style contract in `docs/templates/reference/output-style.md`.
-
 ## Step 4: Report
 
 State plainly which files you updated and which you deliberately skipped, with the reason:
 
 ```
-CHANGELOG.md  — added 0.7.5 entry (new harness changes what init writes)
-AGENTS.md     — added src/local-skills/ to architecture map
+CHANGELOG.md  — added an Unreleased entry (update now writes a new file)
+AGENTS.md     — no change needed (no new rule or command)
 README.md     — no change needed (no user-facing CLI or workflow change)
 ```
 
