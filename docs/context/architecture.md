@@ -44,7 +44,7 @@ payload/  ← the source of the installed skills, runtime and references; edit h
 | `payload/` | The 1.x skills, runtime, references and templates (source; see above) |
 | `src/` | The CLI (TypeScript) |
 | `scripts/` | Release, payload pin, 0.7 inventory builder, docs-sync gate, `ste-lint.py` |
-| `tests/` | Test suite; `tests/fixtures/` holds real stack manifests and real 0.7 installs (`v07/`) |
+| `tests/` | Test suite; `tests/fixtures/` holds real stack manifests and real 0.7 installs (`tests/fixtures/v07/`) |
 | `docs/context/` | Current project knowledge (see the context map in `AGENTS.md`) |
 | `docs/features/` | Working material: one folder per feature with brief, specs and queue |
 | `docs/discoveries/` | Session surprises worth remembering |
