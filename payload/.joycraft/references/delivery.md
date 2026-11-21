@@ -18,9 +18,9 @@ receipt with paths and SHAs; successful push receipts also contain verifier exit
 status and byte-count/digest metadata. Verifier output itself is drained without
 being retained or printed.
 
-For `push`, the helper holds a cooperative lock keyed by the chosen remote and
-branch in Git's common directory. An existing lock is refused for manual
-diagnosis; it is never broken automatically. It requires a clean tracked/index
+For `push`, a cooperative lock keyed by remote and branch sits in Git's common
+directory. It records PID and host and breaks a lock only if its PID
+died on this host. It requires a clean tracked/index
 state, captures `HEAD`, the semantic index tree and tracked-file hashes, runs
 the explicit verifier argv without a shell, and rejects a nonzero result. It
 then proves those captured sources are unchanged before pushing the captured SHA

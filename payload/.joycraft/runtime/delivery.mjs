@@ -4,7 +4,8 @@
  * isolate other writers.
  */
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, rm, stat } from 'node:fs/promises';
+import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { hostname } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { spawn } from 'node:child_process';
 import { TextDecoder } from 'node:util';
@@ -105,12 +106,30 @@ async function invoke(argv, root) {
     child.on('error', reject); child.on('close', exitCode => resolveRun({ exitCode, stdout: stdout(), stderr: stderr() }));
   });
 }
+const lockHeld = () => new Error('delivery-lock-exists-manual-diagnosis-required');
+async function takeLock(lock) {
+  await mkdir(lock, { recursive: false, mode: 0o700 });
+  await writeFile(join(lock, 'holder.json'), JSON.stringify({ pid: process.pid, host: hostname(), startedAt: new Date().toISOString() }), { mode: 0o600 });
+}
+/** True only when the recorded holder ran on this host and its PID is gone. */
+async function deadHolder(lock) {
+  let holder; try { holder = JSON.parse(await readFile(join(lock, 'holder.json'), 'utf8')); } catch { return false; }
+  if (holder?.host !== hostname() || !Number.isSafeInteger(holder.pid) || holder.pid <= 0) return false;
+  try { process.kill(holder.pid, 0); return false; } catch (error) { return error.code === 'ESRCH'; }
+}
 async function acquireLock(root, remote, branch) {
   const common = await gitText(root, ['rev-parse', '--git-common-dir']); const directory = isAbsolute(common) ? common : resolve(root, common);
   const lock = join(directory, 'joycraft-delivery-locks', digest(`${remote}\0${branch}`));
   await mkdir(dirname(lock), { recursive: true, mode: 0o700 });
-  try { await mkdir(lock, { recursive: false, mode: 0o700 }); } catch (error) { if (error.code === 'EEXIST') throw new Error('delivery-lock-exists-manual-diagnosis-required'); throw error; }
-  return lock;
+  try { await takeLock(lock); return lock; } catch (error) { if (error.code !== 'EEXIST') throw error; }
+  // Take over a dead holder's lock under a second exclusive directory, so two takers cannot both win.
+  const takeover = `${lock}.takeover`;
+  try { await mkdir(takeover, { recursive: false, mode: 0o700 }); } catch (error) { if (error.code === 'EEXIST') throw lockHeld(); throw error; }
+  try {
+    if (!(await deadHolder(lock))) throw lockHeld();
+    await rm(lock, { recursive: true, force: true }); await takeLock(lock);
+    return lock;
+  } finally { await rm(takeover, { recursive: true, force: true }); }
 }
 function validTarget(remote, branch) { return typeof remote === 'string' && remote && !remote.startsWith('-') && typeof branch === 'string' && branch && !branch.startsWith('-') && !/[\s~^:?*\\[\x00]/.test(branch); }
 
