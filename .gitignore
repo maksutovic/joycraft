@@ -15,3 +15,5 @@ docs/max-discussion-transcripts/
 docs/.joycraft/local/
 .test-dist/
 .test-dist-*/
+.joycraft/local/
+.joycraft-backups/

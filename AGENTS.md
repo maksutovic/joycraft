@@ -2,6 +2,13 @@
 
 **What:** The `joycraft` npm package. Its CLI installs and updates Joycraft, a skill bundle and small runtime for agent-led software work, in any project, for Claude Code, Codex, Pi, Oh My Pi, GitHub Copilot CLI and OpenCode. The skills, runtime and references it ships live in `payload/`, which is their source: edit them there and run `node scripts/pin-payload.mjs`. joycraft-prototype is retired; never route a change through it.
 
+<!-- joycraft:managed -->
+- First action in each session: run `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow `.joycraft/references/update.md`.
+- Ask a person to answer or approve anything only through Joycraft's decision artifact (`node .joycraft/runtime/artifacts/cli.mjs`, see `.joycraft/references/artifacts.md#asking-questions`), in the project's question style. Every page that shows a person a document, a question or a decision comes from that engine: never write your own HTML page for one. Show every other document a person must read (a plan, spec set, report or review) as an engine page (`--doc`), never only as Markdown in chat, where the person works (see `.joycraft/references/artifacts.md#showing-a-page`), and say where it is.
+- A Context Map row that matches your next step binds: read that page first, and again after a compaction or in a new agent. A record (a log or history) is an audit trail: search it to learn why or when; do not read it at the start.
+- When a fact here disagrees with the code, trust the code and report it. A rule holds even when the code breaks it.
+<!-- /joycraft:managed -->
+
 ---
 
 ## Behavioral Boundaries
@@ -83,4 +90,4 @@ Keep this file lean: link out, don't inline. Read a document when its row applie
 | `docs/context/institutional-knowledge.md` | Looking for an unwritten convention or constraint |
 | `docs/context/dangerous-assumptions.md` | Something the agent believes about this repo turned out false — check and add |
 | `docs/context/anchors.md` | Scoring how sure you are of a claim in a brief, spec or review |
-| `docs/templates/reference/model-profile-claude-fable-5-1.md` | Working with Claude Fable 5.1 — finishing whole tasks, scope, progress updates, prose |
+| `docs/context/reference/model-profile-claude-fable-5-1.md` | Working with Claude Fable 5.1 — finishing whole tasks, scope, progress updates, prose |

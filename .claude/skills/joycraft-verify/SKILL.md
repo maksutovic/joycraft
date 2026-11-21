@@ -1,176 +1,106 @@
 ---
 name: joycraft-verify
-entry: agent
-description: Invoked by session-end or the human directly — spawn an independent verifier subagent to check an implementation against its spec, read-only
-instructions: 30
+description: Independently review an in-review Joycraft spec and produce an evidence-backed completion report for the guarded local helper.
+compatibility: Requires Node.js 22+, the installed .joycraft runtime, and Git for revision-bound completion. A separate reviewer context completes a spec; UI inspection is needed only for visual criteria.
 ---
-At skill entry, run `node docs/.joycraft/check.mjs check --json --session <session-id>` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing or fails, continue the requested skill quietly without retrying setup. Offer updates only for display: true; current, postponed, off, and unknown stay quiet. If automaticUpdate is present, finish this skill, then run its exact command once from the project root: the candidate must verify every safety gate before applying. Other updates require approval. After an offer or automatic attempt, record it with `node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>`. Apply updates only at this workflow boundary; after success, reinvoke the skill or restart the session to load changed instructions.
 
+# Joycraft Verify
 
-# Verify Implementation Against Spec
+Use this skill after an implementer has finished an authorized spec and placed it in `in-review`.
 
-The user wants independent verification of an implementation. Your job is to find the relevant spec, extract its acceptance criteria and test plan, then spawn a separate verifier subagent that checks each criterion and produces a structured verdict.
+An artifact can make the current brief's decisions and review summary easier to
+inspect; it does not verify behavior or change a queue status. Read
+`.joycraft/references/artifacts.md` only when that view is part of the
+review material. A read-only artifact status cannot mark a spec done.
 
-**Why a separate subagent?** Anthropic's research found that agents reliably skew positive when grading their own work. Separating the agent doing the work from the agent judging it consistently outperforms self-evaluation. The verifier gets a clean context window with no implementation bias.
+For work that used a worker tree, prepare the subject from the coordinator's
+final integrated bytes, not the implementer's pre-integration tree. A stable
+source-read-only review may use that fixed tree and write its declared report
+and receipts outside frozen inputs; it cannot modify governing inputs. Runtime
+checks that mutate caches, browser profiles, or other state need independent
+mutable runtime state. Read [worker isolation](../../../.joycraft/references/worktrees.md)
+when this boundary applies. Worktree separation does not establish a separate
+reviewer context, so retain the dispatch requirements below.
 
-## Step 1: Find the Spec
+When called from the implementer's context, launch the independent reviewer with
+only current raw brief/spec/queue/input sources plus scoped owning decisions; do
+not pass an expected verdict, reasoning, or proposed report. A parent may
+prepare a source packet for a manual boundary, but it must not bind the child
+using the parent's identity. After launch, the reviewer child bootstraps at its
+actual root and runs `dispatch-start.mjs --role reviewer` with its own actual
+native identity, which captures the subject, preflights delivery, writes the
+bounded packet. If the real ID or a separate reviewer context is unavailable,
+leave the spec `in-review`; do not manufacture either. This holds only the
+claimed review, not unrelated work.
+Reviewer startup output also carries `trace`, the spec's criteria with the tests
+tagged `[AC:<criterion-id>]` (`node .joycraft/runtime/trace.mjs --queue <queue> --spec <id>`
+produces the same). Report untraced criteria as findings; a missing tag alone is
+not a FAIL.
+Write packets and snapshots beneath a confirmed Git-ignored project-local
+directory so they do not create unrelated scope paths.
 
-If the user provided a spec path (e.g., `/joycraft-verify docs/features/<slug>/specs/add-widget.md`), use that path directly.
+Dispatch `collaboration.spawn_agent` with `fork_turns: "none"` and the packet's raw sources and output contract. Do not give the reviewer an intended verdict, conclusion, or implementer reasoning. In Claude Code, use its `Agent` tool with the same limited inputs and the `joycraft-reviewer` agent type when installed (otherwise the project-selected reviewer model); a fresh worker is the separate review context. Otherwise use a separate accessible review context. Record its returned native host, session and child agent identity; a shared parent session does not make two native actors the same. Follow the actor-report fields in the dispatch reference. Do not invent IDs or create a worktree solely to obtain a different session string.
 
-If no path was provided, scan `docs/features/*/specs/` recursively for spec files (and `docs/bugfixes/<area>/` for bugfixes). Pick the most recently modified `.md` file. If no specs exist, tell the user:
+When already dispatched as the independent reviewer, perform the review directly; do not recursively dispatch another reviewer. Read the parent brief, spec, queue entry, declared criteria and exact verification inputs. Use the supplied subject, set independence truthfully, and do not self-certify implementation from your own context.
 
-> No specs found under `docs/features/*/specs/` or `docs/bugfixes/`. Please provide a spec path: `/joycraft-verify path/to/spec.md`
+Check changed tests for weakened assertions that could hide the requested
+behavior.
 
-## Step 2: Read and Parse the Spec
+Review scope as well as behavior: determine whether the listed inputs and criteria cover the requested work, including relevant newly changed files. For a cross-boundary change, inspect the combined observable behavior across the relevant producer, consumer, state or storage boundary; separate green helpers, snapshots, or assertion counts do not establish that behavior. If a material counterpart or owning decision/context source was omitted, report the scope gap and require its exact path to be added before a fresh current review subject is prepared. Preserve the snapshot's implementation revision as provenance while checking its current bound inputs. A changed, missing, or renamed input makes the subject stale; do not substitute a newer HEAD as its identity.
 
-Read the spec file and extract:
+Create a schema-v1 verification report tied to that subject, using the shared fields in [.joycraft/contracts/types.d.ts](../../../.joycraft/contracts/types.d.ts). For every declared criterion, provide PASS observations for its required evidence kinds. Keep unfiltered command output and its real exit status in hashed, project-relative receipts. A source scan supports only structural observations. Visual observations require a reviewer-inspected render plus route, state, viewport, interactions, and outcomes. Take evidence with the package's recorded tool, start command and evidence command from the packet's `reviewLoop` (`section`: the `Review loop` section of `AGENTS.md`; `local`: this machine's host tools), within that tool's `canShow`. A claim beyond `canShow`, or in a package the user skipped, is an agreed limit, not `UNVERIFIED`: check what the agreed tool can show, say in plain words how you checked, and leave what is left to the parent agent. A picture-only tool gives `interactions: []`. `UNVERIFIED` means a check that should have run and did not: the tool broke, the app did not start, or a render was saved but not inspected. On a tool break, first repair with what the user agreed to: restart the dev server, free the port, relaunch the browser or simulator, retry once. A repair never installs, upgrades or reconfigures anything. If it still fails, record `UNVERIFIED` with `cause: 'tool-break'` and the reason. Mark a failing result or an unresolved concern as `FAIL` or `UNVERIFIED` truthfully.
 
-1. **Spec name** -- from the H1 title
-2. **Acceptance Criteria** -- the checklist under the `## Acceptance Criteria` section
-3. **Test Plan** -- the table under the `## Test Plan` section, including any test commands
-4. **Constraints** -- the `## Constraints` section if present
+Run each test command with
+`node .joycraft/runtime/evidence.mjs run --receipt <path> -- <command>`;
+see [running tests](../../../.joycraft/references/testing.md#running-tests). Record an unresolved hang as `UNVERIFIED` with its receipt.
 
-### Step 2.5: Gather Oracle Inputs Beyond the Spec (PROTOCOL)
+Run the dispatch helper's `check-report` before completion. It reuses the same
+subject, receipt, and evidence validators without changing a queue status. If
+it rejects a packaging or report problem, return the correction to this same
+reviewer; do not invent observations or replace the independent identity.
 
-The spec alone is not the oracle — a spec can silently drift from the brief it was decomposed from, and a verifier that only reads the spec would rubber-stamp that drift. Before spawning the verifier subagent, also gather:
+Items under a spec's "Deferred until deploy" section are not criteria; list
+each as a `follow-up` finding for the owner.
 
-1. **The parent brief's Hard Constraints** -- read `docs/features/<slug>/brief.md` (linked from the spec's `> **Parent Brief:**` line) and extract its Hard Constraints / non-negotiables section.
-2. **The brief's `decisions:` frontmatter block** -- the stamped decisions (id, question, status, choice, rationale) that constrained this feature.
-3. **CLAUDE.md boundaries** -- the project's ALWAYS / ASK FIRST / NEVER boundaries.
+Findings rule: give each `findings` entry its `class`, `origin`, and `criterion`
+or `at` (file:line or receipt). `blocking` is only a failing stated criterion or
+a reproducible defect or regression in the changed code. A case the spec does
+not decide is a `follow-up`: take the reading closest to the brief's intent,
+recorded as `assumption`. `decision-needed` is only for two readings that give
+opposite verdicts on a stated criterion, or a guess that cannot be undone; it
+holds this spec and its dependents, never the queue. A probe outside the named
+checks is a `follow-up` unless it regresses. Never repeat an earlier round's
+finding as new.
 
-If no parent brief exists (a standalone spec), skip items 1-2 and note "standalone spec, no brief oracle" — CLAUDE.md boundaries still apply. Missing `decisions:` frontmatter (legacy brief) is not an error — proceed without it.
+Set a PASS verdict only when scope is reviewed, all required evidence is sufficient, and no blocking finding or unresolved UNVERIFIED evidence remains. Then run guarded completion:
 
-If the spec has no Acceptance Criteria section, tell the user:
-
-> This spec doesn't have an Acceptance Criteria section. Verification needs criteria to check against. Add acceptance criteria to the spec and try again.
-
-If the spec has no Test Plan section, note this but proceed -- the verifier can still check criteria by reading code and running any available project tests.
-
-## Step 3: Identify Test Commands
-
-Look for test commands in these locations (in priority order):
-
-1. The spec's Test Plan section (look for commands in backticks or "Type" column entries like "unit", "integration", "e2e", "build")
-2. The project's CLAUDE.md (look for test/build commands in the Development Workflow section)
-3. Common defaults based on the project type:
-   - Node.js: `npm test` or `pnpm test --run`
-   - Python: `pytest`
-   - Rust: `cargo test`
-   - Go: `go test ./...`
-
-Build a list of specific commands the verifier should run.
-
-## Step 4: Spawn the Verifier Subagent
-
-Use Claude Code's Agent tool to spawn a subagent with the following prompt. Replace the placeholders with the actual content extracted in Steps 2-3.
-
-```
-You are a QA verifier. Your job is to independently verify an implementation against its spec. You have NO context about how the implementation was done -- you are checking it fresh.
-
-RULES -- these are hard constraints, not suggestions:
-- You may READ any file using the Read tool or cat
-- You may RUN these specific test/build commands: [TEST_COMMANDS]
-- You may NOT edit, create, or delete any files
-- You may NOT run commands that modify state (no git commit, no npm install, no file writes)
-- You may NOT install packages or access the network
-- Report what you OBSERVE, not what you expect or hope
-
-SPEC NAME: [SPEC_NAME]
-
-ACCEPTANCE CRITERIA:
-[ACCEPTANCE_CRITERIA]
-
-TEST PLAN:
-[TEST_PLAN]
-
-CONSTRAINTS:
-[CONSTRAINTS_OR_NONE]
-
-BRIEF HARD CONSTRAINTS:
-[BRIEF_HARD_CONSTRAINTS_OR_STANDALONE]
-
-BRIEF DECISIONS (decisions: frontmatter):
-[BRIEF_DECISIONS_OR_NONE]
-
-PROJECT BOUNDARIES (CLAUDE.md):
-[PROJECT_BOUNDARIES]
-
-YOUR TASK:
-Your oracle is the brief's Hard Constraints + decisions + project boundaries, not the spec in isolation — the spec is one implementer's translation of that oracle, and it can drift. For each acceptance criterion, determine if it PASSES or FAILS based on evidence:
-
-1. Run the test commands listed above. Record the output.
-2. For each acceptance criterion:
-   a. Check if there is a corresponding test and whether it passes
-   b. If no test exists, read the relevant source files to verify the criterion is met
-   c. If the criterion cannot be verified by reading code or running tests, mark it MANUAL CHECK NEEDED
-3. For criteria about build/test passing, actually run the commands and report results.
-4. Separately, compare the SPEC (its Constraints and Acceptance Criteria) against the BRIEF HARD CONSTRAINTS, BRIEF DECISIONS, and PROJECT BOUNDARIES above. If the spec contradicts, narrows, or omits something the brief/decisions/boundaries required, that is spec-vs-brief drift — report it as a FINDING, not folded silently into a criterion's pass/fail. A finding here is about the *spec*, not the implementation: don't auto-fail the implementation for a drift that originated upstream in the spec.
-
-OUTPUT FORMAT -- you MUST use this exact format:
-
-VERIFICATION REPORT
-
-| # | Criterion | Verdict | Evidence |
-|---|-----------|---------|----------|
-| 1 | [criterion text] | PASS/FAIL/MANUAL CHECK NEEDED | [what you observed] |
-| 2 | [criterion text] | PASS/FAIL/MANUAL CHECK NEEDED | [what you observed] |
-[continue for all criteria]
-
-FINDINGS (spec-vs-brief drift, if any):
-- [finding text, or "none found"]
-
-SUMMARY: X/Y criteria passed. [Z failures need attention. / All criteria verified.]
-
-If any test commands fail to run (missing dependencies, wrong command, etc.), report the error as evidence for a FAIL verdict on the relevant criterion.
+```sh
+node .joycraft/runtime/completion.mjs finalize-review --queue <queue-path> --spec <id> --report <report.json>
 ```
 
-## Step 5: Format and Present the Verdict
+`finalize-review` is the primary command and has exactly the validation of the
+legacy-compatible `complete` alias. Completion validates the report and receipt
+hashes, distinct native implementer/reviewer actors (or legacy distinct session
+IDs), independent-review attestation, subject freshness, and evidence
+sufficiency. It may reject an otherwise green suite. Do not edit the queue or
+spec to make a report fit. For rejections or interrupted writes, follow
+[completion guidance](../../../.joycraft/references/completion.md).
+Once it returns, let the implementer continue the autonomous ready queue; do not
+hold independent work behind an unrelated failed branch.
 
-Write this verdict to the style contract in `docs/templates/reference/output-style.md`.
+For scope-enabled work, completion compares the recorded base and inferred
+relevant paths with the current change topology. Do not replace the base with
+current `HEAD`. Give every unrelated changed path an explicit, narrow exclusion
+and reason; never add an entire branch or directory blindly. A deletion is a
+deliberate non-requirement input with `state: 'absent'`; requirements must remain
+present, and a rename binds both the old absent and new present paths.
 
-Take the subagent's response and present it to the user in this format:
+For a current `FAIL` or `UNVERIFIED` report, preserve the evidence, receipt,
+subject identity, and explicit limits. Do not solicit owner acceptance as part
+of review or soften the verdict. The implementer may repair it or, after a
+trusted human explicitly accepts this spec's current findings, use the separate
+owner-acceptance completion path described in [completion guidance](../../../.joycraft/references/completion.md). That path validates bindings and
+receipts, not the authenticity of a human instruction; it never turns this
+report into PASS or verified evidence.
 
-```
-## Verification Report -- [Spec Name]
-
-| # | Criterion | Verdict | Evidence |
-|---|-----------|---------|----------|
-| 1 | ... | PASS | ... |
-| 2 | ... | FAIL | ... |
-
-**Findings (spec-vs-brief drift):** [list, or "none found"]
-
-**Overall: X/Y criteria passed.**
-
-[If all passed:]
-All criteria verified. Ready to commit and open a PR.
-
-[If any failed:]
-N failures need attention. Review the evidence above and fix before proceeding.
-
-[If any MANUAL CHECK NEEDED:]
-N criteria need manual verification -- they can't be checked by reading code or running tests alone.
-
-[If any drift findings:]
-Spec-vs-brief drift found -- this is a finding against the spec, not the implementation. Review before the spec is trusted as the oracle for future verification passes.
-```
-
-## Step 6: Suggest Next Steps
-
-Based on the verdict:
-
-- **All PASS:** Suggest committing and opening a PR, or running `/joycraft-session-end` to capture discoveries.
-- **Some FAIL:** List the failed criteria and suggest the user fix them, then run `/joycraft-verify` again.
-- **MANUAL CHECK NEEDED items:** Explain what needs human eyes and why automation couldn't verify it.
-
-**Do NOT offer to fix failures yourself.** The verifier reports; the human (or implementation agent in a separate turn) decides what to do. This separation is the whole point.
-
-## Edge Cases
-
-| Scenario | Behavior |
-|----------|----------|
-| Spec has no Test Plan | Warn that verification is weaker without a test plan, but proceed by checking criteria through code reading and any available project-level tests |
-| All tests pass but a criterion is not testable | Mark as MANUAL CHECK NEEDED with explanation |
-| Subagent can't run tests (missing deps) | Report the error as FAIL evidence |
-| No specs found and no path given | Tell user to provide a spec path or create a spec first |
-| Spec status is "Complete" | Still run verification -- "Complete" means the implementer thinks it's done, verification confirms |
+Report the reviewer identity, checks and observed outcomes, receipt paths, verdict, helper result, and limitations without claiming evidence that was not observed.

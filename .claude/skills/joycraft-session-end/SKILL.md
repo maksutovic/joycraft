@@ -1,208 +1,86 @@
 ---
 name: joycraft-session-end
-entry: human
-description: Wrap up a session — capture discoveries, verify, prepare for PR or next session
-instructions: 22
+description: Close an authorized Joycraft implementation session, report evidence honestly, and archive a wholly accepted feature only at the session boundary.
+compatibility: Requires Node.js 22+ and the installed .joycraft runtime for the archive helper.
 ---
-At skill entry, run `node docs/.joycraft/check.mjs check --json --session <session-id>` once, reusing JOYCRAFT_SESSION_ID if supplied or one ID chosen for this conversation. If the checker is missing or fails, continue the requested skill quietly without retrying setup. Offer updates only for display: true; current, postponed, off, and unknown stay quiet. If automaticUpdate is present, finish this skill, then run its exact command once from the project root: the candidate must verify every safety gate before applying. Other updates require approval. After an offer or automatic attempt, record it with `node docs/.joycraft/check.mjs acknowledge <available-version> --session <session-id>`. Apply updates only at this workflow boundary; after success, reinvoke the skill or restart the session to load changed instructions.
 
+# Joycraft Session End
 
-# Session Wrap-Up — Feature Finisher
+Use this skill when pausing or finishing an authorized queue session.
 
-This is the **once-per-feature finisher** — the heavy bookend that runs **once**, when the feature's specs are done, not after every spec. It is the **only validation gate** in the loop and the single place that pushes and opens the PR.
+Read each touched queue and report the real state of every affected spec: `todo`, `in-review`, or `done`. `done` must have either an accepted PASS report receipt or a completion-helper owner-acceptance record bound to a current failed or unverified report; a commit, PASS command, or implementer assertion is not acceptance. Keep blocked or failed dependency branches explicit while identifying independent ready work that can continue next.
 
-> **Two-tier wrap-up.** The light per-spec step is `joycraft-spec-done` (status bump `todo → in-review` + commit, no validation/push/PR — it runs after each spec). This skill is the heavy counterpart: full validation, consolidate the discovery stubs spec-done left behind, graduate every `in-review` spec to `done`, push, and open the PR. See `docs/reference/spec-status-lifecycle.md` for the `todo → in-review → done` lifecycle.
+If the session stops or restarts a concurrent run, report its recorded
+coordinator ownership, captured refs, known worker trees, leases, locks, and
+runtime processes. Release only resources demonstrably owned by that run;
+retain ambiguous merges, locks, processes, and trees for diagnosis. Do not
+force local state to a remote tip. Start a replacement only from the durable
+run journal and a newly printed dispatch plan.
 
-Complete these steps in order.
+For each completed spec, report the implementation revision, independent reviewer session ID, report and receipt paths, actual commands and outcomes, visual inspection status where required, and known limitations. For owner-accepted work, also report the owner-acceptance record and its inherited limits as `done, owner-accepted with <limits>`; preserve the original `FAIL` or `UNVERIFIED` report rather than calling it PASS or verified. List each spec completed under a feature waiver as `done, waived by the user: "<instruction>"`, with any report's real verdict; never call it reviewed or verified.
 
-## 1. Consolidate Discoveries
+If a completion operation failed or was interrupted, do not declare success or hand-edit statuses. Retain the helper's error and journal/recovery information, then use the bounded local recovery process in [completion guidance](../../../.joycraft/references/completion.md). It only restores the two status surfaces and accepted-report receipt captured by the journal; it does not retry unrelated work.
 
-**Why:** Discoveries are the surprises — things that weren't in the spec or that contradicted expectations. They prevent future sessions from hitting the same walls.
+Leave enough project-relative paths and next actions for another session to resume the autonomous ready authorized queue without recreating settled context or decisions.
 
-This is the **consolidation** pass: `joycraft-spec-done` may have left terse 2-line discovery **stubs** during the feature (one per surprising spec). Curate and expand those stubs into proper discovery docs now, and capture anything else surprising from the feature as a whole. If any stubs exist at `docs/discoveries/`, consolidate them (merge related ones, expand each into the full format below); then create or update a discovery file at `docs/discoveries/YYYY-MM-DD-topic.md`. Lazy-create the `docs/discoveries/` directory if it doesn't exist.
+Before ending, run `node .joycraft/runtime/status.mjs --fix` (repairs lagging
+frontmatter of accepted specs, lists features ready to archive) and
+`node .joycraft/runtime/gate.mjs check`. Do the step each gate message names,
+such as a completing command. Tell the user each message you could not clear.
+Ask the user each status `questions` entry (findings rule: `$joycraft-verify`).
+Write each answer where it lasts: a decision in the decision log; a requested
+change in a new spec or the held spec. Never archive a feature whose question
+the user asked to wait.
+Then preview `node .joycraft/runtime/worktrees.mjs prune` and apply it with
+`--apply`: it removes only clean, integrated trees of done specs and keeps the
+rest with their reason. Report kept trees and their size from `list`.
+When this session coordinated a queue and no work on it remains, release the
+lease with `node .joycraft/runtime/coordinator.mjs release --queue <queue> --session <your-session-id>`. See [worker isolation](../../../.joycraft/references/worktrees.md)
+when the session used parallel mutable workers.
 
-(Discoveries stay flat at `docs/discoveries/` rather than per-feature, since they often span features and are read serendipitously rather than via a known path.)
+When an `UNVERIFIED` review identifies only an environment condition, record
+that condition and arrange a fresh review after it is corrected. Do not create
+an unchanged-code fix round.
 
-The discovery file MUST start with YAML frontmatter — the 4-field personal schema:
+Before any archival, route each reusable fact the session established (a decision, a trap, a reference, a production fact) to its one home, as [knowledge guidance](../../../.joycraft/references/knowledge.md) says. Leave feature intent in the brief.
 
-```yaml
----
-status: todo
-owner: <resolved name>
-created: YYYY-MM-DD
-feature: <slug-of-related-feature>   # omit if not feature-tied
----
+Write nothing temporal into an entry file or a guide: a date, a status or a hand-off goes to its record, as the [cleanup reference](../../../.joycraft/references/cleanup.md#what-to-find-on-each-page) says.
+
+Then audit the docs without being asked: run `joycraft-cleanup` in its
+session-end mode. It reports and makes only the mechanical fixes. Put its
+findings on the session-end page. With no findings, say so in one line.
+
+When independent reports suggest a reusable failure lesson, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md).
+
+## Session-end archival
+
+Archive only after the host has ended active work for a feature. It is never a
+completion action: do not invoke it from `complete`, `verify`, a hook, or while
+a worker or unfinished dependent needs the feature paths. Read
+[archive guidance](../../../.joycraft/references/archive.md) before
+preparing the host attestation.
+
+Use the archive CLI's default preview first. It requires `phase=session-end`, a
+quiescent host attestation, durable constraints already carried into current
+context, every queue spec `done`, accepted independent PASS reports or
+historical owner-acceptance records bound to their retained failed/unverified
+reports, intact historical receipts, and no completion journal. Apply is the
+separate explicit step:
+
+```sh
+node .joycraft/runtime/archive.mjs archive --feature <slug> --phase session-end --attestation <attestation.json>
+node .joycraft/runtime/archive.mjs archive --feature <slug> --phase session-end --attestation <attestation.json> --apply
 ```
 
-**Owner resolution:** look up the owner name in this order — (1) `git config user.name`, (2) value in your auto-memory `joycraft-owner.txt` if present, (3) ask the user once and persist.
+Historical reports retain their original paths, subject revisions, and claims.
+Do not rewrite them or describe old code hashes as a new current acceptance.
 
-Only capture what's NOT obvious from the code or git diff:
-- "We thought X but found Y" — assumptions that were wrong
-- "This API/library behaves differently than documented" — external gotchas
-- "This edge case needs handling in a future spec" — deferred work with context
-- "The approach in the spec didn't work because..." — spec-vs-reality gaps
-- Key decisions made during implementation that aren't in the spec
-
-**Do NOT capture:** files changed (that's the diff), what you set out to do (that's the spec), or a step-by-step narrative of the session (nobody re-reads these). Use this format:
-
-```markdown
-# Discoveries — [topic]
-
-**Date:** YYYY-MM-DD
-**Spec:** [link to spec if applicable]
-
-## [Discovery title]
-**Expected:** [what we thought would happen]
-**Actual:** [what actually happened]
-**Impact:** [what this means for future work]
-```
-
-If nothing surprising happened, skip the discovery file entirely. No discovery is a good sign — the spec was accurate. While consolidating, also flag stale discoveries per the staleness rule in `docs/reference/knowledge-lifecycle.md` — an advisory list in your report, never an auto-delete.
-
-## 1b. Update Context Documents
-
-Escalation gate first: a fact enforceable as architecture, a deny pattern, or a CI check goes to `/joycraft-harden`, not prose (advisory — continue if declined). Then, if `docs/context/` exists, quickly check whether this session revealed anything about:
-
-- **Production risks** — did you interact with or learn about production vs staging systems? → Update `docs/context/production-map.md`
-- **Wrong assumptions** — did the agent (or you) assume something that turned out to be false? → Update `docs/context/dangerous-assumptions.md`
-- **Key decisions** — did you make an architectural or tooling choice? → Add a row to `docs/context/decision-log.md`
-- **Unwritten rules** — did you discover a convention or constraint not documented anywhere? → Update `docs/context/institutional-knowledge.md`
-
-When you UPDATE a context doc, also bump (or add) its YAML frontmatter — the 2-field shared schema:
-
-```yaml
----
-last_updated: YYYY-MM-DD
-last_updated_by: <resolved name>
----
-```
-
-If the file already has the frontmatter, update the `last_updated` and `last_updated_by` fields in place. If it doesn't, prepend a fresh block. Context docs are *shared* artifacts (no single owner) — the shared schema reflects that.
-
-Skip this if nothing applies. Don't force it — only update when there's genuine new context.
-
-## 2. Run Validation — the ONLY validation gate
-
-This is **mandatory** and it is the **only** validation gate in the loop: `joycraft-spec-done` deliberately skips validation (it trusts implement's per-spec TDD), so this feature-level run is the single cross-spec safety net. Never skip it.
-
-Run the project's validation commands. Check CLAUDE.md for project-specific commands. Common checks:
-
-- Type-check (e.g., `tsc --noEmit`, `mypy`, `cargo check`)
-- Tests (e.g., `npm test`, `pytest`, `cargo test`)
-- Lint (e.g., `eslint`, `ruff`, `clippy`)
-
-Fix any failures before proceeding. **If validation fails, stop — do NOT graduate specs to `done` and do NOT push.**
-
-## 2b. Extraction: `done`-Graduation Ledger + Reap Marker
-
-This step runs **only when the feature as a whole reaches `done`** (every spec graduated in step 3 below, none left `todo`). It is the extraction half of the shipped-ledger design (D1/D2): the branch's own history is about to be squashed away by the merge, so the ledger row is what survives. This step never deletes the feature folder — that's the Reaper's job alone, and only after a verified merge (`joycraft-optimize`'s Reaper pass).
-
-**PROTOCOL — do these three in order:**
-
-1. **Prepend a ledger row to `docs/context/shipped.md`.** Before writing, run the overlap check (below) against `docs/context/shipped.md` itself — the ledger only ever gets one row per feature, so if a row for this feature slug already exists, update it in place instead of prepending a second one. Otherwise prepend one row directly under the header/separator (newest-first, matching the doc's existing convention):
-
-   ```
-   | Date | Feature | What shipped | Where (paths) | PR | Owner |
-   ```
-
-   Keep the row **factual and thin** — when/what/who/where/PR only. Narrative belongs in the decision log or discoveries, not the ledger.
-
-   Write the row's wording to the style contract in `docs/templates/reference/output-style.md`; where it and the ledger's fixed shape disagree, the shape wins.
-
-   If prepending pushes `docs/context/shipped.md` over the 200-line budget, follow the rotation procedure in `docs/reference/knowledge-lifecycle.md` (numbered shards + pointer-only manifest, created only at first rotation).
-
-2. **Confirm the feature's decisions landed in the decision log.** Grep `docs/context/decision-log.md` for the feature's D-ids (from the brief's frontmatter `decisions:` list, if present). Report which D-ids landed and which are missing. If any are missing, write them (prepend, per the decision-log's own newest-first rule) before proceeding to step 3 — don't mark reap-eligible with an incomplete extraction. A feature with no dossier/decisions at all is not an error: report "no stamped decisions" and continue.
-
-3. **Set `reap: eligible` in the brief's frontmatter.** Edit `docs/features/<slug>/brief.md`'s YAML frontmatter to add (or set) `reap: eligible`. This is a **mark, not a delete** — it makes the folder a candidate for the Reaper's verified-merge sweep. Session-end **never deletes the folder itself**; deletion is exclusively the Reaper's, and only fires after `gh` confirms the PR actually merged. If this feature has no PR yet (specs remain, or the PR hasn't been opened), skip this step — extraction only applies to a feature that has reached `done`.
-
-**Overlap check (PROTOCOL, applies to any context/discovery write in this skill, not just the ledger):** before creating any new discovery file, context doc, or table row, grep the knowledge layer for an existing home:
-
-```bash
-grep -ril '<topic keywords>' docs/context/ docs/discoveries/ docs/reference/
-```
-
-No match → create the new file/row as normal. A match → that's an overlap; update the existing doc in place instead of minting a near-duplicate, and say so in your report. Multiple conflicting matches → surface the contradiction to the human rather than picking silently (see `docs/reference/knowledge-lifecycle.md`).
-## 3. Graduate Specs `in-review → done`
-
-This step graduates the feature's finished specs to their terminal state. Because session-end runs once at the end, **multiple specs may be waiting** in `in-review` (one per spec the loop completed via `joycraft-spec-done`). Graduate **all** of them, in **both** systems (the queue JSON and the frontmatter must never disagree):
-
-For each spec in `docs/features/<slug>/specs/` (or `docs/bugfixes/<area>/` for bugfixes — scan recursively) whose status is `in-review`:
-
-1. **Queue JSON** — `joycraft-mark-done <spec-id> --to done <specs-dir>` (the `--to done` graduation; find `<spec-id>` by matching the entry's `file`).
-2. **Frontmatter** — edit the spec file's YAML `status:` to `done`.
-
-Rules:
-- Only graduate specs that are `in-review`. A spec still at `todo` was never started — **leave it `todo` and report it as remaining** (the feature isn't fully done; see the PR gate in step 6). Graduate nothing beyond what was validated, per the "Keep Changes and Tests to What the Task Asks" block in `docs/templates/reference/model-profile-claude-fable-5-1.md`.
-- Never write `done` for work nothing has validated — this validation run (step 2) is what licenses the graduation. (Once `verify-in-loop` ships, an independent verify performs the `in-review → done` transition; until then, this step does.)
-- `done` means **verified**, not **merged**. A merged PR is a git fact, never a spec status — do not invent a `merged` status or any fourth state beyond `todo`/`in-review`/`done`.
-
-If working from a Feature Brief at `docs/features/<slug>/brief.md`, also check off completed specs in the decomposition table.
-
-## 4. Scan Read Telemetry
-
-Run `npx joycraft telemetry`. Report its one-line result and move on. When the command is unavailable or fails — no npx, package not installed, stale cache without the subcommand, offline — note that in one line and continue. A skipped scan is never a failure and must never block wrap-up; `joycraft-optimize` reports the gap as `INACCESSIBLE` evidence.
-
-## 5. Commit
-
-Commit all changes including the discovery file (if created) and spec status updates. The commit message should reference the spec if applicable.
-
-## 6. Push and PR (if autonomous git is enabled)
-
-**Check CLAUDE.md for "Git Autonomy" in the Behavioral Boundaries section.** If it says "STRICTLY ENFORCED" or the ALWAYS section includes "Push to feature branches immediately after every commit":
-
-1. **Push immediately.** Run `git push origin <branch>` — do not ask, do not hesitate.
-2. **Open a PR if the feature is complete.** The feature is complete when every spec is `done` (none left at `todo`/`in-review`). Check the queue JSON / decomposition table — if all specs are `done`, run `gh pr create` with a summary of all completed specs. Do not ask first.
-3. **If specs remain (`todo`),** still push. The PR comes when the feature's last spec is graduated.
-
-If CLAUDE.md does NOT have autonomous git rules (or has "ASK FIRST" for pushing), ask the user before pushing.
-
-## 7. Report and Hand Off
-
-Write this report to the style contract in `docs/templates/reference/output-style.md`.
-
-```
-Feature complete.
-- Feature: [slug]
-- Specs graduated to done: [N] (remaining at todo: [N])
-- Build: [passing / failing]
-- Discoveries: [N consolidated / none]
-- Pushed: [yes / no — and why not]
-- PR: [opened #N / not yet — N specs remaining]
-- Next: [what comes after this feature]
-```
-
-End with the canonical Handoff block. Include any discovery and updated-context paths produced.
-
-## Recommended Next Steps
-
-Next:
-```bash
-/joycraft-implement docs/features/<slug>/specs/<next-spec>.md
-```
-Run /clear first.
-
-Then hand off with a briefing, not a bare command — a prompt the human pastes into the fresh session after /clear. Fill every line; a cold agent must be able to act on this block alone without re-deriving context.
-
-```
-/joycraft-implement docs/features/<slug>/specs/<next-spec>.md
-
-You are picking up the spec queue for <slug>, last session ended <date>.
-Decisions <ids> are stamped in the brief — do not reopen them.
-Start: <next-spec>.md (mode: <mode>). Order: specs/README.md.
-Hazard: <the one known trap, or "none known">.
-Done when: <next-spec> is in-review, committed, and the suite is green.
-```
-
-Filled example:
-
-```
-/joycraft-implement docs/features/2026-07-29-succinct-gates/specs/gate-contract-tests.md
-
-You are picking up the spec queue for 2026-07-29-succinct-gates, last session ended 2026-07-29.
-Decisions D1-D7 are stamped in the brief — do not reopen them.
-Start: gate-contract-tests.md (mode: batch). Order: specs/README.md.
-Hazard: the suite regenerates bundles; commit machine-generated output as-is.
-Done when: gate-contract-tests is in-review, committed, and the suite is green.
-```
-
-If all specs in the feature are complete, hand off to a feature-level wrap-up instead (PR review, etc.) — the Handoff block is just the slash command for whatever the next move is.
+If post-acceptance queue/spec edits block archival, investigate the discrepancy
+and use the explicit archive-reconciliation path in the archive guidance when
+the owner has authorized that resolution. Record the instruction, exact affected
+report/input hashes, cause, resolution and limitations; preserve every original
+report and accepted version. Existing task authorization need not be requested
+again. Do not rewrite acceptance hashes, roll back a queue merely to satisfy old
+reports, or re-review done work solely to move a folder. Report the result as
+`archived with reconciliation`, never as renewed acceptance. Unresolved product
+work and corrupt or missing evidence still block closure.
