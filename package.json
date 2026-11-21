@@ -6,8 +6,6 @@
   "bin": {
     "joycraft": "dist/cli.js"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist",
     "payload"
@@ -18,8 +16,7 @@
     "autoSafeEligible": false
   },
   "scripts": {
-    "build": "node scripts/generate-bundled-files.mjs && node scripts/sync-skills.mjs && tsup && node scripts/release-preparation.mjs emit-descriptor",
-    "sync-skills": "node scripts/generate-bundled-files.mjs && node scripts/sync-skills.mjs",
+    "build": "tsup && node scripts/release-preparation.mjs emit-descriptor",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm build"
@@ -49,8 +46,6 @@
     "commander": "^13.1.0"
   },
   "devDependencies": {
-    "@earendil-works/pi-coding-agent": "0.75.5",
-    "@sinclair/typebox": "^0.34.49",
     "@types/node": "^22.13.0",
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",

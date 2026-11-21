@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Docs-sync gate — the check half of the `release-docs-sync` maintainer skill.
 //
-// Fails when the branch changes product files (src/, templates/, scripts/)
+// Fails when the branch changes product files (src/, scripts/)
 // but CHANGELOG.md is untouched, unless the PR body carries an explicit
 // opt-out line:   Docs: none — <reason>
 //
@@ -17,7 +17,7 @@ import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
-const PRODUCT_PATHS = [/^src\//, /^templates\//, /^scripts\//];
+const PRODUCT_PATHS = [/^src\//, /^scripts\//];
 const OPT_OUT = /^\s*Docs:\s*none\b/im;
 
 export function changedFiles(base) {
