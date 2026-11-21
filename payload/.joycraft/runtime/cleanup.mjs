@@ -227,6 +227,9 @@ export const checkList = [
   ['orphan', 'report', 'A context page that nothing links to'],
   ['impact-drift', 'report', 'A page in cleanup.impact whose mapped code changed after the page last changed'],
   ['unknown-worktree', 'report', 'A linked worktree that worktrees.mjs did not create'],
+  // tidy only: range-scoped checks.
+  ['tidy', 'report', 'tidy: the range cannot be read (shallow clone or no Git); everything else is skipped'],
+  ['new-doc', 'report', 'tidy: Markdown the range added under the docs root, outside features, archive and backlog, by folder'],
 ];
 
 /** Report stale working material, link problems, unmapped pages and code drift. */
@@ -392,7 +395,80 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   return { config: config.source ?? 'defaults', paths: config.paths, counts, findings, skipped };
 }
 
-const usage = 'Usage: cleanup.mjs [--checks] [--root <project>]';
+// tidy: drift that a stateless Git range caused, so session end can clean it.
+const emptyTree = '4b825dc642cb6eb9a060e54bf8d69288fbee4904';
+const tryGit = (root, args) => { try { return git(root, args); } catch { return null; } };
+
+/** The common parent of the work folders: where docs live. */
+export function docsRoot({ features, archive, context }) {
+  const parts = [features, archive, context].map(folder => folder.split('/'));
+  const common = [];
+  for (let index = 0; parts.every(part => index < part.length && part[index] === parts[0][index]); index += 1) common.push(parts[0][index]);
+  return common.join('/') || '.';
+}
+
+/**
+ * The range tidy reads. On a branch: the merge base with the default branch.
+ * On the default branch: the last 7 days or 100 commits, whichever is smaller
+ * (approximate). `base` overrides. A shallow clone or no Git gives { skipped }.
+ */
+export function tidyRange(root, { base, now = Date.now() } = {}) {
+  const head = tryGit(root, ['rev-parse', '--verify', '--quiet', 'HEAD']);
+  if (!head) return { skipped: 'Not a Git repository with commits.' };
+  if (base) {
+    const resolved = tryGit(root, ['rev-parse', '--verify', '--quiet', `${base}^{commit}`]);
+    requireValue(resolved, `cleanup.mjs tidy: --base ${base} is not a commit`);
+    return { base: resolved, head, approximate: false };
+  }
+  if (tryGit(root, ['rev-parse', '--is-shallow-repository']) === 'true') return { skipped: 'A shallow clone has no reliable range; fetch the history or pass --base.' };
+  const remote = tryGit(root, ['symbolic-ref', '--quiet', '--short', 'refs/remotes/origin/HEAD']);
+  const trunk = remote ?? ['main', 'master'].find(name => tryGit(root, ['rev-parse', '--verify', '--quiet', `refs/heads/${name}`]));
+  const branch = tryGit(root, ['symbolic-ref', '--quiet', '--short', 'HEAD']);
+  if (trunk && branch !== trunk && branch !== trunk.replace(/^[^/]+\//, '')) {
+    const fork = tryGit(root, ['merge-base', trunk, 'HEAD']);
+    if (fork) return { base: fork, head, approximate: false };
+  }
+  const since = Math.floor((now - 7 * 24 * 3600 * 1000) / 1000);
+  const recent = git(root, ['rev-list', '--first-parent', '--max-count=100', `--since=${since}`, 'HEAD']).split('\n').filter(Boolean);
+  if (recent.length === 0) return { base: head, head, approximate: true };
+  return { base: tryGit(root, ['rev-parse', '--verify', '--quiet', `${recent.at(-1)}^`]) ?? emptyTree, head, approximate: true };
+}
+
+/** Findings the range caused. `read(file)` gives a page's text (the working tree by default). */
+function rangeFindings(root, config, range) {
+  const { features, archive } = config.paths;
+  const docs = docsRoot(config.paths);
+  const findings = [];
+  // new-doc: Markdown the range added under the docs root, outside the work folders and the backlog.
+  const added = git(root, ['diff', '--name-only', '--diff-filter=A', '-z', range.base, range.head, '--', docs]).split('\0')
+    .filter(file => file.endsWith('.md') && !inside(file, features) && !inside(file, archive)
+      && !(docs === '.' ? file : file.slice(docs.length + 1)).split('/').slice(0, -1).includes('backlog'));
+  const groups = new Map();
+  for (const file of added) { const folder = path.posix.dirname(file); groups.set(folder, [...(groups.get(folder) ?? []), file]); }
+  for (const [folder, files] of groups) {
+    findings.push({ check: 'new-doc', path: folder, count: files.length, files, fixable: false, detail: `${files.length} new doc(s) in this range.`, fix: 'Carry durable facts to their context home; leave the doc as working material.' });
+  }
+  return findings;
+}
+
+/** The tidy report: range findings, context pages first, at most `limit` of them. */
+export function tidyReport({ root = process.cwd(), base, now = Date.now(), limit = 10 } = {}) {
+  const config = readConfig(root);
+  const range = tidyRange(root, { base, now });
+  const out = { base: range.base ?? null, head: range.head ?? null, approximate: range.approximate ?? false, findings: [], more: 0, standing: 0, skipped: [] };
+  if (range.skipped) { out.skipped.push({ check: 'tidy', reason: range.skipped }); return out; }
+  const all = rangeFindings(root, config, range);
+  const rank = item => (inside(item.path, config.paths.context) ? 0 : 1);
+  all.sort((a, b) => rank(a) - rank(b) || a.path.localeCompare(b.path) || (a.line ?? 0) - (b.line ?? 0));
+  out.findings = all.slice(0, limit);
+  out.more = all.length - out.findings.length;
+  out.all = all;
+  // Findings that the range did not cause fold into one count.
+  out.standing = cleanupReport({ root, now }).findings.length;
+  return out;
+}
+
+const usage = 'Usage: cleanup.mjs [--checks | tidy [--base <ref>] | age-out --days <n> [--apply]] [--root <project>]';
 
 export async function main(argv = process.argv.slice(2)) {
   const args = [...argv];
@@ -404,6 +480,15 @@ export async function main(argv = process.argv.slice(2)) {
     const { gateChecks } = await import('./entry-check.mjs');
     for (const [id, kind, finds] of checkList) process.stdout.write(`${id}\t${kind}${gateChecks.includes(id) ? ' gate' : ''}\t${finds}\n`);
     return checkList;
+  }
+  if (args[0] === 'tidy') {
+    args.shift();
+    const base = take('--base');
+    requireValue(args.length === 0, usage);
+    const { all, ...result } = tidyReport({ root, base });
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    if (result.findings.length) process.exitCode = 2;
+    return result;
   }
   requireValue(args.length === 0, usage);
   const result = cleanupReport({ root });
