@@ -507,7 +507,44 @@ export function tidyReport({ root = process.cwd(), base, now = Date.now(), limit
   return out;
 }
 
-const usage = 'Usage: cleanup.mjs [--checks | tidy [--base <ref>] | age-out --days <n> [--apply]] [--root <project>]';
+/**
+ * tidy --verify: measure again on the working tree. Pass only when the diff
+ * against HEAD edits nothing but lines that a fixable finding at HEAD names;
+ * then give the one commit message. An entry file is never a tidy edit.
+ */
+export function tidyVerify({ root = process.cwd(), base, now = Date.now() } = {}) {
+  const config = readConfig(root);
+  const range = tidyRange(root, { base, now });
+  if (range.skipped) return { status: 'skipped', skipped: [{ check: 'tidy', reason: range.skipped }], message: null };
+  const atHead = file => tryGit(root, ['show', `${range.head}:${file}`]);
+  const before = rangeFindings(root, config, range, atHead).filter(item => item.fixable && item.line);
+  const after = rangeFindings(root, config, range).filter(item => item.fixable);
+  const out = { status: 'clean', base: range.base, head: range.head, cleared: 0, remaining: after, refused: [], message: null };
+  const changed = git(root, ['diff', '--name-only', '-z', 'HEAD']).split('\0').filter(Boolean);
+  if (changed.length === 0) return out;
+  const named = new Map();
+  for (const item of before) named.set(item.path, new Set([...(named.get(item.path) ?? []), item.line]));
+  let lines = 0;
+  for (const file of changed) {
+    if (entryFiles.includes(path.posix.basename(file))) { out.refused.push({ path: file, reason: 'An entry file: tidy never edits one.' }); continue; }
+    if (!named.has(file)) { out.refused.push({ path: file, reason: 'No fixable tidy finding names this file.' }); continue; }
+    for (const [, start, count = '1'] of git(root, ['diff', '-U0', '--no-color', '--no-ext-diff', 'HEAD', '--', file]).matchAll(/^@@ -(\d+)(?:,(\d+))? /gm)) {
+      const first = Number(start), size = Number(count);
+      const outside = size === 0 ? [first] : Array.from({ length: size }, (_, index) => first + index).filter(line => !named.get(file).has(line));
+      if (size === 0 || outside.length) out.refused.push({ path: file, line: outside[0], reason: 'Edits a line that no finding names.' });
+      else lines += size;
+    }
+  }
+  if (out.refused.length) return { ...out, status: 'refused' };
+  const key = item => `${item.check}\0${item.path}\0${item.symbol ?? item.line}`;
+  const left = new Set(after.map(key));
+  out.cleared = before.filter(item => !left.has(key(item))).length;
+  out.status = 'pass';
+  out.message = `docs: tidy ${lines} doc line${lines === 1 ? '' : 's'} after ${range.head.slice(0, 7)}\n\nJoycraft-Tidy: ${range.base}..${range.head}`;
+  return out;
+}
+
+const usage = 'Usage: cleanup.mjs [--checks | tidy [--base <ref>] [--verify] | age-out --days <n> [--apply]] [--root <project>]';
 
 export async function main(argv = process.argv.slice(2)) {
   const args = [...argv];
@@ -523,6 +560,13 @@ export async function main(argv = process.argv.slice(2)) {
   if (args[0] === 'tidy') {
     args.shift();
     const base = take('--base');
+    if (has('--verify')) {
+      requireValue(args.length === 0, usage);
+      const result = tidyVerify({ root, base });
+      process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+      if (result.status === 'refused') process.exitCode = 2;
+      return result;
+    }
     requireValue(args.length === 0, usage);
     const { all, ...result } = tidyReport({ root, base });
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
