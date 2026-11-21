@@ -1,0 +1,40 @@
+== probe A: --checks output
+unarchived	report	A feature whose specs are all done, still in paths.features
+status-drift	mechanical	A spec whose queue status and frontmatter status differ (status.mjs --fix)
+frontmatter-unreadable	report	Context-page frontmatter that cleanup cannot parse
+stale-after	report	A context page whose stale_after date has passed
+working-link	report	A guide or entry file linking a feature or archive folder
+deprecated-link	report	A link to a page marked status: deprecated
+broken-link	report gate	A Markdown link to a file that does not exist
+missing-path	mechanical gate	A backticked project path that does not exist and Git does not ignore (fixed when Git shows one rename)
+unmapped	report	A context page that only other context pages mention
+entry-size	report	An entry file over cleanup.entryWords words (default 1000)
+temporal	report	A date (YYYY-MM-DD) or a link to a dated file in an entry file, outside code spans
+script-name	report gate	A package script that an entry file names and no package.json defines
+codex-bytes	report gate	AGENTS.md files from the root to one folder over 32,768 bytes, the Codex limit
+managed-block	mechanical	Joycraft's AGENTS.md block differs from entry-check.mjs block
+import	report gate	An @path line in an entry file (not @AGENTS.md in CLAUDE.md), or AGENTS.override.md
+orphan	report	A context page that nothing links to
+impact-drift	report	A page in cleanup.impact whose mapped code changed after the page last changed
+unknown-worktree	report	A linked worktree that worktrees.mjs did not create
+tidy	report	tidy: the range cannot be read (shallow clone or no Git); everything else is skipped
+gone-symbol	mechanical	tidy: a backticked name in a mapped page that the range removed from all code (report-only in an entry file)
+new-doc	report	tidy: Markdown the range added under the docs root, outside features, archive and backlog, by folder
+exit=0
+== probe A2: --checks with a stray arg
+Cleanup stopped: Usage: cleanup.mjs [--checks | tidy [--base <ref>] [--verify] | age-out --days <n> [--apply]] [--root <project>]
+exit=1
+== probe B: 500 backticked missing paths, 250 git-ignored
+cleanup exit=2
+elapsed_ms=460
+check-ignore spawns (any argv position)=1
+missing-path findings=250
+ignored reported=0
+src reported=250
+== probe C: negated ignore pattern keeps the path reported
+Names ignored/keep.ts, which does not exist.
+== probe D: impact-drift clears after the fix text is followed
+before: Read the changed code and update the page, or, if it is still true, add a `verified: <today>` line to it.
+after verified line: cleared
+== done
+probe-script exit=0

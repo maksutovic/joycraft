@@ -1,6 +1,6 @@
 ---
 id: 6
-status: in-review
+status: done
 ---
 # Setup and update offer to hide the archive from search
 
