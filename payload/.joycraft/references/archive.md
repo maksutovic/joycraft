@@ -28,12 +28,10 @@ Prepare a project-relative attestation file:
 ```
 
 `quiescent` attests that no active worker and no unfinished work requiring the
-feature's live paths remains. It does not ask for a new human permission. The
-current Markdown context references must already exist outside `docs/features/` and
+feature's live paths remains. The current Markdown context references must already exist outside `docs/features/` and
 `docs/archive/`; they demonstrate that constraints worth retaining were carried
-into current documentation. Reuse the project's existing home, including
-`AGENTS.md` or a custom context map. This attestation is an operational statement, not
-another decision or approval authority.
+into current documentation, such as `AGENTS.md` or a custom context map. The
+attestation is an operational statement, not an approval.
 
 The preview validates the complete queue before any write: the canonical queue
 must be the only queue anywhere in the feature tree, all specs must be
@@ -53,8 +51,8 @@ and every referenced receipt must still have its recorded bytes. A pending
 completion journal, a malformed/corrupt/FAIL report, unfinished work, missing
 durable context, symlinks, traversal, or archive collision stops the operation.
 
-The runtime deliberately does not rerun historic suites or compare their code
-input hashes with current live code. Later work may supersede those hashes. For
+The runtime does not rerun historic suites or compare their code input hashes
+with live code, which later work may supersede. For
 a v1-bound report it still checks the selected queue/dependencies and selected
 governing requirement or decision records, while independent queue records and
 unselected decisions may change. Older reports retain their original whole-file
@@ -99,10 +97,8 @@ one entry; a merge keeping a parent's brief needs none. The before hash is at
 exactly once in the current brief's frontmatter JSON `decisions` array, have
 status `clarified` or `assigned`, and a nonempty answer. Do not manufacture an
 answer to unblock archival. The preview includes the validated amendments.
-These records explain historical changes; they do not prove a fresh review of
-the amended feature. Archival therefore does not require one report matching
-today's brief: a single report could cover only one scope and would not renew
-acceptance for the whole feature anyway.
+These records explain historical changes; they do not prove a fresh review, so
+archival does not require one report matching today's brief.
 
 Apply restores each accepted raw version under
 `evidence/requirements/<proof-hash>/<original-path>` in the archive. Different
@@ -168,17 +164,16 @@ version survives outside HEAD history (for example after a squash merge), an
 entry may also name `acceptedCommit` as a full Git commit ID. The blob at that
 exact commit must reproduce the original accepted hash; the helper never waives
 missing bytes. The current external requirement is copied into the archive too,
-so the recorded current hash remains verifiable. `laterCommits` means the path
-commits in the Git range `acceptedCommit..HEAD`; for a branched history this is
-not a claim that all those commits were chronologically later. `acceptedSha256` is copied from the original report's input;
+so the recorded current hash remains verifiable. `laterCommits` lists the path
+commits in `acceptedCommit..HEAD`, not necessarily later in time. `acceptedSha256` is copied from the original report's input;
 `currentSha256` pins raw current bytes, including acceptance metadata. One queue
 edit may therefore need many entries, one for each report whose dependency
 projection changed. Unchanged later reports need no entry. Duplicate, unused,
 uncovered or stale entries fail closed. A ledger's presence alone never enables
 the override, and its shape does not authenticate a human. The ledger itself may
 be uncommitted: preview pins its raw hash, apply rechecks it, and archival retains
-it byte-for-byte as part of the paper trail. Commit the resulting archive through
-the normal project delivery process. A renamed own spec or changed report subject
+it byte-for-byte as part of the paper trail. Commit the archive through normal
+delivery. A renamed own spec or changed report subject
 path still fails; this override reconciles contents, not acceptance identities.
 
 ```sh
@@ -203,8 +198,10 @@ then atomically moves `docs/features/<slug>` to
 `docs/archive/<slug>/feature`. Code, tests, and shared receipts outside the
 feature stay live. Reports and receipts outside the feature are copied under
 the archive record's `evidence/` directory. `archive-replay.json` maps each
-original path to its moved, copied or restored byte-identical record. Historical links in
-the moved files retain their original text; treat them as history.
+original path to its moved, copied or restored byte-identical record. Links in
+the moved files keep their text. Apply rewrites links into the folder in live
+Markdown under the docs root (not the archive, reports or receipts); `links`
+lists them and, unedited, other live files that name the folder.
 
 The staging directory receives `archive-recovery.json` before any copy or move,
 and the marker remains in the final archive as immutable move provenance. If an
@@ -215,6 +212,13 @@ manual recovery. A collision or changed byte fails without accepting new
 completion. A repeat is idempotent only when the replay manifest names
 the feature and every mapped byte still matches; otherwise reconcile it
 manually.
+
+## Archive as is
+
+On the owner's instruction, `--as-is --owner-instruction "<their words>"`
+archives a feature whose acceptance is incomplete: it moves the folder unchanged
+and writes `unverified.md` listing each spec not accepted, each missing receipt
+and the instruction verbatim. Report it as **archived as is, unverified**.
 
 ## After-archive hook
 
@@ -227,7 +231,6 @@ hooks:
 
 After a successful `--apply`, the runtime runs it once from the project root with
 `JOYCRAFT_FEATURE`, `JOYCRAFT_ARCHIVE_PATH` and `JOYCRAFT_SOURCE_PATH` set, and reports
-its exit code and output tail under `afterArchive`. Use it to update a wiki
-or run a doc audit. A failing hook does not undo the archive;
+its exit code and output tail under `afterArchive`. A failing hook does not undo the archive;
 report and fix it. A repeat does not run it again.
 `paths.features` and `paths.archive` there move both folders.

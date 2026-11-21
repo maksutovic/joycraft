@@ -361,6 +361,7 @@ function existingArchive(root, folder) {
       requireValue(archivedPath === restoredPath(destination, record) && sha256(requirementProjection(bytes, record)) === record.acceptedSha256, `Restored requirement does not match acceptance: ${archivedPath}`);
     }
   }
+  if (manifest.asIs !== undefined) requireValue(isObject(manifest.asIs) && manifest.asIs.path === `${destination}/unverified.md` && sha256(readLocal(root, manifest.asIs.path)) === manifest.asIs.sha256 && manifest.historical?.archivedAsIs === true, `Archived as-is note is missing or changed: ${destination}/unverified.md`);
   for (const decision of manifest.evidence ?? []) {
     for (const record of decision.requirementHistory ?? []) {
       requireValue(manifest.files.some(file => file.operation === 'restored-from-git' && canonical(file.requirement) === canonical(record)), `Historical requirement replay is missing: ${record.path}`);
@@ -369,8 +370,10 @@ function existingArchive(root, folder) {
   return { destination, manifestPath, manifest };
 }
 
-export function previewArchiveFeature({ root = process.cwd(), feature, phase, attestation, reconciliation: reconciliationPath }) {
+export function previewArchiveFeature({ root = process.cwd(), feature, phase, attestation, reconciliation: reconciliationPath, asIs = false, ownerInstruction }) {
   const name = featureName(feature);
+  requireValue(!asIs || nonempty(ownerInstruction), 'Archive --as-is needs --owner-instruction with the owner\'s own words');
+  requireValue(asIs || ownerInstruction === undefined, '--owner-instruction is only for --as-is');
   requireValue(phase === 'session-end', 'Archive is allowed only during phase=session-end');
   const folder = resolveFolder(root, name);
   const source = featurePath(root, folder), destination = archivePath(root, folder);
@@ -399,12 +402,17 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
   requireValue(typeof queue.feature === 'string' && featureFolderMatches(folder, queue.feature), `Queue feature does not match its folder ${source}: name the folder for the feature (${queue.feature}), optionally after a YYYY-MM-DD- date`);
   feature = queue.feature;
   const reconciliation = readReconciliation(root, source, feature, reconciliationPath);
-  const evidence = [];
+  const evidence = [], unverified = [];
   for (const item of queue.specs ?? []) {
-    const state = readQueue({ root, queuePath, specId: item.id, criteria: item?.ownerAcceptance?.legacy !== true });
-    evidence.push(historicalDecision(root, queuePath, state, reconciliation));
+    const decide = () => historicalDecision(root, queuePath, readQueue({ root, queuePath, specId: item.id, criteria: item?.ownerAcceptance?.legacy !== true }), reconciliation);
+    if (!asIs) { evidence.push(decide()); continue; }
+    // As is: a spec that is not done, or whose acceptance does not hold, is listed, never accepted.
+    let reason = item?.status === 'done' ? null : `status ${item?.status}`;
+    if (!reason) { try { evidence.push(decide()); } catch (error) { reason = error.message; } }
+    if (reason) unverified.push({ id: item?.id, file: item?.file, status: item?.status, reason, missingReceipts: missingReceipts(root, item) });
   }
-  requireValue(Array.isArray(queue.specs) && queue.specs.length > 0 && queue.specs.every(spec => spec.status === 'done'), 'Every spec must be done before archiving the whole feature');
+  if (asIs) requireValue(Array.isArray(queue.specs) && queue.specs.length > 0, 'The queue has no specs');
+  else requireValue(Array.isArray(queue.specs) && queue.specs.length > 0 && queue.specs.every(spec => spec.status === 'done'), 'Every spec must be done before archiving the whole feature');
   if (reconciliation) requireValue(reconciliation.used.size === reconciliation.record.entries.length, 'Archive reconciliation contains unused or stale entries');
   const copies = new Map();
   for (const decision of evidence) {
@@ -426,7 +434,44 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
   };
   collect(source);
   const requirementHistory = [...new Map(evidence.flatMap(decision => decision.requirementHistory ?? []).map(record => [canonical(record), record])).values()];
-  return { schemaVersion: 1, feature, phase, source, destination, queuePath, attestation: parsedAttestation, evidence, requirementHistory, ...(reconciliation ? { reconciliation: { path: reconciliation.path, sha256: reconciliation.sha256, record: reconciliation.record } } : {}), featureFiles: files.sort((a, b) => a.path.localeCompare(b.path)), copiedEvidence: [...copies.values()].sort((a, b) => a.path.localeCompare(b.path)), historical: { codeInputHashesAreHistorical: true, currentAcceptanceRenewed: false, ...(reconciliation ? { acceptanceRecordsReconciled: true } : {}) } };
+  return { schemaVersion: 1, feature, phase, source, destination, queuePath, attestation: parsedAttestation, evidence, requirementHistory, ...(asIs ? { asIs: { path: `${destination}/unverified.md`, ownerInstruction, unverified } } : {}), ...(reconciliation ? { reconciliation: { path: reconciliation.path, sha256: reconciliation.sha256, record: reconciliation.record } } : {}), featureFiles: files.sort((a, b) => a.path.localeCompare(b.path)), copiedEvidence: [...copies.values()].sort((a, b) => a.path.localeCompare(b.path)), historical: { codeInputHashesAreHistorical: true, currentAcceptanceRenewed: false, ...(reconciliation ? { acceptanceRecordsReconciled: true } : {}), ...(asIs ? { archivedAsIs: true } : {}) } };
+}
+
+/** Receipts and reports that a spec's acceptance records name but that are missing or changed. Reads only. */
+function missingReceipts(root, spec) {
+  const missing = [];
+  const check = (file, digest) => {
+    let bytes = null;
+    try { bytes = readLocal(root, relativePath(file)); } catch { /* missing */ }
+    if (bytes === null || (digest && sha256(bytes) !== digest)) { missing.push(file); return null; }
+    return bytes;
+  };
+  const reports = [spec?.acceptedReport, spec?.waiver?.review];
+  for (const record of [spec?.ownerAcceptance, spec?.waiver]) {
+    if (!isObject(record) || !nonempty(record.path)) continue;
+    const bytes = check(record.path, record.sha256);
+    if (bytes !== null && record === spec?.ownerAcceptance && record.legacy !== true) { try { reports.push(JSON.parse(bytes.toString('utf8')).review); } catch { /* not JSON */ } }
+  }
+  for (const review of reports.filter(item => isObject(item) && nonempty(item.path))) {
+    const bytes = check(review.path, review.sha256);
+    let report;
+    try { report = bytes && JSON.parse(bytes.toString('utf8')); } catch { continue; }
+    for (const flow of Array.isArray(report?.flows) ? report.flows : []) for (const observation of Array.isArray(flow?.observations) ? flow.observations : []) {
+      for (const receipt of Array.isArray(observation?.receipts) ? observation.receipts : []) if (isObject(receipt) && nonempty(receipt.path)) check(receipt.path, receipt.sha256);
+    }
+  }
+  return [...new Set(missing)];
+}
+
+/** The note an as-is archive carries: what was not accepted, and the owner's words. It claims no acceptance. */
+function unverifiedNote(plan) {
+  const lines = [`# Archived as is: ${plan.feature}`, '', 'The owner had this feature archived without complete acceptance. Nothing here says that it was accepted or verified.', '', 'Owner instruction:', '', ...plan.asIs.ownerInstruction.split('\n').map(line => `> ${line}`), '', '## Specs not accepted', ''];
+  if (plan.asIs.unverified.length === 0) lines.push('None: every spec held its acceptance.');
+  for (const item of plan.asIs.unverified) {
+    lines.push(`- Spec ${item.id} (\`${item.file}\`): ${item.reason}`);
+    for (const file of item.missingReceipts) lines.push(`  - Missing or changed: \`${file}\``);
+  }
+  return `${lines.join('\n')}\n`;
 }
 
 function requirementProjection(bytes, record) {
@@ -447,7 +492,7 @@ function replayManifest(plan) {
     ...plan.requirementHistory.map(record => ({ originalPath: record.path, archivedPath: restoredPath(plan.destination, record), sha256: record.restoredSha256, operation: 'restored-from-git', requirement: record })),
     ...plan.copiedEvidence.map(file => ({ originalPath: file.path, archivedPath: `${plan.destination}/evidence/${file.path}`, sha256: file.sha256, operation: 'copied' })),
   ];
-  return { schemaVersion: 1, kind: 'joycraft-archive-replay', feature: plan.feature, archivedAt: new Date().toISOString(), phase: plan.phase, source: plan.source, evidence: plan.evidence, ...(plan.reconciliation ? { reconciliation: plan.reconciliation } : {}), durableContext: plan.attestation.durableContext, hostSession: plan.attestation.host.sessionId, historical: plan.historical, files: map };
+  return { schemaVersion: 1, kind: 'joycraft-archive-replay', feature: plan.feature, archivedAt: new Date().toISOString(), phase: plan.phase, source: plan.source, evidence: plan.evidence, ...(plan.reconciliation ? { reconciliation: plan.reconciliation } : {}), ...(plan.asIs ? { asIs: { ...plan.asIs, sha256: sha256(Buffer.from(unverifiedNote(plan))) } } : {}), durableContext: plan.attestation.durableContext, hostSession: plan.attestation.host.sessionId, historical: plan.historical, files: map };
 }
 
 export function archiveFeature(options) {
@@ -477,6 +522,7 @@ export function archiveFeature(options) {
       mkdirSync(path.dirname(target), { recursive: true, mode: 0o700 });
       writeFileSync(target, bytes, { flag: 'wx', mode: 0o600 });
     }
+    if (plan.asIs) writeFileSync(path.join(stageLocal, 'unverified.md'), unverifiedNote(plan), { flag: 'wx', mode: 0o600 });
     writeFileSync(path.join(stageLocal, 'archive-replay.json'), `${JSON.stringify(replayManifest(plan), null, 2)}\n`, { flag: 'wx', mode: 0o600 });
     // One final source check protects the move after staging completes.
     const latest = previewArchiveFeature({ ...options, root, apply: false });
@@ -492,8 +538,81 @@ export function archiveFeature(options) {
     const recovery = restored ? 'The live feature path was preserved.' : `The staged feature remains at ${stage}; restore it manually before retrying.`;
     throw new Error(`Archive stopped without accepting new completion: ${error.message}. ${recovery}`);
   }
+  let links;
+  try { links = relinkLive(root, plan); } catch (error) { links = { error: error.message }; }
   const afterArchive = runAfterArchive(root, plan);
-  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(afterArchive ? { afterArchive } : {}) };
+  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), links, ...(afterArchive ? { afterArchive } : {}) };
+}
+
+/** The common parent folder of the context, features and archive homes ('.' when they share none). */
+function docsRoot(root) {
+  const parts = Object.values(workPaths(root)).map(folder => folder.split('/'));
+  const common = [];
+  for (let index = 0; parts.every(list => index < list.length - 1 && list[index] === parts[0][index]); index += 1) common.push(parts[0][index]);
+  return common.join('/') || '.';
+}
+
+const under = (file, folder) => folder === '.' || file === folder || file.startsWith(`${folder}/`);
+
+/** Live project files: Git's tracked and unignored files, or the docs root's files without Git. */
+function liveFiles(root, docs) {
+  if (gitRoot(root)) return gitIn(root, ['ls-files', '-z', '--cached', '--others', '--exclude-standard']).split('\0').filter(file => file && existsSync(path.join(root, file)));
+  const files = [];
+  const walk = relative => {
+    const local = path.join(root, relative);
+    if (!existsSync(local)) return;
+    for (const name of readdirSync(local)) {
+      if (name.startsWith('.')) continue;
+      const child = relative === '.' ? name : `${relative}/${name}`, stat = lstatSync(path.join(root, child));
+      if (stat.isDirectory()) walk(child); else if (stat.isFile()) files.push(child);
+    }
+  };
+  walk(docs);
+  return files;
+}
+
+/**
+ * After a move: rewrite Markdown links into the moved folder in live docs under
+ * the docs root (not the archive, not reports or receipts), and list, unedited,
+ * live files that still name the folder in other words.
+ */
+function relinkLive(root, plan) {
+  const { source, destination } = plan;
+  const docs = docsRoot(root), archive = workPaths(root).archive;
+  const evidence = new Set([...plan.copiedEvidence.map(file => file.path), ...plan.evidence.flatMap(decision => [decision.path, decision.report?.path].filter(Boolean))]);
+  const names = new RegExp(`(?<![\\w-])${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`);
+  const result = { rewritten: [], namedInMarkdown: [], namedInOtherFiles: [] };
+  for (const file of liveFiles(root, docs).filter(file => !under(file, archive)).sort()) {
+    const local = path.join(root, file);
+    let text;
+    try { text = readFileSync(local, 'utf8'); } catch { continue; }
+    if (!file.endsWith('.md')) {
+      if (names.test(text)) result.namedInOtherFiles.push(file);
+      continue;
+    }
+    const editable = under(file, docs) && !evidence.has(file);
+    let fenced = false, changed = false;
+    const lines = text.split('\n').map((line, index) => {
+      if (/^\s{0,3}(```|~~~)/.test(line)) { fenced = !fenced; return line; }
+      if (fenced || !editable) return line;
+      // Inline links `](target)` and reference definitions `[label]: target`.
+      return line.replace(/(\]\(\s*<?|^\s{0,3}\[[^\]]+\]:\s*<?)([^)\s>]+)/g, (match, lead, target) => {
+        if (/^[a-z][a-z\d+.-]*:/i.test(target) || target.startsWith('#') || target.startsWith('/')) return match;
+        const [, bare, suffix] = /^([^#?]*)(.*)$/.exec(target);
+        const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(file), bare)).replace(/\/$/, '');
+        if (!under(resolved, source)) return match;
+        const moved = `${destination}/feature${resolved.slice(source.length)}`;
+        const link = `${path.posix.relative(path.posix.dirname(file), moved) || '.'}${bare.endsWith('/') ? '/' : ''}${suffix}`;
+        result.rewritten.push({ path: file, line: index + 1, from: target, to: link });
+        changed = true;
+        return `${lead}${link}`;
+      });
+    });
+    const next = lines.join('\n');
+    if (changed) writeFileSync(local, next);
+    if (names.test(next)) result.namedInMarkdown.push(file);
+  }
+  return result;
 }
 
 /** Run the project's hooks.afterArchive once. Its failure is reported; the archive stands. */
@@ -510,22 +629,44 @@ function runAfterArchive(root, plan) {
     ...(result.error ? { error: result.error.message } : {}), stdout: tail(result.stdout), stderr: tail(result.stderr) };
 }
 
+/**
+ * Whether the project's `.ignore` lists the archive folder, so rg and similar
+ * searches skip history. `apply` appends `<archive>/` once, creating the file.
+ */
+export function archiveIgnore({ root = process.cwd(), apply = false } = {}) {
+  const archive = workPaths(root).archive.replace(/\/+$/, '');
+  const line = `${archive}/`, file = path.join(root, '.ignore');
+  const text = existsSync(file) ? readFileSync(file, 'utf8') : null;
+  const listed = (text ?? '').split(/\r?\n/).map(item => item.trim().replace(/^\//, '').replace(/\/+$/, '')).includes(archive);
+  if (listed) return { file: '.ignore', line, status: 'present' };
+  if (!apply) return { file: '.ignore', line, status: 'missing' };
+  writeFileSync(file, `${text ?? ''}${text && !text.endsWith('\n') ? '\n' : ''}${line}\n`);
+  return { file: '.ignore', line, status: 'added' };
+}
+
 function argumentsFor(argv) {
   const [command, ...args] = argv;
-  requireValue(command === 'archive', 'Usage: archive.mjs archive --feature <feature or folder name> --phase session-end --attestation <path> [--reconciliation <path>] [--apply]');
+  requireValue(command === 'archive', 'Usage: archive.mjs ignore --check | --apply, or archive.mjs archive --feature <feature or folder name> --phase session-end --attestation <path> [--reconciliation <path>] [--as-is --owner-instruction <text>] [--apply]');
   const flags = {};
   for (let index = 0; index < args.length; index += 1) {
-    if (args[index] === '--apply') { requireValue(flags['--apply'] === undefined, 'Duplicate --apply'); flags['--apply'] = true; continue; }
-    requireValue(['--feature', '--phase', '--attestation', '--reconciliation'].includes(args[index]) && nonempty(args[index + 1]) && flags[args[index]] === undefined, `Invalid or duplicate argument: ${args[index]}`);
+    if (['--apply', '--as-is'].includes(args[index])) { requireValue(flags[args[index]] === undefined, `Duplicate ${args[index]}`); flags[args[index]] = true; continue; }
+    requireValue(['--feature', '--phase', '--attestation', '--reconciliation', '--owner-instruction'].includes(args[index]) && nonempty(args[index + 1]) && flags[args[index]] === undefined, `Invalid or duplicate argument: ${args[index]}`);
     flags[args[index]] = args[index + 1]; index += 1;
   }
   requireValue(flags['--feature'] && flags['--phase'] && flags['--attestation'], 'Archive needs --feature, --phase and --attestation');
+  requireValue(!flags['--as-is'] || flags['--owner-instruction'], 'Archive --as-is needs --owner-instruction "<the owner\'s own words>"');
   return flags;
 }
 
 export function main(argv = process.argv.slice(2)) {
+  if (argv[0] === 'ignore') {
+    requireValue(argv.length === 2 && ['--check', '--apply'].includes(argv[1]), 'Usage: archive.mjs ignore --check | --apply');
+    const result = archiveIgnore({ apply: argv[1] === '--apply' });
+    process.stdout.write(`${JSON.stringify(result)}\n`);
+    return result;
+  }
   const flags = argumentsFor(argv);
-  const result = archiveFeature({ feature: flags['--feature'], phase: flags['--phase'], attestation: flags['--attestation'], reconciliation: flags['--reconciliation'], apply: flags['--apply'] === true });
+  const result = archiveFeature({ feature: flags['--feature'], phase: flags['--phase'], attestation: flags['--attestation'], reconciliation: flags['--reconciliation'], asIs: flags['--as-is'] === true, ownerInstruction: flags['--owner-instruction'], apply: flags['--apply'] === true });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   // The archive stands; exit 3 tells a caller that only the after-archive hook failed.
   if (result.afterArchive && !result.afterArchive.ok) process.exitCode = 3;
