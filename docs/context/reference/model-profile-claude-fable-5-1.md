@@ -12,7 +12,7 @@ can need none of it or different fixes. When the active model changes, re-check
 each block against observed behavior before you keep it.
 
 This file is the single home for Fable 5.1 steering. Other files cite a block
-as `docs/templates/reference/model-profile-claude-fable-5-1.md` plus the block
+as `docs/context/reference/model-profile-claude-fable-5-1.md` plus the block
 heading, for example "see *Finish the Whole Task* in the model profile". They
 do not copy its prose. Block headings are stable: renaming one breaks every
 citation.

@@ -61,7 +61,7 @@ pnpm build && node dist/cli.js init /tmp/test-project --yes   # try the CLI as n
 
 | Check | Command | Source |
 |---|---|---|
-| Focused test | `pnpm vitest run tests/<file>.test.ts` | vitest.config.ts |
+| Focused test | `pnpm test tests/<file>.test.ts` | vitest.config.ts |
 | Project gate | `pnpm test && pnpm typecheck` | package.json |
 | Full suite | CI: Test workflow on the PR (tarball gates, OS matrix, upgrade from the published release) | .github/workflows/test.yml |
 

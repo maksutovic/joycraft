@@ -11,6 +11,9 @@ last_updated_by: Maximilian Maksutovic
 
 | Agent Might Assume | But Actually | Impact If Wrong |
 |-------------------|-------------|----------------|
+| A PR that changes only `payload/` releases | Until 1.8.0, release preparation and the docs-sync gate ignored `payload/`; check `isProductPath()` in `scripts/release-preparation.mjs` before trusting it | A payload fix merges and never reaches npm |
+| Main blocks a red PR | Branch protection on main requires no status checks; a red PR can merge, and a merge publishes. The suite runs again on main and in publish as the only guard | Removing a main or publish suite run lets a broken build ship |
+| An example path in a docs page is harmless | `tests/public-docs.test.ts` resolves every Markdown link in `docs/guides` and `docs/reference`; an installed-skill path such as `../../../.joycraft/...` fails there | CI fails on a docs-only PR |
 | The registered `block-dangerous.sh` hook needs a tool-name argument | Claude Code passes none; the hook reads `tool_name` and `tool_input.command` from the stdin JSON (fixed 2026-09-23 after shipping as a no-op since 2026-07) and reports its reason on stderr | A hook that reads `$1` silently allows everything |
 | A hook exit code of 1 asks the user | Exit 1 is a non-blocking warning; an ask is exit 0 plus a JSON `permissionDecision` | A recipe meant to pause silently continues |
 | Skill files can grow freely | Tests cap interview (329), optimize (285), tune (228), and session-end (211) lines | Prose edits break the suite after the fact |

@@ -28,3 +28,4 @@
 - `main` branch directly (always use PRs)
 - `package.json` version field (controls npm publish)
 - `.github/workflows/publish.yml` (controls automated publishing)
+- The suite runs in `publish.yml` and on pushes to main: branch protection requires no status checks, so these runs are the only guard before npm
