@@ -49,8 +49,9 @@ The steps, short. Link to a reference for detail.
 
 A skill runs in the user's project, so every path in its text must resolve there.
 
-- Link a reference from a skill with a relative link:
-  `[setup](../../../.joycraft/references/setup.md)`.
+- Link a reference from a skill with a relative link. From
+  `.agents/skills/<name>/SKILL.md`, the setup reference is
+  `../../../.joycraft/references/setup.md`.
 - Name a runtime command with its installed path:
   `node .joycraft/runtime/gate.mjs check`.
 - Never write `payload/`, `docs/reference/`, `src/` or an absolute path in shipped
