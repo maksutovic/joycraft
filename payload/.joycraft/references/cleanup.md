@@ -1,6 +1,6 @@
 # Cleanup checks
 
-`cleanup.mjs` reports; it never edits. Each finding has `check`, `path`,
+`cleanup.mjs` reports; only `age-out --apply` moves files. Each finding has `check`, `path`,
 `detail` and `fix`. `node .joycraft/runtime/cleanup.mjs --checks` lists every
 check, what it finds, and whether it is a gate. `entry-check.mjs` prints the
 findings about entry files; `--ci` prints the gate findings and exits 2.
@@ -166,6 +166,10 @@ that talks to the owner, runs the steps.
    ledger. Run
    `entry-check.mjs lost --base HEAD` and account for each line. Run `cleanup.mjs`,
    `wiring.mjs`, `entry-check.mjs --ci` and the project's gates. Offer one commit.
+
+In this attended pass only, never at session end, run `cleanup.mjs age-out --days 14`.
+If it lists docs, ask once: "N working docs have had no commit for 14 days.
+Archive them?" On a yes, run it again with `--apply`.
 
 On request, check the guides again, or fix a line that a person names
 and each copy of its claim.

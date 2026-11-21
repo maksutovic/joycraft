@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseYaml, readConfig } from './config.mjs';
@@ -544,6 +544,29 @@ export function tidyVerify({ root = process.cwd(), base, now = Date.now() } = {}
   return out;
 }
 
+/**
+ * age-out: working docs (Markdown under the docs root outside context, features,
+ * archive and backlog) with no commit for `days` days. `apply` moves each with
+ * git mv to <archive>/working/<its path under the docs root> and commits nothing.
+ */
+export function ageOut({ root = process.cwd(), days, apply = false, now = Date.now() } = {}) {
+  requireValue(Number.isInteger(days) && days > 0, 'cleanup.mjs age-out: --days must be a positive whole number');
+  const { features, archive, context } = readConfig(root).paths;
+  const docs = docsRoot({ features, archive, context });
+  const under = file => (docs === '.' ? file : file.slice(docs.length + 1));
+  const tracked = git(root, ['ls-files', '-z', '--', docs]).split('\0').filter(file => file.endsWith('.md')
+    && ![features, archive, context].some(folder => inside(file, folder)) && !under(file).split('/').slice(0, -1).includes('backlog'));
+  const last = new Map();
+  for (const entry of git(root, ['log', '--format=%x00%ct', '--name-only', '--', docs]).split('\0').filter(Boolean)) {
+    const [time, ...files] = entry.split('\n').filter(Boolean);
+    for (const file of files) if (!last.has(file)) last.set(file, Number(time) * 1000);
+  }
+  const old = tracked.filter(file => last.has(file) && now - last.get(file) > days * 86400000)
+    .map(file => ({ path: file, days: Math.floor((now - last.get(file)) / 86400000), to: `${archive}/working/${under(file)}` }));
+  if (apply) for (const doc of old) { mkdirSync(path.join(root, path.dirname(doc.to)), { recursive: true }); git(root, ['mv', '--', doc.path, doc.to]); }
+  return { days, count: old.length, docs: old, applied: apply };
+}
+
 const usage = 'Usage: cleanup.mjs [--checks | tidy [--base <ref>] [--verify] | age-out --days <n> [--apply]] [--root <project>]';
 
 export async function main(argv = process.argv.slice(2)) {
@@ -571,6 +594,15 @@ export async function main(argv = process.argv.slice(2)) {
     const { all, ...result } = tidyReport({ root, base });
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     if (result.findings.length) process.exitCode = 2;
+    return result;
+  }
+  if (args[0] === 'age-out') {
+    args.shift();
+    const days = Number(take('--days'));
+    const apply = has('--apply');
+    requireValue(args.length === 0, usage);
+    const result = ageOut({ root, days, apply });
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     return result;
   }
   requireValue(args.length === 0, usage);
