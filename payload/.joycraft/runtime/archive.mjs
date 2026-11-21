@@ -510,9 +510,24 @@ function runAfterArchive(root, plan) {
     ...(result.error ? { error: result.error.message } : {}), stdout: tail(result.stdout), stderr: tail(result.stderr) };
 }
 
+/**
+ * Whether the project's `.ignore` lists the archive folder, so rg and similar
+ * searches skip history. `apply` appends `<archive>/` once, creating the file.
+ */
+export function archiveIgnore({ root = process.cwd(), apply = false } = {}) {
+  const archive = workPaths(root).archive.replace(/\/+$/, '');
+  const line = `${archive}/`, file = path.join(root, '.ignore');
+  const text = existsSync(file) ? readFileSync(file, 'utf8') : null;
+  const listed = (text ?? '').split(/\r?\n/).map(item => item.trim().replace(/^\//, '').replace(/\/+$/, '')).includes(archive);
+  if (listed) return { file: '.ignore', line, status: 'present' };
+  if (!apply) return { file: '.ignore', line, status: 'missing' };
+  writeFileSync(file, `${text ?? ''}${text && !text.endsWith('\n') ? '\n' : ''}${line}\n`);
+  return { file: '.ignore', line, status: 'added' };
+}
+
 function argumentsFor(argv) {
   const [command, ...args] = argv;
-  requireValue(command === 'archive', 'Usage: archive.mjs archive --feature <feature or folder name> --phase session-end --attestation <path> [--reconciliation <path>] [--apply]');
+  requireValue(command === 'archive', 'Usage: archive.mjs ignore --check | --apply, or archive.mjs archive --feature <feature or folder name> --phase session-end --attestation <path> [--reconciliation <path>] [--apply]');
   const flags = {};
   for (let index = 0; index < args.length; index += 1) {
     if (args[index] === '--apply') { requireValue(flags['--apply'] === undefined, 'Duplicate --apply'); flags['--apply'] = true; continue; }
@@ -524,6 +539,12 @@ function argumentsFor(argv) {
 }
 
 export function main(argv = process.argv.slice(2)) {
+  if (argv[0] === 'ignore') {
+    requireValue(argv.length === 2 && ['--check', '--apply'].includes(argv[1]), 'Usage: archive.mjs ignore --check | --apply');
+    const result = archiveIgnore({ apply: argv[1] === '--apply' });
+    process.stdout.write(`${JSON.stringify(result)}\n`);
+    return result;
+  }
   const flags = argumentsFor(argv);
   const result = archiveFeature({ feature: flags['--feature'], phase: flags['--phase'], attestation: flags['--attestation'], reconciliation: flags['--reconciliation'], apply: flags['--apply'] === true });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
