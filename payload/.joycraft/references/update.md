@@ -33,10 +33,11 @@ Use the version from `latest`:
    the block replaces. This is the one entry-file edit that an unattended run
    makes, besides a path with one unique Git rename.
    When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`,
-   ask once whether search should skip the archive; on a yes, rerun it with `--apply`.
+   ask once whether search should skip the archive; rerun it with `--apply` on
+   a yes, `--decline` on a no.
 4. Tell the user in plain words what is different now. For a `minor` or
    `migration`, name what the user can now do or say, one line per release since
-   the old version, from the listed release summaries and the changelog. When
+   the old version, from the listed release summaries and the changelog when you can read it. When
    `node .joycraft/runtime/artifacts/cli.mjs questions` prints `unset: true`,
    ask for the question style now, as [setup](setup.md) step 2 says.
 5. Run the review-loop plan

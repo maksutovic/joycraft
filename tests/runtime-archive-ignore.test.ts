@@ -56,4 +56,34 @@ describe('archive.mjs ignore', () => {
       expect(text.match(/archive\.mjs ignore/g), name).toHaveLength(1);
     }
   });
+
+  it('[review-b-7] a line with leading spaces is not the archive line; CRLF stays CRLF; equivalent spellings count as present', () => {
+    const root = fixture();
+    put(join(root, '.ignore'), 'node_modules/\r\n  docs/archive/\r\n');
+    expect(ignore(root, '--check').status).toBe('missing');
+    expect(ignore(root, '--apply').status).toBe('added');
+    expect(readFileSync(join(root, '.ignore'), 'utf8')).toBe('node_modules/\r\n  docs/archive/\r\ndocs/archive/\r\n');
+    put(join(root, '.ignore'), 'node_modules/\r\nlast');
+    ignore(root, '--apply');
+    expect(readFileSync(join(root, '.ignore'), 'utf8')).toBe('node_modules/\r\nlast\r\ndocs/archive/\r\n');
+    for (const spelling of ['./docs/archive/', 'docs/archive/**', '/docs/archive', 'docs/archive', 'docs/archive/  ']) {
+      put(join(root, '.ignore'), `x\n${spelling}\n`);
+      expect(ignore(root, '--check').status, spelling).toBe('present');
+    }
+  });
+
+  it('[review-b-8] --decline records the no in preferences, keeping other keys; --check then reports declined', () => {
+    const root = fixture();
+    const prefs = join(root, '.joycraft/preferences.json');
+    put(prefs, JSON.stringify({ schemaVersion: 1, artifacts: { pages: 'local' } }));
+    expect(ignore(root, '--decline').status).toBe('declined');
+    expect(JSON.parse(readFileSync(prefs, 'utf8'))).toEqual({ schemaVersion: 1, artifacts: { pages: 'local' }, archive: { ignore: 'declined' } });
+    expect(existsSync(join(root, '.ignore'))).toBe(false);
+    expect(ignore(root, '--check').status).toBe('declined');
+    for (const name of ['setup.md', 'update.md']) {
+      const text = readFileSync(join(repo, 'payload', '.joycraft', 'references', name), 'utf8');
+      expect(text, name).toMatch(/archive\.mjs ignore --check`[^.]*`missing`/);
+      expect(text, name).toContain('--decline');
+    }
+  });
 });

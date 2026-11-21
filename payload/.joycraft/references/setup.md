@@ -276,7 +276,8 @@ settings, and never overwrite it. `node .joycraft/runtime/config.mjs` prints the
 settings in effect.
 
 Only the context homes are current project knowledge. `docs/features/` is working
-material and `docs/archive/` is history: retrieval, wikis and doc audits treat
+material (a brief or spec there can be out of date until the feature is
+archived) and `docs/archive/` is history: retrieval, wikis and doc audits treat
 both as non-authoritative and never link to them as current truth.
 
 The brief retains decision authority under `workflow.md`; the context document
@@ -303,7 +304,7 @@ Step 5 of [Set up the context map](#set-up-the-context-map) is the finish
 check; also check that command claims match their cited source. Setup does not
 change credentials, install dependencies, or replace the user's workflow.
 When `.joycraft/installation.json` lists the `claude` host, offer the [gates](gates.md) once, in one line; turn them on only on the user's yes.
-Ask once whether search should skip the archive; on a yes, run `node .joycraft/runtime/archive.mjs ignore --apply`.
+When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`, ask once whether search should skip the archive; rerun it with `--apply` on a yes, `--decline` on a no.
 When the project already uses a doc or code checker (vale, knip), offer once to add it to `checks:` ([settings](settings.md)).
 
 ## Upgrade and agent onboarding
