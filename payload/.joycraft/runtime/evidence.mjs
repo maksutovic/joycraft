@@ -149,7 +149,7 @@ export function validateEvidence(report, criteria) {
 
 export const defaultTimeoutMs = 300000;
 const graceMs = 2000;
-const usage = 'Usage: evidence.mjs run --receipt <path> [--timeout-ms <n>] -- <command> [args...]';
+const usage = 'Usage: evidence.mjs run --receipt <path>.log [--timeout-ms <n>] -- <command> [args...]';
 
 const refusal = message => Object.assign(new Error(message), { exitCode: 2 });
 const refuse = (condition, message) => { if (!condition) throw refusal(message); };
@@ -159,6 +159,16 @@ export function gitIgnored(root, relative) {
     execFileSync('git', ['check-ignore', '-q', '--', relative], { cwd: root, stdio: 'ignore' });
     return true;
   } catch { return false; } // 1: not ignored; anything else: git cannot say, so not ignored.
+}
+
+/** The HEAD commit (null outside Git or before the first commit) and whether the tree has changes. */
+export function revision(root) {
+  const read = args => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+  let commit;
+  try { commit = read(['rev-parse', '--verify', '-q', 'HEAD^{commit}']).trim(); } catch { return { commit: null, dirty: false }; }
+  let dirty = false;
+  try { dirty = read(['status', '--porcelain']).trim() !== ''; } catch { /* git cannot say; report clean */ }
+  return { commit: /^[0-9a-f]{40}$/.test(commit) ? commit : null, dirty };
 }
 
 /** Signal the process group led by pid; false once the group is gone. */
@@ -186,6 +196,7 @@ async function receiptFile(root, receipt) {
   let relative, file;
   try { relative = relativePath(receipt); file = localPath(root, relative, true); }
   catch (error) { throw refusal(`Receipt must be a new project-relative path inside the project: ${error.message}`); }
+  refuse(!/\.jsonl?$/i.test(relative), `A raw receipt is not JSON; use a .log path: ${relative}`);
   refuse(!existsSync(file), `Receipt already exists: ${relative}; use a fresh receipt path`);
   const { workPaths } = await import('./config.mjs');
   let features;
@@ -206,14 +217,16 @@ async function receiptFile(root, receipt) {
  * limit. The child's stdout and stderr both go straight to one new receipt
  * file, in the order the child wrote them, as `cmd > receipt 2>&1` would.
  * Returns the observation's `command` and `receipts`, plus `timedOut`,
- * `timeoutMs` and the ending `signal` when there was one. A timeout ends the
- * child's process group (POSIX) or the child (Windows) and gives exitCode null.
+ * `timeoutMs`, the `revision` it ran on, and the ending `signal` when there
+ * was one. A timeout ends the child's process group (POSIX) or the child
+ * (Windows) and gives exitCode null.
  * Every refusal happens before the child starts and carries exitCode 2.
  */
 export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = defaultTimeoutMs, argv }) {
   refuse(Array.isArray(argv) && argv.length > 0 && argv.every(value => typeof value === 'string') && argv[0] !== '', `A command is needed after --. ${usage}`);
   refuse(Number.isSafeInteger(timeoutMs) && timeoutMs > 0 && timeoutMs <= 2 ** 31 - 1, `--timeout-ms must be a whole number of milliseconds from 1 to ${2 ** 31 - 1}`);
   const { relative, file } = await receiptFile(root, receipt);
+  const commit = revision(root);
   let fd;
   try { fd = openSync(file, 'wx', 0o644); }
   catch (error) { throw refusal(error.code === 'EEXIST' ? `Receipt already exists: ${relative}; use a fresh receipt path` : `Cannot create receipt ${relative}: ${error.message}`); }
@@ -245,7 +258,7 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
   return {
     command: { argv: [...argv], exitCode: timedOut ? null : code },
     receipts: [{ path: relative, sha256: digest.digest('hex') }],
-    timedOut, timeoutMs, ...(signal ? { signal } : {}),
+    timedOut, timeoutMs, ...(signal ? { signal } : {}), revision: commit,
   };
 }
 
