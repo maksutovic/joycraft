@@ -96,6 +96,11 @@ packaged compatibility checks run before the single OIDC publish to `latest`.
 The post-publication metadata check confirms identity and visibility. It does not
 replace those consumer tests with another package installation.
 
-### Legacy upgrade fixture
+### Previous-version update fixture
 
-The previous package is initialized with plain `init`, which supports 0.7.13. The temporary consumer contains only generated files, so the candidate update explicitly replaces its legacy `.claude/hooks/joycraft-version-check.mjs`. Real projects retain the default ownership-conflict guard and require explicit review for that replacement.
+The update check installs the current npm `latest` into an empty consumer project
+with plain `init . --yes`, then runs the candidate's
+`update . --migrate --archive-custom --yes` on it. The consumer holds only files the
+previous package generated, so archiving custom files changes nothing a user wrote.
+Real projects keep the default ownership-conflict check and need a person's review
+before an edited Joycraft file is replaced.

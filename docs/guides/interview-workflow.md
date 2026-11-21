@@ -2,40 +2,70 @@
 
 > [Back to README](../../README.md)
 
-The single biggest upgrade Joycraft makes to your workflow is replacing the prompt-iterate-fix cycle with a **structured interview**.
+The biggest change Joycraft makes to your work is this: before the agent writes
+code, it asks you questions and writes down what you want.
 
-Here's the problem with how most of us use AI coding tools: we open a session and start typing. "Build me a notification system." The agent starts writing code immediately. It makes assumptions about your data model, your UI framework, your error handling strategy, your deployment target. You catch some of these mid-flight, correct them, the agent adjusts, introduces new assumptions. Three hours later you have something that *kind of* works but is built on a foundation of guesses.
+Without that step, you type "build me a notification system" and the agent starts
+at once. It guesses your data model, your UI framework, your error handling and
+your deployment target. You catch some guesses and correct them, and the agent
+makes new ones. Three hours later the work *kind of* works, on a base of guesses.
 
-Joycraft flips this. Before the agent writes a single line of code, you have a conversation about *what you're building and why*.
+Joycraft changes the order. First you and the agent agree on *what you are
+building and why*. Then the agent builds it.
 
-## Two interview modes
+## How it works
 
-**`/joycraft-interview`** is the lightweight brainstorm. You yap about an idea, the agent asks clarifying questions, and you get a structured summary saved to `docs/briefs/`. Good for early-stage thinking when you're not ready to commit to building anything yet. No pressure, no specs, just organized thought.
+You do not call a skill by name. Describe the work and the agent picks the step.
 
-**`/joycraft-new-feature`** is the full workflow. This is the structured interview that produces a **Feature Brief** (the what and why) and then decomposes it into **Atomic Specs** (small, testable, independently executable units of work). Each spec is self-contained. An agent in a fresh session can pick it up and execute without reading anything else.
+1. **You say what you want.** The `joycraft-entry` skill reads the project's context
+   map, then asks you only what the code and the docs cannot tell it.
+2. **The agent writes a brief.** The brief is in `docs/features/<slug>/brief.md`. It
+   says what you want, why, and ends with "Done when": the result you will accept.
+   Each open choice is a decision in the brief, and the agent asks it on a page.
+   You approve the brief.
+3. **The agent splits the brief into specs.** `joycraft-decompose` writes small specs
+   and a queue (`docs/features/<slug>/specs/.joycraft-spec-queue.json`). Each spec is
+   one step that an agent can build and test alone.
+4. **The agent builds each spec.** `joycraft-implement` builds the queue with tests.
+5. **A second agent checks each spec.** `joycraft-verify` runs in a separate context.
+   Only its PASS completes a spec.
+6. **The agent wraps up.** `joycraft-session-end` reports the real state of each spec,
+   records what the work taught, and archives a feature when all of it is accepted.
+
+For a choice about a screen or a page, `joycraft-ui-slice` builds a small working
+preview, so you can choose from the real thing.
+
+A prompt to start:
+
+```text
+I want to add <what you want>. Ask me what you need to know first, then show me
+the brief on a page before you write any specs.
+Do not commit, publish, or ask me for API keys.
+```
 
 ## Why this works
 
-The insight comes from [Boris Cherny](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens) (Head of Claude Code at Anthropic): interview in one session, write the spec, then execute in a *fresh session* with clean context. The interview captures your intent. The spec is the contract. The execution session has only the spec. No baggage from the conversation, no accumulated misunderstandings, no context window full of abandoned approaches.
+The idea comes from [Boris Cherny](https://www.lennysnewsletter.com/p/head-of-claude-code-what-happens)
+(Head of Claude Code at Anthropic): interview in one session, write the spec, then
+build in a *fresh session* with clean context. The interview captures your intent.
+The spec is the contract. The building agent has only the spec, with no leftover
+misunderstandings and no context window full of abandoned approaches.
 
-This is what separates Level 2 (back-and-forth prompting) from Level 4 (spec-driven development). You stop being a typist correcting an agent's guesses and start being a PM defining what needs to be built.
+This is the step from Level 2 (back-and-forth prompting) to Level 4 (spec-driven
+development). See [The levels](levels.md). You stop correcting an agent's guesses
+and start saying what must be built.
 
 ```mermaid
 flowchart LR
-    A["/joycraft-interview<br/>(brainstorm)"] --> B["Draft Brief<br/>docs/briefs/"]
-    B --> C["/joycraft-new-feature<br/>(structured interview)"]
-    C --> D["Feature Brief<br/>(what & why)"]
-    D --> R["/joycraft-research<br/>(objective facts)"]
-    R --> DS["/joycraft-design<br/>(human checkpoint)"]
-    DS --> E["/joycraft-decompose"]
-    E --> F["Atomic Specs<br/>docs/specs/"]
-    F --> G["Fresh Session<br/>Execute each spec"]
-    G --> H["/joycraft-session-end<br/>(discoveries + commit)"]
+    A["You say what you want"] --> B["joycraft-entry<br/>(questions + brief)"]
+    B --> C["Brief<br/>docs/features/&lt;slug&gt;/"]
+    C --> D["joycraft-decompose"]
+    D --> E["Specs + queue"]
+    E --> F["joycraft-implement<br/>(tests while it builds)"]
+    F --> G["joycraft-verify<br/>(separate reviewer)"]
+    G --> H["joycraft-session-end<br/>(report + archive)"]
 
-    style A fill:#e8f4fd,stroke:#369
-    style C fill:#e8f4fd,stroke:#369
-    style R fill:#f0e8fd,stroke:#639
-    style DS fill:#f0e8fd,stroke:#639
-    style F fill:#cfc,stroke:#393
+    style B fill:#e8f4fd,stroke:#369
+    style E fill:#cfc,stroke:#393
     style G fill:#ffd,stroke:#993
 ```

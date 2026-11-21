@@ -4,7 +4,7 @@
 
 ## The core idea
 
-- **The product:** Skills like `/joycraft-tune`, `/joycraft-new-feature`, and `/joycraft-interview` replace unstructured prompting with spec-driven development — you interview, you write specs, the agent executes — plus a harness (boundaries, context docs, skills) that gets better as you work.
+- **The product:** Joycraft replaces unstructured prompting with spec-driven development: the agent asks you questions, writes a brief and specs, builds them with tests, and a second agent checks each one. Around that loop is a harness (`AGENTS.md` boundaries, a context map, skills) that gets better as you work.
 
 ## What are the levels?
 
@@ -13,9 +13,9 @@
 | Level | Name | What it looks like | Joycraft's role |
 |-------|------|--------------------|-----------------|
 | 1 | Autocomplete | Tab-complete suggestions | - |
-| 2 | Junior Developer | Prompt → iterate → fix → repeat | `/joycraft-tune` assesses where you are |
-| 3 | Developer as Manager | Your life is reviewing diffs | Behavioral boundaries in CLAUDE.md |
-| 4 | Developer as PM | You write specs, agent writes code | `/joycraft-new-feature` + `/joycraft-decompose` |
+| 2 | Junior Developer | Prompt → iterate → fix → repeat | `joycraft-entry` builds the context map and turns a request into a brief |
+| 3 | Developer as Manager | Your life is reviewing diffs | Boundaries in `AGENTS.md`; `joycraft-verify` reviews each spec before you do |
+| 4 | Developer as PM | You write specs, agent writes code | `joycraft-decompose` + `joycraft-implement` |
 | 5 | Software Factory | Specs in, validated software out | - |
 
 Most developers plateau at Level 2. Joycraft's job is to make you excellent at
