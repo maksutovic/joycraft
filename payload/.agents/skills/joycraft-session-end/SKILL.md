@@ -6,22 +6,19 @@ compatibility: Requires Node.js 22+ and the installed .joycraft runtime for the 
 
 # Joycraft Session End
 
-Use this skill when pausing or finishing an authorized queue session.
-
 Read each touched queue and report the real state of every affected spec: `todo`, `in-review`, or `done`. `done` must have either an accepted PASS report receipt or a completion-helper owner-acceptance record bound to a current failed or unverified report; a commit, PASS command, or implementer assertion is not acceptance. Keep blocked or failed dependency branches explicit while identifying independent ready work that can continue next.
 
-If the session stops or restarts a concurrent run, report its recorded
-coordinator ownership, captured refs, known worker trees, leases, locks, and
-runtime processes. Release only resources demonstrably owned by that run;
-retain ambiguous merges, locks, processes, and trees for diagnosis. Do not
-force local state to a remote tip. Start a replacement only from the durable
-run journal and a newly printed dispatch plan.
+If the session stops or restarts a concurrent run, report its coordinator
+ownership, refs, worker trees, leases, locks and processes. Release only what
+that run owns; keep ambiguous merges, locks, processes and trees for diagnosis.
+Do not force local state to a remote tip. Start a replacement only from the run
+journal and a new dispatch plan.
 
 For each completed spec, report the implementation revision, independent reviewer session ID, report and receipt paths, actual commands and outcomes, visual inspection status where required, and known limitations. For owner-accepted work, also report the owner-acceptance record and its inherited limits as `done, owner-accepted with <limits>`; preserve the original `FAIL` or `UNVERIFIED` report rather than calling it PASS or verified. List each spec completed under a feature waiver as `done, waived by the user: "<instruction>"`, with any report's real verdict; never call it reviewed or verified.
 
-If a completion operation failed or was interrupted, do not declare success or hand-edit statuses. Retain the helper's error and journal/recovery information, then use the bounded local recovery process in [completion guidance](../../../.joycraft/references/completion.md). It only restores the two status surfaces and accepted-report receipt captured by the journal; it does not retry unrelated work.
+If a completion operation failed or was interrupted, do not declare success or hand-edit statuses. Keep the helper's error and journal, then follow the recovery in [completion guidance](../../../.joycraft/references/completion.md).
 
-Leave enough project-relative paths and next actions for another session to resume the autonomous ready authorized queue without recreating settled context or decisions.
+Leave the paths and next actions another session needs to resume the ready queue without redoing settled context or decisions.
 
 Before ending, run `node .joycraft/runtime/status.mjs --fix` (repairs lagging
 frontmatter of accepted specs, lists features ready to archive) and
@@ -46,9 +43,12 @@ Before any archival, route each reusable fact the session established (a decisio
 
 Write nothing temporal into an entry file or a guide: a date, a status or a hand-off goes to its record, as the [cleanup reference](../../../.joycraft/references/cleanup.md#what-to-find-on-each-page) says.
 
-Then audit the docs without being asked: run `joycraft-cleanup` in its
-session-end mode. It reports and makes only the mechanical fixes. Put its
-findings on the session-end page. With no findings, say so in one line.
+Then tidy without being asked. Commit the session's other edits first. Run
+`node .joycraft/runtime/cleanup.mjs tidy` and fix only the lines its
+`fixable: true` findings name, never an entry file or rule text. When
+`cleanup.mjs tidy --verify` passes, make one commit with the message it
+prints. Then run `joycraft-cleanup` in its session-end mode. Put the other
+findings on the session-end page; with none, say so in one line.
 
 When independent reports suggest a reusable failure lesson, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md).
 
@@ -72,15 +72,14 @@ node .joycraft/runtime/archive.mjs archive --feature <slug> --phase session-end 
 node .joycraft/runtime/archive.mjs archive --feature <slug> --phase session-end --attestation <attestation.json> --apply
 ```
 
-Historical reports retain their original paths, subject revisions, and claims.
-Do not rewrite them or describe old code hashes as a new current acceptance.
+Keep historical reports as they are. Never describe old code hashes as a new
+acceptance.
 
-If post-acceptance queue/spec edits block archival, investigate the discrepancy
-and use the explicit archive-reconciliation path in the archive guidance when
-the owner has authorized that resolution. Record the instruction, exact affected
-report/input hashes, cause, resolution and limitations; preserve every original
-report and accepted version. Existing task authorization need not be requested
-again. Do not rewrite acceptance hashes, roll back a queue merely to satisfy old
-reports, or re-review done work solely to move a folder. Report the result as
-`archived with reconciliation`, never as renewed acceptance. Unresolved product
+If queue or spec edits after acceptance block archival, find the cause. Use the
+archive-reconciliation path in the archive guidance when the owner authorized
+it. Record the instruction, affected report and input hashes, cause, resolution
+and limits; keep every original report and accepted version. Do not ask again
+for authorization you have. Do not rewrite acceptance hashes, roll back a queue
+to satisfy old reports, or re-review done work only to move a folder. Report
+`archived with reconciliation`, never renewed acceptance. Unresolved product
 work and corrupt or missing evidence still block closure.

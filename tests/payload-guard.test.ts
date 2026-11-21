@@ -271,6 +271,13 @@ describe('shipped payload text', () => {
     expect(words, `${words} words; field-24 had ${FIELD_24_WORDS}`).toBeLessThanOrEqual(FIELD_24_WORDS);
   });
 
+  // Spec: docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md (29,853 words before it).
+  it('[AC:spec-12-5] ships fewer than 29,917 words after the drift-tidy cuts', () => {
+    const words = payloadWords(treeBundle());
+    console.log(`payload words: ${words}`);
+    expect(words, `${words} words`).toBeLessThan(29917);
+  });
+
   it('every relative link and named reference or runtime path is shipped', () => {
     expect(deadReferences(treeBundle())).toEqual([]);
   });

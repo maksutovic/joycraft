@@ -31,15 +31,15 @@ A reusable fact is one a later session needs and cannot cheaply get from the
 code. Use the home the map already names for that kind. Use the default only when
 the map has no home for it.
 
-| Fact | Home |
-|---|---|
-| What the project is (purpose, users, owners, constraints), and the areas setup has not mapped yet | `docs/context/project.md` (from `.joycraft/templates/project-context.md`) |
-| Navigation across code boundaries (where a flow lives) | A focused reference page linked by the map, e.g. `docs/context/architecture.md` |
-| Decision | Current choice in the home that owns that area; reason and rejected options in the decision log |
-| Trap (something that misleads or breaks, and how to avoid it) | The project's troubleshooting or gotchas page, default `docs/context/traps.md` |
-| Reference (where something lives, how to run or look it up) | A focused reference page linked by the map |
-| Production fact (deploy, environments, data, external services) | The production page, default `docs/context/production.md` |
-| Feature intent and product choices for live work | The feature brief; do not copy them into a context home |
+| Fact | Kind | Home |
+|---|---|---|
+| What the project is (purpose, users, owners, constraints), and the areas setup has not mapped yet | domain | `docs/context/project.md` (from `.joycraft/templates/project-context.md`) |
+| Navigation across code boundaries (where a flow lives) | explanation | A reference page the map links, e.g. `docs/context/architecture.md` |
+| Decision | explanation | Current choice in the home that owns that area; reason and rejected options in the decision log |
+| Trap (something that misleads or breaks, and how to avoid it) | how-to | The troubleshooting page, default `docs/context/traps.md` |
+| Reference (where something lives, how to run or look it up) | reference | A reference page the map links |
+| Production fact (deploy, environments, data, external services) | reference | The production page, default `docs/context/production.md` |
+| Feature intent and product choices for live work | | The feature brief; do not copy them into a context home |
 
 For each fact:
 

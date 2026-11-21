@@ -1,6 +1,7 @@
 # Cleanup checks
 
-`cleanup.mjs` reports; only `age-out --apply` moves files. Each finding has `check`, `path`,
+`cleanup.mjs` reports; only `age-out --apply` moves files. Session end edits
+only the lines that `cleanup.mjs tidy` names. Each finding has `check`, `path`,
 `detail` and `fix`. `node .joycraft/runtime/cleanup.mjs --checks` lists every
 check, what it finds, and whether it is a gate. `entry-check.mjs` prints the
 findings about entry files; `--ci` prints the gate findings and exits 2.
@@ -100,8 +101,7 @@ it.
    log; anything temporal (a date, a status, paused, open, in progress, who
    decided); a copy of something that another place owns. Name the one home
    for each: a decision and its reason go to the decision log, an operation
-   or a status to its log, open work to the backlog (default `docs/backlog/`)
-   or a handoff.
+   or a status to its log, open work to the backlog (default `docs/backlog/`).
 4. **Shape.** What does a reader that this page's map row sends need, and how
    much must it read to get it? Propose the smallest change that fixes it:
    reorder, split, merge or move.

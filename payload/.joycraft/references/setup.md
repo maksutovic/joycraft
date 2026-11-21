@@ -8,16 +8,6 @@ the context map from the repository and a short interview with the user. The
 interview is part of every setup. Work inside the current project. A
 read-only request gets the findings reported, not written.
 
-## Contents
-
-- [Set up the context map](#set-up-the-context-map)
-- [Kickoff for a new project](#kickoff-for-a-new-project)
-- [Review loop tools](#review-loop-tools)
-- [Project-owned worktrees](#project-owned-worktrees)
-- [Knowledge grows with the work](#knowledge-grows-with-the-work)
-- [Finish setup and continue](#finish-setup-and-continue)
-- [Upgrade and agent onboarding](#upgrade-and-agent-onboarding)
-
 ## Set up the context map
 
 The context map in `AGENTS.md` is the index of project memory
@@ -314,6 +304,7 @@ check; also check that command claims match their cited source. Setup does not
 change credentials, install dependencies, or replace the user's workflow.
 When `.joycraft/installation.json` lists the `claude` host, offer the [gates](gates.md) once, in one line; turn them on only on the user's yes.
 Ask once whether search should skip the archive; on a yes, run `node .joycraft/runtime/archive.mjs ignore --apply`.
+When the project already uses a doc or code checker (vale, knip), offer once to add it to `checks:` ([settings](settings.md)).
 
 ## Upgrade and agent onboarding
 
