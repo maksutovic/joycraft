@@ -28,12 +28,10 @@ Prepare a project-relative attestation file:
 ```
 
 `quiescent` attests that no active worker and no unfinished work requiring the
-feature's live paths remains. It does not ask for a new human permission. The
-current Markdown context references must already exist outside `docs/features/` and
+feature's live paths remains. The current Markdown context references must already exist outside `docs/features/` and
 `docs/archive/`; they demonstrate that constraints worth retaining were carried
-into current documentation. Reuse the project's existing home, including
-`AGENTS.md` or a custom context map. This attestation is an operational statement, not
-another decision or approval authority.
+into current documentation, such as `AGENTS.md` or a custom context map. The
+attestation is an operational statement, not an approval.
 
 The preview validates the complete queue before any write: the canonical queue
 must be the only queue anywhere in the feature tree, all specs must be
@@ -53,8 +51,8 @@ and every referenced receipt must still have its recorded bytes. A pending
 completion journal, a malformed/corrupt/FAIL report, unfinished work, missing
 durable context, symlinks, traversal, or archive collision stops the operation.
 
-The runtime deliberately does not rerun historic suites or compare their code
-input hashes with current live code. Later work may supersede those hashes. For
+The runtime does not rerun historic suites or compare their code input hashes
+with live code, which later work may supersede. For
 a v1-bound report it still checks the selected queue/dependencies and selected
 governing requirement or decision records, while independent queue records and
 unselected decisions may change. Older reports retain their original whole-file
@@ -203,8 +201,10 @@ then atomically moves `docs/features/<slug>` to
 `docs/archive/<slug>/feature`. Code, tests, and shared receipts outside the
 feature stay live. Reports and receipts outside the feature are copied under
 the archive record's `evidence/` directory. `archive-replay.json` maps each
-original path to its moved, copied or restored byte-identical record. Historical links in
-the moved files retain their original text; treat them as history.
+original path to its moved, copied or restored byte-identical record. Links in
+the moved files keep their text. Apply rewrites links into the folder in live
+Markdown under the docs root (not the archive, reports or receipts); `links`
+lists them and, unedited, other live files that name the folder.
 
 The staging directory receives `archive-recovery.json` before any copy or move,
 and the marker remains in the final archive as immutable move provenance. If an
@@ -227,7 +227,6 @@ hooks:
 
 After a successful `--apply`, the runtime runs it once from the project root with
 `JOYCRAFT_FEATURE`, `JOYCRAFT_ARCHIVE_PATH` and `JOYCRAFT_SOURCE_PATH` set, and reports
-its exit code and output tail under `afterArchive`. Use it to update a wiki
-or run a doc audit. A failing hook does not undo the archive;
+its exit code and output tail under `afterArchive`. A failing hook does not undo the archive;
 report and fix it. A repeat does not run it again.
 `paths.features` and `paths.archive` there move both folders.

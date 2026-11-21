@@ -492,8 +492,81 @@ export function archiveFeature(options) {
     const recovery = restored ? 'The live feature path was preserved.' : `The staged feature remains at ${stage}; restore it manually before retrying.`;
     throw new Error(`Archive stopped without accepting new completion: ${error.message}. ${recovery}`);
   }
+  let links;
+  try { links = relinkLive(root, plan); } catch (error) { links = { error: error.message }; }
   const afterArchive = runAfterArchive(root, plan);
-  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(afterArchive ? { afterArchive } : {}) };
+  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, links, ...(afterArchive ? { afterArchive } : {}) };
+}
+
+/** The common parent folder of the context, features and archive homes ('.' when they share none). */
+function docsRoot(root) {
+  const parts = Object.values(workPaths(root)).map(folder => folder.split('/'));
+  const common = [];
+  for (let index = 0; parts.every(list => index < list.length - 1 && list[index] === parts[0][index]); index += 1) common.push(parts[0][index]);
+  return common.join('/') || '.';
+}
+
+const under = (file, folder) => folder === '.' || file === folder || file.startsWith(`${folder}/`);
+
+/** Live project files: Git's tracked and unignored files, or the docs root's files without Git. */
+function liveFiles(root, docs) {
+  if (gitRoot(root)) return gitIn(root, ['ls-files', '-z', '--cached', '--others', '--exclude-standard']).split('\0').filter(file => file && existsSync(path.join(root, file)));
+  const files = [];
+  const walk = relative => {
+    const local = path.join(root, relative);
+    if (!existsSync(local)) return;
+    for (const name of readdirSync(local)) {
+      if (name.startsWith('.')) continue;
+      const child = relative === '.' ? name : `${relative}/${name}`, stat = lstatSync(path.join(root, child));
+      if (stat.isDirectory()) walk(child); else if (stat.isFile()) files.push(child);
+    }
+  };
+  walk(docs);
+  return files;
+}
+
+/**
+ * After a move: rewrite Markdown links into the moved folder in live docs under
+ * the docs root (not the archive, not reports or receipts), and list, unedited,
+ * live files that still name the folder in other words.
+ */
+function relinkLive(root, plan) {
+  const { source, destination } = plan;
+  const docs = docsRoot(root), archive = workPaths(root).archive;
+  const evidence = new Set([...plan.copiedEvidence.map(file => file.path), ...plan.evidence.flatMap(decision => [decision.path, decision.report?.path].filter(Boolean))]);
+  const names = new RegExp(`(?<![\\w-])${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`);
+  const result = { rewritten: [], namedInMarkdown: [], namedInOtherFiles: [] };
+  for (const file of liveFiles(root, docs).filter(file => !under(file, archive)).sort()) {
+    const local = path.join(root, file);
+    let text;
+    try { text = readFileSync(local, 'utf8'); } catch { continue; }
+    if (!file.endsWith('.md')) {
+      if (names.test(text)) result.namedInOtherFiles.push(file);
+      continue;
+    }
+    const editable = under(file, docs) && !evidence.has(file);
+    let fenced = false, changed = false;
+    const lines = text.split('\n').map((line, index) => {
+      if (/^\s{0,3}(```|~~~)/.test(line)) { fenced = !fenced; return line; }
+      if (fenced || !editable) return line;
+      // Inline links `](target)` and reference definitions `[label]: target`.
+      return line.replace(/(\]\(\s*<?|^\s{0,3}\[[^\]]+\]:\s*<?)([^)\s>]+)/g, (match, lead, target) => {
+        if (/^[a-z][a-z\d+.-]*:/i.test(target) || target.startsWith('#') || target.startsWith('/')) return match;
+        const [, bare, suffix] = /^([^#?]*)(.*)$/.exec(target);
+        const resolved = path.posix.normalize(path.posix.join(path.posix.dirname(file), bare)).replace(/\/$/, '');
+        if (!under(resolved, source)) return match;
+        const moved = `${destination}/feature${resolved.slice(source.length)}`;
+        const link = `${path.posix.relative(path.posix.dirname(file), moved) || '.'}${bare.endsWith('/') ? '/' : ''}${suffix}`;
+        result.rewritten.push({ path: file, line: index + 1, from: target, to: link });
+        changed = true;
+        return `${lead}${link}`;
+      });
+    });
+    const next = lines.join('\n');
+    if (changed) writeFileSync(local, next);
+    if (names.test(next)) result.namedInMarkdown.push(file);
+  }
+  return result;
 }
 
 /** Run the project's hooks.afterArchive once. Its failure is reported; the archive stands. */
