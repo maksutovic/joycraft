@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "kind": "joycraft-brief-amendments",
+  "brief": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+  "amendments": [
+    {
+      "commit": "14389115712ba61f514a448c0e8384198fcc1d54",
+      "fromSha256": "a28e231dae041602febccf9c8178d4f4e2fa11a952685f2c7beab3afe33c7986",
+      "toSha256": "44d40bec4b77a4a35d3eb842d48b17ff4f123c0ce36490cc921a32c3120c727e",
+      "decisions": [
+        "owner-override-reviews"
+      ],
+      "summary": "Record the owner's override of the remaining reviews for 1.6.0 and what it means for each spec of the queue."
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "kind": "joycraft-archive-replay",
+  "feature": "testing-overhaul",
+  "archivedAt": "2026-11-21T06:26:17.272Z",
+  "phase": "session-end",
+  "source": "docs/features/2026-11-21-testing-overhaul",
+  "evidence": [
+    {
+      "kind": "legacy-acceptance",
+      "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+      "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+      "report": null,
+      "receipts": [],
+      "limitations": [
+        "accepted as it is by the owner, with no review: \"Accept all nine as they are\""
+      ]
+    },
+    {
+      "kind": "legacy-acceptance",
+      "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+      "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+      "report": null,
+      "receipts": [],
+      "limitations": [
+        "accepted as it is by the owner, with no review: \"Accept all nine as they are\""
+      ]
+    },
+    {
+      "kind": "legacy-acceptance",
+      "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+      "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+      "report": null,
+      "receipts": [],
+      "limitations": [
+        "accepted as it is by the owner, with no review: \"Accept all nine as they are\""
+      ]
+    },
+    {
+      "kind": "legacy-acceptance",
+      "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+      "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+      "report": null,
+      "receipts": [],
+      "limitations": [
+        "accepted as it is by the owner, with no review: \"Accept all nine as they are\""
+      ]
+    },
+    {
+      "kind": "legacy-acceptance",
+      "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+      "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+      "report": null,
+      "receipts": [],
+      "limitations": [
+        "accepted as it is by the owner, with no review: \"Accept all nine as they are\""
+      ]
+    },
+    {
+      "kind": "legacy-acceptance",
+      "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+      "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+      "report": null,
+      "receipts": [],
+      "limitations": [
+        "accepted as it is by the owner, with no review: \"Accept all nine as they are\""
+      ]
+    },
+    {
+      "kind": "legacy-acceptance",
+      "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+      "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+      "report": null,
+      "receipts": [],
+      "limitations": [
+        "accepted as it is by the owner, with no review: \"Accept all nine as they are\""
+      ]
+    },
+    {
+      "kind": "legacy-acceptance",
+      "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+      "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+      "report": null,
+      "receipts": [],
+      "limitations": [
+        "accepted as it is by the owner, with no review: \"Accept all nine as they are\""
+      ]
+    },
+    {
+      "kind": "legacy-acceptance",
+      "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+      "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+      "report": null,
+      "receipts": [],
+      "limitations": [
+        "accepted as it is by the owner, with no review: \"Accept all nine as they are\""
+      ]
+    }
+  ],
+  "durableContext": {
+    "carried": true,
+    "references": [
+      "docs/context/decision-log.md",
+      "docs/context/shipped.md"
+    ]
+  },
+  "hostSession": "d6877275-16b9-4d1f-8823-5087c432b3a2",
+  "historical": {
+    "codeInputHashesAreHistorical": true,
+    "currentAcceptanceRenewed": false
+  },
+  "files": [
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/artifact.json",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/artifact.json",
+      "sha256": "15d1cf4e0ea669f41ef5f310860c97989336aa2634380418d913088465d49f74",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/brief.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/brief.md",
+      "sha256": "2e75d1f7bf1c026dcf61055c1e351165283193b568b7e9689063c502720fe832",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/legacy-acceptance.json",
+      "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/panel-ruling.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/panel-ruling.md",
+      "sha256": "a99e2564beed64f45ab5689801da7efe2dea3e508d107f31647b24b2de0384c2",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/specs/.joycraft-spec-queue.json",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/specs/.joycraft-spec-queue.json",
+      "sha256": "9ca4f1f793d13027949024e8d57322172b87f9b763a118b68d2519d35a7da123",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/specs/01-tier-and-review-text.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/specs/01-tier-and-review-text.md",
+      "sha256": "d2ae2e6d9493bd714b4b02139578bf5c3509d8bf1a142f5719388e2de9e943f3",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/specs/02-prune-keeps-cited-receipts.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/specs/02-prune-keeps-cited-receipts.md",
+      "sha256": "6e0ef5ba76626eb4fec05b9bfbd2b789992a43c7893ae9041e6c28faac448772",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/specs/03-receipt-names-and-revision.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/specs/03-receipt-names-and-revision.md",
+      "sha256": "3bbe9733951eb40523d2174f2647b71fde6ae72f3161b27a38dade57c9d1ae16",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/specs/04-delivery-lock-dead-holder.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/specs/04-delivery-lock-dead-holder.md",
+      "sha256": "7add5487d2b6db8c220b52c746f102e021d812fff1d439550ee4a9565a0f71fb",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/specs/05-migration-net.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/specs/05-migration-net.md",
+      "sha256": "4cf5da712b25679e67f1f23ed58d44dd594045c4f38b49f6eb816de99f381a79",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/specs/06-delete-07.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/specs/06-delete-07.md",
+      "sha256": "ebeee454c74ea402d965a90994b519cace081db8c189cf48d4c5cb06c76a93a5",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/specs/07-ci-and-holdout.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/specs/07-ci-and-holdout.md",
+      "sha256": "c9a305292db4166dd42b4c8080514c4f21931d9b5d1340d56663bcd4c5f795e5",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/specs/08-scenario-and-autofix-removal.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/specs/08-scenario-and-autofix-removal.md",
+      "sha256": "d50eed61aa6a563e6980afba9b677903fffa3bf096454b812e6bdf896cb18cf9",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-testing-overhaul/specs/09-cleanup-test-review.md",
+      "archivedPath": "docs/archive/2026-11-21-testing-overhaul/feature/specs/09-cleanup-test-review.md",
+      "sha256": "1e0e008e38f5067506221fdb9c907ffd75f3c9760a0552c6f739952e609a3531",
+      "operation": "moved"
+    }
+  ]
+}

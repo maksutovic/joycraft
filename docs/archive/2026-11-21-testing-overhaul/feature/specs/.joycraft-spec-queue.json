@@ -1,0 +1,321 @@
+{
+  "schemaVersion": 1,
+  "feature": "testing-overhaul",
+  "specs": [
+    {
+      "id": 1,
+      "file": "01-tier-and-review-text.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/specs/01-tier-and-review-text.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-1-outcome",
+            "requirement": {
+              "path": "docs/features/2026-11-21-testing-overhaul/specs/01-tier-and-review-text.md"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+        "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+        "legacy": true
+      }
+    },
+    {
+      "id": 2,
+      "file": "02-prune-keeps-cited-receipts.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/specs/02-prune-keeps-cited-receipts.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-2-outcome",
+            "requirement": {
+              "path": "docs/features/2026-11-21-testing-overhaul/specs/02-prune-keeps-cited-receipts.md"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+        "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+        "legacy": true
+      }
+    },
+    {
+      "id": 3,
+      "file": "03-receipt-names-and-revision.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/specs/03-receipt-names-and-revision.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-3-outcome",
+            "requirement": {
+              "path": "docs/features/2026-11-21-testing-overhaul/specs/03-receipt-names-and-revision.md"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+        "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+        "legacy": true
+      }
+    },
+    {
+      "id": 4,
+      "file": "04-delivery-lock-dead-holder.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/specs/04-delivery-lock-dead-holder.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-4-outcome",
+            "requirement": {
+              "path": "docs/features/2026-11-21-testing-overhaul/specs/04-delivery-lock-dead-holder.md"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+        "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+        "legacy": true
+      }
+    },
+    {
+      "id": 5,
+      "file": "05-migration-net.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/specs/05-migration-net.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-5-outcome",
+            "requirement": {
+              "path": "docs/features/2026-11-21-testing-overhaul/specs/05-migration-net.md"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+        "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+        "legacy": true
+      }
+    },
+    {
+      "id": 6,
+      "file": "06-delete-07.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/specs/06-delete-07.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-6-outcome",
+            "requirement": {
+              "path": "docs/features/2026-11-21-testing-overhaul/specs/06-delete-07.md"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+        "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+        "legacy": true
+      }
+    },
+    {
+      "id": 7,
+      "file": "07-ci-and-holdout.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/specs/07-ci-and-holdout.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-7-outcome",
+            "requirement": {
+              "path": "docs/features/2026-11-21-testing-overhaul/specs/07-ci-and-holdout.md"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+        "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+        "legacy": true
+      }
+    },
+    {
+      "id": 8,
+      "file": "08-scenario-and-autofix-removal.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/specs/08-scenario-and-autofix-removal.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-8-outcome",
+            "requirement": {
+              "path": "docs/features/2026-11-21-testing-overhaul/specs/08-scenario-and-autofix-removal.md"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+        "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+        "legacy": true
+      }
+    },
+    {
+      "id": 9,
+      "file": "09-cleanup-test-review.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "batch",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-testing-overhaul/specs/09-cleanup-test-review.md",
+            "kind": "requirement"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-9-outcome",
+            "requirement": {
+              "path": "docs/features/2026-11-21-testing-overhaul/specs/09-cleanup-test-review.md"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-21-testing-overhaul/legacy-acceptance.json",
+        "sha256": "201a28547a5c16d594408f5451727229cbe4574b7d325f80d4ff299c246d090e",
+        "legacy": true
+      }
+    }
+  ]
+}

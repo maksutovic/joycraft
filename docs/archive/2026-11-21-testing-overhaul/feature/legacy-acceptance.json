@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "kind": "legacy",
+  "queuePath": "docs/features/2026-11-21-testing-overhaul/specs/.joycraft-spec-queue.json",
+  "statement": "Accept all nine as they are",
+  "statedAt": "2026-11-21T06:40:00.000Z",
+  "specs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "reason": "Answer \"accept\" (\"Accept all nine as they are\") to \"Do you accept the nine testing-overhaul specs as shipped in 1.8.0?\" on the docs-cleanup page (docs/features/2026-11-20-docs-cleanup/brief.md, decision accept-testing-overhaul). Limits shown with it: spec 6 dist/cli.js byte equality unchecked; implement reads CI after each push (spec 1 says one time); revision.dirty may be null (spec 3 says boolean); spec 8 GitHub-side removal not checked; no independent review."
+}

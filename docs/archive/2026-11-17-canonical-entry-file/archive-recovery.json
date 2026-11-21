@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "kind": "joycraft-archive-recovery",
+  "feature": "canonical-entry-file",
+  "source": "docs/features/2026-11-17-canonical-entry-file",
+  "destination": "docs/archive/2026-11-17-canonical-entry-file",
+  "stage": "docs/archive/.2026-11-17-canonical-entry-file.staging-3547-1795242371534",
+  "phase": "session-end",
+  "featureFiles": [
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/artifact.json",
+      "sha256": "376a3e16d24b1347b919f01fa6d22ac098d1d1edfa4497322ca5b2b567dd252f"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/brief-amendments.json",
+      "sha256": "d77a6653e0016948ea435a3d356aac61a1f40d36ca897ece90943a52e52a13a4"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+      "sha256": "44d40bec4b77a4a35d3eb842d48b17ff4f123c0ce36490cc921a32c3120c727e"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/handoff.md",
+      "sha256": "7f4df7611f3d7798268ba8e0d24b8d2fd739c5396cb0896b0eec47683149cb90"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-ci-advisory-direct.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-ci.txt",
+      "sha256": "012602120f15769e41e0c2f09f1d42a457ba70ec807eedfa65919523bf1b0779"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-clean-direct.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-clean.txt",
+      "sha256": "769730ec0b5b067736ce015e0ddd965d2db70551ddfa33d1050c4ee881320cb7"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-cleanup-test.txt",
+      "sha256": "14ce5e4e11cfb57f9066d112ae59066eb9088ca0ba8370b810a165154788542f"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-dead-path.txt",
+      "sha256": "b399de0aa990a3d2965ca5559990b6d93d48663d4273977058d6ecca7ac34adb"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-entry-check-test.txt",
+      "sha256": "979f43ef1af18534e5dc307107353f4500c6ad012fbb4e2d8be88cc55a764a80"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-errors.txt",
+      "sha256": "6ff2d6e5ce557dc16ba8782b90fc54eccb225e91489efa81bc9cbaed25515c27"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-policy.txt",
+      "sha256": "c02dbf84aa55b07e9bbfa1b477ddf1acae1547e6ead09e9ffc00c17cce18916b"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-ci-advisory-direct.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-ci.txt",
+      "sha256": "e5a05631770339ed447115e51ba3dbc5a1e890a9430ad2cdf73c0edc2806e924"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-clean-direct.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-clean.txt",
+      "sha256": "28c3b439196658339693874ffd285a906a57c8f4f9d217a693d0144d278de5dd"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-cleanup-test.txt",
+      "sha256": "c122b9de8d879e299d42bbb1426cd9283ac9b60bae0da324b4e629c6c68e2037"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-dead-path.txt",
+      "sha256": "5a34746af7fc2da4bb6756ce472e72581ea83485119f9158add24147078f28c7"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-entry-check-test.txt",
+      "sha256": "db334c2d0deb62eb67906c688f56307887e9c01e484b2d2c66070e947d79325a"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-errors.txt",
+      "sha256": "99dee4f32e8aeb0d114b55dafbc827a8a7e3ae9a3e24267db790740978265935"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-installed-layout.txt",
+      "sha256": "cf6a84ba38b0a758b77fd60eab84b44b186c4d689e33c85fe4f3a8fae1cdf0e2"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-pin-match.txt",
+      "sha256": "9fb4d24275b79cd0aa656d5cc33e4967455bc8f3df2567f7c7b60270920bfd57"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-policy.txt",
+      "sha256": "01d8f700b25b6504ed37244714d468550eefa2300d3ddeba9129d481d70abc52"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-trace.txt",
+      "sha256": "ce289cfa4005ea01ce453bbde3716f529e0e60e96741fac4c7819c59019b4a87"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-worktree-ignored-path-2.txt",
+      "sha256": "c100ff95fdaa72cdd7e8f91260bcdcfa243cfe335c9b5eac1129e215e31f79d7"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-worktree-ignored-path.txt",
+      "sha256": "5309f210262e8777fa80a299152f16abb10d75652286f51531c1f4775166c20e"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-worktree-list.txt",
+      "sha256": "3e3b3ac1743270bbc87cd6fb02a3ce4e97163a22c9c9baf6acd85243ecc46000"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-r2-worktree.txt",
+      "sha256": "fe03771b9244301748079c094da16aac333693d62c7390213b63127639cc233e"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-01-worktree.txt",
+      "sha256": "164c11024659fca27d3054c9b786e117b1e1e8d5e00ea84e86d4de2b9c1b4cf6"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-cleanup-text.txt",
+      "sha256": "f41832a9189bb8c94c57429e6791d89499fb7385f2147e69b3cabe7d034ceb93"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-payload-budget.txt",
+      "sha256": "021a93eafb2fbb3d39416b3e75dde86e08dedbb6680a4bf3834b4988725b03ed"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-payload-words.txt",
+      "sha256": "d2558bc5bc48ef5316f18f8a615ac8ba474b9cda40e4dc06e67d6d32825b0a69"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-pin-match.txt",
+      "sha256": "bfaefdd217201c8cd13ed9b3d828b49d6afdd5044c836de5362f4e0af6531835"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-agreement-2.txt",
+      "sha256": "988db1836e91b64880208b06ec0ec5e6b4c127dc4468319ba9eeb0057073b438"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-agreement.txt",
+      "sha256": "94ee55f639f926e9a49f430fb92a7e7e362416e770dc1b0edf9a1ace289c9aef"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-cleanup-text-test.txt",
+      "sha256": "25d7f3feeae26428c08f05af19853dd3cb8d440c58a29df8652873fa09f3d669"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-links-payload-text.txt",
+      "sha256": "ccd98e0da78f9cf10256f832f63ca8e04a52307fea6bfe3f6cda379774a7f081"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-links.txt",
+      "sha256": "c78d0b2f6ab63e11e381ca55d4e421a98bf4efd50ad09f7bc4f41611fae3de8f"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-payload-budget-test.txt",
+      "sha256": "f70181974476b3687dc6208b4da8677fa9a48025714c7cf6e2aa7b3b0f853dd4"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-payload-words-count.txt",
+      "sha256": "1a611e6b772b23eab18d7c4b4d0a6c9d62fd22dc8665d28c9def490b7ed2e6f8"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-payload-words.txt",
+      "sha256": "1a611e6b772b23eab18d7c4b4d0a6c9d62fd22dc8665d28c9def490b7ed2e6f8"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-pin-match.txt",
+      "sha256": "4eb1a6ee062fe15206dd31576646b56cd3c661495a3aa51f7bfe482a5901f9d2"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-prototype-suite.txt",
+      "sha256": "5b3d3fc55d56e2aeb5ad9cbcebc6f16adf8bd32264c7a42bf67f1e1f6319d5a2"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-map-two-parts.txt",
+      "sha256": "0edb9e88b7d676d65fc5ac594339745493e35ae4ac68496a09662dc0b1759981"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-one-agent-default.txt",
+      "sha256": "566bc88a40abe41175a4f60aecc814da2e1b4726c2d417a4167e29c155ac7e4a"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-one-pass-steps.txt",
+      "sha256": "6dd09651eb12f104d048053c2c6e4dbdea73bf5fff22745cfa368a448eb4651b"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-permission-ledger.txt",
+      "sha256": "862293792c0ef550dac170eee0055ab74dc927885ab8d3875a90cc2bd5a039a7"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-session-end-mechanical.txt",
+      "sha256": "0f25f39384c2aaf74f6aaa007a410a953b3b027b0d72f27efd46b4bf09912d68"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-temporal-homes.txt",
+      "sha256": "6b0ca78a095d705903a8c57641a08d22a55434cebbea988ae768cd87111bb7c8"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-scan-worker-reads-entry.txt",
+      "sha256": "65b2569eca2a3a8488606fb03fa16b7bdc90c1e9714b80ef61fc1e37e25284c7"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-r2-trace.txt",
+      "sha256": "bb2eb2a4101e7ed1d87f55e5f8ab5cc69e80ed075330e6656a10e002b262fbd4"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-source-cleanup.txt",
+      "sha256": "de03eac5c037068db13bab198200e963d44b48aa751cd8700a678d26c0344797"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-source-hold-agent.txt",
+      "sha256": "44084eacc499a7e024c44616ae33a975c2e0d2d58be09517b6813cf3e847db00"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/receipts/spec-11-source-others.txt",
+      "sha256": "194dbfd5ed3c564a79fa65ba24edf14d1b636437337d18ea8d140ace289dda5a"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/spec-01-review-round-1.json",
+      "sha256": "41e81c88a5ad2748b5aa500864b574169b2199cf7ded0eb09f6930eb957322ea"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/spec-01-review.json",
+      "sha256": "e2a92f52e4ced2a2f5970a752e968d6613f377c92094d81029a7fefda0be79d1"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/spec-11-owner-acceptance.json",
+      "sha256": "ccaa8f78d328538871dab21e6c3ec208d80bfdb3268d92aa901470c3f885ca3d"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/spec-11-review-round-1.json",
+      "sha256": "2e2e29ee3dedd44de8e6e822402d43b9b24fced5ff9f2f52bfdbf6a86d3a7bc2"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/reviews/spec-11-review.json",
+      "sha256": "4eb81287015f6ca888e51228a2a857496709dabb700e00d0bd90749e24ac0290"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/.joycraft-spec-queue.json",
+      "sha256": "c83be7341477ff250e0448245e33a34b2b455fc5cc50e9cd4ace5eb28ace3068"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/01-entry-check-command.md",
+      "sha256": "65940b8d5d08b859478a2e3a512f334c41ad8c8be3216f93f314579889712775"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/02-entry-checks.md",
+      "sha256": "70f23dff963d2bc5661fdf8a156fdde8f53fec70da07ae5de03155f3a33af7a8"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/03-tidy-setting.md",
+      "sha256": "0cc59bf0a65535760ab98bcbb35708dd2ab0c75b19d7965aa3d1738f14a471a7"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/04-cleanup-dispositions.md",
+      "sha256": "68b9514a46dec5e119a930762b2b4da56ac1e651615b511174b5eb6cbfb1d0b1"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/05-now-page.md",
+      "sha256": "d220ae3bb53346525bfdd09efd1104a1dbea1cca04d779f10c62184a5d782e24"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/06-rules-rewrite.md",
+      "sha256": "c09d609aeb257541f5610a08625c4d7d3a264da015b3ab2e53e2b702c2d4b8ea"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/07-managed-block.md",
+      "sha256": "0928224b363747ab73159bd2743d9f7254fd4551106e1602567a8b5b0d405a61"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/08-vendor-and-release.md",
+      "sha256": "c451fec3033076fefa26df239dd48074f264f0b7f74b7c3b8e82daa03a23eb0b"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/09-cuts.md",
+      "sha256": "61941f25baa1a0e16b028759b745a5ed6c5fd694ea45e4e05327030f350c9568"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/10-runtime-for-one-pass.md",
+      "sha256": "ba8676a69a7f71af37150a916bfc542f4c82689f546b6905e0f6910c93e8fc84"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/specs/11-one-pass-text.md",
+      "sha256": "148a293e4d1379908a26101d92312ac406b78c6e0d0e355f68f61b31bce100df"
+    },
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/waiver.json",
+      "sha256": "9039b4c40ffdc20aefd34124aed06d0b05ae3801eb7ce3ed3368fd51524b8c39"
+    }
+  ],
+  "copiedEvidence": [],
+  "requirementHistory": [
+    {
+      "path": "docs/features/2026-11-17-canonical-entry-file/brief.md",
+      "normalization": "none",
+      "acceptedSha256": "a28e231dae041602febccf9c8178d4f4e2fa11a952685f2c7beab3afe33c7986",
+      "acceptedCommit": "0858346db422199c11dfc4dd0c6cdd4e37a31049",
+      "restoredSha256": "a28e231dae041602febccf9c8178d4f4e2fa11a952685f2c7beab3afe33c7986",
+      "laterCommits": [
+        "14389115712ba61f514a448c0e8384198fcc1d54",
+        "1f287840f1aeee79815513daa86954907cf0bf19"
+      ],
+      "amendments": [
+        {
+          "commit": "14389115712ba61f514a448c0e8384198fcc1d54",
+          "fromSha256": "a28e231dae041602febccf9c8178d4f4e2fa11a952685f2c7beab3afe33c7986",
+          "toSha256": "44d40bec4b77a4a35d3eb842d48b17ff4f123c0ce36490cc921a32c3120c727e",
+          "decisions": [
+            "owner-override-reviews"
+          ],
+          "summary": "Record the owner's override of the remaining reviews for 1.6.0 and what it means for each spec of the queue."
+        }
+      ]
+    }
+  ]
+}
