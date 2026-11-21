@@ -93,9 +93,9 @@ For the feature's own brief, also write
 }
 ```
 
-Every subsequent brief path commit needs exactly one entry, including commits
-that record the questions before their answers. Git's first parent (`commit^`)
-defines the before hash, including for merges. Each named decision must occur
+Each later brief commit, including one that records questions, needs exactly
+one entry; a merge keeping a parent's brief needs none. The before hash is at
+`commit^`. Each named decision must occur
 exactly once in the current brief's frontmatter JSON `decisions` array, have
 status `clarified` or `assigned`, and a nonempty answer. Do not manufacture an
 answer to unblock archival. The preview includes the validated amendments.

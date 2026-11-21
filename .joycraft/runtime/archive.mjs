@@ -100,9 +100,16 @@ const isDecisionAnswered = decision => ['clarified', 'assigned'].includes(decisi
 /**
  * Each commit that changed the feature brief after an acceptance must have one amendment
  * record naming the answered owner decisions that authorized it, and the record's before
- * and after hashes must equal that commit's parent and own brief bytes.
+ * and after hashes must equal that commit's first parent and own brief bytes.
  */
 function briefAmendments(root, source, briefPath, later) {
+  // A merge that keeps one parent's brief changed nothing, so it needs no record.
+  const keepsParentBrief = commit => {
+    const parents = gitIn(root, ['rev-list', '--parents', '-n', '1', commit]).trim().split(' ').slice(1);
+    const after = committedBytes(root, commit, briefPath);
+    return parents.length > 1 && after !== null && parents.some(parent => committedBytes(root, parent, briefPath)?.equals(after));
+  };
+  later = later.filter(commit => !keepsParentBrief(commit));
   const recordPath = `${source}/brief-amendments.json`;
   const changed = `Original requirement changed after acceptance: ${briefPath}`;
   requireValue(existsSync(localPath(root, recordPath, true)), `${changed} (no ${recordPath} records its amendments)`);
@@ -165,7 +172,7 @@ function reconciledRequirement(root, state, review, input, project, reconciliati
  * also needs an owner-decision amendment for each of those commits. The accepted bytes are
  * restored into the archive, so the original requirement is preserved, not reclassified.
  */
-function historicalRequirement(root, source, input, project, normalizations = ['none', 'requirement-scope'], acceptedCommit) {
+export function historicalRequirement(root, source, input, project, normalizations = ['none', 'requirement-scope'], acceptedCommit) {
   const changed = `Original requirement changed after acceptance: ${input.path}`;
   requireValue(gitRoot(root), `${changed} (no git history proves the accepted version)`);
   requireValue(gitIn(root, ['status', '--porcelain', '--', input.path]).trim() === '', `${changed} (commit its current version first)`);
