@@ -28,4 +28,4 @@
 - `main` branch directly (always use PRs)
 - `package.json` version field (a release keeps it when it is higher than every published version, else takes the next patch)
 - `.github/workflows/publish.yml` (controls automated publishing)
-- The suite runs in `publish.yml` and on pushes to main: branch protection requires no status checks, so these runs are the only guard before npm
+- The suite runs in `publish.yml` for every main push that changes a product path since the last `v*` tag (a docs-only push skips it and publishes nothing): branch protection requires no status checks, so the PR's Test run and this run are the only guards before npm

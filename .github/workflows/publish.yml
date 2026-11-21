@@ -32,8 +32,41 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # A push that changes no product path since the last release tag publishes
+  # nothing: pack, compatibility and publish are skipped and the run ends green.
+  gate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      should_publish: ${{ steps.gate.outputs.should_publish }}
+    steps:
+      - name: Checkout immutable main commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_sha || github.sha }}
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.20.0
+      - name: Decide whether this push changes the product
+        id: gate
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_SHA: ${{ inputs.release_sha || github.sha }}
+        run: |
+          if [[ "$EVENT_NAME" == workflow_dispatch ]]; then
+            echo 'should_publish=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          node scripts/release-preparation.mjs publish-gate --current-sha "$RELEASE_SHA" > publish-gate.json
+          cat publish-gate.json
+          echo "should_publish=$(node -p "require('./publish-gate.json').shouldPublish")" >> "$GITHUB_OUTPUT"
+
   pack:
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.artifact_run_id != '')
+    needs: gate
+    if: needs.gate.outputs.should_publish == 'true' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.artifact_run_id != ''))
     runs-on: ubuntu-latest
     permissions:
       contents: read

@@ -18,7 +18,7 @@ last_updated_by: Maximilian Maksutovic
 ## Organizational Constraints
 
 - Single maintainer (Maximilian Maksutovic) — all publishing goes through npm trusted publishing via GitHub Actions
-- Every merge to main publishes to npm: the workflow keeps a higher source version, else takes the next unused patch, and pushes no commit back to main (`docs/guides/releasing.md`)
+- Every merge to main that changes a product path since the last `v*` tag publishes to npm (a docs-only merge skips `pack` and ends green): the workflow keeps a higher source version, else takes the next unused patch, and pushes no commit back to main (`docs/guides/releasing.md`)
 - Public open-source project — all code, issues, and PRs are visible
 - Users run this via `npx` — no guarantee they have Joycraft installed globally
 
