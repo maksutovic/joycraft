@@ -1,6 +1,6 @@
 import { execFileSync, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { closeSync, createReadStream, existsSync, fsyncSync, mkdirSync, openSync, realpathSync, unlinkSync } from 'node:fs';
+import { appendFileSync, closeSync, createReadStream, existsSync, fstatSync, fsyncSync, mkdirSync, openSync, readSync, realpathSync, unlinkSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -212,13 +212,42 @@ async function receiptFile(root, receipt) {
   return { relative, file };
 }
 
+const footerTag = 'joycraft-evidence: ';
+const tailLines = 40;
+
+/** The 1-minute load average, or null where the platform has none (Windows reports 0). */
+const loadNow = () => (process.platform === 'win32' ? null : os.loadavg()[0]);
+
+/** The last bytes of a file (up to 256 KiB), as text. */
+function readEnd(file, max = 262144) {
+  const fd = openSync(file, 'r');
+  try {
+    const size = fstatSync(fd).size; const length = Math.min(size, max);
+    const buffer = Buffer.alloc(length);
+    readSync(fd, buffer, 0, length, size - length);
+    return buffer.toString('utf8');
+  } finally { closeSync(fd); }
+}
+
+/** The parsed `joycraft-evidence:` footer on a receipt's last line, or null when it has none. */
+export function readFooter(file) {
+  const lines = readEnd(file, 65536).replace(/\n$/, '').split('\n');
+  const last = lines[lines.length - 1];
+  if (!last.startsWith(footerTag)) return null;
+  try { const value = JSON.parse(last.slice(footerTag.length)); return record(value) ? value : null; } catch { return null; }
+}
+
 /**
  * Run the project's own command once, without a shell, with CI=1 and a time
  * limit. The child's stdout and stderr both go straight to one new receipt
  * file, in the order the child wrote them, as `cmd > receipt 2>&1` would.
+ * The child also sees JOYCRAFT_EVIDENCE=1. After it exits, one footer line
+ * `joycraft-evidence: <JSON>` (run facts, argv, exitCode, revision, dirty)
+ * is appended, and the hash covers it.
  * Returns the observation's `command` and `receipts`, plus `timedOut`,
- * `timeoutMs`, the `revision` it ran on, and the ending `signal` when there
- * was one. A timeout ends the child's process group (POSIX) or the child
+ * `timeoutMs`, the `revision` it ran on, the run `facts`, the failing `tail`
+ * (last 40 output lines) when the exit code is not 0, and the ending
+ * `signal` when there was one. Time and load are facts, never a gate. A timeout ends the child's process group (POSIX) or the child
  * (Windows) and gives exitCode null.
  * Every refusal happens before the child starts and carries exitCode 2.
  */
@@ -231,9 +260,12 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
   try { fd = openSync(file, 'wx', 0o644); }
   catch (error) { throw refusal(error.code === 'EEXIST' ? `Receipt already exists: ${relative}; use a fresh receipt path` : `Cannot create receipt ${relative}: ${error.message}`); }
   const posix = process.platform !== 'win32';
+  const cores = os.availableParallelism();
+  const loadStart = loadNow();
+  const started = Date.now();
   let child;
   try {
-    child = spawn(argv[0], argv.slice(1), { cwd: root, env: { ...process.env, CI: '1' }, stdio: ['ignore', fd, fd], detached: posix, windowsHide: true });
+    child = spawn(argv[0], argv.slice(1), { cwd: root, env: { ...process.env, CI: '1', JOYCRAFT_EVIDENCE: '1' }, stdio: ['ignore', fd, fd], detached: posix, windowsHide: true });
     await new Promise((resolve, reject) => { child.once('spawn', resolve); child.once('error', reject); });
   } catch (error) {
     closeSync(fd);
@@ -253,12 +285,23 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
   if (posix) await endGroup(child.pid);
   for (const each of signals) process.off(each, stop);
   try { fsyncSync(fd); } finally { closeSync(fd); }
+  const exitCode = timedOut ? null : code;
+  const wallMs = Date.now() - started;
+  const loadEnd = loadNow();
+  const facts = loadStart === null
+    ? { wallMs, load: null, cores, loaded: null }
+    : { wallMs, load: [loadStart, loadEnd], cores, loaded: loadStart > cores };
+  const output = readEnd(file);
+  const tail = exitCode === 0 ? undefined : output.replace(/\n$/, '').split('\n').slice(-tailLines).join('\n');
+  const footer = { ...facts, argv: [...argv], exitCode, timedOut, revision: commit.commit, dirty: commit.dirty };
+  appendFileSync(file, `${output === '' || output.endsWith('\n') ? '' : '\n'}${footerTag}${JSON.stringify(footer)}\n`);
   const digest = createHash('sha256');
   for await (const chunk of createReadStream(file)) digest.update(chunk);
   return {
-    command: { argv: [...argv], exitCode: timedOut ? null : code },
+    command: { argv: [...argv], exitCode },
     receipts: [{ path: relative, sha256: digest.digest('hex') }],
-    timedOut, timeoutMs, ...(signal ? { signal } : {}), revision: commit,
+    timedOut, timeoutMs, ...(signal ? { signal } : {}), revision: commit, facts,
+    ...(tail === undefined ? {} : { tail }),
   };
 }
 
