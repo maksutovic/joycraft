@@ -128,3 +128,43 @@ describe('report gate runner aliases and a done spec re-check (1.9.1 spec 2)', (
     expect(inReview.stderr).toContain('ran the recorded tests.gate command');
   });
 });
+
+describe('report gate parts of a chained gate (1.9.2 spec 1)', () => {
+  it('[AC:spec-1-1] one part of a chained gate is refused like the whole gate; focused runs and a one-part gate are unchanged', () => {
+    const gate = 'npm test && npm run lint';
+    const refusedCases: string[][] = [['npm', 'test'], ['npm', 'run', 'lint'], ['npm', 'lint'], ['sh', '-c', 'npm test']];
+    for (const argv of refusedCases) {
+      const result = checkReport(fixture({ gate, argv }));
+      expect(result.status, `${JSON.stringify(argv)}: ${result.stderr}`).toBe(2);
+      expect(result.stderr).toContain('a part of the recorded tests.gate command');
+    }
+    const lint = checkReport(fixture({ gate, argv: ['npm', 'run', 'lint'] }));
+    expect(lint.stderr).toContain('ran `npm run lint`, a part of the recorded tests.gate command');
+    for (const argv of [['npm', 'test', 'tests/x.test.ts'], ['npx', 'vitest', 'run', 'tests/x.test.ts']]) {
+      const result = checkReport(fixture({ gate, argv }));
+      expect(result.status, `${JSON.stringify(argv)}: ${result.stderr}`).toBe(0);
+    }
+    const other = checkReport(fixture({ gate: 'pnpm test; pnpm typecheck', argv: ['pnpm', 'typecheck'] }));
+    expect(other.status, other.stderr).toBe(2);
+    const either = checkReport(fixture({ gate: 'pnpm test || pnpm typecheck', argv: ['pnpm', 'test'] }));
+    expect(either.status, either.stderr).toBe(2);
+    const whole = checkReport(fixture({ gate, argv: ['npm', 'test', '&&', 'npm', 'run', 'lint'] }));
+    expect(whole.status).toBe(2);
+    expect(whole.stderr).toContain('ran the recorded tests.gate command `npm test && npm run lint`');
+    const onePart = checkReport(fixture({ gate: 'npm test', argv: ['npm', 'test', 'tests/x.test.ts'] }));
+    expect(onePart.status, onePart.stderr).toBe(0);
+    const onePartRefused = checkReport(fixture({ gate: 'npm test', argv: ['npm', 'test'] }));
+    expect(onePartRefused.stderr).toContain('ran the recorded tests.gate command `npm test`');
+  });
+
+  it('[AC:spec-1-2] a done spec re-checked with a report that ran a gate part stays done; gateRuns still turns the check off', () => {
+    const root = fixture({ argv: ['npm', 'test'] });
+    const first = finalize(root);
+    expect(first.status, first.stderr).toBe(0);
+    put(join(root, 'joycraft.yaml'), 'tests:\n  gate: "npm test && npm run lint"\n');
+    git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'record the gate');
+    const again = finalize(root);
+    expect(again.status, again.stderr).toBe(0);
+    expect(JSON.parse(again.stdout)).toMatchObject({ status: 'done', unchanged: true });
+  });
+});
