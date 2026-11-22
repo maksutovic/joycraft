@@ -1,0 +1,44 @@
+
+> joycraft@1.8.1 test /private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/proof-wt
+> vitest tests/runtime-config-tests.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/proof-wt[39m
+
+ [31m❯[39m tests/runtime-config-tests.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 451[2mms[22m[39m
+   [32m✓[39m joycraft.yaml tests section[2m > [22m[AC:spec-2-1] reads focused, gate and gateRuns from the tests section[32m 52[2mms[22m[39m
+   [32m✓[39m joycraft.yaml tests section[2m > [22m[AC:spec-2-2] a project with no joycraft.yaml reads the default tests settings[32m 53[2mms[22m[39m
+[31m   [31m×[31m joycraft.yaml tests section[2m > [22m[AC:spec-2-3] an unknown key, an empty command or a bad gateRuns names its tests setting and stops[39m[32m 154[2mms[22m[39m
+[31m     → expected +0 to be 1 // Object.is equality[39m
+   [32m✓[39m joycraft.yaml tests section[2m > [22m[AC:spec-2-4] the template parses to the defaults and documents the four keys, commented out[32m 42[2mms[22m[39m
+   [32m✓[39m joycraft.yaml tests section[2m > [22m[AC:spec-29-5] a docs root that is the project root or a hidden folder exits 1 naming the docs root and the three paths[32m 149[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-config-tests.test.ts[2m > [22mjoycraft.yaml tests section[2m > [22m[AC:spec-2-3] an unknown key, an empty command or a bad gateRuns names its tests setting and stops
+[31m[1mAssertionError[22m: expected +0 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m tests/runtime-config-tests.test.ts:[2m42:29[22m[39m
+    [90m 40| [39m    for (const [yaml, key] of [['tests:\n  slow: pnpm slow\n', 'tests.…
+    [90m 41| [39m      [35mconst[39m result [33m=[39m [34mrun[39m([34mfixture[39m(yaml))[33m;[39m
+    [90m 42| [39m      [34mexpect[39m(result[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m   | [39m                            [31m^[39m
+    [90m 43| [39m      [34mexpect[39m(result[33m.[39mstderr)[33m.[39m[34mtoContain[39m(key)[33m;[39m
+    [90m 44| [39m    }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 21:39:11
+[2m   Duration [22m 657ms[2m (transform 28ms, setup 0ms, collect 15ms, tests 451ms, environment 0ms, prepare 42ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":1842,"load":[3.20166015625,3.20166015625],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-config-tests.test.ts"],"exitCode":1,"timedOut":false,"revision":"6163e655888d72d9cf10c5c764092506f3881770","dirty":false,"patch":{"path":".joycraft/local/faults/gateRuns-check.diff","sha256":"7b04fe7d4482aeeefcee412bc8d2a58ed1f800a4eea5b0d07f2c52692b662bec","patched":true,"restored":true}}

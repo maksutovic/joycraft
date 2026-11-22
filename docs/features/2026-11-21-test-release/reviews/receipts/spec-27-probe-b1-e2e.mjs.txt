@@ -1,0 +1,26 @@
+// End-to-end: queue-check gate-in-spec on an argument with a dot, at base edb34b6 and at HEAD.
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, realpathSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+const [head, base] = process.argv.slice(2);
+const put = (f, b) => { mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, b); };
+const folder = 'docs/features/2026-11-21-f', queuePath = `${folder}/specs/.joycraft-spec-queue.json`;
+function fixture(gate, acceptance) {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'p27q-'))); execFileSync('git', ['init', '-q', '-b', 'main'], { cwd: root });
+  put(join(root, 'joycraft.yaml'), `tests:\n  gate: ${JSON.stringify(gate)}\n`);
+  put(join(root, folder, 'brief.md'), '# Brief\n\n## Goal\n\nText.\n');
+  put(join(root, folder, 'specs', '01-a.md'), `---\nid: 1\nstatus: todo\n---\n# A\n\n## acceptance\n\n${acceptance}\n\n## Implementation and verification scope\n\n- Files: \`src/a.ts\`.\n`);
+  const spec = `${folder}/specs/01-a.md`;
+  put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature: 'f', specs: [{ id: 1, file: '01-a.md', depends_on: [], status: 'todo', mode: 'checkpoint',
+    verification: { inputs: [{ path: spec, kind: 'requirement' }, { path: 'tests/x.test.ts', kind: 'check' }], criteria: [{ id: 'spec-1-1', requirement: { path: spec, anchor: 'acceptance' }, requiredKinds: ['runtime'] }] } }] }));
+  return root;
+}
+for (const [gate, acceptance] of [['pnpm test', '- It works. Check: pnpm test add.test.ts passes.'], ['cargo test', '- It parses. Check: cargo test parser::tests passes.'], ['pnpm test', '- It works. Check: pnpm test tests/add.test.ts passes.']]) {
+  const root = fixture(gate, acceptance);
+  for (const [name, dir] of [['base', base], ['head', head]]) {
+    const r = spawnSync(process.execPath, [join(dir, 'payload/.joycraft/runtime/queue-check.mjs'), '--queue', queuePath, '--root', root], { encoding: 'utf8' });
+    const gates = r.stderr.split('\n').filter(l => l.includes('gate or full command'));
+    console.log(`${name} gate=${JSON.stringify(gate)} ${JSON.stringify(acceptance)}: exit ${r.status}, gate-in-spec gaps ${gates.length}`);
+  }
+}

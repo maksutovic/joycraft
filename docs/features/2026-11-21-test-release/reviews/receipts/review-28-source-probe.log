@@ -1,0 +1,27 @@
+verify.md:51 starts: sentence on line 49
+verify sentence line(s): [49]
+verify old packet wording present: false
+testing.md:47-49: share the machine, give each test run at most cores ÷ N workers with the / runner's own flag. After a timeout, run the same command once more with that / cap; a second timeout is reported with both receipts. Never wait in a foreground loop: start a
+testing.md sentence: true
+update.md:38:    When `entry-check.mjs` reports `gate-rule` and
+update sentence: true
+update keeping the other keys: false
+update/setup gate-rule --record: [true,true]
+setup cap phrase: true
+delivery phrases: [true,true,true]
+benefit inside markdown block: true
+benefit before block: false
+decision 1: 1. **Commands.** Focused: `<one file or one name>`, while working. Gate, once per spec: `<command>`. Full suite, only on the integrated revision or in CI, never while working a spec: `<command>`. They are also in `AGENTS.md`. Each spec names its own focused tests; it never names the gate as its check.
+decision 2: 2. **Workers per run.** When agents share the machine, each run takes at most cores ÷ agents workers, set with the runner's own flag in `<config file>`. The cap keys on `JOYCRAFT_EVIDENCE`, never on `CI`, so CI keeps full width.
+decision 3: 3. **No real time.** Tests use `<clock or virtual-time helper>` and wait for a signal, never a fixed delay.
+decision 4: 4. **Each test owns its resources.** Its temporary folder: `<helper>`. Its port: `<port 0 or allocator>`. Its database: `<strategy>`.
+decision 5: 5. **Time is reported, never a gate.** Slow tests show as a warning: `<report flag>`. No test fails for its duration.
+decision 6: 6. **Assertions come from the spec.** Write the expected values from the spec, before reading the code under test.
+decision 7: 7. **Extend before adding.** Add a case to the module's existing test file before creating a new file.
+decision 8: 8. **Flaky means defective.** A test that passes and fails on the same code is a defect to fix; never retry a test into a pass. Run a new test file `<n>` times before it counts.
+decision 9: 9. **Never special-case a test.** Never special-case a test's input in the code, and never edit the check that judges the change. 
+keys on JOYCRAFT_EVIDENCE never CI kept: true
+retired tags still under tests/: []
+EVERY_SPEC_BEFORE under tests/: []
+text-test-review.test.ts sha256 (not a verification input): 978947804b139790f628ee9463690fa52fbfb00af913459fa52216c0e3956fd4
+HEAD: 3a9fec838419bc62996388a6c81a973c59657bda

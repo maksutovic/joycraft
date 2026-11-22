@@ -1,0 +1,431 @@
+{
+ "schemaVersion": 1,
+ "subject": {
+  "schemaVersion": 1,
+  "implementationRevision": "d38f00ba9eca37c234a9a59e8e29cdea2fa36420",
+  "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+  "specId": 18,
+  "specPath": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+  "criteria": [
+   {
+    "id": "spec-18-1",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "structural"
+    ]
+   },
+   {
+    "id": "spec-18-2",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "structural"
+    ]
+   },
+   {
+    "id": "spec-18-3",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "structural"
+    ]
+   },
+   {
+    "id": "spec-18-4",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-18-5",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   }
+  ],
+  "inputs": [
+   {
+    "path": "docs/features/2026-11-21-test-release/brief.md",
+    "kind": "requirement",
+    "scope": {
+     "anchors": [
+      "fault-proof",
+      "context-and-authorization",
+      "scope-and-limits"
+     ],
+     "decisionIds": [
+      "fault-run-location",
+      "test-only-product-code",
+      "speed-work-in-queue",
+      "cap-raise"
+     ]
+    },
+    "sha256": "977591172952faedc05ea843e855bc54f1494ad5957a0d3a8c475ab163be0bb8",
+    "normalization": "requirement-scope"
+   },
+   {
+    "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "kind": "requirement",
+    "sha256": "fbd23ed42bb77af9079f6c2a217796e8a6373f6385f79f7843c36c7d4bc7207b",
+    "normalization": "queue-scope"
+   },
+   {
+    "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+    "kind": "requirement",
+    "sha256": "7098b8a84051c69d51cbada9eb84a29d72c76a00b0ae8023104fecc47ea85133",
+    "normalization": "spec-status"
+   },
+   {
+    "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+    "kind": "code",
+    "sha256": "e22685657827f67bd217ef76a744ece9b4fa25a7a3738709e513e1cee8daac8b",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.claude/agents/joycraft-implementer.md",
+    "kind": "code",
+    "sha256": "e9177881f2c3740dba770591dd714876a752ce4eff930edd0faae740cd66d6bd",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.claude/agents/joycraft-reviewer.md",
+    "kind": "code",
+    "sha256": "868ca34de98f3f39ef68d1372231b12aaf3e3b902241e0b56d4fe168e8944b4d",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/references/testing-review.md",
+    "kind": "code",
+    "sha256": "79be541ec598876189dfadf03e86cc116fe873d280e0d82c925a1bbe37f84ce3",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/references/testing.md",
+    "kind": "code",
+    "sha256": "b4518e35115739d013d9864b502cf28f71a3a67860e73e652d1bf4982a05bf71",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/payload-guard.test.ts",
+    "kind": "check",
+    "sha256": "3d6986aa8ee5ad8c03510e18c1031cb970b9e9e27889be11d9e1110625308b63",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/text-fault-proof.test.ts",
+    "kind": "check",
+    "sha256": "e59b3bd0e8253cc2ce5b0dfaee67903756b70cb0855166076bf687dc98cbc08b",
+    "normalization": "none"
+   }
+  ],
+  "binding": {
+   "version": 1,
+   "queue": {
+    "specIds": [
+     1,
+     2,
+     3,
+     5,
+     9,
+     11,
+     17,
+     18
+    ]
+   },
+   "governing": [
+    {
+     "path": "docs/features/2026-11-21-test-release/brief.md",
+     "anchors": [
+      "fault-proof",
+      "context-and-authorization",
+      "scope-and-limits"
+     ],
+     "decisionIds": [
+      "fault-run-location",
+      "test-only-product-code",
+      "speed-work-in-queue",
+      "cap-raise"
+     ]
+    }
+   ]
+  },
+  "identity": "f17a1831cdefc908aba502f3dfa265a1539702f5e520ae9f61e6cc15d747abb6"
+ },
+ "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+ "implementerActor": {
+  "host": "claude",
+  "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "agentId": "ae6c0efd705c2efb3"
+ },
+ "reviewer": {
+  "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "actor": {
+   "host": "claude",
+   "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+   "agentId": "a367a45cfa6ac254b"
+  },
+  "independent": true,
+  "scopeReviewed": true
+ },
+ "verdict": "PASS",
+ "createdAt": "2026-11-22T03:34:37.490Z",
+ "flows": [
+  {
+   "id": "spec-18-1-section",
+   "subjectIdentity": "f17a1831cdefc908aba502f3dfa265a1539702f5e520ae9f61e6cc15d747abb6",
+   "criteria": [
+    "spec-18-1"
+   ],
+   "representativeInput": "payload/.joycraft/references/testing-review.md:80-100 at d38f00b; tests/text-fault-proof.test.ts [AC:spec-18-1], [review-18-1], [review-18-2], [review-18-5]",
+   "expected": "## Test-only specs: faults chosen per removed or changed assertion, saved and sha256-pinned before the test edit, old file must fail through evidence.mjs run --patch, test edit committed, then new file or a named kept test fails on each; timeout/build error is not a fail; tests-only by git diff --name-only; a seam or fix goes first.",
+   "observations": [
+    {
+     "kind": "structural",
+     "method": "command",
+     "result": "PASS",
+     "actual": "Scan: testing-review.md:80 heading, 82 git diff --name-only, 87-89 one fault per assertion or behavior the diff removes or changes (kill-set preservation), 91-94 git-ignored path or committed, sha256 recorded before the test edit, 96 --patch command, 97-98 timeout/build error not a fail, 99-100 commit the test edit then rerun. Focused tests 30/30 pass, exit 0. Rerun of the round-1 walk reproduces round 1 (same patch shas, timeout fault timedOut true, restored). Weakening attack by the new text (scenario A): an honest agent saves one fault per removed assertion (qty, discount, clamp, round), pins their sha256 in a commit, the old file fails on all four at the base, the typeof-only rewrite passes all four: the agent finds four survivors and its own proof fails. git diff --name-only lists only the test file.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-text-scan.log",
+       "sha256": "f6655d13928486b384ae59fd40db16d8d0eded3778b48a13366b3082b51b7ace"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-tests.log",
+       "sha256": "ea79f8dce8e17f8f5a60bf4faa2b0b21a83366fb711cd6cc7145f28dcfd6355b"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-walk.log",
+       "sha256": "f05095365a9c799e288bc8bb5f302faa5ec1491eda048b407e910b4557236706"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-walk.mjs",
+       "sha256": "01b535832efb94bb46b3a132f266af749995fb77529a181b562d69d2a554e1c3"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-attack.log",
+       "sha256": "03c911b5e45858dbaeb427469dced120f9e7313184eac961449830a9d15cbc0a"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-attack.mjs",
+       "sha256": "54ff57753591cfe0d3e7fb3fa44b6d543798a0d0f50e138f9fbc715dce28cc09"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "test",
+       "tests/text-fault-proof.test.ts",
+       "tests/payload-guard.test.ts",
+       "tests/text-lane-cap.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": [
+    "Text and toy-project walks only; the rows-3-to-5 replay on real field files is deferred to spec 26."
+   ]
+  },
+  {
+   "id": "spec-18-2-reviewer-step",
+   "subjectIdentity": "f17a1831cdefc908aba502f3dfa265a1539702f5e520ae9f61e6cc15d747abb6",
+   "criteria": [
+    "spec-18-2"
+   ],
+   "representativeInput": "payload/.joycraft/references/testing-review.md:102-114; spec-18-r2-attack.mjs scenarios B-G",
+   "expected": "Reviewer reruns one saved fault and one of its own aimed at a removed assertion, runs the old file at the base, checks old-run receipts carry the base revision and the same patch sha256; blocks only when old catches what new misses; the limit line is stated.",
+   "observations": [
+    {
+     "kind": "structural",
+     "method": "command",
+     "result": "PASS",
+     "actual": "Lines 102-114 carry one of its own, the aim rule, the base checkout, the revision and patch-sha256 check, the separate-tree delivery, the receipt home, the shared-tree limit, the block rule and the exact limit sentence. Prune and swap attempts (receipt footers carry revision and patch.sha256): B pruned to two trivial faults passes the implementer proof, but the reviewer own clamp fault fails old at base and passes new: block. C patches swapped after the old run: old/new sha256 differ: caught. D \"old\" runs taken on the new file: revision is not the base: caught. E consistent swap (old at base and new both on a trivial patch): old/new shas agree, revision is base, so the stated check passes; the reviewer own fault still blocks. F one assertion loosened, not deleted, its fault pruned: the deleted line is in the diff; the reviewer own rounding fault blocks. G two assertions removed, one re-covered, the other fault consistently swapped, reviewer aims at the re-covered one: no block and the rounding coverage loss is missed; only a check of the receipt sha256 against the pinned list (mismatch shown) would catch it (follow-up r2-f1). This review shares the coordinator tree, so every fault ran in a temp repo.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-text-scan.log",
+       "sha256": "f6655d13928486b384ae59fd40db16d8d0eded3778b48a13366b3082b51b7ace"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-attack.log",
+       "sha256": "03c911b5e45858dbaeb427469dced120f9e7313184eac961449830a9d15cbc0a"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-attack.mjs",
+       "sha256": "54ff57753591cfe0d3e7fb3fa44b6d543798a0d0f50e138f9fbc715dce28cc09"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-walk.log",
+       "sha256": "f05095365a9c799e288bc8bb5f302faa5ec1491eda048b407e910b4557236706"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-walk.mjs",
+       "sha256": "01b535832efb94bb46b3a132f266af749995fb77529a181b562d69d2a554e1c3"
+      }
+     ],
+     "command": {
+      "argv": [
+       "node",
+       "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-attack.mjs",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": [
+    "Proof limit: the chosen faults are still caught; this does not show the test is as strong as before.",
+    "Round-1 follow-ups: f1, f3, f4, f5 and f6 are resolved by d38f00b and 26b6b5f; f2 is resolved except the pinned-list comparison in r2-f1."
+   ]
+  },
+  {
+   "id": "spec-18-3-pointers",
+   "subjectIdentity": "f17a1831cdefc908aba502f3dfa265a1539702f5e520ae9f61e6cc15d747abb6",
+   "criteria": [
+    "spec-18-3"
+   ],
+   "representativeInput": "payload/.joycraft/references/testing.md:15-16; verify SKILL.md:45; joycraft-reviewer.md:30; joycraft-implementer.md:30",
+   "expected": "testing.md drops \"isolated temporary copy\" and runs a fault in place only through evidence.mjs run --patch; verify, reviewer and implementer each carry one testing-review.md#test-only-specs pointer.",
+   "observations": [
+    {
+     "kind": "structural",
+     "method": "command",
+     "result": "PASS",
+     "actual": "Scan: testing.md:16 \"in place only through `evidence.mjs run --patch`\", no \"isolated temporary copy\" anywhere in the five files; one #test-only-specs pointer each at verify SKILL.md:45, joycraft-reviewer.md:30, joycraft-implementer.md:30. The later testing.md edit (5beb84d, spec 22) touches only line 126 wording. [AC:spec-18-3] passes.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-text-scan.log",
+       "sha256": "f6655d13928486b384ae59fd40db16d8d0eded3778b48a13366b3082b51b7ace"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-tests.log",
+       "sha256": "ea79f8dce8e17f8f5a60bf4faa2b0b21a83366fb711cd6cc7145f28dcfd6355b"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "test",
+       "tests/text-fault-proof.test.ts",
+       "tests/payload-guard.test.ts",
+       "tests/text-lane-cap.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-18-4-words",
+   "subjectIdentity": "f17a1831cdefc908aba502f3dfa265a1539702f5e520ae9f61e6cc15d747abb6",
+   "criteria": [
+    "spec-18-4"
+   ],
+   "representativeInput": "pnpm test tests/text-fault-proof.test.ts tests/payload-guard.test.ts tests/text-lane-cap.test.ts at d38f00b",
+   "expected": "payload-guard passes; every-spec words grow by at most 20 in this spec; on-demand stays inside its cap (+3,500 by decision on-demand-budget).",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "All 30 pass, exit 0. Guard prints every-spec 12166 (cap 12256) and on-demand 19667 (cap 21163, 1496 spare). d38f00b changes only testing-review.md, an on-demand file, so the round-1 every-spec delta for this spec (+18, 12139 to 12157) is unchanged; the +2 since round 1 is 5beb84d (spec 22). [AC:spec-1-3] now asserts 600 more test-review words stay under both caps and spare+1 breaks only the on-demand cap.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-tests.log",
+       "sha256": "ea79f8dce8e17f8f5a60bf4faa2b0b21a83366fb711cd6cc7145f28dcfd6355b"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-every-spec-count.log",
+       "sha256": "8d4fbd4a14369dab30266e885219fbcc2dffdb9a4adbb21c7b0c203dfef5e507"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "test",
+       "tests/text-fault-proof.test.ts",
+       "tests/payload-guard.test.ts",
+       "tests/text-lane-cap.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-18-5-ignored-path",
+   "subjectIdentity": "f17a1831cdefc908aba502f3dfa265a1539702f5e520ae9f61e6cc15d747abb6",
+   "criteria": [
+    "spec-18-5"
+   ],
+   "representativeInput": "testing-review.md:90-94, 106-109; both walks",
+   "expected": "testing-review.md says fault patches and receipts go in a git-ignored path or are committed first, and where reviewer receipts go.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "command",
+     "result": "PASS",
+     "actual": "Lines 90-94 name `.joycraft/local/faults/` or committing first; 106-109 keep reviewer patches and receipts git-ignored and only final report receipts in the feature folder. Attack walk: 52 --patch runs with patches and receipts under the ignored path all ran and restored with a clean tree, including fault-list commits before each test edit. Round-1 walk rerun: a feature-folder receipt still makes the next run refuse (exit 2), the case the new text now rules out. [AC:spec-18-5] passes.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-attack.log",
+       "sha256": "03c911b5e45858dbaeb427469dced120f9e7313184eac961449830a9d15cbc0a"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-attack.mjs",
+       "sha256": "54ff57753591cfe0d3e7fb3fa44b6d543798a0d0f50e138f9fbc715dce28cc09"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-walk.log",
+       "sha256": "f05095365a9c799e288bc8bb5f302faa5ec1491eda048b407e910b4557236706"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-walk.mjs",
+       "sha256": "01b535832efb94bb46b3a132f266af749995fb77529a181b562d69d2a554e1c3"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-tests.log",
+       "sha256": "ea79f8dce8e17f8f5a60bf4faa2b0b21a83366fb711cd6cc7145f28dcfd6355b"
+      }
+     ],
+     "command": {
+      "argv": [
+       "node",
+       "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-attack.mjs",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  }
+ ],
+ "unresolved": [],
+ "findings": [
+  {
+   "id": "r2-f1-reviewer-checks-pinned-list",
+   "class": "follow-up",
+   "origin": "new",
+   "at": "payload/.joycraft/references/testing-review.md:104-106",
+   "summary": "The reviewer compares old-run and new-run patch sha256 with each other, not with the list pinned before the test edit, and does not check that the list has one fault per removed or changed assertion. Probe G: two assertions removed, one re-covered by a new assertion; the implementer pins honest shas, then reruns old (at base) and new on a swapped trivial patch for the uncovered one; the reviewer aims its own fault at the re-covered assertion. Every stated check passes and the lost rounding coverage is missed; the pinned-list sha mismatch is the only signal. Suggest: \"checks each receipt patch sha256 against the list committed before the test edit, one per removed or changed assertion\", and when several assertions are removed, aim at one with no replacement.",
+   "assumption": "The spec asks for the stated text; this case needs a deliberate swap plus an unlucky reviewer pick, so it is a follow-up, not a block."
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-delivery-lock.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 2334[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery lock holder[2m > [22m[AC:lock-dead-holder-taken] takes a lock whose recorded PID is not running on this host and pushes [33m 620[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery lock holder[2m > [22m[AC:lock-dead-takeover-taken] takes over a takeover directory that a dead taker left behind [33m 599[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery lock holder[2m > [22m[AC:lock-records-holder] a free lock records this PID and host and is released after the push [33m 582[2mms[22m[39m
+ [32m✓[39m tests/runtime-wave-gate.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 3281[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-1] refuses a missing, non-gate, red or stale receipt with its own code and pushes nothing [33m 1898[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-2] a green gate receipt on HEAD pushes without a second verifier [33m 612[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-2] a project with no tests.gate keeps the -- <verifier> push [33m 569[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m11 passed[39m[22m[90m (11)[39m
+[2m   Start at [22m 18:31:05
+[2m   Duration [22m 3.45s[2m (transform 36ms, setup 0ms, collect 25ms, tests 5.61s, environment 0ms, prepare 62ms)[22m
+

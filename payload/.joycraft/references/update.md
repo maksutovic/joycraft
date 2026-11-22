@@ -5,7 +5,7 @@ exists. It reads npm once a day at most, sends no project data, and stops after
 two seconds. If it prints nothing, say nothing and continue.
 
 If it prints JSON, read `action`. Put the line below in your next reply to the user,
-even when the request is about something else and even when your reply is short:
+however short or off-topic:
 
 - `note`: tell the user `message` in one line. Do not ask anything.
 - `ask`: tell the user `message` and ask once: update now, not now, or turn off.
@@ -32,10 +32,18 @@ Use the version from `latest`:
    output of `entry-check.mjs block` and remove each older Joycraft line that
    the block replaces. This is the one entry-file edit that an unattended run
    makes, besides a path with one unique Git rename.
+   When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`,
+   ask once whether search should skip the archive; rerun it with `--apply` on
+   a yes, `--decline` on a no.
+   When `entry-check.mjs` reports `gate-rule` and
+   `cleanup.mjs gate-rule --check` prints `unset`, show the findings once with
+   the before-and-after rewrite ([cleanup](cleanup.md)) as one question.
+   Rewrite on a yes. Record the answer with
+   `node .joycraft/runtime/cleanup.mjs gate-rule --record rewritten` or
+   `--record kept`, so no later update asks again.
 4. Tell the user in plain words what is different now. For a `minor` or
    `migration`, name what the user can now do or say, one line per release since
-   the old version, from the release summaries the check listed (and the
-   changelog, when you can read it). When
+   the old version, from the listed release summaries and the changelog when you can read it. When
    `node .joycraft/runtime/artifacts/cli.mjs questions` prints `unset: true`,
    ask for the question style now, as [setup](setup.md) step 2 says.
 5. Run the review-loop plan

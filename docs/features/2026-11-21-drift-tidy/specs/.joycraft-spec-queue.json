@@ -1,0 +1,927 @@
+{
+  "schemaVersion": 1,
+  "feature": "drift-tidy",
+  "specs": [
+    {
+      "id": 1,
+      "file": "01-check-listing.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/cleanup.md",
+            "kind": "code"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-1-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:27:05.481Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-1.report.json",
+        "sha256": "e54d4ad60fb1d808518fb11311daf43b8c5e0c790ce8a14e33b2bd95ac84c9d7"
+      }
+    },
+    {
+      "id": 2,
+      "file": "02-tidy-report.md",
+      "depends_on": [
+        1
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-2-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:31:31.704Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-2.report.json",
+        "sha256": "1f87f14c122a6a1c29322d0615bc2c63ac5366dcd6661a53040e17fbd1d1ae59"
+      }
+    },
+    {
+      "id": 3,
+      "file": "03-gone-symbol.md",
+      "depends_on": [
+        2
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-3-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:34:53.283Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-3.report.json",
+        "sha256": "6de22c6b7f7d2d19206b145637c8f5fe06b7b30d85f55d88347f30af4bf2b1d6"
+      }
+    },
+    {
+      "id": 4,
+      "file": "04-tidy-verify.md",
+      "depends_on": [
+        3
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-cleanup-tidy-verify.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-4-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:38:03.608Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-4-r3.report.json",
+        "sha256": "6d8a0d9fb061011aced70488ac3dc31e760dfa32e0583e0839fb18271c5d94b6"
+      }
+    },
+    {
+      "id": 5,
+      "file": "05-trust-sentence.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/05-trust-sentence.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/wiring.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "AGENTS.md",
+            "kind": "code"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-5-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/05-trust-sentence.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/05-trust-sentence.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/05-trust-sentence.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:27:05.648Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-5.report.json",
+        "sha256": "df26a233cc984b74258ae1cdfcf754e4fcc967a13e14d3b84fb4fed112ae8f22"
+      }
+    },
+    {
+      "id": 6,
+      "file": "06-archive-ignore.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/06-archive-ignore.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/update.md",
+            "kind": "code"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-6-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/06-archive-ignore.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/06-archive-ignore.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/06-archive-ignore.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:27:05.704Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-6.report.json",
+        "sha256": "48009a19a685b10257e8168d8bf6dccb30d4e33ab0aa6ddb2d45b19fc1ebd947"
+      }
+    },
+    {
+      "id": 7,
+      "file": "07-archive-links.md",
+      "depends_on": [
+        6
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/07-archive-links.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/archive.md",
+            "kind": "code"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-7-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/07-archive-links.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-7-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/07-archive-links.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-7-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/07-archive-links.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:30:34.146Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-7.report.json",
+        "sha256": "7dd15e824402291e96b9bc93657346ad4c87f727defa6ebdb17c2e06c0ceb649"
+      }
+    },
+    {
+      "id": 8,
+      "file": "08-as-is-archive.md",
+      "depends_on": [
+        7
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/08-as-is-archive.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/archive.md",
+            "kind": "code"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-8-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/08-as-is-archive.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-8-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/08-as-is-archive.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-8-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/08-as-is-archive.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-21T23:33:56.429Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-8.report.json",
+        "sha256": "f145b63afdaa3c4e68b75a1329b20e5f22dfae938d8408fab4901cc4179a9250"
+      }
+    },
+    {
+      "id": 9,
+      "file": "09-age-out.md",
+      "depends_on": [
+        4
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/09-age-out.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/cleanup.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-cleanup-age-out.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-9-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/09-age-out.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/09-age-out.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/09-age-out.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T00:03:34.631Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-9-r3.report.json",
+        "sha256": "429c70f637e186ead5a85c0e0387f04b86d625c77d0d4c8812982dfc631e3492"
+      }
+    },
+    {
+      "id": 10,
+      "file": "10-checks-seam.md",
+      "depends_on": [
+        4
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/config.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/settings.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/templates/joycraft.yaml",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-cleanup-checks-seam.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-10-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-10-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-10-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-10-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T00:03:34.703Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-10.report.json",
+        "sha256": "adfee82693ac5afc4254f8ffdf929937465a2a85e36dc72849f1264ecca02c44"
+      }
+    },
+    {
+      "id": 11,
+      "file": "11-start-advice.md",
+      "depends_on": [
+        4,
+        5
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/11-start-advice.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/wiring.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/entry-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-entry/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-start-advice.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-11-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/11-start-advice.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-11-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/11-start-advice.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-11-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/11-start-advice.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T00:03:34.771Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-11.report.json",
+        "sha256": "1ce7942745fb5bd273b28fa922042b459c988bdda2a23b4d0e4f80bfc71c2e5a"
+      }
+    },
+    {
+      "id": 12,
+      "file": "12-generator-cuts.md",
+      "depends_on": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-cleanup/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/cleanup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/knowledge.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/drift-tidy-text.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-12-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-12-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-12-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-12-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-12-5",
+            "requirement": {
+              "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T00:22:50.934Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-12-r2.report.json",
+        "sha256": "115cd3be706ca2952a21cd23893f5f382ad8fe62a78a3c7f53ab522ba59adc15"
+      }
+    }
+  ]
+}

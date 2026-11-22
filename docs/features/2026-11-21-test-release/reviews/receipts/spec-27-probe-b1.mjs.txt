@@ -1,0 +1,43 @@
+// Probe spec 27 bullet 1: namesCommand on prose, code spans, arguments and fences.
+const root = process.argv[2];
+const { namesCommand, acceptanceBullets } = await import(`${root}/payload/.joycraft/runtime/queue-check.mjs`);
+const cases = [
+  ['pnpm verify', 'Check: run pnpm verify before merging.', true],
+  ['pnpm verify', 'Check: pnpm verify — then read the log.', true],
+  ['pnpm verify', 'Check: pnpm verify – then read the log.', true],
+  ['pnpm verify', 'Check: pnpm verify - then read the log.', true],
+  ['pnpm verify', 'Check: pnpm verify—then read.', true],
+  ['pnpm verify', 'Check: `pnpm verify` passes.', true],
+  ['pnpm verify', 'Check: `pnpm verify --run` passes.', false],
+  ['pnpm test', '`pnpm test tests/x.test.ts`', false],
+  ['pnpm test', 'pnpm test tests/x.test.ts', false],
+  ['pnpm test', 'pnpm test -- --run', false],
+  ['pnpm test', 'pnpm test --run', false],
+  ['pnpm test', 'pnpm test FOO=1', false],
+  ['pnpm test', 'pnpm test x.test.ts', false],
+  ['pnpm test', 'pnpm test -t name', false],
+  ['pnpm test', 'Check: pnpm test-unit passes', false],
+  ['pnpm test', "Check: pnpm test's output", false],
+  ['pnpm test', 'Check: run pnpm test unit', true],
+  ['pnpm test', 'The pnpm test script is slow, so run `node --test t.mjs`.', true],
+  ['pnpm test', 'Check: `vitest run tests/a.test.ts` (not pnpm test).', true],
+  ['pnpm test', 'Check: `vitest run tests/a.test.ts`; see pnpm testing notes.', false],
+  ['pnpm test', 'Check: mypnpm test runs', false],
+  ['pnpm test', 'Check: `pnpm test` vs `pnpm test tests/a.test.ts`', true],
+  ['pnpm test', 'Check: `pnpm test tests/a.test.ts` then pnpm test', true],
+  ['make', 'Check: make sure the file exists with `node t.mjs`.', null],
+  ['make check', 'Check: make check that it works', null],
+  ['pnpm test && pnpm typecheck', 'Check: run pnpm test && pnpm typecheck before', true],
+  ['pnpm verify', 'Check: `node v.mjs` prints "pnpm verify" for the hint.', true],
+  ['pnpm verify', 'Check: pnpm verify2 runs', false],
+  ['pnpm verify', 'Check: pnpm verifyé runs', false],
+];
+for (const [cmd, text, want] of cases) { const got = namesCommand(text, cmd); console.log(`${want === null ? 'NOTE' : got === want ? 'OK  ' : 'BAD '} gate=${JSON.stringify(cmd)} ${JSON.stringify(text)} -> ${got}`); }
+const spec = (body) => `---\nid: 1\n---\n# S\n\n## Acceptance\n\n${body}\n`;
+for (const body of [
+  '- Check: run it\n  ```\n  pnpm verify\n  ```',
+  '- Check: run it\n  ```sh\n  pnpm verify\n  ```',
+  '- Check: run it\n  ```\n  pnpm verify tests/a.test.ts\n  ```',
+  '- Check: run it\n  ```\n  pnpm  verify\n  ```',
+  '- Check: run it\n  ~~~\n  pnpm verify\n  ~~~',
+]) { const b = acceptanceBullets(spec(body)).bullets[0]; console.log('fence', JSON.stringify(body), '->', JSON.stringify(b?.fenced), 'names:', namesCommand(b?.text ?? '', 'pnpm verify')); }

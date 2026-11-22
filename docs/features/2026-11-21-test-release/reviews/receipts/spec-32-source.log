@@ -1,0 +1,286 @@
+$ git show 26b5a72 -- tests/ payload/.joycraft/references/archive.md payload/.joycraft/runtime/archive.mjs
+commit 26b5a720a4a87b493e4d510e13bc58bd7bba8efa
+Author: Maximilian Maksutovic <maksutovic@gmail.com>
+Date:   Sat Nov 21 21:33:07 2026 -0800
+
+    feat: list more archive path spellings and word the gone-folder refusal plainly
+    
+    Spec 32: namesFolder accepts }/ and ../ prefixes, namesDated accepts
+    features/<slug>/, the refusal says the folder is gone and nothing changed,
+    archive.md covers the skip and no-gate steps, and archive.mjs reads the
+    docs root with cleanup.mjs docsRoot.
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+diff --git a/payload/.joycraft/references/archive.md b/payload/.joycraft/references/archive.md
+index 3ba63ce..f28f0e7 100644
+--- a/payload/.joycraft/references/archive.md
++++ b/payload/.joycraft/references/archive.md
+@@ -103,8 +103,7 @@ Apply restores each accepted raw version under
+ `evidence/requirements/<proof-hash>/<original-path>` in the archive. Different
+ accepted versions or scopes remain distinct. Replay entries use
+ `operation: "restored-from-git"` and retain the proof in `requirement`; replay
+-verifies the raw bytes and their accepted projection without live Git history. The current brief and its amendment ledger move with
+-the feature, alongside the separately restored older brief versions.
++verifies the raw bytes and their accepted projection without live Git history.
+ 
+ ## Archive reconciliation for a changed acceptance record
+ 
+@@ -160,8 +159,7 @@ Under an owner-authorized resolution, use this separate archive-only override:
+ records. For an ordinary `none` or `requirement-scope` requirement whose accepted
+ version survives outside HEAD history (for example after a squash merge), an
+ entry may also name `acceptedCommit` as a full Git commit ID. The blob at that
+-exact commit must reproduce the original accepted hash; the helper never waives
+-missing bytes. The current external requirement is copied into the archive too,
++exact commit must reproduce the original accepted hash. The current external requirement is copied into the archive too,
+ so the recorded current hash remains verifiable. `laterCommits` lists the path
+ commits in `acceptedCommit..HEAD`, not necessarily later in time. `acceptedSha256` is copied from the original report's input;
+ `currentSha256` pins raw current bytes, including acceptance metadata. One queue
+@@ -169,8 +167,7 @@ edit may need an entry for each report whose dependency projection changed. Dupl
+ uncovered or stale entries fail closed. A ledger's presence alone never enables
+ the override, and its shape does not authenticate a human. The ledger may be
+ uncommitted: preview pins its raw hash, apply rechecks it, and the archive keeps
+-it byte-for-byte. Commit the archive through normal
+-delivery. A renamed own spec or changed report subject
++it byte-for-byte. A renamed own spec or changed report subject
+ path still fails; this override reconciles contents, not acceptance identities.
+ 
+ ```sh
+@@ -210,6 +207,10 @@ stays red, move the folder back, delete the archive record folder, restore the
+ changed files with Git until `git status` prints nothing, and report the feature
+ as not archived. A path built in pieces from a variable is not listed.
+ 
++When a listed test needs more than a path change (fixture to move, spent check,
++uneditable file), skip that feature, write one line. Edit a listed non-test file
++only when a listed test asserts it. No gate recorded: run the changed tests.
++
+ The staging directory receives `archive-recovery.json` before any copy or move,
+ and the marker remains in the final archive as immutable move provenance. If the
+ final rename fails, the runtime restores the source directory; when it cannot
+diff --git a/payload/.joycraft/runtime/archive.mjs b/payload/.joycraft/runtime/archive.mjs
+index 0851338..d699208 100644
+--- a/payload/.joycraft/runtime/archive.mjs
++++ b/payload/.joycraft/runtime/archive.mjs
+@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url';
+ import { boundQueueForSubject, briefDecisionRecords, canonical, featureFolderMatches, isObject, isSha256, localPath, nonempty, normalizedQueueForSubject, parseJson, readLocal, readQueue, relativePath, requireValue, scopedRequirementForSubject, sha256, specStatus, subjectIdentity, validateIndependentReview } from './identity.mjs';
+ import { validateEvidence } from './evidence.mjs';
+ import { validateOwnerAcceptance, validateWaiver } from './completion.mjs';
++import { docsRoot } from './cleanup.mjs';
+ import { readConfig, workPaths } from './config.mjs';
+ import { isTestPath } from './test-changes.mjs';
+ 
+@@ -498,15 +499,17 @@ function replayManifest(plan) {
+   return { schemaVersion: 1, kind: 'joycraft-archive-replay', feature: plan.feature, archivedAt: new Date().toISOString(), phase: plan.phase, source: plan.source, evidence: plan.evidence, ...(plan.reconciliation ? { reconciliation: plan.reconciliation } : {}), ...(plan.asIs ? { asIs: { ...plan.asIs, sha256: sha256(Buffer.from(unverifiedNote(plan))) } } : {}), durableContext: plan.attestation.durableContext, hostSession: plan.attestation.host.sessionId, historical: plan.historical, files: map };
+ }
+ 
+-// The feature folder as the project names it: its own features home, bare or after ./, never
+-// inside a longer path (packages/app/docs/features/x), and ending at a path boundary, so
+-// docs/features/x.old and docs/features/x-two are other folders.
++// The feature folder as the project names it: its own features home, bare, after ./, after one
++// or more ../ or after }/ (`${root}/docs/...`), never inside a longer path
++// (packages/app/docs/features/x), and ending at a path boundary, so docs/features/x.old and
++// docs/features/x-two are other folders.
+ const escaped = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+-const pathStart = '(?:(?<![\\w./-])|(?<=(?<![\\w./-])\\./))';
++const pathStart = '(?:(?<![\\w./-])|(?<=(?<![\\w./-])(?:\\./|(?:\\.\\./)+))|(?<=\\}/))';
+ const namesFolder = source => new RegExp(`${pathStart}${escaped(source)}(?=$|/|[^\\w.-]|\\.(?!\\w))`);
+ // A dated folder name (YYYY-MM-DD-...) is unique enough to match alone: as a whole quoted token
+-// ('docs', 'features', '<name>') or as the first part of a path ('<name>/brief.md').
+-const namesDated = name => new RegExp(`(?<=["'\`])${escaped(name)}(?=["'\`])|${pathStart}${escaped(name)}(?=/)`);
++// ('docs', 'features', '<name>'), or at a path start as '<name>/brief.md' or, after the features
++// folder's last segment, as 'features/<name>/brief.md'.
++const namesDated = (name, home) => new RegExp(`(?<=["'\`])${escaped(name)}(?=["'\`])|${pathStart}(?:${escaped(home)}/)?${escaped(name)}(?=/)`);
+ // A migration may already be applied somewhere: archive marks it so the agent leaves it as it is.
+ const isMigrationPath = file => /(^|\/)migrations\//.test(file);
+ 
+@@ -519,7 +522,7 @@ function namedFiles(root, source) {
+   if (!gitRoot(root)) return [];
+   const { features, archive } = workPaths(root);
+   const folder = path.posix.basename(source);
+-  const patterns = [namesFolder(source), ...(/^\d{4}-\d{2}-\d{2}-/.test(folder) ? [namesDated(folder)] : [])];
++  const patterns = [namesFolder(source), ...(/^\d{4}-\d{2}-\d{2}-/.test(folder) ? [namesDated(folder, path.posix.basename(features))] : [])];
+   // git grep reads only the text files that hold the folder name, never every tracked file or a binary.
+   let candidates;
+   try { candidates = gitIn(root, ['grep', '-I', '-l', '-z', '-F', '-e', folder]).split('\0').filter(Boolean); }
+@@ -552,10 +555,10 @@ export function archiveFeature(options) {
+   const notNeeded = options.asIs === true && !plan.asIs ? { asIs: 'not-needed' } : {};
+   if (options.apply !== true) return { status: 'preview', plan, ...notNeeded };
+   const root = options.root ?? process.cwd();
+-  // Another archive of this folder that moves it while this run checks makes these checks fail
+-  // on a vanished path; that is a refusal (nothing was changed), not a crash.
++  // A folder that vanishes while this run checks makes these checks fail on a missing path; that
++  // is a refusal (nothing was changed), not a crash. The cause is not known here, so none is named.
+   const movedMeanwhile = error => error?.exitCode === undefined && !existsSync(projectTarget(root, plan.source))
+-    ? refusal(`Another archive --apply moved ${plan.source} while this run was checking it; this run changed nothing. Run the archive preview to see the result`)
++    ? refusal(`${plan.source} is gone; this run changed nothing. Run the archive preview to see the result`)
+     : error;
+   let stage, stageLocal, destinationLocal, sourceLocal;
+   try {
+@@ -592,10 +595,10 @@ export function archiveFeature(options) {
+   } catch (error) {
+     const stagedFeature = path.join(stageLocal, 'feature');
+     if (!existsSync(stagedFeature) && !existsSync(sourceLocal)) {
+-      // This run never moved the feature folder, yet it is gone: another archive run moved it.
++      // This run never moved the feature folder, yet it is gone (another run or a person moved it).
+       // This run's stage folder holds only copies, so it is removed.
+       rmSync(stageLocal, { recursive: true, force: true });
+-      throw refusal(`${plan.source} was moved by another archive run while this run was staging; this run never moved it, removed its own stage folder and changed nothing else. Run the archive preview to see the result`);
++      throw refusal(`${plan.source} is gone; this run never moved it, removed its own stage folder and changed nothing. Run the archive preview to see the result`);
+     }
+     let restored = true;
+     try { if (existsSync(stagedFeature) && !existsSync(sourceLocal)) renameSync(stagedFeature, sourceLocal); } catch { restored = false; }
+@@ -610,14 +613,6 @@ export function archiveFeature(options) {
+   return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), ...notNeeded, ...nextSteps(plan), links, ...(afterArchive ? { afterArchive } : {}) };
+ }
+ 
+-/** The common parent folder of the context, features and archive homes ('.' when they share none). */
+-function docsRoot(root) {
+-  const parts = Object.values(workPaths(root)).map(folder => folder.split('/'));
+-  const common = [];
+-  for (let index = 0; parts.every(list => index < list.length - 1 && list[index] === parts[0][index]); index += 1) common.push(parts[0][index]);
+-  return common.join('/') || '.';
+-}
+-
+ const under = (file, folder) => folder === '.' || file === folder || file.startsWith(`${folder}/`);
+ 
+ /** Live project files: Git's tracked and unignored files, or the docs root's files without Git. Symlinks are skipped. */
+@@ -682,7 +677,7 @@ const entryFile = file => ['AGENTS.md', 'CLAUDE.md'].includes(path.posix.basenam
+  */
+ function relinkLive(root, plan) {
+   const { source, destination } = plan;
+-  const docs = docsRoot(root), { features, archive } = workPaths(root);
++  const paths = workPaths(root), docs = docsRoot(paths), { features, archive } = paths;
+   const evidence = new Set([...plan.copiedEvidence.map(file => file.path), ...plan.evidence.flatMap(decision => [decision.path, decision.report?.path].filter(Boolean))]);
+   const names = new RegExp(`(?<![\\w-])${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`);
+   const result = { rewritten: [], namedInMarkdown: [], namedInOtherFiles: [] };
+diff --git a/tests/runtime-archive-links.test.ts b/tests/runtime-archive-links.test.ts
+index 94bf327..cd916a3 100644
+--- a/tests/runtime-archive-links.test.ts
++++ b/tests/runtime-archive-links.test.ts
+@@ -116,4 +116,13 @@ describe('archive rewrites live links', () => {
+     expect(result.links.rewritten).toEqual([{ path: 'work/notes/README.md', line: 1, from: '../features/x/brief.md', to: '../history/x/feature/brief.md' }]);
+     expect(result.links.namedInMarkdown).toEqual(['AGENTS.md', 'pkg/CLAUDE.md']);
+   });
++  it('[AC:spec-32-5] with paths.context: docs the docs root is docs: a root README.md link stays and is listed, docs/guide.md is rewritten', () => {
++    const readme = '# Readme\n\n[x](docs/features/x/brief.md)\n';
++    const root = fixture({ 'joycraft.yaml': 'paths:\n  context: docs\n', 'README.md': readme, 'docs/guide.md': '[x](features/x/brief.md)\n' });
++    const result = apply(root);
++    expect(readFileSync(join(root, 'README.md'), 'utf8')).toBe(readme);
++    expect(result.links.namedInMarkdown).toContain('README.md');
++    expect(readFileSync(join(root, 'docs/guide.md'), 'utf8')).toBe('[x](archive/x/feature/brief.md)\n');
++    expect(result.links.rewritten).toEqual([{ path: 'docs/guide.md', line: 1, from: 'features/x/brief.md', to: 'archive/x/feature/brief.md' }]);
++  });
+ });
+diff --git a/tests/runtime-archive-named-files.test.ts b/tests/runtime-archive-named-files.test.ts
+index 9a4dae3..4a80b8c 100644
+--- a/tests/runtime-archive-named-files.test.ts
++++ b/tests/runtime-archive-named-files.test.ts
+@@ -162,6 +162,25 @@ describe('archive lists only (spec 30)', () => {
+   });
+ });
+ 
++describe('archive list follow-ups (spec 32)', () => {
++  it('[AC:spec-32-1] namedFiles lists the }/, ../, ../../ and features/<slug>/ forms and none of the five look-alikes', () => {
++    const root = fixture({ folder: dated, extra: {
++      'tests/root.test.ts': `const p = \`\${root}/${datedSource}/x\`;\n`,
++      'tests/up.test.ts': `const p = '../${datedSource}/x';\n`,
++      'tests/up-two.test.ts': `const p = '../../${datedSource}';\n`,
++      'tests/home.test.ts': `const p = 'features/${dated}/brief.md';\n`,
++      'scripts/nested.mjs': `export const p = 'packages/app/${datedSource}/brief.md';\n`,
++      'scripts/old.mjs': `export const p = '${datedSource}.old';\n`,
++      'scripts/two.mjs': `export const p = '${datedSource}-two';\n`,
++      'scripts/before.mjs': `export const p = 'x${dated}/brief.md';\n`,
++      'scripts/after.mjs': `export const p = '${dated}x/brief.md';\n`,
++    } });
++    const paths = listed(root).map((file: { path: string }) => file.path);
++    for (const file of ['tests/root.test.ts', 'tests/up.test.ts', 'tests/up-two.test.ts', 'tests/home.test.ts']) expect(paths, file).toContain(file);
++    for (const file of ['scripts/nested.mjs', 'scripts/old.mjs', 'scripts/two.mjs', 'scripts/before.mjs', 'scripts/after.mjs']) expect(paths, file).not.toContain(file);
++  });
++});
++
+ // A preload that runs a whole second plain --apply inside this one at one point: when this run
+ // checks for the destination again ('check'), or right before it moves the folder ('stage').
+ const preloadHome = realpathSync(mkdtempSync(join(tmpdir(), 'jc-archive-race-')));
+@@ -184,13 +203,14 @@ if (at) {
+ 
+ describe('archive owner check of spec 13', () => {
+   for (const at of ['check', 'stage']) {
+-    it(`[owner-check-n1] [AC:spec-30-5] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (${at})`, () => {
++    it(`[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (${at})`, () => {
+       const root = fixture();
+       const out = join(root, '.joycraft/local/other.json');
+       const loser = run(root, ['--apply'], { env: { NODE_OPTIONS: `--import=${preload}`, JC_RACE_AT: at, JC_RACE_OUT: out } });
+       expect(JSON.parse(readFileSync(out, 'utf8'))).toMatchObject({ status: 'archived' });
+       expect(loser.status, loser.stderr).toBe(2);
+-      expect(loser.stderr).toMatch(/[Aa]nother archive/);
++      expect(loser.stderr).toContain('changed nothing');
++      expect(loser.stderr).toContain('is gone');
+       expect(loser.stderr).not.toMatch(/manually/);
+       expect(readdirSync(join(root, 'docs/archive'))).toEqual(['x']);
+       expect(existsSync(join(root, 'docs/archive/x/feature/brief.md'))).toBe(true);
+diff --git a/tests/text-archive-tests.test.ts b/tests/text-archive-tests.test.ts
+index 46593c9..bcd6f47 100644
+--- a/tests/text-archive-tests.test.ts
++++ b/tests/text-archive-tests.test.ts
+@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
+ import { join } from 'node:path';
+ import { describe, expect, it } from 'vitest';
+ 
+-// Spec: docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md
++// Specs: docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md and 32-archive-list-followups.md
+ const root = join(__dirname, '..');
+ const payload = join(root, 'payload');
+ const raw = (path: string) => readFileSync(join(payload, path), 'utf8');
+@@ -37,6 +37,16 @@ describe('archive tests text (spec 24)', () => {
+     expect(text.split(' ').length).toBeLessThanOrEqual(115);
+   });
+ 
++  it('[AC:spec-32-3] a second short archive.md paragraph after the spec 24 one covers the skip and no-gate steps', () => {
++    const text = paragraph(ARCHIVE, 'more than a path change');
++    expect(text).toMatch(/no gate recorded/i);
++    expect(text).toMatch(/asserts/);
++    expect(text.trim().split(' ').length).toBeLessThanOrEqual(45);
++    const blocks = raw(ARCHIVE).split(/\n\s*\n/);
++    const first = blocks.findIndex(each => each.includes('`namedFiles`'));
++    expect(blocks[first + 1]).toContain('more than a path change');
++  });
++
+   it('[AC:spec-24-2] the session-end skill fixes the listed tests and commits them with the move', () => {
+     const text = paragraph(SKILL, 'docs: archive <slug>');
+     expect(text).toMatch(/After `--apply`, fix the tests the preview listed in `namedFiles` \(see the archive guidance\), then commit the move and those edits in their own commit, `docs: archive <slug>`\./);
+@@ -46,7 +56,7 @@ describe('archive tests text (spec 24)', () => {
+   it('[AC:spec-24-3] testing-review names the archive exception and the featurePaths fix', () => {
+     const opening = paragraph(REVIEW, 'never edits or deletes a test');
+     expect(opening).toMatch(/exception: at archive, session end may change a folder path in a listed test/);
+-    const item = paragraph(REVIEW, '(`featurePaths`)').split('\n').join(' ');
++    const item = paragraph(REVIEW, '(`featurePaths`)');
+     expect(item).toMatch(/\(`featurePaths`\) is a follow-up finding; the fix is to move the file the test reads out of the feature folder/);
+   });
+ 
+
+$ git grep -n "docs: archive" -- payload
+payload/.agents/skills/joycraft-session-end/SKILL.md:112:`docs: archive <slug>`. That commit takes every archive edit: the move, the live
+
+$ grep -n refusal/exitCode archive.mjs
+543:const refusal = message => Object.assign(new Error(message), { exitCode: 2 });
+560:  const movedMeanwhile = error => error?.exitCode === undefined && !existsSync(projectTarget(root, plan.source))
+561:    ? refusal(`${plan.source} is gone; this run changed nothing. Run the archive preview to see the result`)
+571:  } catch (error) { throw movedMeanwhile(error); }
+598:      // This run never moved the feature folder, yet it is gone (another run or a person moved it).
+601:      throw refusal(`${plan.source} is gone; this run never moved it, removed its own stage folder and changed nothing. Run the archive preview to see the result`);
+819:  try { main(); } catch (error) { process.stderr.write(`Archive stopped: ${error.message}\n`); process.exitCode = error.exitCode ?? 1; }
+
+$ grep docsRoot
+payload/.joycraft/runtime/archive.mjs:8:import { docsRoot } from './cleanup.mjs';
+payload/.joycraft/runtime/archive.mjs:680:  const paths = workPaths(root), docs = docsRoot(paths), { features, archive } = paths;
+payload/.joycraft/runtime/cleanup.mjs:441:export function docsRoot({ features, archive, context }) {
+payload/.joycraft/runtime/cleanup.mjs:528:  const docs = docsRoot(config.paths);
+payload/.joycraft/runtime/cleanup.mjs:819:  const docs = docsRoot(paths);
+
+$ top-level guards of cleanup.mjs and its imports
+payload/.joycraft/runtime/cleanup.mjs:972:if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+payload/.joycraft/runtime/status.mjs:181:if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+payload/.joycraft/runtime/queue-check.mjs:435:if (invoked && import.meta.url === pathToFileURL(invoked).href) {
+payload/.joycraft/runtime/wiring.mjs:200:if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+payload/.joycraft/runtime/worktrees.mjs:213:if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+payload/.joycraft/runtime/config.mjs:234:if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

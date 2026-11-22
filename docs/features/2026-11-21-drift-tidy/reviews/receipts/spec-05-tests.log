@@ -1,0 +1,16 @@
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/payload-entry-check.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 1770[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped entry check[2m > [22m[AC:payload-entry-check] a clean project prints nothing and exits 0, also with --ci [33m 469[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped entry check[2m > [22m[AC:payload-entry-check] the exact block is clean; a block with one changed word is one advisory and --ci exits 0 [33m 905[2mms[22m[39m
+ [32m✓[39m tests/runtime-trust-sentence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 2382[2mms[22m[39m
+   [33m[2m✓[22m[39m trust sentence in the managed block[2m > [22m[AC:spec-5-2] an AGENTS.md with the previous four-line block gets a managed-block finding (changed) [33m 1444[2mms[22m[39m
+   [33m[2m✓[22m[39m trust sentence in the managed block[2m > [22m[AC:spec-5-3] this repository's AGENTS.md carries the current block [33m 804[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 15:29:05
+[2m   Duration [22m 2.84s[2m (transform 110ms, setup 0ms, collect 241ms, tests 4.15s, environment 0ms, prepare 137ms)[22m
+

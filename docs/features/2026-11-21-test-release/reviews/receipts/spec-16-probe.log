@@ -1,0 +1,23 @@
+briefDoneWhen cleanup.mjs: ["3:pnpm verify"] entry-check.mjs: ["3:pnpm verify"]
+tableOnly cleanup.mjs: [] entry-check.mjs: "unparsed exit=0  "
+twoRules cleanup.mjs: ["3:pnpm verify","4:pnpm verify"] entry-check.mjs: ["3:pnpm verify","4:pnpm verify"]
+noRecordedGate cleanup.mjs: []
+touched files in every-spec list: []
+files changed by c4932c7: payload/.agents/skills/joycraft-cleanup/SKILL.md, payload/.joycraft/references/cleanup.md, payload/.joycraft/references/update.md, payload/PIN, tests/text-owner-gate-lines.test.ts
+words .agents/skills/joycraft-cleanup/SKILL.md: 409 -> 465 (+56)
+words .joycraft/references/update.md: 552 -> 595 (+43)
+words .joycraft/references/cleanup.md: 1801 -> 1844 (+43)
+update.md step 3:
+3. Run `npx joycraft@<latest> doctor .`, then `node .joycraft/runtime/entry-check.mjs`.
+   When it reports `managed-block`, replace the block in `AGENTS.md` with the
+   output of `entry-check.mjs block` and remove each older Joycraft line that
+   the block replaces. This is the one entry-file edit that an unattended run
+   makes, besides a path with one unique Git rename.
+   When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`,
+   ask once whether search should skip the archive; rerun it with `--apply` on
+   a yes, `--decline` on a no.
+   When it reports `gate-rule` and `.joycraft/preferences.json` has no
+   `cleanup.gateRule`, show the findings once with the before-and-after
+   rewrite ([cleanup](cleanup.md)) as one question. Rewrite on a yes. Record
+   the answer as `cleanup.gateRule`: `rewritten` or `kept`, keeping the other
+   keys, so no later update asks again.

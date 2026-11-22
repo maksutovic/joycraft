@@ -1,0 +1,71 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-dispatch-commands.test.ts tests/runtime-archive-ignore.test.ts tests/runtime-config-tests.test.ts tests/runtime-cleanup-age-out.test.ts tests/runtime-archive-links.test.ts tests/text-sota-page.test.ts tests/text-wave-gate.test.ts tests/text-session-end-pr.test.ts tests/payload-guard.test.ts tests/text-test-review.test.ts tests/runtime-wave-gate.test.ts tests/drift-tidy-text.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/text-sota-page.test.ts (4 tests) 3ms
+ ✓ tests/drift-tidy-text.test.ts (4 tests) 3ms
+ ✓ tests/text-test-review.test.ts (4 tests) 331ms
+   ✓ test review as the cleanup path > [AC:spec-21-1] measures the full suite once through evidence.mjs with its run facts, then ranks by what every run pays and finds CI-keyed controls and nested runners  329ms
+ ✓ tests/text-wave-gate.test.ts (7 tests) 455ms
+ ✓ tests/runtime-config-tests.test.ts (5 tests) 676ms
+ ✓ tests/text-session-end-pr.test.ts (9 tests) 1422ms
+   ✓ session end review-25 runtime > [review-25-1] a records commit, then the tidy fix: tidy --verify passes on the new HEAD  1419ms
+ ✓ tests/runtime-archive-ignore.test.ts (6 tests) 1622ms
+   ✓ archive.mjs ignore > [AC:spec-6-1] --check reports missing on a fresh fixture; --apply adds the line once; a second --apply is byte-identical  321ms
+   ✓ archive.mjs ignore > [review-b-7] a line with leading spaces is not the archive line; CRLF stays CRLF; equivalent spellings count as present  392ms
+   ✓ archive.mjs ignore > [AC:spec-29-4] a symlinked .ignore is refused; docs/archive/* counts as present; a run from a subfolder uses the root .ignore  534ms
+stdout | tests/payload-guard.test.ts > shipped payload text > [AC:spec-1-2] every-spec and on-demand words stay under their own caps
+every-spec words: 12177 (cap 12256, 79 spare)
+on-demand words: 20546 (cap 21163, 617 spare)
+
+ ✓ tests/payload-guard.test.ts (16 tests) 1906ms
+   ✓ shipped payload text > [AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on  480ms
+   ✓ shipped payload text > [AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name  457ms
+ ✓ tests/runtime-archive-links.test.ts (7 tests) 2424ms
+   ✓ archive rewrites live links > [AC:spec-7-1] a context page link into the feature points at its archive path after apply, and resolves  450ms
+   ✓ archive rewrites live links > [AC:spec-7-2] live Markdown naming the folder in prose and a tracked non-Markdown file are listed and unchanged  383ms
+   ✓ archive rewrites live links > [AC:spec-7-3] a page inside the archive that links the feature folder is byte-identical after apply  315ms
+   ✓ archive rewrites live links > [review-b-1] Markdown under paths.features (another feature's receipt) is byte-identical and listed  364ms
+   ✓ archive rewrites live links > [review-b-2] a tracked symlink to a file outside the project is not followed or rewritten  301ms
+   ✓ archive rewrites live links > [review-b-3] links in inline code, indented code and fences (a ``` line inside ~~~) stay; a link after the fence is rewritten  319ms
+ ✓ tests/runtime-cleanup-age-out.test.ts (17 tests) 8745ms
+   ✓ age-out > [AC:spec-9-1] --days 14 lists only the working doc last committed 20 days ago, with count and age  458ms
+   ✓ age-out > [AC:spec-9-2] --apply moves the doc under the archive with git mv and commits nothing  424ms
+   ✓ age-out review fixes > [review-a-1] about 3 MB of log names does not overflow the Git buffer  5326ms
+   ✓ age-out review 9 fixes > [review-9-3] a doc changed in a merge counts as changed  358ms
+   ✓ age-out review 9 fixes > [review-9-r2-2] a symlinked docs root, or a symlink on the way to it, gives one skipped entry  344ms
+ ✓ tests/runtime-dispatch-commands.test.ts (10 tests) 10134ms
+   ✓ task startup commands > [AC:spec-5-1] implementer and reviewer startup print the focused command built from the check inputs  1273ms
+   ✓ task startup commands > [AC:spec-5-2] each step is one plain command with literal paths  913ms
+   ✓ task startup commands > [AC:spec-5-3] without tests.focused or without check inputs, focused is null with a note and startup succeeds  557ms
+   ✓ task startup commands > [review-5-1] printed commands run as printed through /bin/sh with a space in the worker root or a check path  1908ms
+   ✓ task startup commands > [review-5-2] {files} inside a word is replaced in place and quoted template arguments stay whole  847ms
+   ✓ task startup commands > [review-5-3] two startups in the same second print different receipt paths  339ms
+   ✓ task startup commands > [review-5-4] reviewer receipts go to reviews/receipts and implementer receipts to receipts  669ms
+   ✓ task startup commands > [AC:spec-29-2] an unclosed quote in tests.focused gives focused null with a note, and startup exits 0  498ms
+   ✓ task startup commands > [AC:spec-29-3] a focused command with shell syntax runs as sh -c under evidence  2877ms
+ ✓ tests/runtime-wave-gate.test.ts (17 tests) 25003ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-1] refuses a missing, non-gate, red or stale receipt with its own code and pushes nothing  2850ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-2] a green gate receipt on HEAD pushes without a second verifier  668ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-2] a project with no tests.gate keeps the -- <verifier> push  686ms
+   ✓ gate receipt review-7 fixes > [review-7-1] refuses a green receipt of a non-shell program given -c "<gate>"  565ms
+   ✓ gate receipt review-7 fixes > [review-7-1] still accepts a real shell receipt of sh -c "<gate>"  796ms
+   ✓ gate receipt review-7 fixes > [review-7-3] reads the footer with evidence.mjs readFooter: only the last line, only an object  728ms
+   ✓ gate receipt review-7 fixes > [review-7-4] refuses a gate receipt outside the project root  689ms
+   ✓ gate receipt review-7 fixes > [review-7-r2-1] a gate with shell syntax needs the shell form: split words are refused, a red sh -c run is refused  1035ms
+   ✓ gate receipt review-7 fixes > [review-7-r2-1] the same gate pushes through sh -c when every command is green  915ms
+   ✓ gate receipt review-7 fixes > [review-7-r2-2] a shell form whose program is a relative path is refused; a bare name or absolute path is accepted  1935ms
+   ✓ spec 27 delivery polish > [AC:spec-27-13] a plain gate in shell form splits on spaces and tabs only; a shell path inside the project or (POSIX) in Windows form is refused  2313ms
+   ✓ spec 27 delivery polish > [AC:spec-27-14] a receipt on an ancestor of HEAD pushes when only docs-root paths changed since; any other path or a non-ancestor stays stale  1215ms
+   ✓ spec 27 delivery polish > [review-27-7] only Markdown and JSON under the docs root, or a non-symlink record file in a feature or archive folder, keeps an old receipt  3533ms
+   ✓ spec 27 delivery polish > [AC:spec-31-3] a feature or archive folder keeps an old receipt only for record extensions; a source file there needs the gate  6611ms
+
+ Test Files  12 passed (12)
+      Tests  106 passed (106)
+   Start at  21:26:15
+   Duration  25.27s (transform 416ms, setup 0ms, collect 718ms, tests 52.72s, environment 1ms, prepare 695ms)
+
+exit=0

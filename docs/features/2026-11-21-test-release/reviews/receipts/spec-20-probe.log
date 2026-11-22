@@ -1,0 +1,20 @@
+ok   page has one fenced markdown template
+ok   nine numbered principles inside the template :: 1 Commands. | 2 Each spec names its own tests. | 3 Workers per run. | 4 No real time. | 5 Each test owns its resources. | 6 Time is reported, never a gate. | 7 Assertions come from the spec. | 8 Extend before adding. | 9 Full suite once.
+ok   template has project fill-in slots :: `<one file or one name>` `<command>` `<command>` `<config file>` `<clock or virtual-time helper>` `<helper>` `<port 0 or allocator>` `<strategy>` `<report flag>` `<the project's slot, or "none">`
+ok   spec check set: no runner names
+ok   wider set: no tool names (informational)
+ok   load order in the page body
+ok   benefit sentence
+NOTE page says what to do with a flaky test (informational) :: only the read-when line mentions flaky
+ok   setup.md: links testing-page.md
+ok   setup.md: writes <context>/testing.md
+ok   setup.md: map row text
+ok   testing-review.md: links testing-page.md
+ok   testing-review.md: writes <context>/testing.md
+ok   testing-review.md: map row text
+ok   setup: testing page is a drafted change inside the Propose step :: propose@3838 page@4988 next@6420
+ok   setup: only when the project has none (re-run stays unchanged)
+ok   testing-review: only when missing
+ok   evidence.mjs sets JOYCRAFT_EVIDENCE=1 for the child
+ok   config default paths.context is docs/context
+words testing-page.md: 494

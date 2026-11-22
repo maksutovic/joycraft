@@ -1,0 +1,361 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "7f63f7f9e417fd23b0477e951219ee527dbfc2fd",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 2,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+    "criteria": [
+      {
+        "id": "spec-2-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "37b5ed8a7fda291df292faebb268f765a028db36305ef5338ab6c973f71e91ca",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+        "kind": "requirement",
+        "sha256": "6f679e99a7c87925704b9035f3cff0496280bc664e7ecaedbff848722c48b808",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "f6075597f2f6e095f1420f886d8dc15979ec304c9d644644fb1aa1907bc073a1",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2
+        ]
+      },
+      "governing": []
+    },
+    "identity": "088bfc7a60bff8c227c2cd2ae6800cc8ab9daa6fbafe0f09bde74c89fb81bf3d"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ab91b652c1d17b46d"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "af469870d58a9c65e"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-2-1-range-base",
+      "subjectIdentity": "088bfc7a60bff8c227c2cd2ae6800cc8ab9daa6fbafe0f09bde74c89fb81bf3d",
+      "criteria": [
+        "spec-2-1"
+      ],
+      "representativeInput": "Git fixtures: feature branch, trunk-only (7-day and 100-commit limits), squash-merged history, --base override, clone with origin/HEAD, master-only repo",
+      "expected": "Branch: merge base with the default branch, approximate false. Default branch: parent of the oldest first-parent commit in the smaller of 7 days / 100 commits, approximate true. --base overrides.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-1] x4 passed: feature branch base = fork; trunk with 4 old + 3 recent commits base = last old commit, approximate true; 103 commits in the window base = HEAD~100; squash-merged history base = fork, --base <squash> gives that SHA.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-tests.log",
+              "sha256": "e1d892d32a15ef5133ee125425cda788c7bb3d9678ccf2be2b93614a87365a8f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-tidy.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "P1: in a clone origin/HEAD=origin/main and a feature branch gets base = fork SHA, approximate false; on main it is approximate true (root inside window gives the empty tree). P2: master-only repo, feature base = master fork; on master approximate true. P9: a bad --base exits 1 with \"is not a commit\".",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-probes.log",
+              "sha256": "ff53c12bf956c309dcf6cb2568d45227d1e94a8e619685c1e2f50ffabf49fe5b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "spec2-probe.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "A repo with no origin/HEAD, main or master reads every branch as the trunk window (approximate); not covered by the spec."
+      ]
+    },
+    {
+      "id": "spec-2-2-skipped",
+      "subjectIdentity": "088bfc7a60bff8c227c2cd2ae6800cc8ab9daa6fbafe0f09bde74c89fb81bf3d",
+      "criteria": [
+        "spec-2-2"
+      ],
+      "representativeInput": "git clone --depth 1 fixture; a plain folder; a git repo with no commits",
+      "expected": "One skipped entry with a reason, exit 0.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-2] passed: depth-1 clone and plain folder each exit 0 with one skipped entry {check: tidy, reason} and no findings.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-tests.log",
+              "sha256": "e1d892d32a15ef5133ee125425cda788c7bb3d9678ccf2be2b93614a87365a8f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-tidy.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "P3: plain folder via CLI prints skipped [{check: tidy, reason: \"Not a Git repository with commits.\"}], exit 0. P4: repo with no commits, same, exit 0. P5: depth-1 clone gives \"A shallow clone has no reliable range...\", exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-probes.log",
+              "sha256": "ff53c12bf956c309dcf6cb2568d45227d1e94a8e619685c1e2f50ffabf49fe5b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "spec2-probe.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-2-3-new-doc",
+      "subjectIdentity": "088bfc7a60bff8c227c2cd2ae6800cc8ab9daa6fbafe0f09bde74c89fb81bf3d",
+      "criteria": [
+        "spec-2-3"
+      ],
+      "representativeInput": "Range adding docs/research/x (3), docs/notes (1), docs/features/f (1), docs/archive/a (1), docs/backlog (1)",
+      "expected": "Groups docs/research/x (3) and docs/notes (1) only.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-3] passed: new-doc findings are exactly [[docs/notes,1],[docs/research/x,3]]; features, archive and backlog folder files are not listed.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-tests.log",
+              "sha256": "e1d892d32a15ef5133ee125425cda788c7bb3d9678ccf2be2b93614a87365a8f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-tidy.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "P7: custom paths work/{features,archive,context} give docs root work; only work/r (1) is listed; docs/other.md outside the root, work/backlog, features and archive are not. P8: a backlog folder is excluded, but a file named docs/backlog.md is listed (spec names only a folder).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-probes.log",
+              "sha256": "ff53c12bf956c309dcf6cb2568d45227d1e94a8e619685c1e2f50ffabf49fe5b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "spec2-probe.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-2-4-limit-and-shape",
+      "subjectIdentity": "088bfc7a60bff8c227c2cd2ae6800cc8ab9daa6fbafe0f09bde74c89fb81bf3d",
+      "criteria": [
+        "spec-2-4"
+      ],
+      "representativeInput": "Fixture with 14 range findings (13 folders plus one in docs/context)",
+      "expected": "10 findings shown, context first, more: 4, JSON keys base, head, approximate, findings, more, skipped.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-4] passed: keys include base, head, approximate, findings, more, skipped; 10 findings; more 4; first finding path docs/context.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-tests.log",
+              "sha256": "e1d892d32a15ef5133ee125425cda788c7bb3d9678ccf2be2b93614a87365a8f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-tidy.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "P10: CLI on 14 new-doc findings shows 10, more 4, keys base,head,approximate,findings,more,standing,skipped; exit 2 when findings exist.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-probes.log",
+              "sha256": "ff53c12bf956c309dcf6cb2568d45227d1e94a8e619685c1e2f50ffabf49fe5b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "spec2-probe.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "The limit counts all range findings, including report-only new-doc ones; see finding f2."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-trace-inputs",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "Spec 2 declares no check input, so startup trace lists spec-2-1..4 as untraced. tests/runtime-cleanup-tidy.test.ts tags every criterion ([AC:spec-2-1] x4, -2, -3, -4). Add it as a verification check input."
+    },
+    {
+      "id": "f2-fixable-wording",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-2-4",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:586",
+      "summary": "The spec says \"at most 10 fixable findings\"; the code caps all range findings (new-doc and checks: findings are fixable:false). In the 14-finding fixture all shown findings are report-only.",
+      "assumption": "Read as the brief end-commit says: \"reports at most 10 findings (context pages first)\". The spec check (14 -> 10, more 4) passes."
+    },
+    {
+      "id": "f3-new-context-page",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:517",
+      "summary": "A Markdown page added under paths.context is reported as new-doc with the fix \"carry durable facts to their context home\", which does not fit a page that is already a context page. The spec and brief exclude only features, archive and backlog, so this matches the text."
+    },
+    {
+      "id": "f4-backlog-file",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:518",
+      "summary": "new-doc skips a backlog folder but lists a backlog file such as docs/backlog.md; age-out (line 685) also skips backlog* files. Consider the same rule in both."
+    },
+    {
+      "id": "f5-installed-copy",
+      "class": "follow-up",
+      "origin": "new",
+      "at": ".joycraft/runtime/cleanup.mjs:1",
+      "summary": "Review ran against payload/.joycraft/runtime/cleanup.mjs; the installed dogfood copy is the coordinator's call to refresh, as in spec 1."
+    }
+  ],
+  "createdAt": "2026-11-21T23:34:25.356Z"
+}

@@ -1,0 +1,398 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "66d8224ce86f1c82109394a0a1e4ab83640fc843",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 2,
+    "specPath": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+    "criteria": [
+      {
+        "id": "spec-2-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "spec-tier",
+            "wave-gate",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "wave-gate-default"
+          ]
+        },
+        "sha256": "50d49dcbe222ba6748db8b1ee51dab831962ae200ff88ef3619e9a4d6e653d25",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "b7a74ca8d1a7887aeda909234215318494bd877a6a7c214dfdb47f4950faec08",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+        "kind": "requirement",
+        "sha256": "049e032b4b3b83c0fbe1329b9333a74cef7e64beee95315a47dd64bef6224c7f",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/config.mjs",
+        "kind": "code",
+        "sha256": "d4200b6ae396ba9a0a6b990320b7b67e04cf5453a36414d13d23b5e203eeb3d6",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/templates/joycraft.yaml",
+        "kind": "code",
+        "sha256": "98cc706f0c0b905fd77c6260f4150ab52e3c25a8a864930d7fb06c52ee98685d",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-config-tests.test.ts",
+        "kind": "check",
+        "sha256": "46714d2be2d7ae5a3f8e551a50a7a06fc4e66f23e6a47b92c750d9251e83190c",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "spec-tier",
+            "wave-gate",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "wave-gate-default"
+          ]
+        }
+      ]
+    },
+    "identity": "5c0943a83f82d9046413ad48107c6883d537e07bf592989e190d173e3f625342"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a465133b4c1fadef3"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "ac8ddefa6b5eddb4f"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-2-1-read",
+      "subjectIdentity": "5c0943a83f82d9046413ad48107c6883d537e07bf592989e190d173e3f625342",
+      "criteria": [
+        "spec-2-1"
+      ],
+      "representativeInput": "config.mjs --root on a fixture with tests: focused \"pnpm test {files}\", gate \"pnpm verify\", gateRuns wave (block form); readTests at payload/.joycraft/runtime/config.mjs:128",
+      "expected": "Exit 0 and tests = { focused: \"pnpm test {files}\", gate: \"pnpm verify\", gateRuns: \"wave\" }.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-1] passes in the 4/4 run (exit 0).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-tests.log",
+              "sha256": "8d8743871bc283d9d6efea32595ac1d57caa347d46a8663fe52e030a857b33ce"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-config-tests.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: the spec fixture printed exactly those values. Unquoted `pnpm test {files}`, a gate with `&&` and a trailing comment on full also read correctly. The flow-map form from the spec text is refused with \"joycraft.yaml line 1: unsupported YAML syntax\", so a user who writes it gets a named line, not silent defaults.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.log",
+              "sha256": "6d4542c1ca1b381b425df62bd59248f0b2daeba479929ac8291dae44e8a8438f"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs",
+              "sha256": "b7ecb2ab879621fe0388d3f316e5cf3efdf38ba8cab8e2f78cc4b82c30cbaf34"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-2-2-default",
+      "subjectIdentity": "5c0943a83f82d9046413ad48107c6883d537e07bf592989e190d173e3f625342",
+      "criteria": [
+        "spec-2-2"
+      ],
+      "representativeInput": "config.mjs --root on a fixture with no joycraft.yaml, a joycraft.yaml without tests:, and an empty tests: section",
+      "expected": "Exit 0; tests holds no commands and gateRuns spec; other sections unchanged.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-2] passes: no joycraft.yaml gives tests { gateRuns: \"spec\" }, exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-tests.log",
+              "sha256": "8d8743871bc283d9d6efea32595ac1d57caa347d46a8663fe52e030a857b33ce"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-config-tests.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: all three fixtures exit 0 with tests { gateRuns: \"spec\" }; paths stay the defaults.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.log",
+              "sha256": "6d4542c1ca1b381b425df62bd59248f0b2daeba479929ac8291dae44e8a8438f"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs",
+              "sha256": "b7ecb2ab879621fe0388d3f316e5cf3efdf38ba8cab8e2f78cc4b82c30cbaf34"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-2-3-refuse",
+      "subjectIdentity": "5c0943a83f82d9046413ad48107c6883d537e07bf592989e190d173e3f625342",
+      "criteria": [
+        "spec-2-3"
+      ],
+      "representativeInput": "config.mjs --root on fixtures with tests.slow, gate \"\", focused \"   \", full with no value, gate 5, gateRuns daily, gateRuns 60, gateRuns empty, tests as a list",
+      "expected": "Each exits 1 with a message that names tests.<key>.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-3] passes for the three named fixtures (unknown key, empty command, bad gateRuns).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-tests.log",
+              "sha256": "8d8743871bc283d9d6efea32595ac1d57caa347d46a8663fe52e030a857b33ce"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-config-tests.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: all eight bad values exit 1 and name their tests.<key> (e.g. \"tests.gateRuns must be wave or spec, not 60\"); tests as a list exits 1 with \"tests must be a map\".",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.log",
+              "sha256": "6d4542c1ca1b381b425df62bd59248f0b2daeba479929ac8291dae44e8a8438f"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs",
+              "sha256": "b7ecb2ab879621fe0388d3f316e5cf3efdf38ba8cab8e2f78cc4b82c30cbaf34"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-2-4-template",
+      "subjectIdentity": "5c0943a83f82d9046413ad48107c6883d537e07bf592989e190d173e3f625342",
+      "criteria": [
+        "spec-2-4"
+      ],
+      "representativeInput": "payload/.joycraft/templates/joycraft.yaml (tests block at its end)",
+      "expected": "parseYaml gives no tests key and readConfig gives the defaults; the file has \"# tests:\" and the four keys commented; no machine number.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-4] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-tests.log",
+              "sha256": "8d8743871bc283d9d6efea32595ac1d57caa347d46a8663fe52e030a857b33ce"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-config-tests.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: the template parses with tests undefined and reads as the defaults; \"# tests:\" and focused/gate/full/gateRuns are commented; the tests section has no digit at all; uncommenting the block gives a valid config.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.log",
+              "sha256": "6d4542c1ca1b381b425df62bd59248f0b2daeba479929ac8291dae44e8a8438f"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs",
+              "sha256": "b7ecb2ab879621fe0388d3f316e5cf3efdf38ba8cab8e2f78cc4b82c30cbaf34"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-default-shape",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-2-2",
+      "summary": "The spec says a project without tests: reads \"with tests: {} and gateRuns: spec\"; the code returns tests: { gateRuns: \"spec\" } (config.mjs:15). Read literally, tests: {} and gateRuns inside tests (criterion spec-2-1) cannot both hold.",
+      "assumption": "The phrase means \"no commands, gateRuns spec\". The implemented shape is the only one that agrees with spec-2-1 and with the coordinator consumer (testSettings returns readConfig(root).tests). Worth one word in spec 14 setup text if it quotes the default."
+    },
+    {
+      "id": "f2-flow-map-fixture",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-2-1",
+      "summary": "The spec check writes the fixture as a flow map (tests: { ... }); the YAML subset has no flow maps and refuses that line by number, so the test writes the same values in block form (tests/runtime-config-tests.test.ts:26-27, with a comment saying why).",
+      "assumption": "The check names the values, not the YAML style; block form tests the stated behavior. Adding flow maps to the parser is out of this spec's file list."
+    },
+    {
+      "id": "f3-stale-bridge-comment",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/coordinator.mjs:171",
+      "summary": "After 243d862, testSettings is one line, but its doc comment still says \"Bridge until config.mjs reads tests: (spec 2) ... read the section here\". Not a spec 2 file; drop the second sentence."
+    }
+  ],
+  "limits": [
+    "Gate not run; due at wave end (the spec's own test file was run once, per the testing reference).",
+    "The installed .joycraft/runtime/config.mjs was not checked; the payload copy was reviewed and run."
+  ],
+  "createdAt": "2026-11-22T02:28:44.729Z"
+}

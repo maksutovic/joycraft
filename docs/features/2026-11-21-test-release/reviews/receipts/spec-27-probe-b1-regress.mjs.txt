@@ -1,0 +1,15 @@
+// Compare namesCommand before (base edb34b6) and after (HEAD) on argument words that hold a dot or colon.
+const [root, baseFile] = process.argv.slice(2);
+// The base copy imports siblings; evaluate only namesCommand's source.
+import { readFileSync } from 'node:fs';
+const src = readFileSync(baseFile, 'utf8');
+const body = src.slice(src.indexOf('const escape ='), src.indexOf('function label('));
+const oldNames = new Function(`${body}; return namesCommand;`.replace('export function', 'function'))();
+const { namesCommand } = await import(`${root}/payload/.joycraft/runtime/queue-check.mjs`);
+for (const [cmd, text] of [
+  ['pnpm test', 'Check: pnpm test add.test.ts passes.'],
+  ['pnpm test', 'Check: pnpm test x.test.ts'],
+  ['cargo test', 'Check: cargo test parser::tests passes.'],
+  ['pytest', 'Check: pytest tests.py passes.'],
+  ['pnpm test', 'Check: pnpm test tests/x.test.ts'],
+]) console.log(JSON.stringify(cmd), JSON.stringify(text), 'base:', oldNames(text, cmd), 'head:', namesCommand(text, cmd));

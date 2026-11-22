@@ -1,0 +1,181 @@
+import { execFileSync } from 'node:child_process';
+import { lstatSync, readFileSync, realpathSync } from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { workPaths } from './config.mjs';
+import { readQueue, relativePath, requireValue } from './identity.mjs';
+import { tag } from './trace.mjs';
+
+// The test files a spec changed since its base, split by the spec's own
+// `## Test changes` section at the base into declared (with class) and
+// undeclared. Joycraft names no test runner, so a test file is found by
+// convention: a check input of the spec, a code file outside the work folders
+// that holds an AC tag (the pattern trace.mjs reads), or a common test name. It
+// reports; the reviewer decides what blocks.
+
+// Prose and data files are never tests by name or tag: a spec, a review log or
+// a report quotes test names and tags without being a test.
+const proseExtensions = new Set(['md', 'mdx', 'markdown', 'txt', 'rst', 'adoc', 'log']);
+const dataExtensions = new Set(['json', 'jsonl', 'yaml', 'yml', 'toml', 'csv', 'tsv', 'xml', 'html', 'htm', 'svg', 'lock', 'ini', 'cfg']);
+const extensionOf = name => (name.includes('.') ? name.slice(name.lastIndexOf('.') + 1).toLowerCase() : '');
+
+// Folder names that hold tests across stacks, compared case-insensitively
+// (Swift Tests/, C# App.Tests projects), and the known Gradle, Kotlin and
+// Android test source sets, by their exact names. Another camelCase `*Test`
+// folder (abTest, loadTest) is not a test folder.
+const testSegments = new Set(['test', 'tests', 'spec', '__tests__']);
+const testSourceSets = new Set(['androidTest', 'androidUnitTest', 'androidInstrumentedTest', 'commonTest', 'jvmTest', 'jsTest', 'iosTest', 'nativeTest', 'integrationTest']);
+const isTestSegment = part => testSegments.has(part.toLowerCase()) || testSourceSets.has(part) || /\.Tests?$/.test(part);
+
+/** Whether a project path looks like a test by common naming conventions. A JVM-style
+ * `FooTest.java` or `BarSpec.kt` name counts only inside a test source set (src/test,
+ * src/jvmTest and the like), which the folder rule already covers: src/main/LoadTest.java
+ * is a load-test tool, not a test. */
+export function isTestPath(file) {
+  const parts = String(file).split('/');
+  const name = parts.at(-1);
+  if (proseExtensions.has(extensionOf(name))) return false;
+  return parts.slice(0, -1).some(isTestSegment)
+    || /\.(?:test|spec|e2e|cy)\./.test(name) || /_(?:test|spec)\.[^.]+$/.test(name)
+    || name === 'tests.py' || name === 'conftest.py'
+    || (/^test_/.test(name) && !/^test_(?:helpers?|utils?|support|data|fixtures?)(?:[._-]|$)/.test(name));
+}
+
+const under = (file, folder) => file === folder || file.startsWith(`${folder}/`);
+
+/** Whether the AC tag rule applies: a code file outside Joycraft's own files (work folders are left out before). */
+function taggable(file) {
+  const ext = extensionOf(file.split('/').at(-1));
+  return !proseExtensions.has(ext) && !dataExtensions.has(ext) && !file.split('/').includes('.joycraft');
+}
+
+const git = (root, args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024 });
+const nulList = text => text.split('\0').filter(Boolean);
+
+/** The bullets of a `## Test changes` section: `path` and class 1, 2 or 3. "none" means none. */
+export function declaredTestChanges(text, skipped = []) {
+  return declarations(text, skipped).map(({ path: file, class: cls }) => ({ path: file, class: cls }));
+}
+
+/** As declaredTestChanges, with each bullet's requiring text (the words after its class). */
+function declarations(text, skipped = []) {
+  const lines = String(text).replace(/^﻿/, '').split(/\r?\n/);
+  const start = lines.findIndex(line => /^#{1,6}\s+Test changes\s*$/i.test(line));
+  if (start < 0) return [];
+  const level = /^#+/.exec(lines[start])[0].length;
+  const declared = [];
+  let fenced = false;
+  for (const line of lines.slice(start + 1)) {
+    if (/^\s*(```|~~~)/.test(line)) { fenced = !fenced; continue; }
+    if (fenced) continue;
+    const heading = /^(#{1,6})\s/.exec(line);
+    if (heading && heading[1].length <= level) break;
+    const item = /^\s*[-*+]\s+(.*)$/.exec(line);
+    if (!item) continue;
+    const file = /`([^`\s]+)`/.exec(item[1]);
+    const cls = /\bclass\s*([123])\b/i.exec(item[1]);
+    // A bullet with no requiring line after its class declares nothing.
+    if (!file || !cls || !/\w/.test(item[1].slice(cls.index + cls[0].length))) continue;
+    const requiring = item[1].slice(cls.index + cls[0].length).replace(/^[\s:,.;—–-]+/, '').replace(/\s+/g, ' ').trim();
+    try { declared.push({ path: relativePath(file[1]), class: Number(cls[1]), requiring }); }
+    catch (error) { skipped.push({ path: file[1], reason: `declared path refused: ${error.message}` }); }
+  }
+  return declared;
+}
+
+export function testChanges({ root = process.cwd(), queuePath, specId, base }) {
+  root = realpathSync(root);
+  requireValue(typeof base === 'string' && /^[0-9a-f]{7,64}$/i.test(base), 'test-changes needs --base <sha>, the captured revision before dispatch');
+  try { git(root, ['rev-parse', '--verify', '--quiet', `${base}^{commit}`]); }
+  catch { throw new Error(`Base ${base} is not a commit in this repository`); }
+  try { git(root, ['merge-base', '--is-ancestor', base, 'HEAD']); }
+  catch { throw new Error(`Base ${base} is not an ancestor of HEAD; pass the revision captured before dispatch on this branch`); }
+  const { spec, specPath } = readQueue({ root, queuePath, specId });
+  const checks = new Set(spec.verification.inputs.filter(input => input.kind === 'check').map(input => relativePath(input.path)));
+  // --no-renames: a rename is its old path deleted and its new path added, so
+  // a declaration under either path matches and a deleted test stays visible.
+  // A declaration of either path of a Git rename covers both: git diff -M pairs them.
+  const partners = new Map();
+  const renames = nulList(git(root, ['diff', '-M', '--name-status', '-z', '--diff-filter=R', base, '--']));
+  for (let index = 0; index + 2 < renames.length; index += 3) {
+    partners.set(renames[index + 1], renames[index + 2]); partners.set(renames[index + 2], renames[index + 1]);
+  }
+  const changed = [...new Set([...nulList(git(root, ['diff', '--name-only', '--no-renames', '-z', base, '--'])), ...nulList(git(root, ['ls-files', '--others', '--exclude-standard', '-z']))])].sort();
+  const skipped = [];
+  // A file's current text, or its base text when it was deleted. Null for a
+  // path that is not a readable file (a submodule, a directory): it is skipped.
+  const contents = new Map();
+  const read = file => {
+    if (contents.has(file)) return contents.get(file);
+    let text = null;
+    try {
+      const stat = lstatSync(path.join(root, file));
+      if (stat.isFile()) text = readFileSync(path.join(root, file), 'utf8');
+      else skipped.push({ path: file, reason: stat.isDirectory() ? 'not a file (a submodule or directory)' : 'not a regular file' });
+    } catch (error) {
+      if (error.code !== 'ENOENT') skipped.push({ path: file, reason: `unreadable: ${error.code ?? error.message}` });
+      else {
+        // A deleted path is a test only when its base object is a blob: a removed submodule is a commit.
+        let type = null;
+        try { type = /^\d+ (\w+) /.exec(git(root, ['ls-tree', '-z', base, '--', file]))?.[1] ?? null; } catch { /* not in the base tree */ }
+        if (type === 'blob') { try { text = git(root, ['show', `${base}:${file}`]); } catch { /* unreadable: skipped below */ } }
+        if (text === null) skipped.push({ path: file, reason: type === 'commit' ? 'deleted submodule, not a file' : 'deleted, and its base content is not a file' });
+      }
+    }
+    contents.set(file, text);
+    return text;
+  };
+  const folders = workPaths(root);
+  const tagged = new RegExp(tag.source);
+  const tests = changed.filter(file => {
+    const text = read(file);
+    if (text === null) return false;
+    if (checks.has(file)) return true;
+    // The work folders hold specs, reviews and receipts, never the project's tests.
+    if (under(file, folders.features) || under(file, folders.archive)) return false;
+    return isTestPath(file) || (taggable(file) && tagged.test(text));
+  });
+  // Declarations come from the spec at the base, as decompose wrote it: one the
+  // implementer adds later is listed apart and never counts as declared. A spec
+  // that did not exist at the base declares nothing; all its bullets are later.
+  let baseSpec = null;
+  try { baseSpec = git(root, ['show', `${base}:./${specPath}`]); } catch { /* new since the base */ }
+  const current = declarations(readFileSync(path.join(root, specPath), 'utf8'), skipped);
+  const declaredList = baseSpec === null ? [] : declarations(baseSpec, []);
+  const byPath = new Map(declaredList.map(item => [item.path, item]));
+  const declaration = file => byPath.get(file) ?? (partners.has(file) ? byPath.get(partners.get(file)) : undefined);
+  // A base declaration whose requiring text the current spec changed: same path and class, other words.
+  const rewritten = declaredList.filter(old => current.some(item => item.path === old.path && item.class === old.class && item.requiring !== old.requiring)
+    && !current.some(item => item.path === old.path && item.class === old.class && item.requiring === old.requiring)).map(item => item.path);
+  const later = current.filter(item => !declaredList.some(old => old.path === item.path && old.class === item.class));
+  const present = file => { try { return lstatSync(path.join(root, file)).isFile(); } catch { return false; } };
+  const featurePaths = tests.filter(present).flatMap(file => read(file).split(/\r?\n/).flatMap((text, index) => (text.includes(`${folders.features}/`) ? [{ path: file, line: index + 1, text: text.trim() }] : [])));
+  return {
+    base, specId: spec.id, testFiles: tests,
+    declared: tests.filter(file => declaration(file)).map(file => ({ path: file, class: declaration(file).class })),
+    undeclared: tests.filter(file => !declaration(file)),
+    addedAfterBase: later.filter(item => tests.includes(item.path)).map(({ path: file, class: cls }) => ({ path: file, class: cls })),
+    rewritten,
+    featurePaths,
+    skipped,
+  };
+}
+
+export function main(argv = process.argv.slice(2)) {
+  const usage = 'Usage: test-changes.mjs --queue <queue> --spec <id> --base <sha> [--root <project>]';
+  const flags = {};
+  for (let index = 0; index < argv.length; index += 2) {
+    const [name, value] = [argv[index], argv[index + 1]];
+    requireValue(['--queue', '--spec', '--base', '--root'].includes(name) && flags[name] === undefined && typeof value === 'string' && value && !value.startsWith('--'), usage);
+    flags[name] = value;
+  }
+  requireValue(flags['--queue'] && flags['--base'] && /^(?:0|[1-9]\d*)$/.test(flags['--spec'] ?? ''), usage);
+  const result = testChanges({ root: path.resolve(flags['--root'] ?? '.'), queuePath: flags['--queue'], specId: Number(flags['--spec']), base: flags['--base'] });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  return result;
+}
+
+const invoked = (() => { try { return realpathSync(process.argv[1]); } catch { return null; } })();
+if (invoked && import.meta.url === pathToFileURL(invoked).href) {
+  try { main(); } catch (error) { process.stderr.write(`Test changes stopped: ${error.message}\n`); process.exitCode = 1; }
+}

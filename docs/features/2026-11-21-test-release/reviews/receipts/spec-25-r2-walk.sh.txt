@@ -1,0 +1,85 @@
+#!/bin/bash
+# Walk joycraft-session-end (committed bytes at HEAD) on three fixtures.
+set -u
+SRC=/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+G="git -c user.name=t -c user.email=t@example.com"
+mk() { # $1 dir ; $2 branch-mode (feature|main)
+  d=$1; rm -rf $d; mkdir -p $d; cd $d
+  $G init -q -b main
+  mkdir -p .joycraft src docs/context docs/features/demo/specs
+  (cd $SRC && git archive HEAD payload/.joycraft/runtime payload/.joycraft/contracts) | tar -x -C $d/.tmp 2>/dev/null || { mkdir -p .tmp; (cd $SRC && git archive HEAD payload/.joycraft/runtime payload/.joycraft/contracts) | tar -x -C .tmp; }
+  mv .tmp/payload/.joycraft/runtime .joycraft/runtime; mv .tmp/payload/.joycraft/contracts .joycraft/contracts 2>/dev/null; rm -rf .tmp
+  printf '.joycraft/local/\n' > .gitignore
+  printf 'export function getWidget() {\n  return 1;\n}\nexport const keep = 2;\n' > src/widget.ts
+  printf '# Guide\n\nThe widget loader.\n\nCall `getWidget()` to load one.\n' > docs/context/guide.md
+  printf '# Decision log\n' > docs/context/decision-log.md
+  printf '# A\n\n[guide](docs/context/guide.md)\n[log](docs/context/decision-log.md)\n' > AGENTS.md
+  printf '{"schemaVersion":1,"feature":"demo","specs":[{"id":1,"file":"01-a.md","status":"done","mode":"checkpoint","depends_on":[],"verification":{"inputs":[]},"acceptedReport":{"path":"docs/features/demo/specs/review-1.report.json","sha256":"0000000000000000000000000000000000000000000000000000000000000000"}}]}\n' > docs/features/demo/specs/.joycraft-spec-queue.json
+  printf -- '---\nid: 1\nstatus: in-review\n---\n# A\n' > docs/features/demo/specs/01-a.md
+  $G add -A; GIT_COMMITTER_DATE="2026-10-01T00:00:00" $G commit -q -m init --date 2026-10-01T00:00:00
+  if [ "$2" = feature ]; then $G checkout -q -b feature; fi
+  printf 'export const keep = 2;\n' > src/widget.ts
+  $G commit -q -a -m 'remove getWidget'
+}
+run() { echo "\$ $*"; "$@"; echo "[exit $?]"; }
+R() { node .joycraft/runtime/$@; }
+
+echo "=== (a) clean tree, branch, record to write ==="
+mk /private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r25r2/a feature
+run git status --porcelain
+run node .joycraft/runtime/status.mjs --fix
+echo "-- Records step writes a decision answer"
+printf '# Decision log\n\n- keep: answered.\n' > docs/context/decision-log.md
+run $G add -A
+run $G commit -q -m 'docs: session-end records'
+run node .joycraft/runtime/cleanup.mjs tidy
+echo "-- fix the named line"
+sed -i '' 's/Call `getWidget()` to load one./Read `keep` for the value./' docs/context/guide.md
+run node .joycraft/runtime/cleanup.mjs tidy --verify
+MSG=$(node .joycraft/runtime/cleanup.mjs tidy --verify | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>process.stdout.write(JSON.parse(s).message))')
+run $G commit -q -a -m "$MSG"
+run node .joycraft/runtime/worktrees.mjs prune
+run node .joycraft/runtime/worktrees.mjs prune --apply
+run git status --porcelain
+run git log --oneline
+run git remote
+echo "-- control: record left uncommitted with the tidy fix (round-1 shape)"
+mk /private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r25r2/a2 feature
+printf '# Decision log\n\n- keep: answered.\n' > docs/context/decision-log.md
+sed -i '' 's/Call `getWidget()` to load one./Read `keep` for the value./' docs/context/guide.md
+run node .joycraft/runtime/cleanup.mjs tidy --verify
+echo "-- no-fix case: records committed, nothing to tidy"
+mk /private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r25r2/a3 feature
+printf '# Guide\n\nThe widget loader.\n' > docs/context/guide.md; $G commit -q -a -m 'guide ok'
+printf '# Decision log\n\n- keep: answered.\n' > docs/context/decision-log.md
+$G commit -q -a -m 'docs: session-end records'
+run node .joycraft/runtime/cleanup.mjs tidy --verify
+
+echo "=== (b) dirty tree ==="
+mk /private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r25r2/b feature
+printf 'user work\n' >> src/widget.ts; printf 'scratch\n' > notes.txt
+run git status --porcelain
+BEFORE=$( (git status --porcelain; git diff; cat notes.txt; git log --format=%H) | shasum)
+run node .joycraft/runtime/status.mjs
+run node .joycraft/runtime/gate.mjs check
+run node .joycraft/runtime/cleanup.mjs tidy
+run node .joycraft/runtime/worktrees.mjs prune
+mkdir -p .joycraft/local; printf %s "{\"schemaVersion\":1,\"phase\":\"session-end\",\"host\":{\"sessionId\":\"s\",\"quiescent\":true,\"activeWorkers\":[],\"dependentWork\":[]},\"durableContext\":{\"carried\":true,\"references\":[\"docs/context/decision-log.md\"]}}" > .joycraft/local/att.json
+run node .joycraft/runtime/archive.mjs archive --feature demo --phase session-end --attestation .joycraft/local/att.json
+AFTER=$( (git status --porcelain; git diff; cat notes.txt; git log --format=%H) | shasum)
+echo "tree+history hash before=$BEFORE after=$AFTER"
+[ "$BEFORE" = "$AFTER" ] && echo "UNCHANGED: read-only forms wrote nothing tracked and made no commit" || echo "CHANGED"
+
+echo "=== (c) solo repo, no remote, work on main ==="
+mk /private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r25r2/c main
+run git remote
+printf '# Decision log\n\n- keep: answered.\n' > docs/context/decision-log.md
+$G commit -q -a -m 'docs: session-end records'
+run node .joycraft/runtime/cleanup.mjs tidy
+sed -i '' 's/Call `getWidget()` to load one./Read `keep` for the value./' docs/context/guide.md
+run node .joycraft/runtime/cleanup.mjs tidy --verify
+MSG=$(node .joycraft/runtime/cleanup.mjs tidy --verify | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>process.stdout.write(JSON.parse(s).message||""))')
+run $G commit -q -a -m "$MSG"
+run git status --porcelain
+run git log --oneline
+run git push

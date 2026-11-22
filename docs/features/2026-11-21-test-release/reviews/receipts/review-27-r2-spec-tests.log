@@ -1,0 +1,112 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-queue-check-gate.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 1595[2mms[22m[39m
+   [33m[2m✓[22m[39m queue-check gate-in-spec[2m > [22m[AC:spec-4-3] the gate outside acceptance, a project with no gate, and a done spec give no gap [33m 344[2mms[22m[39m
+   [33m[2m✓[22m[39m queue-check gate matching in prose (spec 27)[2m > [22m[AC:spec-27-1] plain text followed by a word or a dash, and a fenced line holding only the gate, name it; argument forms do not [33m 558[2mms[22m[39m
+ [32m✓[39m tests/runtime-evidence-receipt.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 1694[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run receipts[2m > [22m[AC:receipt-refuses-json] refuses a .json or .jsonl receipt with exit 2 and writes nothing [33m 368[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run receipts[2m > [22m[AC:receipt-revision] a run prints the HEAD commit and a dirty flag [33m 567[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs receipt tail and long footer (spec 27)[2m > [22m[AC:spec-27-5] readFooter returns a footer longer than 64 KiB; the failing tail starts at a line start [33m 607[2mms[22m[39m
+ [32m✓[39m tests/runtime-status-load.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1913[2mms[22m[39m
+   [33m[2m✓[22m[39m status.mjs load line[2m > [22m[AC:spec-10-1] counts loaded runs across feature receipts and report-cited receipts, each once [33m 370[2mms[22m[39m
+   [33m[2m✓[22m[39m status.mjs load line[2m > [22m[AC:spec-10-2] no loaded run, or receipts without a footer, give no load field [33m 778[2mms[22m[39m
+   [33m[2m✓[22m[39m status.mjs load line wording (spec 27)[2m > [22m[AC:spec-27-10] says why, names each distinct core count, and drops the count when no footer has one [33m 764[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-gate-rule.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 3471[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup gate-rule[2m > [22m[AC:spec-8-1] an entry-file rule line naming the recorded gate gives exactly one finding [33m 527[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup gate-rule[2m > [22m[AC:spec-8-2] the Commands table row gives no finding, and a project with no recorded gate is not checked [33m 1178[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup gate-rule polish (spec 27)[2m > [22m[AC:spec-27-1] a plain-text rule line naming the gate before a word gives one finding [33m 423[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup gate-rule polish (spec 27)[2m > [22m[review-27-1] a rule line running the gate with a file or path argument gives no finding [33m 455[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup gate-rule polish (spec 27)[2m > [22m[AC:spec-27-4] gate-rule --record writes cleanup.gateRule and keeps other keys; --check reads it; bad values and symlinks change nothing [33m 843[2mms[22m[39m
+ [32m✓[39m tests/runtime-evidence-env.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 3672[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs machine-local environment map[2m > [22m[AC:spec-12-1] passes the map to the child, CI wins, and lists the applied names [33m 461[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs machine-local environment map[2m > [22m[AC:spec-12-2] a malformed map or a tracked map refuses with exit 2 naming the file; no map runs as before [33m 1643[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs environment map checks (spec 27)[2m > [22m[AC:spec-27-9] refuses bad names and NULs, never applies CI or JOYCRAFT_EVIDENCE in any case, and needs an ignored map [33m 1568[2mms[22m[39m
+ [32m✓[39m tests/runtime-start-advice.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 4047[2mms[22m[39m
+   [33m[2m✓[22m[39m session start advice from the tidy range[2m > [22m[AC:spec-11-1] a gone-symbol finding gives at most 3 lines, the last naming cleanup.mjs tidy; a clean fixture gives none [33m 1461[2mms[22m[39m
+   [33m[2m✓[22m[39m session start advice from the tidy range[2m > [22m[AC:spec-11-2] advice does not change the exit code and edits no file [33m 1144[2mms[22m[39m
+   [33m[2m✓[22m[39m session start advice from the tidy range[2m > [22m[AC:spec-11-3] a depth-1 clone gives no tidy advice and no error [33m 494[2mms[22m[39m
+   [33m[2m✓[22m[39m start advice polish (spec 27)[2m > [22m[AC:spec-27-17] an entry-check.mjs that throws on import gives the same wiring result with no tidy advice [33m 547[2mms[22m[39m
+   [33m[2m✓[22m[39m start advice polish (spec 27)[2m > [22m[AC:spec-27-17] on the default branch the advice says recent commits removed the symbol [33m 400[2mms[22m[39m
+ [32m✓[39m tests/runtime-report-gate.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 4461[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-1] a report whose observation ran the recorded gate is refused, also in a shell form [33m 943[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-2] a report that ran only focused commands passes, and a project with no gate is not checked [33m 850[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate wrappers and a broken joycraft.yaml (spec 27)[2m > [22m[AC:spec-27-3] each shell or env wrapper of the gate is refused; more arguments pass; a broken joycraft.yaml refuses [33m 2668[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-checks-seam.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 4966[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: in joycraft.yaml[2m > [22m[AC:spec-10-2] each path:line: message output line is a finding with the check name; other lines are ignored [33m 834[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: in joycraft.yaml[2m > [22m[AC:spec-10-3] a command not found is one skipped entry and tidy exits 0 [33m 838[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: review fixes[2m > [22m[review-a-5] stderr lines count, stack-trace lines do not [33m 688[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: review fixes[2m > [22m[review-a-5] a check past its timeout is skipped, even when it pipes [33m 1634[2mms[22m[39m
+   [33m[2m✓[22m[39m checks seam line forms (spec 27)[2m > [22m[AC:spec-27-16] reads the markdownlint-cli2 form and project-absolute paths; host:port lines are not findings [33m 521[2mms[22m[39m
+ [32m✓[39m tests/runtime-test-changes.test.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 8048[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-1] lists changed test files by convention and exports isTestPath [33m 585[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-2] splits the changed test files by the spec's Test changes section [33m 974[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-3] lists each changed test line that names a path under the features folder [33m 467[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-4] reviewer startup adds testChanges with --changes-base, and nothing without it [33m 940[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-1] lists a renamed test under both paths and a deleted tag-only test from its base [33m 639[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-2] skips a submodule path and a refused declared path without losing the result [33m 781[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[review-17-2] reads declarations from the spec at the base; one added later is listed apart and never declared [33m 579[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[review-17-2] a spec that did not exist at the base declares nothing; all its bullets are added after the base [33m 345[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-4] reviewer startup with an unknown --changes-base says so plainly and stays ready [33m 670[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes base, declarations and file rules (spec 27)[2m > [22m[AC:spec-27-12] a declaration of one path of a rename covers both paths [33m 450[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes base, declarations and file rules (spec 27)[2m > [22m[AC:spec-27-12] JVM-style names count only in a test source set; a removed submodule is skipped, not a test [33m 858[2mms[22m[39m
+ [32m✓[39m tests/runtime-evidence-patch.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 10290[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-1] refuses a dirty tree, a patch that does not apply, and a path outside the project, applying nothing [33m 876[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-2] applies the fault, runs, reverses it and reports restored: true [33m 955[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-3] restores the tree after a passing run and after a timeout [33m 1902[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-3] a failed restore reports restored: false and exits 1, never a pass [33m 494[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-4] a timeout keeps timedOut and exitCode null, and the footer records the patch [33m 1025[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch polish (spec 27)[2m > [22m[AC:spec-27-6] a SIGTERM while git apply runs ends with 143 and the tree restored [33m 1786[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch polish (spec 27)[2m > [22m[AC:spec-27-7] a change to another tracked file, a commit or a stash gives restored: false; the plain fault run stays true [33m 2584[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch polish (spec 27)[2m > [22m[AC:spec-27-8] a project in a repository subfolder runs its fault; a patch outside the subfolder is refused [33m 669[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-tidy-verify.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 19196[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify[2m > [22m[AC:spec-4-1] after the named line is fixed, the finding is gone and verify exits 0 [33m 1101[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify[2m > [22m[AC:spec-4-2] an edit to AGENTS.md is refused, naming it, with no message [33m 1043[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify[2m > [22m[AC:spec-4-2] an edit to an unlisted context page is refused, naming it [33m 928[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify[2m > [22m[AC:spec-4-2] an edit to an unnamed line of a named page is refused [33m 741[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify[2m > [22m[AC:spec-4-3] a pass prints the subject and the Joycraft-Tidy trailer; no edits prints nothing to commit [33m 1076[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review fixes[2m > [22m[review-a-3] a hunk that replaces the named line and adds lines after it is refused [33m 610[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review fixes[2m > [22m[review-a-3] an untracked file is refused [33m 540[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review fixes[2m > [22m[review-a-3] a staged edit that the working tree hides is refused [33m 584[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review fixes[2m > [22m[review-a-3] an edit to the named line that still names the gone symbol is refused [33m 615[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: a page with a NUL byte [33m 592[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: .git/info/attributes *.md binary [33m 577[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: a textconv driver [33m 556[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: a committed .gitattributes *.md -diff [33m 583[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: a mode-only change of the named page [33m 611[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: a mode change with the valid fix [33m 543[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a pass never prints "tidy 0 doc lines" [33m 568[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-2] AGENTS.override.md is an entry file: its edit is refused [33m 546[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-3] an index that holds part of the change is refused; a fully staged fix passes [33m 894[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-4] a named line that still names the gone symbol is refused: a space inside the backticks [33m 566[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-4] a named line that still names the gone symbol is refused: no backticks [33m 491[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-4] a named line that still names the gone symbol is refused: inner spaces [33m 546[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-5] an entry file with --assume-unchanged is refused [33m 549[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-5] an entry file with --skip-worktree is refused [33m 518[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4-r2 fixes: the diff is read line by line[2m > [22m[review-4-r2-1] LS1: a U+2028 funcname context does not hide an edit to an unnamed line [33m 535[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4-r2 fixes: the diff is read line by line[2m > [22m[review-4-r2-2] LS2: a named line that still names the gone symbol after U+2028 is refused [33m 531[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4-r2 fixes: the diff is read line by line[2m > [22m[review-4-r2-3] CR2: on a CRLF page a named line that still names the gone symbol is refused [33m 518[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4-r2 fixes: the diff is read line by line[2m > [22m[review-4-r2-3] CR3: on a CRLF page a named line that still names the gone symbol is refused [33m 530[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4-r2 fixes: the diff is read line by line[2m > [22m[review-4-r2-4] a valid fix on a CRLF page and on a page with U+2028 still passes [33m 1139[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify ignores the user diff environment (spec 27)[2m > [22m[AC:spec-27-15] with GIT_DIFF_OPTS=--unified=5 set, verify accepts the valid fix as without it [33m 497[2mms[22m[39m
+ [32m✓[39m tests/runtime-wave-gate.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 23586[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-1] refuses a missing, non-gate, red or stale receipt with its own code and pushes nothing [33m 4139[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-2] a green gate receipt on HEAD pushes without a second verifier [33m 844[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-2] a project with no tests.gate keeps the -- <verifier> push [33m 851[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-1] refuses a green receipt of a non-shell program given -c "<gate>" [33m 692[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-1] still accepts a real shell receipt of sh -c "<gate>" [33m 946[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-3] reads the footer with evidence.mjs readFooter: only the last line, only an object [33m 872[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-4] refuses a gate receipt outside the project root [33m 846[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-r2-1] a gate with shell syntax needs the shell form: split words are refused, a red sh -c run is refused [33m 1252[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-r2-1] the same gate pushes through sh -c when every command is green [33m 944[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-r2-2] a shell form whose program is a relative path is refused; a bare name or absolute path is accepted [33m 2170[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-27-13] a plain gate in shell form splits on spaces and tabs only; a shell path inside the project or (POSIX) in Windows form is refused [33m 2990[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-27-14] a receipt on an ancestor of HEAD pushes when only docs-root paths changed since; any other path or a non-ancestor stays stale [33m 1778[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[review-27-7] only Markdown and JSON under the docs root, or any non-symlink file in a feature or archive folder, keeps an old receipt [33m 4449[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-27-14] a docs root of . gives no exemption [33m 602[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+[2m      Tests [22m [1m[32m108 passed[39m[22m[90m (108)[39m
+[2m   Start at [22m 20:20:33
+[2m   Duration [22m 23.90s[2m (transform 411ms, setup 0ms, collect 851ms, tests 86.94s, environment 2ms, prepare 775ms)[22m
+

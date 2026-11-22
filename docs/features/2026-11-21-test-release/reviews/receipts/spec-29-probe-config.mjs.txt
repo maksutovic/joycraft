@@ -1,0 +1,26 @@
+import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+const root = process.argv[2];
+const { readConfig } = await import(`${root}/payload/.joycraft/runtime/config.mjs`);
+const { docsRoot } = await import(`${root}/payload/.joycraft/runtime/cleanup.mjs`);
+const layouts = [
+  null,
+  'paths:\n  context: docs\n',
+  'paths:\n  features: docs/work/features\n',
+  'paths:\n  features: work/features\n  archive: work/history\n  context: work/notes\n',
+  'paths:\n  features: work\n  archive: old\n  context: notes\n',
+  'paths:\n  features: .docs/features\n  archive: .docs/archive\n  context: .docs/context\n',
+  'paths:\n  features: docs/.hidden/features\n  archive: docs/.hidden/archive\n  context: docs/.hidden/context\n',
+  'paths:\n  features: docs/.features\n',
+  'paths:\n  archive: work/old\n',
+  'paths:\n  features: docs/features/\n  archive: ./docs/archive\n',
+  'paths:\n  context: .\n',
+];
+for (const text of layouts) {
+  const dir = mkdtempSync(join(tmpdir(), 'p29-'));
+  if (text) writeFileSync(join(dir, 'joycraft.yaml'), text);
+  try { const c = readConfig(dir); console.log(JSON.stringify(text), 'LOADS', JSON.stringify(c.paths), 'cleanup docsRoot=', docsRoot(c.paths)); }
+  catch (e) { console.log(JSON.stringify(text), 'REFUSED', e.message); }
+  rmSync(dir, { recursive: true, force: true });
+}

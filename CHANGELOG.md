@@ -7,6 +7,137 @@ claim that a release has shipped.
 
 ---
 
+## 1.9.0 — Drift tidy, and tests that cost less time
+
+Two features ship together. Drift tidy: guides kept naming code a session had
+removed, and new working docs piled up between cleanup passes, so a power user ran
+commit, cleanup, commit, audit, commit by hand. Testing: a field project spent 48
+hours on slow and flaky agent-written tests, with many agents sharing one machine
+and every spec running the whole project gate. Field feedback, a research swarm and
+a review panel led to this release. Joycraft still names no test runner: its text
+says "the runner's own flag".
+
+### Update notes
+
+- **A second marker.** `CI=1` stays set, and test commands now also get `JOYCRAFT_EVIDENCE=1`; a local limit that reads `CI` should check it too.
+- **The project testing page is now `<context>/test-practices.md`.** Setup and the
+  test review write it from a shipped template, titled "Test practices", so it
+  cannot be confused with `.joycraft/references/testing.md`.
+- **The docs root must be one visible folder.** `joycraft.yaml` now refuses (exit 1)
+  a docs root that is the project root or a hidden folder: `paths.features`,
+  `paths.archive` and `paths.context` must share one visible parent folder, such as
+  `docs/`. If yours do not, move the three folders under one folder and update
+  `paths` in `joycraft.yaml`.
+- **The managed block has one new line.** `update` reports the `managed-block`
+  finding and replaces the block.
+
+### Added
+
+- **Tidy.** `cleanup.mjs tidy` reports drift that the current range caused: on a
+  branch, from the merge base to HEAD; on the default branch, the last 7 days or 100
+  commits (labelled approximate); `--base <ref>` overrides; a shallow clone gives one
+  `skipped` line. `gone-symbol` finds backticked names in context pages and entry
+  files that the range removed from code; `new-doc` counts the Markdown files the
+  range added, by folder. It shows at most 10 findings, context pages first.
+- **`tidy --verify` and one commit.** Session end may fix only a line a finding
+  names, in a context page. `--verify` measures again, refuses a diff that touches
+  an entry file or any unlisted file or line, and on a pass prints one commit
+  message with a `Joycraft-Tidy: <base>..<head>` trailer. "Tidy now" mid-session
+  uses the same command.
+- **Your own checkers.** An optional `checks:` list in `joycraft.yaml` (`name`,
+  `run`) runs during tidy. Each `path:line: message` output line becomes a finding;
+  a missing command gives `skipped`, never a stop.
+- **Session start warns** in up to 3 lines when mapped pages name removed code.
+- **`cleanup.mjs --checks`** lists every check, one line each.
+- **Archive hides from search on request.** Setup and update ask once;
+  `archive.mjs ignore --check | --apply | --decline` writes `paths.archive` to the
+  project's `.ignore`, once.
+- **Archive as is.** `archive.mjs archive --as-is --owner-instruction "<text>"`
+  archives a feature whose acceptance is incomplete and writes `unverified.md`
+  naming each unfinished spec, each missing receipt and the instruction. The default
+  archive is unchanged.
+- **Age-out.** In an attended cleanup, `cleanup.mjs age-out --days 14` lists
+  working docs with no commit for 14 days and, on a yes, moves them under
+  `<archive>/working/`.
+- **Test tiers in `joycraft.yaml`.** A `tests:` section records `focused`, `gate`,
+  `full` and `gateRuns` (`spec` or `wave`). Setup records them and times the gate
+  once: over about 60 seconds it records one gate run per integrated wave.
+- **Specs name their own tests.** `queue-check.mjs` reports `gate-in-spec` when a
+  spec's acceptance names the recorded gate or full command. Task startup prints
+  the focused command built from the spec's check inputs, and the worker's commands
+  ready to paste. A focused command with shell syntax runs as `sh -c`. `check-report` refuses a review report that ran the gate.
+- **The coordinator runs the gate.** `coordinator.mjs gate-plan` prints the gate
+  points; `gate-owner` names the spec whose inputs hold a failing file, or
+  `bisect`. With `tests.gate` recorded, `delivery.mjs push` needs
+  `--gate-receipt`: a green gate run on a clean tree at the HEAD being pushed, or at
+  an older commit when only record files changed since. Receipts must be
+  git-ignored or inside a feature folder.
+- **Run facts.** Every `evidence.mjs run` receipt ends with one footer line: wall
+  time, 1-minute load at start and end, cores, `loaded` (load above the core
+  count). On a red run the result JSON also carries the failing tail of the
+  output. Session-end status
+  prints one `load` line only when runs started loaded.
+- **Saved faults.** `evidence.mjs run --patch <fault>.diff` refuses a dirty tree,
+  applies the fault, runs, reverses it and checks the restore (`patch.restored`):
+  the touched files by hash, and the status, HEAD and stash unchanged. A test-only spec proves each changed test file this way, and
+  the reviewer reruns one saved fault plus one of its own.
+- **Declared test changes.** Specs carry a `## Test changes` section (path, class,
+  requiring line; default "none"). `test-changes.mjs` and reviewer startup list the
+  declared and undeclared changed test files; the reviewer blocks only an
+  undeclared change that no line requires.
+- **A machine-local environment map.** `evidence.mjs` applies
+  `.joycraft/local/evidence-env.json` and refuses it unless Git ignores it.
+- **Archive lists what names the folder.** The archive preview's `namedFiles`
+  lists tracked non-Markdown files that name the feature folder, tests first.
+  Session end changes the path in those tests after the move, runs the gate and
+  commits the edits with the move; on red it moves the folder back.
+- **Cleanup flags owner rule lines that name the gate** ("run `pnpm verify` after
+  every change"), outside the Commands table, and offers a before-and-after rewrite
+  as one decision. `cleanup.mjs gate-rule --record rewritten|kept` keeps your
+  answer and `--check` reads it, so `update` shows the finding once.
+
+### Changed
+
+- **Archive rewrites live links.** When a feature moves, links to it in live
+  Markdown under the docs root point to the archive. Other mentions are listed, not
+  edited.
+- **The managed block** adds: "Search the mapped pages first. A doc that no map row
+  reaches is working material, not current truth."
+- **Session end rides the PR.** It starts with a clean-tree check and commits
+  nothing of yours on a dirty tree. Then records, one tidy commit, worktree prune,
+  archive last and one push. After merge, the next session start checks, read-only,
+  that the change deployed and works.
+- **Fewer, sharper tests.** One test may cover several checks; extend an existing
+  file first; a new acceptance test must fail before the code exists; each user-flow
+  check names the real boundary it crosses. A new skip counts as a removal.
+- **Parallel runs share the machine.** With N workers, each test run gets at most
+  cores ÷ N workers, set with the runner's own flag; this replaces "rerun once,
+  alone". Specs that delete tests or change shared test tooling take the one lane.
+  Setup offers a worker cap keyed on `JOYCRAFT_EVIDENCE`, never on `CI`.
+- **CI is read once,** on the PR, after session end's push.
+- **The test review is the cleanup path for an existing suite:** measure once, rank
+  by what every run pays, find controls keyed on `CI`, and write each approved
+  change as a test-only spec.
+- **Agent files name the forbidden shell forms** (heredoc, `source`, `cd` out) and
+  point to the printed commands.
+- **Joycraft writes less.** The cleanup check table is gone, and the knowledge
+  table labels each kind of fact as domain, explanation, how-to or reference. The payload guard
+  counts every-spec and on-demand words separately.
+
+### Fixed
+
+- `joycraft-verify` takes runtime evidence from the spec's own tests, so it no
+  longer contradicts itself, and the implementer agent no longer runs the project
+  gate; the coordinator does.
+- Cleanup checks ignored paths with one `git check-ignore --stdin` call, not one
+  process per path.
+
+### Maintainers
+
+- A push to main that changes no product path publishes nothing. This landed on
+  main after 1.8.1 and first ships in this release.
+- Release proof receipts for this release are in the test-release feature folder.
+
 ## 1.8.1 — Archive accepts a merge that keeps the brief
 
 Session-end archive failed for a feature whose brief changed after acceptance and

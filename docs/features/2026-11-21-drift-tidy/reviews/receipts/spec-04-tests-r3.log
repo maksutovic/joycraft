@@ -1,0 +1,38 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-cleanup-tidy-verify.test.ts (29 tests) 15860ms
+   ✓ tidy --verify > [AC:spec-4-1] after the named line is fixed, the finding is gone and verify exits 0  536ms
+   ✓ tidy --verify > [AC:spec-4-2] an edit to AGENTS.md is refused, naming it, with no message  515ms
+   ✓ tidy --verify > [AC:spec-4-2] an edit to an unlisted context page is refused, naming it  522ms
+   ✓ tidy --verify > [AC:spec-4-2] an edit to an unnamed line of a named page is refused  575ms
+   ✓ tidy --verify > [AC:spec-4-3] a pass prints the subject and the Joycraft-Tidy trailer; no edits prints nothing to commit  898ms
+   ✓ tidy --verify review fixes > [review-a-3] a hunk that replaces the named line and adds lines after it is refused  494ms
+   ✓ tidy --verify review fixes > [review-a-3] an untracked file is refused  514ms
+   ✓ tidy --verify review fixes > [review-a-3] a staged edit that the working tree hides is refused  538ms
+   ✓ tidy --verify review fixes > [review-a-3] an edit to the named line that still names the gone symbol is refused  558ms
+   ✓ tidy --verify review-4 fixes > [review-4-1] a named page rewritten past the hunk reader is refused: a page with a NUL byte  559ms
+   ✓ tidy --verify review-4 fixes > [review-4-1] a named page rewritten past the hunk reader is refused: .git/info/attributes *.md binary  546ms
+   ✓ tidy --verify review-4 fixes > [review-4-1] a named page rewritten past the hunk reader is refused: a textconv driver  542ms
+   ✓ tidy --verify review-4 fixes > [review-4-1] a named page rewritten past the hunk reader is refused: a committed .gitattributes *.md -diff  491ms
+   ✓ tidy --verify review-4 fixes > [review-4-1] a named page rewritten past the hunk reader is refused: a mode-only change of the named page  501ms
+   ✓ tidy --verify review-4 fixes > [review-4-1] a named page rewritten past the hunk reader is refused: a mode change with the valid fix  475ms
+   ✓ tidy --verify review-4 fixes > [review-4-1] a pass never prints "tidy 0 doc lines"  492ms
+   ✓ tidy --verify review-4 fixes > [review-4-2] AGENTS.override.md is an entry file: its edit is refused  485ms
+   ✓ tidy --verify review-4 fixes > [review-4-3] an index that holds part of the change is refused; a fully staged fix passes  847ms
+   ✓ tidy --verify review-4 fixes > [review-4-4] a named line that still names the gone symbol is refused: a space inside the backticks  503ms
+   ✓ tidy --verify review-4 fixes > [review-4-4] a named line that still names the gone symbol is refused: no backticks  500ms
+   ✓ tidy --verify review-4 fixes > [review-4-4] a named line that still names the gone symbol is refused: inner spaces  508ms
+   ✓ tidy --verify review-4 fixes > [review-4-5] an entry file with --assume-unchanged is refused  542ms
+   ✓ tidy --verify review-4 fixes > [review-4-5] an entry file with --skip-worktree is refused  509ms
+   ✓ tidy --verify review-4-r2 fixes: the diff is read line by line > [review-4-r2-1] LS1: a U+2028 funcname context does not hide an edit to an unnamed line  542ms
+   ✓ tidy --verify review-4-r2 fixes: the diff is read line by line > [review-4-r2-2] LS2: a named line that still names the gone symbol after U+2028 is refused  506ms
+   ✓ tidy --verify review-4-r2 fixes: the diff is read line by line > [review-4-r2-3] CR2: on a CRLF page a named line that still names the gone symbol is refused  517ms
+   ✓ tidy --verify review-4-r2 fixes: the diff is read line by line > [review-4-r2-3] CR3: on a CRLF page a named line that still names the gone symbol is refused  505ms
+   ✓ tidy --verify review-4-r2 fixes: the diff is read line by line > [review-4-r2-4] a valid fix on a CRLF page and on a page with U+2028 still passes  1010ms
+
+ Test Files  1 passed (1)
+      Tests  29 passed (29)
+   Start at  15:59:14
+   Duration  16.07s (transform 102ms, setup 0ms, collect 20ms, tests 15.86s, environment 0ms, prepare 55ms)
+

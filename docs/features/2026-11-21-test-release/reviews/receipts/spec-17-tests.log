@@ -1,0 +1,18 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r17-export[39m
+
+ [32m✓[39m tests/text-test-changes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 356[2mms[22m[39m
+   [33m[2m✓[22m[39m declared test changes text[2m > [22m[AC:spec-17-1] the spec template has ## Test changes with "none" and the three classes, and test-changes.mjs parses its example bullet [33m 353[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12142 (cap 12256, 114 spare)
+on-demand words: 18998 (cap 19663, 665 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1369[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 382[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 325[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m20 passed[39m[22m[90m (20)[39m
+[2m   Start at [22m 19:02:04
+[2m   Duration [22m 1.55s[2m (transform 33ms, setup 0ms, collect 46ms, tests 1.72s, environment 0ms, prepare 73ms)[22m
+

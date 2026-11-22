@@ -1,0 +1,16 @@
+M	payload/.agents/skills/joycraft-verify/SKILL.md
+M	payload/.claude/agents/joycraft-implementer.md
+M	payload/.claude/agents/joycraft-reviewer.md
+M	payload/.joycraft/references/setup.md
+M	payload/.joycraft/references/testing-review.md
+M	payload/.joycraft/references/testing.md
+M	payload/.joycraft/runtime/archive.mjs
+M	payload/.joycraft/runtime/dispatch-start.mjs
+M	payload/PIN
+M	tests/payload-guard.test.ts
+M	tests/runtime-archive-named-files.test.ts
+A	tests/text-fault-proof.test.ts
+M	tests/text-fewer-tests.test.ts
+A	tests/text-lane-cap.test.ts
+M	tests/text-spec-tier.test.ts
+M	tests/text-worker-commands.test.ts

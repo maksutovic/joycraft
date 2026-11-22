@@ -1,0 +1,28 @@
+PASS implementer: names heredoc
+PASS implementer: names `source`
+PASS implementer: names cd out of the root
+PASS implementer: keeps && ; | $(git …)
+PASS implementer: says paste the startup output's `commands`
+PASS reviewer: names heredoc
+PASS reviewer: names `source`
+PASS reviewer: names cd out of the root
+PASS reviewer: keeps && ; | $(git …)
+PASS reviewer: says paste the startup output's `commands`
+PASS dispatch: names heredoc
+PASS dispatch: names `source`
+PASS dispatch: names cd out of the root
+PASS dispatch: keeps && ; | $(git …)
+PASS dispatch: says paste the startup output's `commands`
+PASS dispatch: keeps run pwd / git rev-parse HEAD alone and paste the value
+PASS setup: evidence-env.json machine-local, never a tracked file
+implementer: base had "Paste literal paths and revisions instead": true; now: false
+reviewer: base had "Paste literal paths and revisions instead": true; now: false
+PASS payload dispatch-start returns a commands object
+words implementer: base 314 head 313 tree 313 delta -1
+words reviewer: base 334 head 333 tree 333 delta -1
+words dispatch: base 1668 head 1674 tree 1674 delta 6
+words setup: base 3014 head 3043 tree 3043 delta 29
+every-spec delta (implementer+reviewer+dispatch): 4
+PASS every-spec delta <= 6
+files changed 09f5ad5..dcd5476: payload/.claude/agents/joycraft-implementer.md, payload/.claude/agents/joycraft-reviewer.md, payload/.joycraft/references/dispatch.md, payload/.joycraft/references/setup.md, payload/PIN, tests/text-worker-commands.test.ts
+PASS no existing test file changed

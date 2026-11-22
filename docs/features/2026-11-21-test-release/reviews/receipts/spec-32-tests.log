@@ -1,0 +1,28 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-archive-named-files.test.ts tests/runtime-archive-links.test.ts tests/text-archive-tests.test.ts tests/payload-guard.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/text-archive-tests.test.ts (5 tests) 6ms
+stdout | tests/payload-guard.test.ts > shipped payload text > [AC:spec-1-2] every-spec and on-demand words stay under their own caps
+every-spec words: 12177 (cap 12256, 79 spare)
+on-demand words: 20558 (cap 21163, 605 spare)
+
+ ✓ tests/payload-guard.test.ts (16 tests) 1395ms
+   ✓ shipped payload text > [AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on  364ms
+   ✓ shipped payload text > [AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name  373ms
+ ✓ tests/runtime-archive-links.test.ts (8 tests) 2032ms
+ ✓ tests/runtime-archive-named-files.test.ts (10 tests) 2654ms
+   ✓ archive lists only (spec 30) > [AC:spec-30-2] namedFiles lists the full path, split segments and the dated name, not look-alikes; marks only a non-test migration  338ms
+   ✓ archive lists only (spec 30) > [AC:spec-30-4] --rewrite is an unknown argument, and neither a preview nor an --apply writes under .joycraft/local  331ms
+   ✓ archive owner check of spec 13 > [owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (check)  325ms
+   ✓ archive owner check of spec 13 > [owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (stage)  349ms
+
+ Test Files  4 passed (4)
+      Tests  39 passed (39)
+   Start at  21:35:17
+   Duration  2.85s (transform 70ms, setup 0ms, collect 123ms, tests 6.09s, environment 0ms, prepare 139ms)
+
+exit=0

@@ -1,0 +1,33 @@
+OBSERVED subfolder apply: 0 { "days": 14, "count": 1, "docs": [ { "path": "notes/research/old.md", "days": 20, "to": "notes/old/working/research/old.md", "moved": true } ], "skipped": [], "applied": true }
+PASS subfolder project lists only notes/research/old.md, 20 days
+PASS subfolder apply: rename shown from repo root, sibling project untouched, HEAD unchanged :: R  app/notes/research/old.md -> app/notes/old/working/research/old.md
+PASS subfolder apply: no skipped entries :: []
+OBSERVED deep --root apply: 0 { "days": 14, "count": 1, "docs": [ { "path": "docs/research/old.md", "days": 30, "to": "docs/archive/working/research/old.md", "moved": true } ], "skipped": [ { "path": "docs/research/edit.md", "reason": "It has uncommitted changes." }, { "path": "docs/research/staged.md", "reason": "It has uncommitted changes." } ], "applied": true }
+PASS deep --root: old moved, staged and edited skipped as uncommitted
+OBSERVED unicode/space dry run: 0 { "days": 14, "count": 3, "docs": [ { "path": ".docs/research/café notes.md", "days": 30, "to": ".docs/archive/working/research/café notes.md" }, { "path": ".docs/research/日本語.md", "days": 30, "to": ".docs/archive/working/research/日本語.md" }, { "path": ".docs/réseau/plan d’été.md", "days": 30, "to": ".docs/archive/working/réseau/plan d’été.md" } ], "skipped": [ { "path": ".docs/research/quote\"q.md", "reason": "Git shows no commit for it, so its age is unknown." }, { "path": ".docs/research/tab\tname.md", "reason": "Git shows no commit for it, so its age is unknown." } ], "applied": false }
+PASS unicode and space names are listed with 30 days :: [".docs/research/café notes.md",".docs/research/日本語.md",".docs/réseau/plan d’été.md"]
+PASS names Git log quotes (tab, double quote) are listed or skipped with a reason, never silently dropped :: [{"path":".docs/research/quote\"q.md","reason":"Git shows no commit for it, so its age is unknown."},{"path":".docs/research/tab\tname.md","reason":"Git shows no commit for it, so its age is unknown."}]
+INFO quoted names: listed [] skipped [{"path":".docs/research/quote\"q.md","reason":"Git shows no commit for it, so its age is unknown."},{"path":".docs/research/tab\tname.md","reason":"Git shows no commit for it, so its age is unknown."}]
+PASS unicode/space apply moves each listed doc under .docs/archive/working/ :: R  "my app/.docs/research/café notes.md" -> "my app/.docs/archive/working/research/café notes.md"
+R  "my app/.docs/research/日本語.md" -> "my app/.docs/archive/working/research/日本語.md"
+R  "my app/.docs/réseau/plan d’été.md" -> "my app/.docs/archive/working/réseau/plan d’été.md"
+OBSERVED unicode porcelain: "R  \"my app/.docs/research/café notes.md\" -> \"my app/.docs/archive/working/research/café notes.md\"\nR  \"my app/.docs/research/日本語.md\" -> \"my app/.docs/archive/working/research/日本語.md\"\nR  \"my app/.docs/réseau/plan d’été.md\" -> \"my app/.docs/archive/working/réseau/plan d’été.md\""
+OBSERVED NFD name: 0 { "days": 14, "count": 1, "docs": [ { "path": "docs/research/été.md", "days": 30, "to": "docs/archive/working/research/été.md", "moved": true } ], "skipped": [], "applied": true }
+PASS NFD-named doc is listed and moved (or skipped with a reason) :: R  docs/research/été.md -> docs/archive/working/research/été.md
+OBSERVED symlinked ancestor --root: 0 { "days": 14, "count": 1, "docs": [ { "path": "docs/research/old.md", "days": 30, "to": "docs/archive/working/research/old.md", "moved": true } ], "skipped": [], "applied": true } 
+PASS a symlink above the project root does not trigger the symlink skip; old doc moves
+OBSERVED symlinked ancestor + subfolder: 0 { "days": 14, "count": 1, "docs": [ { "path": "docs/research/old.md", "days": 30, "to": "docs/archive/working/research/old.md" } ], "skipped": [], "applied": false }
+PASS symlinked ancestor + subfolder project lists the old doc with 30 days
+OBSERVED case-collision target: 0 { "days": 14, "count": 0, "docs": [], "skipped": [ { "path": "docs/research/old.md", "reason": "docs/archive/working/research/old.md already exists." } ], "applied": true }
+INFO filesystem is case-insensitive: true
+PASS a target that collides only by case is skipped, the archived OLD.md is untouched
+OBSERVED wrong-case --root subfolder: 0 { "days": 14, "count": 1, "docs": [ { "path": "docs/research/old.md", "days": 30, "to": "docs/archive/working/research/old.md" } ], "skipped": [], "applied": false } 
+PASS wrong-case --root lists the old doc or explains with a skipped entry (no silent empty, no false "no commit") :: []
+OBSERVED config case mismatch: 0 { "days": 14, "count": 0, "docs": [], "skipped": [ { "path": "Docs", "reason": "Git tracks no file under Docs" } ], "applied": false }
+PASS config case mismatch lists nothing silently? (expect a skipped entry or a listing)
+OBSERVED installed+old: 0 { "days": 14, "count": 1, "docs": [ { "path": "docs/research/old.md", "days": 30, "to": "docs/archive/working/research/old.md", "moved": true } ], "skipped": [], "applied": true }
+PASS installed old doc is neither listed nor moved; plain old doc moves
+OBSERVED installed+old subfolder: 0 { "days": 14, "count": 1, "docs": [ { "path": "docs/research/old.md", "days": 30, "to": "docs/archive/working/research/old.md", "moved": true } ], "skipped": [], "applied": true }
+PASS subfolder: installed old doc kept, plain old doc moves
+PASS acceptance: lists only the 20-day doc, count 1, git status shows the rename, no commit
+failures: 0

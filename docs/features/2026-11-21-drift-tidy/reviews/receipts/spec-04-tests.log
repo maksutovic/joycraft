@@ -1,0 +1,19 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-cleanup-tidy-verify.test.ts (9 tests) 3579ms
+   ✓ tidy --verify > [AC:spec-4-1] after the named line is fixed, the finding is gone and verify exits 0  385ms
+   ✓ tidy --verify > [AC:spec-4-2] an edit to AGENTS.md is refused, naming it, with no message  358ms
+   ✓ tidy --verify > [AC:spec-4-2] an edit to an unlisted context page is refused, naming it  387ms
+   ✓ tidy --verify > [AC:spec-4-2] an edit to an unnamed line of a named page is refused  354ms
+   ✓ tidy --verify > [AC:spec-4-3] a pass prints the subject and the Joycraft-Tidy trailer; no edits prints nothing to commit  595ms
+   ✓ tidy --verify review fixes > [review-a-3] a hunk that replaces the named line and adds lines after it is refused  368ms
+   ✓ tidy --verify review fixes > [review-a-3] an untracked file is refused  375ms
+   ✓ tidy --verify review fixes > [review-a-3] a staged edit that the working tree hides is refused  379ms
+   ✓ tidy --verify review fixes > [review-a-3] an edit to the named line that still names the gone symbol is refused  376ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  15:40:03
+   Duration  3.75s (transform 18ms, setup 0ms, collect 16ms, tests 3.58s, environment 0ms, prepare 47ms)
+

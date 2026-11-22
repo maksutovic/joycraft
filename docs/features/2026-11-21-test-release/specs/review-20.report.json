@@ -1,0 +1,332 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "5c5d0e2f096f360c8d4903ea74011a9c3aecc81f",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 20,
+    "specPath": "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+    "criteria": [
+      {
+        "id": "spec-20-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-20-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-20-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "sota-page",
+            "load-guidance",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "sota-knowledge-home",
+            "cap-raise",
+            "machine-slot"
+          ]
+        },
+        "sha256": "79948abee92b2557f8a8a4a164a0ea404670b29c38917eaff2beb71da9f3bbe8",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "82e2074f383a5e56b97ad90375df3eb76d51f33ca172e3b87c74b137636164c7",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+        "kind": "requirement",
+        "sha256": "02d862a9878849e8a0000b74e89fa9441a414c633a5dc261474a5af46b1b6301",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "b9b61871728f8b6918f9aeab85c948ad6efd0c52011da3fcd94f9b6bcb0722dd",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing-page.md",
+        "kind": "code",
+        "sha256": "2dba23881e4040efbbd5efd16e1d1cc15519fd0e02f8229b107f4d5cc2d47db1",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing-review.md",
+        "kind": "code",
+        "sha256": "55b6bdce577f278ec652d98933d8b0840ab26a587b9a5475dcca00977fe3a9af",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "e9f3623b14b2fea3eaa8b597355b57f8e85c5ef1ab918c049a5caf156758d9c5",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-sota-page.test.ts",
+        "kind": "check",
+        "sha256": "9506fac9c02cee8fb5276a16c42da0b71dbe108f8ade793c0b2f8b0b8ec16589",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          3,
+          20
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "sota-page",
+            "load-guidance",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "sota-knowledge-home",
+            "cap-raise",
+            "machine-slot"
+          ]
+        }
+      ]
+    },
+    "identity": "42d7ceab37259dad14d5ee969dbfa2a7c3f97f632e97e523468d1e4a6b90ff78"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ab041cf96c503b99a"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a7e1a9591d1663238"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-20-1-principles",
+      "subjectIdentity": "42d7ceab37259dad14d5ee969dbfa2a7c3f97f632e97e523468d1e4a6b90ff78",
+      "criteria": [
+        "spec-20-1"
+      ],
+      "representativeInput": "payload/.joycraft/references/testing-page.md (494 words)",
+      "expected": "Nine numbered principles matching the spec list, each a project decision with fill-in slots; load order run less, cap workers, then a slot; the benefit line.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "The fenced template holds exactly nine numbered principles (Commands; Each spec names its own tests; Workers per run keyed on JOYCRAFT_EVIDENCE, never CI; No real time; Each test owns its resources; Time is reported, never a gate; Assertions come from the spec; Extend before adding; Full suite once), matching the spec items 1-9, with 10 `<...>` fill-in slots. Load order appears in the page body and in Filling it in; benefit \"fewer slow and flaky reruns\" is at line 12. evidence.mjs really sets JOYCRAFT_EVIDENCE=1 for the child. [AC:spec-20-1] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.log",
+              "sha256": "03676f9b6b0582fcdcf154ce42df526bc3447f54dca655a9ed56ab81186ec174"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs",
+              "sha256": "3f80fbd538347a9ff4798783b66cc438b55c33245ecfd2e0f49c48cb59096fbe"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-tests.log",
+              "sha256": "1a03453b8729715c1a42318b5e13b5f1bbcd3636b3b592c640d23819126d050d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-20-2-no-runner",
+      "subjectIdentity": "42d7ceab37259dad14d5ee969dbfa2a7c3f97f632e97e523468d1e4a6b90ff78",
+      "criteria": [
+        "spec-20-2"
+      ],
+      "representativeInput": "testing-page.md against the 16-name check set, plus a wider 28-name set (nextest, bazel, xdist, stryker, hypothesis, pnpm, npm, node, yarn, sqlite, postgres, pglite, ...)",
+      "expected": "Zero matches, case-insensitive.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "Zero matches for the spec check set and zero for the wider set; the page says \"the runner's own flag\" and uses placeholders. [AC:spec-20-2] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.log",
+              "sha256": "03676f9b6b0582fcdcf154ce42df526bc3447f54dca655a9ed56ab81186ec174"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs",
+              "sha256": "3f80fbd538347a9ff4798783b66cc438b55c33245ecfd2e0f49c48cb59096fbe"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-tests.log",
+              "sha256": "1a03453b8729715c1a42318b5e13b5f1bbcd3636b3b592c640d23819126d050d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-20-3-wiring",
+      "subjectIdentity": "42d7ceab37259dad14d5ee969dbfa2a7c3f97f632e97e523468d1e4a6b90ff78",
+      "criteria": [
+        "spec-20-3"
+      ],
+      "representativeInput": "setup.md Propose step, testing-review.md Apply section, payload-guard on-demand list",
+      "expected": "Both files link testing-page.md, write `<context>/testing.md` with the map row \"A test run is slow or flaky\", only when missing; payload-guard passes with testing-page.md on demand.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "19/19 tests pass across tests/text-sota-page.test.ts and tests/payload-guard.test.ts (exit 0), including [AC:spec-20-3] and the on-demand list with testing-page.md. The payload-guard diff only adds testing-page.md to the list (class 1, as the Test changes section says); no assertion removed or skipped.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-tests.log",
+              "sha256": "1a03453b8729715c1a42318b5e13b5f1bbcd3636b3b592c640d23819126d050d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/text-sota-page.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: setup.md places the testing page as a drafted change inside step 3 Propose (attended, user sees it), guarded by \"when the project has none\" so a repeat setup stays unchanged; testing-review.md writes it \"when the project has no testing page\". Default paths.context is docs/context, matching the template.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.log",
+              "sha256": "03676f9b6b0582fcdcf154ce42df526bc3447f54dca655a9ed56ab81186ec174"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs",
+              "sha256": "3f80fbd538347a9ff4798783b66cc438b55c33245ecfd2e0f49c48cb59096fbe"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-evidence-fit",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/testing-page.md:27",
+      "summary": "Against sota-playbook.md section 1, the nine are not the nine best-evidenced. Principles 1, 2 and 9 all restate P8 (tiers), so three slots carry one principle. Principle 8 \"extend before adding\" has no ranked principle behind it (only checklist row 12). Missing S-graded principles: P7 flaky means defective, never retry into a pass, repeat a new or changed test file before it counts (the map row says \"slow or flaky\", yet the page has no flaky rule: probe NOTE); P1 no special-casing of test inputs and never edit the check that judges the change (the sota-evidence panel calls it the cheapest measured mitigation); P4 prove a new test can fail on a broken copy. Suggest folding 2 and 9 into 1 and using the freed slots for P7 and P1.",
+      "assumption": "The spec fixes the nine items by name, so the page matches the spec; this is a spec-level change for the owner, not a failure of spec-20-1."
+    },
+    {
+      "id": "f2-useful-tool",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/testing-page.md:11",
+      "summary": "Max's sota-knowledge-home note wants tests to be a useful tool, not an obligation. The benefit line (fewer slow and flaky reruns) sits only in the template preamble; the page the project gets says only \"keep its tests fast and honest\". Carry the benefit into the written page so the project's own agents read why.",
+      "assumption": "The spec asks the reference to add the benefit, which it does."
+    },
+    {
+      "id": "f3-review-end",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/testing-review.md:40",
+      "summary": "\"At the end\" sits in the Apply section. It does not say whether the page is written when the person approves no change. Assumed: written whenever the review reaches its end, which fits the brief (an existing project gains the page after the cleanup).",
+      "assumption": "Written whenever the review completes."
+    },
+    {
+      "id": "f4-fixtures",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/text-sota-page.test.ts:9",
+      "summary": "The spec scope says to use git fixtures in a temp dir; the test reads payload text directly. For pure text checks no fixture is needed, so this is the better choice; note only.",
+      "assumption": "Text checks need no fixture."
+    },
+    {
+      "id": "f5-name-clash",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/testing-page.md:4",
+      "summary": "The project page is `<context>/testing.md`, the same basename as `.joycraft/references/testing.md` (every-spec text). Distinct folders, but an agent searching \"testing.md\" can open the wrong one. Consider a distinct name or a one-line pointer.",
+      "assumption": "Not decided by the spec."
+    }
+  ],
+  "createdAt": "2026-11-22T02:33:54.495Z"
+}

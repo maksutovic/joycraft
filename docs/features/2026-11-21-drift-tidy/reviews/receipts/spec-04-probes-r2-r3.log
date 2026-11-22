@@ -1,0 +1,48 @@
+CR1 CRLF page at HEAD; named line fixed (CRLF kept)
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 4cf530c\n\nJoycraft-Tidy: 2377c27d4a1308cf0f9a5589e6328cf51a369e65..4cf530c67a3678fa27448e4bd9b4d0f42f757e22"}
+CR2 CRLF page at HEAD; named line still names getWidget without backticks
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":5,"reason":"The edit leaves the finding: it still names getWidget."}],"cleared":0,"remaining":0,"message":null}
+CR3 CRLF page at HEAD; named line keeps the gone symbol with a space in backticks
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":5,"reason":"The edit leaves the finding: it still names getWidget."}],"cleared":0,"remaining":0,"message":null}
+CR4 CRLF page: valid fix of line 5 plus rewrite of unnamed line 7 (hunk heading holds a CR) [raw diff: ["@@ -5 +5 @@ The widget loader.","@@ -7 +7 @@ Note line."]]
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+CR5 LF page at HEAD; whole page converted to CRLF, named line fixed
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":1,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+CR6 LF page; only the named line gets a CR and the fix
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 068623a\n\nJoycraft-Tidy: e5af029cb78e585213cf51c385065136414fc721..068623a64aeef59392f305b326b7b0950b1938bb"}
+CR7 core.autocrlf=true; LF page converted to CRLF in the worktree plus the fix
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 32e128b\n\nJoycraft-Tidy: 33eb1ed9de21e239060a5618af3798f0d680aa74..32e128b13558f84fc4ed9be96bcd532a5a2f5667"}
+LS1 LF page with U+2028 in line 6 at HEAD: valid fix of line 5 plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+LS2 named line rewritten as "Read `keep`.<U+2028>getWidget() still"
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":5,"reason":"The edit leaves the finding: it still names getWidget."}],"cleared":0,"remaining":0,"message":null}
+SM1 submodule at docs/vendor added (new gitlink) plus the valid fix
+  -> {"exit":2,"status":"refused","refused":[{"path":".gitmodules","reason":"No fixable tidy finding names this file."},{"path":"docs/vendor","reason":"No fixable tidy finding names this file."}],"cleared":0,"remaining":0,"message":null}
+SM2 committed submodule moved to a new commit plus the valid fix
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/vendor","reason":"No fixable tidy finding names this file."}],"cleared":0,"remaining":0,"message":null}
+SM3 submodule with ignore=all in .gitmodules moved to a new commit plus the valid fix [status: M docs/context/guide.md]
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 895029e\n\nJoycraft-Tidy: 62a288ac5573739882c0bcaa94b464edaee5b96f..895029ee99216592f5558a7b0ecbbe935e9e4a59"}
+SM4 named page replaced by a submodule gitlink in the index
+  -> {"exit":2,"status":"refused","refused":[{"path":".gitmodules","reason":"No fixable tidy finding names this file."},{"path":"docs/context/guide.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"remaining":0,"message":null}
+IR1 index renames guide.md to guide2.md (same blob); worktree guide.md holds the valid fix [status: RD docs/context/guide.md -> docs/context/guide2.md | ?? docs/context/guide.md]
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","reason":"An untracked file: tidy adds no file."},{"path":"docs/context/guide.md","reason":"Changes the file mode, type or binary content: a tidy edit only replaces or deletes named lines."},{"path":"docs/context/guide2.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"remaining":0,"message":null}
+IR2 index renames other.md (unnamed) to other2.md; worktree unchanged except the valid fix
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/other.md","reason":"An untracked file: tidy adds no file."},{"path":"docs/context/other.md","reason":"No fixable tidy finding names this file."},{"path":"docs/context/other2.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"remaining":0,"message":null}
+IA1 git add -N docs/context/new.md plus the valid fix [diff HEAD names: docs/context/guide.md,docs/context/new.md; cached: ]
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/new.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"remaining":0,"message":null}
+IA2 git add -N an empty docs/context/empty.md plus the valid fix
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/empty.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"remaining":0,"message":null}
+IA3 git add -N AGENTS.override.md at the root plus the valid fix
+  -> {"exit":2,"status":"refused","refused":[{"path":"AGENTS.override.md","reason":"An entry file: tidy never edits one."}],"cleared":0,"remaining":0,"message":null}
+LL1 named line replaced by a 3 MB line that names no symbol
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after a286c17\n\nJoycraft-Tidy: be609bcc323063651dc2dd57a3589e77f952cb2e..a286c1781361e136c71752bad4bc851194467bd5"}
+LL2 named line replaced by a 3 MB line ending in getWidget() (no backticks)
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":5,"reason":"The edit leaves the finding: it still names getWidget."}],"cleared":0,"remaining":0,"message":null}
+LL3 valid fix plus unnamed line 3 replaced by a 3 MB line
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":3,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+LL4 HEAD page has a 3 MB line 3; valid fix of line 5 only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 858e4da\n\nJoycraft-Tidy: 854f988dd9231aa1db57eb88e4ceb25d58026770..858e4dae555c11eec1985b67e7965efd00279abf"}
+P1 valid fix
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 42e51ab\n\nJoycraft-Tidy: 8ab8fe27788ac3981aca88554a4cf349c4a10bd3..42e51abaaf38b019c232cfc88c8a681bc61e2452"}
+N1 no edits
+  -> {"exit":0,"status":"clean","refused":[],"cleared":0,"remaining":1,"message":null}

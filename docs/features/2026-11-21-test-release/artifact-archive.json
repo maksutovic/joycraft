@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "test-release-archive-route",
+  "title": "Spec 13 used all its review rounds: your call",
+  "summary": "20 of 26 testing specs are accepted. Spec 13 needs an owner decision.",
+  "decisionIds": [
+    "archive-rewrite-route"
+  ]
+}

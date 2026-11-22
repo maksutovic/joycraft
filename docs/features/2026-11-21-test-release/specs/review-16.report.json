@@ -1,0 +1,308 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "6f23653aba13b2e9bffa1a15604e44c579641d11",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 16,
+    "specPath": "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+    "criteria": [
+      {
+        "id": "spec-16-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-16-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-16-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "owner-gate-lines",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "cap-raise"
+          ]
+        },
+        "sha256": "cb184fc0e10275901ee5daa08446efeb0a9e1d4913ddd57f6cdc9d0ee4600109",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "f088867a9b400172901bdc1ece8c9bf8e7371c4524a67ccc8d263640ad80bbe9",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+        "kind": "requirement",
+        "sha256": "9792b28a10178b8f5954ffcaaf841bdd0d7dcff655f5c09a43f4c644e5aabb82",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-cleanup/SKILL.md",
+        "kind": "code",
+        "sha256": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/cleanup.md",
+        "kind": "code",
+        "sha256": "669afad7a1580cd1503219ddf7e9802a54a149ac4d315faa9439e9c3fb89769c",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/update.md",
+        "kind": "code",
+        "sha256": "2aa9881b66f5514875ff46c846d3446f8010b5f4efbdd32ffee09d0b76d24aa9",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "e9f3623b14b2fea3eaa8b597355b57f8e85c5ef1ab918c049a5caf156758d9c5",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-owner-gate-lines.test.ts",
+        "kind": "check",
+        "sha256": "3acefdfbaa249816043171c15859137a7c619543d429446e8846d365e73a290c",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          8,
+          16
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "owner-gate-lines",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "cap-raise"
+          ]
+        }
+      ]
+    },
+    "identity": "75d0c0fe1abb16f88a4712831f341bbaf4a6ed05be466389ecc8d3e657181d75"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a174f7d186d65e773"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "ab92bfe1f2734fcb4"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "createdAt": "2026-11-22T02:39:36.929Z",
+  "flows": [
+    {
+      "id": "spec-16-1-attended-decision",
+      "subjectIdentity": "75d0c0fe1abb16f88a4712831f341bbaf4a6ed05be466389ecc8d3e657181d75",
+      "criteria": [
+        "spec-16-1"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-cleanup/SKILL.md (Which run this is, Gate lines) with payload/.joycraft/references/cleanup.md One pass steps 2-3; AGENTS.md fixtures run through cleanup.mjs",
+      "expected": "Attended cleanup turns all gate-rule findings into one before-and-after decision (after = gate once on the integrated revision, focused tests per spec); no unattended rewrite.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "SKILL.md:44-49 \"Gate lines\": all gate-rule findings become one decision, each line shown before and after (\"the gate runs once on the integrated revision, and each spec runs its focused tests\"), rewrite only on the owner's yes, never unattended. The unattended branch (SKILL.md:32) now says \"Change no rule and no other line, a `gate-rule` line included\". The attended pass reaches the findings: cleanup.md step 2 runs cleanup.mjs, step 3 asks one round and keeps lines in their words without an answer. Probe: the brief's Done-when fixture gives exactly one gate-rule finding (line 3) and the Commands table row none; two rule lines give two findings; no recorded gate gives none. [AC:spec-16-1] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.log",
+              "sha256": "cda55a093e96a619494b9560a55bbd89e3423725f5fc2b0a9e09fea33948543e"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs",
+              "sha256": "d3baee3feca461d38dc9a88892597c3332191c663ac8c32f22acfcfcd13a6251"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-tests.log",
+              "sha256": "b5baa46631ae980b95c5b73ca26cf6dd5d88cf132435e7202c134cdbca9a2580"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-16-2-update-once",
+      "subjectIdentity": "75d0c0fe1abb16f88a4712831f341bbaf4a6ed05be466389ecc8d3e657181d75",
+      "criteria": [
+        "spec-16-2"
+      ],
+      "representativeInput": "payload/.joycraft/references/update.md step 3, payload/.joycraft/references/cleanup.md:17-20, entry-check.mjs on fixtures",
+      "expected": "update.md shows gate-rule once with the offer and records the answer so it is not asked again; cleanup.md names the check.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "update.md step 3 runs entry-check.mjs after every update; the probe shows entry-check.mjs surfaces the same gate-rule findings as cleanup.mjs (it imports cleanupReport). The new lines show the findings once as one question only while .joycraft/preferences.json has no cleanup.gateRule, rewrite only on a yes, and record rewritten or kept keeping other keys. In apply (automatic) mode the step still asks and rewrites nothing without a yes. cleanup.md:17-20 names gate-rule as the owner's rule. Recording is prose-only (no runtime helper); archive.mjs readPreferences accepts the extra key, so the archive helper keeps working. [AC:spec-16-2] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.log",
+              "sha256": "cda55a093e96a619494b9560a55bbd89e3423725f5fc2b0a9e09fea33948543e"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs",
+              "sha256": "d3baee3feca461d38dc9a88892597c3332191c663ac8c32f22acfcfcd13a6251"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-tests.log",
+              "sha256": "b5baa46631ae980b95c5b73ca26cf6dd5d88cf132435e7202c134cdbca9a2580"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "The \"asked once\" record is written by the agent from prose, not by a runtime helper; checked by reading, not by running an update."
+      ]
+    },
+    {
+      "id": "spec-16-3-word-budget",
+      "subjectIdentity": "75d0c0fe1abb16f88a4712831f341bbaf4a6ed05be466389ecc8d3e657181d75",
+      "criteria": [
+        "spec-16-3"
+      ],
+      "representativeInput": "tests/payload-guard.test.ts printed counts; word counts of the three edited files at c4932c7^ and c4932c7",
+      "expected": "payload-guard passes; every-spec count grows by at most 10; on-demand inside budget.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "19/19 tests pass (exit 0). Printed every-spec words 12150 (cap 12256), the same 12,150 the guard records as the pre-spec count, so growth is 0. On-demand words 18486 (cap 19663, 1177 spare). None of the three edited files is in EVERY_SPEC_FILES; their growth is +56, +43, +43 on-demand words. payload-guard.test.ts is unchanged by c4932c7, matching Test changes: none.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-tests.log",
+              "sha256": "b5baa46631ae980b95c5b73ca26cf6dd5d88cf132435e7202c134cdbca9a2580"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.log",
+              "sha256": "cda55a093e96a619494b9560a55bbd89e3423725f5fc2b0a9e09fea33948543e"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs",
+              "sha256": "d3baee3feca461d38dc9a88892597c3332191c663ac8c32f22acfcfcd13a6251"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/text-owner-gate-lines.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-it-antecedent",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/update.md:38",
+      "summary": "\"When it reports `gate-rule`\" follows the archive.mjs sentence, so \"it\" reads as archive.mjs ignore --check, which never reports gate-rule. An agent will most likely infer entry-check.mjs (the only tool that can), but naming entry-check.mjs there removes the doubt at no word cost to every-spec text."
+    },
+    {
+      "id": "f2-prose-recording",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/update.md:41",
+      "summary": "assumption: prose-only recording of cleanup.gateRule is acceptable. The spec asks only to record it where the archive answer lives, not for a helper; the brief favors printed output over prose but does not require a runtime for this. Risk: a hand-written preferences.json with bad JSON makes archive.mjs readPreferences throw. A later `archive.mjs`-style --decline/--record helper would close that."
+    },
+    {
+      "id": "f3-fresh-install-path",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/update.md:30",
+      "summary": "The once-only offer runs inside an update. A project that installs fresh (init/setup, no update) meets gate-rule only if setup hands the cleanup findings on, and nothing here says setup offers the rewrite. The finding still shows in any attended cleanup."
+    },
+    {
+      "id": "f4-spec-gate-lines",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:375",
+      "summary": "Max's note names specs as well as owner rules. gate-rule scans only entry files; every-step gate text inside specs is the domain of other specs in this queue (gate-in-spec), not spec 16. Confirm in the feature-level review that both together cover his note."
+    },
+    {
+      "id": "f5-test-wording-pins",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/text-owner-gate-lines.test.ts:33",
+      "summary": "The [AC:spec-16-1] and [AC:spec-16-2] tests pin whole sentences, so any rewording breaks them. The spec check asks only for gate-rule, before and after."
+    }
+  ]
+}

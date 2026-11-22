@@ -1,0 +1,434 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "4546cf5645fa0ddc66bf7c9fa49af6a7933f6d23",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 12,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+    "criteria": [
+      {
+        "id": "spec-12-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-12-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-12-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-12-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-12-5",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "4408efe9a33538b596df0dea4ddf30d30eb6407af2a20db4c706a8ada4e577f6",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+        "kind": "requirement",
+        "sha256": "a1f0112d191cadfe6192c1966b460605343ba39fdec3efda81b3682987913b73",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-cleanup/SKILL.md",
+        "kind": "code",
+        "sha256": "be787d18356dac3f292b69d13e8b547ff5bb1a99039c0fe2d9a2cd12e0abe5f7",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+        "kind": "code",
+        "sha256": "49d894e7e6e20684d68afc014320963b0d4db7cdd265d2580905b78fbb58f665",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/cleanup.md",
+        "kind": "code",
+        "sha256": "90bca4d9ff1c9c72dbfc0c89be068e19d18ee9a210168efb72e909a81aecfcbb",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/knowledge.md",
+        "kind": "code",
+        "sha256": "4cadd5679179e66422820058c29314241aac906657ef9f9e44f4adcf2fd92172",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "07dc7a62e749ebb2ea2c1cb838be05ec49ea686723a2f6c3fc8e3948aad9d4e2",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/drift-tidy-text.test.ts",
+        "kind": "check",
+        "sha256": "952806a19e2ef7658065a66560e0b902ebbdc5a5ba9e2234abdbe9d142dffe1e",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "b4e507761fc56fe00345e7de950bbca5ce613324530fdb6cee449e07479fd8f4",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ]
+      },
+      "governing": []
+    },
+    "identity": "165c50d07648c9af5776461df1be36d64152bfe22323b0d2008a1a97ad25c855"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ad3d29ba195df1dbf"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a7375dfaf6dc5d5de"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "spec-12-1-session-end-tidy",
+      "subjectIdentity": "165c50d07648c9af5776461df1be36d64152bfe22323b0d2008a1a97ad25c855",
+      "criteria": [
+        "spec-12-1"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-session-end/SKILL.md at 4546cf5, read in full and diffed against 453c898; tidyVerify in payload/.joycraft/runtime/cleanup.mjs:671-731",
+      "expected": "The skill runs cleanup.mjs tidy, fixes only fixable findings, runs tidy --verify, makes the one printed commit, keeps the hold sentence, and no longer says session end changes no page",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-12-1] passed: the skill names `cleanup.mjs tidy`, `fixable: true`, `tidy --verify`, \"make one commit with the message it prints\", and the hold sentence; no \"no rule and no page\" text in the three files. Reviewer read: SKILL.md:46-51 matches tidyVerify, which passes only with lines > 0 (cleanup.mjs:728) and prints the Joycraft-Tidy message, and refuses any untracked file (683) or changed file no finding names (701). See finding f1 on the added \"Commit the session's other edits first\".",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests.log",
+              "sha256": "3147ff89680039fea62c8c373f2873c7b42bef230ac637e6204e9417f8d635a8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-12-2-handoff-and-diataxis",
+      "subjectIdentity": "165c50d07648c9af5776461df1be36d64152bfe22323b0d2008a1a97ad25c855",
+      "criteria": [
+        "spec-12-2"
+      ],
+      "representativeInput": "payload/.joycraft/references/cleanup.md and knowledge.md at 4546cf5",
+      "expected": "No `or a handoff` in cleanup.md; the knowledge routing table has a Kind column with explanation, reference, how-to and domain",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-12-2] passed: cleanup.md has no \"or a handoff\"; knowledge.md table header has `Kind`, and the four labels are cells (domain: project; explanation: navigation, decision; how-to: trap; reference: reference, production). See blocking finding f2 on another line of cleanup.md.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests.log",
+              "sha256": "3147ff89680039fea62c8c373f2873c7b42bef230ac637e6204e9417f8d635a8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-12-3-tidy-now",
+      "subjectIdentity": "165c50d07648c9af5776461df1be36d64152bfe22323b0d2008a1a97ad25c855",
+      "criteria": [
+        "spec-12-3"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-cleanup/SKILL.md at 4546cf5",
+      "expected": "The skill points \"tidy now\" to cleanup.mjs tidy",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-12-3] passed: SKILL.md:32-33 \"**\\\"Tidy now\\\".** Run `node .joycraft/runtime/cleanup.mjs tidy` and do the session-end tidy step.\"; the description also names it.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests.log",
+              "sha256": "3147ff89680039fea62c8c373f2873c7b42bef230ac637e6204e9417f8d635a8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-12-4-setup-checks",
+      "subjectIdentity": "165c50d07648c9af5776461df1be36d64152bfe22323b0d2008a1a97ad25c855",
+      "criteria": [
+        "spec-12-4"
+      ],
+      "representativeInput": "payload/.joycraft/references/setup.md at 4546cf5",
+      "expected": "setup.md names `checks:` in one sentence, offered when the project already uses a doc or code checker",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-12-4] passed: exactly one sentence names `checks:` (setup.md:308) and it says \"already uses a doc or code checker (vale, knip), offer once\"; it links settings.md, whose new row describes `checks:`.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests.log",
+              "sha256": "3147ff89680039fea62c8c373f2873c7b42bef230ac637e6204e9417f8d635a8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-12-5-payload-words",
+      "subjectIdentity": "165c50d07648c9af5776461df1be36d64152bfe22323b0d2008a1a97ad25c855",
+      "criteria": [
+        "spec-12-5"
+      ],
+      "representativeInput": "pnpm vitest run tests/payload-guard.test.ts; reviewer probe counting payload words at 453c898 (main), 17eba35^, 17eba35 and HEAD",
+      "expected": "Measured payload words below 29,917 and below main",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-12-5] passed and printed \"payload words: 29846\" (< 29,917). payload-guard.test.ts diff since main only adds this test; no assertion removed or skipped.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests.log",
+              "sha256": "3147ff89680039fea62c8c373f2873c7b42bef230ac637e6204e9417f8d635a8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe counts (same rule as the test): main 453c898 = 29917, before spec 12 (17eba35^) = 29880, after 17eba35 = 29836, HEAD = 29846. Net vs main: -71. The setup.md contents list removal is about 25 words; without it HEAD would still be about 29,871 (< 29,917).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-words.log",
+              "sha256": "1540c1585527569c814a64bc888be5fe615d72a05cee0df24c224fd93b47e7a6"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-probe.mjs",
+              "sha256": "291b5a43cb510ef68b3ef472f240038376bd9d189bd4165d68666c98aac58745"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-probe.mjs",
+              "453c898",
+              "17eba35^",
+              "17eba35",
+              "HEAD"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "payload/PIN matches payload/.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-pin.log",
+              "sha256": "88fccb5e1bdbdb09a50373439c4629d4ee6731138db59fd4b02d2cf9b718c006"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "scripts/pin-payload.mjs",
+              "--check"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [
+    "f2: cleanup.md:3 contradicts the session-end mechanical fixes that the cleanup skill and update.md keep.",
+    "f1: owner decision needed on the unattended commit of the session's other edits before tidy."
+  ],
+  "findings": [
+    {
+      "id": "f1-commit-other-edits-first",
+      "class": "decision-needed",
+      "origin": "new",
+      "criterion": "spec-12-1",
+      "at": "payload/.agents/skills/joycraft-session-end/SKILL.md:46",
+      "summary": "New text \"Commit the session's other edits first.\" gives unattended session end a second commit of unspecified session edits (status --fix repairs, knowledge rows, decision-log answers, possibly entry files). The reason is real: tidy --verify refuses any untracked file (cleanup.mjs:683) and any changed file no fixable finding names (cleanup.mjs:701), so with a dirty tree verify can never pass. But brief decision end-commit = \"one\" says \"the agent commits once\", and its context says \"Today approval to edit is not approval to commit\" and \"This extends a standing rule\"; the cleanup skill still says approval to edit is not approval to commit (SKILL.md:47-48). Reading A (session end makes only the one printed commit) fails this criterion; reading B (the one printed tidy commit, other commits out of scope) passes it. Owner options: allow the pre-commit; or skip tidy and report when the tree holds other edits; or tell the agent to leave unrelated edits for the user and run tidy only on a clean tree. The skill also does not say what to do when the user's own unrelated edits are in the tree."
+    },
+    {
+      "id": "f2-cleanup-ref-contradicts-mechanical-fixes",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-12-2",
+      "at": "payload/.joycraft/references/cleanup.md:3",
+      "summary": "Spec 12 (17eba35) replaced \"it never edits.\" with \"Session end edits only the lines that `cleanup.mjs tidy` names.\" That is false against surviving rules: in its session-end mode the cleanup skill replaces Joycraft's managed block in AGENTS.md and re-points a dead path with one Git rename (joycraft-cleanup SKILL.md:26-31, run right after tidy by session-end SKILL.md:50), and update.md:33 calls the block replacement the one unattended entry-file edit. The cleanup skill tells the agent to read this reference first, so the agent gets two opposite rules for the same run. Fix: limit the sentence to the tidy step, or name the managed-block and rename fixes (no new words needed beyond a few)."
+    },
+    {
+      "id": "f3-removed-sentences-ledger",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-session-end/SKILL.md:9",
+      "summary": "Removed-sentence ledger since 453c898, each rule checked: session-end \"Use this skill when pausing or finishing...\" -> survives in the frontmatter description; \"It only restores the two status surfaces ... does not retry unrelated work\" -> survives in completion.md:157-159 (recover restores before bytes; retry only while the review is current); \"It reports and makes only the mechanical fixes\" -> survives in cleanup SKILL.md:26-31; \"Historical reports retain their original paths, subject revisions, and claims. Do not rewrite them\" -> \"Keep historical reports as they are\"; \"Existing task authorization need not be requested again\" -> \"Do not ask again for authorization you have\". entry SKILL \"The CLI cannot write the project's context map ... you build it\" -> survives in setup.md:4-7. cleanup.md check table -> survives in `cleanup.mjs --checks` (all ids, gate marks, 1000-word and 32,768-byte limits); \"It is an audit trail:\" -> descriptor only, the log rule stays; \"or a handoff\" -> removed by the spec; \"one after another where it has none\" -> survives only by implication of \"in parallel when the host has subagents\" (step 6 keeps the no-subagent case). knowledge.md \"focused\", \"or gotchas\", \"project's\" -> wording only. setup.md contents list -> navigation only, no rule; the non-authoritative sentence keeps its rule. update.md two rewordings keep their rules. archive.md (spec 7/8 and 17eba35 cuts): \"Reports and receipts must always retain their recorded bytes\" -> survives in archive.md:50 (receipts keep recorded bytes), :163 (helper never waives missing bytes) and the session-end \"keep every original report\"; \"Unchanged later reports need no entry\" -> implied by \"an entry for each report whose dependency projection changed\" plus \"unused ... entries fail closed\"; \"The same flag is required for the first apply\" -> \"apply with the same flag\"; \"Use it to update a wiki or run a doc audit\" and the single-report reasoning -> examples/reasons, no rule. No other lost rule found."
+    },
+    {
+      "id": "f4-setup-contents-list",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/setup.md:9",
+      "summary": "Removing setup.md's 7-line Contents list is within the brief (generator-cuts: cut what Joycraft writes, net words down) and loses no rule; no link targets #contents. Not needed for the cap (about 25 words; HEAD would still be below 29,917 without it). setup.md is 321 lines, and context.md and dispatch.md keep their Contents lists, so a long reference now gives a partial reader no outline. Owner may want to restore it if partial reads of setup.md matter."
+    },
+    {
+      "id": "f5-tidy-then-cleanup-order",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-session-end/SKILL.md:50",
+      "summary": "joycraft-cleanup session-end mode runs after the tidy commit, so its managed-block and rename fixes are left uncommitted and nothing says who commits them. The skill gives no step for a refused verify (exit 2): revert the tidy edits and report, presumably."
+    },
+    {
+      "id": "f6-installed-copies",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": ".agents/skills/joycraft-session-end/SKILL.md",
+      "summary": "The repo's installed copies of all five spec files differ from payload/ (unchanged since main); payload/PIN matches. AGENTS.md here gives no refresh step, so sessions in this repo keep the old session-end text until a reinstall."
+    },
+    {
+      "id": "f7-test-input",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "tests/drift-tidy-text.test.ts and tests/payload-guard.test.ts are declared check inputs; startup trace showed all 5 criteria traced and none untraced. The spec text names only payload-guard.test.ts as its test file. Knowledge.md labels navigation as explanation; a reader could argue reference, wording only."
+    }
+  ],
+  "createdAt": "2026-11-22T00:27:25.671Z"
+}

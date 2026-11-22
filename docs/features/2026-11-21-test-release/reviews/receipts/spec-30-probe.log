@@ -1,0 +1,29 @@
+preview exit 0 
+LISTED {"path":"tests/dq.test.ts","line":1,"text":"const p = \"2026-11-21-x\";","test":true}
+LISTED {"path":"tests/fixtures/guard.json","line":1,"text":"{\"k\": \"2026-11-21-x/brief.md\"}","test":true}
+LISTED {"path":"tests/json.json","line":1,"text":"{\"k\": \"docs/features/2026-11-21-x/brief.md\"}","test":true}
+NOT LISTED tests/dotdot.test.ts
+NOT LISTED tests/tmpl.test.ts
+NOT LISTED tests/mid.test.ts
+NOT LISTED tests/backslash.test.ts
+NOT LISTED tests/prefix.test.ts
+NOT LISTED tests/suffix.test.ts
+NOT LISTED src/app.ts
+NOT LISTED assets/b.bin
+status unchanged true
+apply exit 0 
+next 3 tests still name `docs/features/2026-11-21-x`: `tests/dq.test.ts:1`, `tests/fixtures/guard.json:1`, `tests/json.json:1`. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.
+changed D docs/features/2026-11-21-x/brief.md
+ D docs/features/2026-11-21-x/specs/.joycraft-spec-queue.json
+ D docs/features/2026-11-21-x/specs/01-a.md
+ D docs/features/2026-11-21-x/specs/legacy.json
+?? docs/archive/2026-11-21-x/archive-recovery.json
+?? docs/archive/2026-11-21-x/archive-replay.json
+?? docs/archive/2026-11-21-x/feature/brief.md
+?? docs/archive/2026-11-21-x/feature/specs/.joycraft-spec-queue.json
+?? docs/archive/2026-11-21-x/feature/specs/01-a.md
+?? docs/archive/2026-11-21-x/feature/specs/legacy.json
+local exists false
+unknown exit 2 Archive stopped: Unknown argument: --bogus; nothing was changed
+missing value exit 1 Archive stopped: Invalid or duplicate argument: --feature
+exit=0

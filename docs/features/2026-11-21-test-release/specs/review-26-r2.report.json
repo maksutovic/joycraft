@@ -1,0 +1,435 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "9691e60129682bde04aa2799afa8a7644a90911d",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 26,
+    "specPath": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+    "criteria": [
+      {
+        "id": "spec-26-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-26-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-26-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-26-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "code",
+        "sha256": "c8f2d2b79ff9ea57b3919bdd68c66094470d67026dda4ece4c16a2f897348932",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "sha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "121f6e0c7d916d9386f0de0009af5d5e521a99676e4c99a1646b6e5b23bcbc8b",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+        "kind": "requirement",
+        "sha256": "3f1014182f9dbecf55174cc19eb0aa0d766c2ff983acb80d8911d2e779e172dd",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "package.json",
+        "kind": "code",
+        "sha256": "d39866fcb7f01444a59537d5c27125baf16270368a3f6a5d55e7bf0de037d751",
+        "normalization": "none"
+      },
+      {
+        "path": "src/joycraft-release.json",
+        "kind": "code",
+        "sha256": "b03febd3d7e7037f7b2de6531d2d98c4dfbb4124955b2973ffd64089724570ad",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "3d6986aa8ee5ad8c03510e18c1031cb970b9e9e27889be11d9e1110625308b63",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/release-preparation.test.ts",
+        "kind": "check",
+        "sha256": "32ae9ce8e74fbe4fdd872c1859b29a9e130f6c19b0a744132421085554204d9c",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-config-tests.test.ts",
+        "kind": "check",
+        "sha256": "9cf88f7ab0c2fe28458d68bb296fd35b55093d894f3b170c487998f7f4b40db4",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32
+        ]
+      },
+      "governing": []
+    },
+    "identity": "557ca4fa5da7544010b7fae72f07eece9e4f4c3cc5f50037b0ee45499662815e"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a068005367513783f"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a999008c138bc72f9"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-26-1-flow",
+      "subjectIdentity": "557ca4fa5da7544010b7fae72f07eece9e4f4c3cc5f50037b0ee45499662815e",
+      "criteria": [
+        "spec-26-1"
+      ],
+      "representativeInput": "evidence.mjs run --receipt <log> -- pnpm test tests/runtime-config-tests.test.ts, plus a node -e probe that prints CI and JOYCRAFT_EVIDENCE through the same runtime",
+      "expected": "Exit 0; footer with exitCode 0, cores and loaded; the child sees CI=1 and JOYCRAFT_EVIDENCE=1",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-ci.log",
+              "sha256": "be10a57c35692c7b14fd637814bd0b9f1fb6b93ee3b3464c93574c51a16a4790"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "payload/.joycraft/runtime/evidence.mjs",
+              "run",
+              "--receipt",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-ci.log",
+              "--",
+              "pnpm",
+              "test",
+              "tests/runtime-config-tests.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Reviewer rerun: exit 0, 5 tests pass; footer exitCode 0, cores 14, loaded false, load [5.72, 5.42], dirty false."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-markers.log",
+              "sha256": "2aed7de801bb5f4e68852ddbfb7d0124e5e5fe2bd54158b63a5cd7a0f07b7f80"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "payload/.joycraft/runtime/evidence.mjs",
+              "run",
+              "--receipt",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-markers.log",
+              "--",
+              "node",
+              "-e",
+              "console.log('CI=' + process.env.CI + ' JOYCRAFT_EVIDENCE=' + process.env.JOYCRAFT_EVIDENCE)"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Prints CI=1 JOYCRAFT_EVIDENCE=1; evidence.mjs:414 sets both on every child env."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-probe.log",
+              "sha256": "53457ef86d315061242e4ff75b2c18fa241a8dec3250d65cab7a2aba04f29d4d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "bash",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r26-probe.sh"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Implementer receipts rehash to the hashes in proof-ci.md: proof-ci.log 7729a8f8... footer exitCode 0, cores 14, loaded false, dirty false; proof-markers.log prints CI=1 JOYCRAFT_EVIDENCE=1 (dirty true, disclosed)."
+        }
+      ],
+      "limits": [
+        "One machine, 14 cores, not loaded.",
+        "Round 2: only CHANGELOG.md changed since bc04f27 (spec-26-r2-probe.log), so this proof is carried from round 1 and not rerun."
+      ]
+    },
+    {
+      "id": "spec-26-2-flow",
+      "subjectIdentity": "557ca4fa5da7544010b7fae72f07eece9e4f4c3cc5f50037b0ee45499662815e",
+      "criteria": [
+        "spec-26-2"
+      ],
+      "representativeInput": "Implementer receipts of evidence.mjs run --patch gateRuns-check.diff -- pnpm test tests/runtime-config-tests.test.ts in a linked worktree",
+      "expected": "exitCode 1, patched true, restored true, empty porcelain after",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-probe.log",
+              "sha256": "53457ef86d315061242e4ff75b2c18fa241a8dec3250d65cab7a2aba04f29d4d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "bash",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r26-probe.sh"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Rehashed: proof-patch.log f9127bb9... equals the result JSON receipts[0]; result command.exitCode 1, patch.patched true, patch.restored true, revision 6163e65 dirty false; the fault diff (7b04fe7d...) replaces the gateRuns check with requireValue(true,...) against config.mjs blob 35baadd, the same blob at HEAD; the one failing test is [AC:spec-2-3] (expected 1, got 0), the other 4 pass. Empty porcelain after is stated in proof-patch.md step 6 with the unchanged config.mjs hash; the worktree was removed, so that step is not rerun (brief: do not redo bullet 2 unless a receipt looks wrong; none does)."
+        }
+      ],
+      "limits": [
+        "Bullet 2 not rerun by the reviewer; porcelain-after rests on the implementer note plus restored:true, which evidence.mjs computes from file hashes, porcelain, HEAD and refs/stash (evidence.mjs:318-323).",
+        "Round 2: only CHANGELOG.md changed since bc04f27 (spec-26-r2-probe.log), so this proof is carried from round 1 and not rerun."
+      ]
+    },
+    {
+      "id": "spec-26-3-flow",
+      "subjectIdentity": "557ca4fa5da7544010b7fae72f07eece9e4f4c3cc5f50037b0ee45499662815e",
+      "criteria": [
+        "spec-26-3"
+      ],
+      "representativeInput": "pnpm build, then node dist/cli.js init <empty git dir> --yes",
+      "expected": "testing-page.md, test-changes.mjs and the template tests: section installed",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-init.log",
+              "sha256": "4a1b8e99e1610a788df937b7ff5d1fa2b68be2afe38a3f7ee8f9fdd006ac6307"
+            }
+          ],
+          "command": {
+            "argv": [
+              "bash",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r26-init.sh",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r26-init"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Reviewer rerun: build and init exit 0; .joycraft/references/testing-page.md, .joycraft/runtime/test-changes.mjs and .joycraft/templates/joycraft.yaml exist, byte-identical to payload/ and to the hashes in proof-init.md; template lines 32-40 hold the commented tests: section (focused, gate, full, gateRuns)."
+        }
+      ],
+      "limits": [
+        "Fresh init only; update path from 1.8.1 not exercised.",
+        "Round 2: only CHANGELOG.md changed since bc04f27 (spec-26-r2-probe.log), so this proof is carried from round 1 and not rerun."
+      ]
+    },
+    {
+      "id": "spec-26-4-flow",
+      "subjectIdentity": "557ca4fa5da7544010b7fae72f07eece9e4f4c3cc5f50037b0ee45499662815e",
+      "criteria": [
+        "spec-26-4"
+      ],
+      "representativeInput": "Round-2 CHANGELOG 1.9.0 entry (9691e60) against the payload code; release fields unchanged",
+      "expected": "Tests pass; the entry covers both features, carries the JOYCRAFT_EVIDENCE note and the docs-root update note, and makes no claim the code does not back",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-r2-tests.log",
+              "sha256": "413580172c1ae4caa6118f437503eaf797d10d6f164c7b6cb9a9b8c7e7722bfe"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/release-preparation.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/runtime-config-tests.test.ts",
+              "tests/public-docs.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "4 files, 60 tests pass, exit 0 at 9691e60."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-r2-probe.log",
+              "sha256": "aedc16f4028bce29dddfe6ae49c90b3856e39ffa1b0304bf92323366de60a122"
+            }
+          ],
+          "command": {
+            "argv": [
+              "bash",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r26-r2-probe.sh"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Only CHANGELOG.md changed among inputs since bc04f27. f1: new Update notes bullet matches config.mjs:171-172 (root or hidden docs root refused, three paths under one visible folder). f2: older receipt with only record files matches delivery.mjs:167; receipt location matches evidence.mjs:208. f3: tail now attributed to the result JSON (evidence.mjs:438,447). f4: \"unless Git ignores it\" matches evidence.mjs:344. f5: status/HEAD/stash matches evidence.mjs:318-323. f6: \"or a handoff\" and \"Diataxis\" removed; kinds listed match knowledge.md. f7: sh -c (dispatch-start.mjs:135) and gate-rule --record/--check (cleanup.mjs:883) now named. f8: Maintainers line says it landed after 1.8.1 and first ships here. Privacy scan of the entry finds no SHA, absolute path or PR number; no --rewrite mention."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "limits": [
+    "Bullets 1-3 carried from round 1 receipts (inputs they rely on unchanged); bullet 2 never rerun by the reviewer."
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "r2-f1-long-lines",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "CHANGELOG.md:68,82",
+      "summary": "Cosmetic: a few edited lines run past the entry's wrap width (e.g. the sh -c sentence and the saved-faults line); reflow if wanted."
+    },
+    {
+      "id": "r2-f2-spec-gaps",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-26-3",
+      "at": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+      "assumption": "As round 1: the template is .joycraft/templates/joycraft.yaml; a separate node -e markers receipt is the right way to show both markers.",
+      "summary": "Both spec gaps remain judged acceptable (not repeated as new findings)."
+    },
+    {
+      "id": "deferred-1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+      "summary": "Deferred until deploy: field project: run one test through evidence.mjs before and after its local-run.mjs line-34 change under JOYCRAFT_EVIDENCE."
+    },
+    {
+      "id": "deferred-2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+      "summary": "Deferred until deploy: field project: replay the fault proof on the 10 test files of the two named PRs with the three saved faults."
+    },
+    {
+      "id": "deferred-3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+      "summary": "Deferred until deploy: field project: run --patch in a worker worktree under the Codex sandbox."
+    },
+    {
+      "id": "deferred-4",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+      "summary": "Deferred until deploy: field project, local read-only temp clone: archive preview namedFiles at the four named revisions."
+    },
+    {
+      "id": "deferred-5",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+      "summary": "Deferred until deploy: next field report: gate runs per spec and run facts across a parallel queue; ruling row 6 kill criterion."
+    }
+  ],
+  "createdAt": "2026-11-22T05:52:30.000Z"
+}

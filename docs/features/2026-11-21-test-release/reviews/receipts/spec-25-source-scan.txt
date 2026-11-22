@@ -1,0 +1,26 @@
+$ grep -n "porcelain\|runtime/\|tidy --verify\|worktrees.mjs prune\|archive.mjs archive\|one push\|read-only\|commit the move\|carries the records" payload/.agents/skills/joycraft-session-end/SKILL.md
+9:Start with the clean-tree check: run `git status --porcelain`. When it prints
+14:last, then one push that opens the PR.
+32:Run `node .joycraft/runtime/status.mjs --fix` (repairs lagging frontmatter of
+34:`node .joycraft/runtime/gate.mjs check`. Do the step each gate message names,
+53:Tidy without being asked. Run `node .joycraft/runtime/cleanup.mjs tidy` and fix
+55:text. When `cleanup.mjs tidy --verify` passes, make one commit with the message it
+56:prints; it carries the records and the tidy fixes. Then run `joycraft-cleanup`
+62:Preview `node .joycraft/runtime/worktrees.mjs prune` and apply it with
+66:lease with `node .joycraft/runtime/coordinator.mjs release --queue <queue> --session <your-session-id>`. See [worker isolation](../../../.joycraft/references/worktrees.md)
+85:node .joycraft/runtime/archive.mjs archive --feature <slug> --phase session-end --attestation <attestation.json>
+86:node .joycraft/runtime/archive.mjs archive --feature <slug> --phase session-end --attestation <attestation.json> --apply
+101:After `--apply`, commit the move.
+105:Then make one push that carries these commits and opens the PR, or updates the
+107:start checks, read-only, that the change deployed and works.
+exit 0
+$ grep -n -i "post-merge\|merged-PR detector\|sessionEnd.commits" payload/.agents/skills/joycraft-session-end/SKILL.md
+exit 1
+$ grep -n "renameSync\|git(.*commit" payload/.joycraft/runtime/archive.mjs
+2:import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+562:  renameSync(path.join(destinationLocal, 'feature'), projectTarget(root, plan.source));
+602:    renameSync(sourceLocal, path.join(stageLocal, 'feature'));
+603:    renameSync(stageLocal, destinationLocal);
+607:    try { if (existsSync(stagedFeature) && !existsSync(sourceLocal)) renameSync(stagedFeature, sourceLocal); } catch { restored = false; }
+789:    renameSync(temporary, target);
+exit 0

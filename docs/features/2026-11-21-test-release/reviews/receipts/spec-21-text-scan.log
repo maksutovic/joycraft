@@ -1,0 +1,42 @@
+payload/.joycraft/references/artifacts.md:56:after a measurement: its `example` gives the measured time, load or repeat count.
+payload/.joycraft/references/testing-review.md:5:Unattended cleanup never asks, and never edits or deletes a test.
+payload/.joycraft/references/testing-review.md:10:`node .joycraft/runtime/evidence.mjs run --receipt <path>.log -- <full suite command>`.
+payload/.joycraft/references/testing-review.md:11:Report its run facts: `wallMs`, `load`, `cores` and `loaded`. A slow time on a
+payload/.joycraft/references/testing-review.md:13:only at a like load. List the slowest files and their share of the time. Read
+payload/.joycraft/references/testing-review.md:19:Rank the findings by what every run pays first: global setup, or a file that
+payload/.joycraft/references/testing-review.md:20:every focused run or gate loads. Then rank by the slowest file.
+payload/.joycraft/references/testing-review.md:22:- Global setup that every run pays: logging, a monitoring SDK left on,
+payload/.joycraft/references/testing-review.md:28:- A control keyed on `CI` (a worker cap, a slot, a lower priority):
+payload/.joycraft/references/testing-review.md:30:  agents. Key it on `JOYCRAFT_EVIDENCE` or on the CI provider's own variable.
+payload/.joycraft/references/testing-review.md:31:- A test that starts a nested test runner or runs the suite in a child
+payload/.joycraft/references/testing-review.md:38:- A test with no real oracle: it compares a value with itself, its expected
+payload/.joycraft/references/testing-review.md:55:time limit or a result cache only after a measurement: count how often a run
+payload/.joycraft/references/testing-review.md:57:read files or start processes. Leave counts that only shrink (fixed waits,
+payload/.joycraft/references/testing-review.md:62:The review itself edits no test. Write each change the person approves as a
+payload/.joycraft/references/testing-review.md:63:[test-only spec](#test-only-specs) for a queue, in decompose's format, with its
+payload/.joycraft/references/testing-review.md:67:decision>`, and the owner's yes. Report the full-suite time and run facts
+payload/.joycraft/references/testing-review.md:68:before and after the queue, measured the same way.
+payload/.joycraft/references/testing-review.md:121:   or are committed first: `evidence.mjs run --patch` refuses a dirty tree,
+payload/.joycraft/references/testing-review.md:125:   `node .joycraft/runtime/evidence.mjs run --patch <fault>.diff --receipt <path>.log -- <focused command>`.
+exit=0
+{
+  "base": "853bfcc4f0db915f2f86d7143e7b4e34182de243",
+  "specId": 21,
+  "testFiles": [
+    "tests/text-test-review.test.ts"
+  ],
+  "declared": [],
+  "undeclared": [
+    "tests/text-test-review.test.ts"
+  ],
+  "addedAfterBase": [],
+  "featurePaths": [
+    {
+      "path": "tests/text-test-review.test.ts",
+      "line": 7,
+      "text": "// Spec: docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md"
+    }
+  ],
+  "skipped": []
+}
+exit=0

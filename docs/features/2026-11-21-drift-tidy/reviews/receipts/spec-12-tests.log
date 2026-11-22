@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/drift-tidy-text.test.ts (4 tests) 3ms
+stdout | tests/payload-guard.test.ts > shipped payload text > [AC:spec-12-5] ships fewer than 29,917 words after the drift-tidy cuts
+payload words: 29846
+
+ ✓ tests/payload-guard.test.ts (14 tests) 1271ms
+   ✓ shipped payload text > [AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on  356ms
+
+ Test Files  2 passed (2)
+      Tests  18 passed (18)
+   Start at  16:25:42
+   Duration  1.47s (transform 34ms, setup 0ms, collect 47ms, tests 1.27s, environment 0ms, prepare 81ms)
+
+exit=0

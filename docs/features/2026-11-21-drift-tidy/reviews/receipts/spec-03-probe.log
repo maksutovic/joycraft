@@ -1,0 +1,36 @@
+P1 name only left in README.md (Markdown) at HEAD
+  expect: 1 finding (Markdown is not code)
+  got: ["docs/context/guide.md:1 getWidget fixable=true"]
+P2 rename getWidget -> fetchWidget
+  expect: 1 finding
+  got: ["docs/context/guide.md:1 getWidget fixable=true"]
+P3 call with args and a space
+  expect: spec-ambiguous; 1 would be closest to intent
+  got: []
+P4 qualified name widget.getWidget()
+  expect: 1 finding
+  got: ["docs/context/guide.md:1 getWidget fixable=true"]
+P5 whole file deleted
+  expect: 1 finding
+  got: ["docs/context/guide.md:1 getWidget fixable=true"]
+P6 name in fenced code block
+  expect: 0 (not backticked inline) or 1
+  got: []
+P7 page not in context (docs/research)
+  expect: 0 (not map-reached)
+  got: []
+P8 substring alive: getWidgetById remains
+  expect: 1 finding (-w word match)
+  got: ["docs/context/guide.md:1 getWidget fixable=true"]
+P9 CLAUDE.md entry file
+  expect: 1 finding fixable=false
+  got: ["CLAUDE.md:1 getWidget fixable=false"]
+P10 plain lowercase python name `render`
+  expect: spec literal says 1; codeShaped filter gives 0
+  got: []
+P11 two pages, same symbol
+  expect: 2 findings
+  got: ["docs/context/b.md:1 getWidget fixable=true","docs/context/guide.md:1 getWidget fixable=true"]
+P12 symbol removed but still in a .json/.yaml config
+  expect: 0 (non-Markdown hit counts as alive)
+  got: []

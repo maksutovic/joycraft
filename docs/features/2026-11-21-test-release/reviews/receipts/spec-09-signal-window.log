@@ -1,0 +1,3 @@
+FAULT LEFT delay=112ms exit=null/SIGTERM status="M add.mjs"
+signal window: fault left in 1 of 63 early SIGTERM runs
+joycraft-evidence: {"wallMs":15997,"load":[10.8681640625,13.244140625],"cores":14,"loaded":false,"argv":["node","docs/features/2026-11-21-test-release/reviews/receipts/spec-09-signal-window.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"],"exitCode":0,"timedOut":false,"revision":"5c5d0e2f096f360c8d4903ea74011a9c3aecc81f","dirty":true}

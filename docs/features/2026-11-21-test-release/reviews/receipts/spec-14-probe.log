@@ -1,0 +1,61 @@
+every-spec words at 28ee6ed: 12150
+every-spec words at 58f2c69: 12154
+every-spec words at dcd5476: 12158
+spec-14 every-spec growth (58f2c69 - 28ee6ed): 4
+  .agents/skills/joycraft-verify/SKILL.md: +4
+  .agents/skills/joycraft-decompose/SKILL.md: +10
+  .claude/agents/joycraft-implementer.md: -10
+
+--- payload lines naming the gate / full suite / run the tests (HEAD) ---
+payload/.agents/skills/joycraft-cleanup/SKILL.md:47:each line, the before (the line as it is) and the after (the gate runs once on
+payload/.agents/skills/joycraft-cleanup/SKILL.md:48:the integrated revision, and each spec runs its focused tests). Rewrite a line
+payload/.agents/skills/joycraft-decompose/SKILL.md:30:file or filter, never the project gate or full suite.
+payload/.agents/skills/joycraft-implement/SKILL.md:59:Implement the spec and run meaningful checks and any relevant rendered inspection during implementation. Do not defer ordinary checks to the batch boundary. Run tests in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Write one focused test per acceptance `Check:`, from the spec rather than the code, and tag it with its queue criterion ID as `[AC:<criterion-id>]` in the test name or a comment; if a criterion or test looks wrong, report a spec gap instead of editing it to pass. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
+payload/.agents/skills/joycraft-verify/SKILL.md:51:Create a schema-v1 verification report tied to that subject, using the shared fields in [.joycraft/contracts/types.d.ts](../../../.joycraft/contracts/types.d.ts). For every declared criterion, provide PASS observations for its required evidence kinds. Keep unfiltered command output and its real exit status in hashed, project-relative receipts. A source scan supports only structural observations. Visual observations require a reviewer-inspected render plus route, state, viewport, interactions, and outcomes. Take runtime evidence once from the spec's own tests (the packet's `commands.focused`), never the project gate ([running tests](../../../.joycraft/references/testing.md#running-tests)); other evidence with the package's recorded tool, start command and evidence command from the packet's `reviewLoop` (`section`: the `Review loop` section of `AGENTS.md`; `local`: this machine's host tools), within that tool's `canShow`. A claim beyond `canShow`, or in a package the user skipped, is an agreed limit, not `UNVERIFIED`: check what the agreed tool can show, say in plain words how you checked, and leave what is left to the parent agent. A picture-only tool gives `interactions: []`. `UNVERIFIED` means a check that should have run and did not: the tool broke, the app did not start, or a render was saved but not inspected. On a tool break, first repair with what the user agreed to: restart the dev server, free the port, relaunch the browser or simulator, retry once. A repair never installs, upgrades or reconfigures anything. If it still fails, record `UNVERIFIED` with `cause: 'tool-break'` and the reason. Mark a failing result or an unresolved concern as `FAIL` or `UNVERIFIED` truthfully.
+payload/.claude/agents/joycraft-implementer.md:3:description: Implements one authorized Joycraft spec or review fix in a fresh context, writes one focused test per acceptance check, runs the project's checks, and sets the spec to in-review.
+payload/.claude/agents/joycraft-implementer.md:25:Write one focused test per acceptance `Check:`, taken from the spec rather than
+payload/.claude/agents/joycraft-implementer.md:28:`.joycraft/references/testing.md#running-tests` says: focused tests while you
+payload/.claude/agents/joycraft-implementer.md:33:Run only the spec's focused tests, never the project gate. Then `node .joycraft/runtime/completion.mjs submit`, commit by
+payload/.claude/agents/joycraft-reviewer.md:26:against the owner intent in the brief. Do not run the project gate again; run
+payload/.joycraft/references/settings.md:20:| "Our focused test is `pnpm test <file>`" / "run the gate once per wave" | `tests:` (`focused` with `{files}`, `gate`, `full`; `gateRuns`: `wave` or `spec`) |
+payload/.joycraft/references/setup.md:80:     `gateRuns: wave`, else `gateRuns: spec`.
+payload/.joycraft/references/setup.md:100:   "unknown"), commands with their source (focused test, project gate, full
+payload/.joycraft/references/testing-page.md:25:   `<command>`. Full suite, on the integrated revision: `<command>`. They are
+payload/.joycraft/references/testing-page.md:27:2. **Each spec names its own tests.** A spec lists the focused tests that
+payload/.joycraft/references/testing-page.md:42:9. **Full suite once.** Run it only on the integrated revision, or let CI run
+payload/.joycraft/references/testing-page.md:47:Run less first: the focused test, then the gate. Then cap workers per run
+payload/.joycraft/references/testing-review.md:9:Run the full suite one time with the runner's duration output. List the
+payload/.joycraft/references/testing-review.md:11:how many times one push and one merge run the full suite.
+payload/.joycraft/references/testing-review.md:22:- `AGENTS.md` names no focused command, project gate or full suite.
+payload/.joycraft/references/testing-review.md:31:files: a spec runs its own tests, and the gate runs once per spec or wave.
+payload/.joycraft/references/testing-review.md:32:Recommend a result cache only when the full suite is slow: selection by imports
+payload/.joycraft/references/testing-review.md:38:with no code change. Run the full suite before and after, and report both
+payload/.joycraft/references/testing.md:26:- **Project gate:** run it one time on the final commit of a spec. A review
+payload/.joycraft/references/testing.md:27:  fix runs focused tests only. A commit that changes only Joycraft records
+payload/.joycraft/references/testing.md:29:- **Full suite:** run it one time on the final integrated revision: in CI
+payload/.joycraft/runtime/cleanup.mjs:382:      if (command) findings.push({ check: 'gate-rule', path: file, line: index + 1, command, detail: `Names the project gate \`${command}\` in a rule, so every agent runs it after each change.`, fix: 'Keep the command in the Commands table and say when it runs: once per spec at review or once per wave, not after every change.' });
+payload/.joycraft/runtime/completion.mjs:127:function refuseGateRuns(root, report) {
+payload/.joycraft/runtime/completion.mjs:137:    if (match) throw refused(new Error(`Report flows[${flowIndex}].observations[${index}] ran the recorded ${match[0]} command \`${match[1]}\`; a spec review runs the spec's own focused tests, so rerun with those and correct the report`));
+payload/.joycraft/runtime/completion.mjs:146:  refuseGateRuns(root, report);
+payload/.joycraft/runtime/config.mjs:15:  tests: Object.freeze({ gateRuns: 'spec' }),
+payload/.joycraft/runtime/config.mjs:123:  tests: ['focused', 'gate', 'full', 'gateRuns'] };
+payload/.joycraft/runtime/config.mjs:126:// tests: the project's test tiers. focused may hold {files}; gateRuns is a recorded
+payload/.joycraft/runtime/config.mjs:129:  const tests = { gateRuns: defaults.tests.gateRuns };
+payload/.joycraft/runtime/config.mjs:136:  if (parsed?.gateRuns != null || Object.hasOwn(parsed ?? {}, 'gateRuns')) {
+payload/.joycraft/runtime/config.mjs:137:    requireValue(parsed.gateRuns === 'wave' || parsed.gateRuns === 'spec', `${configFile}: tests.gateRuns must be wave or spec, not ${JSON.stringify(parsed.gateRuns)}`);
+payload/.joycraft/runtime/config.mjs:138:    tests.gateRuns = parsed.gateRuns;
+payload/.joycraft/runtime/coordinator.mjs:170:/** joycraft.yaml's `tests:` section: `{ focused?, gate?, full?, gateRuns }`.
+payload/.joycraft/runtime/coordinator.mjs:177: * one per wave when tests.gateRuns is `wave`, one per spec when it is `spec`. */
+payload/.joycraft/runtime/coordinator.mjs:195:  const { gateRuns } = testSettings(root);
+payload/.joycraft/runtime/coordinator.mjs:196:  const gatePoints = gateRuns === 'wave'
+payload/.joycraft/runtime/coordinator.mjs:199:  return { feature: queue.feature, gateRuns, waves, gatePoints };
+payload/.joycraft/runtime/dispatch-start.mjs:84:/** The focused test command for a spec: `tests.focused` with `{files}` replaced
+payload/.joycraft/runtime/queue-check.mjs:213: * `pnpm test tests/x.test.ts` does not name `pnpm test`.
+payload/.joycraft/runtime/queue-check.mjs:335:          if (namesCommand(bullet.text, command)) gap('gate-in-spec', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet names the recorded gate or full command \`${command}\`; a spec checks with its own test files, and the gate runs at the review boundary or wave end.`);
+payload/.joycraft/templates/joycraft.yaml:34:# project gate; full is everything, CI included. gateRuns says when the gate
+payload/.joycraft/templates/joycraft.yaml:37:#   focused: pnpm test {files}
+payload/.joycraft/templates/joycraft.yaml:38:#   gate: pnpm test && pnpm typecheck
+payload/.joycraft/templates/joycraft.yaml:39:#   full: pnpm test:all
+payload/.joycraft/templates/joycraft.yaml:40:#   gateRuns: spec
+payload/.joycraft/templates/spec.md:14:result. Each `Check:` names the spec's own test file or filter, never the project gate or full suite. Reference the source requirement instead
+

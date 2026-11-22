@@ -7,7 +7,7 @@ import { parseJson, readLocal, relativePath, requireValue, validateQueue } from 
 // Tests name the acceptance criterion they check with [AC:<criterion-id>]. The
 // trace shows which criteria have a test and which do not. It reports; the
 // reviewer decides what a gap means (it never blocks completion by itself).
-const tag = /\[AC:([A-Za-z0-9_.-]+)\]/g;
+export const tag = /\[AC:([A-Za-z0-9_.-]+)\]/g;
 
 function filesMatching(root, glob) {
   const pattern = globToRegExp(checkGlob(glob, '--tests'));

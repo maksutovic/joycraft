@@ -1,0 +1,132 @@
+
+=== two x,y: after both killed
+{
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n D docs/features/y/brief.md\n D docs/features/y/specs/.joycraft-spec-queue.json\n D docs/features/y/specs/01-a.md\n D docs/features/y/specs/legacy.json\n M tests/shared.test.mjs\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n M tests/y-a.test.mjs\n M tests/y-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json\n?? docs/archive/y/archive-recovery.json\n?? docs/archive/y/archive-replay.json\n?? docs/archive/y/feature/brief.md\n?? docs/archive/y/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/y/feature/specs/01-a.md\n?? docs/archive/y/feature/specs/legacy.json",
+  "pending": [
+   "x.json",
+   "y.json"
+  ],
+  "archive": [
+   "x",
+   "y"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": false,
+   "tests/y-a.test.mjs": false,
+   "tests/y-b.test.mjs": false,
+   "tests/shared.test.mjs": false
+  }
+ },
+ "shared": "// docs/archive/x/feature and docs/archive/y/feature\n"
+}
+
+=== two x,y: recover x then y
+{
+ "r1": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted-unverified",
+  "stderr": ""
+ },
+ "r2": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/shared.test.mjs\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   "x"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": false,
+   "tests/y-a.test.mjs": true,
+   "tests/y-b.test.mjs": true,
+   "tests/shared.test.mjs": false
+  }
+ },
+ "shared": "// docs/archive/x/feature and docs/features/y\n"
+}
+
+=== two y,x: after both killed
+{
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n D docs/features/y/brief.md\n D docs/features/y/specs/.joycraft-spec-queue.json\n D docs/features/y/specs/01-a.md\n D docs/features/y/specs/legacy.json\n M tests/shared.test.mjs\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n M tests/y-a.test.mjs\n M tests/y-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json\n?? docs/archive/y/archive-recovery.json\n?? docs/archive/y/archive-replay.json\n?? docs/archive/y/feature/brief.md\n?? docs/archive/y/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/y/feature/specs/01-a.md\n?? docs/archive/y/feature/specs/legacy.json",
+  "pending": [
+   "x.json",
+   "y.json"
+  ],
+  "archive": [
+   "x",
+   "y"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": false,
+   "tests/y-a.test.mjs": false,
+   "tests/y-b.test.mjs": false,
+   "tests/shared.test.mjs": false
+  }
+ },
+ "shared": "// docs/archive/x/feature and docs/archive/y/feature\n"
+}
+
+=== two y,x: recover y then x
+{
+ "r1": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "r2": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "after": {
+  "git": "",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true,
+   "tests/y-a.test.mjs": true,
+   "tests/y-b.test.mjs": true,
+   "tests/shared.test.mjs": true
+  }
+ },
+ "shared": "// docs/features/x and docs/features/y\n"
+}
+
+=== sequential x killed, y green, x recovered
+{
+ "y": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "x": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted-unverified",
+  "stderr": ""
+ },
+ "shared": "// docs/archive/x/feature and docs/archive/y/feature\n",
+ "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n D docs/features/y/brief.md\n D docs/features/y/specs/.joycraft-spec-queue.json\n D docs/features/y/specs/01-a.md\n D docs/features/y/specs/legacy.json\n M tests/shared.test.mjs\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n M tests/y-a.test.mjs\n M tests/y-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json\n?? docs/archive/y/archive-recovery.json\n?? docs/archive/y/archive-replay.json\n?? docs/archive/y/feature/brief.md\n?? docs/archive/y/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/y/feature/specs/01-a.md\n?? docs/archive/y/feature/specs/legacy.json"
+}
+exit 0

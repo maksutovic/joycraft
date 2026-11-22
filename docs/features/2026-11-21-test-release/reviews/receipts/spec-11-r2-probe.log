@@ -1,0 +1,11 @@
+== 1. isTestPath
+app code -> {"src/testing/index.ts":false,"src/contest.py":false,"lib/attestation.rb":false,"TestFlight.swift":false,"Sources/App/TestFlight.swift":false,"Sources/App/TestFlightManager.swift":false,"src/test.ts":false,"src/latest.ts":false,"pkg/testing/testing.go":false,"src/protest/rally.ts":false,"src/inspect_test_mode.ts":false,"lib/testimonial.rb":false,"src/test_data.py":false,"src/test_utils.ts":false,"docs/tests/plan.txt":false,"tests/README.md":false,"CHANGELOG.md":false,"src/main/kotlin/com/x/abTest/Flags.kt":true,"src/main/kotlin/ProductSpec.kt":true,"src/main/java/SplitTest.java":true,"src/spec/openapi.ts":true,"src/main/java/LoadTest.java":true}
+test layouts -> {"tests/a.test.ts":true,"Tests/AppTests/AppTests.swift":true,"app/src/androidTest/java/Foo.kt":true,"src/jvmTest/kotlin/FooTest.kt":true,"App.Tests/FooTests.cs":true,"lib/FooTest.java":true,"app/models/user_spec.rb":true,"app/tests.py":true,"conftest.py":true,"pkg/test_a.py":true,"e2e/login.e2e.ts":true,"cypress/a.cy.ts":true,"pkg/a_test.go":true,"test/test_helper.rb":true,"tests/fixtures/data.json":true}
+== 2. declarations under a renamed old path and a deleted path
+result: {"testFiles":["tests/gone.test.ts","tests/new.test.ts","tests/old.test.ts"],"declared":[{"path":"tests/gone.test.ts","class":3},{"path":"tests/old.test.ts","class":2}],"undeclared":["tests/new.test.ts"],"skipped":[]}
+== 3. AC tag rule
+testFiles: ["scripts/verify.sh","src/check.py","src/old_check.py"]
+== 4. deleted submodule
+result: {"testFiles":["tests/vendor-lib"],"skipped":[]}
+== 5. archive namedFiles test flag
+namedFiles: {"previewThrows":"Archive is allowed only during phase=session-end"}

@@ -75,11 +75,12 @@ describe('shipped entry check', () => {
     expect([result.status, result.stderr]).toEqual([0, '']);
     const lines = result.stdout.trimEnd().split('\n');
     expect([lines[0], lines.at(-1)]).toEqual(['<!-- joycraft:managed -->', '<!-- /joycraft:managed -->']);
-    expect(lines).toHaveLength(6);
+    expect(lines).toHaveLength(7);
     expect(lines[1]).toMatch(/First action in each session: run `node \.joycraft\/runtime\/update-check\.mjs check`/);
     expect(lines[2]).toMatch(/as an engine page \(`--doc`\)/);
     expect(lines[3]).toMatch(/A Context Map row that matches your next step binds/);
     expect(lines[4]).toMatch(/trust the code and report it\. A rule holds even when the code breaks it\.$/);
+    expect(lines[5]).toMatch(/^- Search the mapped pages first\. A doc that no map row reaches is working material, not current truth\.$/);
   });
 
   it('[AC:payload-entry-check] the exact block is clean; a block with one changed word is one advisory and --ci exits 0', () => {

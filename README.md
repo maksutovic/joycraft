@@ -46,9 +46,10 @@ bigger than one quick change:
 2. **The agent splits the brief into specs.** A spec is one small step that it can
    build and test alone.
 3. **The agent builds each spec with tests.** While it works, it runs only the
-   tests for the code it changed. It runs your project gate one time per spec, and
-   the full suite one time on the PR (or locally, when you have no CI). It opens
-   one PR when the queue is done.
+   tests for the code it changed. The coordinating agent runs your project gate
+   after each spec, or after each wave of specs when the gate is slow, and the full
+   suite runs one time on the PR (or locally, when you have no CI). Session end
+   opens one PR when the queue is done.
 4. **A second agent checks each spec.** It did not write the code. It reads the spec,
    runs the checks, and says PASS or FAIL. Only a PASS completes the spec. For a
    screen or page, it looks at the real result with the package's review tool
@@ -144,6 +145,10 @@ anything:
 - **Status.** It runs the gate check (below). The check finds specs marked done with
   no accepted review and specs whose text disagrees with the queue. It also finds
   features that are finished but not archived.
+- **Tidy.** It finds drift this session caused: context pages that name code the
+  session removed, and new working docs piling up. It fixes only the lines a finding
+  names, checks the fix, and commits it as one tidy commit. Say "tidy now" to run it
+  mid-session.
 - **Questions.** It asks you each follow-up question that the reviews left. See
   [Running a queue while you are away](#running-a-queue-while-you-are-away).
 - **Worktrees.** It removes its worker worktrees once their spec is done and merged.
@@ -336,7 +341,9 @@ Do not commit, publish, or ask me for API keys.
 - After a feature is archived, session end no longer lists its follow-up questions.
   The reviews stay in the archive.
 - A criterion can still pass on a test that only the implementing agent wrote.
-  Joycraft does not yet check that the test fails for broken behavior.
+  A test is shown to fail for broken behavior only when a saved fault (a small
+  patch that breaks the code) is run against it: every test-only spec does this,
+  and the reviewer reruns one.
 
 ### The gates: no spec is done without an accepted review
 

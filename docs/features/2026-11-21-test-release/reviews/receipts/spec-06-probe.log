@@ -1,0 +1,28 @@
+OK   [refuse] exact gate argv=["pnpm","verify"] -> exit 2 :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm verify`; a spec review runs the spec's own focused tests, so rerun with those and correct the report
+OK   [refuse] gate as one argv string argv=["pnpm verify"] -> exit 2 :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm verify`; a spec review runs the spec's own focused tests, so rerun with those and correct the report
+OK   [refuse] gate with extra whitespace in argv argv=["pnpm"," verify "] -> exit 2 :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm verify`; a spec review runs the spec's own focused tests, so rerun with those and correct the report
+OK   [refuse] sh -c argv=["sh","-c","pnpm verify"] -> exit 2 :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm verify`; a spec review runs the spec's own focused tests, so rerun with those and correct the report
+OK   [refuse] bash -c argv=["bash","-c","pnpm verify"] -> exit 2 :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm verify`; a spec review runs the spec's own focused tests, so rerun with those and correct the report
+OK   [refuse] /bin/sh -c (absolute path) argv=["/bin/sh","-c","pnpm verify"] -> exit 2 :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm verify`; a spec review runs the spec's own focused tests, so rerun with those and correct the report
+OK   [refuse] bash -c two-part gate, extra spaces argv=["bash","-c","pnpm test  &&  pnpm typecheck"] -> exit 2 :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm test && pnpm typecheck`; a spec review runs the spec's own focused tests, so rerun with those and correct the report
+OK   [refuse] two-part gate split across argv argv=["pnpm","test","&&","pnpm","typecheck"] -> exit 2 :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm test && pnpm typecheck`; a spec review runs the spec's own focused tests, so rerun with those and correct the report
+OK   [refuse] tests.full only argv=["pnpm","verify"] -> exit 2 :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.full command `pnpm verify`; a spec review runs the spec's own focused tests, so rerun with those and correct the report
+OK   [probe] bash -lc argv=["bash","-lc","pnpm verify"] -> pass
+OK   [probe] sh -c with $0 arg (argv length 4) argv=["sh","-c","pnpm verify","sh"] -> pass
+OK   [probe] zsh -c argv=["zsh","-c","pnpm verify"] -> pass
+OK   [probe] sh -c quoted inner argv=["sh","-c","\"pnpm verify\""] -> pass
+OK   [probe] env prefix argv=["env","CI=1","pnpm","verify"] -> pass
+OK   [probe] env var inside sh -c argv=["sh","-c","CI=1 pnpm verify"] -> pass
+OK   [probe] /usr/bin/env bash -c argv=["/usr/bin/env","bash","-c","pnpm verify"] -> pass
+OK   [probe] npx form of gate (gate: vitest run) argv=["npx","vitest","run"] -> pass
+OK   [probe] pnpm exec form (gate: vitest run) argv=["pnpm","exec","vitest","run"] -> pass
+OK   [probe] pnpm run verify argv=["pnpm","run","verify"] -> pass
+OK   [probe] gate plus trailing args argv=["pnpm","verify","--reporter=dot"] -> pass
+OK   [probe] first half of two-part gate (pnpm test) argv=["pnpm","test"] -> pass
+OK   [pass] focused command argv=["pnpm","test","tests/a.test.ts"] -> pass
+OK   [pass] no joycraft.yaml argv=["pnpm","verify"] -> pass
+OK   [pass] joycraft.yaml with focused only argv=["pnpm","verify"] -> pass
+OK   [pass] joycraft.yaml without tests section argv=["pnpm","verify"] -> pass
+OK   [probe] FAIL report that ran the gate argv=["pnpm","verify"] -> exit 1 :: Dispatch stopped: Report verdict must be PASS; FAIL or UNVERIFIED cannot complete a spec
+OK   [probe] broken joycraft.yaml argv=["pnpm","verify"] -> pass
+expected-outcome mismatches: 0

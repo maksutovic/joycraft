@@ -22,6 +22,7 @@ const managedLines = [
   'Ask a person to answer or approve anything only through Joycraft\'s decision artifact (`node .joycraft/runtime/artifacts/cli.mjs`, see `.joycraft/references/artifacts.md#asking-questions`), in the project\'s question style. Every page that shows a person a document, a question or a decision comes from that engine: never write your own HTML page for one. Show every other document a person must read (a plan, spec set, report or review) as an engine page (`--doc`), never only as Markdown in chat, where the person works (see `.joycraft/references/artifacts.md#showing-a-page`), and say where it is.',
   'A Context Map row that matches your next step binds: read that page first, and again after a compaction or in a new agent. A record (a log or history) is an audit trail: search it to learn why or when; do not read it at the start.',
   'When a fact here disagrees with the code, trust the code and report it. A rule holds even when the code breaks it.',
+  'Search the mapped pages first. A doc that no map row reaches is working material, not current truth.',
 ];
 export const managedBlock = [managedOpen, ...managedLines.map(line => `- ${line}`), managedClose].join('\n');
 // The command that every version of Joycraft's first-action line names.
@@ -182,7 +183,15 @@ export function checkWiring(root, { hosts } = {}) {
 export async function main(argv = process.argv.slice(2)) {
   const index = argv.indexOf('--root');
   if (!(argv.length === 0 || (argv.length === 2 && index === 0))) throw new Error('Usage: wiring.mjs [--root <project>]');
-  const result = checkWiring(path.resolve(index === 0 ? argv[1] : '.'));
+  const root = path.resolve(index === 0 ? argv[1] : '.');
+  const result = checkWiring(root);
+  // Start advice from the tidy range. Loaded here, so install and doctor stay file-only.
+  // Advice is optional: a broken import or tidy run gives the same wiring result with no advice.
+  try {
+    const { tidyAdvice } = await import('./entry-check.mjs');
+    const tidy = tidyAdvice({ root });
+    if (tidy) result.advice.push(tidy);
+  } catch { /* no tidy advice */ }
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (!result.wired) process.exitCode = 2;
   return result;

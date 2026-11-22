@@ -1,0 +1,16 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-dispatch-commands.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 4773[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-1] implementer and reviewer startup print the focused command built from the check inputs [33m 697[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-2] each step is one plain command with literal paths [33m 563[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-3] without tests.focused or without check inputs, focused is null with a note and startup succeeds [33m 426[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-1] printed commands run as printed through /bin/sh with a space in the worker root or a check path [33m 1589[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-2] {files} inside a word is replaced in place and quoted template arguments stay whole [33m 673[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-4] reviewer receipts go to reviews/receipts and implementer receipts to receipts [33m 546[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m7 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 18:40:21
+[2m   Duration [22m 4.95s[2m (transform 29ms, setup 0ms, collect 36ms, tests 4.77s, environment 0ms, prepare 32ms)[22m
+

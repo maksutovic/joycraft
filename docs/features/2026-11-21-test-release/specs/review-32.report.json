@@ -1,0 +1,493 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "5b9da0e13f0d79bfc6cf9c45f31abe639080b04b",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 32,
+    "specPath": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+    "criteria": [
+      {
+        "id": "spec-32-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-32-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-32-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-32-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-32-5",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "archive-tests"
+          ]
+        },
+        "sha256": "f180ebe66ab5909627ec75ac5a9ed8aef01eb0235d49acf6dc260c40b2418f67",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "1e55ad6c30861c7f7e2256b2e235e1bba1bd87b4fb5624e76443c3c693ffc25a",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+        "kind": "requirement",
+        "sha256": "93ba5e7dc289b54790ec8796c43e4163525267acd0a8a7eb36cfb9fd3a4f27a8",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/archive.md",
+        "kind": "code",
+        "sha256": "f68f4962cdec487829edbd281555245f5f2d020979f8b3efea5aa2c3fe737899",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "f42c9758898ad1bb3768685dfa40c7cb831f3d2f7131db7f3fd0bbac312367e0",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "4efff5b19f58a0329ddb9106d54999f938ca0d7efa43b1e37aa1c563d0d66681",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "3d6986aa8ee5ad8c03510e18c1031cb970b9e9e27889be11d9e1110625308b63",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-links.test.ts",
+        "kind": "check",
+        "sha256": "7257f6f4ad7dde7370bafa813d95cd851ac2b97d7deb69f5b3948d3ee71efbc4",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-named-files.test.ts",
+        "kind": "check",
+        "sha256": "101b970976050c36d03bfee66d183eb85cae0db198173b647a82bdeee077f70d",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-archive-tests.test.ts",
+        "kind": "check",
+        "sha256": "77982d8fbaa3e0657dda58a0e33d6fc8ae232441e18975c918fe6719dcf747a4",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "archive-tests"
+          ]
+        }
+      ]
+    },
+    "identity": "425e8d76b260b42eff426fd784341f6f4d5e8e24b6d1d4d3e565b56893da3ff5"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a7ce71649fe14a51e"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a17d685280460a86f"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-32-1-flow",
+      "subjectIdentity": "425e8d76b260b42eff426fd784341f6f4d5e8e24b6d1d4d3e565b56893da3ff5",
+      "criteria": [
+        "spec-32-1"
+      ],
+      "representativeInput": "Dated fixture with the four new forms, the five named look-alikes, and extra probes (x../, .../, packages/app/../, packages/app/docs/features/<dated>/, xfeatures/, a}/)",
+      "expected": "Four new forms listed; five look-alikes not listed",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-tests.log",
+              "sha256": "416a4bb5bdc7feed2c88943961ac6f0bba7d2fb2a5306c02a3c592ac3c1aaf7d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "4 files, 39 tests pass, exit 0. [AC:spec-32-1] (tests/runtime-archive-named-files.test.ts:166) lists }/, ../, ../../ and features/<slug>/ and none of nested, .old, -two, x<slug>/, <slug>x/."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-probe.log",
+              "sha256": "5c59aeba14057edc12edb0c87bc1b32f35a7edb3b4d11096a3b36edfa22458c5"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-probe.mjs.txt",
+              "sha256": "870df953c2613456a164b6d8add2161a182a705e11f3f262a398c663e347ace3"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p32/probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Listed: ${root}/, ../, ../../, ../../../, features/<dated>/, ../features/, ./features/, ${d}/features/, bare and ./ full path. Not listed: packages/app/docs/features/<dated>/ (namesFolder and namesDated with the features prefix), .old, -two, x<dated>/, <dated>x/, x../docs/..., .../docs/..., packages/app/../docs/..., xfeatures/<dated>/. Listed (follow-up f1): a}/docs/features/<dated>/x. Undated folder: features/x/ not listed, ../docs/features/x listed."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-32-2-flow",
+      "subjectIdentity": "425e8d76b260b42eff426fd784341f6f4d5e8e24b6d1d4d3e565b56893da3ff5",
+      "criteria": [
+        "spec-32-2"
+      ],
+      "representativeInput": "The two race tests (check and stage) where a second --apply moves the folder mid-run",
+      "expected": "Exit 2, stderr has \"changed nothing\" and \"is gone\", no \"Another archive\", no manual step",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-tests.log",
+              "sha256": "416a4bb5bdc7feed2c88943961ac6f0bba7d2fb2a5306c02a3c592ac3c1aaf7d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-32-2] (:206) passes for both check and stage: loser exits 2, stderr contains \"changed nothing\" and \"is gone\", not \"manually\"."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-source.log",
+              "sha256": "116c18d96f8e8ad18cd0301a48295d2dea7a78e64c466d692571ab27223989f6"
+            }
+          ],
+          "actual": "Both messages come from refusal() (archive.mjs:543, exitCode 2; CLI sets process.exitCode = error.exitCode at :819). check: \"<source> is gone; this run changed nothing. Run the archive preview to see the result\". stage: \"<source> is gone; this run never moved it, removed its own stage folder and changed nothing.\" Neither names a cause. The stage branch runs only when neither the staged copy nor the source exists, and removes only its own stage folder, so the words are accurate and it is still a no-change refusal."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-32-3-flow",
+      "subjectIdentity": "425e8d76b260b42eff426fd784341f6f4d5e8e24b6d1d4d3e565b56893da3ff5",
+      "criteria": [
+        "spec-32-3"
+      ],
+      "representativeInput": "archive.md after commit 26b5a72",
+      "expected": "A second paragraph of at most 45 words after the unchanged spec 24 paragraph, with the three phrases",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-tests.log",
+              "sha256": "416a4bb5bdc7feed2c88943961ac6f0bba7d2fb2a5306c02a3c592ac3c1aaf7d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-32-3] (tests/text-archive-tests.test.ts:40) passes; [AC:spec-24-1] still passes unchanged. The text test diff only adds the new test, updates the header comment and drops .split('\\n').join(' ') at :59, which the Test changes section allows."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-source.log",
+              "sha256": "116c18d96f8e8ad18cd0301a48295d2dea7a78e64c466d692571ab27223989f6"
+            }
+          ],
+          "actual": "git show 26b5a72: the spec 24 paragraph (\"Read `namedFiles` in the preview ...\") is untouched; the new paragraph follows it (40 words) and matches ruling 4.1 steps 2 and 5 and the 4.3 field case (non-test file edited only when a test asserts it)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-32-4-flow",
+      "subjectIdentity": "425e8d76b260b42eff426fd784341f6f4d5e8e24b6d1d4d3e565b56893da3ff5",
+      "criteria": [
+        "spec-32-4"
+      ],
+      "representativeInput": "payload-guard at ab57dec (26b5a72~1) and at 5b9da0e",
+      "expected": "Every-spec count unchanged; on-demand inside the cap; guard passes",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-tests.log",
+              "sha256": "416a4bb5bdc7feed2c88943961ac6f0bba7d2fb2a5306c02a3c592ac3c1aaf7d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "payload-guard 16 tests pass. Printed: every-spec words 12177 (cap 12256), on-demand 20558 (cap 21163, 605 spare)."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-words-base.log",
+              "sha256": "d0c3fd03c5d76be1464204f81e699f299ce6cd4831fd3991df4e95e04687a9d1"
+            }
+          ],
+          "command": {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "tests/payload-guard.test.ts",
+              "-t",
+              "every-spec and on-demand"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Baseline (git archive ab57dec into a scratch dir): every-spec 12177, on-demand 20546 (617 spare). Every-spec count equal before and after; on-demand +12 words and still above the 600-word spare [AC:spec-1-3] needs."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-32-5-flow",
+      "subjectIdentity": "425e8d76b260b42eff426fd784341f6f4d5e8e24b6d1d4d3e565b56893da3ff5",
+      "criteria": [
+        "spec-32-5"
+      ],
+      "representativeInput": "Fixture with paths.context: docs, root README.md and docs/guide.md linking into docs/features/x; --apply",
+      "expected": "README.md unedited and listed; docs/guide.md rewritten",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-tests.log",
+              "sha256": "416a4bb5bdc7feed2c88943961ac6f0bba7d2fb2a5306c02a3c592ac3c1aaf7d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-32-5] (tests/runtime-archive-links.test.ts:119) passes: README.md bytes unchanged and in namedInMarkdown; docs/guide.md rewritten to archive/x/feature/brief.md, the only rewrite."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-source.log",
+              "sha256": "116c18d96f8e8ad18cd0301a48295d2dea7a78e64c466d692571ab27223989f6"
+            }
+          ],
+          "actual": "archive.mjs:8 imports docsRoot from cleanup.mjs; the old local copy (which skipped each folder's last segment, so context: docs gave \".\") is deleted. The only docs-root reader in archive.mjs is relinkLive (:680, liveFiles and the editable check); namedFiles uses git grep over the whole project and the as-is path writes into the destination, so neither reads a docs root. Probe: importing cleanup.mjs and archive.mjs from an empty dir prints nothing, writes no file, exits 0 (CLI mains are behind import.meta.url guards in cleanup and its imports); docsRoot gives \"docs\" for context: docs and for docs/context."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "limits": [
+    "A path built from a variable or a glob is not listed (spec Not covered, ruling 4.3)."
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-brace-start-unguarded",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-32-1",
+      "at": "payload/.joycraft/runtime/archive.mjs:507",
+      "assumption": "The criterion names five look-alikes; others are judged by ruling 4.2 (a wider list costs a line of reading).",
+      "summary": "The }/ branch of pathStart has no guard on what comes before }, so a}/docs/features/<slug>/x and `${pkg}/app}/docs/...` are listed. Only template literals or brace expansion put } before /, and over-listing only adds a line to read, so no fix is needed. The ../ branch is guarded: x../, .../ and packages/app/../ are not listed."
+    },
+    {
+      "id": "f2-archive-md-cuts",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/archive.md:106,162,170",
+      "assumption": "Cuts to keep [AC:spec-1-3] green are within the spec, since archive.md is a listed file and only the spec 24 paragraph must stay unchanged.",
+      "summary": "Implementer gap 1 judged acceptable. \"Commit the archive through normal delivery.\" is covered by the session-end skill (payload/.agents/skills/joycraft-session-end/SKILL.md:110-113: commit the move and its edits as docs: archive <slug>), which also applies to a reconciled archive, and by archive.md \"Commit the edits with the move\". \"the helper never waives missing bytes\" restates the sentence before it (the blob must reproduce the hash), and the runtime enforces it. A third cut (~19 words) the brief did not name: \"The current brief and its amendment ledger move with the feature, alongside the separately restored older brief versions.\" It only describes what --apply does; no agent step depends on it. Net on-demand +12 words, 605 spare."
+    },
+    {
+      "id": "f3-stage-refusal-wording",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-32-2",
+      "at": "payload/.joycraft/runtime/archive.mjs:601",
+      "summary": "Implementer gap 2 judged acceptable. The stage refusal moved from \"was moved by another archive run\" to \"is gone; this run never moved it, removed its own stage folder and changed nothing.\" It is still refusal() with exit 2, and the race test checks it at the stage point. \"changed nothing\" after \"removed its own stage folder\" is accurate: the stage folder was this run's own temp copy."
+    },
+    {
+      "id": "f4-spec-32-4-untraced",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-32-4",
+      "at": "tests/payload-guard.test.ts",
+      "summary": "No test carries [AC:spec-32-4]; the spec names the existing payload-guard run as the check. Evidence is the printed counts before and after (12177 = 12177)."
+    }
+  ],
+  "createdAt": "2026-11-22T05:37:27.409Z"
+}

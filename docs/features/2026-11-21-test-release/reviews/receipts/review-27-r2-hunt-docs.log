@@ -1,0 +1,15 @@
+OK   docs-only commit: expected PUSHED, got PUSHED
+OK   JSON under the docs root outside records: docs/package.json: expected PUSHED, got PUSHED
+OK   JSON under the docs root outside records: docs/tsconfig.json: expected PUSHED, got PUSHED
+OK   Markdown read by a doctest: docs/guide.md: expected PUSHED, got PUSHED
+OK   Go test file in a feature folder: expected PUSHED, got PUSHED
+OK   Go non-test probe in a feature folder: expected PUSHED, got PUSHED
+OK   pytest file in a feature folder: expected PUSHED, got PUSHED
+OK   conftest.py in an archive folder: expected PUSHED, got PUSHED
+OK   vitest-style test in a feature folder: expected PUSHED, got PUSHED
+BAD  features folder is the docs root: code under it: expected PUSHED, got REFUSED joycraft.yaml: docs/archive cannot sit inside docs
+go test ./... with a red test in docs/features/f: exit 1 ok  	example.com/m	0.269s | --- FAIL: TestX (0.00s) | FAIL
+go test ./... with a broken probe.go in docs/features/f: exit 1 ok  	example.com/m	0.267s | FAIL	example.com/m/docs/features/f [build failed] | FAIL
+pytest (no config) with a red test in docs/features/f: exit 1 =================================== FAILURES =================================== | FAILED docs/features/f/test_probe.py::test_x - assert False | 1 failed, 1 passed in 0.01s
+pytest (testpaths = tests) with a red test in docs/features/f: exit 0 1 passed in 0.00s
+cargo test --offline with a red .rs file in docs/features/f: exit 0 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s | test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

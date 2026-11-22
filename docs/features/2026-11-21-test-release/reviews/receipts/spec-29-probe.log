@@ -1,0 +1,79 @@
+== HEAD
+ae1b50201d6b67574fff3960d19910770e80ecc5
+== node docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt (copied to scratch .mjs)
+"vitest run {files}" ["tests/a.test.ts"] -> ["vitest","run","tests/a.test.ts"] shell= false
+"vitest run {files}" ["tests/{files}.test.ts","tests/b.test.ts"] -> ["vitest","run","tests/{files}.test.ts","tests/b.test.ts"] shell= false
+"vitest run --dir={files}" ["a","b"] -> ["vitest","run","--dir=a","b"] shell= false
+"vitest run {files} --reporter=dot" ["it's.test.ts"] -> ["vitest","run","it's.test.ts","--reporter=dot"] shell= false
+"pnpm build && vitest run {files}" ["it's a.test.ts","b$(x).test.ts"] -> ["sh","-c","pnpm build && vitest run 'it'\\''s a.test.ts' 'b$(x).test.ts'"] shell= true
+"pnpm build && vitest run" ["a.test.ts"] -> ["sh","-c","pnpm build && vitest run a.test.ts"] shell= true
+"runner 'a && b' {files}" ["a.test.ts"] -> ["runner","a && b","a.test.ts"] shell= false
+"runner \"a && b\" {files}" ["a.test.ts"] -> ["runner","a && b","a.test.ts"] shell= false
+"runner \"a \\\" && b\" {files}" ["a.test.ts"] -> ["runner","a \" && b","a.test.ts"] shell= false
+"runner a\\&\\&b {files}" ["a.test.ts"] -> ["runner","a&&b","a.test.ts"] shell= false
+"runner a;b {files}" ["a.test.ts"] -> ["sh","-c","runner a;b a.test.ts"] shell= true
+"runner a & {files}" ["a.test.ts"] -> ["runner","a","&","a.test.ts"] shell= false
+"runner a 2>&1 {files}" ["a.test.ts"] -> ["sh","-c","runner a 2>&1 a.test.ts"] shell= true
+"FOO=1 vitest run {files}" ["a.test.ts"] -> ["FOO=1","vitest","run","a.test.ts"] shell= false
+"vitest run $HOME {files}" ["a.test.ts"] -> ["vitest","run","$HOME","a.test.ts"] shell= false
+"runner \"$(x)\" {files}" ["a.test.ts"] -> ["runner","$(x)","a.test.ts"] shell= false
+"runner a#b {files}" ["a.test.ts"] -> ["runner","a#b","a.test.ts"] shell= false
+"vitest run {files} # comment" ["a.test.ts"] -> ["vitest","run","a.test.ts","#","comment"] shell= false
+"vitest run {files}{files}" ["a","b"] -> ["vitest","run","a","ba","b"] shell= false
+"vitest run x{files}y" ["a","b","c"] -> ["vitest","run","xa","b","cy"] shell= false
+"vitest run 'x {files}" ["a"] -> THROW tests.focused has an unclosed single quote: vitest run 'x {files} shell= false
+"vitest run \"x {files}" ["a"] -> THROW tests.focused has an unclosed double quote: vitest run "x {files} shell= false
+"a && vitest 'x {files}" ["a"] -> THROW tests.focused has an unclosed single quote: a && vitest 'x {files} shell= true
+exit=0
+== probe-quoted
+"a && vitest \"{files}\"" ["sh","-c","a && vitest \"'x y.ts' b.ts\""]
+"a && vitest '{files}'" ["sh","-c","a && vitest ''x y.ts' b.ts'"]
+"a && vitest --x={files}" ["sh","-c","a && vitest --x='x y.ts' b.ts"]
+exit=0
+== probe-config
+null LOADS {"features":"docs/features","archive":"docs/archive","context":"docs/context"} cleanup docsRoot= docs
+"paths:\n  context: docs\n" LOADS {"features":"docs/features","archive":"docs/archive","context":"docs"} cleanup docsRoot= docs
+"paths:\n  features: docs/work/features\n" LOADS {"features":"docs/work/features","archive":"docs/archive","context":"docs/context"} cleanup docsRoot= docs
+"paths:\n  features: work/features\n  archive: work/history\n  context: work/notes\n" LOADS {"features":"work/features","archive":"work/history","context":"work/notes"} cleanup docsRoot= work
+"paths:\n  features: work\n  archive: old\n  context: notes\n" REFUSED joycraft.yaml: the docs root (the common parent of paths.features work, paths.archive old and paths.context notes) is the project root; put all three under one visible folder such as docs/
+"paths:\n  features: .docs/features\n  archive: .docs/archive\n  context: .docs/context\n" REFUSED joycraft.yaml: the docs root (the common parent of paths.features .docs/features, paths.archive .docs/archive and paths.context .docs/context) is .docs, a hidden folder; put all three under one visible folder such as docs/
+"paths:\n  features: docs/.hidden/features\n  archive: docs/.hidden/archive\n  context: docs/.hidden/context\n" REFUSED joycraft.yaml: the docs root (the common parent of paths.features docs/.hidden/features, paths.archive docs/.hidden/archive and paths.context docs/.hidden/context) is docs/.hidden, a hidden folder; put all three under one visible folder such as docs/
+"paths:\n  features: docs/.features\n" LOADS {"features":"docs/.features","archive":"docs/archive","context":"docs/context"} cleanup docsRoot= docs
+"paths:\n  archive: work/old\n" REFUSED joycraft.yaml: the docs root (the common parent of paths.features docs/features, paths.archive work/old and paths.context docs/context) is the project root; put all three under one visible folder such as docs/
+"paths:\n  features: docs/features/\n  archive: ./docs/archive\n" LOADS {"features":"docs/features","archive":"docs/archive","context":"docs/context"} cleanup docsRoot= docs
+"paths:\n  context: .\n" REFUSED Expected a file path: .
+exit=0
+== archive.mjs docsRoot source
+614:function docsRoot(root) {
+615-  const parts = Object.values(workPaths(root)).map(folder => folder.split('/'));
+616-  const common = [];
+617-  for (let index = 0; parts.every(list => index < list.length - 1 && list[index] === parts[0][index]); index += 1) common.push(parts[0][index]);
+618-  return common.join('/') || '.';
+619-}
+== cleanup.mjs docsRoot source
+441:export function docsRoot({ features, archive, context }) {
+442-  const parts = [features, archive, context].map(folder => folder.split('/'));
+443-  const common = [];
+444-  for (let index = 0; parts.every(part => index < part.length && part[index] === parts[0][index]); index += 1) common.push(parts[0][index]);
+445-  return common.join('/') || '.';
+446-}
+== cleanup.mjs docs === '.' paths
+533:      && !(docs === '.' ? file : file.slice(docs.length + 1)).split('/').slice(0, -1).includes('backlog'));
+822:  if (docs === '.') return none('age-out needs a docs folder; the docs root is the project root');
+== word counts implement skill before/after
+1315
+1314
+== every-spec files changed by f04a499
+payload/.agents/skills/joycraft-implement/SKILL.md
+== test files changed by f04a499
+ tests/runtime-archive-ignore.test.ts    | 36 +++++++++++++++++++++++++----
+ tests/runtime-archive-links.test.ts     |  6 ++---
+ tests/runtime-cleanup-age-out.test.ts   | 21 +++++++++--------
+ tests/runtime-config-tests.test.ts      | 12 ++++++++++
+ tests/runtime-dispatch-commands.test.ts | 40 ++++++++++++++++++++++++++++++++-
+ tests/runtime-wave-gate.test.ts         |  3 ++-
+ tests/text-session-end-pr.test.ts       | 20 +++++++++++++++++
+ tests/text-sota-page.test.ts            | 10 +++++++--
+ tests/text-test-review.test.ts          | 22 ++++++++++++++++++
+ tests/text-wave-gate.test.ts            | 13 +++++++++++
+ 10 files changed, 163 insertions(+), 20 deletions(-)

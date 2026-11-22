@@ -1,0 +1,23 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/text-session-end-pr.test.ts tests/drift-tidy-text.test.ts tests/payload-guard.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/drift-tidy-text.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/text-session-end-pr.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 821[2mms[22m[39m
+   [33m[2m✓[22m[39m session end review-25 runtime[2m > [22m[review-25-1] a records commit, then the tidy fix: tidy --verify passes on the new HEAD [33m 819[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12150 (cap 12256, 106 spare)
+on-demand words: 18486 (cap 19663, 1177 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1261[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 354[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 309[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m28 passed[39m[22m[90m (28)[39m
+[2m   Start at [22m 18:39:28
+[2m   Duration [22m 1.44s[2m (transform 47ms, setup 0ms, collect 81ms, tests 2.08s, environment 0ms, prepare 105ms)[22m
+

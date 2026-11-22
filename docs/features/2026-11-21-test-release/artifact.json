@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "test-release-open",
+  "title": "1.9.0 testing brief: 5 open decisions",
+  "summary": "The brief is below the decisions. 8 earlier answers are already in it.",
+  "decisionIds": [
+    "archive-edit-tests",
+    "session-end-push-order",
+    "wave-gate-default",
+    "test-only-lane",
+    "cap-raise"
+  ]
+}

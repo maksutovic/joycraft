@@ -1,0 +1,355 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "45c9e575ee0a9c60508e524ab963ffea7434b687",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 3,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+    "criteria": [
+      {
+        "id": "spec-3-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "49b586ea77489aeb586a122b87ff7f6058958b8b7f2988f948e62d7126b82d46",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+        "kind": "requirement",
+        "sha256": "d10379b7dcff00919b1505775137da7293546274d965cb94848fca8ac9cc9a2e",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "f6075597f2f6e095f1420f886d8dc15979ec304c9d644644fb1aa1907bc073a1",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3
+        ]
+      },
+      "governing": []
+    },
+    "identity": "a6bf9236ca71dd5fc1fa013528839004b7f7b0f735f8fa120fbb0f2ed912c8a9"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ab91b652c1d17b46d"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "afb28bfeb6d944c96"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-3-1-removed-name",
+      "criteria": [
+        "spec-3-1"
+      ],
+      "representativeInput": "Git fixture: feature branch deletes getWidget from src/widget.ts; docs/context/guide.md line 5 names `getWidget()`.",
+      "expected": "One gone-symbol finding at docs/context/guide.md:5.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-1] passed: exactly one gone-symbol finding {path: docs/context/guide.md, line: 5, symbol: getWidget, fixable: true}.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-tests.log",
+              "sha256": "89f975fcec23ebae98d46f4deea805017f174d2d879fc37daf0fd105c0ba7ea5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-gone-symbol.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "P1: a README.md that still names getWidget does not keep it alive (Markdown excluded from git grep) -> 1 finding. P2: rename to fetchWidget -> 1 finding. P4: `widget.getWidget()` -> 1. P5: whole file deleted -> 1. P7: page outside context (docs/research) -> 0. P8: getWidgetById still in code, getWidget removed -> 1 (word match). P11: two context pages -> 2 findings.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-probe.log",
+              "sha256": "1a59fd70e4dec5952c9570dde89b321c3a04a8673468e5639caf88d0978c1862"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/spec3/probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Backticked spans with whitespace or a slash (e.g. `getWidget(id, opts)`) are skipped (probe P3 -> 0); see follow-up."
+      ],
+      "subjectIdentity": "a6bf9236ca71dd5fc1fa013528839004b7f7b0f735f8fa120fbb0f2ed912c8a9"
+    },
+    {
+      "id": "spec-3-2-still-exists",
+      "criteria": [
+        "spec-3-2"
+      ],
+      "representativeInput": "Same fixture, getWidget moved from src/widget.ts to src/loader.ts in the range.",
+      "expected": "No gone-symbol finding.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-2] passed: gone-symbol findings == [].",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-tests.log",
+              "sha256": "89f975fcec23ebae98d46f4deea805017f174d2d879fc37daf0fd105c0ba7ea5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-gone-symbol.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "P12: getWidget removed from src/widget.ts but still named in config.yaml (non-Markdown, tracked) -> 0 findings.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-probe.log",
+              "sha256": "1a59fd70e4dec5952c9570dde89b321c3a04a8673468e5639caf88d0978c1862"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/spec3/probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [],
+      "subjectIdentity": "a6bf9236ca71dd5fc1fa013528839004b7f7b0f735f8fa120fbb0f2ed912c8a9"
+    },
+    {
+      "id": "spec-3-3-python",
+      "criteria": [
+        "spec-3-3"
+      ],
+      "representativeInput": "Git fixture: def get_widget removed from app/widget.py; guide line 3 names `get_widget()`.",
+      "expected": "One gone-symbol finding.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-3] passed: one finding {path: docs/context/guide.md, line: 3, symbol: get_widget}.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-tests.log",
+              "sha256": "89f975fcec23ebae98d46f4deea805017f174d2d879fc37daf0fd105c0ba7ea5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-gone-symbol.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "P10: a plain lowercase Python name `render` (no call parens, no underscore/capital) removed from app/v.py -> 0 findings because of the codeShaped filter; see follow-up.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-probe.log",
+              "sha256": "1a59fd70e4dec5952c9570dde89b321c3a04a8673468e5639caf88d0978c1862"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/spec3/probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Plain single-word lowercase names without call parens are not reported (codeShaped filter from review A)."
+      ],
+      "subjectIdentity": "a6bf9236ca71dd5fc1fa013528839004b7f7b0f735f8fa120fbb0f2ed912c8a9"
+    },
+    {
+      "id": "spec-3-4-entry-fixable",
+      "criteria": [
+        "spec-3-4"
+      ],
+      "representativeInput": "Git fixture: AGENTS.md line 3 names `getWidget()`, which the range removes.",
+      "expected": "One finding with fixable: false; context-page hits fixable: true.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-4] passed: one finding {path: AGENTS.md, line: 3, fixable: false}; spec-3-1 test shows fixable: true for the context page.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-tests.log",
+              "sha256": "89f975fcec23ebae98d46f4deea805017f174d2d879fc37daf0fd105c0ba7ea5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-gone-symbol.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "P9: CLAUDE.md naming `getWidget()` -> 1 finding fixable=false.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-probe.log",
+              "sha256": "1a59fd70e4dec5952c9570dde89b321c3a04a8673468e5639caf88d0978c1862"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/spec3/probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [],
+      "subjectIdentity": "a6bf9236ca71dd5fc1fa013528839004b7f7b0f735f8fa120fbb0f2ed912c8a9"
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-span-with-space",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:494",
+      "summary": "Backticked spans containing whitespace or \"/\" are skipped entirely, so `getWidget(id, opts)` naming removed code gives no finding (probe P3).",
+      "assumption": "The spec fixtures use `getWidget()`; skipping multi-token spans is a precision choice the spec does not decide."
+    },
+    {
+      "id": "f2-code-shaped",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:472",
+      "summary": "codeShaped narrows backticked identifiers beyond the spec tokenizer: a plain lowercase name like `render` (no parens/underscore/capital) is never reported (probe P10).",
+      "assumption": "Took the review-A noise filter as within intent; the spec tokenizer wording applies to removed code lines."
+    },
+    {
+      "id": "f3-untraced-by-queue",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "The queue declares no check input, so startup trace showed all four criteria untraced; with --tests tests/runtime-cleanup-gone-symbol.test.ts all four are traced (lines 39, 48, 56, 65). Add the test file as a check input."
+    },
+    {
+      "id": "f4-installed-copy",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": ".joycraft/runtime/cleanup.mjs:1",
+      "summary": "The installed .joycraft/runtime/cleanup.mjs differs from payload/ (it predates the whole feature, not only this spec). Sync before release if AGENTS.md requires it."
+    }
+  ],
+  "createdAt": "2026-11-21T23:37:38.639924Z"
+}

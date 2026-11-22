@@ -1,0 +1,26 @@
+OBSERVED dot root CLI: 0 { "days": 14, "count": 0, "docs": [], "skipped": [ { "path": ".", "reason": "age-out needs a docs folder; the docs root is the project root" } ], "applied": false }
+PASS dot root CLI exits 0 with one skipped entry and moves nothing
+OBSERVED .docs root: 0 { "days": 14, "count": 1, "docs": [ { "path": ".docs/research/old.md", "days": 30, "to": ".docs/archive/working/research/old.md" } ], "skipped": [], "applied": false } 
+PASS .docs root lists .docs/research/old.md (a working doc under the docs root)
+INFO .docs root gives a skipped entry explaining an empty list: []
+OBSERVED installation missing: 0 ["docs/research/x.md","docs/research/y.md"] 
+PASS installation.json missing: exit 0 and lists ["docs/research/x.md","docs/research/y.md"]
+OBSERVED installation malformed: 0 ["docs/research/x.md","docs/research/y.md"] 
+PASS installation.json malformed: exit 0 and lists ["docs/research/x.md","docs/research/y.md"]
+OBSERVED installation files-object: 0 ["docs/research/x.md","docs/research/y.md"] 
+PASS installation.json files-object: exit 0 and lists ["docs/research/x.md","docs/research/y.md"]
+OBSERVED installation files-null-entry: 0 ["docs/research/x.md","docs/research/y.md"] 
+PASS installation.json files-null-entry: exit 0 and lists ["docs/research/x.md","docs/research/y.md"]
+OBSERVED installation lists-a-doc: 0 ["docs/research/x.md"] 
+PASS installation.json lists-a-doc: exit 0 and lists ["docs/research/x.md"]
+OBSERVED symlinked doc: 0 [{"path":"docs/research/plain.md","days":30,"to":"docs/archive/working/research/plain.md","moved":true}] [{"path":"docs/research/link.md","reason":"It is a symlink: moving it would break its link."}]
+INFO symlinked doc was not moved
+PASS ordinary doc next to a symlink still moves
+OBSERVED docs root is a symlink: 0 {"days":14,"count":0,"docs":[],"skipped":[{"path":"docs","reason":"docs is a symlink: age-out reads only a real docs folder"}],"applied":false} 
+PASS docs-as-symlink: exit 0 and nothing moved
+OBSERVED submodule: 0 ["docs/research/x.md"] [] 
+PASS submodule: no file inside the submodule is listed and the gitlink is not moved
+PASS submodule: the ordinary doc still moves
+OBSERVED root-commit doc: [{"path":"docs/research/rooted.md","days":20,"to":"docs/archive/working/research/rooted.md"}]
+PASS a doc whose only commit is the root commit is listed with its age (20)
+failures=0

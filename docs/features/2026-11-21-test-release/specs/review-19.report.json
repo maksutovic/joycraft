@@ -1,0 +1,375 @@
+{
+ "schemaVersion": 1,
+ "subject": {
+  "schemaVersion": 1,
+  "implementationRevision": "955fdb007495e8567934e0fbb82d0fe2990a80cd",
+  "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+  "specId": 19,
+  "specPath": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+  "criteria": [
+   {
+    "id": "spec-19-1",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "structural"
+    ]
+   },
+   {
+    "id": "spec-19-2",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "structural"
+    ]
+   },
+   {
+    "id": "spec-19-3",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "structural"
+    ]
+   },
+   {
+    "id": "spec-19-4",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   }
+  ],
+  "inputs": [
+   {
+    "path": "docs/features/2026-11-21-test-release/brief.md",
+    "kind": "requirement",
+    "scope": {
+     "anchors": [
+      "lane-cap",
+      "load-guidance",
+      "evidence-marker",
+      "context-and-authorization",
+      "scope-and-limits"
+     ],
+     "decisionIds": [
+      "worker-cap-home",
+      "machine-slot",
+      "test-only-lane",
+      "cap-raise"
+     ]
+    },
+    "sha256": "b21a5dc0a5bf59bd783ca2c60c20e0e2be1b9812fc140925909d700ca16ea472",
+    "normalization": "requirement-scope"
+   },
+   {
+    "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "kind": "requirement",
+    "sha256": "7a00e3a7cc2cea645e33726f6562104ed3da1afca2b490b7ff3e8aaf74e75f93",
+    "normalization": "queue-scope"
+   },
+   {
+    "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+    "kind": "requirement",
+    "sha256": "c26d7ccea9bf346f42b53d90086b332bd261b063950395f8a5f3487704435824",
+    "normalization": "spec-status"
+   },
+   {
+    "path": "payload/.joycraft/references/setup.md",
+    "kind": "code",
+    "sha256": "52de47eb5e82181bcb32ca5f5628dc5479b172d5dfab19f0fcb3c0d74ed4c7b7",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/references/testing-review.md",
+    "kind": "code",
+    "sha256": "c2f24963fc38e36de4e180c5488a25725e7de3657c72a81f62b867f6e7e3a3c9",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/references/testing.md",
+    "kind": "code",
+    "sha256": "89bac4aaa1d409d42fa5b28f1d8de99f660c123d4428933d7b071cf7884c4f1a",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/payload-guard.test.ts",
+    "kind": "check",
+    "sha256": "5b08375159053d9c6eea4b4a32fac6858701bf1010528d87367936bee101ea3e",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/text-lane-cap.test.ts",
+    "kind": "check",
+    "sha256": "0bfa500619e5f74e8b5ac83cbb093cab0b72be0fb76768616547d8d930ffe3b0",
+    "normalization": "none"
+   }
+  ],
+  "binding": {
+   "version": 1,
+   "queue": {
+    "specIds": [
+     1,
+     2,
+     3,
+     5,
+     10,
+     11,
+     17,
+     19
+    ]
+   },
+   "governing": [
+    {
+     "path": "docs/features/2026-11-21-test-release/brief.md",
+     "anchors": [
+      "lane-cap",
+      "load-guidance",
+      "evidence-marker",
+      "context-and-authorization",
+      "scope-and-limits"
+     ],
+     "decisionIds": [
+      "worker-cap-home",
+      "machine-slot",
+      "test-only-lane",
+      "cap-raise"
+     ]
+    }
+   ]
+  },
+  "identity": "0c182f5a53270eed049eeea262c00bfbfd1f03b2db834a136b2e3343e16fac50"
+ },
+ "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+ "implementerActor": {
+  "host": "claude",
+  "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "agentId": "ae6c0efd705c2efb3"
+ },
+ "reviewer": {
+  "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "actor": {
+   "host": "claude",
+   "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+   "agentId": "a20c7f5c61059a18f"
+  },
+  "independent": true,
+  "scopeReviewed": true
+ },
+ "verdict": "PASS",
+ "flows": [
+  {
+   "id": "spec-19-1-testing",
+   "subjectIdentity": "0c182f5a53270eed049eeea262c00bfbfd1f03b2db834a136b2e3343e16fac50",
+   "criteria": [
+    "spec-19-1"
+   ],
+   "representativeInput": "payload/.joycraft/references/testing.md:38-48 at 955fdb0 (change b7a8685)",
+   "expected": "Cap sentence with cores / N and the runner's own flag replaces \"rerun once, alone\"; JOYCRAFT_EVIDENCE=1 named next to CI=1.",
+   "observations": [
+    {
+     "kind": "structural",
+     "method": "command",
+     "result": "PASS",
+     "actual": "testing.md:38 now reads \"single-run mode with `CI=1`, `JOYCRAFT_EVIDENCE=1` and a 300000 ms timeout\"; lines 46-48 read \"When N workers share the machine, give each test run at most cores ÷ N workers with the runner's own flag; a second timeout is reported with both receipts.\" \"rerun once\" occurs nowhere in the scanned files. No runner is named (stack-agnostic). evidence.mjs:323 sets CI=1 and JOYCRAFT_EVIDENCE=1 on every child, so the named variable is real. [AC:spec-19-1] passes.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-text-scan.log",
+       "sha256": "11132dd432378bf4df4c975436b85cd1ee10770c7332eb7d96279994ce5b4337"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-tests.log",
+       "sha256": "292d033cff41107a711f03cd303f4997d209c6fa23c4d9ba0bf733e89201aa12"
+      }
+     ],
+     "command": {
+      "argv": [
+       "grep",
+       "-n",
+       "-E",
+       "JOYCRAFT_EVIDENCE|cores|runner's own|rerun once|never on .CI|run less|cap workers|project-owned slot|runner config, guards|overloaded|formula|machine-local|tracked file|above the core count",
+       "payload/.joycraft/references/testing.md",
+       "payload/.joycraft/references/setup.md",
+       "payload/.joycraft/references/testing-review.md",
+       "payload/.joycraft/references/testing-page.md",
+       "payload/.joycraft/runtime/status.mjs"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-19-2-setup",
+   "subjectIdentity": "0c182f5a53270eed049eeea262c00bfbfd1f03b2db834a136b2e3343e16fac50",
+   "criteria": [
+    "spec-19-2"
+   ],
+   "representativeInput": "payload/.joycraft/references/setup.md:85-95 at 955fdb0; tests/text-lane-cap.test.ts cappedProject fixture",
+   "expected": "Attended setup step offers a runner-config cap keyed on JOYCRAFT_EVIDENCE, never on CI, explains why, and gives run less -> cap per run -> project-owned slot.",
+   "observations": [
+    {
+     "kind": "structural",
+     "method": "command",
+     "result": "PASS",
+     "actual": "setup.md:85-95 is a new \"Machine load\" bullet in the attended write step, beside the testing page: offer a worker cap in the project's own runner config keyed on `JOYCRAFT_EVIDENCE` (set on every Joycraft test run), never on `CI`, which teammates and CI also set; explains in the same step that an overloaded machine makes slow and flaky runs that agents rerun and the reruns cost more than the cap; order run less (each spec runs its own tests), then cap workers per run (cores ÷ agents), then a project-owned slot that Joycraft does not ship. Fallback for a runner config that cannot hold a cap goes to machine-local .joycraft/local/evidence-env.json, never a tracked file. This answers Max's machine-slot note at setup; the testing page template (testing-page.md decision 3 and \"When a run is slow\") and the queue-end load line (status.mjs:115, spec 10) carry the same order with a number. Behavior probe in the test: a fixture config capped on JOYCRAFT_EVIDENCE sees workers=3 under evidence.mjs and workers=undefined with CI=1 alone. [AC:spec-19-2] passes.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-text-scan.log",
+       "sha256": "11132dd432378bf4df4c975436b85cd1ee10770c7332eb7d96279994ce5b4337"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-tests.log",
+       "sha256": "292d033cff41107a711f03cd303f4997d209c6fa23c4d9ba0bf733e89201aa12"
+      }
+     ],
+     "command": {
+      "argv": [
+       "grep",
+       "-n",
+       "-E",
+       "JOYCRAFT_EVIDENCE|cores|runner's own|rerun once|never on .CI|run less|cap workers|project-owned slot|runner config, guards|overloaded|formula|machine-local|tracked file|above the core count",
+       "payload/.joycraft/references/testing.md",
+       "payload/.joycraft/references/setup.md",
+       "payload/.joycraft/references/testing-review.md",
+       "payload/.joycraft/references/testing-page.md",
+       "payload/.joycraft/runtime/status.mjs"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": [
+    "The machine-number rule is stated in testing-page.md (\"Write the formula, not this machine's number\") but not in setup.md's bullet; see follow-up f2."
+   ]
+  },
+  {
+   "id": "spec-19-3-lane",
+   "subjectIdentity": "0c182f5a53270eed049eeea262c00bfbfd1f03b2db834a136b2e3343e16fac50",
+   "criteria": [
+    "spec-19-3"
+   ],
+   "representativeInput": "payload/.joycraft/references/testing-review.md:51-53 (## Test changes) at 955fdb0",
+   "expected": "Only deletions and shared test tooling (runner config, guards, selection lists) take the serial lane; other test-only specs may run in parallel (decision test-only-lane = shared-only).",
+   "observations": [
+    {
+     "kind": "structural",
+     "method": "command",
+     "result": "PASS",
+     "actual": "testing-review.md ## Test changes adds: \"Specs that delete tests or change shared test tooling (runner config, guards, selection lists) take the one serial lane (`execution.parallel: false`); other test-only specs may run in parallel.\" This is the shared-only answer, not \"all\". [AC:spec-19-3] passes and checks the sentence inside the Test changes section.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-text-scan.log",
+       "sha256": "11132dd432378bf4df4c975436b85cd1ee10770c7332eb7d96279994ce5b4337"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-tests.log",
+       "sha256": "292d033cff41107a711f03cd303f4997d209c6fa23c4d9ba0bf733e89201aa12"
+      }
+     ],
+     "command": {
+      "argv": [
+       "grep",
+       "-n",
+       "-E",
+       "JOYCRAFT_EVIDENCE|cores|runner's own|rerun once|never on .CI|run less|cap workers|project-owned slot|runner config, guards|overloaded|formula|machine-local|tracked file|above the core count",
+       "payload/.joycraft/references/testing.md",
+       "payload/.joycraft/references/setup.md",
+       "payload/.joycraft/references/testing-review.md",
+       "payload/.joycraft/references/testing-page.md",
+       "payload/.joycraft/runtime/status.mjs"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-19-4-words",
+   "subjectIdentity": "0c182f5a53270eed049eeea262c00bfbfd1f03b2db834a136b2e3343e16fac50",
+   "criteria": [
+    "spec-19-4"
+   ],
+   "representativeInput": "tests/payload-guard.test.ts printed counts at 955fdb0; every-spec totals at 4bbb34f (before) and b7a8685 (after)",
+   "expected": "Every-spec words grow by at most 15; on-demand within budget; guard passes.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "pnpm test tests/text-lane-cap.test.ts tests/payload-guard.test.ts: 2 files, 20 tests passed, exit 0. Guard prints \"every-spec words: 12164 (cap 12256, 92 spare)\". Recomputed from git: every-spec total 12157 at b7a8685^ and 12164 at b7a8685, so this spec adds 7 every-spec words (all in testing.md); setup.md and testing-review.md are on-demand and the on-demand cap check passes. Sibling tests text-fault-proof and text-fewer-tests also pass with their re-baselined counts (probe, exit 0).",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-tests.log",
+       "sha256": "292d033cff41107a711f03cd303f4997d209c6fa23c4d9ba0bf733e89201aa12"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-every-spec-before-after.txt",
+       "sha256": "ee716b71cbbc7ad1e71f63047e48e02a117218f9463ad740134da77b366f039a"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-probe-siblings.log",
+       "sha256": "a0aa387c46a7e74dfe860549a27cd8050272130babb08ad3315ba78263b0793e"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "test",
+       "tests/text-lane-cap.test.ts",
+       "tests/payload-guard.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  }
+ ],
+ "unresolved": [],
+ "findings": [
+  {
+   "id": "f1-undeclared-rebaseline",
+   "class": "follow-up",
+   "origin": "new",
+   "at": "tests/text-fault-proof.test.ts:33",
+   "summary": "Commit b7a8685 changes two existing tests' expected values (text-fault-proof.test.ts:33 EVERY_SPEC_BEFORE 12139 -> 12139 + 7; text-fewer-tests.test.ts:33 everySpec 12142 + 18 -> + 18 + 7) while the spec's ## Test changes says \"none\"; test-changes.mjs lists both as undeclared. Not blocking: acceptance spec-19-4 permits this growth, and without the +7 both sibling tests fail (12164 - 12139 = 25 > 20; 12164 > 12160). The new value equals the measured growth exactly and each test still caps its own spec's growth. Decompose should declare such re-baselines as class 1 next time.",
+   "assumption": "A baseline shift forced by a growth the spec's own acceptance line allows counts as required by that line."
+  },
+  {
+   "id": "f2-setup-formula",
+   "class": "follow-up",
+   "origin": "new",
+   "at": "payload/.joycraft/references/setup.md:91",
+   "summary": "The brief rule \"no machine number in a tracked file\" is said in testing-page.md (\"Write the formula, not this machine's number\") but not in setup.md's Machine load bullet, which puts the cap in the tracked runner config with \"(cores ÷ agents)\". An agent following setup alone can write a literal (the spec's own fixture uses `JOYCRAFT_EVIDENCE ? 3 : undefined`, tests/text-lane-cap.test.ts:39). Add a few words, e.g. \"computed from the core count at run time, never this machine's number\" (on-demand text).",
+   "assumption": "Setup writes the testing page in the same step, so the template's formula rule usually reaches the agent."
+  },
+  {
+   "id": "f3-load-line-why",
+   "class": "follow-up",
+   "origin": "pre-existing",
+   "at": "payload/.joycraft/runtime/status.mjs:115",
+   "summary": "The queue-end load line (spec 10) gives the number and the fix (\"Cap workers per run with the runner's own flag; see setup\") but not the why from Max's note (an overloaded machine makes flaky tests rerun and queues run long). Consider a few words of cause in that line.",
+   "assumption": "Spec 10 owns that line; the explanation lives in setup and the testing page."
+  },
+  {
+   "id": "f4-second-timeout",
+   "class": "follow-up",
+   "origin": "new",
+   "at": "payload/.joycraft/references/testing.md:48",
+   "summary": "\"a second timeout is reported with both receipts\" no longer says where the second run comes from after \"rerun once, alone\" was removed; a reader infers one rerun after a timeout. The wording is the spec's mandated text.",
+   "assumption": "One rerun after a timeout remains intended."
+  }
+ ],
+ "createdAt": "2026-11-22T04:00:00.000Z"
+}

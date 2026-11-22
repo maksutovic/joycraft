@@ -1,0 +1,965 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "ae1b50201d6b67574fff3960d19910770e80ecc5",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 29,
+    "specPath": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+    "criteria": [
+      {
+        "id": "spec-29-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-29-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-29-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-29-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-29-5",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-29-6",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-29-7",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-29-8",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-29-9",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-29-10",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "context-and-authorization",
+            "scope-and-limits",
+            "worker-commands",
+            "sota-page",
+            "wave-gate",
+            "session-end-pr",
+            "archive-tests"
+          ],
+          "decisionIds": [
+            "cap-raise",
+            "session-end-push-order",
+            "archive-test-editor"
+          ]
+        },
+        "sha256": "f71143d3517cbfba4b374c2fccd733508ca6efe624f47ff61a4d336fb8997d33",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/review-followups.md",
+        "kind": "requirement",
+        "sha256": "e41e6a4a6480661206924dd4e5beeec515ef464ce7b1f934eb087e97420ba369",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "24921b01e42c88cb81d001d8294b92842453ef9e180e67b82eb165c683a46e72",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+        "kind": "requirement",
+        "sha256": "622c56f639960688ba3a17837c5180ebeb1d2ab4fbd8811003e01d38f6b1ea3b",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+        "kind": "code",
+        "sha256": "1c86089354998c66be3613bd7a300e0f24ba9715d8ad2469492a01b8b700a63e",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+        "kind": "code",
+        "sha256": "5833ca31dec8e2e654beb0a7fb0001705695679bca43951fc06477a1b15e6b97",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "82c04c5983a9f98007c7bbf437921e881b1f21e015decf544b6dbd2807923b8a",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing-page.md",
+        "kind": "code",
+        "sha256": "16704b494c999def6cf19f2b12e11cbd157e04671d5d8f7cbc9e9043c1373ffb",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing-review.md",
+        "kind": "code",
+        "sha256": "445d78d487aef44f37d8786b8bc05c3d4f16d31f65def22519ef7b0873a15cf4",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "46e221073f6a73fcade6b1d8c07924c18e6d7cc92d69cc9ca5ff96a2b4622d0c",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/config.mjs",
+        "kind": "code",
+        "sha256": "dac5f409c01d593f9230fe695fa0ea29c343c1e7cb04bb09775af05dc240f62d",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+        "kind": "code",
+        "sha256": "b737cff8b44de1aa18c5a7ddb05dd2929089e8bade6960ddf0b49d1025285d53",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "3d6986aa8ee5ad8c03510e18c1031cb970b9e9e27889be11d9e1110625308b63",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-ignore.test.ts",
+        "kind": "check",
+        "sha256": "a26e4b459cd9beb286e9bb54ec7c69dbbf3effb67d0c2d5dba5b2c02039f8a31",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-links.test.ts",
+        "kind": "check",
+        "sha256": "eb24eba09bd8c34514f725fcc2255856f564a1f7abacce11f98b0d988985187d",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-age-out.test.ts",
+        "kind": "check",
+        "sha256": "4d335077e2f377f3ee68185eb89361e1fe1d8fdad8b1cef8ac629b002861d224",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-config-tests.test.ts",
+        "kind": "check",
+        "sha256": "9cf88f7ab0c2fe28458d68bb296fd35b55093d894f3b170c487998f7f4b40db4",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-dispatch-commands.test.ts",
+        "kind": "check",
+        "sha256": "b536e45f4fcc4a9509f4a75eeac4032ce468e7adf333f6268c16bfc2dedbd348",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-session-end-pr.test.ts",
+        "kind": "check",
+        "sha256": "92fe93be2a83b4149583f46f4523c95be5a9988049d42bd8d1f0a2397c83e2ba",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-sota-page.test.ts",
+        "kind": "check",
+        "sha256": "045b7edc51a67889d7c603bb85501bd889f46b5b37c2b0ee396f29a311adf399",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-test-review.test.ts",
+        "kind": "check",
+        "sha256": "6d6a9c5b0c2e4404070b26f421fc945b5d8c99d5c5beacf7aaf9c7d57a4ac051",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "0fdce7688ce875bc2a0477d2695e5e82f737d4b9002bfb441ce3c2b6706b461f",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          27,
+          28,
+          29,
+          30,
+          31
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "context-and-authorization",
+            "scope-and-limits",
+            "worker-commands",
+            "sota-page",
+            "wave-gate",
+            "session-end-pr",
+            "archive-tests"
+          ],
+          "decisionIds": [
+            "cap-raise",
+            "session-end-push-order",
+            "archive-test-editor"
+          ]
+        }
+      ]
+    },
+    "identity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a67a990f3451209db"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "ad2455e57c5494218"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-29-1-flow",
+      "subjectIdentity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc",
+      "criteria": [
+        "spec-29-1"
+      ],
+      "representativeInput": "templateArgv(\"vitest run {files}\", [\"tests/{files}.test.ts\"]) via dispatch-start.mjs --role implementer",
+      "expected": "argv [\"vitest\",\"run\",\"tests/{files}.test.ts\"], startup returns",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-tests.log",
+              "sha256": "3ae11c4fde5bd37e7c8e38a8537c22a38754bfbb3c261a4bd713b61fd7066ca9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/runtime-config-tests.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-sota-page.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-test-review.test.ts",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "12 files, 106 tests pass, exit 0. [AC:spec-29-1] (tests/runtime-dispatch-commands.test.ts:152) passes."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+              "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+              "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+              "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+              "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+            }
+          ],
+          "actual": "dispatch-start.mjs:137-147 expand() splits the template word on {files} and never rescans a file path. Probe: two files with a literal {files} path stay literal; x{files}y over 3 files gives [\"xa\",\"b\",\"cy\"]; {files}{files} over 2 gives [\"a\",\"ba\",\"b\"]."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-29-2-flow",
+      "subjectIdentity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc",
+      "criteria": [
+        "spec-29-2"
+      ],
+      "representativeInput": "tests.focused = \"vitest run 'x {files}\" and \"vitest run \\\"x {files}\"",
+      "expected": "focused null, note names the quote, exit 0",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-tests.log",
+              "sha256": "3ae11c4fde5bd37e7c8e38a8537c22a38754bfbb3c261a4bd713b61fd7066ca9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/runtime-config-tests.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-sota-page.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-test-review.test.ts",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "12 files, 106 tests pass, exit 0. [AC:spec-29-2] (tests/runtime-dispatch-commands.test.ts:158) passes for single and double quote."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+              "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+              "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+              "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+              "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+            }
+          ],
+          "actual": "dispatch-start.mjs:99-104 catches only the unclosed-quote error from templateWords and returns a note; other errors still throw. Probe: an unclosed quote in a shell-form template (\"a && vitest 'x {files}\") also gives the unclosed-quote error, because templateWords runs before hasShellSyntax."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-29-3-flow",
+      "subjectIdentity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc",
+      "criteria": [
+        "spec-29-3"
+      ],
+      "representativeInput": "tests.focused = \"pnpm build && vitest run {files}\", check tests/a.test.ts; printed evidence step run with /bin/sh",
+      "expected": "argv [\"sh\",\"-c\",\"pnpm build && vitest run tests/a.test.ts\"]; receipt footer argv starts with sh",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-tests.log",
+              "sha256": "3ae11c4fde5bd37e7c8e38a8537c22a38754bfbb3c261a4bd713b61fd7066ca9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/runtime-config-tests.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-sota-page.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-test-review.test.ts",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "12 files, 106 tests pass, exit 0. [AC:spec-29-3] (tests/runtime-dispatch-commands.test.ts:169) passes: argv, receipt footer argv [sh,-c,...], each of ||, ;, |, <, >, $(, backtick, and a quoted \"a && b\" that stays plain argv."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+              "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+              "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+              "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+              "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+            }
+          ],
+          "actual": "hasShellSyntax (dispatch-start.mjs:111-125) skips backslash escapes, single-quoted and double-quoted text (with escaped quotes), and flags ; | < > ` && and $(. Probe: a\\&\\&b, \"a \\\" && b\", 'a && b' stay argv (no false positive); runner a;b and 2>&1 go shell form; files are shell-quoted (it's -> 'it'\\''s', b$(x) -> 'b$(x)'). Not detected, as the spec list allows: a single &, FOO=1 prefix, $HOME, # comment, and $( or a backtick inside double quotes (see follow-ups)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-29-4-flow",
+      "subjectIdentity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc",
+      "criteria": [
+        "spec-29-4"
+      ],
+      "representativeInput": "archive.mjs ignore with a symlinked .ignore; .ignore holding docs/archive/* and /docs/archive/*; --apply from docs/",
+      "expected": "exit 1 and target unchanged; present; root .ignore written, no docs/.ignore",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-tests.log",
+              "sha256": "3ae11c4fde5bd37e7c8e38a8537c22a38754bfbb3c261a4bd713b61fd7066ca9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/runtime-config-tests.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-sota-page.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-test-review.test.ts",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "12 files, 106 tests pass, exit 0. [AC:spec-29-4] (tests/runtime-archive-ignore.test.ts:91) passes for --check and --apply on the symlink, both star spellings, and the subfolder run. [AC:spec-6-2] passes with the docs/old fixture the spec names."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+              "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+              "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+              "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+              "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+            }
+          ],
+          "actual": "archive.mjs:762-768 lstat-refuses a symlink or non-file before any read or write (so --decline is refused too); pattern strips /* and /**. projectRoot (archive.mjs:800-806) walks up to the nearest real .joycraft/ directory, else the start folder; main passes it as root."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-29-5-flow",
+      "subjectIdentity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc",
+      "criteria": [
+        "spec-29-5"
+      ],
+      "representativeInput": "joycraft.yaml paths work/old/notes, .docs/*, defaults, context: docs, work/{features,history,notes}",
+      "expected": "root-level and hidden docs roots exit 1 naming docs root and the three paths; defaults and common layouts load",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-tests.log",
+              "sha256": "3ae11c4fde5bd37e7c8e38a8537c22a38754bfbb3c261a4bd713b61fd7066ca9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/runtime-config-tests.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-sota-page.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-test-review.test.ts",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "12 files, 106 tests pass, exit 0. [AC:spec-29-5] (tests/runtime-config-tests.test.ts:60) passes; runtime-cleanup-age-out, runtime-archive-ignore, runtime-archive-links and runtime-wave-gate pass with the edited fixtures."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+              "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+              "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+              "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+              "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+            }
+          ],
+          "actual": "config.mjs:166-172 uses the same common-prefix rule as cleanup.mjs docsRoot (cleanup.mjs:441-446), which delivery.mjs:150-152 also uses. Probe: defaults, context: docs, features: docs/work/features, work/{features,history,notes} and trailing-slash/./ spellings load; work/old/notes, .docs/*, docs/.hidden/*, archive: work/old alone are refused with the three paths named; docs/.features loads (docs root is docs, not hidden). archive.mjs docsRoot (archive.mjs:614-619) uses a different rule (index < length-1): it agrees on every loaded layout except when one path equals the docs root (context: docs), where it gives \".\" (see follow-up f1)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-29-6-flow",
+      "subjectIdentity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc",
+      "criteria": [
+        "spec-29-6"
+      ],
+      "representativeInput": "testing-page.md, setup.md, testing-review.md",
+      "expected": "`<context>/test-practices.md` named, no `<context>/testing.md`, title \"Test practices\"",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+              "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+              "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+              "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+              "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+            }
+          ],
+          "actual": "git show f04a499: setup.md:82, testing-page.md:4 and :14, testing-review.md end section all name <context>/test-practices.md; the template heading is \"# Test practices\". [AC:spec-20-3][AC:spec-29-6] (tests/text-sota-page.test.ts:53) passes in the test receipt."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-29-7-flow",
+      "subjectIdentity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc",
+      "criteria": [
+        "spec-29-7"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-implement/SKILL.md delivery paragraph (lines 113-123)",
+      "expected": "no \"open one PR\"; \"-- <verifier>\" and session end in the paragraph; spec-15-1/2 still pass",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+              "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+              "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+              "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+              "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+            }
+          ],
+          "actual": "The paragraph now reads \"(`delivery.mjs push --gate-receipt`, or `-- <verifier>` without `tests.gate`\" and \"push after each green gate (session end's one push opens the PR)\". [AC:spec-29-7], [AC:spec-15-1] and [AC:spec-15-2] (tests/text-wave-gate.test.ts) pass in the test receipt."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-29-8-flow",
+      "subjectIdentity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc",
+      "criteria": [
+        "spec-29-8"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+      "expected": "archive commit sentence has relinked and preview listed, no --rewrite; records sentence has cleanup; dirty-tree paragraph has gate messages, cleanup fixes, lease",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+              "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+              "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+              "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+              "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+            }
+          ],
+          "actual": "Session end: \"Gate messages, cleanup fixes and the lease release also wait.\" in the dirty-tree paragraph; joycraft-cleanup session-end mode now runs before the records commit, which takes \"the records and cleanup's fixes\"; the archive commit \"takes every archive edit: the move, the live docs it relinked and the path edits in the tests the preview listed\". The order records, tidy, prune, archive, push (decision session-end-push-order) is kept. The hold sentence \"Never archive a feature whose question the user asked to wait\" is kept (drift-tidy-text passes). [AC:spec-29-8], [AC:spec-25-1], [AC:spec-25-2] pass in the test receipt."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-29-9-flow",
+      "subjectIdentity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc",
+      "criteria": [
+        "spec-29-9"
+      ],
+      "representativeInput": "pnpm test tests/payload-guard.test.ts; wc -w of the implement skill before and after f04a499",
+      "expected": "payload-guard passes; implement skill not above 1315; every-spec words do not grow",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-tests.log",
+              "sha256": "3ae11c4fde5bd37e7c8e38a8537c22a38754bfbb3c261a4bd713b61fd7066ca9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/runtime-config-tests.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-sota-page.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-test-review.test.ts",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "12 files, 106 tests pass, exit 0. payload-guard.test.ts and [AC:spec-29-9] (tests/text-wave-gate.test.ts:67) pass."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+              "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+              "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+              "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+              "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+            }
+          ],
+          "actual": "Probe log: implement skill 1315 -> 1314 words; it is the only every-spec file f04a499 changes, so every-spec words drop by 1. The trims (\"when available\" in the counterpart sentence; \"the spec, the tool, the cause and the repair\" -> \"the spec, tool, cause and repair\") match no [AC] test string (grep of tests/) and no decision; the hold sentence for the user keeps the same four items."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-29-10-flow",
+      "subjectIdentity": "ae65480b5ce22dca74da0fa9bd348f3a807506574613a4a080763f71ee4c90fc",
+      "criteria": [
+        "spec-29-10"
+      ],
+      "representativeInput": "payload/.joycraft/references/testing-review.md",
+      "expected": "each SOTA cleanup gap present; on-demand words within cap",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-tests.log",
+              "sha256": "3ae11c4fde5bd37e7c8e38a8537c22a38754bfbb3c261a4bd713b61fd7066ca9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/runtime-config-tests.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/text-sota-page.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-test-review.test.ts",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "12 files, 106 tests pass, exit 0. [AC:spec-29-10] (tests/text-test-review.test.ts:86) and payload-guard (on-demand cap) pass."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+              "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+              "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+              "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+              "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+            }
+          ],
+          "actual": "git show f04a499: Measure first offers the JOYCRAFT_EVIDENCE worker cap with the owner's yes and links to Find (:36 describes it), --timeout-ms, suspect files alone, ABAB >= 3 at a like load, always-on cost; Find adds the flake probe and duplicate-contract/debugging-probe tests; Recommend adds the kept-real-case and shrunk-input sentences; Apply adds the break-the-code receipt and the kept test classes; Test-only specs allow runner config and global test setup."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-archive-docsroot-context-docs",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-29-5",
+      "at": "payload/.joycraft/runtime/archive.mjs:614-619",
+      "assumption": "The spec's \"common parent\" is read as cleanup.mjs docsRoot, the reader delivery uses for the records exemption; config.mjs:166 says so.",
+      "summary": "archive.mjs docsRoot stops one segment short (index < length-1), so with context: docs (which config loads, docs root docs) archive reads docs root \".\" and relinkLive scans the whole project. Unchanged by spec 29 and the layouts the spec names agree; a later spec could make archive.mjs import cleanup.mjs docsRoot so the three readers share one rule."
+    },
+    {
+      "id": "f2-test-changes-omissions",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-29-5",
+      "at": "tests/runtime-cleanup-age-out.test.ts:172; tests/runtime-wave-gate.test.ts:275",
+      "summary": "Two existing-test edits are not under Test changes: [review-9-r2-1] (a .docs root used to list working docs, now exits 1 naming docs root) and [AC:spec-27-14] \"a docs root of . gives no exemption\" (expected gate-receipt-stale, now stderr contains docs root). Both follow bullet 5 and its seam sentence (\"A root-level docs root must fail at config load, before any of them runs\") and keep the check: no move and a clean tree, no push (remoteRef empty). Dot-segment skipping under a visible docs root is still covered by [review-9-1] at runtime-cleanup-age-out.test.ts:139. tests/runtime-wave-gate.test.ts is also not a verification input of spec 29; I ran it in the receipt. Name both in Test changes / inputs next time."
+    },
+    {
+      "id": "f3-unreachable-docs-dot",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:533, :822; payload/.joycraft/runtime/delivery.mjs:153",
+      "summary": "With config refusing a root-level docs root, cleanup.mjs docsRoot can no longer return \".\", so the age-out skip (:822), the \".\" branch at :533 and delivery's unsafe(\".\") guard are unreachable defensive code. Harmless; remove or keep as a guard in a later tidy."
+    },
+    {
+      "id": "f4-shell-form-edges",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-29-3",
+      "at": "payload/.joycraft/runtime/dispatch-start.mjs:111-125, :133-136",
+      "summary": "Probe: not detected as shell form (the spec list allows this): a single & (background), a FOO=1 env prefix (argv form runs \"FOO=1\" as the program), $HOME, a # comment, and $( or a backtick inside double quotes (the shell would expand them). In shell form a {files} written inside quotes (\"{files}\" or '{files}') nests the shellQuote quotes and breaks the word, and inside double quotes a file path with $( would expand. All need an unusual template; a later spec could treat an env prefix and a single & as shell form and refuse a quoted {files}."
+    },
+    {
+      "id": "f5-implement-trim-meaning",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-29-9",
+      "at": "payload/.agents/skills/joycraft-implement/SKILL.md:14",
+      "summary": "Dropping \"when available\" makes \"inspect the actual counterpart code and relevant owning decisions/context\" read as unconditional. No test or decision relies on the old words; the next sentence already says \"report unresolved coverage\". Acceptable."
+    },
+    {
+      "id": "f6-spec32",
+      "class": "follow-up",
+      "origin": "new",
+      "summary": "Spec 30 follow-ups f2/f6 are recorded as moved to spec 32 (review-followups.md:100-101), as intended; not reviewed here."
+    }
+  ],
+  "createdAt": "2026-11-22T05:28:25.756Z"
+}

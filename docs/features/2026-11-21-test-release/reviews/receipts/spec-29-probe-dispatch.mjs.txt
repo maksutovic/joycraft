@@ -1,0 +1,32 @@
+const root = process.argv[2];
+const m = await import(`${root}/payload/.joycraft/runtime/dispatch-start.mjs`);
+const cases = [
+  ['vitest run {files}', ['tests/a.test.ts']],
+  ['vitest run {files}', ['tests/{files}.test.ts', 'tests/b.test.ts']],
+  ['vitest run --dir={files}', ['a', 'b']],
+  ['vitest run {files} --reporter=dot', ["it's.test.ts"]],
+  ['pnpm build && vitest run {files}', ["it's a.test.ts", 'b$(x).test.ts']],
+  ['pnpm build && vitest run', ['a.test.ts']],
+  ["runner 'a && b' {files}", ['a.test.ts']],
+  ['runner "a && b" {files}', ['a.test.ts']],
+  ['runner "a \\" && b" {files}', ['a.test.ts']],
+  ['runner a\\&\\&b {files}', ['a.test.ts']],
+  ['runner a\;b {files}', ['a.test.ts']],
+  ['runner a & {files}', ['a.test.ts']],
+  ['runner a 2>&1 {files}', ['a.test.ts']],
+  ['FOO=1 vitest run {files}', ['a.test.ts']],
+  ['vitest run $HOME {files}', ['a.test.ts']],
+  ['runner "$(x)" {files}', ['a.test.ts']],
+  ['runner a#b {files}', ['a.test.ts']],
+  ['vitest run {files} # comment', ['a.test.ts']],
+  ['vitest run {files}{files}', ['a', 'b']],
+  ['vitest run x{files}y', ['a', 'b', 'c']],
+  ["vitest run 'x {files}", ['a']],
+  ['vitest run "x {files}', ['a']],
+  ["a && vitest 'x {files}", ['a']],
+];
+for (const [t, f] of cases) {
+  let out;
+  try { out = JSON.stringify(m.templateArgv(t, f)); } catch (e) { out = 'THROW ' + e.message; }
+  console.log(JSON.stringify(t), JSON.stringify(f), '->', out, 'shell=', m.hasShellSyntax(t));
+}

@@ -1,19 +1,11 @@
 # Cleanup checks
 
-`cleanup.mjs` reports; it never edits. Each finding has `check`, `path`,
-`detail` and `fix`.
-`entry-check.mjs` prints the findings about entry files, and nothing when
-they are clean. `--ci` prints one line for each gate finding (G below) and exits 2.
-
-| Check | Finds |
-|---|---|
-| `broken-link` (G) | A Markdown link to a file that does not exist |
-| `missing-path` (G) | A backticked project path in an entry file or context page that does not exist |
-| `entry-size` | An entry file over `cleanup.entryWords` words (default 1000) |
-| `temporal` | A date (`YYYY-MM-DD`) or a link to a dated file in an entry file, outside code spans |
-| `script-name` (G) | A package script that an entry file names and no `package.json` defines |
-| `codex-bytes` (G) | `AGENTS.md` files from the root to one folder over 32,768 bytes together, the Codex limit |
-| `import` (G) | An `@path` line in an entry file (not `@AGENTS.md` in `CLAUDE.md`), or `AGENTS.override.md` |
+`cleanup.mjs` reports; only `age-out --apply` moves files. The tidy step edits
+only the lines that `cleanup.mjs tidy` names. Each finding has `check`, `path`,
+`detail` and `fix`. `node .joycraft/runtime/cleanup.mjs --checks` lists every
+check, what it finds, and whether it is a gate. `entry-check.mjs` prints the
+findings about entry files, and nothing when they are clean; `--ci` prints one
+line for each gate finding and exits 2.
 
 `missing-path` skips globs, placeholders, URLs, paths outside the
 project and paths that Git ignores. A record rightly names removed paths and
@@ -21,6 +13,11 @@ working material, so it is exempt from `missing-path` and `working-link`: a
 page with `type: log` or `type: history` frontmatter, `decision-log.md` and
 `shipped*.md`. `entry-check.mjs lost --base <rev>` lists the lines
 that a change dropped.
+
+`gate-rule` names an entry-file rule line, outside a table, that names the
+recorded `tests.gate` or `tests.full` command, so every agent runs it after
+each change. The line is the owner's rule: `joycraft-cleanup` offers its
+rewrite as one decision, and `update` shows it once.
 
 ## One pass
 
@@ -84,8 +81,8 @@ Decide the kind of each page first. The kind sets what "good" means.
   reader that a map row sends can read all of it. Aim for under 1,500 words;
   over 3,000 words is a finding.
 - **Log** (`type: log`). A dated record: decisions, operations, what shipped.
-  It is an audit trail: an agent searches it to learn why or
-  when, or to check for a regression, and never reads it at the start. A
+  An agent searches it to learn why or when, or to check for a
+  regression, and never reads it at the start. A
   current rule or current state that lives only in a log is misplaced: check
   that no later row reversed it, then state it in a guide; the log keeps the
   dated record.
@@ -110,8 +107,7 @@ it.
    log; anything temporal (a date, a status, paused, open, in progress, who
    decided); a copy of something that another place owns. Name the one home
    for each: a decision and its reason go to the decision log, an operation
-   or a status to its log, open work to the backlog (default `docs/backlog/`)
-   or a handoff.
+   or a status to its log, open work to the backlog (default `docs/backlog/`).
 4. **Shape.** What does a reader that this page's map row sends need, and how
    much must it read to get it? Propose the smallest change that fixes it:
    reorder, split, merge or move.
@@ -148,8 +144,8 @@ is a recommendation: show them as a page that the owner can veto.
 Above about 20,000 words of pages, first state
 the word count and the cost (about 25 tokens for each word). Then split the
 work into parts: the entry files are one part, and the pages are groups of
-about 20,000 words. One agent does each part, in parallel where the host has
-subagents and one after another where it has none. A small set is one part. A coordinator, the session
+about 20,000 words. One agent does each part, in parallel when the host has
+subagents. A small set is one part. A coordinator, the session
 that talks to the owner, runs the steps.
 
 1. **List.** Each page with its kind and size. Find what parses these files:
@@ -168,7 +164,10 @@ that talks to the owner, runs the steps.
    the claim. Each answer goes to the decision log in the owner's words.
 5. **Write the entry file last.** The coordinator writes it from the answers
    and applies the requests. No other agent changes an entry file, and no
-   agent commits.
+   agent commits. Then, in this attended pass only, never at session end, run
+   `cleanup.mjs age-out --days 14`. If it lists docs, ask once: "N working docs
+   have had no commit for 14 days. Archive them?" On a yes, run it again with
+   `--apply`. For each `skipped` entry it prints, say its reason and go on.
 6. **Check.** Give each finding a final status: fixed, left for the owner,
    or not done and why. Then an agent that wrote no edit checks the changed
    guides against the code (with no subagents: read them again yourself);

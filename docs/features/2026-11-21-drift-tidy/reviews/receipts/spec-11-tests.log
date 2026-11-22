@@ -1,0 +1,13 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-start-advice.test.ts (3 tests) 1418ms
+   ✓ session start advice from the tidy range > [AC:spec-11-1] a gone-symbol finding gives at most 3 lines, the last naming cleanup.mjs tidy; a clean fixture gives none  591ms
+   ✓ session start advice from the tidy range > [AC:spec-11-2] advice does not change the exit code and edits no file  595ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  16:05:17
+   Duration  1.63s (transform 15ms, setup 0ms, collect 14ms, tests 1.42s, environment 0ms, prepare 31ms)
+
+exit 0

@@ -1,0 +1,9 @@
+P1 four findings: {"status":2,"stderr":"","ms":131,"tidy":[{"check":"tidy","path":"docs/context/guide.md","lines":["docs/context/guide.md:3 names aaaOne, which this branch removed from the code.","docs/context/guide.md:5 names bbbTwo, which this branch removed from the code.","4 mapped doc lines name removed code: run `node .joycraft/runtime/cleanup.mjs tidy` now or at session end."],"detail":"docs/context/guide.md:3 names aaaOne, which this branch removed from the code. docs/context/guide.md:5 names bbbTwo, which this branch removed from the code. 4 mapped doc lines name removed code: run `node .joycraft/runtime/cleanup.mjs tidy` now or at session end.","fix":"Run `node .joycraft/runtime/cleanup.mjs tidy` and fix the lines it names. Do not fix them at session start."}]}
+P2 entry-file only: {"status":2,"stderr":"","ms":125,"tidy":[]}
+P3 no git: {"status":2,"stderr":"","ms":41,"tidy":[]}
+P4 trunk only: {"status":2,"stderr":"","ms":120,"tidy":[]}
+P5 run: {"status":2,"stderr":"","ms":121,"tidy":[{"check":"tidy","path":"docs/context/guide.md","lines":["docs/context/guide.md:1 names aaaOne, which this branch removed from the code.","1 mapped doc line names removed code: run `node .joycraft/runtime/cleanup.mjs tidy` now or at session end."],"detail":"docs/context/guide.md:1 names aaaOne, which this branch removed from the code. 1 mapped doc line names removed code: run `node .joycraft/runtime/cleanup.mjs tidy` now or at session end.","fix":"Run `node .joycraft/runtime/cleanup.mjs tidy` and fix the lines it names. Do not fix them at session start."}]}
+P5 files before/after (snapshot taken after the reviewer git status, around the wiring run only): 161a44553a607495 (28 files) / 161a44553a607495 (28 files)
+P5 status before/after: ["",""]
+P6 dirty: {"status":2,"lines":2,"statusSame":true}
+exit 0

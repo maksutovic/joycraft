@@ -1,0 +1,33 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-archive-named-files.test.ts tests/runtime-archive-links.test.ts tests/runtime-archive-as-is.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-archive-as-is.test.ts (7 tests) 1644ms
+   ✓ archive as is > [AC:spec-8-1] a feature with one in-review spec is refused by default and archived with --as-is --owner-instruction  330ms
+ ✓ tests/runtime-archive-links.test.ts (7 tests) 1767ms
+ ✓ tests/runtime-archive-named-files.test.ts (18 tests) 12948ms
+   ✓ archive lists files that name the feature folder > [AC:spec-13-2] --apply --rewrite rewrites the test to the archive path, runs it green and archives  424ms
+   ✓ archive lists files that name the feature folder > [AC:spec-13-3] a red rewritten test is held and restored; an unlisted file or no tests.focused refuses before any edit  772ms
+   ✓ archive review 13 fixes > [review-13-1] SIGTERM during the test run restores and moves back; a rerun is held  4738ms
+   ✓ archive review 13 fixes > [review-13-1] SIGKILL of the archive and its test leaves a pending record; any rerun restores it and is held  486ms
+   ✓ archive review 13 fixes > [review-13-2] only the features home path with a path boundary names the folder  384ms
+   ✓ archive review 13 fixes > [review-13-4] [review-13-5] a red run reports what the test itself changed and leaves no empty archive home  382ms
+   ✓ archive review 13 fixes > [review-13-7] tests.focused is split into shell words, so a quoted argument stays one word  365ms
+   ✓ archive review 13 round 2 fixes > [review-13-r2-1] a user note added in the archive folder holds and keeps everything  387ms
+   ✓ archive review 13 round 2 fixes > [review-13-r2-1] a test edited after the interruption keeps the edit and holds  306ms
+   ✓ archive review 13 round 2 fixes > [review-13-r2-1] after git restore, an edit in the archived copy is kept and the call holds  308ms
+   ✓ archive review 13 round 2 fixes > [review-13-r2-1] a sibling feature's later green rewrite of a shared test is kept  571ms
+   ✓ archive review 13 round 2 fixes > [review-13-r2-1] two interrupted features sharing a test: the wrong order holds, the right order restores all  653ms
+   ✓ archive review 13 round 2 fixes > [review-13-r2-1] a hand-edited record pointing at src is refused and touches nothing  1506ms
+   ✓ archive review 13 round 2 fixes > [review-13-r2-2] a kill between the two renames is recovered from the staging folder  569ms
+   ✓ archive review 13 round 2 fixes > [review-13-r2-4] a green rewrite keeps bytes that are not UTF-8  318ms
+
+ Test Files  3 passed (3)
+      Tests  32 passed (32)
+   Start at  19:24:43
+   Duration  13.14s (transform 63ms, setup 0ms, collect 102ms, tests 16.36s, environment 0ms, prepare 109ms)
+
+exit 0

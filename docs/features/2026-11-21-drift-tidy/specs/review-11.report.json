@@ -1,0 +1,341 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "81b88baf83949939191afaf8d120423effd7a906",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 11,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/11-start-advice.md",
+    "criteria": [
+      {
+        "id": "spec-11-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/11-start-advice.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-11-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/11-start-advice.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-11-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/11-start-advice.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "2d6c5be823e377d555c284db57bd50a000adb70f34e32f3a597fc541335bfccd",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/11-start-advice.md",
+        "kind": "requirement",
+        "sha256": "e5542a8552bccda7be2efa8b1cbbc98086277f5e15628bf00b3740a62fe166d9",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-entry/SKILL.md",
+        "kind": "code",
+        "sha256": "92acef3063aab574ef6b8d0ded31670859acec1967aed6dc985be09d9b02db3b",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/entry-check.mjs",
+        "kind": "code",
+        "sha256": "60a65e2c2d67ace798ce47b7ef46b9d9c2ff85d04be889ac9e1f7c1e3dc1b4eb",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/wiring.mjs",
+        "kind": "code",
+        "sha256": "732c77231e8c7ece45e419ce0abee0b322cd4da11276cd1cef59694ee502530b",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-start-advice.test.ts",
+        "kind": "check",
+        "sha256": "8f42902a7dc848f54248dce3e0b36a0f76c3017fc7aa5b0a1c5a0a8fb44e8ca6",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          11
+        ]
+      },
+      "governing": []
+    },
+    "identity": "e7a153f6464ec323972cf6db053b27e6f935fd015b60eaf0b419f2f149ee83e5"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ad3d29ba195df1dbf"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "abd7933afda66d87d"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-11-1-advice-at-most-3-lines",
+      "subjectIdentity": "e7a153f6464ec323972cf6db053b27e6f935fd015b60eaf0b419f2f149ee83e5",
+      "criteria": [
+        "spec-11-1"
+      ],
+      "representativeInput": "Git fixture: main with src/widget.ts and docs/context/guide.md naming `getWidget`, mapped from AGENTS.md; feature branch deletes getWidget (and a clean variant that keeps it); node payload/.joycraft/runtime/wiring.mjs --root <fixture>",
+      "expected": "One `tidy` advice item of 1 to 3 lines, the last naming cleanup.mjs tidy and the finding at docs/context/guide.md:3; no tidy item in the clean fixture",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-11-1] passed (3/3 in the file): one tidy item, 2 lines, last line contains `cleanup.mjs tidy`, text names docs/context/guide.md:3; clean fixture gives []. The advice is produced by tidyAdvice in entry-check.mjs:36 and pushed into the wiring.mjs main output (wiring.mjs:186-191), the command the entry skill runs first (joycraft-entry SKILL.md:11,21).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-tests.log",
+              "sha256": "7e1e6f8a20d9c4c7d241bddd7572222e8773bd2c35baa66415a8a2cb18216dda"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-start-advice.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Reviewer probes: P1 four findings still give exactly 3 lines (2 named, then \"4 mapped doc lines name removed code: run `node .joycraft/runtime/cleanup.mjs tidy` ...\"); P2 a removed symbol named only in AGENTS.md (entry file, report-only) gives no tidy advice; P3 a folder without Git gives no tidy advice and empty stderr.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probes.log",
+              "sha256": "dff4b2d0723ae99cdfe4cc7e1a62210db0ebee609ccf6912cb082f3c45786b90"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probe.mjs",
+              "sha256": "31a6ebffc852246ce4e373d2a323813b60e2ff9780ece30b307de03cf2f4203b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probe.mjs",
+              "<repo-root>",
+              "<scratch-dir>"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-11-2-exit-code-and-no-writes",
+      "subjectIdentity": "e7a153f6464ec323972cf6db053b27e6f935fd015b60eaf0b419f2f149ee83e5",
+      "criteria": [
+        "spec-11-2"
+      ],
+      "representativeInput": "Same fixtures with and without the finding; this repository (feature/drift-tidy, 730 commits, 1004 tracked files) and a full clone with main moved to the root commit and on main",
+      "expected": "Same exit code with and without the finding; git status and file mtimes unchanged by the run",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-11-2] passed: exit status equal with and without the finding; git status --porcelain empty after the run.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-tests.log",
+              "sha256": "7e1e6f8a20d9c4c7d241bddd7572222e8773bd2c35baa66415a8a2cb18216dda"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-start-advice.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "P5: the file snapshot (every path outside .git/objects with mtime and size) is identical before and after the wiring run, 28 files, and git status is unchanged; P6: a dirty working tree keeps its exact status. Source: wiring.mjs sets exitCode only from result.wired; tidyAdvice only reads (tidyReport quick, no customChecks, no cleanupReport).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probes.log",
+              "sha256": "dff4b2d0723ae99cdfe4cc7e1a62210db0ebee609ccf6912cb082f3c45786b90"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probe.mjs",
+              "sha256": "31a6ebffc852246ce4e373d2a323813b60e2ff9780ece30b307de03cf2f4203b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probe.mjs",
+              "<repo-root>",
+              "<scratch-dir>"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Start cost on a large repo: this worktree (211-commit merge-base range) 0.11-0.12 s per run vs 0.02 s for checkWiring alone; worst case (whole 730-commit history as the range) 0.15-0.18 s; default branch path (last 7 days / 100 commits) 0.23-0.25 s and it gave a real 3-line item. git status unchanged by every run.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-cost.log",
+              "sha256": "3e6b1da22e09fe64bf287c6188a2fa86e5502ad57a8a1b0e311f6d61ad9b1708"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "payload/.joycraft/runtime/wiring.mjs",
+              "--root",
+              "."
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-11-3-shallow-skips",
+      "subjectIdentity": "e7a153f6464ec323972cf6db053b27e6f935fd015b60eaf0b419f2f149ee83e5",
+      "criteria": [
+        "spec-11-3"
+      ],
+      "representativeInput": "git clone --depth 1 --branch feature of the gone-symbol fixture; wiring.mjs --root <clone>",
+      "expected": "No tidy advice and empty stderr",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-11-3] passed: stderr is empty and the advice has no tidy item. Source: tidyRange returns skipped for a shallow repository (cleanup.mjs:449) and tidyReport then adds no range findings, so tidyAdvice returns null.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-tests.log",
+              "sha256": "7e1e6f8a20d9c4c7d241bddd7572222e8773bd2c35baa66415a8a2cb18216dda"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-start-advice.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-channel-reading",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-11-1",
+      "summary": "Implementer-noted gap: the spec names the channel as `entry-check.mjs`; the advice function lives in entry-check.mjs (tidyAdvice) and prints through wiring.mjs, which the entry skill runs first. The brief decision start-advice = entry says \"At most 3 lines through wiring.mjs\", so this meets the brief.",
+      "assumption": "The spec parenthetical names where the function lives, and the brief decision names the printing channel; both hold."
+    },
+    {
+      "id": "f2-cleanup-not-input",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:516",
+      "summary": "Commit ce49232 also changed cleanup.mjs (tidyReport `quick`: skips project checkers and the standing count). That counterpart is not a declared verification input, so this subject does not bind it. The reviewer read the diff and the end-to-end tests cover it through wiring.mjs; add the path to the inputs if the coordinator wants it bound."
+    },
+    {
+      "id": "f3-installed-copies",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": ".joycraft/runtime/wiring.mjs",
+      "summary": "The repo's installed .joycraft/runtime/wiring.mjs, .joycraft/runtime/entry-check.mjs and .agents/skills/joycraft-entry/SKILL.md differ from payload/ (payload/PIN matches, spec-11-pin.log). Sessions in this repo do not see the advice until a reinstall."
+    },
+    {
+      "id": "f4-wording-on-trunk",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/entry-check.mjs:40",
+      "summary": "The line says \"which this branch removed from the code\" also on the default branch, where the range is the approximate last 7 days / 100 commits (seen in spec-11-cost.log on main)."
+    },
+    {
+      "id": "f5-import-outside-try",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/wiring.mjs:189",
+      "summary": "The dynamic import of entry-check.mjs is outside a try; tidyAdvice never throws, but a failing import (partial install) would make the whole wiring check throw instead of skipping the advice."
+    },
+    {
+      "id": "f6-net-range",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-cost.log",
+      "summary": "Range findings are net diffs: the whole-history range gave no finding while the 100-commit window on main gave 2, because a symbol added and removed inside one range nets out. Spec 3 territory; noted only."
+    },
+    {
+      "id": "f7-test-input",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "tests/runtime-start-advice.test.ts is a declared check input and the startup trace showed all 3 criteria traced (lines 37, 48, 57); no change needed."
+    }
+  ],
+  "createdAt": "2026-11-22T00:07:39.000Z"
+}

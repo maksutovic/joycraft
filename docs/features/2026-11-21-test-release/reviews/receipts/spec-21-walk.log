@@ -1,0 +1,155 @@
+project=/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T//jc-r21-walk-QBlLxN base=4e461d971342d41f7d564a3317d9388f7d7357d2
+== Measure first: full suite once, with the runner's duration output, through evidence.mjs
+{
+  "command": {
+    "argv": [
+      "npm",
+      "test"
+    ],
+    "exitCode": 0
+  },
+  "receipts": [
+    {
+      "path": "receipts/full.log",
+      "sha256": "14b6276c0e5783b8cc580bcba2a5e20fea6f8fb5f61cc4e3a52551863804e6d3"
+    }
+  ],
+  "timedOut": false,
+  "timeoutMs": 300000,
+  "revision": {
+    "commit": "4e461d971342d41f7d564a3317d9388f7d7357d2",
+    "dirty": false
+  },
+  "facts": {
+    "wallMs": 1790,
+    "load": [
+      6.00732421875,
+      6.00634765625
+    ],
+    "cores": 14,
+    "loaded": false
+  }
+}
+measure exit=0
+-- receipt: runner line, per-file durations, footer
+runner: concurrency=14 (CI=1)
+✔ finishes within budget (31.519333ms)
+✔ runner config works (30.182583ms)
+✔ discount total (0.288042ms)
+✔ rate comes back (0.060875ms)
+✔ total after the cache warms (1502.811333ms)
+ℹ duration_ms 1605.285917
+joycraft-evidence: {"wallMs":1790,"load":[6.00732421875,6.00634765625],"cores":14,"loaded":false,"argv":["npm","test"],"exitCode":0,"timedOut":false,"revision":"4e461d971342d41f7d564a3317d9388f7d7357d2","dirty":false}
+== Find: what every run pays (global setup) -- a focused run of one fast file
+{
+  "command": {
+    "argv": [
+      "npm",
+      "test",
+      "--",
+      "test/inner/a.test.mjs"
+    ],
+    "exitCode": 0
+  },
+  "receipts": [
+    {
+      "path": "receipts/focused-inner.log",
+      "sha256": "35cbe82c572d5e8581f19aa96d82cf63ae569a78f410c7ff3a3e41cfc38a30f9"
+    }
+  ],
+  "timedOut": false,
+  "timeoutMs": 300000,
+  "revision": {
+    "commit": "4e461d971342d41f7d564a3317d9388f7d7357d2",
+    "dirty": false
+  },
+  "facts": {
+    "wallMs": 218,
+    "load": [
+      6.00634765625,
+      6.00634765625
+    ],
+    "cores": 14,
+    "loaded": false
+  }
+}
+focused exit=0
+{
+  "command": {
+    "argv": [
+      "node",
+      "--test",
+      "test/inner/a.test.mjs"
+    ],
+    "exitCode": 0
+  },
+  "receipts": [
+    {
+      "path": "receipts/focused-nosetup.log",
+      "sha256": "3b279bf724423318328312e80abeaed01612af5d3567b5a9d154447c9ccfe203"
+    }
+  ],
+  "timedOut": false,
+  "timeoutMs": 300000,
+  "revision": {
+    "commit": "4e461d971342d41f7d564a3317d9388f7d7357d2",
+    "dirty": false
+  },
+  "facts": {
+    "wallMs": 62,
+    "load": [
+      6.00634765625,
+      6.00634765625
+    ],
+    "cores": 14,
+    "loaded": false
+  }
+}
+focused-without-setup exit=0
+== Find: scans the text's bullets point at
+-- real waits
+test/sleep.test.mjs:4:  await new Promise((r) => setTimeout(r, 1500)); // fixed sleep
+test/flaky.test.mjs:3:  const t0 = Date.now(); await new Promise((r) => setTimeout(r, 30));
+-- controls keyed on CI
+./run-tests.mjs:3:const concurrency = process.env.CI ? availableParallelism() : 2;
+./run-tests.mjs:4:console.log(`runner: concurrency=${concurrency} (CI=${process.env.CI ?? ''})`);
+-- nested runners
+test/nested.test.mjs:3:  const r = spawnSync(process.execPath, ['--test', 'test/inner/'], { encoding: 'utf8' }); // nested test runner, default workers
+-- no real oracle
+test/self.test.mjs:3:test('discount total', () => { const v = total(3, 10, 0.1); assert.equal(v, v); }); // compares a value with itself
+test/self.test.mjs:5:  const client = { get: async () => ({ value: 1.25 }) }; // the mock supplies the asserted behavior
+-- flaky (second full run at the same tree)
+{
+  "command": {
+    "argv": [
+      "npm",
+      "test"
+    ],
+    "exitCode": 0
+  },
+  "receipts": [
+    {
+      "path": "receipts/full-2.log",
+      "sha256": "911ae2e0e369d7b6e48b1b88be1db8fea4b4bca2d2dfea225b776ee01f58e6db"
+    }
+  ],
+  "timedOut": false,
+  "timeoutMs": 300000,
+  "revision": {
+    "commit": "4e461d971342d41f7d564a3317d9388f7d7357d2",
+    "dirty": false
+  },
+  "facts": {
+    "wallMs": 1738,
+    "load": [
+      6.00634765625,
+      6.00634765625
+    ],
+    "cores": 14,
+    "loaded": false
+  }
+}
+second run exit=0
+joycraft-evidence: {"wallMs":1738,"load":[6.00634765625,6.00634765625],"cores":14,"loaded":false,"argv":["npm","test"],"exitCode":0,"timedOut":false,"revision":"4e461d971342d41f7d564a3317d9388f7d7357d2","dirty":false}
+== Review edits no test: tree vs base
+tests untouched (git diff --quiet exit 0)

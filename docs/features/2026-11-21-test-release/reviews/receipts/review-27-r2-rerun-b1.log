@@ -1,0 +1,34 @@
+OK   gate="pnpm verify" "Check: run pnpm verify before merging." -> true
+OK   gate="pnpm verify" "Check: pnpm verify — then read the log." -> true
+OK   gate="pnpm verify" "Check: pnpm verify – then read the log." -> true
+OK   gate="pnpm verify" "Check: pnpm verify - then read the log." -> true
+OK   gate="pnpm verify" "Check: pnpm verify—then read." -> true
+OK   gate="pnpm verify" "Check: `pnpm verify` passes." -> true
+OK   gate="pnpm verify" "Check: `pnpm verify --run` passes." -> false
+OK   gate="pnpm test" "`pnpm test tests/x.test.ts`" -> false
+OK   gate="pnpm test" "pnpm test tests/x.test.ts" -> false
+OK   gate="pnpm test" "pnpm test -- --run" -> false
+OK   gate="pnpm test" "pnpm test --run" -> false
+OK   gate="pnpm test" "pnpm test FOO=1" -> false
+OK   gate="pnpm test" "pnpm test x.test.ts" -> false
+OK   gate="pnpm test" "pnpm test -t name" -> false
+OK   gate="pnpm test" "Check: pnpm test-unit passes" -> false
+OK   gate="pnpm test" "Check: pnpm test's output" -> false
+OK   gate="pnpm test" "Check: run pnpm test unit" -> true
+OK   gate="pnpm test" "The pnpm test script is slow, so run `node --test t.mjs`." -> true
+OK   gate="pnpm test" "Check: `vitest run tests/a.test.ts` (not pnpm test)." -> true
+OK   gate="pnpm test" "Check: `vitest run tests/a.test.ts`; see pnpm testing notes." -> false
+OK   gate="pnpm test" "Check: mypnpm test runs" -> false
+OK   gate="pnpm test" "Check: `pnpm test` vs `pnpm test tests/a.test.ts`" -> true
+OK   gate="pnpm test" "Check: `pnpm test tests/a.test.ts` then pnpm test" -> true
+NOTE gate="make" "Check: make sure the file exists with `node t.mjs`." -> true
+NOTE gate="make check" "Check: make check that it works" -> true
+OK   gate="pnpm test && pnpm typecheck" "Check: run pnpm test && pnpm typecheck before" -> true
+OK   gate="pnpm verify" "Check: `node v.mjs` prints \"pnpm verify\" for the hint." -> true
+OK   gate="pnpm verify" "Check: pnpm verify2 runs" -> false
+OK   gate="pnpm verify" "Check: pnpm verifyé runs" -> false
+fence "- Check: run it\n  ```\n  pnpm verify\n  ```" -> ["  pnpm verify"] names: true
+fence "- Check: run it\n  ```sh\n  pnpm verify\n  ```" -> ["  pnpm verify"] names: true
+fence "- Check: run it\n  ```\n  pnpm verify tests/a.test.ts\n  ```" -> ["  pnpm verify tests/a.test.ts"] names: false
+fence "- Check: run it\n  ```\n  pnpm  verify\n  ```" -> ["  pnpm  verify"] names: true
+fence "- Check: run it\n  ~~~\n  pnpm verify\n  ~~~" -> ["  pnpm verify"] names: false

@@ -1,0 +1,278 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "3b6c101990e8f190af263ee71a79ca8fdc391a33",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 6,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/06-archive-ignore.md",
+    "criteria": [
+      {
+        "id": "spec-6-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/06-archive-ignore.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-6-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/06-archive-ignore.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-6-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/06-archive-ignore.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "7fad9c7999745b05d34454ef46f5ca618fea1c8f356b4916b98f4397c49563c1",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/06-archive-ignore.md",
+        "kind": "requirement",
+        "sha256": "6fa44631cac3eede5d7ae9de55b2717eaf8611645109a35268f59fee7851dcd2",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "07dc7a62e749ebb2ea2c1cb838be05ec49ea686723a2f6c3fc8e3948aad9d4e2",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/update.md",
+        "kind": "code",
+        "sha256": "1b2c9587ebcf2525202ef7725013a58d14ec083ef305cef3f88808d3e920b10a",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "d7725e5351d134043cd774aa174e057790a6dfe7e589ee43822a998a22cca499",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          6
+        ]
+      },
+      "governing": []
+    },
+    "identity": "618468df858c4b37f368aee99284f057d4c57217960ded49376ce635f7bba1bd"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "add5a4cc68ca18886"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a5fcee63b436f4019"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-6-1-check-apply-idempotent",
+      "subjectIdentity": "618468df858c4b37f368aee99284f057d4c57217960ded49376ce635f7bba1bd",
+      "criteria": [
+        "spec-6-1"
+      ],
+      "representativeInput": "Fresh git fixture with no .ignore; archive.mjs ignore --check, --apply, --apply, --check",
+      "expected": "--check prints missing; --apply creates .ignore with docs/archive/ once; a second --apply leaves the file byte-identical",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test [AC:spec-6-1] passed (5/5 tests in the file passed): check -> {file:.ignore,line:docs/archive/,status:missing}, no file created; apply -> added, file is exactly \"docs/archive/\\n\"; second apply -> present and Buffer.equals true. Reviewer probes also ran the CLI directly: no-trailing-newline line counts as present; decline then apply adds the line; bad or combined flags exit 1 with usage.",
+          "receipts": [
+            {
+              "path": ".joycraft/local/packets/spec-6-tests.log",
+              "sha256": "a5e531270c5df211513dea27595aa9e436e12e87c4568fd92c935dd004365f0e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-archive-ignore.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-6-2-custom-archive",
+      "subjectIdentity": "618468df858c4b37f368aee99284f057d4c57217960ded49376ce635f7bba1bd",
+      "criteria": [
+        "spec-6-2"
+      ],
+      "representativeInput": "Fixture joycraft.yaml with paths.archive: work/old and an existing .ignore \"node_modules/\" (no trailing newline)",
+      "expected": "--check reports work/old/ missing; --apply appends work/old/ on its own line",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test [AC:spec-6-2] passed: check -> line work/old/ missing; after apply .ignore is \"node_modules/\\nwork/old/\\n\". Reviewer probe: paths.archive \"work/old/\" (trailing slash) writes work/old/ once; ../evil and absolute archive paths are refused by workPaths with exit 1.",
+          "receipts": [
+            {
+              "path": ".joycraft/local/packets/spec-6-tests.log",
+              "sha256": "a5e531270c5df211513dea27595aa9e436e12e87c4568fd92c935dd004365f0e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-archive-ignore.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-6-3-setup-update-question",
+      "subjectIdentity": "618468df858c4b37f368aee99284f057d4c57217960ded49376ce635f7bba1bd",
+      "criteria": [
+        "spec-6-3"
+      ],
+      "representativeInput": "payload/.joycraft/references/setup.md and update.md text; payload word count",
+      "expected": "Each file names archive.mjs ignore and asks the question once in one or two sentences, running --apply on a yes; payload words stay within the cap",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test [AC:spec-6-3] passed: each file matches /archive\\.mjs ignore/ exactly once; [review-b-8] also checks each names --check ... missing and --decline. Source read: setup.md:307 and update.md:35-37 are one sentence each (ask once when --check prints missing; --apply on a yes, --decline on a no).",
+          "receipts": [
+            {
+              "path": ".joycraft/local/packets/spec-6-tests.log",
+              "sha256": "a5e531270c5df211513dea27595aa9e436e12e87c4568fd92c935dd004365f0e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-archive-ignore.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "payload-guard word tests passed (2 passed, 12 skipped by -t filter); printed \"payload words: 29834\", below the field-24 cap and below 29,917.",
+          "receipts": [
+            {
+              "path": ".joycraft/local/packets/spec-6-payload-words.log",
+              "sha256": "184b62e75f380bb90f675bf09a650bf9ddac444a8d0f7662fe5d15f19bb49e07"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/payload-guard.test.ts",
+              "-t",
+              "words"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-symlink-ignore",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:713",
+      "summary": "archiveIgnore --apply follows a symlinked .ignore and appends to its target, even outside the project (probe: .ignore -> ../target got docs/archive/ appended). readPreferences refuses symlinks for preferences.json; .ignore has no such check.",
+      "assumption": "The spec does not decide symlinked .ignore files; rare case, so not blocking."
+    },
+    {
+      "id": "f2-glob-spelling",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:701",
+      "summary": "An existing \"docs/archive/*\" line is not counted as present, so --check says missing and --apply adds a second, equivalent line. Only trailing \"/**\", leading \"./\" or \"/\" and trailing slashes are normalized.",
+      "assumption": "Equivalent-spelling coverage beyond the tested set is not a stated criterion."
+    },
+    {
+      "id": "f3-cwd-root",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:735",
+      "summary": "ignore uses process.cwd() as the project root; run from a subdirectory it reads that folder (no joycraft.yaml) and --apply would write .ignore there. The setup and update references run it from the root, so this is a usage limit.",
+      "assumption": "Commands are run from the project root, as the references show."
+    },
+    {
+      "id": "f4-installed-copy",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": ".joycraft/runtime/archive.mjs",
+      "summary": "The repo's installed .joycraft/runtime/archive.mjs differs from payload/ (it has no ignore subcommand). AGENTS.md names payload/ as the source and gives no refresh step, so this is left to the release flow.",
+      "assumption": "Installed copies refresh on the next install/update, not in this spec."
+    },
+    {
+      "id": "f5-co-implementer",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "Spec 6 was implemented by lane-b-archive (agent add5a4cc68ca18886) and then changed by fix-lane-b (agent a63ca5fcef335dbda, commit 5f0d3d2). implementerActor records lane-b-archive only."
+    }
+  ],
+  "createdAt": "2026-11-21T23:30:08.871Z"
+}

@@ -1,0 +1,417 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "e5777828aaf3ba38cae6821896783819d5eccf5f",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 4,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+    "criteria": [
+      {
+        "id": "spec-4-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "7cdbdf9517bba20697877b70034ed85dd629517e9381e7bc06f66c049d60729e",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+        "kind": "requirement",
+        "sha256": "73b1b224bfd496e62a04655f761be3db3d1489ff61d8472aa634b9a8d036db02",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "eb301346e9274e4961f43f6d6f7fe1402b2a44b8cc261ebcd8874e1a72484090",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-tidy-verify.test.ts",
+        "kind": "check",
+        "sha256": "47e2c911df56407187f05d00a756e5e5f5d7a6cb28a105369a8f3ed5282f657a",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "governing": []
+    },
+    "identity": "4a7740985ffde6f76baf51b12c17e7928cc280b0f1ca7387f5d27331ab037cca"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ab91b652c1d17b46d"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a024bacc447856d86"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "spec-4-1-fix-clears",
+      "criteria": [
+        "spec-4-1"
+      ],
+      "subjectIdentity": "4a7740985ffde6f76baf51b12c17e7928cc280b0f1ca7387f5d27331ab037cca",
+      "representativeInput": "Gone-symbol fixture: the branch removes getWidget; docs/context/guide.md line 5 names `getWidget()`; that line is edited to name `keep`.",
+      "expected": "--verify reports 0 remaining for that finding and exits 0.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests-r2.log",
+              "sha256": "d7136ea3db33a7cb011c788d960c09ce55dfc77cf59e5a64dbe0e342a53620f4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-tidy-verify.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "23/23 tests pass, including [AC:spec-4-1]: exit 0, status pass, cleared 1, no remaining getWidget finding."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2.log",
+              "sha256": "dbd118fb27fe418e39d761be43711b29ad1932226a778c4dc2cf64e86f355d17"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "sha256": "3ebf76b6db21f48042484b2b8d7c28e0da597b67019ea0a9f417a77d1bb460af"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Round-1 probe rerun: P1 valid fix -> exit 0, pass, cleared 1; X3 pure deletion -> pass; N1 no edits -> clean, message null."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2-new.log",
+              "sha256": "7b97d014b75de93b2d3814567bc11d696ab944004881707983e53e2c457ab8a2"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+              "sha256": "490bc825cb59cbc2474bd5c5020305038a37bddbeea865a7699fe7a0c24e8134"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "New probes: CR1 CRLF page fix -> pass; CR7 autocrlf -> pass; LL1 3 MB replacement line -> pass; LL4 HEAD page with a 3 MB line, fix of line 5 -> pass; P1 -> pass cleared 1."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-4-2-refuse-scope",
+      "criteria": [
+        "spec-4-2"
+      ],
+      "subjectIdentity": "4a7740985ffde6f76baf51b12c17e7928cc280b0f1ca7387f5d27331ab037cca",
+      "representativeInput": "Same fixture with edits outside the named line: entry files, unlisted files, no-hunk diffs (round-1 f1), CRLF pages, U+2028 pages, submodules, index-only renames, intent-to-add files, very long lines.",
+      "expected": "Exit non-zero naming each offending path, message null; per brief end-edits, also refuse any line outside the listed findings.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests-r2.log",
+              "sha256": "d7136ea3db33a7cb011c788d960c09ce55dfc77cf59e5a64dbe0e342a53620f4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-tidy-verify.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-4-2] tests pass (AGENTS.md, docs/context/other.md, unnamed line); review-4-1..5 tests pass (no-hunk rewrites, AGENTS.override.md, partial index, reformat evasion, hidden bits)."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2.log",
+              "sha256": "dbd118fb27fe418e39d761be43711b29ad1932226a778c4dc2cf64e86f355d17"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "sha256": "3ebf76b6db21f48042484b2b8d7c28e0da597b67019ea0a9f417a77d1bb460af"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "f1 fixed: B1 NUL rewrite, B2 *.md binary, B3 textconv, B4 committed -diff -> refused with line reasons; M1/M2 mode change -> refused. E3 AGENTS.override.md -> refused. I1/I2 partial index -> refused. C1/C2 -> refused. A1/A2 hidden bits -> refused. U1 (.git/info/exclude new file) still passes: round-1 limit, unchanged."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2-new.log",
+              "sha256": "7b97d014b75de93b2d3814567bc11d696ab944004881707983e53e2c457ab8a2"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+              "sha256": "490bc825cb59cbc2474bd5c5020305038a37bddbeea865a7699fe7a0c24e8134"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Refused as expected: CR4 (CRLF, unnamed line 7), CR5 whole page to CRLF, SM1/SM2 submodule add/move, SM4 page replaced by gitlink, IR1/IR2 index-only renames, IA1/IA2/IA3 intent-to-add files, LL3 unnamed 3 MB line."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2-new.log",
+              "sha256": "7b97d014b75de93b2d3814567bc11d696ab944004881707983e53e2c457ab8a2"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+              "sha256": "490bc825cb59cbc2474bd5c5020305038a37bddbeea865a7699fe7a0c24e8134"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "FAIL",
+          "actual": "LS1: HEAD page has U+2028 inside line 6 (\"Note<U+2028>line.\"). Working tree fixes named line 5 and rewrites unnamed line 7 to \"New policy: push to main.\" -> exit 0, status pass, message \"docs: tidy 1 doc line ...\". git diff shows \"@@ -7 +7 @@ Note<U+2028>line.\" but the hunk regex .*\\n cannot cross U+2028, so that hunk is never read."
+        }
+      ],
+      "limits": [
+        "SM3: a submodule with ignore=all in .gitmodules moved to a new commit is hidden from git diff and git status; verify passes, and git commit -a also leaves it out. Recorded as a limit, like round-1 U1."
+      ]
+    },
+    {
+      "id": "spec-4-3-message",
+      "criteria": [
+        "spec-4-3"
+      ],
+      "subjectIdentity": "4a7740985ffde6f76baf51b12c17e7928cc280b0f1ca7387f5d27331ab037cca",
+      "representativeInput": "Passing fixture after the valid fix; no edits; mode-only change.",
+      "expected": "Subject 'docs: tidy N doc lines after <short head>' plus trailer 'Joycraft-Tidy: <base>..<head>'; nothing to commit with no edits; never 'tidy 0 doc lines'.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests-r2.log",
+              "sha256": "d7136ea3db33a7cb011c788d960c09ce55dfc77cf59e5a64dbe0e342a53620f4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-tidy-verify.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-4-3] passes: subject 'docs: tidy 1 doc line after <head7>', trailer 'Joycraft-Tidy: <base>..<head>'; no edits -> clean, message null; review-4-1 'never tidy 0 doc lines' passes."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2.log",
+              "sha256": "dbd118fb27fe418e39d761be43711b29ad1932226a778c4dc2cf64e86f355d17"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "sha256": "3ebf76b6db21f48042484b2b8d7c28e0da597b67019ea0a9f417a77d1bb460af"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "M1 mode-only change now refused with message null (round-1 'tidy 0 doc lines' fixed). P1 message has the subject and trailer."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2-new.log",
+              "sha256": "7b97d014b75de93b2d3814567bc11d696ab944004881707983e53e2c457ab8a2"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+              "sha256": "490bc825cb59cbc2474bd5c5020305038a37bddbeea865a7699fe7a0c24e8134"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "P1 message: \"docs: tidy 1 doc line after <head7>\" + \"Joycraft-Tidy: <base>..<head>\"; N1 -> clean, message null; every refused probe has message null."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [
+    "f7-hunk-regex-line-separator: tidy --verify skips a hunk whose heading or body holds U+2028/U+2029, so an unnamed line can be rewritten and verify passes."
+  ],
+  "findings": [
+    {
+      "id": "f1-no-hunk-bypass",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-4-2",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:600",
+      "summary": "Round-1 blocking finding: FIXED in d66e927. rawDiff passes --text --no-textconv; notLines and the no-hunk guard refuse mode, type and binary changes (probes B1-B4, M1, M2 refused; tests review-4-1 pass). Listed only to record its status."
+    },
+    {
+      "id": "f7-hunk-regex-line-separator",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-4-2",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:651",
+      "summary": "Regression from d66e927. The new hunk regex /^@@ ... @@.*\\n(...)/gm needs .*\\n after the header, but JS \".\" does not match U+2028 or U+2029. Git puts the nearest preceding \"funcname\" line (any line that starts with a letter, or a line chosen by a custom diff.<driver>.xfuncname) after @@. When that HEAD line holds U+2028/U+2029, the regex skips the whole hunk, and its lines are never checked. Probe LS1: valid fix of line 5 plus a rewrite of unnamed line 7 passes with a commit message. The round-1 regex (header only, no .*\\n) did read that hunk. Fix direction: match the header with [^\\n]* and the body lines with [^\\n]* (or split the diff on \"\\n\"), and refuse when the number of @@ lines differs from the number of parsed hunks."
+    },
+    {
+      "id": "f8-crlf-stillnames-skipped",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:651",
+      "summary": "Same root cause in the hunk body: [-+\\\\].* stops at \\r (and U+2028), so on a CRLF page the body capture ends after the first \"-\" line and \"fresh\" is empty. The new stillNames guard (round-1 f4) then never runs: CR2 (getWidget() without backticks) and CR3 (`getWidget ()`) on a CRLF page pass; LS2 (U+2028 before getWidget()) passes. Spec criteria still hold (the finding itself is cleared), so this is a follow-up; the f7 fix also fixes it."
+    },
+    {
+      "id": "f9-submodule-ignore-all",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:627",
+      "summary": "Probe SM3: a submodule with ignore=all in .gitmodules moved to a new commit is invisible to git diff, so verify passes. git commit -a also leaves it out, so the tidy commit stays clean; same class as the round-1 U1 limit.",
+      "assumption": "Verify needs to bound only what git commit -a would commit."
+    },
+    {
+      "id": "f6-installed-copy",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": ".joycraft/runtime/cleanup.mjs:1",
+      "summary": "Round-1 follow-up still open: the installed .joycraft/runtime/cleanup.mjs still differs from payload/. Sync before release if AGENTS.md requires it."
+    }
+  ],
+  "notes": "Round 2. The packet reportDestination is review-4.report.json (round 1), so this report is written to review-4-r2.report.json. tests/runtime-cleanup-tidy-verify.test.ts is now a declared check input (round-1 f5 resolved; trace shows no untraced criteria). Round-1 f2 (AGENTS.override.md), f3 (index not measured) and f4 (reformat evasion, LF pages) are fixed. The test diff in d66e927 only adds tests; it removes no assertion and adds no skip.",
+  "createdAt": "2026-11-21T23:52:14.366Z"
+}

@@ -1,0 +1,20 @@
+$ node scripts/pin-payload.mjs --check
+payload/PIN matches payload/.
+exit: 0
+$ git diff ce49232^ HEAD --stat -- tests/ (existing test files changed since spec 11 base)
+ tests/drift-tidy-text.test.ts             |  45 ++++++++
+ tests/payload-guard.test.ts               |   7 ++
+ tests/runtime-archive-as-is.test.ts       |  32 ++++++
+ tests/runtime-archive-ignore.test.ts      |  30 ++++++
+ tests/runtime-archive-links.test.ts       |  54 +++++++++-
+ tests/runtime-cleanup-age-out.test.ts     |  59 ++++++++++
+ tests/runtime-cleanup-checks-seam.test.ts |  30 ++++++
+ tests/runtime-cleanup-checks.test.ts      |  32 ++++++
+ tests/runtime-cleanup-gone-symbol.test.ts |  10 ++
+ tests/runtime-cleanup-tidy-verify.test.ts | 172 +++++++++++++++++++++++++++++-
+ tests/runtime-cleanup-tidy.test.ts        |  26 +++++
+ tests/runtime-start-advice.test.ts        |  65 +++++++++++
+ 12 files changed, 556 insertions(+), 6 deletions(-)
+$ git log --format="%h %s" ce49232^..HEAD -- payload/.joycraft/runtime/wiring.mjs payload/.joycraft/runtime/entry-check.mjs payload/.agents/skills/joycraft-entry/SKILL.md tests/runtime-start-advice.test.ts
+17eba35 docs: skills call cleanup.mjs tidy and the payload ships fewer words
+ce49232 feat: session start advises tidy when mapped docs name removed code

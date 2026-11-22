@@ -1,0 +1,25 @@
+
+=== interrupt SIGINT group state
+{
+ "status": "",
+ "ignored": "!! .joycraft/",
+ "sourceThere": true,
+ "archiveThere": false,
+ "archiveEntries": null,
+ "test": "// docs/features/x\nsetTimeout(() => process.exit(1), 4000);\n"
+}
+
+=== rerun preview
+{
+ "status": 0,
+ "s": "preview",
+ "err": ""
+}
+
+=== rerun apply
+{
+ "status": 2,
+ "s": "held",
+ "err": ""
+}
+exit 0

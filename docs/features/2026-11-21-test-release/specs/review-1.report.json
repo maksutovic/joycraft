@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "98ea7bd12bb2a6047065f028233ceffd7affa6c4",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 1,
+    "specPath": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+    "criteria": [
+      {
+        "id": "spec-1-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-1-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "spec-tier",
+            "sota-page",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "cap-raise",
+            "word-budget"
+          ]
+        },
+        "sha256": "950eed80dd7f460151ffd4a58c4b08741f759f4d10eb656533acaee4c964219d",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "260c56928bb500e8e853ce0f8d45f798522cc2adeb9460cee2fcbb295a53ecaa",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+        "kind": "requirement",
+        "sha256": "173dd0fb16ba62b33cf108a934f91b20baf108b6cb0c81c8df761d762ac91dbb",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-testing/SKILL.md",
+        "kind": "code",
+        "sha256": "607c67503363a63d32ef0877fe51b481ff0815a102cf6fe5df533da37bdfb45c",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "40532ff9053ef9a0c49f14af3af4fc727429510efd5aac9f5fea4438fa57bfd2",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "f06eebbf62c568aa5fac52941b68197d76a0025db4a0ada46ccac1e4d4fcf295",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "spec-tier",
+            "sota-page",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "cap-raise",
+            "word-budget"
+          ]
+        }
+      ]
+    },
+    "identity": "f1044d90df84c4eeed2bfb4e7d9eb8d01c4e4f50ecacfd3c6caf9f1c7795b7ee"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "aedc3f36eba62ef14"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a6b60405c845a8b47"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "spec-1-1-every-spec-list",
+      "subjectIdentity": "f1044d90df84c4eeed2bfb4e7d9eb8d01c4e4f50ecacfd3c6caf9f1c7795b7ee",
+      "criteria": [
+        "spec-1-1"
+      ],
+      "representativeInput": "tests/payload-guard.test.ts:22-52 (EVERY_SPEC_FILES, isOnDemand) at 98ea7bd; links followed from the four listed skills, both agent files and the five listed references; payload/.joycraft/runtime/dispatch-preflight.mjs:382-403,468-470 (packet readFirst for both roles)",
+      "expected": "One exported list holds every payload text file an agent reads on every spec (\"the references they always read per spec\"), each with a reason; the 8 named references are on-demand; the two groups equal isPayloadText.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "FAIL",
+          "actual": "The list exists, each entry has a reason, all 11 files exist, the 8 named references are on-demand and the two groups equal isPayloadText (test [AC:spec-1-1] passes). Links from the listed skills, agents and references to architecture.md, artifacts.md, delivery.md, recurring-failures.md and worktrees.md are conditional in the text (\"when the boundary is unclear\", \"only when that view is part of the review material\", \"when parallel work ... is in play\"). But dispatch-preflight.mjs:400 puts .joycraft/references/worktrees.md in referencePaths for both roles with no condition, :468 copies those into packet readFirst, and :470 tells every implementer and reviewer \"Read the listed files first.\" This reviewer's own packet lists worktrees.md in readFirst. So worktrees.md (1,353 words) is read on every spec and is missing from EVERY_SPEC_FILES; the test comment at tests/payload-guard.test.ts:24-26 says it is read only \"when\". No other unconditional every-spec read of an on-demand payload file was found.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.log",
+              "sha256": "99bdbb2dc25d66d2c5c8979522392bc1fc8c1869a0fc72aaa5fcbf31a1adcccc"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.mjs",
+              "sha256": "3a695e78fe3998f5aab9bf4a2390fc79a167ecf159b0935e0fc8dc95647cfec9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.mjs",
+              "f157616a263266a867dbd897cf67ebae84be6eda",
+              ".joycraft/local/packets/tr-spec-1-reviewer.json"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Templates (.joycraft/templates/spec.md and others) are outside isPayloadText and were not judged."
+      ]
+    },
+    {
+      "id": "spec-1-2-two-caps",
+      "subjectIdentity": "f1044d90df84c4eeed2bfb4e7d9eb8d01c4e4f50ecacfd3c6caf9f1c7795b7ee",
+      "criteria": [
+        "spec-1-2"
+      ],
+      "representativeInput": "pnpm test tests/payload-guard.test.ts at 98ea7bd (run as node_modules/.bin/vitest run tests/payload-guard.test.ts)",
+      "expected": "Two caps replace [AC:payload-words-not-up] and [AC:spec-12-5]; the test passes and prints every-spec and on-demand counts.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "16/16 tests pass, exit 0. Prints \"every-spec words: 10797 (cap 10903, 106 spare)\" and \"on-demand words: 18922 (cap 21016, 2094 spare)\". The probe recomputed the base f157616 split independently: 10,848 every-spec, 19,016 on-demand, 29,864 total, which matches the constants at tests/payload-guard.test.ts:54-55. Both old tests are removed, as the Test changes section declares. The constants come from the grouping of spec-1-1; with worktrees.md every-spec they become cap 12,256 (12,150 now, 106 spare) and on-demand cap 19,663 (17,569 now, 2,094 spare), so the caps still hold after the fix.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-tests.log",
+              "sha256": "21e85ffe3bba019c5858a9b72ebe1f13ef1d413b0b588b90c540d3388f908e3b"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.log",
+              "sha256": "99bdbb2dc25d66d2c5c8979522392bc1fc8c1869a0fc72aaa5fcbf31a1adcccc"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-1-3-cap-fixtures",
+      "subjectIdentity": "f1044d90df84c4eeed2bfb4e7d9eb8d01c4e4f50ecacfd3c6caf9f1c7795b7ee",
+      "criteria": [
+        "spec-1-3"
+      ],
+      "representativeInput": "tests/payload-guard.test.ts:345-348 ([AC:spec-1-3]) with grown() at :149-153",
+      "expected": "200 extra words in the implement skill break the every-spec cap; 600 extra words in testing-review.md break nothing.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-3] passed. The fixture appends words to the in-memory bundle read; 200 words over 106 spare gives exactly one \"every-spec\" overage, and 600 words over 2,094 on-demand spare gives none.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-tests.log",
+              "sha256": "21e85ffe3bba019c5858a9b72ebe1f13ef1d413b0b588b90c540d3388f908e3b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-1-4-duplicate-cuts",
+      "subjectIdentity": "f1044d90df84c4eeed2bfb4e7d9eb8d01c4e4f50ecacfd3c6caf9f1c7795b7ee",
+      "criteria": [
+        "spec-1-4"
+      ],
+      "representativeInput": "git diff f157616 822b626 -- payload/.joycraft/references/setup.md payload/.agents/skills/joycraft-testing/SKILL.md",
+      "expected": "setup.md loses the Claude worktree paragraph and keeps the resource-lease paragraph; joycraft-testing loses the acceptance-test paragraph; worktrees.md keeps its copy; every-spec count drops.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-4] passed; every-spec 10,797 < 10,848 before. The diff removes setup.md:256-264 and joycraft-testing/SKILL.md:34-37 only.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-tests.log",
+              "sha256": "21e85ffe3bba019c5858a9b72ebe1f13ef1d413b0b588b90c540d3388f908e3b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: setup.md has 0 WorktreeCreate lines, keeps \"resource-lease convention\", worktrees.md keeps \"A `WorktreeCreate` hook replaces creation\"; worktrees.md:117 still holds the baseRef sentence from the cut setup paragraph.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.log",
+              "sha256": "99bdbb2dc25d66d2c5c8979522392bc1fc8c1869a0fc72aaa5fcbf31a1adcccc"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.mjs",
+              "sha256": "3a695e78fe3998f5aab9bf4a2390fc79a167ecf159b0935e0fc8dc95647cfec9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.mjs",
+              "f157616a263266a867dbd897cf67ebae84be6eda",
+              ".joycraft/local/packets/tr-spec-1-reviewer.json"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-worktrees-is-every-spec",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-1-1",
+      "at": "tests/payload-guard.test.ts:41",
+      "summary": "EVERY_SPEC_FILES omits .joycraft/references/worktrees.md, which every implementer and reviewer reads on every spec: dispatch-preflight.mjs:400 lists it in both roles' referencePaths without a condition, :468 makes it packet readFirst, and :470 says \"Read the listed files first.\" The comment at tests/payload-guard.test.ts:24-26 states the opposite. The spec's parenthetical names five references and the code matches that literal list, but the criterion and the coordinator interpretation define every-spec as \"the references they always read per spec\" / \"text an agent reads while working a spec\", which worktrees.md is. Fix: add worktrees.md with its reason, recompute the constants (base on-demand 17,663: caps 12,256 and 19,663; now 12,150 and 17,569, same 106 / 2,094 spare), correct the comment, and add worktrees.md to the spec's list. The cap still holds after the fix, so no text was moved to dodge the cap today; the error widens what may grow later.",
+      "assumption": "The parenthetical list is the decomposer's enumeration of the definition, not a closed definition; the reading closest to the brief (\"text read on every spec stays flat\") wins."
+    },
+    {
+      "id": "f2-occasional-skills-on-demand",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-test-release/brief.md:129",
+      "summary": "The cap-raise option text says every-spec is \"skills, agents, the references they always read\"; the coordinator interpretation (spec 98ea7bd) puts the session-end, entry, context, cleanup, retro and ui-slice skills on-demand. Under the original spec grouping the spare is the same 106 words, so this does not dodge today's cap, but about 10,300 words (occasional skills plus conditional references) now share the +2,000 growth budget. Session-end runs once per queue unattended. Owner may want to confirm the narrowing.",
+      "assumption": "The decision context \"text read on every spec stays flat\" governs over the shorthand \"skills\"."
+    },
+    {
+      "id": "f3-lost-rule",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-testing/SKILL.md:34",
+      "summary": "The spec-mandated cut of joycraft-testing:34-37 was not a full duplicate: \"Do not commit tests of one-off run state\" and \"or conflicts with a later owner decision\" now appear nowhere in the payload (probe git grep: none). implement:59 and joycraft-implementer.md:26 keep the rest. Spec 22 plans to cut implement:59 too; it should keep these clauses somewhere."
+    },
+    {
+      "id": "f4-fixture-depends-on-spare",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/payload-guard.test.ts:346",
+      "summary": "The 200-word fixture fails the every-spec cap only while spare is under 200 (106 now). Later cuts (spec 22 and others) can raise spare past 200 and make this test fail with no regression. Adding (EVERY_SPEC_CAP - everySpec + 1) words, or asserting at least that, keeps the check stable."
+    },
+    {
+      "id": "f5-stale-allowlist",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/payload-guard.test.ts:119",
+      "summary": "The allowlist entry for WorktreeCreate in setup.md no longer matches any line after the cut; it can be removed."
+    }
+  ],
+  "createdAt": "2026-11-22T02:19:03.369Z"
+}

@@ -1,0 +1,345 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "84fab84936d3a6e80161d9156b69b08926247c32",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 9,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/09-age-out.md",
+    "criteria": [
+      {
+        "id": "spec-9-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/09-age-out.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-9-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/09-age-out.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-9-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/09-age-out.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "84d57a3799a1a49a6e62e30ebbf8f173fa74d44a2016f0698410771f5a127c41",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/09-age-out.md",
+        "kind": "requirement",
+        "sha256": "85378845e03629854daedc15fd4281c6c9567eaf760ef6111d884a299baad4bc",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/cleanup.md",
+        "kind": "code",
+        "sha256": "90bca4d9ff1c9c72dbfc0c89be068e19d18ee9a210168efb72e909a81aecfcbb",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "64464850376b2e78dd33019bb2f9511fc8597ed0b553e1051f109b317e8fe731",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-age-out.test.ts",
+        "kind": "check",
+        "sha256": "33baa62901d1af516d78ebca2f8696fba6631219011c09748daf4fd45f3b72df",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          9
+        ]
+      },
+      "governing": []
+    },
+    "identity": "463f0d1c37792df06b0760185209b7fd9e24dea3b26ce7581df1d6a00ebc7b00"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ab91b652c1d17b46d"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "ab8838727f713cdd0"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-9-1-list-old-working-docs",
+      "subjectIdentity": "463f0d1c37792df06b0760185209b7fd9e24dea3b26ce7581df1d6a00ebc7b00",
+      "criteria": [
+        "spec-9-1"
+      ],
+      "representativeInput": "20/5-day GIT_COMMITTER_DATE fixture; round-1 and round-2 probe reruns; new probes: subfolder project, unicode/space/quoted names under .docs, NFD name, symlinked ancestor above the project root, case-insensitive collisions, a doc both installed and old",
+      "expected": "age-out --days 14 lists only working docs under the docs root older than 14 days, with count and age; nothing dropped without a skipped entry",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "17/17 tests pass, including [AC:spec-9-1] (only docs/research/old.md, 20 days) and the five new [review-9-r2-*] tests (.docs root, symlinked docs root and ancestor, tracked symlink doc, empty docs root, subfolder project).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-tests-r3.log",
+              "sha256": "9b599a377369e1e4bd01d9bb4f049738760af1382e2f7350b8259b34da3d0125"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-age-out.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-2 probe rerun: all 12 checks PASS, exit 0. Probe B (.docs root) now lists .docs/research/old.md, so round-2 blocking r2-f1 is fixed.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r2-r3.log",
+              "sha256": "9096717360551037df7082570c9e79a52fafc7f9e9fe74a5f2f2f49c0aa4e021"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r2.mjs",
+              "sha256": "bf07b1d624c6eb3e79ac6418691bbbb78e288879b4732ed9b3e9684cd3b286ac"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r2.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-3 probes: subfolder project (own joycraft.yaml, renamed archive) lists only the 20-day doc; unicode, space and NFD names under .docs list with 30 days; names Git log quotes (tab, double quote) are skipped with a reason, not dropped; a symlink above the project root does not trigger the symlink skip; wrong-case --root still lists; a Docs/docs config mismatch gives a skipped entry; an installed old doc is never listed (top-level and subfolder); acceptance fixture with GIT_COMMITTER_DATE only lists count 1 at 20 days. failures: 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r3-new.log",
+              "sha256": "c95a1030ef3f67b4f746d72dcd22f2be2a035af7a2e9a10f44904117b9f9a076"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r3.mjs",
+              "sha256": "63e71d7e0026bd6e6bfc286bd72988b46963325b38065deac9b4a1f4130fa2ba"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r3.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-9-2-apply-git-mv",
+      "subjectIdentity": "463f0d1c37792df06b0760185209b7fd9e24dea3b26ce7581df1d6a00ebc7b00",
+      "criteria": [
+        "spec-9-2"
+      ],
+      "representativeInput": "20/5-day fixture with --apply; subfolder project and --root two folders deep; unicode/space names; case-only target collision",
+      "expected": "Each listed doc moves with git mv to <archive>/working/<path under docs root>; renames in git status; no commit",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-9-2] passes: porcelain exactly \"R  docs/research/old.md -> docs/archive/working/research/old.md\", HEAD unchanged; [review-9-r2-5] subfolder apply passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-tests-r3.log",
+              "sha256": "9b599a377369e1e4bd01d9bb4f049738760af1382e2f7350b8259b34da3d0125"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-age-out.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-3 probes: subfolder apply gives porcelain \"R  app/notes/research/old.md -> app/notes/old/working/research/old.md\" with the sibling project untouched; deep --root a/b moves old and skips staged and edited docs as uncommitted; unicode/space docs move to .docs/archive/working/...; a target differing only by case (OLD.md) is skipped with \"already exists\" and nothing moves; acceptance fixture: rename in git status, commit count unchanged at 2.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r3-new.log",
+              "sha256": "c95a1030ef3f67b4f746d72dcd22f2be2a035af7a2e9a10f44904117b9f9a076"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r3.mjs",
+              "sha256": "63e71d7e0026bd6e6bfc286bd72988b46963325b38065deac9b4a1f4130fa2ba"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r3.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-2 apply probes (staged skip, existing target, space name, `.` root moves nothing, symlink doc not moved) still pass.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r2-r3.log",
+              "sha256": "9096717360551037df7082570c9e79a52fafc7f9e9fe74a5f2f2f49c0aa4e021"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r2.mjs",
+              "sha256": "bf07b1d624c6eb3e79ac6418691bbbb78e288879b4732ed9b3e9684cd3b286ac"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r2.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-9-3-attended-only",
+      "subjectIdentity": "463f0d1c37792df06b0760185209b7fd9e24dea3b26ce7581df1d6a00ebc7b00",
+      "criteria": [
+        "spec-9-3"
+      ],
+      "representativeInput": "payload/.joycraft/references/cleanup.md and the session-end skill",
+      "expected": "cleanup.md names age-out in the attended pass; the session-end skill does not",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-9-3] passes. Round-2 fix only changes cleanup.md:165 to \"For each `skipped` entry it prints, say its reason and go on.\" Under payload/, only cleanup.md and cleanup.mjs mention age-out.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-tests-r3.log",
+              "sha256": "9b599a377369e1e4bd01d9bb4f049738760af1382e2f7350b8259b34da3d0125"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-age-out.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "r3-f1-quoted-names-misreason",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:820",
+      "summary": "A doc name with a tab or double quote is skipped with \"Git shows no commit for it, so its age is unknown.\" The real cause: `git log --name-only` C-quotes such names even with core.quotepath=false, so the log map misses them. The doc is not dropped, and the attended pass says the reason, but the reason is wrong. Rare. Fix direction: read log names with -z.",
+      "assumption": "Very rare names; a visible skip is acceptable for this spec."
+    },
+    {
+      "id": "r3-f2-case-mismatch-config",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:804",
+      "summary": "On a case-insensitive filesystem, a config of Docs/... over a tracked docs/ folder passes the symlink check but gives \"Git tracks no file under Docs\". It is explained, not silent; the reason could name the case mismatch. Misconfiguration only."
+    },
+    {
+      "id": "r3-f3-check-input",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "tests/runtime-cleanup-age-out.test.ts is already a check input in the subject; no queue change needed. Round-3 code is from fix-spec-9-r2 (a33d8d844e48ddee6, 84fab84) on top of lane-a-tidy, fix-lane-a and fix-spec-9; implementerActor records lane-a-tidy as instructed."
+    },
+    {
+      "id": "r3-f4-report-path",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/review-9-r3.report.json",
+      "summary": "The packet's reportDestination is the existing round-1 path review-9.report.json; this report is written to review-9-r3.report.json so earlier FAIL reports are kept."
+    },
+    {
+      "id": "r3-f5-round1-probe-rerun",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r1-r3.log",
+      "summary": "Round-1 probe rerun (node docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe.mjs, exit 1, log sha256 a717c02525361fbbb200aab20499bc021dab1bdcd46a847e44e6c6476d0e81f7): 34 PASS lines and one FAIL, \"dot root lists notes/old.md\", which is obsolete by design per round 2's r2-f4 (a `.` root is skipped). Not used as PASS evidence because of its nonzero exit; every other round-1 line, including the round-1 apply probes, passes."
+    }
+  ],
+  "createdAt": "2026-11-22T00:22:12.652244Z"
+}

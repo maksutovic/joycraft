@@ -1,0 +1,18 @@
+$ node spec8-probe.mjs payload/.joycraft/runtime/archive.mjs  (reviewer probe script; temp git fixtures)
+PASS P1 as-is preview exits 0 :: status=0 stderr=
+PASS P1 preview leaves source and writes no archive
+PASS P2 as-is apply exits 0 :: status=0 stderr=
+PASS P2 in-folder report bytes preserved
+PASS P2 manifest ownerInstruction verbatim
+PASS P2 note quotes each instruction line verbatim
+PASS P2 note names spec 1
+PASS P2 note has no "accepted" claim beyond the disclaimer
+PASS P2 manifest historical.currentAcceptanceRenewed false
+PASS P2 manifest evidence empty (nothing accepted) :: []
+PASS P3 whitespace-only instruction refused :: status=1 stderr=Archive stopped: Invalid or duplicate argument: --owner-instruction
+PASS P4 instruction without --as-is refused :: status=1 stderr=Archive stopped: --owner-instruction is only for --as-is
+PASS P4 default archive still refuses (folder stays) :: status=1 stderr=Archive stopped: Verification needs at least one criterion
+PASS P5 --as-is without instruction (any order) exits non-zero naming --owner-instruction :: status=1 stderr=Archive stopped: Archive --as-is needs --owner-instruction "<the owner's own words>"
+PASS P6 tampered unverified.md refused on repeat :: status=1 stderr=Archive stopped: Archived as-is note is missing or changed: docs/archive/x/unverified.md
+failures: 0
+exit: 0

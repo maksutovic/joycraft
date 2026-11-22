@@ -1,0 +1,26 @@
+payload/.agents/skills/joycraft-implement/SKILL.md:19:when the boundary is unclear; a local repair needs no architecture review.
+payload/.agents/skills/joycraft-implement/SKILL.md:24:explicitly owner-accepted dependency. Choose independent ready work while an
+payload/.agents/skills/joycraft-implement/SKILL.md:99:and continue independent ready work. Treat a held `decision-needed` finding
+payload/.agents/skills/joycraft-implement/SKILL.md:115:through `evidence.mjs` at each point `coordinator.mjs gate-plan` prints, with
+payload/.agents/skills/joycraft-implement/SKILL.md:116:the receipt at a git-ignored path or after committing pending files. No push
+payload/.agents/skills/joycraft-implement/SKILL.md:117:without a green gate receipt (`delivery.mjs push --gate-receipt`; see
+payload/.agents/skills/joycraft-implement/SKILL.md:119:`coordinator.mjs gate-owner` picks the spec for the fix round, else bisect only
+payload/.agents/skills/joycraft-implement/SKILL.md:121:`AGENTS.md` says otherwise, push after each green gate, open one PR when no spec
+payload/.agents/skills/joycraft-implement/SKILL.md:122:can start, and read CI once, on the PR, after session end's push. After a second
+payload/.agents/skills/joycraft-verify/SKILL.md:49:Create a schema-v1 verification report tied to that subject, using the shared fields in [.joycraft/contracts/types.d.ts](../../../.joycraft/contracts/types.d.ts). For every declared criterion, provide PASS observations for its required evidence kinds. Keep unfiltered command output and its real exit status in hashed, project-relative receipts. A source scan supports only structural observations. Visual observations require a reviewer-inspected render plus route, state, viewport, interactions, and outcomes. Take runtime evidence once from the spec's own tests (the packet's `commands.focused`), never the project gate ([running tests](../../../.joycraft/references/testing.md#running-tests)); in wave mode, state "gate not run; due at wave end"; other evidence with the package's recorded tool, start command and evidence command from the packet's `reviewLoop` (`section`: the `Review loop` section of `AGENTS.md`; `local`: this machine's host tools), within that tool's `canShow`. A claim beyond `canShow`, or in a package the user skipped, is an agreed limit, not `UNVERIFIED`: check what the agreed tool can show, say in plain words how you checked, and leave what is left to the parent agent. A picture-only tool gives `interactions: []`. `UNVERIFIED` means a check that should have run and did not: the tool broke, the app did not start, or a render was saved but not inspected. On a tool break, first repair with what the user agreed to: restart the dev server, free the port, relaunch the browser or simulator, retry once. A repair never installs, upgrades or reconfigures anything. If it still fails, record `UNVERIFIED` with `cause: 'tool-break'` and the reason. Mark a failing result or an unresolved concern as `FAIL` or `UNVERIFIED` truthfully.
+payload/.agents/skills/joycraft-entry/SKILL.md:46:missing context permits explicit assumptions. Surface contradictions that change
+payload/.agents/skills/joycraft-session-end/SKILL.md:16:worktree prune, archive last with its commit, then one push that opens the PR.
+payload/.agents/skills/joycraft-session-end/SKILL.md:19:Read each touched queue and report the real state of every affected spec: `todo`, `in-review`, or `done`. `done` must have either an accepted PASS report receipt or a completion-helper owner-acceptance record bound to a current failed or unverified report; a commit, PASS command, or implementer assertion is not acceptance. Keep blocked or failed dependency branches explicit while identifying independent ready work that can continue next.
+payload/.joycraft/references/testing.md:26:- **Project gate:** the coordinator runs it at each `gate-plan` point (per
+payload/.joycraft/references/testing.md:27:  spec or per wave, `tests.gateRuns`); workers and reviewers run focused tests
+payload/.joycraft/references/testing.md:28:  only. A commit that changes only Joycraft records needs no test run.
+payload/.joycraft/references/delivery.md:39:- **When:** `node .joycraft/runtime/coordinator.mjs gate-plan --queue <queue>`
+payload/.joycraft/references/delivery.md:40:  prints the gate points. `tests.gateRuns: spec` (the default) gives one point
+payload/.joycraft/references/delivery.md:45:  gate with shell syntax counts only as `<shell> -c "<gate>"` (see
+payload/.joycraft/references/delivery.md:49:  inside the project. Write the receipt to a git-ignored path, or commit
+payload/.joycraft/references/delivery.md:51:- **Push:** `delivery.mjs push ... --gate-receipt <path>.log` refuses without a
+payload/.joycraft/references/delivery.md:54:- **On red:** `node .joycraft/runtime/coordinator.mjs gate-owner --queue <queue> --file <failing file>...`
+payload/.joycraft/references/delivery.md:58:- **CI:** read it once, on the PR, after session end's push (commit, then one
+payload/.joycraft/references/dispatch.md:114:observed and the reviewed inputs stay fixed. A worktree alone proves neither
+payload/.joycraft/references/worktrees.md:30:fresh-context requirement; a worktree alone does not satisfy it.
+AGENTS.md:18:- Push after each accepted spec. Open one PR when no spec of the queue can start.

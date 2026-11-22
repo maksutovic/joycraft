@@ -1,0 +1,27 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-queue-check-gate.test.ts (8 tests) 854ms
+   ✓ queue-check gate matching in prose (spec 27) > [AC:spec-27-1] plain text followed by a word or a dash, and a fenced line holding only the gate, name it; argument forms do not  315ms
+ ✓ tests/runtime-wave-gate.test.ts (17 tests) 23903ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-1] refuses a missing, non-gate, red or stale receipt with its own code and pushes nothing  2046ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-2] a green gate receipt on HEAD pushes without a second verifier  652ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-2] a project with no tests.gate keeps the -- <verifier> push  692ms
+   ✓ gate receipt review-7 fixes > [review-7-1] refuses a green receipt of a non-shell program given -c "<gate>"  497ms
+   ✓ gate receipt review-7 fixes > [review-7-1] still accepts a real shell receipt of sh -c "<gate>"  658ms
+   ✓ gate receipt review-7 fixes > [review-7-3] reads the footer with evidence.mjs readFooter: only the last line, only an object  571ms
+   ✓ gate receipt review-7 fixes > [review-7-4] refuses a gate receipt outside the project root  576ms
+   ✓ gate receipt review-7 fixes > [review-7-r2-1] a gate with shell syntax needs the shell form: split words are refused, a red sh -c run is refused  875ms
+   ✓ gate receipt review-7 fixes > [review-7-r2-1] the same gate pushes through sh -c when every command is green  730ms
+   ✓ gate receipt review-7 fixes > [review-7-r2-2] a shell form whose program is a relative path is refused; a bare name or absolute path is accepted  1651ms
+   ✓ spec 27 delivery polish > [AC:spec-27-13] a plain gate in shell form splits on spaces and tabs only; a shell path inside the project or (POSIX) in Windows form is refused  2360ms
+   ✓ spec 27 delivery polish > [AC:spec-27-14] a receipt on an ancestor of HEAD pushes when only docs-root paths changed since; any other path or a non-ancestor stays stale  1293ms
+   ✓ spec 27 delivery polish > [review-27-7] only Markdown and JSON under the docs root, or a non-symlink record file in a feature or archive folder, keeps an old receipt  3572ms
+   ✓ spec 27 delivery polish > [AC:spec-31-3] a feature or archive folder keeps an old receipt only for record extensions; a source file there needs the gate  7074ms
+   ✓ spec 27 delivery polish > [AC:spec-27-14] a docs root of . gives no exemption  468ms
+
+ Test Files  2 passed (2)
+      Tests  25 passed (25)
+   Start at  20:30:46
+   Duration  24.09s (transform 51ms, setup 0ms, collect 51ms, tests 24.76s, environment 0ms, prepare 72ms)
+

@@ -1,0 +1,264 @@
+== 7908d6f implement 1329 implementer 313 every-spec {"n":12,"total":12142}
+== 08beda2 implement 1308 implementer 324 every-spec {"n":12,"total":12139}
+== 955fdb0 implement 1308 implementer 329 every-spec {"n":12,"total":12164}
+== 26b6b5f implement 1308 implementer 329 every-spec {"n":12,"total":12164}
+== 5beb84d implement 1315 implementer 329 every-spec {"n":12,"total":12166}
+== HEAD implement 1315 implementer 329 every-spec {"n":12,"total":12166}
+skill has "runs once and fails before the code exists; its receipt comes first" true
+skill has "Add a test only when it can fail for a reason no existing test can" true
+skill has "one test may carry several `[AC:]` tags" true
+skill has "extend the existing test file first" true
+skill has "Do not commit tests of one-off run state" true
+skill has "one focused test per acceptance" false
+cut-check "before edits, stateful runtime work, or packet preparation" at 26b6b5f true HEAD false
+cut-check "Its first action is the documented project bootstrap" at 26b6b5f true HEAD true
+cut-check "Do not ask merely because a review failed" at 26b6b5f true HEAD false
+cut-check "Ask only when" at 26b6b5f true HEAD true
+cut-check "instead of only announcing passes" at 26b6b5f true HEAD false
+cut-check "Give concise stage updates during long work" at 26b6b5f true HEAD true
+cut-check "The session-end summary lists every held spec again" at 26b6b5f true HEAD false
+cut-check "Session end lists every held" at 26b6b5f false HEAD true
+cut-check "relevant existing decision/context paths" at 26b6b5f true HEAD false
+cut-check "first fix straightforward failures" at 26b6b5f true HEAD true
+cut-check "it does not show that the test is right" at 26b6b5f false HEAD false
+grep "before edits":
+HEAD:payload/.joycraft/references/worktrees.md:93:documented bootstrap before edits, stateful runtime work, or packet preparation.
+grep "bootstrap":
+HEAD:payload/.agents/skills/joycraft-decompose/SKILL.md:70:host. The host launches a child, and that child bootstraps then starts its own
+HEAD:payload/.agents/skills/joycraft-implement/SKILL.md:28:child bootstraps from its actual root, then runs `dispatch-start.mjs --role
+HEAD:payload/.agents/skills/joycraft-implement/SKILL.md:50:the documented project bootstrap. Dispatch from its actual root. Read [worker isolation](../../../.joycraft/references/worktrees.md)
+HEAD:payload/.agents/skills/joycraft-verify/SKILL.md:28:using the parent's identity. After launch, the reviewer child bootstraps at its
+HEAD:payload/.joycraft/references/dispatch.md:57:path is unknown until launch, the child bootstraps and starts from its actual
+HEAD:payload/.joycraft/references/retro.md:66:| Required logs, fixtures or capability were unavailable | The project's bootstrap or evidence access |
+HEAD:payload/.joycraft/references/setup.md:244:For an observed Git project with a parallel-worker preference, keep bootstrap
+HEAD:payload/.joycraft/references/setup.md:246:worktree/bootstrap home. If neither exists, setup may create
+HEAD:payload/.joycraft/references/setup.md:255:appropriate dependency bootstrap such as `pnpm install --frozen-lockfile`, but
+HEAD:payload/.joycraft/references/worktrees.md:89:Record project-specific bootstrap, ignored-file, disk, and resource requirements
+HEAD:payload/.joycraft/references/worktrees.md:93:documented bootstrap before edits, stateful runtime work, or packet preparation.
+HEAD:payload/.joycraft/references/worktrees.md:94:If the project lockfile changed since a tree was bootstrapped, complete its
+HEAD:payload/.joycraft/references/worktrees.md:95:documented dependency bootstrap again before its runtime or data commands. A
+HEAD:payload/.joycraft/references/worktrees.md:110:another worker. If bootstrap fails, preserve the tree and its failure output for
+HEAD:payload/.joycraft/references/worktrees.md:118:auto-created path is unknown until the child launches: the child bootstraps, then
+HEAD:payload/.joycraft/runtime/worktrees.mjs:65:    return { ...entry, next: 'Run the project bootstrap in this tree before any edit.' };
+grep "merely because a review failed":
+(none)
+grep "announcing passes":
+(none)
+grep "stage update":
+HEAD:payload/.agents/skills/joycraft-implement/SKILL.md:129:explain any needed external setting and its effect. Give concise stage updates
+grep "lists every held spec":
+HEAD:payload/.joycraft/references/dispatch.md:103:session end. The session-end summary lists every held spec again.
+git diff 26b6b5f 5beb84d --word-diff payload text:
+diff --git a/payload/.agents/skills/joycraft-implement/SKILL.md b/payload/.agents/skills/joycraft-implement/SKILL.md
+index a1c9736..a3daa69 100644
+--- a/payload/.agents/skills/joycraft-implement/SKILL.md
++++ b/payload/.agents/skills/joycraft-implement/SKILL.md
+@@ -13,8 +13,8 @@ Read the project's entry file (`AGENTS.md`), then each page whose context-map ro
+For a change across state, data or producer/consumer boundaries, inspect the
+actual counterpart code and relevant owning decisions/context when available.
+Add discovered material sources
+and relevant[-existing-] decision/context paths to exact verification inputs before
+[-review, reporting-]{+review; report+} unresolved coverage. See
+[focused discovery](../../../.joycraft/references/architecture.md)
+when the boundary is unclear; a local repair needs no architecture review.
+
+@@ -47,14 +47,13 @@ For a spec marked `execution.parallel: true`, use a separate linked worktree for
+each concurrent mutator, including its build/cache state. Create it with
+`node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <your-session-id>`
+when the host has no native worktree isolation; never invent another folder. Its first action is
+the documented project [-bootstrap, before edits, stateful runtime work, or packet-]
+[-preparation.-]{+bootstrap.+} Dispatch from its actual root. Read [worker isolation](../../../.joycraft/references/worktrees.md)
+when parallel work, integration, cleanup, or resource capacity is in play. If
+isolation cannot be obtained, replan the affected wave and set the current
+queue entry's `execution.parallel` to `false` before dispatch, recording why;
+then run it serially. Otherwise leave it unstarted.
+
+Implement the spec; run checks and any relevant rendered inspection as you go, in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Tests come from the spec, tagged [-`[AC:<criterion-id>]`;-]{+`[AC:<criterion-id>]`. Add a test only when it can fail for a reason no existing test can;+} one {+test+} may {+carry several `[AC:]` tags and+} cover several checks; extend the existing test file [-first; a-]{+first. A+} new acceptance test {+runs once and+} fails before the code [-exists.-]{+exists; its receipt comes first. Do not commit tests of one-off run state.+} When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
+
+Honor the queue's commit mode. In `batch`, commit and review the independent ready
+wave at its boundary before advancing its dependents; do not wait for an entire
+@@ -80,15 +79,15 @@ not unrelated authorized work.
+When a recorded tool breaks during a run, repair and record it as
+`$joycraft-verify` says, leave that spec `in-review`, and continue with the
+specs that do not depend on it. At the first hold, tell the user the spec, the
+tool, the cause and the repair tried. [-The session-end summary-]{+Session end+} lists every held
+[-spec again.-]{+spec.+}
+
+A tool break stops the whole queue only when the project will not build or
+install, the worktree or repository is broken, or the next step would touch data
+or systems outside the project (a shared database, a deploy). Every other tool
+break is repair, then hold.
+
+Only the guarded completion path can move an `in-review` spec to `done`. Use its manual snapshot/complete commands only at an explicit non-native [-boundary; read-]{+boundary, after reading+} [completion [-guidance](../../../.joycraft/references/completion.md) before doing so.-]{+guidance](../../../.joycraft/references/completion.md).+}
+
+When a current independent review is `FAIL` or `UNVERIFIED`, first fix
+straightforward failures within the existing authorization and obtain a fresh
+@@ -99,9 +98,9 @@ yourself: note it under `## Decision needed` in the spec, leave it `in-review`,
+and continue independent ready work. Treat a held `decision-needed` finding
+(`$joycraft-verify`) the same, without the note: `status.mjs` lists it. An owner can explicitly accept the
+current findings and their stated limits through `accept-owner`; that is a
+bounded exception, not a PASS or verified result.[-Do not ask merely because a-]
+[-review failed.-] Ask only when {+proceeding+}
+{+needs+} an explicit override[-is needed to proceed-] and [-a-]{+no+} trusted human acceptance of this spec and [-these-]{+its+}
+current findings [-is missing.-]{+exists.+}
+Make one short summary and focused choice, then persist the owner's actual
+instruction and nonempty limits in the decision record. A general
+"continue" or "go," another agent's direction, or authorization to add this
+@@ -128,5 +127,5 @@ held spec, run `$joycraft-session-end` without waiting for the user.
+Report blockers and the next action first, then measured progress. Tell the user
+when a run stops or planned work is omitted, with the reason and retained state;
+explain any needed external setting and its effect. Give concise stage updates
+during long [-work instead of only announcing passes.-]{+work.+} Never describe unavailable,
+failed, or uninspected evidence as passing.
+diff --git a/payload/.joycraft/references/testing.md b/payload/.joycraft/references/testing.md
+index 4ec949b..e16529d 100644
+--- a/payload/.joycraft/references/testing.md
++++ b/payload/.joycraft/references/testing.md
+@@ -123,6 +123,6 @@ Tag each acceptance test with its queue criterion ID, `[AC:<criterion-id>]`, in
+test name or a comment, in any language. `trace.mjs --queue <queue> --spec <id>`
+lists each criterion with its tagged tests from the spec's `check` inputs (add
+`--tests <glob>` for undeclared files) and exits 2 while a criterion is untraced.
+Reviewer startup includes the same trace. A tag shows[-that-] a test claims the
+[-criterion; it does-]{+criterion,+} not[-show-] that [-the test-]{+it+} is right. Write the test from the spec
+text before reading the implementation.
+
+test diffs 955fdb0..HEAD:
+diff --git a/tests/payload-guard.test.ts b/tests/payload-guard.test.ts
+index c404f36..c1441fc 100644
+--- a/tests/payload-guard.test.ts
++++ b/tests/payload-guard.test.ts
+@@ -32,7 +32,7 @@ const FIELD_24_WORDS = 29919;
+ // On-demand text is everything else: setup, update, cleanup, archive, the test
+ // review, artifacts, settings, the session-end, cleanup, retro, context, entry
+ // and ui-slice skills, and any new on-demand reference. It may grow by 2,000
+-// words over its count before spec 1: 17,663 + 2,000 = 19,663.
++// words over its count before spec 1: 17,663 + 2,000 = 19,663 (raised to +3,500 below).
+ //
+ // Spec 1 cut two duplicates (setup.md's Claude worktree paragraph, a copy of
+ // worktrees.md; joycraft-testing's acceptance-test paragraph). After it:
+@@ -54,7 +54,9 @@ export const EVERY_SPEC_FILES: Record<string, string> = {
+   '.joycraft/references/worktrees.md': 'every implementer and reviewer packet lists it in readFirst (dispatch-preflight.mjs)',
+ };
+ export const EVERY_SPEC_CAP = FIELD_24_WORDS - 17663;
+-export const ON_DEMAND_CAP = 17663 + 2000;
++// Decision `on-demand-budget` = `plus-1500` (Max, 2026-11-21): on-demand text may
++// grow by 1,500 more words, 3,500 in all. The every-spec cap does not move.
++export const ON_DEMAND_CAP = 17663 + 3500;
+ 
+ /** True when a payload text file is on-demand: every payload text file not in EVERY_SPEC_FILES. */
+ export const isOnDemand = (path: string) => !(path in EVERY_SPEC_FILES);
+@@ -343,13 +345,17 @@ describe('shipped payload text', () => {
+     expect(over).toEqual([]);
+   });
+ 
+-  it('[AC:spec-1-3] 200 more words in the implement skill break the every-spec cap; up to 600 more in the test review do not', () => {
++  it('[AC:spec-1-3] 200 more words in the implement skill break the every-spec cap; 600 more in the test review do not', () => {
+     // At least 200, and always one past the spare, so later cuts cannot make this pass without a regression.
+     const spare = EVERY_SPEC_CAP - splitCap(treeBundle()).everySpec;
+     expect(splitCap(grown('.agents/skills/joycraft-implement/SKILL.md', Math.max(200, spare + 1))).over).toEqual([expect.stringMatching(/^every-spec /)]);
+-    // On-demand words a later spec spends shrink the room the test review has; 600 or all that is left (spec 18, class 1).
++    // 600 more on-demand words: no every-spec entry, and still under the on-demand cap.
++    const review = splitCap(grown('.joycraft/references/testing-review.md', 600));
++    expect(review.over.filter((entry) => entry.startsWith('every-spec '))).toEqual([]);
++    expect(review.onDemand).toBeLessThanOrEqual(ON_DEMAND_CAP);
++    // One word past the on-demand spare breaks only the on-demand cap.
+     const onDemandSpare = ON_DEMAND_CAP - splitCap(treeBundle()).onDemand;
+-    expect(splitCap(grown('.joycraft/references/testing-review.md', Math.min(600, onDemandSpare))).over).toEqual([]);
++    expect(splitCap(grown('.joycraft/references/testing-review.md', onDemandSpare + 1)).over).toEqual([expect.stringMatching(/^on-demand /)]);
+   });
+ 
+   it('[AC:spec-1-4] the duplicate worktree and acceptance-test paragraphs are cut, and worktrees.md keeps its copy', () => {
+diff --git a/tests/text-fault-proof.test.ts b/tests/text-fault-proof.test.ts
+index dadf52f..88ffd2e 100644
+--- a/tests/text-fault-proof.test.ts
++++ b/tests/text-fault-proof.test.ts
+@@ -21,11 +21,11 @@ const section = (path: string, name: string) => {
+   return text.slice(start, end < 0 ? undefined : end).replace(/\s+/g, ' ');
+ };
+ 
+-/** The guard's EVERY_SPEC_FILES paths and its on-demand cap, read from its source. */
++/** The guard's EVERY_SPEC_FILES paths and its on-demand cap (decision `on-demand-budget` = `plus-1500`: +3,500). */
+ const guard = () => {
+   const source = readFileSync(join(root, 'tests', 'payload-guard.test.ts'), 'utf8');
+   const block = source.slice(source.indexOf('export const EVERY_SPEC_FILES'), source.indexOf('export const EVERY_SPEC_CAP'));
+-  return { everySpec: [...block.matchAll(/^\s+'([^']+)':/gm)].map(([, path]) => path), onDemandCap: 17663 + 2000 };
++  return { everySpec: [...block.matchAll(/^\s+'([^']+)':/gm)].map(([, path]) => path), onDemandCap: 17663 + 3500 };
+ };
+ 
+ // The guard's every-spec count at the commit before this spec (08beda2), plus later growth:
+@@ -74,6 +74,35 @@ describe('fault proof text', () => {
+     expect(text).toContain("A reviewer that shares the coordinator's tree runs no fault: it reads the saved receipts and states that as a limit");
+   });
+ 
++  it('[review-18-1] faults are chosen with intent: one per removed or changed assertion; the reviewer aims its own at a removed one', () => {
++    const text = section(REVIEW, 'Test-only specs');
++    expect(text).toContain('one fault per assertion or behavior the diff removes or changes');
++    expect(text).toContain('kill-set preservation');
++    expect(text).toContain('It aims its own fault at an assertion or behavior the diff removed');
++  });
++
++  it('[review-18-2] each patch sha256 is recorded before the test edit; the reviewer checks old-run revision and patch sha256', () => {
++    const text = section(REVIEW, 'Test-only specs');
++    expect(text).toContain("Before the test edit, it records each patch's sha256 in the spec or in a committed list");
++    expect(text).toContain('old-run receipt carries the base revision and the same patch sha256 as the new runs');
++  });
++
++  it('[review-18-3] the reviewer keeps its own patches and receipts git-ignored; only final report receipts go in the feature folder', () => {
++    const text = section(REVIEW, 'Test-only specs');
++    expect(text).toContain('Its own patches and receipts go in a git-ignored path');
++    expect(text).toContain('only the final report receipts go in the feature folder, after its last fault run');
++  });
++
++  it('[review-18-4] a reviewer in a separate tree gets the patches through a commit of the patch files or its packet', () => {
++    expect(section(REVIEW, 'Test-only specs')).toContain('A reviewer in a separate tree gets the patches through a commit of the patch files (not the receipts) or through its packet');
++  });
++
++  it('[review-18-5] the test edit is committed before faults rerun on it; the reviewer checks out the base for the old file', () => {
++    const text = section(REVIEW, 'Test-only specs');
++    expect(text).toContain('Commits the test edit before it reruns the faults on it');
++    expect(text).toContain('checks out the base to run the old file on it');
++  });
++
+   it('[AC:spec-18-3] testing.md drops the isolated temporary copy; verify and both agents point to the test-only section', () => {
+     const testing = flat('.joycraft/references/testing.md');
+     expect(testing).not.toContain('isolated temporary copy');
+diff --git a/tests/text-fewer-tests.test.ts b/tests/text-fewer-tests.test.ts
+index 95702fe..884c84c 100644
+--- a/tests/text-fewer-tests.test.ts
++++ b/tests/text-fewer-tests.test.ts
+@@ -56,6 +56,12 @@ describe('fewer, sharper tests text', () => {
+       expect(text, path).toContain('several checks');
+     }
+     expect(flat(IMPLEMENTER)).toContain('receipt first');
++    // The skill is the only carrier on every host but Claude: it states the whole fail-first rule and the fewer-tests default.
++    const skill = flat(IMPLEMENT);
++    expect(skill).toContain('A new acceptance test runs once and fails before the code exists; its receipt comes first');
++    expect(skill).toContain('Add a test only when it can fail for a reason no existing test can');
++    expect(skill).toContain('one test may carry several `[AC:]` tags');
++    expect(skill).toContain('Do not commit tests of one-off run state');
+   });
+ 
+   it('[AC:spec-22-2] the spec template asks each user-flow check for the real boundary or the mocked one under Not covered', () => {
+@@ -81,7 +87,7 @@ describe('fewer, sharper tests text', () => {
+ 
+   it('[AC:spec-22-5] the two rules spec 1 cut are back in the payload', () => {
+     const grep = payloadRepo();
+-    expect(grep('Do not commit tests of one-off run state')).toContain(IMPLEMENTER);
++    expect(grep('Do not commit tests of one-off run state')).toEqual(expect.arrayContaining([IMPLEMENTER, IMPLEMENT]));
+     expect(grep('conflicts with a later owner decision')).toContain('.joycraft/references/testing-review.md');
+   });
+ });
+diff --git a/tests/text-lane-cap.test.ts b/tests/text-lane-cap.test.ts
+index 7aa600d..2450a3a 100644
+--- a/tests/text-lane-cap.test.ts
++++ b/tests/text-lane-cap.test.ts
+@@ -81,6 +81,7 @@ describe('lane cap text', () => {
+     const text = (readdirSync(join(root, 'payload'), { recursive: true }) as string[]).map((path) => path.split('\\').join('/'))
+       .filter((path) => /^\.agents\/skills\/joycraft-[^/]+\/SKILL\.md$|^\.claude\/agents\/[^/]+\.md$|^\.joycraft\/references\/.+\.md$/.test(path));
+     const onDemand = text.filter((path) => !everySpec.includes(path)).reduce((sum, path) => sum + words(raw(path)), 0);
+-    expect(onDemand).toBeLessThanOrEqual(17663 + 2000);
++    // The on-demand cap is +3,500 since decision `on-demand-budget` = `plus-1500`.
++    expect(onDemand).toBeLessThanOrEqual(17663 + 3500);
+   });
+ });
+

@@ -1,0 +1,122 @@
+CR1 CRLF page at HEAD; named line fixed (CRLF kept)
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after c0dfcae\n\nJoycraft-Tidy: 4b5f24ab4f460c6d235352ee1233acdaa69882fc..c0dfcae0fedd168cb0e703f2052b61ce3c9a9305"}
+CR2 CRLF page at HEAD; named line still names getWidget without backticks
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":5,"reason":"The edit leaves the finding: it still names getWidget."}],"cleared":0,"remaining":0,"message":null}
+CR3 CRLF page at HEAD; named line keeps the gone symbol with a space in backticks
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":5,"reason":"The edit leaves the finding: it still names getWidget."}],"cleared":0,"remaining":0,"message":null}
+G1a color.ui=always, color.diff=always: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 1c72043\n\nJoycraft-Tidy: bc1483d894071c9acae8d8b49c58f1cc93cbdb25..1c72043aba36734013dc87ea88ea5a68de4a4038"}
+G1b color.ui=always, color.diff=always: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G2a diff.external=a script that prints nothing: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 1c72043\n\nJoycraft-Tidy: bc1483d894071c9acae8d8b49c58f1cc93cbdb25..1c72043aba36734013dc87ea88ea5a68de4a4038"}
+G2b diff.external=a script that prints nothing: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G3a core.quotePath=true: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 0446ad7\n\nJoycraft-Tidy: 76d96fe1ee102f398f3ffe2c98d3432673caff86..0446ad79a1253745a94f815be17555de978b48b5"}
+G3b core.quotePath=true: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G4a diff.renames=copies, diff.renameLimit=1: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after b939c9f\n\nJoycraft-Tidy: 3ecdade16388aa1bb6ca145440c2d8c730f1c24f..b939c9fe0d41ecd379baafa1bf117261ebbd21df"}
+G4b diff.renames=copies, diff.renameLimit=1: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G5a diff.algorithm=patience: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 062600f\n\nJoycraft-Tidy: bce71d20feced2c452d675f2b29650f50d47002c..062600f86b31a0b8a53189a7e4091ad7e7b57fc4"}
+G5b diff.algorithm=patience: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G6a diff.algorithm=histogram: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 062600f\n\nJoycraft-Tidy: bce71d20feced2c452d675f2b29650f50d47002c..062600f86b31a0b8a53189a7e4091ad7e7b57fc4"}
+G6b diff.algorithm=histogram: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G7a diff.interHunkContext=10: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 7022b48\n\nJoycraft-Tidy: 49c52bd3fa97f9341e03a674f128a5decc2eef50..7022b4838552060e8bacde75aca8c83722ede9b5"}
+G7b diff.interHunkContext=10: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":6,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G8a diff.interHunkContext=10 + diff.suppressBlankEmpty=true: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 8ea4113\n\nJoycraft-Tidy: e71c38f4586a0e6c3c46badc212f4f43e5d08a53..8ea411334c527c4f644bd257b0e2580cdc9a72e4"}
+G8b diff.interHunkContext=10 + diff.suppressBlankEmpty=true: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":6,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G9a diff.noprefix=true + diff.mnemonicPrefix=true: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 890b76f\n\nJoycraft-Tidy: 6bc1ce79933fe71739a6e5343e2e6a00d6b27217..890b76f07d41ab4e25e0324b2631a8dab6fae6a0"}
+G9b diff.noprefix=true + diff.mnemonicPrefix=true: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G10a diff.srcPrefix=@@ -1 +1 @@ and diff.dstPrefix=+++ : valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 21d15b0\n\nJoycraft-Tidy: 58c5c52c11e27a1de74ac54c89d9b347b26abb15..21d15b09676f35f11728c2b3f7e6321ecd301b90"}
+G10b diff.srcPrefix=@@ -1 +1 @@ and diff.dstPrefix=+++ : valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G11a diff.wordRegex=. + diff.colorMoved=zebra + diff.wsErrorHighlight=all: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 21d15b0\n\nJoycraft-Tidy: 58c5c52c11e27a1de74ac54c89d9b347b26abb15..21d15b09676f35f11728c2b3f7e6321ecd301b90"}
+G11b diff.wordRegex=. + diff.colorMoved=zebra + diff.wsErrorHighlight=all: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G12a diff.indentHeuristic=false + diff.context=8: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 2f01680\n\nJoycraft-Tidy: ccbbccca46c4b05641335d5450b5c188c984b594..2f01680a22bd717eaaded5a8529fc4018b9072e3"}
+G12b diff.indentHeuristic=false + diff.context=8: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G13a env GIT_DIFF_OPTS=--unified=3: valid fix only
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":2,"reason":"Edits a line that no finding names."}],"cleared":0,"message":null}
+G13b env GIT_DIFF_OPTS=--unified=3: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":2,"reason":"Edits a line that no finding names."}],"cleared":0,"message":null}
+G14a env GIT_EXTERNAL_DIFF=true: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"message":"docs: tidy 1 doc line after c9863a2\n\nJoycraft-Tidy: bfb044484e3b5749e4476674edfb5df6413de65a..c9863a2d23acd832787dd0d78e69ac69b1c32ebb"}
+G14b env GIT_EXTERNAL_DIFF=true: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"message":null}
+G15a env GIT_CONFIG_PARAMETERS color.ui=always + diff.noprefix: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"message":"docs: tidy 1 doc line after c9863a2\n\nJoycraft-Tidy: bfb044484e3b5749e4476674edfb5df6413de65a..c9863a2d23acd832787dd0d78e69ac69b1c32ebb"}
+G15b env GIT_CONFIG_PARAMETERS color.ui=always + diff.noprefix: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"message":null}
+G16a custom xfuncname that puts "@@ -5 +5 @@" text after the hunk header: valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 7d50472\n\nJoycraft-Tidy: fab46e9568931cecf6e1c586d8b814eb11222ef8..7d504724d0e6dd427f758b7b92cdd67c644215c9"}
+G16b custom xfuncname that puts "@@ -5 +5 @@" text after the hunk header: valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G17a textconv that appends `getWidget()` to every line (show HEAD:file side): valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after a9384ed\n\nJoycraft-Tidy: 5d9b97456a7b64aae5102af586b03bae02433ce4..a9384ed5ff125605eff6f1ca3d6b0edf8ddf3fb2"}
+G17b textconv that appends `getWidget()` to every line (show HEAD:file side): valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+G18a clean filter = cat (filter applied to diff and commit alike): valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after f815927\n\nJoycraft-Tidy: fe9de74c4366be72068c3f877e1650e40cf13238..f81592783d3a709d088ec955b766302845fe526c"}
+G18b clean filter = cat (filter applied to diff and commit alike): valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+D1 page with diff-like lines; valid fix of the named line only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 7c139f7\n\nJoycraft-Tidy: 1d8b08bbd8276fa74ad17d986db67c0888abd366..7c139f701b55a70f88c32190c5c6af7cd8e2903a"}
+D2 page with diff-like lines; valid fix plus "@@ -9 +9 @@" line rewritten
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":9,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+D3 page with diff-like lines; valid fix plus "diff --git" line rewritten
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":3,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+D4 page with diff-like lines; valid fix plus the policy line rewritten
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":10,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+D5 named line replaced by "@@ -1,3 +1,3 @@" (one line for one)
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 6093a9b\n\nJoycraft-Tidy: d4b02e07f198789b233fd6ed79132f6fdfb6b7e4..6093a9b5c757d42ee79aa905659f710e619e71b0"}
+D6 named line replaced by "diff --git a/AGENTS.md b/AGENTS.md"
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 57107fa\n\nJoycraft-Tidy: d4b02e07f198789b233fd6ed79132f6fdfb6b7e4..57107faef3aea27820745c2b41e55bedbb7f457a"}
+NL1 named last line with no newline; fixed, still no newline
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 5661b4b\n\nJoycraft-Tidy: 5eddeddc9086602fbeb2e89d3635a82aee6449eb..5661b4b061dc0874e0573a7ff9484888a825056a"}
+NL2 named last line with no newline; fixed and a newline added
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after e999749\n\nJoycraft-Tidy: 9e7b396d6262c96b8e47279c73d1228146b0cbcf..e999749dbf8c53e3c33a8284ad9f622ce464625c"}
+NL3 named last line with no newline; fixed plus unnamed line 3 rewritten
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":3,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+NL4 named last line fixed to "Read `keep`.\nPush to main." (adds a line, no final newline)
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":4,"reason":"Adds lines: a tidy edit only replaces or deletes the named lines."}],"cleared":0,"remaining":0,"message":null}
+CR8 lone-CR page; physical line 3 holds "a\rCall `getWidget()`"; edit line 4 ("b")
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":4,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":1,"message":null}
+CR9 lone-CR page; fix the getWidget part of physical line 3
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 5b2c3df\n\nJoycraft-Tidy: 99d345a4b9264f7df6782e0bdc04baffb5e7f6ce..5b2c3dfa2f13f50b72be727af401b6ea3fad59ae"}
+FN1a named page at "docs/context/we\"ird.md": valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 5bbae85\n\nJoycraft-Tidy: 2e23f49203763ffe07a51be99b7ff4e8c1ea9bbf..5bbae8583d0b8bf7ba19b9bbaea057e3f8a06db6"}
+FN1b named page at "docs/context/we\"ird.md": valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/we\"ird.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+FN2a named page at "docs/context/new\nline.md": valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 08baf44\n\nJoycraft-Tidy: 677ee7dd059e3b921fd3655a3d14cd31f1a4cf46..08baf449e429d895449a78b77d08f65871c78add"}
+FN2b named page at "docs/context/new\nline.md": valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/new\nline.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+FN3a named page at "docs/context/tab\there é.md": valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 40d19eb\n\nJoycraft-Tidy: 8c0c43f687bfb2c93a4f5a25ebd7a2005ba81097..40d19eb992be558f8cc81da7c9dc9f1345e4914b"}
+FN3b named page at "docs/context/tab\there é.md": valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/tab\there é.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+FN4a named page at "docs/context/-- a b.md": valid fix only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after 0110947\n\nJoycraft-Tidy: 3930ab397ae0b5f5d138646c05e88cf485391ad6..011094753dd66e88043bc90bfac27c888a28074b"}
+FN4b named page at "docs/context/-- a b.md": valid fix plus rewrite of unnamed line 7
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/-- a b.md","line":7,"reason":"Edits a line that no finding names."}],"cleared":0,"remaining":0,"message":null}
+P1 valid fix
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"remaining":0,"message":"docs: tidy 1 doc line after a5e2f3e\n\nJoycraft-Tidy: 72b1bf6b05c4e85398d38cd6ec9bc613691c89f0..a5e2f3e6212a6285b40debef565a8431c77f718a"}
+N1 no edits
+  -> {"exit":0,"status":"clean","refused":[],"cleared":0,"remaining":1,"message":null}

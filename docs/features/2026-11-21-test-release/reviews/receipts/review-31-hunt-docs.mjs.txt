@@ -1,0 +1,68 @@
+// Spec 31 review hunt: which changes since an old green gate receipt still push, extending the
+// spec-27 round-2 hunt (review-27-r2-hunt-docs.mjs.txt). Also runs the queue-check and cleanup
+// CLIs end to end on spec-31 prose. Exit 1 when any decided case is BAD.
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, realpathSync, writeFileSync, renameSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+const runtime = join(process.argv[2], 'payload/.joycraft/runtime');
+const git = (cwd, ...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@e.com', ...a], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const put = (f, b) => { mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, b); };
+function fixture(yaml = 'tests:\n  gate: node gate.mjs\n', seed = {}) {
+  const base = realpathSync(mkdtempSync(join(tmpdir(), 'p31-'))); const remote = join(base, 'r.git'); const root = join(base, 'w');
+  git(base, 'init', '-q', '--bare', remote); mkdirSync(root); git(root, 'init', '-q', '-b', 'main');
+  put(join(root, '.gitignore'), '/receipts/\n'); put(join(root, 'joycraft.yaml'), yaml); put(join(root, 'gate.mjs'), "console.log('ok')\n");
+  put(join(root, 'src/x.mjs'), 'export const x = 1;\n'); put(join(root, 'docs/features/f/a.md'), 'a\n');
+  for (const [path, body] of Object.entries(seed)) put(join(root, path), body);
+  git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'one'); const first = git(root, 'rev-parse', 'HEAD');
+  put(join(root, 'b.txt'), 'b\n'); git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'two');
+  git(root, 'remote', 'add', 'origin', remote);
+  return { root, first, head: git(root, 'rev-parse', 'HEAD') };
+}
+const receipt = (root, rev) => put(join(root, 'receipts/g.log'), `out\njoycraft-evidence: ${JSON.stringify({ argv: ['node', 'gate.mjs'], exitCode: 0, revision: rev, dirty: false, wallMs: 1, load: [1, 1], cores: 8, loaded: false, timedOut: false })}\n`);
+const push = (root, first) => { const r = spawnSync(process.execPath, [join(runtime, 'delivery.mjs'), 'push', '--root', root, '--base', first, '--remote', 'origin', '--branch', 'feature', '--gate-receipt', 'receipts/g.log'], { cwd: root, encoding: 'utf8' }); return r.status === 0 ? 'PUSHED' : `REFUSED ${r.stderr.trim()}`; };
+const commit = (root, m) => { git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', m); };
+let bad = 0;
+const out = [];
+const scenario = (name, expect, fn, yaml, seed) => { const f = fixture(yaml, seed); receipt(f.root, f.head); fn(f); const got = push(f.root, f.first); const tag = expect === null ? 'NOTE' : got.startsWith(expect) ? 'OK  ' : 'BAD '; if (tag === 'BAD ') bad += 1; out.push(`${tag} ${name}: expected ${expect ?? 'undecided'}, got ${got}`); };
+const add = (path, body = 'x\n') => ({ root }) => { put(join(root, path), body); commit(root, path); };
+// Source files in feature and archive folders: need the gate (REFUSED).
+for (const path of ['docs/features/f/x_test.go', 'docs/features/f/probe.go', 'docs/features/f/test_x.py', 'docs/archive/f/conftest.py', 'docs/features/f/a.test.ts',
+  'docs/archive/f/a.spec.js', 'docs/features/f/probe.mjs', 'docs/features/f/reviews/receipts/p.cjs', 'docs/features/f/x_spec.rb', 'docs/features/f/x.rs',
+  'docs/archive/f/FooTest.java', 'docs/features/f/run.sh', 'docs/features/f/Makefile', 'docs/features/f/x.MJS', 'docs/features/f/x.md.ts', 'docs/features/f/x.tsx'])
+  scenario(`source ${path}`, 'REFUSED gate-receipt-stale', add(path));
+// Record files in feature and archive folders: keep the old receipt (PUSHED).
+for (const path of ['docs/features/f/notes.log', 'docs/features/f/r.txt', 'docs/archive/f/c.diff', 'docs/features/f/c.patch', 'docs/features/f/q.yaml',
+  'docs/archive/f/q.yml', 'docs/features/f/n.md', 'docs/features/f/reviews/receipts/p.mjs.txt', 'docs/features/f/N.MD', 'docs/archive/f/x.LOG', 'docs/features/f/q.json'])
+  scenario(`record ${path}`, 'PUSHED', add(path, path.endsWith('.json') ? '{}\n' : 'x\n'));
+// Outside the record folders: only Markdown and JSON under the docs root (spec 27 rule, unchanged).
+scenario('docs root yaml docs/ci.yaml', 'REFUSED gate-receipt-stale', add('docs/ci.yaml'));
+scenario('docs root log docs/context/x.log', 'REFUSED gate-receipt-stale', add('docs/context/x.log'));
+scenario('docs root markdown docs/context/log.md', 'PUSHED', add('docs/context/log.md'));
+scenario('code outside docs src/y.mjs', 'REFUSED gate-receipt-stale', add('src/y.mjs'));
+// Archive move: a whole feature folder moved to the archive (as session end does).
+scenario('archive move of records only (md, log, mjs.txt)', 'PUSHED', ({ root }) => { mkdirSync(join(root, 'docs/archive'), { recursive: true }); renameSync(join(root, 'docs/features/g'), join(root, 'docs/archive/g')); commit(root, 'archive'); }, undefined,
+  { 'docs/features/g/brief.md': 'b\n', 'docs/features/g/reviews/receipts/a.log': 'l\n', 'docs/features/g/reviews/receipts/p.mjs.txt': 'p\n' });
+scenario('archive move of a folder holding a probe .mjs receipt', 'REFUSED gate-receipt-stale', ({ root }) => { mkdirSync(join(root, 'docs/archive'), { recursive: true }); renameSync(join(root, 'docs/features/g'), join(root, 'docs/archive/g')); commit(root, 'archive'); }, undefined,
+  { 'docs/features/g/brief.md': 'b\n', 'docs/features/g/reviews/receipts/p.mjs': 'p\n' });
+scenario('delete a probe .mjs from a feature folder', 'REFUSED gate-receipt-stale', ({ root }) => { git(root, 'rm', '-q', 'docs/features/g/p.mjs'); git(root, 'commit', '-q', '-m', 'rm'); }, undefined, { 'docs/features/g/p.mjs': 'p\n' });
+scenario('rename src code into a feature folder as .md', 'REFUSED gate-receipt-stale', ({ root }) => { renameSync(join(root, 'src/x.mjs'), join(root, 'docs/features/f/x.md')); commit(root, 'mv'); });
+for (const line of out) console.log(line);
+// End to end: queue-check and cleanup on spec-31 prose.
+const folder = 'docs/features/2026-11-21-f'; const queuePath = `${folder}/specs/.joycraft-spec-queue.json`;
+function qc(acceptance, gate) {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'p31q-'))); git(root, 'init', '-q', '-b', 'main');
+  put(join(root, 'joycraft.yaml'), `tests:\n  gate: ${JSON.stringify(gate)}\n`); put(join(root, folder, 'brief.md'), '# Brief\n\n## Goal\n\nText.\n');
+  const spec = `${folder}/specs/01-a.md`;
+  put(join(root, spec), `---\nid: 1\nstatus: todo\n---\n# A\n\n## acceptance\n\n- It works. ${acceptance}\n\n## Implementation and verification scope\n\n- Files: \`src/a.ts\`.\n`);
+  put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature: 'f', specs: [{ id: 1, file: '01-a.md', depends_on: [], status: 'todo', mode: 'checkpoint', verification: { inputs: [{ path: spec, kind: 'requirement' }, { path: 'tests/x.test.ts', kind: 'check' }], criteria: [{ id: 'spec-1-1', requirement: { path: spec, anchor: 'acceptance' }, requiredKinds: ['runtime'] }] } }] }));
+  const r = spawnSync(process.execPath, [join(runtime, 'queue-check.mjs'), '--queue', queuePath, '--root', root], { encoding: 'utf8' });
+  return { status: r.status, gaps: r.stderr.split('\n').filter(l => l.includes('gate or full command')).length };
+}
+for (const [acceptance, gate, want] of [["Check: pnpm verify doesn't fail.", 'pnpm verify', 1], ['Check: pnpm verify (the full suite) passes.', 'pnpm verify', 1], ['Check: pnpm verify → done.', 'pnpm verify', 1],
+  ['Check: pnpm verify re-runs it.', 'pnpm verify', 1], ['Check: pnpm test —run passes.', 'pnpm test', 0], ['Check: pnpm test—tests/a.test.ts passes.', 'pnpm test', 0], ['Check: `pnpm test tests/x.test.ts` passes.', 'pnpm test', 0]]) {
+  const r = qc(acceptance, gate); const tag = r.gaps === want ? 'OK  ' : 'BAD '; if (tag === 'BAD ') bad += 1;
+  console.log(`${tag} queue-check gate=${JSON.stringify(gate)} ${JSON.stringify(acceptance)}: exit ${r.status}, gate-in-spec gaps ${r.gaps} (want ${want})`);
+}
+console.log(`${bad} BAD`);
+process.exit(bad ? 1 : 0);

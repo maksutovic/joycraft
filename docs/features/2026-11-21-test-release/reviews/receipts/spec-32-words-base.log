@@ -1,0 +1,17 @@
+# git archive ab57dec (26b5a72~1) into a scratch dir, node_modules symlinked, then: npx vitest run tests/payload-guard.test.ts -t 'every-spec and on-demand'
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+ RUN  v3.2.4 /private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/base32
+
+stdout | tests/payload-guard.test.ts > shipped payload text > [AC:spec-1-2] every-spec and on-demand words stay under their own caps
+every-spec words: 12177 (cap 12256, 79 spare)
+on-demand words: 20546 (cap 21163, 617 spare)
+
+ ✓ tests/payload-guard.test.ts (16 tests | 15 skipped) 6ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 15 skipped (16)
+   Start at  21:35:35
+   Duration  203ms (transform 23ms, setup 0ms, collect 23ms, tests 6ms, environment 0ms, prepare 30ms)
+
+exit=0

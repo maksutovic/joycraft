@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/text-owner-gate-lines.test.ts (3 tests) 235ms
+stdout | tests/payload-guard.test.ts > shipped payload text > [AC:spec-1-2] every-spec and on-demand words stay under their own caps
+every-spec words: 12150 (cap 12256, 106 spare)
+on-demand words: 18486 (cap 19663, 1177 spare)
+
+ ✓ tests/payload-guard.test.ts (16 tests) 1209ms
+   ✓ shipped payload text > [AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on  318ms
+
+ Test Files  2 passed (2)
+      Tests  19 passed (19)
+   Start at  18:38:41
+   Duration  1.38s (transform 27ms, setup 0ms, collect 31ms, tests 1.44s, environment 0ms, prepare 70ms)
+

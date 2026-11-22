@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -11,8 +11,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.8.1",
-    "summary": "Session end can archive a finished feature again when its branch reached main through a merge commit.",
+    "release": "1.9.0",
+    "summary": "Tidy cleans the doc drift a session caused in one checked commit, and each spec runs only its own tests while the gate runs at gate points, with run facts and saved-fault proofs. Test commands now also get JOYCRAFT_EVIDENCE=1.",
     "autoSafeEligible": false
   },
   "scripts": {

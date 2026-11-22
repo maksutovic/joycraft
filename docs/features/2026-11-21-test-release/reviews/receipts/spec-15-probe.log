@@ -1,0 +1,19 @@
+A gate-plan gateRuns=(unset) :: exit=0 gateRuns=spec waves=[[1,2],[3]] gatePoints=[{"wave":1,"specs":[1]},{"wave":1,"specs":[2]},{"wave":2,"specs":[3]}]
+A gate-plan gateRuns=spec :: exit=0 gateRuns=spec waves=[[1,2],[3]] gatePoints=[{"wave":1,"specs":[1]},{"wave":1,"specs":[2]},{"wave":2,"specs":[3]}]
+A gate-plan gateRuns=wave :: exit=0 gateRuns=wave waves=[[1,2],[3]] gatePoints=[{"wave":1,"specs":[1,2]},{"wave":2,"specs":[3]}]
+B1 evidence plain argv of shell gate :: exit=0 footerArgv=["node","gate.mjs","&&","node","lint.mjs"]
+B1 push with plain-argv receipt :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+B2 evidence shell form, pending file, tracked feature-folder receipt :: exit=0 dirty=true
+B2 push with dirty-tree receipt :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+B3 evidence shell form after committing pending :: exit=0 dirty=false
+B3 push with clean receipt at non-ignored path :: exit=0 stdout.ok=true remoteRef=HEAD
+B4 evidence shell form, ignored receipt :: exit=0 dirty=false
+B4 push with ignored green receipt :: exit=0 stdout.ok=true remoteRef=HEAD
+B5 evidence wave-2 gate :: exit=1 footerExit=1
+B5 push with red receipt :: exit=1 stderr="gate-receipt-red" remoteRef=80fffffd
+B6 gate-owner src/a.mjs + unowned :: exit=0 { "feature": "f", "files": [ { "file": "src/a.mjs", "specs": [ 1 ] }, { "file": "src/zzz.mjs", "specs": "bisect" } ] }
+B7 evidence wave-2 gate after fix :: exit=0
+B7 push with green receipt :: exit=0 stdout.ok=true remoteRef=HEAD
+B8 session-end push after records commit, previous receipt :: exit=1 stderr="gate-receipt-stale" remoteRef=d8aa740d
+B9 push without --gate-receipt :: exit=1 stderr="gate-receipt-required" remoteRef=d8aa740d
+gate runs in wave walk (green or red at a gate point, shell form): 3 for 2 gate points + 1 fix-round rerun

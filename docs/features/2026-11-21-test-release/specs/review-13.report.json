@@ -1,0 +1,430 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "cff0fe41dc03d486dad8358db95fe54ca5bb7c23",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 13,
+    "specPath": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+    "criteria": [
+      {
+        "id": "spec-13-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-13-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-13-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-named-files",
+            "archive-edit-tests"
+          ]
+        },
+        "sha256": "4a8779d2d05d6d8fb76d5458e2206e2f05f97228992efaa940573589b3df4829",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "fccce2d199b089c41b58bf2bcd571c5d3fd6ed6cc866c5672a3da203ddbb9aa6",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+        "kind": "requirement",
+        "sha256": "4f0d00bc4a4ce70d3f6e7b398356311ae13bd9d261eef4b09ea3d4cdf90e9379",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "465167f10263265b545dba0c85150c8dbba8b6e73b81dd4a0236276f4a1dd3e8",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-as-is.test.ts",
+        "kind": "check",
+        "sha256": "db7b3881d80bae2c34a7636336f3a361d09b81563259b51372775b5f4aaf5293",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-links.test.ts",
+        "kind": "check",
+        "sha256": "c746fc0245496f546058e82aecb67d7f7ea3773caaff34f9e21a73f0e6528dcc",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-named-files.test.ts",
+        "kind": "check",
+        "sha256": "70892ba857d4e855b07e5955ef9de6a084d9d197479cf9e4d6ef1d0d22997798",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2,
+          5,
+          11,
+          13
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-named-files",
+            "archive-edit-tests"
+          ]
+        }
+      ]
+    },
+    "identity": "29f441c67683ccf58abb4736f9d0b1a7cbd33812d5f673239f375ea4ebd5e1c2"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a465133b4c1fadef3"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "aa535bbd342f817b8"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "spec-13-1-preview",
+      "subjectIdentity": "29f441c67683ccf58abb4736f9d0b1a7cbd33812d5f673239f375ea4ebd5e1c2",
+      "criteria": [
+        "spec-13-1"
+      ],
+      "representativeInput": "Spec fixture (test and script naming docs/features/x, strict and --as-is preview); probe fixtures with a migration, a tracked symlink, other-feature names",
+      "expected": "namedFiles lists tracked non-Markdown files naming the folder with line and test flag, tests first; preview moves nothing",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-spec-tests.log",
+              "sha256": "5d809427b8062f1a7e06883c2864a1935791a943bfaf51bd98d6a406d1a02669"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "17/17 pass, exit 0; [AC:spec-13-1] lists tests/two-tier.test.mjs:3 (test) before scripts/x.mjs:1 and the tree stays clean, strict and as-is."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.log",
+              "sha256": "4651e1e64119ede99e3ce555b02b47be57d7a6dcec387e9b1488bfbe59699aa1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Preview lists tests first (migration db/migrations/0001_init.sql:1 test:false after the test); docs/notes.md (Markdown) left out; tracked symlinks left out; docs/features/x-two not matched (receipt lines 2-15, 42-55, 104-112)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-13-2-rewrite-green",
+      "subjectIdentity": "29f441c67683ccf58abb4736f9d0b1a7cbd33812d5f673239f375ea4ebd5e1c2",
+      "criteria": [
+        "spec-13-2"
+      ],
+      "representativeInput": "Spec fixture with tests.focused \"<node> {files}\"; probe: CRLF test, latin-1 byte, multi-path test; interrupted --apply --rewrite runs (SIGTERM to the archive process; SIGINT to the process group) of a test that would exit 1 after 4 s, then a rerun",
+      "expected": "Rewrites the folder path, runs tests.focused through evidence.mjs, moves the folder only when it exits 0; rewritten files stay changed",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-spec-tests.log",
+              "sha256": "5d809427b8062f1a7e06883c2864a1935791a943bfaf51bd98d6a406d1a02669"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-13-2] passes: test rewritten to docs/archive/x/feature, run green, archived, git diff --name-only lists the test."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.log",
+              "sha256": "4651e1e64119ede99e3ce555b02b47be57d7a6dcec387e9b1488bfbe59699aa1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Green CRLF test keeps CRLF and only the path line changes (receipt line 80). Side notes recorded as follow-ups: a latin-1 byte becomes U+FFFD (line 87), nested/suffixed look-alike paths are rewritten (line 23)."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-interrupt-sigterm.log",
+              "sha256": "6329fd78012732f2b03734c27b301f81b07bd66b24191e0d428b39743eb1fb66"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "interrupt",
+              "SIGTERM"
+            ],
+            "exitCode": 0
+          },
+          "result": "FAIL",
+          "actual": "Killed during the test run: the feature folder stays at docs/archive/x/feature (D docs/features/x/*), tests/two-tier.test.mjs stays rewritten, and no record of the rewrite exists. A rerun of preview and of --apply --rewrite returns status archived, unchanged: true, exit 0, so the red test never runs and the folder moved without a green exit."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-interrupt-sigint.log",
+              "sha256": "1b1e4bf15198c5bde600f3fceb76a1c31d1c1fe285894074a5d855a07a402840"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "interrupt",
+              "SIGINT",
+              "group"
+            ],
+            "exitCode": 0
+          },
+          "result": "FAIL",
+          "actual": "Same result for Ctrl-C to the process group: moved, rewritten, and the rerun reports archived unchanged with exit 0."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-13-3-red-and-refusals",
+      "subjectIdentity": "29f441c67683ccf58abb4736f9d0b1a7cbd33812d5f673239f375ea4ebd5e1c2",
+      "criteria": [
+        "spec-13-3"
+      ],
+      "representativeInput": "Spec red fixture and refusals; probe: CRLF red, red with a tracked symlink, receipt home missing or not ignored, a red test that edits files, --rewrite without --apply, with ../, with a directory",
+      "expected": "On red the rewritten files are byte-identical, nothing moves, status held with the receipt; unlisted file or no tests.focused refuses with exit 2 before any edit",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-spec-tests.log",
+              "sha256": "5d809427b8062f1a7e06883c2864a1935791a943bfaf51bd98d6a406d1a02669"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-13-3] passes: held, exitCode 1, receipt exists, folder in place, tree clean; unlisted file and missing tests.focused exit 2 with a clean tree."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.log",
+              "sha256": "4651e1e64119ede99e3ce555b02b47be57d7a6dcec387e9b1488bfbe59699aa1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "CRLF red file byte-identical and tree clean (line 67); symlink red clean (119); missing .joycraft/local is created ignored and the tree stays clean (131); a non-ignored .joycraft/local makes evidence.mjs refuse the receipt and the run is held and restored, so no receipt lands in a tracked path (149); --rewrite without --apply, with ../x, or with a directory exit 2 and nothing changes (174-183). A red test that edits files leaves its own edits (33), recorded as a follow-up."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f13-1-interrupt-moves-without-green",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-13-2",
+      "at": "payload/.joycraft/runtime/archive.mjs:617",
+      "summary": "The folder moves before the test run (by the coordinator order) and the run is a blocking spawnSync (archive.mjs:552) with no signal handling and no record of the rewrite. If the archive process is killed or interrupted during the test (a host command timeout, Ctrl-C), the folder stays archived and the listed files stay rewritten. The next archive call takes the plan.existing path (archive.mjs:568) and returns status archived, unchanged: true, exit 0, so a session end that retries accepts a move that never got a green exit. Reproduced with SIGTERM and with SIGINT to the group (receipts spec-13-interrupt-sigterm.log, spec-13-interrupt-sigint.log). Suggested fix: before the move, write the rewrite list with each file before-hash into the staged archive-recovery.json (or a pending journal) and clear it only after green; when a rerun finds that record, restore the files and move the folder back (or rerun the test) instead of returning unchanged. Optionally run the test with async spawn and SIGINT/SIGTERM/SIGHUP handlers that call holdArchive, as evidence.mjs does for --patch."
+    },
+    {
+      "id": "f13-2-rewrite-overmatch",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:501",
+      "summary": "The folder regex allows a preceding slash and a following dot, so packages/app/docs/features/x/y and docs/features/x.old are listed and rewritten (receipt spec-13-probe.log line 23). Every occurrence in a listed file is replaced. Suggest anchoring the start to a quote, whitespace, ./ or line start and the end to / or a quote.",
+      "assumption": "Look-alike paths are rare; a wrong rewrite usually turns the test red and is restored."
+    },
+    {
+      "id": "f13-3-non-utf8-bytes",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:547",
+      "summary": "The rewrite decodes as UTF-8 and writes the string back, so a non-UTF-8 byte (0xE9) becomes EF BF BD on green (receipt line 87). Replace on the Buffer as latin1/binary, or refuse a file that is not valid UTF-8.",
+      "assumption": "Test files are UTF-8 in nearly every project."
+    },
+    {
+      "id": "f13-4-test-side-effects-on-red",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:559",
+      "summary": "holdArchive restores only the rewritten files. A red test that edits files leaves them: an edit inside the archived feature folder moves back with it, and other tracked or new files stay (receipt line 33). Suggest comparing git status before the move and after the hold and listing any extra changes in the held result.",
+      "assumption": "Such edits come from the project test, not from archive."
+    },
+    {
+      "id": "f13-5-empty-archive-dir",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:563",
+      "summary": "On red the empty archive home (docs/archive/) created by staging stays on disk. Git does not show it. Remove it when the archive created it.",
+      "assumption": "Not visible to git; cosmetic."
+    },
+    {
+      "id": "f13-6-migration-not-guarded",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:528",
+      "summary": "The runtime rewrites any listed file, including db/migrations/0001_init.sql, and when a test is in the set it runs only the tests, so the migration edit is never exercised (receipt lines 42-66). The spec leaves this judgment to the agent; spec 24 text must tell the agent never to pass an applied migration.",
+      "assumption": "Spec says the script never decides migration safety; the agent judges."
+    },
+    {
+      "id": "f13-7-scan-cost-and-argv-split",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:510",
+      "summary": "namedFiles reads every tracked file as text on each of the three previews per apply (including large binaries); and tests.focused is split on whitespace, so a quoted argument or a path with spaces breaks. Consider skipping large/binary files and documenting the split.",
+      "assumption": "Small repos and simple focused commands are the common case."
+    }
+  ],
+  "limits": [
+    "Interrupt probes ran in temp git repos only; the host timeout case was simulated with SIGTERM to the archive process and SIGINT to its process group. SIGKILL cannot be handled by any handler, so only a recovery record covers it.",
+    "Test changes section says none: tests/runtime-archive-links.test.ts and tests/runtime-archive-as-is.test.ts have no diff since before 17baa32; the only test change is the new file tests/runtime-archive-named-files.test.ts. Consistent.",
+    "Trace: all three criteria have tagged tests; unknownTags spec-7-* and spec-8-* belong to other specs in the shared check files.",
+    "HEAD moved during review (2e2c472, 08118b2, 40d0029) with no change to any bound input of this spec."
+  ],
+  "createdAt": "2026-11-22T02:59:42.960Z"
+}

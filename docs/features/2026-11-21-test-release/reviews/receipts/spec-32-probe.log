@@ -1,0 +1,28 @@
+preview exit 0 
+L-root-template  listed=true  `${root}/docs/features/2026-01-02-x/x`
+L-up-one         listed=true  '../docs/features/2026-01-02-x/x'
+L-up-two         listed=true  '../../docs/features/2026-01-02-x'
+L-up-three       listed=true  '../../../docs/features/2026-01-02-x/a'
+L-home           listed=true  'features/2026-01-02-x/brief.md'
+L-up-home        listed=true  '../features/2026-01-02-x/brief.md'
+L-dot-home       listed=true  './features/2026-01-02-x/brief.md'
+L-brace-home     listed=true  `${d}/features/2026-01-02-x/b`
+L-bare-full      listed=true  'docs/features/2026-01-02-x'
+L-dot-full       listed=true  './docs/features/2026-01-02-x/a'
+N-nested         listed=false  'packages/app/docs/features/2026-01-02-x/brief.md'
+N-old            listed=false  'docs/features/2026-01-02-x.old'
+N-two            listed=false  'docs/features/2026-01-02-x-two'
+N-before         listed=false  'x2026-01-02-x/brief.md'
+N-after          listed=false  '2026-01-02-xx/brief.md'
+N-word-dotdot    listed=false  'x../docs/features/2026-01-02-x/a'
+N-dots3          listed=false  '.../docs/features/2026-01-02-x/a'
+N-mid-dotdot     listed=false  'packages/app/../docs/features/2026-01-02-x/x'
+N-nested-home    listed=false  'packages/app/docs/features/2026-01-02-x/brief.md'
+N-xfeatures      listed=false  'xfeatures/2026-01-02-x/brief.md'
+N-other-home     listed=false  'xspecs/features/2026-01-02-xx/b'
+Q-word-brace     listed=true  'a}/docs/features/2026-01-02-x/x'
+Q-brace-nested   listed=true  `${pkg}/app}/docs/features/2026-01-02-x/x`
+undated features/x/ listed false | undated ../docs/features/x listed true
+import cleanup.mjs exit 0 stdout "docsRoot function docs docs\n" stderr "" files after []
+import archive.mjs exit 0 stdout "ok\n" stderr "" files after []
+exit=0

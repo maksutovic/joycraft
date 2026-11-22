@@ -1,0 +1,15 @@
+export const EVERY_SPEC_FILES: Record<string, string> = {
+  '.agents/skills/joycraft-implement/SKILL.md': 'the coordinator, for every spec it runs',
+  '.agents/skills/joycraft-verify/SKILL.md': 'the reviewer, for every spec it reviews',
+  '.agents/skills/joycraft-decompose/SKILL.md': 'the decomposer, for every spec it writes',
+  '.agents/skills/joycraft-testing/SKILL.md': 'the implementer and reviewer, when they run any check',
+  '.claude/agents/joycraft-implementer.md': 'each implementer subagent, at start',
+  '.claude/agents/joycraft-reviewer.md': 'each reviewer subagent, at start',
+  '.joycraft/references/testing.md': 'implement, verify, testing and both agents link its running-tests tiers on every spec',
+  '.joycraft/references/workflow.md': 'decompose follows its commitment-and-queue section for every queue',
+  '.joycraft/references/dispatch.md': 'implement and the implementer run its dispatch preflight on every spec',
+  '.joycraft/references/completion.md': 'the reviewer reads it at start; verify and implement use it to submit and accept',
+  '.joycraft/references/gates.md': 'the gate check and Stop hook run on every spec once gates are on',
+  '.joycraft/references/worktrees.md': 'every implementer and reviewer packet lists it in readFirst (dispatch-preflight.mjs)',
+};
+export const EVERY_SPEC_CAP = FIELD_24_WORDS - 17663;

@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "c7e7b33fea2a511df3fc990e4212faf738a9b43d",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 4,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+    "criteria": [
+      {
+        "id": "spec-4-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "ec796d1f92b0838a4fd9f6951d453af5374d963690322972672253dedb3cc94d",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+        "kind": "requirement",
+        "sha256": "73b1b224bfd496e62a04655f761be3db3d1489ff61d8472aa634b9a8d036db02",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "f6075597f2f6e095f1420f886d8dc15979ec304c9d644644fb1aa1907bc073a1",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "governing": []
+    },
+    "identity": "e048fee2fed6f9b2985528801f34bc55543bf6a0759f58dcef74e617187c50c3"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ab91b652c1d17b46d"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "ab3ea437c0aab5b03"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "spec-4-1-fix-clears",
+      "criteria": [
+        "spec-4-1"
+      ],
+      "representativeInput": "Gone-symbol fixture: feature branch removes getWidget; docs/context/guide.md line 5 names `getWidget()`; that line is edited to name `keep`.",
+      "expected": "--verify reports 0 remaining for that finding and exits 0.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-1] passed: exit 0, status pass, no remaining getWidget finding, cleared 1. 9/9 tests in the file pass.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests.log",
+              "sha256": "8a3362347cab12dc694ea3912f6df42a1a1ae938d42ef39ed7e52643e298c234"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-tidy-verify.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "P1 valid fix -> exit 0 pass cleared 1. X3 pure deletion of the named line -> pass. N1 no edits -> clean, message null.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes.log",
+              "sha256": "2460c8cb389b8988eb97b772bace52e4245083c9d0db6fcd317fdaff96df85bb"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "sha256": "3ebf76b6db21f48042484b2b8d7c28e0da597b67019ea0a9f417a77d1bb460af"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [],
+      "subjectIdentity": "e048fee2fed6f9b2985528801f34bc55543bf6a0759f58dcef74e617187c50c3"
+    },
+    {
+      "id": "spec-4-2-refuse-scope",
+      "criteria": [
+        "spec-4-2"
+      ],
+      "representativeInput": "Same fixture with edits outside the named line: AGENTS.md, unlisted docs/context/other.md, nested entry files, renames, untracked files, mode changes, symlinks, binary and no-hunk diffs.",
+      "expected": "Exit non-zero naming each offending path, message null; per brief end-edits, also refuse any line outside the listed findings.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-2] tests passed: AGENTS.md edit refused naming AGENTS.md; docs/context/other.md edit refused naming it; unnamed line 3 refused; review-a-3 tests (extra lines, untracked, staged-hidden, non-clearing edit) refused.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests.log",
+              "sha256": "8a3362347cab12dc694ea3912f6df42a1a1ae938d42ef39ed7e52643e298c234"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-tidy-verify.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Refused as expected: M3 chmod unnamed file; S1 symlink replacing named file; R1/R2 git mv (both paths named); D1 git rm named file; E1 docs/context/sub/CLAUDE.md; E2 docs/context/AGENTS.md; E4 docs/sub/agents.md; X1 extra line in hunk; X2 named+blank deleted; X4 appended line; I2 staged extra line.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes.log",
+              "sha256": "2460c8cb389b8988eb97b772bace52e4245083c9d0db6fcd317fdaff96df85bb"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "sha256": "3ebf76b6db21f48042484b2b8d7c28e0da597b67019ea0a9f417a77d1bb460af"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "FAIL",
+          "actual": "B1 named file rewritten with a NUL byte plus arbitrary text -> exit 0 status pass, message 'docs: tidy 0 doc lines ...'. B2 .git/info/attributes '*.md binary' then the named file fully rewritten as plain text -> pass. B3 .git/info/attributes diff=x + git config diff.x.textconv=true, file rewritten -> pass. B4 committed .gitattributes '*.md -diff', file rewritten -> pass. In each, lines 1-4 (no finding names them) are replaced and verify passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes.log",
+              "sha256": "2460c8cb389b8988eb97b772bace52e4245083c9d0db6fcd317fdaff96df85bb"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "sha256": "3ebf76b6db21f48042484b2b8d7c28e0da597b67019ea0a9f417a77d1bb460af"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "E3: docs/context/AGENTS.override.md is not treated as an entry file (passes); the spec names only AGENTS.md and CLAUDE.md, see follow-up.",
+        "A1/A2 (assume-unchanged/skip-worktree AGENTS.md) and U1 (.git/info/exclude new file) pass, but git commit -a / add -A would not include those edits; recorded as limits."
+      ],
+      "subjectIdentity": "e048fee2fed6f9b2985528801f34bc55543bf6a0759f58dcef74e617187c50c3"
+    },
+    {
+      "id": "spec-4-3-message",
+      "criteria": [
+        "spec-4-3"
+      ],
+      "representativeInput": "Passing fixture after the valid fix; fixture with no edits; fixture with a mode-only change.",
+      "expected": "Subject 'docs: tidy N doc lines after <short head>' plus trailer 'Joycraft-Tidy: <base>..<head>'; nothing to commit with no edits.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-3] passed: subject 'docs: tidy 1 doc line after <head7>', trailer 'Joycraft-Tidy: <merge-base>..<head>'; no edits -> status clean, message null.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests.log",
+              "sha256": "8a3362347cab12dc694ea3912f6df42a1a1ae938d42ef39ed7e52643e298c234"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-tidy-verify.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "FAIL",
+          "actual": "M1 chmod +x on the named file with no line edit -> exit 0 status pass with message 'docs: tidy 0 doc lines after ...' (a commit message for a change that edits no line). Same no-hunk path as B1-B4.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes.log",
+              "sha256": "2460c8cb389b8988eb97b772bace52e4245083c9d0db6fcd317fdaff96df85bb"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "sha256": "3ebf76b6db21f48042484b2b8d7c28e0da597b67019ea0a9f417a77d1bb460af"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime/cleanup.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [],
+      "subjectIdentity": "e048fee2fed6f9b2985528801f34bc55543bf6a0759f58dcef74e617187c50c3"
+    }
+  ],
+  "unresolved": [
+    "f1-no-hunk-bypass: tidy --verify passes a full rewrite of a named page when Git prints no hunk for it."
+  ],
+  "findings": [
+    {
+      "id": "f1-no-hunk-bypass",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-4-2",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:623",
+      "summary": "tidyVerify reads only @@ hunk headers from 'git diff HEAD -U0 --no-ext-diff -- <file>'. When Git prints no hunks for a named file (binary content, a 'binary'/-diff attribute in .gitattributes or untracked .git/info/attributes, a textconv driver, or a mode-only change) nothing is refused and verify passes with 'tidy 0 doc lines'. Any named context page can be rewritten in full (probes B1-B4, M1, M2). Fix direction: pass --text (-a) and --no-textconv to the hunk diff, and refuse a changed file whose diff yields no hunk or shows a mode/type change."
+    },
+    {
+      "id": "f2-override-entry",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:15",
+      "summary": "cleanup.mjs entryFiles is ['AGENTS.md','CLAUDE.md'], but entry-check.mjs:14 and mapReached in this file also count AGENTS.override.md. A docs/context/AGENTS.override.md naming a gone symbol is fixable and its edit passes verify (probe E3).",
+      "assumption": "The spec names only AGENTS.md and CLAUDE.md; adding AGENTS.override.md matches the brief's 'never an entry file'."
+    },
+    {
+      "id": "f3-index-not-measured",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:629",
+      "summary": "The staged view is checked for line scope but not for clearing: an index edit that still names getWidget passes when the working tree holds a valid fix (probe I1). A 'git commit' without -a would commit the unverified index.",
+      "assumption": "The spec says verify measures the working tree; the scope check still bounds the index."
+    },
+    {
+      "id": "f4-finding-evasion",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:494",
+      "summary": "A named line clears its finding by adding a space inside the backticks or dropping them, while it still names the gone symbol (probes C1, C2). The named line may also become arbitrary text (X5); that is the script-named design."
+    },
+    {
+      "id": "f5-untraced-by-queue",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "The queue declares no check input, so startup trace showed spec-4-1..3 untraced. tests/runtime-cleanup-tidy-verify.test.ts tags all three; add it as a check input."
+    },
+    {
+      "id": "f6-installed-copy",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": ".joycraft/runtime/cleanup.mjs:1",
+      "summary": "The installed .joycraft/runtime/cleanup.mjs predates this feature and differs from payload/. Sync before release if AGENTS.md requires it."
+    }
+  ],
+  "createdAt": "2026-11-21T23:42:39.757570Z"
+}

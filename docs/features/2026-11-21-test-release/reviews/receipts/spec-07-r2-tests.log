@@ -1,0 +1,22 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-delivery-lock.test.ts (6 tests) 2184ms
+   ✓ delivery lock holder > [AC:lock-dead-holder-taken] takes a lock whose recorded PID is not running on this host and pushes  572ms
+   ✓ delivery lock holder > [AC:lock-dead-takeover-taken] takes over a takeover directory that a dead taker left behind  564ms
+   ✓ delivery lock holder > [AC:lock-records-holder] a free lock records this PID and host and is released after the push  559ms
+ ✓ tests/runtime-wave-gate.test.ts (9 tests) 5112ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-1] refuses a missing, non-gate, red or stale receipt with its own code and pushes nothing  1738ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-2] a green gate receipt on HEAD pushes without a second verifier  585ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-2] a project with no tests.gate keeps the -- <verifier> push  502ms
+   ✓ gate receipt review-7 fixes > [review-7-1] refuses a green receipt of a non-shell program given -c "<gate>"  418ms
+   ✓ gate receipt review-7 fixes > [review-7-1] still accepts a real shell receipt of sh -c "<gate>"  596ms
+   ✓ gate receipt review-7 fixes > [review-7-3] reads the footer with evidence.mjs readFooter: only the last line, only an object  554ms
+   ✓ gate receipt review-7 fixes > [review-7-4] refuses a gate receipt outside the project root  544ms
+
+ Test Files  2 passed (2)
+      Tests  15 passed (15)
+   Start at  18:40:03
+   Duration  5.27s (transform 38ms, setup 0ms, collect 32ms, tests 7.30s, environment 0ms, prepare 60ms)
+
+exit=0

@@ -1,0 +1,60 @@
+B1 named file rewritten with a NUL byte (binary) and arbitrary content
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":1,"reason":"Edits a line that no finding names."}],"cleared":0,"message":null}
+B2 .git/info/attributes marks *.md binary, then named file fully rewritten as text
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":1,"reason":"Edits a line that no finding names."},{"path":"docs/context/guide.md","line":3,"reason":"Edits a line that no finding names."}],"cleared":0,"message":null}
+B3 .git/info/attributes diff=x + .git/config textconv=true, named file rewritten
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":1,"reason":"Edits a line that no finding names."},{"path":"docs/context/guide.md","line":3,"reason":"Edits a line that no finding names."}],"cleared":0,"message":null}
+B4 committed .gitattributes "*.md -diff", named file fully rewritten
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":1,"reason":"Edits a line that no finding names."},{"path":"docs/context/guide.md","line":3,"reason":"Edits a line that no finding names."}],"cleared":0,"message":null}
+M1 chmod +x on the named file only (no line edit)
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","reason":"Changes the file mode, type or binary content: a tidy edit only replaces or deletes named lines."}],"cleared":0,"message":null}
+M2 chmod +x plus the valid fix
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","reason":"Changes the file mode, type or binary content: a tidy edit only replaces or deletes named lines."}],"cleared":0,"message":null}
+M3 chmod +x on an unnamed file only
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/other.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"message":null}
+S1 named file replaced by a symlink to AGENTS.md
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"message":null}
+S2 symlink AGENTS.md -> docs/context/guide.md committed earlier? (edit guide line via fix, AGENTS.md is a real file here) baseline fix
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"message":"docs: tidy 1 doc line after a89bceb\n\nJoycraft-Tidy: e88ec812859cf7ec4ca5ccd365b21d02062ec64c..a89bceb162fda3c425c6f9d50553a4c90992a0b4"}
+R1 git mv named file to a new name after fixing
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","reason":"No fixable tidy finding names this file."},{"path":"docs/context/guide2.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"message":null}
+R2 git mv unnamed file
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/other.md","reason":"No fixable tidy finding names this file."},{"path":"docs/context/other2.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"message":null}
+D1 git rm the whole named file
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"message":null}
+E1 nested docs/context/sub/CLAUDE.md edited
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/sub/CLAUDE.md","reason":"An entry file: tidy never edits one."}],"cleared":0,"message":null}
+E2 nested docs/context/AGENTS.md names `getWidget()`; fix that line
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/AGENTS.md","reason":"An entry file: tidy never edits one."}],"cleared":0,"message":null}
+E3 docs/context/AGENTS.override.md names `getWidget()`; fix that line
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/AGENTS.override.md","reason":"An entry file: tidy never edits one."}],"cleared":0,"message":null}
+E4 lowercase docs/sub/agents.md edited
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/sub/agents.md","reason":"No fixable tidy finding names this file."}],"cleared":0,"message":null}
+X1 extra unnamed line inside the same hunk (replace lines 4-5)
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":4,"reason":"Edits a line that no finding names."}],"cleared":0,"message":null}
+X2 delete named line plus the blank line above it
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":4,"reason":"Edits a line that no finding names."}],"cleared":0,"message":null}
+X3 pure deletion of named line only
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"message":"docs: tidy 1 doc line after ab7ef30\n\nJoycraft-Tidy: 4088a0b91a0718792bd85b56d5f79bb5321fae3d..ab7ef3089b1bced991da93e37d102dd26fa9df95"}
+X4 append a line at end of named file (after fix)
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":5,"reason":"Adds lines: a tidy edit only replaces or deletes the named lines."}],"cleared":0,"message":null}
+X5 named line rewritten to arbitrary long policy text (same line count)
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"message":"docs: tidy 1 doc line after 0298db6\n\nJoycraft-Tidy: aa05d2cad3bd08d548faea0d37daea16af67837a..0298db613577ab4df07e1ae06fd85e94cd2a25eb"}
+C1 finding evaded by a space inside backticks (`getWidget `)
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":5,"reason":"The edit leaves the finding: it still names getWidget."}],"cleared":0,"message":null}
+C2 finding evaded by dropping backticks
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","line":5,"reason":"The edit leaves the finding: it still names getWidget."}],"cleared":0,"message":null}
+I1 index holds a non-clearing edit of the named line, worktree holds the valid fix
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","reason":"The index holds part of the change: stage the whole fix (git add) or unstage it (git restore --staged), then verify again."}],"cleared":0,"message":null}
+I2 index has an extra appended line in named file, worktree has valid fix
+  -> {"exit":2,"status":"refused","refused":[{"path":"docs/context/guide.md","reason":"The index holds part of the change: stage the whole fix (git add) or unstage it (git restore --staged), then verify again."}],"cleared":0,"message":null}
+A1 AGENTS.md edited but marked assume-unchanged [git diff HEAD --stat: docs/context/guide.md | 2 +- |  1 file changed, 1 insertion(+), 1 deletion(-)]
+  -> {"exit":2,"status":"refused","refused":[{"path":"AGENTS.md","reason":"Git hides changes to this file (assume-unchanged or skip-worktree): clear the bit with git update-index, then verify again."}],"cleared":0,"message":null}
+A2 AGENTS.md edited with skip-worktree [commit -a would include AGENTS.md? M docs/context/guide.md]
+  -> {"exit":2,"status":"refused","refused":[{"path":"AGENTS.md","reason":"Git hides changes to this file (assume-unchanged or skip-worktree): clear the bit with git update-index, then verify again."}],"cleared":0,"message":null}
+U1 new file hidden by .git/info/exclude
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"message":"docs: tidy 1 doc line after 11104a9\n\nJoycraft-Tidy: 025a4cbfde91d6e03f4a19ab062ab863537a1f07..11104a9a2d60ffcc21b9f6482ab42605ebfe08b7"}
+N1 no edits
+  -> {"exit":0,"status":"clean","refused":[],"cleared":0,"message":null}
+P1 valid fix
+  -> {"exit":0,"status":"pass","refused":[],"cleared":1,"message":"docs: tidy 1 doc line after 1bcd9f4\n\nJoycraft-Tidy: 9fe66993416225ecc74e790ba4175d5a5b750743..1bcd9f41b7a115296ee7bf29c206c2fb76654364"}

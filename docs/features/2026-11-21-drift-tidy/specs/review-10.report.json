@@ -1,0 +1,445 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "81b88baf83949939191afaf8d120423effd7a906",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 10,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+    "criteria": [
+      {
+        "id": "spec-10-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-10-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-10-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-10-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "ee6d2f42a4e517b2430c39fc2e11b15a1a4909d40a3e6d5fb66b40f14917df2f",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+        "kind": "requirement",
+        "sha256": "b713e98db9f944a370a359129659f3e277f87fedc4bbedd212ea764b25e4301d",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/settings.md",
+        "kind": "code",
+        "sha256": "aef03aafa0a22de115b7022d6916b63e55ddfc5cb59323df26417dd693a7269e",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "a5525e14a90cedcbce502436a2909d07e81c8a9a0cd297e30a993eb25794d638",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/config.mjs",
+        "kind": "code",
+        "sha256": "23ddd1573ce5b802ad10b5c5078cd80ddf892f8fe93a08914d8d4ea5c4bd8232",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/templates/joycraft.yaml",
+        "kind": "code",
+        "sha256": "4e70e36156a92cf1e19e31058b8ac0b2be5d93f987ff86b958b8f19129181cfd",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-checks-seam.test.ts",
+        "kind": "check",
+        "sha256": "9b09fea853fedd2d161e161a3f0cfa53a6dc8282d6c0b6441089cc3427a14fe5",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          10
+        ]
+      },
+      "governing": []
+    },
+    "identity": "c013a2acbe34fe8216ab559e7ae4506c0c9a2d580c6899b8834f77587a9c94ad"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ab91b652c1d17b46d"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a0d9e20c257bcd301"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-10-1-config-rejects-missing-run",
+      "subjectIdentity": "c013a2acbe34fe8216ab559e7ae4506c0c9a2d580c6899b8834f77587a9c94ad",
+      "criteria": [
+        "spec-10-1"
+      ],
+      "representativeInput": "Git fixture joycraft.yaml \"checks:\\n  - name: x\" (no run); then the same entry with run: sh lint.sh",
+      "expected": "config.mjs exits non-zero and names run; with run it returns checks [{name, run}]",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-tests.log",
+              "sha256": "eb255945c3e7602c0422ffbe6cf9c69702856cd9ee1ebcc28ff422763b52d4f0"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-checks-seam.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Test [AC:spec-10-1] passed (7/7 in the file): exit non-zero, stderr matches \"checks item 1 (x) needs run\"; with run, checks equals [{name: x, run: sh lint.sh}]."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probes.log",
+              "sha256": "bbb5f91d7760049361fb422f64eb4e37a89d0bf9ee77eea92264544730bf5b32"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs",
+              "sha256": "d6ef000d4cc5a12df914a0f59b7dc8c59a72daebab92015eeddbc47052afc8a3"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs",
+              "payload/.joycraft/runtime"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Probes: an entry with no name, an unknown key (args) and checks as a map each exit 1 with a message that names the field; the template example (quoted glob, timeout: 300) and a run with a colon and a trailing comment parse to the expected strings."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-10-2-line-findings",
+      "subjectIdentity": "c013a2acbe34fe8216ab559e7ae4506c0c9a2d580c6899b8834f77587a9c94ad",
+      "criteria": [
+        "spec-10-2"
+      ],
+      "representativeInput": "Git fixture check lint.sh printing docs/context/a.md:3: ..., summary: 2 problems, ./docs/b.md:12: ..., exit 1; cleanup.mjs tidy",
+      "expected": "Two findings with check: lint; the summary line ignored",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-tests.log",
+              "sha256": "eb255945c3e7602c0422ffbe6cf9c69702856cd9ee1ebcc28ff422763b52d4f0"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-checks-seam.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Test [AC:spec-10-2] passed: exactly two findings with check lint (docs/context/a.md:3 and docs/b.md:12, ./ normalized), the summary line gives none. Source review: customChecks (cleanup.mjs:555) spawns with cwd: root and matches both stdout and stderr."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probes.log",
+              "sha256": "bbb5f91d7760049361fb422f64eb4e37a89d0bf9ee77eea92264544730bf5b32"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs",
+              "sha256": "d6ef000d4cc5a12df914a0f59b7dc8c59a72daebab92015eeddbc47052afc8a3"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs",
+              "payload/.joycraft/runtime"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Probes with documented tool shapes: vale --output=line, markdownlint-cli2 with a column (on stderr), a drift/docaudit-style line with exit 0, and CRLF output each give a finding with the check name; a failing check with no path:line: line gives one fallback finding at path \".\"; two checks where one is missing give the real finding plus one skipped. Gaps recorded as follow-ups."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-10-3-missing-command-skipped",
+      "subjectIdentity": "c013a2acbe34fe8216ab559e7ae4506c0c9a2d580c6899b8834f77587a9c94ad",
+      "criteria": [
+        "spec-10-3"
+      ],
+      "representativeInput": "Git fixture checks: [{name: ghost, run: definitely-not-a-tool-xyz --check}]; cleanup.mjs tidy",
+      "expected": "One skipped entry for ghost; tidy exits 0; no ghost findings",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-tests.log",
+              "sha256": "eb255945c3e7602c0422ffbe6cf9c69702856cd9ee1ebcc28ff422763b52d4f0"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-checks-seam.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Test [AC:spec-10-3] passed: status 0, one skipped entry with check ghost, no ghost findings. The review-a-5 timeout test also passed (sleep 20 | cat with timeout: 1 skipped as \"timed out after 1s\" in under 10 s)."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probes.log",
+              "sha256": "bbb5f91d7760049361fb422f64eb4e37a89d0bf9ee77eea92264544730bf5b32"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs",
+              "sha256": "d6ef000d4cc5a12df914a0f59b7dc8c59a72daebab92015eeddbc47052afc8a3"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs",
+              "payload/.joycraft/runtime"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Probe \"two checks, one missing\": skipped [{check: ghost, reason: \"Command not found: definitely-not-a-tool-xyz\"}] and the other check still runs."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-10-4-docs-name-checks",
+      "subjectIdentity": "c013a2acbe34fe8216ab559e7ae4506c0c9a2d580c6899b8834f77587a9c94ad",
+      "criteria": [
+        "spec-10-4"
+      ],
+      "representativeInput": "payload settings.md and templates/joycraft.yaml; payload word guard",
+      "expected": "Both files name checks:; payload words within the cap",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-tests.log",
+              "sha256": "eb255945c3e7602c0422ffbe6cf9c69702856cd9ee1ebcc28ff422763b52d4f0"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-checks-seam.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Test [AC:spec-10-4] passed: settings.md row \"Run drift, vale or docaudit at session end\" -> `checks:`; the template has a commented \"# checks:\" block with name, run and timeout."
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "payload-guard payload-words tests passed (the field-24 cap test and the spec-12 cut test).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-words.log",
+              "sha256": "63069303003e7547d9f45f1ef3a0b2a7ab4f6a3752b1856ef2d549b6f8d3d743"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/payload-guard.test.ts",
+              "-t",
+              "payload-words"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "payload/PIN matches payload/.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-pin.log",
+              "sha256": "6a6a629b9ba6cab1795828ee8bc7e175993919218ec136af03b9e2e2a17849e2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "scripts/pin-payload.mjs",
+              "--check"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-markdownlint-no-column",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:548",
+      "summary": "markdownlint-cli2 prints \"file:line rule ...\" (no colon after the line) for rules with no column, such as MD041. checkLine needs \"path:line:\", so those lines are dropped silently when the same run has another matching line (probe: 1 of 2 problems found). The template example uses markdownlint-cli2, so a user who copies it gets partial findings.",
+      "assumption": "The spec contract is \"path:line: message\"; accepting \"path:line \" too is a widening for the owner."
+    },
+    {
+      "id": "f2-knip-needs-wrapper",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/setup.md:308",
+      "summary": "setup.md offers knip, but no knip reporter prints path:line: at the line start (the default symbols reporter puts it in the third column). A knip entry gives only the fallback \"failed with no path:line: output\" finding. A vale entry needs --output=line. So drift/docaudit (if they print the line contract) plug in with only a joycraft.yaml entry; vale and markdownlint need the right flag; knip needs a wrapper script. settings.md and the template do not say to pick a line output format."
+    },
+    {
+      "id": "f3-absolute-paths",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:570",
+      "summary": "A tool that prints absolute paths (eslint unix formatter) gives findings with the absolute path; it is not made relative to the project root, so context-first ranking and path matching do not apply to it."
+    },
+    {
+      "id": "f4-space-in-path",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:548",
+      "summary": "A path with a space (\"docs/my notes.md:2: bad\") does not match checkLine (by design, to exclude stack traces), so it gives only the fallback finding."
+    },
+    {
+      "id": "f5-pipeline-not-found",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:564",
+      "summary": "run: \"definitely-not-a-tool-xyz | cat\" exits 0 through the shell pipeline, so it is neither skipped nor reported; the missing tool is silent."
+    },
+    {
+      "id": "f6-subdir-cwd",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:582",
+      "summary": "tidy uses process.cwd() as root; run from a subdirectory it reads no joycraft.yaml, so no checks run and nothing says so (probe \"run from a subdirectory\"). Shared with the other tidy checks, not specific to this spec."
+    },
+    {
+      "id": "f7-column-in-detail",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:570",
+      "summary": "For path:line:col: tools (vale line, eslint unix, markdownlint with a column) the column stays at the start of detail (\"5:Vale.Spelling:...\"). Cosmetic."
+    },
+    {
+      "id": "f8-co-implementer",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": "payload/.joycraft/runtime/cleanup.mjs",
+      "summary": "Spec 10 was implemented by lane-a-tidy (ab91b652c1d17b46d, a0d9ff1) and hardened by fix-lane-a (ae52120572f7c3f19, c9421d1: stderr, stack-trace filter, 120 s default timeout with timeout:, Windows not-found). implementerActor records lane-a-tidy only. Neither commit removed or changed an assertion in the spec test file; c9421d1 only added tests."
+    },
+    {
+      "id": "f9-installed-copy",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": ".joycraft/runtime/cleanup.mjs",
+      "summary": "The repo's installed .joycraft copies of config.mjs, cleanup.mjs, settings.md and the template differ from payload/ (last installed in 48c06a8); payload/PIN matches. Left to the release/install flow, as for earlier specs."
+    }
+  ],
+  "createdAt": "2026-11-22T00:07:20.355Z"
+}

@@ -1,0 +1,358 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "6ad36898a77a8f72a65bbd512102d6e48d1431d4",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 17,
+    "specPath": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+    "criteria": [
+      {
+        "id": "spec-17-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-17-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-17-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-17-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "declared-test-changes",
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "test-only-product-code",
+            "cap-raise"
+          ]
+        },
+        "sha256": "6ecd6df1913ace149e010120b88c0e13fba4186b8512be6bdbefab0b445f6721",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "663f7eb39e295c5dbf1bf58800b3792aa65464b6b725cd632117650f196f7865",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+        "kind": "requirement",
+        "sha256": "62c0aa4de3077df565917aabc938529f25de2e3a5adb590d5199eea4140bbe16",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-decompose/SKILL.md",
+        "kind": "code",
+        "sha256": "492fbd7a736992cca033c6221531cc16a01cdeb4339ad1fbc5a1f18a7bb53f77",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+        "kind": "code",
+        "sha256": "e22685657827f67bd217ef76a744ece9b4fa25a7a3738709e513e1cee8daac8b",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.claude/agents/joycraft-reviewer.md",
+        "kind": "code",
+        "sha256": "868ca34de98f3f39ef68d1372231b12aaf3e3b902241e0b56d4fe168e8944b4d",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing-review.md",
+        "kind": "code",
+        "sha256": "c2f24963fc38e36de4e180c5488a25725e7de3657c72a81f62b867f6e7e3a3c9",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/templates/spec.md",
+        "kind": "code",
+        "sha256": "73993d369bae154587a9e0c324d589ce17d250acba435dbacbd4a03f1362dbe7",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "5b08375159053d9c6eea4b4a32fac6858701bf1010528d87367936bee101ea3e",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-test-changes.test.ts",
+        "kind": "check",
+        "sha256": "1576a6a350127f4dd19c84473be1e41884453258c22161b1dc682abef9a1244b",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          5,
+          11,
+          17
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "declared-test-changes",
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "test-only-product-code",
+            "cap-raise"
+          ]
+        }
+      ]
+    },
+    "identity": "89f2d4b969cbc15b913c4a638c14d0f02ed5771514e39ec080e9044e76944301"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a1c4095e1ee3dcc85"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a70dd0151bcacf0ef"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "createdAt": "2026-11-22T03:12:48.000Z",
+  "flows": [
+    {
+      "id": "spec-17-1-template",
+      "subjectIdentity": "89f2d4b969cbc15b913c4a638c14d0f02ed5771514e39ec080e9044e76944301",
+      "criteria": [
+        "spec-17-1"
+      ],
+      "representativeInput": "payload/.joycraft/templates/spec.md:21-32 at 6ad3689; tests/text-test-changes.test.ts [AC:spec-17-1]",
+      "expected": "Template has ## Test changes, default none, three classes; test-changes.mjs parses its example bullet.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Template section unchanged in substance since round 1: \"none\" default and the three classes. [AC:spec-17-1] passes on the committed bytes; 32/32 tests pass across the three files, exit 0. The fix's new parse rule (a bullet needs text after its class) still parses the template example \"- `tests/a.test.ts` class 1: acceptance bullet 2 states the new value.\".",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-tests.log",
+              "sha256": "983000a29f69ae748a25e908ec1930915047adb3e5b58213958c889c4d217124"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-text-scan.log",
+              "sha256": "7b69048298ab00650a7ab0ad4e9f3c8abd998b386b18888d1c14b2690b7d5e7c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/text-test-changes.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/runtime-test-changes.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-17-2-reviewer-rules",
+      "subjectIdentity": "89f2d4b969cbc15b913c4a638c14d0f02ed5771514e39ec080e9044e76944301",
+      "criteria": [
+        "spec-17-2"
+      ],
+      "representativeInput": "payload/.joycraft/references/testing-review.md:56-79 at 6ad3689; round-1 probe cases A1-A3, B1-B7 plus C1-C5 through payload test-changes.mjs",
+      "expected": "The section owns the reviewer rules; honest class 1/2/3 changes pass and sneaky changes block.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-1 blocking f1 (declarations unconditional) is resolved: testing-review.md now says a declaration covers only the change its requiring line names and its class proves, anything else in that file's diff is undeclared, and a class-1 line without the new value or a bullet with no requiring line declares nothing. Round-1 blocking f2 (self-declaration) is resolved: test-changes.mjs reads declarations from the spec at the base and lists later ones under addedAfterBase, which count only with an acceptance line that existed at the base. Probe on the committed runtime: honest A1 class 1, A2 class 2, A3 class 3 are declared with nothing undeclared, so they pass. Runtime now catches B1 (undeclared), B4 bare bullet (undeclared), B7 self-declaration (declared [], addedAfterBase class 2), C1 a declaration copied from spec 2's base text into spec 1 (addedAfterBase), C2 a spec renamed after the base with a new bullet (declared [], addedAfterBase). B2 (extra assertion dropped in a declared file) and B3 (class 1 whose line states no value) still print as declared; the rule text blocks both: B2's dropped assertion is 'anything else in the diff', undeclared and required by no line; B3 declares nothing because its acceptance line states no value, and no line requires the 99. The rules name both outcomes in words a reviewer can apply from the diff and the spec alone, so a reviewer following the text blocks them reliably. Old rule sentences kept; required deletion now needs class 3 (round-1 f5) and rename pairing is named (round-1 f4). Missing testChanges fallback named (round-1 f3): this review's startup printed no testChanges (installed runtime, no --changes-base), and the probe ran test-changes.mjs directly as the rule says.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-probe.log",
+              "sha256": "15efd8ce16fa3276778c242ac49b44a6dd9106e0773aebc124522b6e5844c6de"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-probe.mjs",
+              "sha256": "974467fa315753e21e44e6730b008b9b2441aef88d81d2ae029a6c4604445d39"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-text-scan.log",
+              "sha256": "7b69048298ab00650a7ab0ad4e9f3c8abd998b386b18888d1c14b2690b7d5e7c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "B2 and B3 are blocked by reviewer judgment from the rule text, not by test-changes.mjs output; that split is what the spec asks for (the Done-when review outcome is a reviewer judgment)."
+      ]
+    },
+    {
+      "id": "spec-17-3-pointers",
+      "subjectIdentity": "89f2d4b969cbc15b913c4a638c14d0f02ed5771514e39ec080e9044e76944301",
+      "criteria": [
+        "spec-17-3"
+      ],
+      "representativeInput": "verify SKILL.md:45, joycraft-reviewer.md:29, decompose SKILL.md:31 at 6ad3689",
+      "expected": "Old blocking sentence gone; verify, reviewer and decompose point to testing-review.md#test-changes.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "After later edits by specs 22/18/19 (b7a8685, e6270e2, 08beda2) the pointers remain in all three files and the old sentence count is 0 in verify and reviewer. [AC:spec-17-3] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-text-scan.log",
+              "sha256": "7b69048298ab00650a7ab0ad4e9f3c8abd998b386b18888d1c14b2690b7d5e7c"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-tests.log",
+              "sha256": "983000a29f69ae748a25e908ec1930915047adb3e5b58213958c889c4d217124"
+            }
+          ],
+          "command": {
+            "argv": [
+              "git",
+              "diff",
+              "40d0029",
+              "6ad3689",
+              "--",
+              "payload/.joycraft/references/testing-review.md"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-17-4-words",
+      "subjectIdentity": "89f2d4b969cbc15b913c4a638c14d0f02ed5771514e39ec080e9044e76944301",
+      "criteria": [
+        "spec-17-4"
+      ],
+      "representativeInput": "tests/payload-guard.test.ts printed counts at 6ad3689; files touched by fix 5d4ec5c",
+      "expected": "Every-spec growth at most 15 from this spec; on-demand inside budget.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Guard passes: every-spec 12164 (cap 12256), on-demand 19519 (cap 19663). The fix 5d4ec5c edits only testing-review.md (on-demand) among payload text, so spec 17's every-spec delta stays the round-1 -11; the +22 since round 1 comes from specs 22/18/19 edits to verify and reviewer.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-tests.log",
+              "sha256": "983000a29f69ae748a25e908ec1930915047adb3e5b58213958c889c4d217124"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-text-scan.log",
+              "sha256": "7b69048298ab00650a7ab0ad4e9f3c8abd998b386b18888d1c14b2690b7d5e7c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/text-test-changes.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/runtime-test-changes.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f7-base-ancestry",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/test-changes.mjs:79-80",
+      "summary": "test-changes.mjs checks only that --base is a commit, not that it is an ancestor of HEAD. With a side-branch base whose spec declares tests/a.test.ts, the weakened file prints as declared (probe C3). Since declarations now come from the base, a wrong base also picks the wrong declarations. Add `git merge-base --is-ancestor <base> HEAD` and say so plainly when it fails.",
+      "assumption": "The base is captured by the coordinator, not chosen by the implementer, so this is not a reachable bypass of spec-17-2."
+    },
+    {
+      "id": "f8-renamed-spec-loses-declarations",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/test-changes.mjs:121",
+      "summary": "The base spec is read at the current spec path. An honest spec renamed after the base (queue updated) loses all its declarations: they show as addedAfterBase with declared [] (probe C2b). Safe direction (more review, not less); the reviewer can read the base spec at the old path. Reading the base queue's file name for the spec id would fix it.",
+      "assumption": "Spec renames mid-review are rare."
+    },
+    {
+      "id": "f9-rewritten-requiring-text",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/test-changes.mjs:125",
+      "summary": "addedAfterBase compares path and class only. A base declaration whose requiring text the implementer rewrites after the base (same path and class) stays declared and is not flagged (probe C4). The rules still require the named change and class proof, so the reviewer reading the current bullet judges against the rewritten line. Comparing the whole bullet text, or saying 'read the requiring line at the base', closes it.",
+      "assumption": "An acceptance-line change in the spec itself is visible in the spec diff the reviewer reads."
+    }
+  ]
+}

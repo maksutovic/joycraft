@@ -1,0 +1,91 @@
+$ node docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs payload/.joycraft/runtime
+
+## vale --output=line shape
+exit 2
+findings [{"check":"vale","path":"docs/a.md","line":3,"detail":"5:Vale.Spelling:Did you really mean 'teh'?"}]
+skipped []
+
+## markdownlint-cli2 shape (with and without column, stderr)
+exit 2
+findings [{"check":"mdl","path":"docs/a.md","line":3,"detail":"81 MD013/line-length Line length"}]
+skipped []
+
+## knip default symbols reporter shape
+exit 2
+findings [{"check":"knip","path":".","detail":"sh tool.sh failed (exit 1) with no path:line: output."}]
+skipped []
+
+## eslint unix formatter (absolute path)
+exit 2
+findings [{"check":"eslint","path":"/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-s10-owPy3z/src/a.js","line":10,"detail":"5: Unexpected var [Error/no-var]"}]
+skipped []
+
+## docaudit/drift line contract, exit 0
+exit 2
+findings [{"check":"drift","path":"docs/context/x.md","line":4,"detail":"names removed fn foo"}]
+skipped []
+
+## path with a space
+exit 2
+findings [{"check":"sp","path":".","detail":"sh tool.sh failed (exit 1) with no path:line: output."}]
+skipped []
+
+## CRLF output
+exit 2
+findings [{"check":"crlf","path":"docs/a.md","line":2,"detail":"bad"}]
+skipped []
+
+## clean check exit 0, no output
+exit 0
+findings []
+skipped []
+
+## failing check, no line output
+exit 2
+findings [{"check":"noisy","path":".","detail":"sh tool.sh failed (exit 2) with no path:line: output."}]
+skipped []
+
+## not-found inside a pipeline
+exit 0
+findings []
+skipped []
+
+## quoted run with glob (template example form)
+exit 2
+findings [{"check":"q","path":"docs/a.md","line":1,"detail":"arg=docs/**/*.md"}]
+skipped []
+
+## run from a subdirectory
+exit 0
+findings []
+skipped []
+
+## two checks, one missing
+exit 2
+findings [{"check":"real","path":"docs/a.md","line":1,"detail":"hi"}]
+skipped [{"check":"ghost","reason":"Command not found: definitely-not-a-tool-xyz"}]
+
+## config: template example parses
+exit 0
+[{"name":"markdownlint","run":"npx markdownlint-cli2 \"docs/**/*.md\"","timeout":300}]
+
+## config: run with colon and hash
+exit 0
+[{"name":"c","run":"sh -c 'echo a: b'"}]
+
+## config: flow-map entry
+exit 1
+Config stopped: joycraft.yaml line 1: nested flow collections are not supported
+
+## config: no name
+exit 1
+Config stopped: joycraft.yaml: checks item 1 needs name
+
+## config: unknown key
+exit 1
+Config stopped: joycraft.yaml: checks item 1: unknown setting args
+
+## config: checks as map
+exit 1
+Config stopped: joycraft.yaml: checks must be a list of name and run
+exit: 0

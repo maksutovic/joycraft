@@ -1,0 +1,333 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "cf6f37bf6b4a4beb00ea7b00cd42a35539497ec5",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 4,
+    "specPath": "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+    "criteria": [
+      {
+        "id": "spec-4-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "spec-tier",
+            "context-and-authorization",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "0449d824dc6392bc46a2a8680d460e096488a56a6abb9e57ef589f083221d171",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "d535ad2f28130e95f4c4b8a29afd55caa756c6198d5c075c6e15cd0cde2cdaf1",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+        "kind": "requirement",
+        "sha256": "a16758c158e73773a50d023fe33d4ab96006010283cc295f2925962102426163",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/queue-check.mjs",
+        "kind": "code",
+        "sha256": "c8dc12f0a192229b7e31d8bd1d88fe572a22b5b6689f184bd42b299b66f261fa",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-queue-check-gate.test.ts",
+        "kind": "check",
+        "sha256": "f79f3e07c0fd63e9f5ce686596c6d7c98244fa6b08e4f198c552951790c41c7a",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2,
+          4
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "spec-tier",
+            "context-and-authorization",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "c9e6ffeb5dd6bafb3e7e4ca0a92ca4808be38e2be8f02c5b310d27203372e2f1"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a465133b4c1fadef3"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "ade1b50bf7d97296a"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-4-1-gate-named",
+      "subjectIdentity": "c9e6ffeb5dd6bafb3e7e4ca0a92ca4808be38e2be8f02c5b310d27203372e2f1",
+      "criteria": [
+        "spec-4-1"
+      ],
+      "representativeInput": "queue-check.mjs on a temp git fixture with tests.gate \"pnpm verify\" and a todo spec whose acceptance bullet names `pnpm verify` (code span) or pnpm verify. (plain text); namesCommand at payload/.joycraft/runtime/queue-check.mjs:215, gap at :334-336",
+      "expected": "One gate-in-spec gap naming spec 1, 01-a.md:9 and `pnpm verify`; exit 2.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-1] passes in the 3/3 run (exit 0): both the code-span and the plain-text bullet give exactly one gap with the spec, the line and the command, and exit 2.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-tests.log",
+              "sha256": "cef5e5f555dfb40ad17db42231148ffc127bfd8f969546d6d63e74fa9d5f8c16"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-queue-check-gate.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: the gate in a code span, in prose ending with punctuation, in parentheses or quotes, with extra inner spaces, or recorded with a tab, all match. Two bullets give two gaps on lines 9 and 10; gate equal to full gives one gap (deduped); gate and full in one bullet give two gaps. The gap text names spec, file:line and the command.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.log",
+              "sha256": "836cf48edd5f350776c3fdd5fb39997f04ed6457f04dddbb158a0416896a0dd0"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs",
+              "sha256": "d603d854f2d1408faf581acdcdadce1c04c4c11d252fb6631ae4be830cde7193"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-4-2-more-args",
+      "subjectIdentity": "c9e6ffeb5dd6bafb3e7e4ca0a92ca4808be38e2be8f02c5b310d27203372e2f1",
+      "criteria": [
+        "spec-4-2"
+      ],
+      "representativeInput": "Fixtures with tests.gate \"pnpm test && pnpm typecheck\" and a bullet naming `pnpm test tests/x.test.ts`; tests.full \"pnpm test:all\" named as `pnpm   test:all`; gate \"npm test\" with `npm test -- tests/x`",
+      "expected": "Focused command gives 0 gaps and exit 0; the full command gives 1 gap and exit 2.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-2] passes: the focused bullet gives 0 gaps (exit 0) and the full-command bullet gives 1 gap (exit 2).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-tests.log",
+              "sha256": "cef5e5f555dfb40ad17db42231148ffc127bfd8f969546d6d63e74fa9d5f8c16"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-queue-check-gate.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: `npm test -- tests/x` against gate `npm test` gives 0 gaps end to end (exit 0); `npm test` alone gives 1 gap (exit 2). `pnpm verify --filter a`, `npm test:unit`, and `pnpm test && pnpm typecheck && pnpm lint` do not match their shorter gate.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.log",
+              "sha256": "836cf48edd5f350776c3fdd5fb39997f04ed6457f04dddbb158a0416896a0dd0"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs",
+              "sha256": "d603d854f2d1408faf581acdcdadce1c04c4c11d252fb6631ae4be830cde7193"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-4-3-out-of-scope",
+      "subjectIdentity": "c9e6ffeb5dd6bafb3e7e4ca0a92ca4808be38e2be8f02c5b310d27203372e2f1",
+      "criteria": [
+        "spec-4-3"
+      ],
+      "representativeInput": "Gate named only under Implementation and verification scope; no joycraft.yaml; a done spec naming the gate; plus a broken joycraft.yaml",
+      "expected": "0 gate-in-spec gaps in each fixture.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-3] passes: the three fixtures give no gate-in-spec gap; the scope and no-gate fixtures exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-tests.log",
+              "sha256": "cef5e5f555dfb40ad17db42231148ffc127bfd8f969546d6d63e74fa9d5f8c16"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-queue-check-gate.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Code read: gateCommands is built only from config.tests.gate/full (queue-check.mjs:304), readConfig defaults carry no command (config.mjs:15), the match runs only over acceptanceBullets of non-done specs (:324, :326-336). Probe: a broken joycraft.yaml gives no gate gap and exit 0, as the spec assigns that to config.mjs.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.log",
+              "sha256": "836cf48edd5f350776c3fdd5fb39997f04ed6457f04dddbb158a0416896a0dd0"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs",
+              "sha256": "d603d854f2d1408faf581acdcdadce1c04c4c11d252fb6631ae4be830cde7193"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-fenced-block",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/queue-check.mjs:215",
+      "summary": "A gate inside a fenced code block within an acceptance bullet is not reported: acceptanceBullets joins the fence lines into \"run ```sh pnpm verify ```\", and the space before the closing fence is not an allowed end. Probe \"fenced block inside bullet\": exit 0, 0 gaps.",
+      "assumption": "The spec names \"text or a code span\", not fenced blocks, so this is outside the criterion. A later fix could end a match at a fence marker too."
+    },
+    {
+      "id": "f2-prose-more-words",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/queue-check.mjs:215",
+      "summary": "A plain-text gate followed by more words (\"run pnpm verify before merging\", \"pnpm verify — then ship\") is not reported, because a following word reads as an argument. A gate in a code span followed by words is reported.",
+      "assumption": "This is the rule the spec chose (\"not ended by more arguments\"); plain text cannot tell words from arguments. Spec writers who use code spans are covered."
+    },
+    {
+      "id": "f3-loose-start",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/queue-check.mjs:215",
+      "summary": "A match may start after any space, so `npx npm test` and `CI=1 pnpm verify` match the gate, and a negated mention (\"do not run `pnpm verify`\") is also reported. The words \"the project gate\" without the command are not reported.",
+      "assumption": "An env prefix or negated mention still names the gate, which is the brief wording; leave as is unless false positives appear in practice."
+    },
+    {
+      "id": "f4-next-step-text",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/queue-check.mjs:14",
+      "summary": "Every gap, gate-in-spec included, ends with \"Add it to the brief as an open decision and ask the user now.\" For gate-in-spec the fix is mechanical (use the spec's own test command), so that suffix gives the wrong next step.",
+      "assumption": "Not a stated criterion; the decompose text specs (later in this queue) may cover what the agent does with the gap."
+    },
+    {
+      "id": "f5-installed-copy",
+      "class": "follow-up",
+      "origin": "new",
+      "at": ".joycraft/runtime/queue-check.mjs",
+      "summary": "The tracked installed copy .joycraft/runtime/queue-check.mjs is still the pre-spec version (uses workPaths, no namesCommand). payload/ is the source per AGENTS.md; the self-install refresh is outside this spec's files."
+    }
+  ],
+  "limits": [
+    "Gate not run; due at wave end (the spec's own test file was run once, per the testing reference).",
+    "The payload copy was reviewed and run; the installed .joycraft copy was not exercised.",
+    "Test changes section says none: the commit adds only a new test file and edits no existing test file (git show a5c09da --stat)."
+  ],
+  "createdAt": "2026-11-22T02:32:20.319Z"
+}

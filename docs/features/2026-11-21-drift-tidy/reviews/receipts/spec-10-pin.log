@@ -1,0 +1,3 @@
+$ node scripts/pin-payload.mjs --check
+payload/PIN matches payload/.
+exit: 0

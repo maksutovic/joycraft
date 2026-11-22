@@ -1,0 +1,24 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-archive-named-files.test.ts tests/runtime-archive-links.test.ts tests/runtime-archive-as-is.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-archive-as-is.test.ts (7 tests) 1552ms
+ ✓ tests/runtime-archive-links.test.ts (7 tests) 1675ms
+ ✓ tests/runtime-archive-named-files.test.ts (9 tests) 7788ms
+   ✓ archive lists files that name the feature folder > [AC:spec-13-2] --apply --rewrite rewrites the test to the archive path, runs it green and archives  402ms
+   ✓ archive lists files that name the feature folder > [AC:spec-13-3] a red rewritten test is held and restored; an unlisted file or no tests.focused refuses before any edit  714ms
+   ✓ archive review 13 fixes > [review-13-1] SIGTERM during the test run restores and moves back; a rerun is held  4651ms
+   ✓ archive review 13 fixes > [review-13-1] SIGKILL of the archive and its test leaves a pending record; any rerun restores it and is held  477ms
+   ✓ archive review 13 fixes > [review-13-2] only the features home path with a path boundary names the folder  389ms
+   ✓ archive review 13 fixes > [review-13-4] [review-13-5] a red run reports what the test itself changed and leaves no empty archive home  338ms
+   ✓ archive review 13 fixes > [review-13-7] tests.focused is split into shell words, so a quoted argument stays one word  347ms
+
+ Test Files  3 passed (3)
+      Tests  23 passed (23)
+   Start at  19:07:54
+   Duration  7.97s (transform 32ms, setup 0ms, collect 67ms, tests 11.01s, environment 0ms, prepare 90ms)
+
+exit 0

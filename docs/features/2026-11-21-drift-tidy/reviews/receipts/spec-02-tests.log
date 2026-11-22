@@ -1,0 +1,23 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-cleanup-tidy.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-cleanup-tidy.test.ts (9 tests) 4368ms
+   ✓ tidy finds a stateless range > [AC:spec-2-1] a feature branch uses the merge base with main  621ms
+   ✓ tidy finds a stateless range > [AC:spec-2-1] a trunk-only repo uses the last 7 days, approximate  693ms
+   ✓ tidy finds a stateless range > [AC:spec-2-1] a trunk-only repo uses at most 100 commits when the 7 days hold more  351ms
+   ✓ tidy finds a stateless range > [AC:spec-2-1] after a squash merge the branch still measures from its fork point; --base overrides  727ms
+   ✓ tidy reports > [AC:spec-2-3] new-doc groups added Markdown by folder, outside features and archive  366ms
+   ✓ tidy reports > [AC:spec-2-4] at most 10 findings, context pages first, then more  371ms
+   ✓ tidy review fixes > [review-a-1] removing a 2.4 MB lockfile and a 2.4 MB source file does not overflow the Git buffer  525ms
+   ✓ tidy review fixes > [review-a-7] a detached HEAD at the trunk tip reads the recent window, like the trunk  437ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  15:33:17
+   Duration  4.55s (transform 18ms, setup 0ms, collect 18ms, tests 4.37s, environment 0ms, prepare 34ms)
+
+exit=0

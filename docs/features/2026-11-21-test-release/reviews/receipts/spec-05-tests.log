@@ -1,0 +1,13 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-dispatch-commands.test.ts (3 tests) 1860ms
+   ✓ task startup commands > [AC:spec-5-1] implementer and reviewer startup print the focused command built from the check inputs  799ms
+   ✓ task startup commands > [AC:spec-5-2] each step is one plain command with literal paths  604ms
+   ✓ task startup commands > [AC:spec-5-3] without tests.focused or without check inputs, focused is null with a note and startup succeeds  456ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  18:30:40
+   Duration  2.06s (transform 30ms, setup 0ms, collect 37ms, tests 1.86s, environment 0ms, prepare 30ms)
+

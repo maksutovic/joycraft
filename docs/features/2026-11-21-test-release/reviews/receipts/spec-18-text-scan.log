@@ -1,0 +1,15 @@
+payload/.joycraft/references/testing-review.md:72:  with `git diff -M <base>`; a rename that drops assertions is class 3.
+payload/.joycraft/references/testing-review.md:80:## Test-only specs
+payload/.joycraft/references/testing-review.md:82:A test-only spec changes tests, fixtures and test lists only: `git diff
+payload/.joycraft/references/testing-review.md:88:   their receipts go in a git-ignored path such as `.joycraft/local/faults/`,
+payload/.joycraft/references/testing-review.md:89:   or are committed first: `evidence.mjs run --patch` refuses a dirty tree,
+payload/.joycraft/references/testing-review.md:92:   `node .joycraft/runtime/evidence.mjs run --patch <fault>.diff --receipt <path>.log -- <focused command>`.
+payload/.joycraft/references/testing-review.md:93:   A fault counts only when the old file fails on it. A timeout or a build
+payload/.joycraft/references/testing-review.md:98:The reviewer reruns one saved fault and one of its own, in a tree it may
+payload/.joycraft/references/testing-review.md:99:change and restore. A reviewer that shares the coordinator's tree runs no
+payload/.joycraft/references/testing-review.md:101:the old file catches a fault that the new file misses; any other survivor is a
+payload/.joycraft/references/testing-review.md:102:finding. The verdict states the proof's limit in one line: "the chosen faults
+payload/.joycraft/references/testing.md:16:in place only through `evidence.mjs run --patch`. No universal coverage target or
+payload/.agents/skills/joycraft-verify/SKILL.md:45:Read the diff of each changed test file and judge it by [test changes](../../../.joycraft/references/testing-review.md#test-changes), test-only specs by [fault proof](../../../.joycraft/references/testing-review.md#test-only-specs).
+payload/.claude/agents/joycraft-reviewer.md:30:`.joycraft/references/testing-review.md#test-only-specs`. Never
+payload/.claude/agents/joycraft-implementer.md:30:work. A test-only spec follows `.joycraft/references/testing-review.md#test-only-specs`. Never weaken an existing test or change the spec's acceptance. If a

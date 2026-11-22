@@ -1,0 +1,40 @@
+A1 class 1, expected value changed, acceptance states 12
+  section: "- `tests/a.test.ts` class 1: acceptance bullet 1 states the new value (12)."
+  declared: [{"path":"tests/a.test.ts","class":1}]
+  undeclared: []
+A2 class 2 speed refactor (fault proof claimed)
+  section: "- `tests/b.test.ts` class 2: acceptance bullet 2; fault proof receipts/fault-b.diff."
+  declared: [{"path":"tests/b.test.ts","class":2}]
+  undeclared: []
+A3 class 3 deletion
+  section: "- `tests/c.test.ts` class 3: ledger row 4, owner yes 2026-11-21."
+  declared: [{"path":"tests/c.test.ts","class":3}]
+  undeclared: []
+B1 undeclared edit removing an assertion
+  section: "none"
+  declared: []
+  undeclared: ["tests/a.test.ts"]
+B2 declared file, change unrelated to the requiring line (assertion on other() dropped)
+  section: "- `tests/a.test.ts` class 1: acceptance bullet 1 states the new value (12)."
+  declared: [{"path":"tests/a.test.ts","class":1}]
+  undeclared: []
+B3 class 1 whose requiring line does not state the value
+  section: "- `tests/a.test.ts` class 1: acceptance bullet 2."
+  declared: [{"path":"tests/a.test.ts","class":1}]
+  undeclared: []
+B4 bare declaration with no requiring line
+  section: "- `tests/a.test.ts` class 1"
+  declared: [{"path":"tests/a.test.ts","class":1}]
+  undeclared: []
+B5 rename hides a deletion, new path declared class 2
+  section: "- `tests/d2.test.ts` class 2: acceptance bullet 2; fault proof receipts/fault-d.diff."
+  declared: [{"path":"tests/d2.test.ts","class":2}]
+  undeclared: ["tests/d.test.ts"]
+B6 rename hides a deletion, nothing declared
+  section: "none"
+  declared: []
+  undeclared: ["tests/d.test.ts","tests/d2.test.ts"]
+B7 implementer adds a class-2 declaration after the base and drops an assertion
+  base section: "none"
+  declared: [{"path":"tests/a.test.ts","class":2}]
+  undeclared: []

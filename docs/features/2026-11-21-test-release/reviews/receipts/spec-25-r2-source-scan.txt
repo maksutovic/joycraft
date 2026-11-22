@@ -1,0 +1,34 @@
+$ git show 253e6b5:payload/.agents/skills/joycraft-session-end/SKILL.md | grep -n -E "git status --porcelain|\.joycraft/runtime/|status.mjs|tidy --verify|worktrees.mjs prune|archive.mjs archive|one push|read-only|session-end records|carries only|archive <slug>|With no remote|without .--apply.|without .--fix.|Never archive a feature whose question"
+9:Start with the clean-tree check: run `git status --porcelain`. When it prints
+12:read-only form only: `status.mjs` without `--fix`, `cleanup.mjs tidy` to report,
+13:the prune preview without `--apply`, the archive preview without `--apply`.
+16:worktree prune, archive last with its commit, then one push that opens the PR.
+17:That one push can carry up to three commits.
+35:Run `node .joycraft/runtime/status.mjs --fix` (repairs lagging frontmatter of
+37:`node .joycraft/runtime/gate.mjs check`. Do the step each gate message names,
+41:change in a new spec or the held spec. Never archive a feature whose question
+54:Commit the records in their own commit, `docs: session-end records`, before
+55:tidy: `tidy --verify` refuses every changed file that no fixable finding names,
+60:Tidy without being asked. Run `node .joycraft/runtime/cleanup.mjs tidy` and fix
+62:text. When `cleanup.mjs tidy --verify` passes, make one commit with the message it
+63:prints; it carries only the tidy fixes. With no fix, it prints no message:
+70:Preview `node .joycraft/runtime/worktrees.mjs prune` and apply it with
+74:lease with `node .joycraft/runtime/coordinator.mjs release --queue <queue> --session <your-session-id>`. See [worker isolation](../../../.joycraft/references/worktrees.md)
+93:node .joycraft/runtime/archive.mjs archive --feature <slug> --phase session-end --attestation <attestation.json>
+94:node .joycraft/runtime/archive.mjs archive --feature <slug> --phase session-end --attestation <attestation.json> --apply
+110:commit, `docs: archive <slug>`.
+114:Then make one push that carries these commits and opens the PR, or updates the
+115:open one. With no remote, make the same commits, skip the push and say the work
+117:start checks, read-only, that the change deployed and works.
+[exit 0]
+$ grep -n -i -E "post-merge|merged-PR detector|sessionEnd.commits|it carries the records" payload/.agents/skills/joycraft-session-end/SKILL.md
+[exit 1]
+$ git diff --stat 253e6b5 HEAD -- payload/.agents/skills/joycraft-session-end/SKILL.md tests/text-session-end-pr.test.ts
+[exit 0]
+$ git show 253e6b5 --stat
+253e6b578b362d0c070ca517020e78bd1d099381
+
+ .../.agents/skills/joycraft-session-end/SKILL.md   | 22 +++++--
+ payload/PIN                                        |  6 +-
+ tests/text-session-end-pr.test.ts                  | 74 +++++++++++++++++++++-
+ 3 files changed, 90 insertions(+), 12 deletions(-)

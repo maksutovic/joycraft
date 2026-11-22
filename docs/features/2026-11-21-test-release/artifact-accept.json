@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "test-release-archive-accept",
+  "title": "Spec 13: how to close it",
+  "summary": "The runtime refuses owner acceptance of code that changed after its last review.",
+  "decisionIds": [
+    "archive-accept-mechanism"
+  ]
+}

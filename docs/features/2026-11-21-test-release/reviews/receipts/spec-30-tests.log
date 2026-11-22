@@ -1,0 +1,22 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-archive-named-files.test.ts tests/runtime-archive-links.test.ts tests/runtime-archive-as-is.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-archive-as-is.test.ts (7 tests) 1598ms
+   ✓ archive as is > [AC:spec-8-1] a feature with one in-review spec is refused by default and archived with --as-is --owner-instruction  306ms
+ ✓ tests/runtime-archive-links.test.ts (7 tests) 1759ms
+ ✓ tests/runtime-archive-named-files.test.ts (9 tests) 2490ms
+   ✓ archive lists only (spec 30) > [AC:spec-30-2] namedFiles lists the full path, split segments and the dated name, not look-alikes; marks only a non-test migration  313ms
+   ✓ archive lists only (spec 30) > [AC:spec-30-4] --rewrite is an unknown argument, and neither a preview nor an --apply writes under .joycraft/local  349ms
+   ✓ archive owner check of spec 13 > [owner-check-n1] [AC:spec-30-5] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (check)  329ms
+   ✓ archive owner check of spec 13 > [owner-check-n1] [AC:spec-30-5] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (stage)  374ms
+
+ Test Files  3 passed (3)
+      Tests  23 passed (23)
+   Start at  21:06:35
+   Duration  2.67s (transform 45ms, setup 0ms, collect 80ms, tests 5.85s, environment 0ms, prepare 110ms)
+
+exit=0

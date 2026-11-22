@@ -1,0 +1,318 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "83343fd5e75274b3463360393593eaa3feddfccb",
+    "queuePath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+    "specId": 8,
+    "specPath": "docs/features/2026-11-21-drift-tidy/specs/08-as-is-archive.md",
+    "criteria": [
+      {
+        "id": "spec-8-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/08-as-is-archive.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-8-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/08-as-is-archive.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-8-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-drift-tidy/specs/08-as-is-archive.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "kind": "requirement",
+        "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "3e2d155f3e8d812c5fc880067170967b3db10c7a7fb71cd6a82ccec4893fb21f",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/08-as-is-archive.md",
+        "kind": "requirement",
+        "sha256": "d2df47173b6bfca824ed43389244d3dbef489da42c9bbb0f44f22651dede96b7",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/archive.md",
+        "kind": "code",
+        "sha256": "d450f5867ce517d076df4a967e501a07f47b64e148990a290b9443267d21adeb",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "d7725e5351d134043cd774aa174e057790a6dfe7e589ee43822a998a22cca499",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          6,
+          7,
+          8
+        ]
+      },
+      "governing": []
+    },
+    "identity": "64cfe0bf540b8ca3ebe6ad3f13977c492f7ffd91c9b1e3e7a170173817a18c9a"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "add5a4cc68ca18886"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a5b1e978071fdb1c9"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-8-1-default-refuses-as-is-archives",
+      "subjectIdentity": "64cfe0bf540b8ca3ebe6ad3f13977c492f7ffd91c9b1e3e7a170173817a18c9a",
+      "criteria": [
+        "spec-8-1"
+      ],
+      "representativeInput": "Git fixture: feature docs/features/x with spec 1 done (legacy owner acceptance) and spec 2 in-review; archive --phase session-end --apply, then with --as-is --owner-instruction \"<text>\" --apply",
+      "expected": "Default exits 1 with \"Spec 2 is not accepted\" and leaves the folder; the flagged run exits 0, moves the folder to docs/archive/x/feature and reports unverified: docs/archive/x/unverified.md",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test [AC:spec-8-1] passed (7/7 in the file): default run exit 1, stderr exactly \"Archive stopped: Spec 2 is not accepted\", source still present; --as-is run exit 0, empty stderr, output has status archived, unverified path, currentAcceptanceRenewed false, archivedAsIs true; source gone, 02-b.md under the archive. Source review: the non-as-is loop is byte-for-byte the old path (archive.mjs:408), so the default refusal is unchanged.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-tests.log",
+              "sha256": "5f7d863056f7fa8aecc7842683071014d616100ee42ce9a6ec4f08fcc641e4db"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-merge-amendment.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Reviewer probes P1 and P4: an --as-is preview without --apply exits 0 and writes nothing; --owner-instruction without --as-is is refused (\"only for --as-is\") and the default run still refuses with the folder in place.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probes.log",
+              "sha256": "749c86f2d2cab799c3fc0dd682093307c72d89f19249313e23a0379ff38d1169"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probe.mjs",
+              "sha256": "8ee9c34aaf672829c1ae385f636d4ca809396aa596b5389cd4ed597c75d53cc9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probe.mjs",
+              "payload/.joycraft/runtime/archive.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-8-2-unverified-note-and-bytes",
+      "subjectIdentity": "64cfe0bf540b8ca3ebe6ad3f13977c492f7ffd91c9b1e3e7a170173817a18c9a",
+      "criteria": [
+        "spec-8-2"
+      ],
+      "representativeInput": "Same fixture; spec 2 report outside the folder names a receipt docs/reviews/x/gone.txt that does not exist; a second variant marks spec 2 done with acceptedReport; probe fixture keeps a report inside the feature folder and uses a two-line instruction",
+      "expected": "unverified.md names spec 2, the missing receipt (when an acceptance record names it) and the instruction verbatim; archived queue bytes equal the source queue; reports unchanged; manifest evidence holds only real acceptances",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Tests [AC:spec-8-2] passed: note has \"- Spec 2 (`02-b.md`): status in-review\", not spec 1, \"> <instruction>\" and the disclaimer; archived queue and spec bytes equal the source bytes; outside report unchanged; manifest evidence kinds = [legacy-acceptance]; repeat is idempotent. Second test: done spec with acceptedReport lists \"Missing or changed: `docs/reviews/x/gone.txt`\".",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-tests.log",
+              "sha256": "5f7d863056f7fa8aecc7842683071014d616100ee42ce9a6ec4f08fcc641e4db"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-merge-amendment.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Reviewer probe P2: a report inside the feature folder is byte-identical after the as-is move; a two-line instruction with markdown is kept verbatim in archive-replay.json asIs.ownerInstruction and quoted line by line in unverified.md; manifest evidence is [] when no spec is accepted; currentAcceptanceRenewed false. P6: editing unverified.md after archive makes the repeat refuse (\"Archived as-is note is missing or changed\").",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probes.log",
+              "sha256": "749c86f2d2cab799c3fc0dd682093307c72d89f19249313e23a0379ff38d1169"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probe.mjs",
+              "sha256": "8ee9c34aaf672829c1ae385f636d4ca809396aa596b5389cd4ed597c75d53cc9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probe.mjs",
+              "payload/.joycraft/runtime/archive.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Missing receipts are found only through acceptance records in the queue (acceptedReport, ownerAcceptance, waiver); see finding f2."
+      ]
+    },
+    {
+      "id": "spec-8-3-missing-instruction-flag",
+      "subjectIdentity": "64cfe0bf540b8ca3ebe6ad3f13977c492f7ffd91c9b1e3e7a170173817a18c9a",
+      "criteria": [
+        "spec-8-3"
+      ],
+      "representativeInput": "archive ... --as-is --apply without --owner-instruction; also --apply --as-is order and a whitespace-only value",
+      "expected": "Non-zero exit with a message naming --owner-instruction; folder not moved",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Test [AC:spec-8-3] passed: exit non-zero, stderr contains --owner-instruction, source still present. review-b-9 also passed: a value starting with -- is refused.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-tests.log",
+              "sha256": "5f7d863056f7fa8aecc7842683071014d616100ee42ce9a6ec4f08fcc641e4db"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-merge-amendment.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Reviewer probes P3 and P5: flag order --apply --as-is gives exit 1 \"Archive --as-is needs --owner-instruction ...\"; a whitespace-only value is refused with exit 1 and the folder stays.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probes.log",
+              "sha256": "749c86f2d2cab799c3fc0dd682093307c72d89f19249313e23a0379ff38d1169"
+            },
+            {
+              "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probe.mjs",
+              "sha256": "8ee9c34aaf672829c1ae385f636d4ca809396aa596b5389cd4ed597c75d53cc9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probe.mjs",
+              "payload/.joycraft/runtime/archive.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-test-not-input",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "summary": "tests/runtime-archive-as-is.test.ts is not a declared verification input, so startup trace showed spec-8-1/2/3 untraced. The file tags them at lines 45, 58, 78 and 91. The reviewer used it as a check input; the queue was not edited."
+    },
+    {
+      "id": "f2-in-review-receipts",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:451",
+      "summary": "missingReceipts follows only reports named by queue acceptance records. An in-review spec with a report whose receipt is gone (the test fixture's spec 2) is listed by status, but its missing receipt is not listed, because no queue record names that report.",
+      "assumption": "\"Each missing receipt\" means receipts that the spec's acceptance records name; the spec test checks the done-with-acceptedReport case."
+    },
+    {
+      "id": "f3-whitespace-message",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:723",
+      "summary": "A whitespace-only --owner-instruction is refused, but with the generic \"Invalid or duplicate argument: --owner-instruction\" rather than a message that asks for the owner's words."
+    },
+    {
+      "id": "f4-installed-copy",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": ".joycraft/runtime/archive.mjs",
+      "summary": "The repo's installed .joycraft/runtime/archive.mjs and .joycraft/references/archive.md differ from payload/; payload/PIN matches payload/ (spec-08-pin.log). Left to the release/install flow."
+    },
+    {
+      "id": "f5-co-implementer",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": "payload/.joycraft/runtime/archive.mjs",
+      "summary": "Spec 8 was implemented by lane-b-archive (add5a4cc68ca18886, commit b504dfc) and changed by fix-lane-b (a63ca5fcef335dbda, commit 5f0d3d2: asIs not-needed, repeat names the note, -- value refused). implementerActor records lane-b-archive only. Neither commit removed or changed an assertion in an existing test file."
+    }
+  ],
+  "createdAt": "2026-11-21T23:37:21.699Z"
+}

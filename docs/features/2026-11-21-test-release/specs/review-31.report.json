@@ -1,0 +1,424 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "3a9fec838419bc62996388a6c81a973c59657bda",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 31,
+    "specPath": "docs/features/2026-11-21-test-release/specs/31-gate-matcher-and-records.md",
+    "criteria": [
+      {
+        "id": "spec-31-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/31-gate-matcher-and-records.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-31-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/31-gate-matcher-and-records.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-31-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/31-gate-matcher-and-records.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "spec-tier",
+            "wave-gate"
+          ]
+        },
+        "sha256": "82badbdbf1276f074bbaf1442c205cf52fed241be365a9bd1b61ffedb8314f02",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "bd64441fd8a8941729f1caf5b532f8ca50144b27a319dde9f021d7218908c2ef",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/31-gate-matcher-and-records.md",
+        "kind": "requirement",
+        "sha256": "24109d711852b2f5390dca4339813fd01b2bef3a0e24edd5d28d4ba7dd7ff0c4",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/delivery.mjs",
+        "kind": "code",
+        "sha256": "d9d4651e296fc0b22fe276b0c759226a49aef83f7573b1bec12f5b7938ff1828",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/queue-check.mjs",
+        "kind": "code",
+        "sha256": "b2a5e70402af47dd7ee9152fef020f865f3a7ac13fbc4e3274171bd1f55d11fe",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-queue-check-gate.test.ts",
+        "kind": "check",
+        "sha256": "d7012e8ea79d88226fcf1a891ff2276c5706ba4446b9cb0986d1c90c304f4c03",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "5dd80e6ed33d5e0af80b3ff6bb5feb0b361945fcb49f242f9dfe37d05049876a",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          5,
+          7,
+          9,
+          11,
+          12,
+          17,
+          27,
+          31
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "spec-tier",
+            "wave-gate"
+          ]
+        }
+      ]
+    },
+    "identity": "c26ead302f6d5ecd77858ba4018e05d41d465cb7f65d895ba936279fe395f874"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a443eef76314d4433"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a90e91a5d103f6c37"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-31-1-flow",
+      "subjectIdentity": "c26ead302f6d5ecd77858ba4018e05d41d465cb7f65d895ba936279fe395f874",
+      "criteria": [
+        "spec-31-1"
+      ],
+      "representativeInput": "namesCommand with gate pnpm verify on the nine bullet-1 lines, plus prose endings in npm/pnpm, pytest, go test, cargo, mvn, make and rspec; queue-check CLI end to end",
+      "expected": "Each bullet-1 line names the gate; prose after the gate in every stack names it; the queue-check CLI gives one gate-in-spec gap.",
+      "limits": [
+        "Plain-text matching is a heuristic; the hunt covers 136 lines, not every phrasing. Misses outside the spec (&&, |, 2>&1) are follow-up f1.",
+        "Gate not run; due at wave end (the coordinator runs it)."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-spec-tests.log",
+              "sha256": "52b4632d9832e632bb47b406f17b8011a11387434cc936480d84d8cef2b71129"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-queue-check-gate.test.ts",
+              "tests/runtime-wave-gate.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "tests/runtime-queue-check-gate.test.ts and tests/runtime-wave-gate.test.ts: 2 files, 25 tests pass, exit 0. [AC:spec-31-1] is tests/runtime-queue-check-gate.test.ts:128."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-names.log",
+              "sha256": "b7c8e36dd3e559b0b7f0dc207ca926ca2a080d8c709b496dadcbbc60d42410e3"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-names.mjs.txt",
+              "sha256": "f49e6db9b2a8612e97a56729e4f3cf696c6829a8ee62daa2b22c0d004e5ad940"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r31/hunt-names.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r31/base/qc.mjs"
+            ],
+            "exitCode": 0
+          },
+          "actual": "All nine bullet-1 lines return true at HEAD (base 3c695f9~1 returned false for them). New prose forms also true: \"i.e.\", \"⇒\", spaced en dash, curly isn’t, \"(twice)\", \"; then\", and gate prose in pytest, go test ./..., cargo, mvn, make and rspec. 136 cases, 0 BAD, exit 0."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-docs.log",
+              "sha256": "7b818940c070d98c60989795859febd46c5f330b9ab7f14f89522b33828e41ef"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-docs.mjs.txt",
+              "sha256": "46ce042e69386e2ad5838d9aa9c2c6b06612fd680cad7d27335025c84fc3e7be"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r31/hunt-docs.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "queue-check.mjs CLI with gate pnpm verify: \"doesn't fail.\", \"(the full suite) passes.\", \"→ done.\" and \"re-runs it.\" each give exit 2 and exactly 1 gate-in-spec gap."
+        }
+      ]
+    },
+    {
+      "id": "spec-31-2-flow",
+      "subjectIdentity": "c26ead302f6d5ecd77858ba4018e05d41d465cb7f65d895ba936279fe395f874",
+      "criteria": [
+        "spec-31-2"
+      ],
+      "representativeInput": "namesCommand on dash-stuck arguments and every argument form from specs 4 and 27 across seven stacks; queue-check CLI end to end",
+      "expected": "Each argument form returns false and gives no gate-in-spec gap.",
+      "limits": [
+        "Two forms the spec does not decide now read as the gate (follow-up f2): a bare number and a hyphenated word after the gate. \"pnpm test—run passes\" was already true before this spec."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-spec-tests.log",
+              "sha256": "52b4632d9832e632bb47b406f17b8011a11387434cc936480d84d8cef2b71129"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-queue-check-gate.test.ts",
+              "tests/runtime-wave-gate.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-31-2] (tests/runtime-queue-check-gate.test.ts:135) passes in the same run: 2 files, 25 tests, exit 0."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-names.log",
+              "sha256": "b7c8e36dd3e559b0b7f0dc207ca926ca2a080d8c709b496dadcbbc60d42410e3"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-names.mjs.txt",
+              "sha256": "f49e6db9b2a8612e97a56729e4f3cf696c6829a8ee62daa2b22c0d004e5ad940"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r31/hunt-names.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r31/base/qc.mjs"
+            ],
+            "exitCode": 0
+          },
+          "actual": "False at HEAD for \"pnpm test —run\", \"pnpm test–run\", \"pnpm test—tests/a.test.ts\", en/em dash before --watch, -lib, -Dtest, -k, --tag, -run TestAdd; \"pnpm test —-run\"; \"(tests/a.test.ts)\"; quoted args; e2e; plus every spec-4/27 and round-2 argument form (paths, ::, --, =, -flag, test:unit, test-unit, test's). 0 BAD."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-docs.log",
+              "sha256": "7b818940c070d98c60989795859febd46c5f330b9ab7f14f89522b33828e41ef"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-docs.mjs.txt",
+              "sha256": "46ce042e69386e2ad5838d9aa9c2c6b06612fd680cad7d27335025c84fc3e7be"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r31/hunt-docs.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "queue-check.mjs CLI with gate pnpm test: \"pnpm test —run passes.\", \"pnpm test—tests/a.test.ts passes.\" and `pnpm test tests/x.test.ts` each give exit 0 and 0 gaps."
+        }
+      ]
+    },
+    {
+      "id": "spec-31-3-flow",
+      "subjectIdentity": "c26ead302f6d5ecd77858ba4018e05d41d465cb7f65d895ba936279fe395f874",
+      "criteria": [
+        "spec-31-3"
+      ],
+      "representativeInput": "delivery.mjs push with an old green gate receipt after one commit that adds, moves or deletes a file under docs/features or docs/archive",
+      "expected": "Source files (.go, .py, .ts, .tsx, .js, .mjs, .cjs, .rb, .rs, .java, .sh, Makefile) refuse with gate-receipt-stale; record files (.md, .json, .log, .txt, .diff, .patch, .yaml, .yml, any case) push.",
+      "limits": [
+        "Fixture repos only; the session-end archive of this feature is follow-up f3."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-spec-tests.log",
+              "sha256": "52b4632d9832e632bb47b406f17b8011a11387434cc936480d84d8cef2b71129"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-queue-check-gate.test.ts",
+              "tests/runtime-wave-gate.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-31-3] (tests/runtime-wave-gate.test.ts:256) passes: x_test.go, test_x.py, a.test.ts, probe.mjs refuse; notes.log, .txt, .diff, .patch, .yaml, .yml, .md, .json push. The changed [review-27-7] case keeps its earlier cases and adds a probe.mjs refusal, as the spec's Test changes section states."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-docs.log",
+              "sha256": "7b818940c070d98c60989795859febd46c5f330b9ab7f14f89522b33828e41ef"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-docs.mjs.txt",
+              "sha256": "46ce042e69386e2ad5838d9aa9c2c6b06612fd680cad7d27335025c84fc3e7be"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r31/hunt-docs.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "16 source paths refuse with gate-receipt-stale (including x.MJS, x.md.ts, Makefile, conftest.py in the archive); 11 record paths push (including N.MD, x.LOG, p.mjs.txt). An archive move of md/log/mjs.txt pushes; an archive move holding a .mjs probe refuses; deleting a .mjs from a feature folder refuses; src code renamed into a feature folder as .md refuses. Docs-root rule unchanged: docs/ci.yaml and docs/context/x.log refuse, docs/context/log.md pushes. 0 BAD."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-pin-check.log",
+              "sha256": "423d69c177cfe4c1e8e2a1470ccfaffa5a844cacdd6c138ef337c6bb078e97e2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "scripts/pin-payload.mjs",
+              "--check"
+            ],
+            "exitCode": 0
+          },
+          "actual": "payload/PIN matches payload/ after the change."
+        }
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-chained-gate-missed",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-31-1",
+      "at": "payload/.joycraft/runtime/queue-check.mjs:262",
+      "assumption": "Spec 31 adds a spaced & only; shell chaining is not in its list.",
+      "summary": "Missed in every version (base and HEAD): \"Check: pnpm verify && pnpm lint pass.\", \"pnpm verify | tee gate.log passes.\" and \"pnpm verify 2>&1 | tee log.\". Each runs the gate. Under the brief's cost rule a miss is the costly error. A fix: let `&&`, `||`, `|` and `2>&1` followed by whitespace end the command (receipt review-31-hunt-names.log)."
+    },
+    {
+      "id": "f2-number-and-hyphen-words-read-as-prose",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-31-2",
+      "at": "payload/.joycraft/runtime/queue-check.mjs:261-262",
+      "assumption": "The implementer's flagged edge is accepted: the spec requires \"2 times\" and \"re-runs\" to name the gate, and the brief says a missed gate costs more than a false gap.",
+      "summary": "Judged against the cost rule, the edge is acceptable. \"pnpm test 2 passes\" is newly true; \"pnpm test—run passes\" was already true at base 3c695f9~1, so it is not new. Because a prose word now takes inner hyphens, \"pnpm test button-group passes.\" and \"yarn test date-utils passes.\" (Jest/Vitest file filters) are newly true too. All of these are false gaps, the cheaper error, and a spec author can quote the command in a code span to clear them. The doc comment at queue-check.mjs:231 still says a next word holding `-` does not name the gate. It should say an inner hyphen between letters reads as prose (receipt review-31-hunt-names.log)."
+    },
+    {
+      "id": "f3-probe-receipts-need-gate-at-archive",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-31-3",
+      "at": "payload/.joycraft/references/delivery.md:53",
+      "assumption": "The spec names probe.mjs as a file that needs the gate, so the refusal is intended.",
+      "summary": "This feature folder holds 38 reviewer probe receipts with source extensions (spec-01-probe.mjs ... spec-23-probe.mjs, spec-09-footer.sh, spec-21-walk.sh). When session end archives the feature after the gate, the push now refuses with gate-receipt-stale and the gate must run again (hunt case \"archive move of a folder holding a probe .mjs receipt\"). delivery.md:53 says only \"a record in a feature or archive folder\" and does not list the extensions. Reviewer guidance does not say to save probes as .mjs.txt either. A fix: list the record extensions in delivery.md, and tell reviewers to save probe scripts with a .txt suffix. This feature then costs one extra gate run at archive, or its probes are renamed first."
+    }
+  ],
+  "createdAt": "2026-11-22T04:35:23.306Z"
+}

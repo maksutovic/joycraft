@@ -1,0 +1,31 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/text-sota-page.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/text-spec-tier.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 172[2mms[22m[39m
+ [32m✓[39m tests/text-test-review.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 283[2mms[22m[39m
+ [32m✓[39m tests/text-lane-cap.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 301[2mms[22m[39m
+ [32m✓[39m tests/text-worker-commands.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 346[2mms[22m[39m
+   [33m[2m✓[22m[39m worker commands text[2m > [22m[AC:spec-23-2] attended setup sends a runner worker variable to the machine-local evidence-env.json, which evidence applies [33m 345[2mms[22m[39m
+ [32m✓[39m tests/text-fewer-tests.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 378[2mms[22m[39m
+   [33m[2m✓[22m[39m fewer, sharper tests text[2m > [22m[AC:spec-22-5] the two rules spec 1 cut are back in the payload [33m 376[2mms[22m[39m
+ [32m✓[39m tests/text-owner-gate-lines.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 403[2mms[22m[39m
+   [33m[2m✓[22m[39m owner gate lines[2m > [22m[AC:spec-16-2] [AC:spec-28-3] setup and update show the entry-check gate-rule finding once and records the answer; cleanup.md names the check [33m 401[2mms[22m[39m
+ [32m✓[39m tests/text-wave-gate.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 400[2mms[22m[39m
+ [32m✓[39m tests/text-test-changes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 643[2mms[22m[39m
+   [33m[2m✓[22m[39m declared test changes text[2m > [22m[AC:spec-17-1] the spec template has ## Test changes with "none" and the three classes, and test-changes.mjs parses its example bullet [33m 642[2mms[22m[39m
+ [32m✓[39m tests/text-fault-proof.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 706[2mms[22m[39m
+   [33m[2m✓[22m[39m fault proof text[2m > [22m[AC:spec-18-5] fault patches and receipts go in a git-ignored path: there --patch runs and restores; an untracked patch is refused [33m 703[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12178 (cap 12256, 78 spare)
+on-demand words: 20203 (cap 21163, 960 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1528[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 381[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 371[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m11 passed[39m[22m[90m (11)[39m
+[2m      Tests [22m [1m[32m58 passed[39m[22m[90m (58)[39m
+[2m   Start at [22m 20:31:31
+[2m   Duration [22m 1.74s[2m (transform 174ms, setup 0ms, collect 385ms, tests 5.16s, environment 1ms, prepare 446ms)[22m
+

@@ -1,0 +1,475 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "80584968d3bcdcb2ad3a08b022eb1fa57197e330",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 9,
+    "specPath": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+    "criteria": [
+      {
+        "id": "spec-9-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-9-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-9-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-9-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "fault-proof",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "fault-run-location"
+          ]
+        },
+        "sha256": "b5a2d34c2d564c4790dde524dcba68cda79e758045f1738c00d31d575986597f",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "fb6586bfeb39c1e57fa7582f0ab053ff4e21c6489609cbf84d1a2da5aa18a677",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+        "kind": "requirement",
+        "sha256": "1d351c8059f18e24def0d80b7a0985371e555c0e8928d0c6010df548466cae0b",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/evidence.mjs",
+        "kind": "code",
+        "sha256": "14b33f9404529968bcd6303537771b2102952868ccf83267f79373662d090111",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-evidence-patch.test.ts",
+        "kind": "check",
+        "sha256": "460bad6ea910a4d18053af4854174e386a75289c34f5dc8969cd2d7aeecc5419",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          3,
+          9
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "fault-proof",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "fault-run-location"
+          ]
+        }
+      ]
+    },
+    "identity": "7396586a4870046efa7ad926464a1bd492f4b2693b9757403895145750597f3b"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a0bee06bbb7735d8f"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a5b595bb2a9476aac"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-9-1-refusals",
+      "subjectIdentity": "7396586a4870046efa7ad926464a1bd492f4b2693b9757403895145750597f3b",
+      "criteria": [
+        "spec-9-1"
+      ],
+      "representativeInput": "preparePatch at payload/.joycraft/runtime/evidence.mjs:244-257: dirty tree, patch that does not apply, path outside the project or in .git",
+      "expected": "Exit 2, nothing applied, no receipt kept, tree unchanged.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-9-1] (test line 42) passes: dirty tree, stale patch and ../outside.txt patch all exit 2 with add.mjs unchanged and git status empty.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log",
+              "sha256": "d7162012222e6a3049ac65c83e8cf55f57aa554b10c71519138204c43f4062bc"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-evidence-patch.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Independent temp repo: dirty check.mjs gives exit 2 with add.mjs untouched; a stale patch gives exit 2, git status empty, and no receipt file left.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.log",
+              "sha256": "c49fce661deb0e8b1aee67e5085fc29da5cad0e8ee42094dc18ad7aa8956b9a2"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh",
+              "sha256": "8f4837969b713220a4a819a3395a613275ecf25aeee9385ea175cb07af79487d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: untracked file and staged-only change both refuse (exit 2). New-file or modify patches at .git/hooks/pre-commit, .GIT/..., .Git/x, sub/.git/config, .git, ../outside.txt, a/../../outside.txt, .git/../.git/hooks/x and .git/config all exit 2 with the tree byte-equal (git apply --check rejects them first; the .git and relativePath guard at :255 is a second layer). A patch writing through a committed symlink, or creating a symlink and then writing through it, exits 2 and the outside file is untouched.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.log",
+              "sha256": "e059b540bdb682479465ee1a2a7cfc1086a93ff0d233c060812d6cb2ffbfe637"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs",
+              "sha256": "15d45c924127b6e667e530d0b6883416efa4811bc5f179ef8cf9f5fe3b47c546"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Refusals were checked with the project root at the Git top level; see finding f2-subdir-root for a root inside a repository subdirectory."
+      ]
+    },
+    {
+      "id": "spec-9-2-apply-run-restore",
+      "subjectIdentity": "7396586a4870046efa7ad926464a1bd492f4b2693b9757403895145750597f3b",
+      "criteria": [
+        "spec-9-2"
+      ],
+      "representativeInput": "runEvidence with --patch: apply at evidence.mjs:315-320, restorePatch at :260-263, patchFacts at :344",
+      "expected": "Working tree only (no index write); the faulty command gives command.exitCode 1; patch {path, sha256, patched: true, restored: true}; git status empty after.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-9-2] (test line 63) passes: exitCode 1, patch object equal to {path, sha256 of the diff, patched: true, restored: true}, status empty, add.mjs hash equal, nothing staged.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log",
+              "sha256": "d7162012222e6a3049ac65c83e8cf55f57aa554b10c71519138204c43f4062bc"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-evidence-patch.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Independent temp repo: fault run exit 1, {exitCode: 1, patch: {path, sha256, patched: true, restored: true}}, status empty; git ls-files -s hash identical before and after all runs (no index write).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.log",
+              "sha256": "c49fce661deb0e8b1aee67e5085fc29da5cad0e8ee42094dc18ad7aa8956b9a2"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh",
+              "sha256": "8f4837969b713220a4a819a3395a613275ecf25aeee9385ea175cb07af79487d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe (every fixture snapshots file hashes + modes, HEAD, ls-files -s, stash and .git/config): create in a new directory, delete, rename with -M plus edit, binary edit, binary create, mode-only change, mode + content, CRLF file, a patch that applies at an offset, apply.whitespace=fix with trailing-space fault and context, and a path with a space and non-ASCII all end SAFE: restored true, git status empty, byte- and mode-equal, index unchanged. apply.ignoreWhitespace=change with drifted context refuses (exit 2).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.log",
+              "sha256": "e059b540bdb682479465ee1a2a7cfc1086a93ff0d233c060812d6cb2ffbfe637"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs",
+              "sha256": "15d45c924127b6e667e530d0b6883416efa4811bc5f179ef8cf9f5fe3b47c546"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-9-3-pass-timeout-failed-restore",
+      "subjectIdentity": "7396586a4870046efa7ad926464a1bd492f4b2693b9757403895145750597f3b",
+      "criteria": [
+        "spec-9-3"
+      ],
+      "representativeInput": "restore after a passing run and after a 500 ms timeout; a command that changes the patched file so the reverse cannot restore it",
+      "expected": "Empty git status and byte-equal files after pass and timeout; a failed restore gives restored: false and exit 1, never a pass.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-9-3] (test lines 77 and 93) pass: passing command exit 0 restored true; timeout exit 1 restored true; both with empty status and equal hash. A command that rewrites add.mjs gives command.exitCode 0, restored false, process exit 1, footer restored false.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log",
+              "sha256": "d7162012222e6a3049ac65c83e8cf55f57aa554b10c71519138204c43f4062bc"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-evidence-patch.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Independent temp repo: --timeout-ms 500 run exit 1 with git status empty.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.log",
+              "sha256": "c49fce661deb0e8b1aee67e5085fc29da5cad0e8ee42094dc18ad7aa8956b9a2"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh",
+              "sha256": "8f4837969b713220a4a819a3395a613275ecf25aeee9385ea175cb07af79487d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: timeout (also with a child that ignores SIGTERM) restores (SAFE). A command that rewrites, appends to or deletes the patched file, or deletes or edits the patch file itself, leaves a changed tree but always reports restored: false with exit 1. SIGINT, SIGTERM and SIGHUP to the runner mid-run and SIGINT to its process group restore the tree (exit 130/143/129). SIGKILL leaves the fault, and the next run refuses the dirty tree (exit 2), as decision fault-run-location accepts.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.log",
+              "sha256": "e059b540bdb682479465ee1a2a7cfc1086a93ff0d233c060812d6cb2ffbfe637"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs",
+              "sha256": "15d45c924127b6e667e530d0b6883416efa4811bc5f179ef8cf9f5fe3b47c546"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Signals and command-made edits are outside the named checks; their gaps are follow-ups f1, f3."
+      ]
+    },
+    {
+      "id": "spec-9-4-timeout-footer",
+      "subjectIdentity": "7396586a4870046efa7ad926464a1bd492f4b2693b9757403895145750597f3b",
+      "criteria": [
+        "spec-9-4"
+      ],
+      "representativeInput": "timeout fixture footer JSON (evidence.mjs:353-354)",
+      "expected": "timedOut true, exitCode null, and the footer records patch path and hash.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-9-4] (test line 104) passes: timedOut true, command.exitCode null, footer exitCode null and patch {path, sha256}.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log",
+              "sha256": "d7162012222e6a3049ac65c83e8cf55f57aa554b10c71519138204c43f4062bc"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-evidence-patch.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Independent temp repo: the timeout receipt footer is {..., \"exitCode\":null, \"timedOut\":true, ..., \"patch\":{\"path\":\"receipts/fault.diff\",\"sha256\":\"a586...\",\"patched\":true,\"restored\":true}}.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.log",
+              "sha256": "c49fce661deb0e8b1aee67e5085fc29da5cad0e8ee42094dc18ad7aa8956b9a2"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh",
+              "sha256": "8f4837969b713220a4a819a3395a613275ecf25aeee9385ea175cb07af79487d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-signal-window",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/evidence.mjs:316-334",
+      "summary": "The fault is applied (:316) before the SIGINT/SIGTERM/SIGHUP handlers are installed (:334, after the awaited spawn). A SIGTERM in that window kills the runner with the default action and leaves the fault in place with no report: 1 of 63 early-SIGTERM runs (delay 112 ms) and 1 of 8 in the main probe (90 ms). Fix: register the stop handlers before git apply (and let stop skip the child kill when there is no child yet).",
+      "assumption": "Decision fault-run-location accepts that a killed runner can leave the fault and the next run refuses the dirty tree (confirmed: exit 2). No acceptance bullet names signals, so this is not a FAIL. Receipt: docs/features/2026-11-21-test-release/reviews/receipts/spec-09-signal-window.log."
+    },
+    {
+      "id": "f2-subdir-root",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/evidence.mjs:253-256",
+      "summary": "When the project root is a subdirectory of the repository (a layout cleanup.mjs:829 handles with --show-prefix), git apply --numstat prints top-level paths (pkg/add.mjs) but the hashes are taken at root/pkg/add.mjs, which does not exist, so the hash check is vacuous. Reproduced: a command that rewrites the patched file gives restored: true and exit 0 with \"M pkg/add.mjs\" left. Also, a hunk for a file outside the project root (../other.txt) is silently skipped by git apply instead of refused, so a partial fault runs. Fix: resolve touched paths against git rev-parse --show-toplevel (or strip --show-prefix) and refuse paths outside the prefix.",
+      "assumption": "dispatch-preflight.mjs:39 requires a worker root to be the Git top level, and the spec does not decide subdirectory roots, so the reading closest to the brief is that the runner runs at the top level, where every probe is safe. The owner may want this fixed before release because criterion spec-9-3 says a failed restore is never a pass."
+    },
+    {
+      "id": "f3-post-run-tree-check",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/evidence.mjs:260-263",
+      "summary": "restored compares only the files the patch touched, as the spec says. A command that edits another tracked file, runs git commit -am (the fault lands in HEAD and the reverse leaves a modified working tree), runs git stash, or leaves a detached grandchild that writes after the restore, ends with restored: true and exit 0 while git status is not empty or HEAD moved. A cheap guard: after the restore, compare git status --porcelain and HEAD with the values taken before, and report restored: false (or a separate treeClean: false) when they differ."
+    },
+    {
+      "id": "f4-tracked-receipts-workflow",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.log",
+      "summary": "For spec 18 text: the saved fault must be committed or ignored before --patch runs (an untracked fault.diff makes the tree dirty, exit 2), and a receipt written into a tracked feature folder makes the next --patch run refuse (old-test run exit 1, then new-test run exit 2 on \"?? .../old.log\"). The old-then-new proof needs a commit between runs or git-ignored receipts; the text should say which."
+    }
+  ],
+  "limits": [
+    "All experiments ran in temp Git repos on macOS (APFS, case-insensitive); Windows and Linux were not run.",
+    "The installed .joycraft/runtime/evidence.mjs is the pre-change copy; the payload copy was reviewed and used for every run.",
+    "Test changes: the spec declares \"none\"; commit 7fcf52c adds only the new tests/runtime-evidence-patch.test.ts and changes no existing test file."
+  ],
+  "createdAt": "2026-11-22T02:33:53.699Z"
+}

@@ -1,0 +1,16 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-cleanup-age-out.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-cleanup-age-out.test.ts (12 tests) 5050ms
+   ✓ age-out review fixes > [review-a-1] about 3 MB of log names does not overflow the Git buffer  3494ms
+
+ Test Files  1 passed (1)
+      Tests  12 passed (12)
+   Start at  16:12:33
+   Duration  5.22s (transform 18ms, setup 0ms, collect 18ms, tests 5.05s, environment 0ms, prepare 36ms)
+
+exit=0

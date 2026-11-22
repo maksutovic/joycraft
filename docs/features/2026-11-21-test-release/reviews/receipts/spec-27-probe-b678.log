@@ -1,0 +1,9 @@
+A tracked (not ignored) receipt folder, plain fault: exit 1 restored true status-after="?? docs/features/x/a.log\n" 
+B subfolder project, not-ignored receipt, plain fault: exit 1 restored true status-after="?? app/docs/features/x/b.log\n" 
+C command creates an untracked file: exit 1 restored false 
+D command creates an ignored file (limit): exit 0 restored true 
+E command switches to a new branch at the same commit: exit 0 restored true branch-after=other 
+F command stages nothing but runs git add of the receipt dir keep: exit 1 restored true (tag only) 
+G SIGINT to the group during git apply: exit 2/null; git diff --quiet 0; stderr "Evidence run stopped: The patch did not apply: faults/f.diff"
+H SIGTERM during the child: exit 143/null; git diff --quiet 0
+joycraft-evidence: {"wallMs":3747,"load":[2.42529296875,2.39111328125],"cores":14,"loaded":false,"argv":["node","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b678.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"],"exitCode":0,"timedOut":false,"revision":"3df6db768e2d6da3374b0291b0f6733f5635b133","dirty":true}

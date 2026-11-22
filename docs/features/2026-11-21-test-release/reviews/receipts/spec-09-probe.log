@@ -1,0 +1,61 @@
+SAFE create file in new dir :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE delete file :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE rename + edit :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE binary edit :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE binary create :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE mode change only :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE mode + content :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE CRLF file :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE patch applies at an offset :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE apply.whitespace=fix + trailing-space fault :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE apply.whitespace=fix + context with trailing space :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE apply.ignoreWhitespace=change + context drift :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: patch failed: ws.txt:1"
+NOTE command rewrites patched file (changed, but reported restored:false exit 1) :: exit=1 restored=false exitCode=0 timedOut=false clean=false byteEqual=false
+NOTE command appends to patched file (changed, but reported restored:false exit 1) :: exit=1 restored=false exitCode=0 timedOut=false clean=false byteEqual=false
+LEAK command edits an unpatched tracked file :: exit=0 restored=true exitCode=0 timedOut=false clean=false byteEqual=false
+NOTE command deletes the patched file (changed, but reported restored:false exit 1) :: exit=1 restored=false exitCode=0 timedOut=false clean=false byteEqual=false
+LEAK command runs git commit -am :: exit=0 restored=true exitCode=0 timedOut=false clean=false byteEqual=false
+LEAK command runs git stash :: exit=0 restored=true exitCode=0 timedOut=false clean=true byteEqual=false
+SAFE command runs git checkout -- . :: exit=0 restored=true exitCode=0 timedOut=false clean=true byteEqual=true
+NOTE command deletes the patch file (changed, but reported restored:false exit 1) :: exit=1 restored=false exitCode=0 timedOut=false clean=false byteEqual=false
+NOTE command edits the patch file (changed, but reported restored:false exit 1) :: exit=1 restored=false exitCode=0 timedOut=false clean=false byteEqual=false
+SAFE timeout 500ms :: exit=1 restored=true exitCode=null timedOut=true clean=true byteEqual=true
+SAFE timeout, child ignores SIGTERM :: exit=1 restored=true exitCode=null timedOut=true clean=true byteEqual=true
+LEAK escaped grandchild writes after restore :: exit=0 restored=true exitCode=0 timedOut=false clean=false byteEqual=false
+SAFE new-file patch at .git/hooks/pre-commit :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: invalid path '.git/hooks/pre-commi"
+SAFE new-file patch at .GIT/hooks/pre-commit :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: invalid path '.GIT/hooks/pre-commi"
+SAFE new-file patch at .Git/x :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: invalid path '.Git/x'"
+SAFE new-file patch at sub/.git/config :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: invalid path 'sub/.git/config'"
+SAFE new-file patch at .git :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: invalid path '.git'"
+SAFE new-file patch at ../outside.txt :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: invalid path '../outside.txt'"
+SAFE new-file patch at a/../../outside.txt :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: invalid path 'a/../../outside.txt'"
+SAFE new-file patch at .git/../.git/hooks/x :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: invalid path '.git/../.git/hooks/x"
+SAFE modify .git/config :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: invalid path '.git/config'"
+SAFE absolute path header (git apply strips it to a project path) :: exit=0 restored=true exitCode=0 timedOut=false clean=true byteEqual=true
+SAFE write through committed symlink :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: affected file 'link/victim.txt' is"
+SAFE outside victim.txt untouched (symlink)
+SAFE patch creates a symlink then writes through it :: exit=2 restored=undefined exitCode=undefined timedOut=undefined clean=true byteEqual=true refusal="Evidence run stopped: The patch does not apply: receipts/fault.diff: error: evil/victim.txt: No such file or d"
+SAFE outside victim.txt untouched (new symlink)
+SAFE patch creates a symlink only :: exit=0 restored=true exitCode=0 timedOut=false clean=true byteEqual=true
+SAFE untracked file refuses :: exit=2
+SAFE staged-only change refuses :: exit=2
+NOTE patch file in a tracked, non-ignored folder :: exit=2 :: Evidence run stopped: --patch refuses a dirty tree; commit or remove these changes first: | ?? receipts/
+NOTE old-then-new fault runs with a tracked receipt folder :: first exit=1 restored=true second exit=2 :: Evidence run stopped: --patch refuses a dirty tree; commit or remove these changes first: | ?? docs/features/demo/proof/old.log
+SAFE subdirectory root, passing command; patch also touches ../other.txt (outside the project) :: exit=1 restored=true exitCode=1 clean=true byteEqual=true other.txt-during-run-untouched=true refusedOutside=false status=""
+LEAK subdirectory root, command rewrites the patched file; patch also touches ../other.txt (outside the project) :: exit=0 restored=true exitCode=0 clean=false byteEqual=false other.txt-during-run-untouched=true refusedOutside=false status="M pkg/add.mjs"
+SAFE path with space and unicode :: exit=1 restored=true exitCode=1 timedOut=false clean=true byteEqual=true
+SAFE SIGINT to the runner mid-run :: faultWasIn=true exit=130/null clean=true byteEqual=true
+SAFE SIGTERM to the runner mid-run :: faultWasIn=true exit=143/null clean=true byteEqual=true
+SAFE SIGHUP to the runner mid-run :: faultWasIn=true exit=129/null clean=true byteEqual=true
+NOTE SIGKILL to the runner (decision tradeoff: fault may stay) :: faultWasIn=true exit=null/SIGKILL clean=false byteEqual=false nextRunExit=2
+SAFE SIGINT to the runner process group :: exit=130/null
+SAFE SIGTERM 30ms after start :: exit=null/SIGTERM clean=true
+SAFE SIGTERM 60ms after start :: exit=null/SIGTERM clean=true
+LEAK SIGTERM 90ms after start :: exit=null/SIGTERM clean=false
+SAFE SIGTERM 120ms after start :: exit=143/null clean=true
+SAFE SIGTERM 150ms after start :: exit=143/null clean=true
+SAFE SIGTERM 180ms after start :: exit=143/null clean=true
+SAFE SIGTERM 210ms after start :: exit=143/null clean=true
+SAFE SIGTERM 240ms after start :: exit=143/null clean=true
+probe: 6 probe(s) left a tree changed without restored:false
+joycraft-evidence: {"wallMs":24655,"load":[17.0048828125,13.046875],"cores":14,"loaded":true,"argv":["node","docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"],"exitCode":0,"timedOut":false,"revision":"5c5d0e2f096f360c8d4903ea74011a9c3aecc81f","dirty":true}

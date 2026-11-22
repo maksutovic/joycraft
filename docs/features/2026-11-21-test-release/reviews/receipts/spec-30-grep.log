@@ -1,0 +1,3 @@
+exit=1
+472:  if (plan.asIs.unverified.length === 0) lines.push('None: every spec held its acceptance.');
+exit=0

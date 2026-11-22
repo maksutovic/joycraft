@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "d9a257f1db55b3ae7566a1678893376867bc08b1",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 12,
+    "specPath": "docs/features/2026-11-21-test-release/specs/12-env-map.md",
+    "criteria": [
+      {
+        "id": "spec-12-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/12-env-map.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-12-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/12-env-map.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "worker-commands",
+            "lane-cap",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "worker-cap-home"
+          ]
+        },
+        "sha256": "f0580d3c866da03bbe20f4581df52f038fb83d17379d5d49cf9c3ca4d67de0b6",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "c98c55f32ad710b01c0d10fd3352c4973cb7fb211bd43057887fc1595e62fef0",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/12-env-map.md",
+        "kind": "requirement",
+        "sha256": "dd971212116c0c2a92cab8a89d2d5a5d4f265c7f0ada610a4ebb62361ecb6f40",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/evidence.mjs",
+        "kind": "code",
+        "sha256": "14b33f9404529968bcd6303537771b2102952868ccf83267f79373662d090111",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-evidence-env.test.ts",
+        "kind": "check",
+        "sha256": "8641eac68c378e8617be2593223e13b1800c27bb6d0214f32455fb80d8bf1e79",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          3,
+          9,
+          12
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "worker-commands",
+            "lane-cap",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "worker-cap-home"
+          ]
+        }
+      ]
+    },
+    "identity": "3ebfb928d246ee8ac2c291b9cedf1921e310eb95087552025cc1613389649233"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a0bee06bbb7735d8f"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a816a5c10d6dcbeb5"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-12-1-map-applied",
+      "subjectIdentity": "3ebfb928d246ee8ac2c291b9cedf1921e310eb95087552025cc1613389649233",
+      "criteria": [
+        "spec-12-1"
+      ],
+      "representativeInput": "evidence.mjs run (payload CLI) in a temp Git project with .joycraft/local/ ignored and .joycraft/local/evidence-env.json holding a string map",
+      "expected": "Map names reach the child; CI and JOYCRAFT_EVIDENCE stay 1; result and receipt footer list applied names under env. Fixture {\"WORKERS\":\"3\",\"CI\":\"0\"} prints \"3 1\" and env [\"WORKERS\"].",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-12-1] passes (2/2 tests, exit 0): the spec fixture prints \"3 1\"; result.env and footer.env are [\"WORKERS\"].",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-tests.log",
+              "sha256": "bab0a5dbb46f8596a8455057673a82acf2dc87d2cb8dbdc710a9d7f63790ca87"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-evidence-env.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe via the CLI: spec fixture gives first receipt line \"3 1\", result env and footer env [\"WORKERS\"]. A map with JOYCRAFT_EVIDENCE=0 and CI=false gives the child JOYCRAFT_EVIDENCE=1, CI=1, and neither name is listed in env. Values with double spaces, a tab, newlines, quotes, $HOME and backticks reach the child byte-exact (no shell); an empty-string value is applied as empty.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.log",
+              "sha256": "e272d47a6fde57d09bc133caf9c4fe19d318f2a08078f8247902211121df6ed9"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.mjs",
+              "sha256": "7b658053fd9645ec61e8f5252d00ac4fe82823ef095021876755e0a43ba8c715"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-12-2-refusals",
+      "subjectIdentity": "3ebfb928d246ee8ac2c291b9cedf1921e310eb95087552025cc1613389649233",
+      "criteria": [
+        "spec-12-2"
+      ],
+      "representativeInput": "evidence.mjs run with malformed, tracked, staged and absent maps in temp Git projects",
+      "expected": "Malformed map: exit 2 naming the file. Git-tracked map: exit 2 with \"must stay machine-local\". No map: runs as before.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-12-2] passes: array, non-string value and invalid JSON each exit 2 with the path in stderr and empty stdout; a committed map exits 2 with \"must stay machine-local\"; no map exits 0 with no env key and the child sees CI=1.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-tests.log",
+              "sha256": "bab0a5dbb46f8596a8455057673a82acf2dc87d2cb8dbdc710a9d7f63790ca87"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-evidence-env.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: array, number value, invalid JSON, null, top-level string, nested object value, null value, boolean value, empty file and a directory at the map path each exit 2, name .joycraft/local/evidence-env.json, and create no receipt (refusal before the child starts). A committed map and an index-only (staged) map exit 2 \"must stay machine-local\"; tracked-and-malformed exits 2; after git rm --cached the map applies again. No map, and an empty .joycraft/local/ folder, run as before (no env key in result or footer). Installer gitignores .joycraft/local/ (src/install-v1.ts:10).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.log",
+              "sha256": "e272d47a6fde57d09bc133caf9c4fe19d318f2a08078f8247902211121df6ed9"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.mjs",
+              "sha256": "7b658053fd9645ec61e8f5252d00ac4fe82823ef095021876755e0a43ba8c715"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-nul-value-message",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/evidence.mjs:276",
+      "summary": "A map value containing a NUL byte passes validation; spawn then rejects it and the run exits 2 with \"Could not start node: ... options.env['A'] must be a string without null bytes\", which does not name the map file. Still exit 2 with no receipt.",
+      "assumption": "JSON strings with \\u0000 are rare; the spec decides only non-string values."
+    },
+    {
+      "id": "f2-name-shape",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/evidence.mjs:276",
+      "summary": "Names are not checked: an empty name or a name containing '=' (probe: {\"A=B\":\"c\"}) is accepted and listed as applied in env, though the child environment then does not hold that name. Consider refusing names that are not valid variable names.",
+      "assumption": "The spec says string names; it does not decide name syntax."
+    },
+    {
+      "id": "f3-windows-case",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/evidence.mjs:304",
+      "summary": "CI/JOYCRAFT_EVIDENCE are excluded case-sensitively. On Windows, env names are case-insensitive, so a map key 'ci' or 'Joycraft_Evidence' sits beside CI in the spawn env object and may win; on darwin the probe shows 'ci' stays a separate variable and CI=1. Not checked on Windows.",
+      "assumption": "POSIX hosts are the main case; the CI matrix runs Windows, so a case-insensitive filter is cheap."
+    },
+    {
+      "id": "f4-untracked-unignored",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/evidence.mjs:272",
+      "summary": "Only a map Git already tracks is refused. A map that is untracked but not ignored (a project whose .gitignore lacks .joycraft/local/) runs, and a later 'git add .' would track it. The installer writes the ignore line, so this needs a hand-edited .gitignore.",
+      "assumption": "Spec criterion names only a map Git tracks; git check-ignore would close the gap."
+    }
+  ],
+  "limits": [
+    "Test changes: spec says none; commit 8ec09df adds only the new file tests/runtime-evidence-env.test.ts and changes no existing test file.",
+    "The new test file does not cover the JOYCRAFT_EVIDENCE override or values with spaces/newlines; the reviewer probe covers both.",
+    "Windows behavior was not run on this machine (darwin)."
+  ],
+  "createdAt": "2026-11-22T02:45:00.000Z"
+}

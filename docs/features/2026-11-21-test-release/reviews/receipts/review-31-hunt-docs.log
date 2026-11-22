@@ -1,0 +1,43 @@
+OK   source docs/features/f/x_test.go: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/probe.go: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/test_x.py: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/archive/f/conftest.py: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/a.test.ts: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/archive/f/a.spec.js: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/probe.mjs: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/reviews/receipts/p.cjs: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/x_spec.rb: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/x.rs: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/archive/f/FooTest.java: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/run.sh: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/Makefile: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/x.MJS: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/x.md.ts: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   source docs/features/f/x.tsx: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   record docs/features/f/notes.log: expected PUSHED, got PUSHED
+OK   record docs/features/f/r.txt: expected PUSHED, got PUSHED
+OK   record docs/archive/f/c.diff: expected PUSHED, got PUSHED
+OK   record docs/features/f/c.patch: expected PUSHED, got PUSHED
+OK   record docs/features/f/q.yaml: expected PUSHED, got PUSHED
+OK   record docs/archive/f/q.yml: expected PUSHED, got PUSHED
+OK   record docs/features/f/n.md: expected PUSHED, got PUSHED
+OK   record docs/features/f/reviews/receipts/p.mjs.txt: expected PUSHED, got PUSHED
+OK   record docs/features/f/N.MD: expected PUSHED, got PUSHED
+OK   record docs/archive/f/x.LOG: expected PUSHED, got PUSHED
+OK   record docs/features/f/q.json: expected PUSHED, got PUSHED
+OK   docs root yaml docs/ci.yaml: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   docs root log docs/context/x.log: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   docs root markdown docs/context/log.md: expected PUSHED, got PUSHED
+OK   code outside docs src/y.mjs: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   archive move of records only (md, log, mjs.txt): expected PUSHED, got PUSHED
+OK   archive move of a folder holding a probe .mjs receipt: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   delete a probe .mjs from a feature folder: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   rename src code into a feature folder as .md: expected REFUSED gate-receipt-stale, got REFUSED gate-receipt-stale
+OK   queue-check gate="pnpm verify" "Check: pnpm verify doesn't fail.": exit 2, gate-in-spec gaps 1 (want 1)
+OK   queue-check gate="pnpm verify" "Check: pnpm verify (the full suite) passes.": exit 2, gate-in-spec gaps 1 (want 1)
+OK   queue-check gate="pnpm verify" "Check: pnpm verify → done.": exit 2, gate-in-spec gaps 1 (want 1)
+OK   queue-check gate="pnpm verify" "Check: pnpm verify re-runs it.": exit 2, gate-in-spec gaps 1 (want 1)
+OK   queue-check gate="pnpm test" "Check: pnpm test —run passes.": exit 0, gate-in-spec gaps 0 (want 0)
+OK   queue-check gate="pnpm test" "Check: pnpm test—tests/a.test.ts passes.": exit 0, gate-in-spec gaps 0 (want 0)
+OK   queue-check gate="pnpm test" "Check: `pnpm test tests/x.test.ts` passes.": exit 0, gate-in-spec gaps 0 (want 0)
+0 BAD

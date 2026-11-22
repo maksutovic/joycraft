@@ -1,0 +1,21 @@
+1 forged footer (gate would be red) :: exit=0 stderr="" remoteRef=HEAD
+2 evidence exit=1
+2 genuine red receipt :: exit=1 stderr="gate-receipt-red" remoteRef=none
+3 genuine green receipt for previous commit :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+3b genuine green receipt for a sibling commit :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+4 genuine dirty receipt (tree clean at push) :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+4b dirty:null :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+4c dirty missing :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+5 genuine other command :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+5b gate plus extra args :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+5c sh -c gate || true :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+5d /bin/echo -c "node gate.mjs" (gate never ran) :: exit=0 stderr="" remoteRef=HEAD
+5e evidence exit=1
+5e node -e 0 -c "node gate.mjs" (red gate never ran) :: exit=1 stderr="gate-receipt-red" remoteRef=none
+6 footer not on last line :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+6b old receipt (previous revision) :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+7 genuine green receipt on HEAD :: exit=0 stderr="" remoteRef=HEAD
+8 absolute receipt path outside project :: exit=0 stderr="" remoteRef=HEAD
+9 gate-plan exit=0 {"feature":"demo","gateRuns":"wave","waves":[[2,4],[3]],"gatePoints":[{"wave":1,"specs":[2,4]},{"wave":2,"specs":[3]}]}
+9b gate-owner exit=0 { "feature": "demo", "files": [ { "file": "tests/shared.test.ts", "specs": [ 2, 3 ] }, { "file": "tests/a.test.ts", "specs": [ 1 ] }, { "file": "tests/d.test.ts", "specs": [ 4 ] } ] } 
+9c gate-owner no --file exit=1 stderr="Coordinator stopped: gate-owner needs at least one --file <path>"

@@ -1,0 +1,327 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "cf6f37bf6b4a4beb00ea7b00cd42a35539497ec5",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 6,
+    "specPath": "docs/features/2026-11-21-test-release/specs/06-report-gate.md",
+    "criteria": [
+      {
+        "id": "spec-6-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/06-report-gate.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-6-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/06-report-gate.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "spec-tier",
+            "context-and-authorization",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "0449d824dc6392bc46a2a8680d460e096488a56a6abb9e57ef589f083221d171",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "57074b01df140b9952aad6c7d06c1cc696edc360ba912b6a06f918531d22d23a",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/06-report-gate.md",
+        "kind": "requirement",
+        "sha256": "9fecef875af349abfa15c611128741849e9619917e2e9b826bd6436d09f4bd48",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/completion.mjs",
+        "kind": "code",
+        "sha256": "7a579f189fd60e081cbbf9e8b896bfe4b93c7800bd1d229df2dce5429650603f",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-report-gate.test.ts",
+        "kind": "check",
+        "sha256": "1653ac55707871d9936955dbb0de03d9e31ae960336eaac833c42c34ae73080b",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2,
+          6
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "spec-tier",
+            "context-and-authorization",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "cd55468b2a9d0433ef37cb2c34172a9b9f06109d79721c8d34e0b20e1466b976"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a465133b4c1fadef3"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a498c8ce32756661b"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-6-1-refuse",
+      "subjectIdentity": "cd55468b2a9d0433ef37cb2c34172a9b9f06109d79721c8d34e0b20e1466b976",
+      "criteria": [
+        "spec-6-1"
+      ],
+      "representativeInput": "payload check-report on git fixtures with tests.gate \"pnpm verify\" (or \"pnpm test && pnpm typecheck\", or tests.full) and a PASS report whose observation argv is the gate, a single-string gate, sh -c, bash -c, /bin/sh -c, or the two-part gate split across argv",
+      "expected": "Exit 2 with a message naming flows[i].observations[j], the key (tests.gate/tests.full) and the command; finalize-review refuses the same report.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-6-1] passes (2/2 in the file, exit 0): check-report exit 2 naming flows[0].observations[0] and `pnpm verify`; finalize-review exit 2; bash -c with extra spaces refused.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-tests.log",
+              "sha256": "16946e010e883cc700dd3a3ca27066756e8a2cd71ef571d6402c8ce39c4dab9b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-report-gate.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: all 9 refuse cases exit 2 with \"Report flows[0].observations[0] ran the recorded tests.gate command `pnpm verify`\" (tests.full named for the full-only fixture). /bin/sh -c, a one-string argv [\"pnpm verify\"] and [\"pnpm\",\"test\",\"&&\",\"pnpm\",\"typecheck\"] are refused too.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.log",
+              "sha256": "afd5613e71ff442d95d8441c763c9c8ef6671b199c107e104911170e62a31584"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.mjs",
+              "sha256": "d2b5c4db73bbf5ea806b5377c88a9b583beba27eaadb5e236d5366ac26f2b20f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Matching is exact normalized text plus sh/bash -c with exactly 3 argv items; other wrappers are follow-ups f1-f2."
+      ]
+    },
+    {
+      "id": "spec-6-2-unaffected",
+      "subjectIdentity": "cd55468b2a9d0433ef37cb2c34172a9b9f06109d79721c8d34e0b20e1466b976",
+      "criteria": [
+        "spec-6-2"
+      ],
+      "representativeInput": "Same fixtures with argv [\"pnpm\",\"test\",\"tests/a.test.ts\"]; gate argv with no joycraft.yaml, with a tests: section holding only focused, with no tests: section, and with a broken joycraft.yaml; plus payload check-report on this repo's accepted review-2 report and a scan of all 22 tracked reports",
+      "expected": "Exit 0 for the focused report and for every project with no recorded gate; older accepted reports still validate.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-6-2] passes: focused argv exit 0 and gate argv with no tests: exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-tests.log",
+              "sha256": "16946e010e883cc700dd3a3ca27066756e8a2cd71ef571d6402c8ce39c4dab9b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/runtime-report-gate.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: focused, no joycraft.yaml, focused-only tests:, no tests: section all exit 0. A FAIL report is stopped by the existing verdict check (exit 1), not the gate check.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.log",
+              "sha256": "afd5613e71ff442d95d8441c763c9c8ef6671b199c107e104911170e62a31584"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.mjs",
+              "sha256": "d2b5c4db73bbf5ea806b5377c88a9b583beba27eaadb5e236d5366ac26f2b20f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "payload check-report on accepted review-2.report.json (spec 2) returns ok:true, exit 0. This repo has no joycraft.yaml, so the check does not run here.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-check.log",
+              "sha256": "61b8721e8410b1f1dc0804a15426a2899e9e54fff5c73164c7d6c7f13c5e0e8e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "payload/.joycraft/runtime/dispatch-preflight.mjs",
+              "check-report",
+              "--worker-root",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research",
+              "--queue",
+              "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+              "--spec",
+              "2",
+              "--report",
+              "docs/features/2026-11-21-test-release/specs/review-2.report.json"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Scan of 22 tracked *.report.json (157 observations with argv) with the same matcher: none matches \"pnpm test && pnpm typecheck\", \"pnpm test\" or \"pnpm typecheck\", so recording this repo's AGENTS.md gate later would not refuse an existing report.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-reports.log",
+              "sha256": "c8a81e65990c56bf1d8f3224f7b7fd2bc2c84feb100cb78aace314ebc68383a6"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-reports.mjs",
+              "sha256": "7b1453732a3b584ed1cc3e05d426d8c6b270786d5f7071a8ce7bf821a6d3dead"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-reports.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-wrapper-bypass",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-6-1",
+      "summary": "Not refused (exit 0): bash -lc \"pnpm verify\", sh -c \"pnpm verify\" sh (4 argv items), zsh -c, /usr/bin/env bash -c, env CI=1 pnpm verify, sh -c \"CI=1 pnpm verify\", and sh -c with a quoted inner string. ranCommand (payload/.joycraft/runtime/completion.mjs:122-123) knows only [sh|bash, -c, cmd]. Receipt spec-06-probe.log.",
+      "assumption": "The spec names sh -c and bash -c only and the named fixtures pass; wider wrapper forms (combined -lc flags, $0 arg, env prefix) are hardening, not a stated criterion. A small fix: strip leading env/VAR=x words and accept any -*c* flag with a trailing $0."
+    },
+    {
+      "id": "f2-runner-aliases",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-6-1",
+      "summary": "Equivalent invocations pass: npx vitest run or pnpm exec vitest run for gate \"vitest run\", pnpm run verify for \"pnpm verify\", the gate plus trailing args (pnpm verify --reporter=dot), and the first half of a two-part gate (pnpm test, which in this repo is the whole suite).",
+      "assumption": "Spec says the argv \"is that command\"; exact text matching is the stated rule and Joycraft names no runner, so aliases are out of scope. Worth a sentence in the reviewer text that the gate in any form is out of a spec review."
+    },
+    {
+      "id": "f3-broken-yaml-silent",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/completion.mjs:129",
+      "summary": "A broken joycraft.yaml makes refuseGateRuns return silently, so check-report passes a gate-running report (probe \"broken joycraft.yaml\" exit 0).",
+      "assumption": "The code comment says config.mjs reports a broken file; other commands surface it. Acceptable, but finalize-review could fail closed instead."
+    },
+    {
+      "id": "f4-refinalize-after-gate-recorded",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/completion.mjs:160",
+      "summary": "The idempotent re-finalize path also calls validatePassingReport, so a report accepted before a project records tests.gate, and which ran that gate, would be refused on a later re-check. Not reproduced in this repo (scan: no tracked report matches).",
+      "assumption": "Rare; left to the owner."
+    },
+    {
+      "id": "f5-installed-copy",
+      "class": "follow-up",
+      "origin": "new",
+      "at": ".joycraft/runtime/completion.mjs",
+      "summary": "The installed .joycraft/runtime/completion.mjs differs from payload/ and has no refuseGateRuns, so this repo's own check-report/finalize-review do not run the new check until the installed copy is synced.",
+      "assumption": "The spec says edit payload/ only; syncing the installed copy is integration work for the coordinator."
+    }
+  ],
+  "limits": [
+    "Spec test changes: none. The commit adds one new test file and edits no existing test file, which matches.",
+    "The project gate was not run by this review (spec-tier rule); due at the review boundary or wave end."
+  ],
+  "createdAt": "2026-11-22T02:32:42.137Z"
+}

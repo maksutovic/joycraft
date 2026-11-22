@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "kind": "owner-acceptance",
+  "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+  "specId": 13,
+  "subjectIdentity": "2b59f55346b037a6bf47726e60affa04c6644138d560843b678436428fecb08c",
+  "review": {
+    "path": "docs/features/2026-11-21-test-release/specs/review-13-r3.report.json",
+    "sha256": "7bb6d77264afc82ce77cf9287f6d53b11b604bbd47223ae905b53c24fd71f1b8"
+  },
+  "instruction": "Max, 2026-11-21, decision archive-accept-mechanism = split: \"Accept round 3, review the fixes as spec 30. Owner-accept spec 13 as round 3 left it, with its two findings named as limits. Put the three fixes (already written) into a new spec 30 that gets its own full independent reviews before release.\" Note: \"please spin up a Fable 5.2 high panel to debate how to actually solve this clearly\".",
+  "limitations": [
+    "f13r3-1: a second archive call during a live --rewrite run undoes that run and the first run reports archived with nothing archived (fixed in 8ea4b71/7f3a9da; spec 30 reviews the fix)",
+    "f13r3-2: a save to a listed test while archive stages is overwritten (fixed in 8ea4b71; spec 30 reviews the fix)",
+    "1.9.0 does not ship until spec 30 is done"
+  ],
+  "createdAt": "2026-11-22T04:14:03Z"
+}

@@ -1,0 +1,25 @@
+== this worktree (feature/drift-tidy, 730 commits, 1004 tracked files), merge-base range 211 commits
+run 1 exit=0 real 0.12
+run 2 exit=0 real 0.11
+run 3 exit=0 real 0.11
+-- checkWiring only (no tidy), same root:
+run 1 real 0.02
+run 2 real 0.02
+run 3 real 0.02
+git status unchanged by the runs
+tidy advice item:
+[]
+
+== worst case: full clone, branch at 81b88ba, main moved to the root commit (range = whole history, 730 commits)
+run 1 exit=0 real 0.15
+run 2 exit=0 real 0.18
+run 3 exit=0 real 0.15
+git status unchanged (0 lines)
+[]
+
+== default branch: on main at 81b88ba (last 7 days or 100 commits, approximate)
+run 1 exit=0 real 0.25
+run 2 exit=0 real 0.23
+run 3 exit=0 real 0.23
+git status lines: 0
+[{"check":"tidy","path":"docs/context/dangerous-assumptions.md","lines":["docs/context/dangerous-assumptions.md:17 names tool_name, which this branch removed from the code.","docs/context/dangerous-assumptions.md:18 names permissionDecision, which this branch removed from the code.","2 mapped doc lines name removed code: run `node .joycraft/runtime/cleanup.mjs tidy` now or at session end."],"detail":"docs/context/dangerous-assumptions.md:17 names tool_name, which this branch removed from the code. docs/context/dangerous-assumptions.md:18 names permissionDecision, which this branch removed from the code. 2 mapped doc lines name removed code: run `node .joycraft/runtime/cleanup.mjs tidy` now or at session end.","fix":"Run `node .joycraft/runtime/cleanup.mjs tidy` and fix the lines it names. Do not fix them at session start."}]

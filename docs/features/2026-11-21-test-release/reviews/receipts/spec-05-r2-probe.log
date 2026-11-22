@@ -1,0 +1,453 @@
+
+=== fixture r1-plain: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-mHy0y6/proj" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024131760Z-62264-1.log -- node tests/a.mjs tests/b.mjs
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-mHy0y6/proj --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024131760Z-62264-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-mHy0y6/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-mHy0y6/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024131991Z-62374-1.log -- node tests/a.mjs tests/b.mjs
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024131991Z-62374-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture r1-space-in-root: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-uEiZxh/my proj" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024132386Z-62503-1.log -- node tests/a.mjs tests/b.mjs
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-uEiZxh/my proj' --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024132386Z-62503-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-uEiZxh/my proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-uEiZxh/my proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024132617Z-62613-1.log -- node tests/a.mjs tests/b.mjs
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024132617Z-62613-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture r1-space-in-check: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-KlVBSC/proj" checks=["tests/a b.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node 'tests/a b.mjs'","argv":["node","tests/a b.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024133003Z-62742-1.log -- node 'tests/a b.mjs'
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-KlVBSC/proj --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a b.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024133003Z-62742-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-KlVBSC/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-KlVBSC/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node 'tests/a b.mjs'","argv":["node","tests/a b.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024133230Z-62852-1.log -- node 'tests/a b.mjs'
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a b.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024133230Z-62852-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture single-quote-root: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-IvOQqV/it's proj" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024133614Z-62981-1.log -- node tests/a.mjs tests/b.mjs
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-IvOQqV/it'\''s proj' --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024133614Z-62981-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-IvOQqV/it's proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-IvOQqV/it's proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024133835Z-63091-1.log -- node tests/a.mjs tests/b.mjs
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024133835Z-63091-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture double-quote-root: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-zJdqya/a\"b proj" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024134221Z-63220-1.log -- node tests/a.mjs tests/b.mjs
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-zJdqya/a"b proj' --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024134221Z-63220-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-zJdqya/a"b proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-zJdqya/a"b proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024134458Z-63331-1.log -- node tests/a.mjs tests/b.mjs
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024134458Z-63331-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture dollar-root: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-XN4VFr/d$HOME x" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024134852Z-63463-1.log -- node tests/a.mjs tests/b.mjs
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-XN4VFr/d$HOME x' --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024134852Z-63463-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-XN4VFr/d$HOME x/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-XN4VFr/d$HOME x/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024135081Z-63573-1.log -- node tests/a.mjs tests/b.mjs
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024135081Z-63573-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture backtick-root: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-VClEZS/b`id`t" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024135500Z-63702-1.log -- node tests/a.mjs tests/b.mjs
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-VClEZS/b`id`t' --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024135500Z-63702-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-VClEZS/b`id`t/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-VClEZS/b`id`t/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024135731Z-63813-1.log -- node tests/a.mjs tests/b.mjs
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024135731Z-63813-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture unicode-root: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-B5dfXW/projé 日本 ü" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024136130Z-63968-1.log -- node tests/a.mjs tests/b.mjs
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-B5dfXW/projé 日本 ü' --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024136130Z-63968-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-B5dfXW/projé 日本 ü/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-B5dfXW/projé 日本 ü/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024136359Z-64078-1.log -- node tests/a.mjs tests/b.mjs
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024136359Z-64078-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture glob-hash-tilde-root: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-OAml1L/~p #h *?[x] !b (p) {c,d} &a" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024136749Z-64209-1.log -- node tests/a.mjs tests/b.mjs
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-OAml1L/~p #h *?[x] !b (p) {c,d} &a' --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024136749Z-64209-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-OAml1L/~p #h *?[x] !b (p) {c,d} &a/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-OAml1L/~p #h *?[x] !b (p) {c,d} &a/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024136985Z-64319-1.log -- node tests/a.mjs tests/b.mjs
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/a.mjs","tests/b.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024136985Z-64319-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+--- INFO (outside the criteria): Windows-style root
+
+=== fixture backslash-root: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-ADoIxz/C:\\Users\\Max Smith" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup reviewer: exit 1 stderr=node:internal/modules/esm/resolve:234 |     throw new ERR_INVALID_MODULE_SPECIFIER( |           ^ |  | TypeError [ERR_INVALID_MODULE_SPECIFIER]: Invalid module "/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-ADoIxz/C:%5CUsers%5CMax%20Smith/.joycraft/runtime/dispatch-start.mjs" must not include encoded "/" or "\" characters imported from /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-ADoIxz/C:\Users\Max Smith/ |     at finalizeResolution (node:internal/modules/esm/resolve:234:11) |     at moduleResolve (node:internal/modules/esm/resolve:879:10) |     at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+  INFO-NOT-OK reviewer startup
+startup implementer: exit 1 stderr=node:internal/modules/esm/resolve:234 |     throw new ERR_INVALID_MODULE_SPECIFIER( |           ^ |  | TypeError [ERR_INVALID_MODULE_SPECIFIER]: Invalid module "/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-ADoIxz/C:%5CUsers%5CMax%20Smith/.joycraft/runtime/dispatch-start.mjs" must not include encoded "/" or "\" characters imported from /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-ADoIxz/C:\Users\Max Smith/ |     at finalizeResolution (node:internal/modules/esm/resolve:234:11) |     at moduleResolve (node:internal/modules/esm/resolve:879:10) |     at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+  INFO-NOT-OK implementer startup
+
+=== fixture quotes-in-check: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-CBAyio/proj" checks=["tests/it's.mjs","tests/q\"u.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node 'tests/it'\\''s.mjs' 'tests/q\"u.mjs'","argv":["node","tests/it's.mjs","tests/q\"u.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024137587Z-64502-1.log -- node 'tests/it'\''s.mjs' 'tests/q"u.mjs'
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-CBAyio/proj --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/it's.mjs","tests/q\"u.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024137587Z-64502-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-CBAyio/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-CBAyio/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node 'tests/it'\\''s.mjs' 'tests/q\"u.mjs'","argv":["node","tests/it's.mjs","tests/q\"u.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024137823Z-64618-1.log -- node 'tests/it'\''s.mjs' 'tests/q"u.mjs'
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/it's.mjs","tests/q\"u.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024137823Z-64618-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture dollar-backtick-in-check: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-I8tdew/proj" checks=["tests/$HOME.mjs","tests/`id`.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node 'tests/$HOME.mjs' 'tests/`id`.mjs'","argv":["node","tests/$HOME.mjs","tests/`id`.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024138233Z-64747-1.log -- node 'tests/$HOME.mjs' 'tests/`id`.mjs'
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-I8tdew/proj --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/$HOME.mjs","tests/`id`.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024138233Z-64747-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-I8tdew/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-I8tdew/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node 'tests/$HOME.mjs' 'tests/`id`.mjs'","argv":["node","tests/$HOME.mjs","tests/`id`.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024138469Z-64857-1.log -- node 'tests/$HOME.mjs' 'tests/`id`.mjs'
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/$HOME.mjs","tests/`id`.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024138469Z-64857-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture unicode-in-check: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-vR6EY0/proj" checks=["tests/日本 é.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node 'tests/日本 é.mjs'","argv":["node","tests/日本 é.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024138857Z-64986-1.log -- node 'tests/日本 é.mjs'
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-vR6EY0/proj --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/日本 é.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024138857Z-64986-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-vR6EY0/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-vR6EY0/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node 'tests/日本 é.mjs'","argv":["node","tests/日本 é.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024139088Z-65096-1.log -- node 'tests/日本 é.mjs'
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/日本 é.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024139088Z-65096-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture glob-in-check: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-w5uPf9/proj" checks=["tests/*.mjs","tests/[ab].mjs","tests/~t #c.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node 'tests/*.mjs' 'tests/[ab].mjs' 'tests/~t #c.mjs'","argv":["node","tests/*.mjs","tests/[ab].mjs","tests/~t #c.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024139478Z-65225-1.log -- node 'tests/*.mjs' 'tests/[ab].mjs' 'tests/~t #c.mjs'
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-w5uPf9/proj --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/*.mjs","tests/[ab].mjs","tests/~t #c.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024139478Z-65225-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-w5uPf9/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-w5uPf9/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node 'tests/*.mjs' 'tests/[ab].mjs' 'tests/~t #c.mjs'","argv":["node","tests/*.mjs","tests/[ab].mjs","tests/~t #c.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024139699Z-65335-1.log -- node 'tests/*.mjs' 'tests/[ab].mjs' 'tests/~t #c.mjs'
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/*.mjs","tests/[ab].mjs","tests/~t #c.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024139699Z-65335-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+--- INFO (outside the criteria): Windows-style check inputs, and $( inside a check path
+
+=== fixture windows-style-check: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-10xZ8L/proj" checks=["tests\\win\\a.mjs","C:\\proj\\tests\\b.mjs"] focused="node {files}"
+startup reviewer: exit 1 stderr=Task startup stopped: Expected a nonempty project-relative path such as docs/features/example/brief.md
+  INFO-NOT-OK reviewer startup
+startup implementer: exit 1 stderr=Task startup stopped: Expected a nonempty project-relative path such as docs/features/example/brief.md
+  INFO-NOT-OK implementer startup
+
+=== fixture dollar-paren-in-check: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-wqLlJL/proj" checks=["tests/$(x).mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node 'tests/$(x).mjs'","argv":["node","tests/$(x).mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024140361Z-65551-1.log -- node 'tests/$(x).mjs'
+  INFO-NOT-OK reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-wqLlJL/proj --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/$(x).mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024140361Z-65551-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-wqLlJL/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-wqLlJL/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node 'tests/$(x).mjs'","argv":["node","tests/$(x).mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024140619Z-65690-1.log -- node 'tests/$(x).mjs'
+  INFO-NOT-OK implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/$(x).mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024140619Z-65690-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== fixture combined: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-WBrvWY/r'oot $x `y` é" checks=["tests/o'k $x `y`.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  focused: {"command":"node 'tests/o'\\''k $x `y`.mjs'","argv":["node","tests/o'k $x `y`.mjs"]}
+  reviewer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/reviews/receipts/spec-1-reviewer-focused-20261122T024141015Z-65823-1.log -- node 'tests/o'\''k $x `y`.mjs'
+  ok   reviewer.evidence has no forbidden form
+  reviewer.checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-WBrvWY/r'\''oot $x `y` é' --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.checkReport has no forbidden form
+  reviewer.finalizeReview printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  ok   reviewer.finalizeReview has no forbidden form
+  ok   reviewer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/o'k $x `y`.mjs"]
+  ok   reviewer.evidence runs as printed :: exit=0 
+  ok   reviewer receipt written under reviews/receipts :: spec-1-reviewer-focused-20261122T024141015Z-65823-1.log
+  ok   reviewer.checkReport parses as printed and stops only on the absent report :: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-WBrvWY/r'oot $x `y` é/docs/features/2026-11-21-f/specs/review-1.report.json'
+  ok   reviewer.finalizeReview parses as printed and stops only on the absent report :: exit=1 Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-WBrvWY/r'oot $x `y` é/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node 'tests/o'\\''k $x `y`.mjs'","argv":["node","tests/o'k $x `y`.mjs"]}
+  implementer.evidence printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024141256Z-65933-1.log -- node 'tests/o'\''k $x `y`.mjs'
+  ok   implementer.evidence has no forbidden form
+  implementer.submit printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+  ok   implementer.submit has no forbidden form
+  ok   implementer.focused runs as printed and the shell passes the exact paths :: exit=0 got=ARGV["tests/o'k $x `y`.mjs"]
+  ok   implementer.evidence runs as printed :: exit=0 
+  ok   implementer receipt written under receipts :: spec-1-implementer-focused-20261122T024141256Z-65933-1.log
+  ok   implementer.submit runs as printed :: exit=0 
+
+=== {files} edge cases via focusedCommand (files present in a temp root)
+  "node {files}" -> {"focused":{"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}}
+  "{files}" -> {"focused":{"command":"tests/a.mjs tests/b.mjs","argv":["tests/a.mjs","tests/b.mjs"]}}
+  "vitest --dir={files} --run" -> {"focused":{"command":"vitest --dir=tests/a.mjs tests/b.mjs --run","argv":["vitest","--dir=tests/a.mjs","tests/b.mjs","--run"]}}
+  "x --a={files}=z" -> {"focused":{"command":"x --a=tests/a.mjs tests/b.mjs=z","argv":["x","--a=tests/a.mjs","tests/b.mjs=z"]}}
+  "x pre{files}post" -> {"focused":{"command":"x pretests/a.mjs tests/b.mjspost","argv":["x","pretests/a.mjs","tests/b.mjspost"]}}
+  "x {files} --and {files}" -> {"focused":{"command":"x tests/a.mjs tests/b.mjs --and tests/a.mjs tests/b.mjs","argv":["x","tests/a.mjs","tests/b.mjs","--and","tests/a.mjs","tests/b.mjs"]}}
+  "x {files}{files}" -> {"focused":{"command":"x tests/a.mjs tests/b.mjstests/a.mjs tests/b.mjs","argv":["x","tests/a.mjs","tests/b.mjstests/a.mjs","tests/b.mjs"]}}
+  "x '{files}'" -> {"focused":{"command":"x tests/a.mjs tests/b.mjs","argv":["x","tests/a.mjs","tests/b.mjs"]}}
+  "x \"{files}\"" -> {"focused":{"command":"x tests/a.mjs tests/b.mjs","argv":["x","tests/a.mjs","tests/b.mjs"]}}
+  "x \\{files\\}" -> {"focused":{"command":"x tests/a.mjs tests/b.mjs","argv":["x","tests/a.mjs","tests/b.mjs"]}}
+  "x {file}" -> {"focused":{"command":"x '{file}' tests/a.mjs tests/b.mjs","argv":["x","{file}","tests/a.mjs","tests/b.mjs"]}}
+  "x {FILES}" -> {"focused":{"command":"x '{FILES}' tests/a.mjs tests/b.mjs","argv":["x","{FILES}","tests/a.mjs","tests/b.mjs"]}}
+  "pnpm test $VAR {files}" -> {"focused":{"command":"pnpm test '$VAR' tests/a.mjs tests/b.mjs","argv":["pnpm","test","$VAR","tests/a.mjs","tests/b.mjs"]}}
+  "pnpm test `id` {files}" -> {"focused":{"command":"pnpm test '`id`' tests/a.mjs tests/b.mjs","argv":["pnpm","test","`id`","tests/a.mjs","tests/b.mjs"]}}
+  "a && b {files}" -> {"focused":{"command":"a '&&' b tests/a.mjs tests/b.mjs","argv":["a","&&","b","tests/a.mjs","tests/b.mjs"]}}
+  "a; b {files}" -> {"focused":{"command":"'a;' b tests/a.mjs tests/b.mjs","argv":["a;","b","tests/a.mjs","tests/b.mjs"]}}
+  "x \"unclosed {files}" -> {"error":"tests.focused has an unclosed double quote: x \"unclosed {files}"}
+  "x 'unclosed {files}" -> {"error":"tests.focused has an unclosed single quote: x 'unclosed {files}"}
+  "x trailing\\" -> {"focused":{"command":"x 'trailing\\' tests/a.mjs tests/b.mjs","argv":["x","trailing\\","tests/a.mjs","tests/b.mjs"]}}
+  "   " -> {"focused":{"command":"tests/a.mjs tests/b.mjs","argv":["tests/a.mjs","tests/b.mjs"]}}
+  "node \"C:\\Program Files\\n.js\" {files}" -> {"focused":{"command":"node 'C:\\Program Files\\n.js' tests/a.mjs tests/b.mjs","argv":["node","C:\\Program Files\\n.js","tests/a.mjs","tests/b.mjs"]}}
+  "node C:\\tools\\run.js {files}" -> {"focused":{"command":"node C:toolsrun.js tests/a.mjs tests/b.mjs","argv":["node","C:toolsrun.js","tests/a.mjs","tests/b.mjs"]}}
+  one file "x --dir={files}/" -> {"focused":{"command":"x --dir=tests/a.mjs/","argv":["x","--dir=tests/a.mjs/"]}}
+  file named {files}: "node {files}" -> {"error":"Maximum call stack size exceeded"}
+  file named {files}, appended: "node" -> {"focused":{"command":"node 'tests/{files}.mjs'","argv":["node","tests/{files}.mjs"]}}
+
+=== shellQuote round-trip through /bin/sh (printf %s\0)
+  ok   shellQuote("it's") = 'it'\''s' :: forbidden=false
+  ok   shellQuote("a\"b") = 'a"b' :: forbidden=false
+  ok   shellQuote("$HOME") = '$HOME' :: forbidden=false
+  ok   shellQuote("`id`") = '`id`' :: forbidden=false
+  ok   shellQuote("$(x)") = '$(x)' :: forbidden=true
+  ok   shellQuote("é日本") = 'é日本' :: forbidden=false
+  ok   shellQuote("C:\\Users\\Max Smith") = 'C:\Users\Max Smith' :: forbidden=false
+  ok   shellQuote("*") = '*' :: forbidden=false
+  ok   shellQuote("~") = '~' :: forbidden=false
+  ok   shellQuote("#c") = '#c' :: forbidden=false
+  ok   shellQuote("") = '' :: forbidden=false
+  ok   shellQuote("-n") = -n :: forbidden=false
+  ok   shellQuote("''") = ''\'''\''' :: forbidden=false
+  ok   shellQuote("\\") = '\' :: forbidden=false
+  ok   shellQuote("!x") = '!x' :: forbidden=false
+  ok   shellQuote("a;b") = 'a;b' :: forbidden=true
+  ok   shellQuote("a|b") = 'a|b' :: forbidden=true
+  ok   shellQuote("a&&b") = 'a&&b' :: forbidden=true
+
+=== receipt freshness
+
+=== fixture fresh: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-KOlM3Z/proj" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup implementer: exit 0
+startup implementer: exit 0
+  ok   two consecutive startups print different receipt paths :: docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024141700Z-66080-1.log vs docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T024141762Z-66113-1.log
+
+=== fixture semicolon-root: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-v7117p/a;b|c" checks=["tests/a.mjs","tests/b.mjs"] focused="node {files}"
+startup reviewer: exit 0
+  checkReport printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-v7117p/a;b|c' --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+  forbidden regex matches checkReport: true
+  checkReport as printed: exit=1 Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5r2-v7117p/a;b|c/docs/features/2026-11-21-f/specs/review-1.report.json'
+
+probe checks failed: 0

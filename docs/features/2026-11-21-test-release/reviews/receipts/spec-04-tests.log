@@ -1,0 +1,14 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-queue-check-gate.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-queue-check-gate.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 361[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 18:30:49
+[2m   Duration [22m 529ms[2m (transform 16ms, setup 0ms, collect 15ms, tests 361ms, environment 0ms, prepare 31ms)[22m
+

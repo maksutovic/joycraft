@@ -1,0 +1,19 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-archive-named-files.test.ts tests/runtime-archive-links.test.ts tests/runtime-archive-as-is.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-archive-named-files.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1343[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists files that name the feature folder[2m > [22m[AC:spec-13-2] --apply --rewrite rewrites the test to the archive path, runs it green and archives [33m 393[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists files that name the feature folder[2m > [22m[AC:spec-13-3] a red rewritten test is held and restored; an unlisted file or no tests.focused refuses before any edit [33m 679[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-as-is.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 1559[2mms[22m[39m
+   [33m[2m✓[22m[39m archive as is[2m > [22m[AC:spec-8-1] a feature with one in-review spec is refused by default and archived with --as-is --owner-instruction [33m 306[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-links.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 1705[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m17 passed[39m[22m[90m (17)[39m
+[2m   Start at [22m 18:56:26
+[2m   Duration [22m 1.90s[2m (transform 55ms, setup 0ms, collect 77ms, tests 4.61s, environment 0ms, prepare 125ms)[22m
+

@@ -1,0 +1,65 @@
+== P1 clone: origin/HEAD names the trunk; feature branch in clone
+origin/HEAD=origin/main fork=aecb549318a23714f49d0138f7714c57f00f73b2
+  "base": "aecb549318a23714f49d0138f7714c57f00f73b2",
+  "head": "4612e58ec04f6ee85b7867eba1d8e30bb3b54864",
+  "approximate": false,
+-- on main in clone (expect approximate true)
+  "base": "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+  "approximate": true,
+== P2 master-only repo
+expect base=cc74973849d5786873efa73c49b29527ee2ab019 approximate false
+  "base": "cc74973849d5786873efa73c49b29527ee2ab019",
+  "approximate": false,
+on master: expect approximate true
+  "base": "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+  "approximate": true,
+== P3 plain folder CLI: exactly one skipped, exit 0
+{
+  "base": null,
+  "head": null,
+  "approximate": false,
+  "findings": [],
+  "more": 0,
+  "standing": 0,
+  "skipped": [
+    {
+      "check": "tidy",
+      "reason": "Not a Git repository with commits."
+    }
+  ]
+}
+exit=0
+== P4 git repo with no commits
+      "reason": "Not a Git repository with commits."
+exit=0
+== P5 shallow clone of a two-commit repo
+      "check": "tidy",
+      "reason": "A shallow clone has no reliable range; fetch the history or pass --base."
+exit=0
+== P6 root commit inside the 7-day window (base = empty tree), new-doc still works
+  "base": "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+  "approximate": true,
+      "check": "new-doc",
+      "path": "docs/context",
+      "count": 1,
+      "check": "new-doc",
+      "path": "docs/notes",
+      "count": 1,
+== P7 custom paths in joycraft.yaml (work/features, work/archive, work/context)
+      "check": "new-doc",
+      "path": "work/r",
+      "count": 1,
+== P8 a backlog FILE (not folder) under the docs root
+      "check": "new-doc",
+      "path": "docs",
+      "count": 1,
+      "check": "new-doc",
+      "path": "docs/notes",
+      "count": 1,
+== P9 --base with a bad ref
+Cleanup stopped: cleanup.mjs tidy: --base nope is not a commit
+exit=1
+== P10 14 findings: count of shown, more, exit code; fixable flags of shown
+exit=2
+shown 10 more 4 keys base,head,approximate,findings,more,standing,skipped fixable [ false ]
+probe-exit=0

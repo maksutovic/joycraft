@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "c0f939188e2c5f888d483aa40029730253b90570",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 23,
+    "specPath": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md",
+    "criteria": [
+      {
+        "id": "spec-23-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-23-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-23-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "worker-commands",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "cap-raise",
+            "worker-cap-home"
+          ]
+        },
+        "sha256": "b57156cea8d1e0edb8fed0f0e9433b64255d9479ac7a99a62260ef7ecaa83336",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "253c540193d1779f4040c73aa2e7686c387d4a7de84881e5adc965923e6af47d",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md",
+        "kind": "requirement",
+        "sha256": "5a77e0039412e682a95885696f96f66b93642b8429079aea8e81f4f0b0e4b8f4",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.claude/agents/joycraft-implementer.md",
+        "kind": "code",
+        "sha256": "efb31e8ac34b5fc68ceedd9d334f0eed618bbd11546315ff7848fca14809c77b",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.claude/agents/joycraft-reviewer.md",
+        "kind": "code",
+        "sha256": "8e3df09691525a9e8153713a7b2f8c3b05d3e9e6a536071faaa9ce066d84d801",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/dispatch.md",
+        "kind": "code",
+        "sha256": "9020619c87f444c1f5f17230be9610441f27eba36818173e661d3f8df6b0b123",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "f58795616b06fa5b7f4314cd0e4546478a1b559cf540a3cca18a663743759644",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "e9f3623b14b2fea3eaa8b597355b57f8e85c5ef1ab918c049a5caf156758d9c5",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "kind": "check",
+        "sha256": "6529320213d64766ba1d6806fab30f84367d641ef558122648b026995ca20cf6",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          5,
+          9,
+          12,
+          23
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "worker-commands",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "cap-raise",
+            "worker-cap-home"
+          ]
+        }
+      ]
+    },
+    "identity": "7eb82a1006127a585da294b3742f32582e1f0d9dcb65d54a0ebf266bacbd3486"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a7d8f94bc269e5b4a"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "adb7ac2c05744233e"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-23-1-forbidden-forms",
+      "subjectIdentity": "7eb82a1006127a585da294b3742f32582e1f0d9dcb65d54a0ebf266bacbd3486",
+      "criteria": [
+        "spec-23-1"
+      ],
+      "representativeInput": "payload/.claude/agents/joycraft-implementer.md:15-18, payload/.claude/agents/joycraft-reviewer.md:15-18, payload/.joycraft/references/dispatch.md:77-82",
+      "expected": "All three name heredoc, `source` and `cd` out of the root beside &&, ;, | and $(git …), and say to paste the startup output's `commands`.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "All three files name a heredoc, `source` and `cd` out of the root, keep `&&`, `;`, `|`, `$(git …)`, and say \"Paste the startup output's `commands`\". dispatch.md still says to run `pwd` or `git rev-parse HEAD` alone and paste the value. The dropped agent-file sentence \"Paste literal paths and revisions instead\" is replaced by the `commands` pointer; payload dispatch-start.mjs workerCommands() prints literal, shell-quoted paths, and both agent files send the worker to dispatch.md, which keeps the pwd/rev-parse rule. No forbidden form or rule is lost. [AC:spec-23-1] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-probe.log",
+              "sha256": "f0cfab50cdc1192a88d8b65cc37af0453abac88c3c2afc357676b1b49b27c93b"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-probe.mjs",
+              "sha256": "a585ad285a82519ddcac20aee09c6f5aa8d9c3b75908818a478687b11a054fe4"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-r1-tests.log",
+              "sha256": "f75b4acd647947e391c21d8e051b218cf33aa25a5a4599737d9431dcc8991eb2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-23-2-env-map",
+      "subjectIdentity": "7eb82a1006127a585da294b3742f32582e1f0d9dcb65d54a0ebf266bacbd3486",
+      "criteria": [
+        "spec-23-2"
+      ],
+      "representativeInput": "payload/.joycraft/references/setup.md:84-87 (testing-page step, attended Propose)",
+      "expected": "setup.md says the machine-local .joycraft/local/evidence-env.json holds the runner worker variable when the runner config cannot hold a cap, never a tracked file.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "setup.md step 3 (attended) carries the sentence with `.joycraft/local/evidence-env.json`, \"machine-local\" and \"never in a tracked file\". The test also proves with a git fixture that payload evidence.mjs applies the map (child sees RUNNER_MAX_WORKERS=3). [AC:spec-23-2] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-probe.log",
+              "sha256": "f0cfab50cdc1192a88d8b65cc37af0453abac88c3c2afc357676b1b49b27c93b"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-probe.mjs",
+              "sha256": "a585ad285a82519ddcac20aee09c6f5aa8d9c3b75908818a478687b11a054fe4"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-r1-tests.log",
+              "sha256": "f75b4acd647947e391c21d8e051b218cf33aa25a5a4599737d9431dcc8991eb2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-23-3-word-budget",
+      "subjectIdentity": "7eb82a1006127a585da294b3742f32582e1f0d9dcb65d54a0ebf266bacbd3486",
+      "criteria": [
+        "spec-23-3"
+      ],
+      "representativeInput": "pnpm test tests/payload-guard.test.ts plus wc-style counts of the three every-spec files at 09f5ad5 and dcd5476",
+      "expected": "Guard passes; every-spec words grow by at most 6; on-demand stays inside its cap.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "19/19 tests pass in tests/text-worker-commands.test.ts and tests/payload-guard.test.ts (exit 0). Guard prints every-spec 12158 (cap 12256) and on-demand 18593 (cap 19663). The commit changes every-spec words by -1 (implementer), -1 (reviewer), +6 (dispatch) = +4; setup.md (on-demand) +29. Only payload files, PIN and the new test changed; no existing test file changed, matching \"Test changes: none\". [AC:spec-23-3] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-r1-tests.log",
+              "sha256": "f75b4acd647947e391c21d8e051b218cf33aa25a5a4599737d9431dcc8991eb2"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-probe.log",
+              "sha256": "f0cfab50cdc1192a88d8b65cc37af0453abac88c3c2afc357676b1b49b27c93b"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-probe.mjs",
+              "sha256": "a585ad285a82519ddcac20aee09c6f5aa8d9c3b75908818a478687b11a054fe4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/text-worker-commands.test.ts:35",
+      "summary": "AC:spec-23-3 hard-codes the pre-spec word counts (314/334/1668) and asserts growth <= 6 against them forever. The next spec that edits any of these three every-spec files by more than a few words will fail this test even when the guard cap holds. Consider retiring or rebasing this assertion once the spec is accepted."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md:13",
+      "summary": "The spec cites joycraft-reviewer.md:51-53, but that file is shorter than 51 lines at the base; the rule lives at lines 15-18, where the edit landed.",
+      "assumption": "The line reference is stale; the intended location is the existing shell-form rule."
+    },
+    {
+      "id": "f3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.claude/agents/joycraft-implementer.md:18",
+      "summary": "The agent files no longer say what to paste for a value that is not in `commands` (for example the worker root on the first dispatch-start call, before any output exists). dispatch.md:81-82 still covers it and both agent files point to dispatch.md, so no rule is lost; noted only in case the coordinator wants the agent files self-contained."
+    },
+    {
+      "id": "f4",
+      "class": "follow-up",
+      "origin": "unknown",
+      "at": "tests/text-worker-commands.test.ts",
+      "summary": "The implementer reported this file changed on disk from outside its own edits before commit. The committed file (new in dcd5476) is identical to the working tree and matches the spec; its origin cannot be told from git. The installed .joycraft/runtime/dispatch-start.mjs in this checkout is older than payload/ and does not print `commands`; the payload source does."
+    }
+  ],
+  "createdAt": "2026-11-22T02:50:55.144Z"
+}
