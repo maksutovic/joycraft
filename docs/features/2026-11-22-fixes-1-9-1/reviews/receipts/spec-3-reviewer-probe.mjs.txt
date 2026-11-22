@@ -1,0 +1,67 @@
+// Spec 3 reviewer probe. Run: node <copy>.mjs <project-root>
+import { mkdtempSync, mkdirSync, writeFileSync, realpathSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { spawnSync } from 'node:child_process';
+const proj = process.argv[2];
+const cleanup = join(proj, 'payload/.joycraft/runtime/cleanup.mjs');
+const mod = await import(cleanup);
+const sh = (cwd, cmd, args) => spawnSync(cmd, args, { cwd, encoding: 'utf8' });
+const put = (root, f, b) => { mkdirSync(join(root, f, '..'), { recursive: true }); writeFileSync(join(root, f), b); };
+const repo = (yaml, files) => {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-p3-')));
+  sh(root, 'git', ['init', '-q', '-b', 'main']);
+  sh(root, 'git', ['config', 'user.email', 'a@b.c']); sh(root, 'git', ['config', 'user.name', 'p']);
+  mkdirSync(join(root, '.joycraft'));
+  put(root, 'joycraft.yaml', yaml);
+  for (const [f, b] of Object.entries(files)) put(root, f, b);
+  sh(root, 'git', ['add', '-A']); sh(root, 'git', ['commit', '-q', '-m', 'init']);
+  return root;
+};
+const tidy = (cwd, extra = []) => { const r = sh(cwd, 'node', [cleanup, 'tidy', ...extra]); try { return JSON.parse(r.stdout); } catch { return { raw: r.stdout, err: r.stderr, status: r.status }; } };
+
+// 1. notFound pattern against a tool that exists and prints "not found" messages, exit 0.
+const msgs = {
+  'module-not-found-plain': "echo \"Error: Module not found: Can't resolve './x'\" >&2",
+  'linter-colon-not-found': "echo \"mylint: config file .mylintrc: not found, using defaults\" >&2",
+  'linter-ends-not-found': "echo \"mylint: rule no-foo: not found\" >&2",
+  'grep-like': "echo \"warning: pattern not found\" >&2",
+  'stdout-only': "echo \"mylint: rule no-foo: not found\"",
+  'exit1-with-line': "echo \"mylint: rule no-foo: not found\" >&2; exit 1",
+};
+const yaml = 'checks:\n' + Object.keys(msgs).map(n => `  - name: ${n}\n    run: sh ${n}.sh\n`).join('');
+const files = Object.fromEntries(Object.entries(msgs).map(([n, b]) => [`${n}.sh`, b + '\n']));
+files['docs/context/a.md'] = '# a\n';
+const r1 = repo(yaml, files);
+const t1 = tidy(r1);
+console.log('PROBE1 notFound skipped:', JSON.stringify(t1.skipped));
+console.log('PROBE1 check findings:', JSON.stringify((t1.findings ?? []).filter(f => Object.keys(msgs).includes(f.check))));
+
+// 2. projectRoot from a folder outside any .joycraft project.
+const outside = realpathSync(mkdtempSync(join(tmpdir(), 'jc-p3-out-')));
+mkdirSync(join(outside, 'a/b'), { recursive: true });
+console.log('PROBE2 projectRoot(outside/a/b) === outside/a/b:', mod.projectRoot(join(outside, 'a/b')) === join(outside, 'a/b'));
+const t2 = sh(join(outside, 'a/b'), 'node', [cleanup, 'tidy']);
+console.log('PROBE2 tidy outside exit', t2.status, 'stdout', t2.stdout.trim().slice(0, 300), 'stderr', t2.stderr.trim().slice(0, 300));
+// subfolder of a project, and a .joycraft file (not folder) is ignored
+console.log('PROBE2 projectRoot(r1/docs/context) === r1:', mod.projectRoot(join(r1, 'docs/context')) === r1);
+const fileMarker = realpathSync(mkdtempSync(join(tmpdir(), 'jc-p3-f-'))); writeFileSync(join(fileMarker, '.joycraft'), ''); mkdirSync(join(fileMarker, 'sub'));
+console.log('PROBE2 .joycraft as a file is not a root:', mod.projectRoot(join(fileMarker, 'sub')) === join(fileMarker, 'sub'));
+// --root still wins over the walk
+const t2b = tidy(join(r1, 'docs/context'), ['--root', '.']);
+console.log('PROBE2 --root . from subfolder reads subfolder (no checks run):', JSON.stringify(t2b.skipped ?? t2b).slice(0, 200));
+
+// 3. Case-mismatch lookup; this disk's case sensitivity:
+const r3 = repo('paths:\n  features: Docs/features\n  archive: Docs/archive\n  context: Docs/context\n', { 'docs/context/a.md': '# a\n', 'docs/research/old.md': '# x\n' });
+const insensitive = existsSync(join(r3, 'DOCS'));
+console.log('PROBE3 disk case-insensitive:', insensitive);
+const a3 = sh(r3, 'node', [cleanup, 'age-out', '--days', '14']);
+console.log('PROBE3 age-out Docs over docs:', a3.stdout.trim().slice(0, 400));
+// nested root: site/Docs config over tracked site/docs
+const r4 = repo('paths:\n  features: site/Docs/features\n  archive: site/Docs/archive\n  context: site/Docs/context\n', { 'site/docs/context/a.md': '# a\n' });
+const a4 = sh(r4, 'node', [cleanup, 'age-out', '--days', '14']);
+console.log('PROBE3 nested site/Docs over site/docs:', a4.stdout.trim().slice(0, 400));
+// Simulated case-sensitive layout: config root names a folder that does not exist on disk at all (as Docs on a case-sensitive disk with only docs/ tracked).
+const r5 = repo('paths:\n  features: Doks/features\n  archive: Doks/archive\n  context: Doks/context\n', { 'docs/context/a.md': '# a\n' });
+const a5 = sh(r5, 'node', [cleanup, 'age-out', '--days', '14']);
+console.log('PROBE3 absent folder (case-sensitive analogue):', a5.stdout.trim().slice(0, 400));

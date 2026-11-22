@@ -212,7 +212,7 @@
       "id": 3,
       "file": "03-cleanup-fixes.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -305,6 +305,10 @@
       },
       "submitted": {
         "at": "2026-11-22T06:53:11.852Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-3.report.json",
+        "sha256": "5485603d5d58b5f3dcd615cb9bd8406e6a845035976fd9b629a00fbaae9e17a8"
       }
     },
     {

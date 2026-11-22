@@ -1,0 +1,421 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "c3194ade42056c7117379d6daa57b0074ce03317",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+    "specId": 3,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+    "criteria": [
+      {
+        "id": "spec-3-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-3",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-4",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-5",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "cleanup",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "3554281f7493052452f2b3ed48b8b2c52d6bb9522249c0811c609ac35629f73b",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "b2704415583c0b86630322e2bd5ab28c4f1c921efe6f3328308d4de3c7e03943",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+        "kind": "requirement",
+        "sha256": "b5ffafa8fb3bb2c169a1787f94aa1998781d75c11e55b91219afa26719b95e7a",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "eb4a14a248c28ce07c6c8fd55ccce8a1eb94ab09a47fbbb94da7068ecde67bdc",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-age-out.test.ts",
+        "kind": "check",
+        "sha256": "4aa2188896c8d469dea117e2578421d7fff09af4d0cc591a781efbd4bf421649",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-checks-seam.test.ts",
+        "kind": "check",
+        "sha256": "85951bcc6fc91a58b9141795caad1515663098e5bb58819a661a4014dc705d84",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-tidy.test.ts",
+        "kind": "check",
+        "sha256": "fc937bd2835706684ec662a473bc0e59252e79ede678f914eabd8d96e16d06ee",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          3
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+          "anchors": [
+            "cleanup",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "1a4c6f7bf1664509696c330071945fa0dd80752a53d09aeac678385dbcb84fa9"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "af0d2d0c03b6b8419"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a5a98b6310a2499cb"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-3-1-backlog-new-doc",
+      "subjectIdentity": "1a4c6f7bf1664509696c330071945fa0dd80752a53d09aeac678385dbcb84fa9",
+      "criteria": [
+        "spec-3-1"
+      ],
+      "representativeInput": "backlogFile at payload/.joycraft/runtime/cleanup.mjs:185, used by rangeFindings new-doc (:547) and ageOut working (:872)",
+      "expected": "docs/backlog.md and docs/Backlog-2026.md give no new-doc finding; docs/guides/x.md still does; one helper serves both.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-focused-20261122T065345626Z-88954-1.log",
+              "sha256": "451db456dabde7be760e9a020066779c5949e08632829b4999cbc1d327f61148"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-tidy.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-cleanup-checks-seam.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-3-1] (tests/runtime-cleanup-tidy.test.ts:146) passes: the only new-doc finding is docs/guides with [docs/guides/x.md]. Source read: one helper backlogFile replaces both inline rules. 39 of 39 tests in the three files pass."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-3-2-quoted-names",
+      "subjectIdentity": "1a4c6f7bf1664509696c330071945fa0dd80752a53d09aeac678385dbcb84fa9",
+      "criteria": [
+        "spec-3-2"
+      ],
+      "representativeInput": "ageOut git log -z with %x01 record split at payload/.joycraft/runtime/cleanup.mjs:880-883",
+      "expected": "A doc named with a double quote or a tab, committed 20 days ago, is listed with days 20 under --days 14.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-focused-20261122T065345626Z-88954-1.log",
+              "sha256": "451db456dabde7be760e9a020066779c5949e08632829b4999cbc1d327f61148"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-tidy.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-cleanup-checks-seam.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-3-2] (tests/runtime-cleanup-age-out.test.ts:232) passes on macOS with both the double-quote and the tab name: skipped is [], both docs listed with days 20."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-3-3-case-mismatch",
+      "subjectIdentity": "1a4c6f7bf1664509696c330071945fa0dd80752a53d09aeac678385dbcb84fa9",
+      "criteria": [
+        "spec-3-3"
+      ],
+      "representativeInput": "ageOut empty-entries branch at payload/.joycraft/runtime/cleanup.mjs:857-863 (existsSync + ls-files :(icase))",
+      "expected": "Docs config over tracked docs/ on a case-insensitive disk names both cases; no folder on disk keeps \"Git tracks no file under <docs>\".",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-focused-20261122T065345626Z-88954-1.log",
+              "sha256": "451db456dabde7be760e9a020066779c5949e08632829b4999cbc1d327f61148"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-tidy.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-cleanup-checks-seam.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-3-3] (tests/runtime-cleanup-age-out.test.ts:240) passes; this temp disk is case-insensitive, so the mismatch branch ran."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-probe.log",
+              "sha256": "d90e6606bd36ad59dfa2de799970c1d48b1aa6c808f8406738370bd43325c304"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-probe.mjs.txt",
+              "sha256": "abccee035cd4b720969d98b8bb4afab6f0633f22f340d752facbdad24fcdb8cb"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probes/spec-3-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "PROBE3: Docs over docs gives \"The docs root Docs differs in case from docs, which Git tracks\"; a nested site/Docs over site/docs names site/docs; a configured root with no folder on disk (the case-sensitive-disk analogue: existsSync is false there for Docs when only docs/ exists) keeps \"Git tracks no file under Doks\"."
+        }
+      ],
+      "limits": [
+        "No case-sensitive volume was available; the case-sensitive layout was checked by reading the code (existsSync(root/Docs) is false there, so the plain message is kept) and by the absent-folder analogue in the probe."
+      ]
+    },
+    {
+      "id": "spec-3-4-piped-missing-tool",
+      "subjectIdentity": "1a4c6f7bf1664509696c330071945fa0dd80752a53d09aeac678385dbcb84fa9",
+      "criteria": [
+        "spec-3-4"
+      ],
+      "representativeInput": "notFound at payload/.joycraft/runtime/cleanup.mjs:594, used in customChecks at :622",
+      "expected": "run: missing-tool-xyz | cat gives one skipped \"Command not found\" entry and no finding; a check that prints a path:line finding is unchanged.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-focused-20261122T065345626Z-88954-1.log",
+              "sha256": "451db456dabde7be760e9a020066779c5949e08632829b4999cbc1d327f61148"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-tidy.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-cleanup-checks-seam.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-3-4] (tests/runtime-cleanup-checks-seam.test.ts:114) passes: piped gives [{check: piped, reason: \"Command not found: missing-tool-xyz | cat\"}] and no finding; found keeps its docs/context/a.md:3 finding and no skip."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-probe.log",
+              "sha256": "d90e6606bd36ad59dfa2de799970c1d48b1aa6c808f8406738370bd43325c304"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-probe.mjs.txt",
+              "sha256": "abccee035cd4b720969d98b8bb4afab6f0633f22f340d752facbdad24fcdb8cb"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probes/spec-3-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "PROBE1 (tool exists, prints \"not found\" in a normal message, exit 0): \"Error: Module not found: ...\" , \"mylint: config file .mylintrc: not found, using defaults\", \"warning: pattern not found\" and a stdout-only line are not skipped; exit 1 with the line still gives the failed finding. \"mylint: rule no-foo: not found\" on stderr with exit 0 IS skipped as \"Command not found: sh linter-ends-not-found.sh\" (finding f1). No finding is ever hidden: the skip needs exit 0 and zero path:line findings."
+        }
+      ],
+      "limits": [
+        "A non-shell stderr line of the form \"<word>: <text>: not found\" with exit 0 is reported as a missing command (follow-up f1)."
+      ]
+    },
+    {
+      "id": "spec-3-5-root-from-subfolder",
+      "subjectIdentity": "1a4c6f7bf1664509696c330071945fa0dd80752a53d09aeac678385dbcb84fa9",
+      "criteria": [
+        "spec-3-5"
+      ],
+      "representativeInput": "projectRoot at payload/.joycraft/runtime/cleanup.mjs:192-198, used by main at :953",
+      "expected": "tidy from <project>/docs/guides reads the project joycraft.yaml and runs its checks:, same output as from the root; projectRoot exported.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-focused-20261122T065345626Z-88954-1.log",
+              "sha256": "451db456dabde7be760e9a020066779c5949e08632829b4999cbc1d327f61148"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-tidy.test.ts",
+              "tests/runtime-cleanup-age-out.test.ts",
+              "tests/runtime-cleanup-checks-seam.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-3-5] (tests/runtime-cleanup-tidy.test.ts:155) passes: tidy from docs/guides equals tidy from the root, including the lint check finding and new-doc."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-probe.log",
+              "sha256": "d90e6606bd36ad59dfa2de799970c1d48b1aa6c808f8406738370bd43325c304"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-3-reviewer-probe.mjs.txt",
+              "sha256": "abccee035cd4b720969d98b8bb4afab6f0633f22f340d752facbdad24fcdb8cb"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probes/spec-3-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "PROBE2: projectRoot from a folder outside any .joycraft project returns that folder; tidy there exits 0 with \"Not a Git repository with commits.\"; projectRoot from a project subfolder returns the project; a .joycraft file (not folder) is not a root; an explicit --root . from a subfolder still wins over the walk."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-notfound-normal-message",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:594",
+      "summary": "notFound matches any \"<word>: <text>: not found\" stderr line, not only a shell's. A checker that exists, exits 0 and prints e.g. \"mylint: rule no-foo: not found\" is reported as skipped \"Command not found: <run>\" instead of clean (receipt spec-3-reviewer-probe.log, PROBE1). No finding is hidden (the skip needs exit 0 and no path:line finding), but the skip text is wrong. Tightening: require the not-found name to be a word of run, or the dash line-number form / \"command not found\".",
+      "assumption": "The spec defines the shell forms, not their exclusivity; the misreport loses no finding, so it is recorded as a follow-up, not a FAIL."
+    },
+    {
+      "id": "f2-backlog-folder-case",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:185",
+      "summary": "The folder half of backlogFile is case-sensitive (a Backlog/ folder is not skipped); only the file-name half ignores case. Same as age-out before this spec.",
+      "assumption": "Read \"(any case)\" as qualifying the name rule, which the spec tests; the folder rule kept its prior behavior."
+    }
+  ],
+  "limits": [
+    "Gate not run by the reviewer (spec review runs only the three focused test files).",
+    "No case-sensitive volume was used; that layout was checked by code reading and an absent-folder analogue.",
+    "The installed .joycraft/runtime/cleanup.mjs copy still differs from payload/; payload/ is the source.",
+    "Test changes: all three files only gain new class-1 describe blocks (appended); no existing test was edited, matching the spec Test changes section."
+  ],
+  "createdAt": "2026-11-22T06:55:52.934Z"
+}

@@ -1,6 +1,6 @@
 ---
 id: 3
-status: in-review
+status: done
 ---
 # Cleanup skips backlog files in new-doc, ages quoted names, names a case mismatch, catches a piped missing tool, and finds the root from a subfolder
 

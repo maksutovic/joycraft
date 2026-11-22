@@ -1,0 +1,58 @@
+PROBE1 notFound skipped: [{"check":"linter-ends-not-found","reason":"Command not found: sh linter-ends-not-found.sh"}]
+PROBE1 check findings: [{"check":"exit1-with-line","path":".","detail":"sh exit1-with-line.sh failed (exit 1) with no path:line output.","fix":"Run sh exit1-with-line.sh and read its output.","fixable":false}]
+PROBE2 projectRoot(outside/a/b) === outside/a/b: true
+PROBE2 tidy outside exit 0 stdout {
+  "base": null,
+  "head": null,
+  "approximate": false,
+  "findings": [],
+  "more": 0,
+  "standing": 0,
+  "skipped": [
+    {
+      "check": "tidy",
+      "reason": "Not a Git repository with commits."
+    }
+  ]
+} stderr 
+PROBE2 projectRoot(r1/docs/context) === r1: true
+PROBE2 .joycraft as a file is not a root: true
+PROBE2 --root . from subfolder reads subfolder (no checks run): []
+PROBE3 disk case-insensitive: true
+PROBE3 age-out Docs over docs: {
+  "days": 14,
+  "count": 0,
+  "docs": [],
+  "skipped": [
+    {
+      "path": "Docs",
+      "reason": "The docs root Docs differs in case from docs, which Git tracks: write it as docs in joycraft.yaml paths"
+    }
+  ],
+  "applied": false
+}
+PROBE3 nested site/Docs over site/docs: {
+  "days": 14,
+  "count": 0,
+  "docs": [],
+  "skipped": [
+    {
+      "path": "site/Docs",
+      "reason": "The docs root site/Docs differs in case from site/docs, which Git tracks: write it as site/docs in joycraft.yaml paths"
+    }
+  ],
+  "applied": false
+}
+PROBE3 absent folder (case-sensitive analogue): {
+  "days": 14,
+  "count": 0,
+  "docs": [],
+  "skipped": [
+    {
+      "path": "Doks",
+      "reason": "Git tracks no file under Doks"
+    }
+  ],
+  "applied": false
+}
+joycraft-evidence: {"wallMs":1144,"load":[3.51513671875,3.51513671875],"cores":14,"loaded":false,"argv":["node",".joycraft/local/probes/spec-3-probe.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"],"exitCode":0,"timedOut":false,"revision":"c3194ade42056c7117379d6daa57b0074ce03317","dirty":true}
