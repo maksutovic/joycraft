@@ -12,8 +12,8 @@ running it successfully does not turn its claim into runtime proof.
 | Module exports a specified contract | Inspect the export or compile a real consumer | Structural evidence; source presence cannot prove execution |
 | Narrow layout remains usable | Inspect the actual narrow render; operate relevant controls and inspect results | Screenshot capture alone is not inspection; appearance cannot establish durable persistence |
 
-Do not edit production code merely to manufacture red evidence; an isolated
-temporary copy can show sensitivity. No universal coverage target or
+Do not edit production code merely to manufacture red evidence; a fault runs
+in place only through `evidence.mjs run --patch`. No universal coverage target or
 end-to-end requirement follows from these examples.
 
 ### Running tests

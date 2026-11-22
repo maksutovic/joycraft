@@ -34,8 +34,9 @@ function fixture() {
 const sentence = "Each `Check:` names the spec's own test file or filter, never the project gate or full suite.";
 
 // Every-spec word counts of the three every-spec files this spec edits, at the commit before it (28ee6ed).
-// Spec 22 (fewer-better-tests) later grew the implementer by 11 words, paid for by the implement skill (class-1 change).
-const before = { decompose: 694, verify: 1370, implementer: 324 + 11 };
+// Later growth, each a class-1 change: spec 22 grew the implementer by 11 words, paid for by the implement skill;
+// spec 18 (fault-proof) added a test-only pointer to verify (5) and the implementer (5).
+const before = { decompose: 694, verify: 1370 + 5, implementer: 324 + 11 + 5 };
 const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
 
 describe('spec tier text', () => {

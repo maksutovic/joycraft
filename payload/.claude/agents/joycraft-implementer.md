@@ -27,7 +27,7 @@ extend the module's existing test file before adding one; a new acceptance test
 runs once and fails before the code exists, receipt first. Tag each
 `[AC:<criterion-id>]`. Do not commit tests of one-off run state. Run tests as
 `.joycraft/references/testing.md#running-tests` says: focused tests while you
-work. Never weaken an existing test or change the spec's acceptance. If a
+work. A test-only spec follows `.joycraft/references/testing-review.md#test-only-specs`. Never weaken an existing test or change the spec's acceptance. If a
 criterion or test looks wrong, report a spec gap.
 
 For a user-facing change, render and inspect it as `joycraft-testing` describes.

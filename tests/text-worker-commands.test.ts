@@ -33,7 +33,8 @@ function fixture() {
 }
 
 // Every-spec word counts of the three every-spec files this spec edits, at the commit before it (58f2c69).
-const before = { implementer: 314, reviewer: 334, dispatch: 1668 };
+// Spec 18 (fault-proof) later added a test-only pointer to the implementer (5) and the reviewer (5): a class-1 change.
+const before = { implementer: 314 + 5, reviewer: 334 + 5, dispatch: 1668 };
 const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
 
 describe('worker commands text', () => {

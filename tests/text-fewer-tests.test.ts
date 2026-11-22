@@ -28,8 +28,8 @@ const section = (path: string, name: string) => {
   return text.slice(start, end < 0 ? undefined : end).replace(/\s+/g, ' ');
 };
 
-// Counts at the commit before this spec (40d0029).
-const BEFORE = { implement: 1329, everySpec: 12142 };
+// Counts at the commit before this spec (40d0029). Spec 18 (fault-proof) later added 18 every-spec words: a class-1 change.
+const BEFORE = { implement: 1329, everySpec: 12142 + 18 };
 
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });

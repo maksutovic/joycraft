@@ -343,11 +343,13 @@ describe('shipped payload text', () => {
     expect(over).toEqual([]);
   });
 
-  it('[AC:spec-1-3] 200 more words in the implement skill break the every-spec cap; 600 more in the test review do not', () => {
+  it('[AC:spec-1-3] 200 more words in the implement skill break the every-spec cap; up to 600 more in the test review do not', () => {
     // At least 200, and always one past the spare, so later cuts cannot make this pass without a regression.
     const spare = EVERY_SPEC_CAP - splitCap(treeBundle()).everySpec;
     expect(splitCap(grown('.agents/skills/joycraft-implement/SKILL.md', Math.max(200, spare + 1))).over).toEqual([expect.stringMatching(/^every-spec /)]);
-    expect(splitCap(grown('.joycraft/references/testing-review.md', 600)).over).toEqual([]);
+    // On-demand words a later spec spends shrink the room the test review has; 600 or all that is left (spec 18, class 1).
+    const onDemandSpare = ON_DEMAND_CAP - splitCap(treeBundle()).onDemand;
+    expect(splitCap(grown('.joycraft/references/testing-review.md', Math.min(600, onDemandSpare))).over).toEqual([]);
   });
 
   it('[AC:spec-1-4] the duplicate worktree and acceptance-test paragraphs are cut, and worktrees.md keeps its copy', () => {

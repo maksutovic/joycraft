@@ -26,7 +26,8 @@ Judge the current code against every acceptance bullet and its `Check:`, and
 against the owner intent in the brief. Do not run the project gate again; run
 the spec's own tests once (`.joycraft/references/testing.md#running-tests`).
 Read the diff of each changed test file and judge it by
-`.joycraft/references/testing-review.md#test-changes`. Never
+`.joycraft/references/testing-review.md#test-changes`; a test-only spec by
+`.joycraft/references/testing-review.md#test-only-specs`. Never
 give a verdict while a command you started is still running.
 
 Startup output includes `trace`: each criterion with its `[AC:<id>]` tests. Report

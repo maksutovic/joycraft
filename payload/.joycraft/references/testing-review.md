@@ -61,3 +61,28 @@ Reviewer rules:
 - A red or flaky test outside the spec's set is a follow-up, never a hold.
 - A changed test that reads a path under the features folder (`featurePaths`)
   is a follow-up finding.
+
+## Test-only specs
+
+A test-only spec changes tests, fixtures and test lists only: `git diff
+--name-only` against its base lists no other file. A seam or a fix that the
+tests need goes first, in its own spec that leaves the tests untouched.
+
+For each test file it changes (class 2), the implementer:
+1. Saves each fault as a patch file before it edits the test file. Patches and
+   their receipts go in a git-ignored path such as `.joycraft/local/faults/`,
+   or are committed first: `evidence.mjs run --patch` refuses a dirty tree,
+   untracked files included.
+2. Runs the old file on each fault:
+   `node .joycraft/runtime/evidence.mjs run --patch <fault>.diff --receipt <path>.log -- <focused command>`.
+   A fault counts only when the old file fails on it. A timeout or a build
+   error is not a fail.
+3. After the edit, runs the new file, or a named kept test, on each fault the
+   same way. Each run must fail.
+
+The reviewer reruns one saved fault and one of its own, in a tree it may
+change and restore. A reviewer that shares the coordinator's tree runs no
+fault: it reads the saved receipts and states that as a limit. Block only when
+the old file catches a fault that the new file misses; any other survivor is a
+finding. The verdict states the proof's limit in one line: "the chosen faults
+are still caught; this does not show the test is as strong as before."
