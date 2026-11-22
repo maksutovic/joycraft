@@ -2257,7 +2257,8 @@
       "file": "24-archive-tests-text.md",
       "depends_on": [
         1,
-        13
+        13,
+        30
       ],
       "status": "todo",
       "mode": "checkpoint",
@@ -2278,6 +2279,8 @@
               "decisionIds": [
                 "archive-named-files",
                 "archive-edit-tests",
+                "archive-test-editor",
+                "archive-red-path",
                 "cap-raise"
               ]
             }
@@ -2330,6 +2333,16 @@
           },
           {
             "id": "spec-24-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-24-4",
             "requirement": {
               "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
               "anchor": "acceptance"
@@ -2473,6 +2486,7 @@
         27,
         28,
         29,
+        30,
         31
       ],
       "status": "todo",
@@ -3111,7 +3125,8 @@
         21,
         22,
         24,
-        28
+        28,
+        30
       ],
       "status": "todo",
       "mode": "checkpoint",
@@ -3135,7 +3150,8 @@
               ],
               "decisionIds": [
                 "cap-raise",
-                "session-end-push-order"
+                "session-end-push-order",
+                "archive-test-editor"
               ]
             }
           },
@@ -3319,6 +3335,132 @@
             },
             "requiredKinds": [
               "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "file": "30-archive-lists-only.md",
+      "depends_on": [
+        13,
+        27,
+        31
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "archive-tests",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "archive-edit-tests",
+                "archive-test-editor",
+                "archive-red-path",
+                "archive-in-place",
+                "archive-spec-13-close"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/30-archive-lists-only.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/test-changes.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/delivery.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-archive-named-files.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-links.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-as-is.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-30-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/30-archive-lists-only.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-30-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/30-archive-lists-only.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-30-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/30-archive-lists-only.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-30-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/30-archive-lists-only.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-30-5",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/30-archive-lists-only.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-30-6",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/30-archive-lists-only.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
             ]
           }
         ]

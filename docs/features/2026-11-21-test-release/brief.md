@@ -261,7 +261,7 @@ Isolation refusals come from Claude Code's guard. The guard stays, and Joycraft 
 
 ### archive-tests
 
-Decision `archive-edit-tests` = `yes`: archive rewrites the path in each listed editable test, runs that test file, and moves only on green; on red it holds and reports. The archive plan lists tracked files that name the feature folder, tests first, before the move. A reviewer finding fires when a test reads a path under the features folder. Applied migrations are never edited.
+Decision `archive-edit-tests` = `yes`, carried out as decision `archive-test-editor` = `agent`: archive lists the tests; session end changes the path, runs the gate and commits the edits with the move; on red it moves the folder back and reports. The archive plan lists tracked files that name the feature folder, tests first, before the move. A reviewer finding fires when a test reads a path under the features folder. Applied migrations are never edited.
 
 ### session-end-pr
 
