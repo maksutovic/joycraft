@@ -147,14 +147,35 @@ describe('archive as is', () => {
     expect(note({})).not.toContain('Missing or changed');
   });
 
-  it('[AC:spec-1-4] a whitespace-only --owner-instruction gets the same message as one that starts with --', () => {
+  // 1.9.2 spec 4 changed this: a blank value no longer gets the "cannot start with --" clause.
+  it('[AC:spec-1-4] a whitespace-only --owner-instruction gets the needs-the-owner\'s-words message', () => {
     const { root } = fixture();
     const result = archive(root, '--as-is', '--owner-instruction', '   ', '--apply');
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain("needs the owner's words");
     expect(result.stderr).not.toContain('Invalid or duplicate');
-    expect(result.stderr).toBe(archive(root, '--as-is', '--owner-instruction', '--apply').stderr);
+    expect(result.stderr).not.toContain('cannot start with --');
     expect(existsSync(join(root, source))).toBe(true);
     expect(git(root, 'status', '--porcelain')).toBe('');
+  });
+});
+
+// Spec: docs/features/2026-11-22-followups-1-9-2/specs/04-archive-lines.md
+describe('archive as is: a blank owner instruction (1.9.2 spec 4)', () => {
+  it('[AC:spec-4-1] a blank or empty --owner-instruction says it needs the owner\'s words without the -- clause; a -- value keeps it; nothing changes', () => {
+    const { root } = fixture();
+    for (const value of ['   ', '', '\t\n']) {
+      const result = archive(root, '--as-is', '--owner-instruction', value, '--apply');
+      expect(result.status, JSON.stringify(value)).toBe(1);
+      expect(result.stderr.trim()).toBe("Archive stopped: --owner-instruction needs the owner's words as its value");
+      expect(result.stderr).not.toContain('cannot start with --');
+    }
+    const dashed = archive(root, '--as-is', '--owner-instruction', '--apply');
+    expect(dashed.status).toBe(1);
+    expect(dashed.stderr).toContain("needs the owner's words");
+    expect(dashed.stderr).toContain('cannot start with --');
+    expect(existsSync(join(root, source))).toBe(true);
+    expect(existsSync(join(root, 'docs/archive/x'))).toBe(false);
+    expect(git(root, 'status', '--porcelain', '--untracked-files=all')).toBe('');
   });
 });

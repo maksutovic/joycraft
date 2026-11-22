@@ -296,3 +296,25 @@ describe('archive owner check of spec 13', () => {
     expect(next).not.toContain('Leave their paths as they are');
   });
 });
+
+// Spec: docs/features/2026-11-22-followups-1-9-2/specs/04-archive-lines.md
+describe('archive reads every line ending (1.9.2 spec 4)', () => {
+  it('[AC:spec-4-2] a CR-only test file gets real line numbers and its comment line counts as a comment; LF, CRLF, U+2028 and U+2029 agree', () => {
+    const lines = ["import x from 'y';", 'export { x };', `// Spec: ${source}/specs/01.md`, 'export const n = 1;'];
+    const entry = (ending: string) => {
+      const root = fixture({ extra: { 'tests/e.test.ts': lines.join(ending) + ending } });
+      rmSync(join(root, 'tests/two-tier.test.mjs')); git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'only e');
+      const named = listed(root).filter((file: { path: string }) => file.path === 'tests/e.test.ts');
+      const result = archive(root, '--apply');
+      expect(result.status, result.stderr).toBe(0);
+      return { named, next: result.output.next as string };
+    };
+    const expected = [{ path: 'tests/e.test.ts', line: 3, text: lines[2], test: true }];
+    for (const ending of ['\r', '\n', '\r\n', ' ', ' ']) {
+      const { named, next } = entry(ending);
+      expect(named, JSON.stringify(ending)).toEqual(expected);
+      expect(next, JSON.stringify(ending)).toContain('only in comments');
+      expect(next, JSON.stringify(ending)).not.toContain('still name');
+    }
+  });
+});

@@ -538,6 +538,9 @@ function folderPatterns(root, source) {
   return [namesFolder(source), ...(/^\d{4}-\d{2}-\d{2}-/.test(folder) ? [namesDated(folder, path.posix.basename(workPaths(root).features))] : [])];
 }
 
+/** A file's lines, split on every line ending: CRLF, LF, a lone CR, U+2028 and U+2029. */
+const fileLines = file => readFileSync(file, 'utf8').split(/\r\n|[\n\r\u2028\u2029]/);
+
 function namedFiles(root, source) {
   if (!gitRoot(root)) return [];
   const { features, archive } = workPaths(root);
@@ -551,7 +554,7 @@ function namedFiles(root, source) {
   for (const file of candidates) {
     if (file.endsWith('.md') || under(file, features) || under(file, archive)) continue;
     let lines;
-    try { if (!lstatSync(path.join(root, file)).isFile()) continue; lines = readFileSync(path.join(root, file), 'utf8').split('\n'); } catch { continue; }
+    try { if (!lstatSync(path.join(root, file)).isFile()) continue; lines = fileLines(path.join(root, file)); } catch { continue; }
     const line = lines.findIndex(each => patterns.some(pattern => pattern.test(each)));
     if (line < 0) continue;
     const test = isTestPath(file);
@@ -604,7 +607,7 @@ function nextSteps(root, plan) {
   const patterns = folderPatterns(root, plan.source);
   const code = tests.flatMap(file => {
     let lines;
-    try { lines = readFileSync(path.join(root, file.path), 'utf8').split('\n'); } catch { return [{ path: file.path, line: file.line }]; }
+    try { lines = fileLines(path.join(root, file.path)); } catch { return [{ path: file.path, line: file.line }]; }
     const comments = commentLines(file.path, lines);
     const line = lines.findIndex((each, at) => !comments[at] && patterns.some(pattern => pattern.test(each)));
     return line < 0 ? [] : [{ path: file.path, line: line + 1 }];
@@ -848,8 +851,12 @@ function argumentsFor(argv) {
   for (let index = 0; index < args.length; index += 1) {
     if (['--apply', '--as-is'].includes(args[index])) { requireValue(flags[args[index]] === undefined, `Duplicate ${args[index]}`); flags[args[index]] = true; continue; }
     if (!['--feature', '--phase', '--attestation', '--reconciliation', '--owner-instruction'].includes(args[index])) throw refusal(`Unknown argument: ${args[index]}; nothing was changed`);
-    // A blank value or one that starts with -- gets the same message: the owner's words are missing.
-    requireValue(args[index] !== '--owner-instruction' || flags[args[index]] !== undefined || (nonempty(args[index + 1]) && !args[index + 1].startsWith('--')), '--owner-instruction needs the owner\'s words as its value; the text cannot start with --');
+    // A missing or blank value lacks the owner's words; one that starts with -- is told why it is not them.
+    if (args[index] === '--owner-instruction' && flags[args[index]] === undefined) {
+      const value = args[index + 1];
+      requireValue(!(typeof value === 'string' && value.startsWith('--')), '--owner-instruction needs the owner\'s words as its value; the text cannot start with --');
+      requireValue(nonempty(value), '--owner-instruction needs the owner\'s words as its value');
+    }
     requireValue(nonempty(args[index + 1]) && flags[args[index]] === undefined, `Invalid or duplicate argument: ${args[index]}`);
     flags[args[index]] = args[index + 1]; index += 1;
   }
