@@ -20,6 +20,8 @@ none
 
 Coordinator note (lane A spec gap): the rewritten path exists only after the move, so the order is: move, rewrite the listed tests to the archive path, run them through `evidence.mjs`; on red, restore every file byte for byte and move the folder back, so nothing moved. This meets `archive-edit-tests` = `yes` ("moves only on green") in net effect.
 
+Coordinator note (round 2, safety rule): recovery and the red path may only undo what archive itself wrote, and only while everything is exactly as archive left it. When something else changed (a user edit, or a red test that writes into the moved folder), archive changes nothing, reports `held` (`interrupted-unverified`) with the differences and manual steps, and never reports archived. This narrows "on red the files are restored" for that rare case; it never loses data.
+
 ## Not covered
 
 Anything in the brief's Scope and limits. Joycraft names no test runner: text says "the runner's own flag". Specs other than this one.
