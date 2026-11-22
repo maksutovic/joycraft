@@ -1,6 +1,6 @@
 ---
 id: 24
-status: in-review
+status: done
 ---
 # Session end reads the archive's named-file list and changes the folder path in listed tests after the move
 

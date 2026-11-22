@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "8760675aaba4548237ed6e0b27b5fdaf67cb1884",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 24,
+    "specPath": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+    "criteria": [
+      {
+        "id": "spec-24-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-24-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-24-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-24-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-named-files",
+            "archive-edit-tests",
+            "archive-test-editor",
+            "archive-red-path",
+            "cap-raise"
+          ]
+        },
+        "sha256": "9aacc1d94d8b7e70f9e2b5fc9a02eae9b6eebe4ea2093dd2fec626c68d789d74",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "e774546f3268892e19fee9682c186b67445a275dbd3527d3e545cd02d172b3b8",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+        "kind": "requirement",
+        "sha256": "c4f3471c934039f791c96d0982e2733c29340b40ce83fb5c5cbc9ef7f2818335",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+        "kind": "code",
+        "sha256": "d238c04ef8cf95559cd78d159e07bc4cde64e40c6957507d29a4c1f437ab7c1e",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/archive.md",
+        "kind": "code",
+        "sha256": "8adbf6ae793fbf8e47ca518c3bc64877ffe586b3ba38ece72d202983c1c8e90b",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing-review.md",
+        "kind": "code",
+        "sha256": "aec426e7220347c410fef96010898526ddb167687578f5bcd0008b42e6519a91",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "3d6986aa8ee5ad8c03510e18c1031cb970b9e9e27889be11d9e1110625308b63",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-archive-tests.test.ts",
+        "kind": "check",
+        "sha256": "a655ebaa83c5504ae960c931c34b76d98865da979c4413f3df1178e3dc27ea44",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          5,
+          7,
+          9,
+          11,
+          12,
+          13,
+          17,
+          24,
+          27,
+          30,
+          31
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-named-files",
+            "archive-edit-tests",
+            "archive-test-editor",
+            "archive-red-path",
+            "cap-raise"
+          ]
+        }
+      ]
+    },
+    "identity": "29c94347401f284c85be6b2e6b5a8d238d804387df03843218025d729f36c736"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a374f5d2d17ac092a"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a7c5db5eb60415e6b"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-24-1-flow",
+      "subjectIdentity": "29c94347401f284c85be6b2e6b5a8d238d804387df03843218025d729f36c736",
+      "criteria": [
+        "spec-24-1"
+      ],
+      "representativeInput": "payload/.joycraft/references/archive.md at HEAD 8760675, read against archive.mjs:510-546 and delivery.mjs:242",
+      "expected": "One paragraph with every clause the spec lists, and nothing archive.mjs contradicts",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-tests.log",
+              "sha256": "7e416fc5ed3538efdc2b4e122320050ac72b933b187e15f28d55572379bd1d4e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "2 files, 20 tests pass, exit 0. [AC:spec-24-1] (tests/text-archive-tests.test.ts:26) passes: one paragraph holds namedFiles, the comment rule, the path-only edit, the migration rule, stale receipt and refused push, one feature per commit, the red-path undo with git status, not archived, and the variable-built limit."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-probe.log",
+              "sha256": "6986fd819bc1939d9ca0fad135382d435b7f5b55839f25397696610046d28024"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-probe.sh.txt",
+              "sha256": "dd4b3319ad61d966b50e51646668d5c9b118fe2bc42ce0137e40d5b1244bc8c9"
+            }
+          ],
+          "actual": "Paragraph is 107 words (test cap 115; spec says about 90). Every clause matches the code: namedFiles is on the preview plan (archive.mjs:553 returns {status:preview, plan}); migration:true is set only on non-test files under migrations/ (:511, :535); next lists only tests and says the same three steps (:543-546); the gate receipt is stale when a path outside the docs root changed (delivery.mjs:242). The staging paragraph after it (archive-recovery.json, manual recovery) matches archive.mjs:571 and :604 and is the 1.8.1 move, which the ruling keeps (section 7 limit 3)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-24-2-flow",
+      "subjectIdentity": "29c94347401f284c85be6b2e6b5a8d238d804387df03843218025d729f36c736",
+      "criteria": [
+        "spec-24-2"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-session-end/SKILL.md:109-111",
+      "expected": "One sentence naming namedFiles and the archive guidance, commit docs: archive <slug>, no --rewrite",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-tests.log",
+              "sha256": "7e416fc5ed3538efdc2b4e122320050ac72b933b187e15f28d55572379bd1d4e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-24-2] (tests/text-archive-tests.test.ts:40) passes: the exact sentence is present and has no --rewrite."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-probe.log",
+              "sha256": "6986fd819bc1939d9ca0fad135382d435b7f5b55839f25397696610046d28024"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-probe.sh.txt",
+              "sha256": "dd4b3319ad61d966b50e51646668d5c9b118fe2bc42ce0137e40d5b1244bc8c9"
+            }
+          ],
+          "actual": "Probe shows SKILL.md:109 and :111 hold the sentence; diff 95e2998 removes \"and any `--rewrite` edits\"."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-24-3-flow",
+      "subjectIdentity": "29c94347401f284c85be6b2e6b5a8d238d804387df03843218025d729f36c736",
+      "criteria": [
+        "spec-24-3"
+      ],
+      "representativeInput": "payload/.joycraft/references/testing-review.md:5-7 and :108-110",
+      "expected": "Line-5 paragraph names the archive exception; featurePaths item says move the file out of the feature folder",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-tests.log",
+              "sha256": "7e416fc5ed3538efdc2b4e122320050ac72b933b187e15f28d55572379bd1d4e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-24-3] (tests/text-archive-tests.test.ts:46) passes."
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-probe.log",
+              "sha256": "6986fd819bc1939d9ca0fad135382d435b7f5b55839f25397696610046d28024"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-probe.sh.txt",
+              "sha256": "dd4b3319ad61d966b50e51646668d5c9b118fe2bc42ce0137e40d5b1244bc8c9"
+            }
+          ],
+          "actual": "testing-review.md:6 \"The one exception: at archive, session end may change a folder path in a listed test.\"; :108-110 featurePaths item ends \"the fix is to move the file the test reads out of the feature folder.\""
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-24-4-flow",
+      "subjectIdentity": "29c94347401f284c85be6b2e6b5a8d238d804387df03843218025d729f36c736",
+      "criteria": [
+        "spec-24-4"
+      ],
+      "representativeInput": "All files under payload/; the 12 EVERY_SPEC_FILES of tests/payload-guard.test.ts",
+      "expected": "No --rewrite in payload; payload-guard passes; every-spec count equal to before",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-tests.log",
+              "sha256": "7e416fc5ed3538efdc2b4e122320050ac72b933b187e15f28d55572379bd1d4e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-24-4] (tests/text-archive-tests.test.ts:53) passes; payload-guard passes and prints \"every-spec words: 12178 (cap 12256, 78 spare)\", on-demand 20353 (cap 21163)."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-probe.log",
+              "sha256": "6986fd819bc1939d9ca0fad135382d435b7f5b55839f25397696610046d28024"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-probe.sh.txt",
+              "sha256": "dd4b3319ad61d966b50e51646668d5c9b118fe2bc42ce0137e40d5b1244bc8c9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p24/probe.sh",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "grep -rl -- --rewrite payload/ prints nothing. git diff 95e2998~1..HEAD on each of the 12 every-spec files prints nothing, and 95e2998 changes only the 3 on-demand files, payload/PIN and the new test, so the every-spec count is the count before this spec."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-word-count",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-24-1",
+      "at": "payload/.joycraft/references/archive.md:204-211",
+      "assumption": "\"about 90 words\" is a target, not a cap; the test cap of 115 is the bound.",
+      "summary": "The paragraph is 107 words, 19% over about 90. Judged acceptable: it holds every clause the spec lists, in plain sentences, and adds only \"listed\" and the \"the push is refused\" sentence form. It is on-demand text (810 words spare). A trim is possible (\"Run the gate: a change outside the docs root makes its receipt stale and the push is refused.\" and dropping \"in it\"), but not needed."
+    },
+    {
+      "id": "f2-staging-paragraph-current",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-24-1",
+      "at": "payload/.joycraft/references/archive.md:213-220",
+      "summary": "Judged correct, not stale. The archive-recovery.json marker (archive.mjs:571) and the \"restore it manually\" message (:604) are the 1.8.1 move code (17baa32~1 also writes the marker). Spec 30 item 4 removed the spec-13 pending record and recoverPending/undo code, not this marker; ruling section 7 limit 3 keeps the 1.8.1 staging behaviour. The archive.mjs code is out of spec 24 scope in any case."
+    },
+    {
+      "id": "f3-more-than-a-path",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-24-1",
+      "at": "payload/.joycraft/references/archive.md:204",
+      "summary": "Ruling 4.1 step 2: when a listed test needs more than a path change (a fixture to move, a spent check), the agent does not archive that feature and writes one line. The paragraph covers only the after-apply red path. Ruling 4.3 also has the agent repoint a non-test fixture string paired with a test (house-rules.json); \"change the folder path in each listed test ... and nothing else\" does not say what to do with a listed non-test, non-migration file. The spec did not require either, so not blocking."
+    },
+    {
+      "id": "f4-no-gate-recorded",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-24-1",
+      "at": "payload/.joycraft/references/archive.md:206",
+      "summary": "Ruling 4.1 step 5 says with no gate recorded, run the tests it changed. The text says only \"Run the gate\", and the receipt/push clause holds only when tests.gate is recorded (delivery.mjs:242). A project with no gate gets no instruction. Not in the spec acceptance."
+    },
+    {
+      "id": "f5-test-noop",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/text-archive-tests.test.ts:49",
+      "summary": ".split(\"\\n\").join(\" \") runs on text that paragraph() already flattened; it is a no-op. Harmless."
+    },
+    {
+      "id": "f6-kill-criterion",
+      "class": "follow-up",
+      "origin": "new",
+      "summary": "Spec kill criterion for the owner: drop the list from the session-end text if two archives in a row list only files nobody should edit."
+    }
+  ],
+  "createdAt": "2026-11-22T05:14:05.033Z"
+}

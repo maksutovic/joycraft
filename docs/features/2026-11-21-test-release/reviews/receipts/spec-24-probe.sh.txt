@@ -1,0 +1,21 @@
+#!/bin/sh
+# Spec 24 review probe: every-spec files unchanged, --rewrite absence, paragraph word count, code facts.
+cd "$1" || exit 1
+P=payload
+EV=".agents/skills/joycraft-implement/SKILL.md .agents/skills/joycraft-verify/SKILL.md .agents/skills/joycraft-decompose/SKILL.md .agents/skills/joycraft-testing/SKILL.md .claude/agents/joycraft-implementer.md .claude/agents/joycraft-reviewer.md .joycraft/references/testing.md .joycraft/references/workflow.md .joycraft/references/dispatch.md .joycraft/references/completion.md .joycraft/references/gates.md .joycraft/references/worktrees.md"
+echo "== every-spec files changed between 95e2998~1 and HEAD (empty = none)"
+for f in $EV; do git diff --name-only 95e2998~1 HEAD -- "$P/$f"; done
+echo "== files changed by 95e2998"
+git diff --name-only 95e2998~1 95e2998
+echo "== grep -rl -- --rewrite payload/ (empty = none)"
+grep -rl -- '--rewrite' payload/
+echo "== archive.md namedFiles paragraph word count"
+awk 'BEGIN{RS="";} /`namedFiles`/ {gsub(/[ \t\n]+/," "); n=split($0,a," "); print n" words: "$0}' payload/.joycraft/references/archive.md
+echo "== archive.mjs facts"
+grep -n "migration: true\|isMigrationPath = \|function nextSteps\|Change the folder path in each test\|archive-recovery.json\|restore it manually\|status: 'preview', plan" payload/.joycraft/runtime/archive.mjs
+echo "== gate receipt docs-root exemption"
+grep -n -o "at an ancestor of HEAD when every path changed since is under the docs root" payload/.joycraft/runtime/delivery.mjs
+echo "== session-end line"
+grep -n "namedFiles\|docs: archive <slug>" payload/.agents/skills/joycraft-session-end/SKILL.md
+echo "== testing-review lines"
+grep -n "exception: at archive\|out of the$\|feature folder\.$\|featurePaths" payload/.joycraft/references/testing-review.md

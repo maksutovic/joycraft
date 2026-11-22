@@ -100,3 +100,9 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - f2: archive.mjs namesFolder misses `../docs/features/<dated>/`, `${root}/docs/features/<dated>/` and `features/<dated>/` spellings. Allow a match after `}/` or `../` (keep `packages/app/...` out). Fold into spec 29.
 - f6: movedMeanwhile message (archive.mjs ~557) blames "another archive --apply" even when the folder was deleted by hand. Reword. Fold into spec 29.
 - f1/f5: spec Test changes should name the two kept-test edits; test file `let output = null` could be `: any`.
+
+## Spec 24 review (PASS, round 1)
+- f3: archive.md:204 lacks ruling §4 steps: a listed test needing more than a path change → do not archive that feature, write one line; paired non-test fixture repoint (§4.3); listed non-test non-migration files have no instruction.
+- f4: archive.md:206 has no fallback when no gate is recorded (ruling: run the tests it changed).
+- f5: tests/text-archive-tests.test.ts:49 redundant split/join.
+- f6 (owner): kill criterion — drop the list if two archives in a row list only files nobody should edit.

@@ -1,0 +1,27 @@
+== every-spec files changed between 95e2998~1 and HEAD (empty = none)
+== files changed by 95e2998
+payload/.agents/skills/joycraft-session-end/SKILL.md
+payload/.joycraft/references/archive.md
+payload/.joycraft/references/testing-review.md
+payload/PIN
+tests/text-archive-tests.test.ts
+== grep -rl -- --rewrite payload/ (empty = none)
+== archive.md namedFiles paragraph word count
+107 words: Read `namedFiles` in the preview; a listed comment needs no change. After `--apply`, change the folder path in each listed test that reads the folder, and nothing else in it. Never edit an applied migration. Run the gate: a changed file outside the docs root makes its receipt stale, and the push is refused. Commit the edits with the move, one feature per commit. When a test stays red, move the folder back, delete the archive record folder, restore the changed files with Git until `git status` prints nothing, and report the feature as not archived. A path built in pieces from a variable is not listed.
+== archive.mjs facts
+511:const isMigrationPath = file => /(^|\/)migrations\//.test(file);
+535:    found.push({ path: file, line: line + 1, text: lines[line].replace(/\r$/, ''), test, ...(!test && isMigrationPath(file) ? { migration: true } : {}) });
+543:function nextSteps(plan) {
+546:  return { next: `${tests.length} ${tests.length === 1 ? 'test still names' : 'tests still name'} \`${plan.source}\`: ${tests.map(file => `\`${file.path}:${file.line}\``).join(', ')}. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.` };
+553:  if (options.apply !== true) return { status: 'preview', plan, ...notNeeded };
+571:    writeFileSync(path.join(stageLocal, 'archive-recovery.json'), `${JSON.stringify({ schemaVersion: 1, kind: 'joycraft-archive-recovery', feature: plan.feature, source: plan.source, destination: plan.destination, stage, phase: plan.phase, featureFiles: plan.featureFiles, copiedEvidence: plan.copiedEvidence, requirementHistory: plan.requirementHistory }, null, 2)}\n`, { flag: 'wx', mode: 0o600 });
+604:    const recovery = restored ? 'The live feature path was preserved.' : `The staged feature remains at ${stage}; restore it manually before retrying.`;
+== gate receipt docs-root exemption
+242:at an ancestor of HEAD when every path changed since is under the docs root
+== session-end line
+109:After `--apply`, fix the tests the preview listed in `namedFiles` (see the
+111:`docs: archive <slug>`.
+== testing-review lines
+6:The one exception: at archive, session end may change a folder path in a
+108:- A changed test that reads a path under the features folder (`featurePaths`)
+exit=0
