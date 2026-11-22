@@ -1,0 +1,35 @@
+453c898	29917
+17eba35^	29880
+17eba35	29836
+HEAD	29846
+
+per-file change 453c898 -> 17eba35^:
++27	.agents/skills/joycraft-entry/SKILL.md
++1	.joycraft/references/archive.md
+-83	.joycraft/references/cleanup.md
++19	.joycraft/references/settings.md
+-5	.joycraft/references/setup.md
++4	.joycraft/references/update.md
+
+per-file change 453c898 -> 17eba35:
++12	.agents/skills/joycraft-cleanup/SKILL.md
++2	.agents/skills/joycraft-entry/SKILL.md
+-29	.agents/skills/joycraft-session-end/SKILL.md
++1	.joycraft/references/archive.md
+-76	.joycraft/references/cleanup.md
++8	.joycraft/references/knowledge.md
++19	.joycraft/references/settings.md
+-22	.joycraft/references/setup.md
++4	.joycraft/references/update.md
+
+per-file change 453c898 -> HEAD:
++12	.agents/skills/joycraft-cleanup/SKILL.md
++2	.agents/skills/joycraft-entry/SKILL.md
+-29	.agents/skills/joycraft-session-end/SKILL.md
+-32	.joycraft/references/archive.md
+-67	.joycraft/references/cleanup.md
++8	.joycraft/references/knowledge.md
++19	.joycraft/references/settings.md
++3	.joycraft/references/setup.md
++13	.joycraft/references/update.md
+exit=0
