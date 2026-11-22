@@ -101,7 +101,7 @@
       "id": 2,
       "file": "02-tests-config.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -182,6 +182,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:26:23.240Z"
       }
     },
     {
