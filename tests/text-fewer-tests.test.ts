@@ -32,7 +32,7 @@ const section = (path: string, name: string) => {
 const BEFORE = { implement: 1329, everySpec: 12142 + 18 };
 
 const dirs: string[] = [];
-afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
+afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true, maxRetries: 5 }); });
 
 /** A committed git copy of the shipped payload, searched with `git grep` as a project would. */
 function payloadRepo() {

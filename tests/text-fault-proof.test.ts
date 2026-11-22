@@ -32,7 +32,7 @@ const guard = () => {
 const EVERY_SPEC_BEFORE = 12139;
 
 const dirs: string[] = [];
-afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
+afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true, maxRetries: 5 }); });
 
 /** A git project with one source file and a passing check; `.joycraft/local/` is git-ignored. */
 function project() {
