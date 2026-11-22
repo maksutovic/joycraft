@@ -1,6 +1,6 @@
 ---
 id: 10
-status: in-review
+status: done
 ---
 # Projects can plug their own doc and code checkers into tidy
 

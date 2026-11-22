@@ -1,0 +1,16 @@
+$ node_modules/.bin/vitest run tests/runtime-cleanup-checks-seam.test.ts
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-cleanup-checks-seam.test.ts (7 tests) 2578ms
+   ✓ checks: in joycraft.yaml > [AC:spec-10-2] each path:line: message output line is a finding with the check name; other lines are ignored  323ms
+   ✓ checks: in joycraft.yaml > [AC:spec-10-3] a command not found is one skipped entry and tidy exits 0  337ms
+   ✓ checks: review fixes > [review-a-5] stderr lines count, stack-trace lines do not  336ms
+   ✓ checks: review fixes > [review-a-5] a check past its timeout is skipped, even when it pipes  1329ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  16:05:25
+   Duration  2.76s (transform 15ms, setup 0ms, collect 15ms, tests 2.58s, environment 0ms, prepare 32ms)
+
+exit: 0
