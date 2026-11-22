@@ -37,8 +37,10 @@ does. None blocked 1.9.0; this release fixes them.
 - **Archive relinks Markdown in any case.** `.MD` and `.markdown` files that link
   into the feature folder are rewritten like `.md` files.
 - **Archive's next step skips comment-only tests.** It names a listed test only
-  where the test names the feature folder outside a comment, and says so when every
-  listed test names it only in comments.
+  where the test names the feature folder outside a comment, and calls a line a
+  comment only when it surely is one: any doubt counts as code. When every listed
+  test names the folder only in comments, it says no path change looks needed and
+  still tells the agent to run the gate.
 - **As-is archive lists an in-review spec's receipts.** With no acceptance record
   naming a report, it reads the spec's latest review report and lists each receipt
   that is missing or changed.
