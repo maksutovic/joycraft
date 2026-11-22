@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-2924da6ffb6a",
-  "commit": "2924da6ffb6a97fc079aab885ccada334c1c007a41b51ffc08abfc8eab689b7c",
+  "tag": "payload-4f1f49707918",
+  "commit": "4f1f497079188c56cad5ebe66fa4cb186805b83a7e23671ddd1dc2dedbc87984",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "be787d18356dac3f292b69d13e8b547ff5bb1a99039c0fe2d9a2cd12e0abe5f7",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -66,7 +66,7 @@
     ".joycraft/runtime/gate.mjs": "b6c65645f939a2b41adbad3c712683c3458385cea4de446707b95559e1bbcea3",
     ".joycraft/runtime/identity.mjs": "87860a0fe61461b18a0fa4eb43f7c7e40bdd1540005dd0b45e377f298453a42c",
     ".joycraft/runtime/kickoff.mjs": "9d96998bff94662863182b9a922f26732c649b7a0b0130b6da7d63ec73eb3590",
-    ".joycraft/runtime/queue-check.mjs": "64d8bf1cb5fb5324af9c19ad90495c8fefea6651f69f242de02ddc39a8dd45c8",
+    ".joycraft/runtime/queue-check.mjs": "c8dc12f0a192229b7e31d8bd1d88fe572a22b5b6689f184bd42b299b66f261fa",
     ".joycraft/runtime/redact.mjs": "cc8c0fe5e8d8fe78116ef126f6eee757a247739084e19c342bcf09a2b06524bc",
     ".joycraft/runtime/retro.mjs": "6f3664b0d50c12d4f2d8eef4b4d0d62897939d03e45860d4dcf35c0f5f92677c",
     ".joycraft/runtime/review-tools.json": "e0b0f5625654bba5f02d49710356aa1740fd42dd282eef6a29af361396915763",

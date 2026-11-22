@@ -1,7 +1,7 @@
 import { existsSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { workPaths } from './config.mjs';
+import { readConfig } from './config.mjs';
 import { briefDecisionRecords, featureFolderMatches, isObject, localPath, parseJson, readLocal, relativePath, validateQueue } from './identity.mjs';
 
 // Before the first dispatch, find the queue gaps a program can decide, so each
@@ -202,6 +202,23 @@ export function acceptanceBullets(text) {
   };
 }
 
+const escape = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const normalize = text => String(text).replace(/\s+/g, ' ').trim();
+
+/**
+ * Whether `text` names `command` as a whole command: whitespace-normalized, it
+ * starts after the text start, a space, a backtick, a quote or a bracket, and
+ * ends at the end of the text, a backtick (the end of a code span) or
+ * punctuation that ends a word. More arguments make it a different command, so
+ * `pnpm test tests/x.test.ts` does not name `pnpm test`.
+ */
+export function namesCommand(text, command) {
+  const wanted = normalize(command);
+  if (!wanted) return false;
+  const pattern = new RegExp(`(?:^|(?<=[\\s\`"'(\\[]))${escape(wanted)}(?=$|\`|[.,;:!?)\\]"']+(?:\\s|$|\`))`);
+  return pattern.test(normalize(text));
+}
+
 function label(text) {
   const sentence = /^.*?[.!?](?=\s|$)/.exec(text)?.[0] ?? text;
   return sentence.length > 80 ? `${sentence.slice(0, 79)}…` : sentence;
@@ -280,8 +297,11 @@ export function checkQueue({ root = process.cwd(), queuePath }) {
   const featureFolder = path.posix.dirname(folder);
   // Session-end archive finds a feature by its folder name, so a working queue
   // whose folder is named for something else can never be archived.
-  let featuresHome = null;
-  try { featuresHome = workPaths(root).features; } catch { /* A broken joycraft.yaml is reported by config.mjs. */ }
+  let config = null;
+  try { config = readConfig(root); } catch { /* A broken joycraft.yaml is reported by config.mjs. */ }
+  const featuresHome = config?.paths.features ?? null;
+  // The recorded gate and full commands belong to the wave or the owner, not to one spec.
+  const gateCommands = [...new Set([config?.tests.gate, config?.tests.full].filter(Boolean).map(normalize))];
   if (queuePath === `${featuresHome}/${path.posix.basename(featureFolder)}/specs/.joycraft-spec-queue.json` && !featureFolderMatches(path.posix.basename(featureFolder), queue.feature)) {
     gap('feature-folder', null, featureFolder, `has feature "${queue.feature}", but its folder is ${featureFolder}; session-end archive finds a feature only in a folder named ${queue.feature} or YYYY-MM-DD-${queue.feature}.`);
   }
@@ -311,6 +331,9 @@ export function checkQueue({ root = process.cwd(), queuePath }) {
       for (const bullet of bullets) {
         if (!bullet.hasCheck) gap('missing-check', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet "${label(bullet.text)}" has no \`Check:\`.`);
         else if (!bullet.plainCheck) gap('missing-check', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet "${label(bullet.text)}" has a \`Check:\` only in code or a comment.`);
+        for (const command of gateCommands) {
+          if (namesCommand(bullet.text, command)) gap('gate-in-spec', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet names the recorded gate or full command \`${command}\`; a spec checks with its own test files, and the gate runs at the review boundary or wave end.`);
+        }
       }
     }
     // The brief headings and decisions this spec cites: criterion anchors on
