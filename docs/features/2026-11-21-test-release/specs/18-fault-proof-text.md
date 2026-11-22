@@ -1,6 +1,6 @@
 ---
 id: 18
-status: in-review
+status: done
 ---
 # A test-only spec proves each changed test file with saved faults
 

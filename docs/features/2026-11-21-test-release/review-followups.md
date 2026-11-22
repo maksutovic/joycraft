@@ -83,3 +83,6 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - setup.md Machine load: the cap is "computed from the core count at run time, never this machine's number" (brief rule).
 - status.mjs load line: add a few words on why (overload makes slow, flaky runs that agents rerun) per Max's note.
 - testing.md:48: say where the second run comes from now that "rerun once, alone" is gone.
+
+## Fault proof (spec 18 r2) — fix
+- The reviewer checks each receipt's patch sha256 against the list committed before the test edit, checks the list has one fault per removed or changed assertion, and aims its own fault at a removed assertion with no replacement (testing-review.md:104-106).

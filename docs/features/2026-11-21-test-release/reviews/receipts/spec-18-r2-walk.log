@@ -1,0 +1,42 @@
+base a99ff5f (runtime copied from /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/payload/.joycraft/runtime)
+
+## Implementer step 1: save two faults before the test edit (git-ignored .joycraft/local/faults/)
+{"clean":true}
+
+## Implementer step 2: the old file on each fault
+{"label":"old f1-no-clamp","exit":1,"exitCode":1,"timedOut":false,"revision":"a99ff5f","patch":{"sha256":"4b4a504239a1","restored":true},"wallMs":6118,"firstFailing":"✖ clamps a discount above 100 to free","clean":true}
+{"label":"old f2-floor","exit":1,"exitCode":1,"timedOut":false,"revision":"a99ff5f","patch":{"sha256":"1cadf8911178","restored":true},"wallMs":6118,"firstFailing":"✖ rounds to cents","clean":true}
+
+## Implementer step 3: rewrite faster; "the same way" before a commit is refused
+{"label":"new f1 uncommitted","exit":2,"exitCode":null,"timedOut":null,"revision":null,"patch":null,"wallMs":null,"firstFailing":"","refused":"Evidence run stopped: --patch refuses a dirty tree; commit or remove these changes first:","clean":false}
+{"diffNameOnly":["test/price.test.mjs"]}
+{"label":"new f1-no-clamp","exit":1,"exitCode":1,"timedOut":false,"revision":"277998f","patch":{"sha256":"4b4a504239a1","restored":true},"wallMs":83,"firstFailing":"✖ clamps a discount above 100 to free","clean":true}
+{"label":"new f2-floor","exit":1,"exitCode":1,"timedOut":false,"revision":"277998f","patch":{"sha256":"1cadf8911178","restored":true},"wallMs":82,"firstFailing":"✖ rounds to cents","clean":true}
+
+## Reviewer: one saved fault and one of its own; receipts in the feature folder
+{"label":"reviewer saved f2 new (feature-folder receipt)","exit":1,"exitCode":1,"timedOut":false,"revision":"277998f","patch":{"sha256":"1cadf8911178","restored":true},"wallMs":82,"firstFailing":"✖ rounds to cents","clean":false}
+{"label":"reviewer own r1 new (feature-folder receipt)","exit":2,"exitCode":null,"timedOut":null,"revision":null,"patch":null,"wallMs":null,"firstFailing":"","refused":"Evidence run stopped: --patch refuses a dirty tree; commit or remove these changes first:","clean":false}
+
+## Reviewer again with git-ignored receipts; old file by checking out the base
+{"label":"reviewer new f2-floor","exit":1,"exitCode":1,"timedOut":false,"revision":"277998f","patch":{"sha256":"1cadf8911178","restored":true},"wallMs":83,"firstFailing":"✖ rounds to cents","clean":true}
+{"label":"reviewer new r1-ignore-qty","exit":1,"exitCode":1,"timedOut":false,"revision":"277998f","patch":{"sha256":"4511634693f0","restored":true},"wallMs":81,"firstFailing":"✖ sums price times quantity","clean":true}
+{"label":"reviewer new r2-negative","exit":0,"exitCode":0,"timedOut":false,"revision":"277998f","patch":{"sha256":"4caa054463b5","restored":true},"wallMs":82,"firstFailing":"","clean":true}
+{"label":"reviewer old r1-ignore-qty","exit":1,"exitCode":1,"timedOut":false,"revision":"a99ff5f","patch":{"sha256":"4511634693f0","restored":true},"wallMs":6116,"firstFailing":"✖ sums price times quantity","clean":true}
+{"label":"reviewer old r2-negative","exit":0,"exitCode":0,"timedOut":false,"revision":"a99ff5f","patch":{"sha256":"4caa054463b5","restored":true},"wallMs":6120,"firstFailing":"","clean":true}
+
+## Timeout fault: not a fail; tree restored
+{"label":"new t1-hang","exit":1,"exitCode":null,"timedOut":true,"revision":"277998f","patch":{"sha256":"0cb8b66757d2","restored":true},"wallMs":3034,"firstFailing":"✖ test/price.test.mjs","clean":true}
+
+## Weakening probe: one typeof assertion replaces four; the implementer picks trivial faults
+{"label":"old w1-throw","exit":1,"exitCode":1,"timedOut":false,"revision":"a99ff5f","patch":{"sha256":"b8b797a7461b","restored":true},"wallMs":6125,"firstFailing":"✖ sums price times quantity","clean":true}
+{"label":"old w2-undefined","exit":1,"exitCode":1,"timedOut":false,"revision":"a99ff5f","patch":{"sha256":"141f4bcb68a9","restored":true},"wallMs":6107,"firstFailing":"✖ sums price times quantity","clean":true}
+{"label":"weak new w1-throw","exit":1,"exitCode":1,"timedOut":false,"revision":"09ab298","patch":{"sha256":"b8b797a7461b","restored":true},"wallMs":84,"firstFailing":"✖ total returns a number","clean":true}
+{"label":"weak new w2-undefined","exit":1,"exitCode":1,"timedOut":false,"revision":"09ab298","patch":{"sha256":"141f4bcb68a9","restored":true},"wallMs":82,"firstFailing":"✖ total returns a number","clean":true}
+-- reviewer own fault aimed at a removed assertion (f1 clamp):
+{"label":"weak new f1-no-clamp","exit":0,"exitCode":0,"timedOut":false,"revision":"09ab298","patch":{"sha256":"4b4a504239a1","restored":true},"wallMs":81,"firstFailing":"","clean":true}
+{"label":"base old f1-no-clamp","exit":1,"exitCode":1,"timedOut":false,"revision":"a99ff5f","patch":{"sha256":"4b4a504239a1","restored":true},"wallMs":6097,"firstFailing":"✖ clamps a discount above 100 to free","clean":true}
+-- reviewer own fault that is trivial (returns a string):
+{"label":"weak new rv-string","exit":1,"exitCode":1,"timedOut":false,"revision":"09ab298","patch":{"sha256":"9a759550e215","restored":true},"wallMs":90,"firstFailing":"✖ total returns a number","clean":true}
+-- "old" runs taken on the new file: they differ from real old runs only in revision
+{"label":"weak \"old\" f1 at new revision","exit":0,"exitCode":0,"timedOut":false,"revision":"09ab298","patch":{"sha256":"4b4a504239a1","restored":true},"wallMs":88,"firstFailing":"","clean":true}
+{"base":"a99ff5f","fast":"277998f","weak":"09ab298"}

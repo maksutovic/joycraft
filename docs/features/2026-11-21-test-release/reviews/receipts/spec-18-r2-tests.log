@@ -1,0 +1,23 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/text-fault-proof.test.ts tests/payload-guard.test.ts tests/text-lane-cap.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/text-lane-cap.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 231[2mms[22m[39m
+ [32m✓[39m tests/text-fault-proof.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 357[2mms[22m[39m
+   [33m[2m✓[22m[39m fault proof text[2m > [22m[AC:spec-18-5] fault patches and receipts go in a git-ignored path: there --patch runs and restores; an untracked patch is refused [33m 350[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12166 (cap 12256, 90 spare)
+on-demand words: 19667 (cap 21163, 1496 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1467[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 373[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 377[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m30 passed[39m[22m[90m (30)[39m
+[2m   Start at [22m 19:32:01
+[2m   Duration [22m 1.65s[2m (transform 44ms, setup 0ms, collect 61ms, tests 2.05s, environment 0ms, prepare 101ms)[22m
+
