@@ -160,7 +160,7 @@ The sources are kept outside the repository. They are a field project's test-too
 
 ## Context and authorization
 
-Max answered 8 decisions (`fault-run-location` through `worker-cap-home` above) and approved panel conclusions 2, 3 and 4 in the Q&A. The five open decisions above block only the sections that name them. Joycraft stays stack-agnostic: it names no test runner and ships no per-stack tooling. The agent knows the project's runner, and Joycraft's text says "the runner's own flag".
+Max answered all 13 decisions above and approved panel conclusions 2, 3 and 4 in the Q&A. `archive-named-files` is settled by `archive-edit-tests` (the panel's fourth option, prevent then fix). Joycraft stays stack-agnostic: it names no test runner and ships no per-stack tooling. The agent knows the project's runner, and Joycraft's text says "the runner's own flag".
 
 Rules for every goal:
 - time is a fact, never a gate;
@@ -186,7 +186,7 @@ Each spec carries its own test tier.
 
 ### wave-gate
 
-Decision `wave-gate-default` (open). The coordinator runs the gate alone on the integrated revision, and `delivery.mjs` refuses a push without a green gate receipt. On red:
+Decision `wave-gate-default` = `per-wave-if-slow`: setup times the gate; over about 60 s it runs once per integrated wave, under it once per spec at the review boundary, as today. The coordinator runs the gate alone on the integrated revision, and `delivery.mjs` refuses a push without a green gate receipt. On red:
 - the spec whose inputs hold the failing file gets the fix round;
 - otherwise, bisect only the failing file, newest commit first;
 - a second red holds the push.
@@ -241,7 +241,7 @@ These facts go in one receipt footer line, written before the hash.
 
 ### lane-cap
 
-Decision `worker-cap-home` = `dispatch-and-offer`. Dispatch says: when N workers share the machine, give each test run at most cores ÷ N workers, set with the runner's own flag. This replaces "rerun once, alone". Setup offers a worker cap in the project's runner config, keyed on `JOYCRAFT_EVIDENCE`, never on `CI`. Decision `test-only-lane` (open) says which specs share one lane.
+Decision `worker-cap-home` = `dispatch-and-offer`. Dispatch says: when N workers share the machine, give each test run at most cores ÷ N workers, set with the runner's own flag. This replaces "rerun once, alone". Setup offers a worker cap in the project's runner config, keyed on `JOYCRAFT_EVIDENCE`, never on `CI`. Decision `test-only-lane` = `shared-only`: test-only specs run in parallel; specs that delete tests or change shared test tooling (runner config, guards, selection lists) take the one lane.
 
 ### load-guidance
 
@@ -249,7 +249,7 @@ Decision `machine-slot` = `project-owned`, with Max's note that Joycraft *must* 
 
 ### sota-page
 
-Decision `sota-knowledge-home` (Max's note). Setup, or the test review, writes a short project-owned testing page behind a narrow map row ("a test run is slow or flaky"). The page carries about nine strong principles as the project's own decisions, in the project's stack. Joycraft-shipped playbook text is read on demand only (setup and the test review), within decision `cap-raise`.
+Decision `sota-knowledge-home` (custom, Max's note). Setup, or the test review, writes a short project-owned testing page behind a narrow map row ("a test run is slow or flaky"). The page carries about nine strong principles as the project's own decisions, in the project's stack. Joycraft-shipped playbook text is read on demand only (setup and the test review), within decision `cap-raise` = `split-cap`.
 
 ### test-review-cleanup
 
@@ -282,7 +282,7 @@ Isolation refusals come from Claude Code's guard. The guard stays, and Joycraft 
 
 ### archive-tests
 
-Decision `archive-edit-tests` (open). The archive plan lists tracked files that name the feature folder, tests first, before the move. A reviewer finding fires when a test reads a path under the features folder. Applied migrations are never edited.
+Decision `archive-edit-tests` = `yes`: archive rewrites the path in each listed editable test, runs that test file, and moves only on green; on red it holds and reports. The archive plan lists tracked files that name the feature folder, tests first, before the move. A reviewer finding fires when a test reads a path under the features folder. Applied migrations are never edited.
 
 ### session-end-pr
 
@@ -290,7 +290,7 @@ Session end rides the PR. It starts with a clean-tree check; on a dirty tree it 
 
 ## Agent work and pending choices
 
-The five open decisions block `wave-gate`, `lane-cap` (lane part), `sota-page` (budget), `archive-tests` and `session-end-pr` (order). All other goals can be specified now.
+All 13 decisions are answered, so every goal can be specified.
 
 ## Scope and limits
 

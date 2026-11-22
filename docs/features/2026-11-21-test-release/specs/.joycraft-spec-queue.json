@@ -1,0 +1,2357 @@
+{
+  "schemaVersion": 1,
+  "feature": "test-release",
+  "specs": [
+    {
+      "id": 1,
+      "file": "01-split-cap.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "spec-tier",
+                "sota-page",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "cap-raise",
+                "word-budget"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-testing/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-1-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-1-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "file": "02-tests-config.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "spec-tier",
+                "wave-gate",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "wave-gate-default"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/config.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/templates/joycraft.yaml",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-config-tests.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-2-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "file": "03-run-facts.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "evidence-marker",
+                "context-and-authorization",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/evidence.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-evidence-facts.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-evidence-receipt.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-3-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-5",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "file": "04-gate-in-spec.md",
+      "depends_on": [
+        2
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "spec-tier",
+                "context-and-authorization",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/queue-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-queue-check-gate.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-4-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "file": "05-packet-commands.md",
+      "depends_on": [
+        2
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "spec-tier",
+                "worker-commands",
+                "context-and-authorization",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-dispatch-commands.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-5-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "file": "06-report-gate.md",
+      "depends_on": [
+        2
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "spec-tier",
+                "context-and-authorization",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/06-report-gate.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/completion.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-report-gate.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-6-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/06-report-gate.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/06-report-gate.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "file": "07-gate-receipt.md",
+      "depends_on": [
+        2,
+        3
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "wave-gate",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "wave-gate-default"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/delivery.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/coordinator.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-wave-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-delivery-lock.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-7-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-7-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-7-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-7-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "file": "08-gate-rule.md",
+      "depends_on": [
+        2
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "owner-gate-lines",
+                "context-and-authorization",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-cleanup-gate-rule.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-cleanup-checks.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-8-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-8-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-8-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "file": "09-fault-patch.md",
+      "depends_on": [
+        3
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "fault-proof",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "fault-run-location"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/evidence.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-evidence-patch.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-9-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "file": "10-load-line.md",
+      "depends_on": [
+        3
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "load-guidance",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "machine-slot"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/10-load-line.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/status.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-status-load.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-10-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/10-load-line.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-10-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/10-load-line.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "file": "11-test-changes.md",
+      "depends_on": [
+        5
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "declared-test-changes",
+                "archive-tests",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "archive-named-files",
+                "archive-edit-tests"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/test-changes.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-test-changes.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-11-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-11-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-11-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-11-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "file": "12-env-map.md",
+      "depends_on": [
+        9
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "worker-commands",
+                "lane-cap",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "worker-cap-home"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/12-env-map.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/evidence.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-evidence-env.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-12-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/12-env-map.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-12-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/12-env-map.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 13,
+      "file": "13-archive-named.md",
+      "depends_on": [
+        2,
+        11
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": true
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "archive-tests",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "archive-named-files",
+                "archive-edit-tests"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-archive-named-files.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-links.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-as-is.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-13-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-13-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-13-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 14,
+      "file": "14-tier-text.md",
+      "depends_on": [
+        1,
+        2,
+        4,
+        5,
+        6
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "spec-tier",
+                "wave-gate",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "wave-gate-default",
+                "cap-raise"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-decompose/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/templates/spec.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-implementer.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-review.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/settings.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-spec-tier.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-14-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-14-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-14-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-14-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-14-5",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 15,
+      "file": "15-wave-gate-text.md",
+      "depends_on": [
+        1,
+        7
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "wave-gate",
+                "ci-once",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "wave-gate-default",
+                "session-end-push-order",
+                "cap-raise"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/delivery.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-wave-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-15-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-15-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-15-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-15-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "file": "16-owner-lines-text.md",
+      "depends_on": [
+        1,
+        8
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "owner-gate-lines",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "cap-raise"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-cleanup/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/update.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/cleanup.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-owner-gate-lines.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-16-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-16-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-16-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 17,
+      "file": "17-test-changes-text.md",
+      "depends_on": [
+        1,
+        11
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "declared-test-changes",
+                "archive-tests",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "test-only-product-code",
+                "cap-raise"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/templates/spec.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-review.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-reviewer.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-decompose/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-test-changes.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-17-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-17-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-17-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-17-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "file": "18-fault-proof-text.md",
+      "depends_on": [
+        1,
+        9,
+        17
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "fault-proof",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "fault-run-location",
+                "test-only-product-code",
+                "speed-work-in-queue",
+                "cap-raise"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-review.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-reviewer.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-implementer.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-fault-proof.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-18-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-18-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-18-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-18-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 19,
+      "file": "19-lane-cap-text.md",
+      "depends_on": [
+        1,
+        3,
+        10,
+        17
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "lane-cap",
+                "load-guidance",
+                "evidence-marker",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "worker-cap-home",
+                "machine-slot",
+                "test-only-lane",
+                "cap-raise"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/references/testing.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-review.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-lane-cap.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-19-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-19-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-19-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-19-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "file": "20-sota-page.md",
+      "depends_on": [
+        1,
+        3
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "sota-page",
+                "load-guidance",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "sota-knowledge-home",
+                "cap-raise",
+                "machine-slot"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-page.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-review.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-sota-page.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-20-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-20-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-20-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 21,
+      "file": "21-test-review-cleanup.md",
+      "depends_on": [
+        1,
+        18,
+        20
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "test-review-cleanup",
+                "sota-page",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "sota-knowledge-home",
+                "speed-work-in-queue",
+                "cap-raise"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-review.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/artifacts.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-test-review.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-21-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-21-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-21-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-21-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 22,
+      "file": "22-fewer-better-tests.md",
+      "depends_on": [
+        1,
+        17
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "fewer-better-tests",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "cap-raise"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-implementer.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/templates/spec.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-review.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-fewer-tests.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-22-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-22-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-22-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-22-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 23,
+      "file": "23-worker-commands-text.md",
+      "depends_on": [
+        1,
+        5,
+        12
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "worker-commands",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "cap-raise",
+                "worker-cap-home"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-implementer.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-reviewer.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/dispatch.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-worker-commands.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-23-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-23-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-23-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "file": "24-archive-tests-text.md",
+      "depends_on": [
+        1,
+        13
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "archive-tests",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "archive-named-files",
+                "archive-edit-tests",
+                "cap-raise"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/references/archive.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-review.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-archive-tests.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-24-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-24-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-24-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 25,
+      "file": "25-session-end-pr.md",
+      "depends_on": [
+        1
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "session-end-pr",
+                "context-and-authorization",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "session-end-push-order",
+                "cap-raise"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-session-end-pr.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/drift-tidy-text.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-25-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-25-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-25-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-25-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 26,
+      "file": "26-release-proof.md",
+      "depends_on": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "package.json",
+            "kind": "code"
+          },
+          {
+            "path": "src/joycraft-release.json",
+            "kind": "code"
+          },
+          {
+            "path": "CHANGELOG.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/release-preparation.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-config-tests.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-26-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-26-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-26-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-26-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
