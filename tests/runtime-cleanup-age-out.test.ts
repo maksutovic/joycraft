@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -162,5 +162,54 @@ describe('age-out review 9 fixes', () => {
   it('[review-9-4] CLAUDE.local.md is never a working doc', () => {
     const root = repo({ 'docs/context/a.md': '', 'docs/research/CLAUDE.local.md': '# local\n', 'docs/research/x.md': '' });
     expect(listed(ageOut(root, ['--days', '14']))).toEqual(['docs/research/x.md']);
+  });
+
+  const dotDocs = 'paths:\n  features: .docs/features\n  archive: .docs/archive\n  context: .docs/context\n';
+
+  it('[review-9-r2-1] a dot-folder docs root lists its working docs and still skips dot segments under it', () => {
+    const root = repo({ '.docs/context/a.md': '# a\n', '.docs/research/old.md': '# x\n', '.docs/.drafts/x.md': '# d\n' }, dotDocs);
+    const out = ageOut(root, ['--days', '14']);
+    expect(listed(out)).toEqual(['.docs/research/old.md']);
+    expect(out.docs[0]).toMatchObject({ days: 30, to: '.docs/archive/working/research/old.md' });
+    expect(out.skipped).toEqual([]);
+  });
+
+  it('[review-9-r2-2] a symlinked docs root, or a symlink on the way to it, gives one skipped entry', () => {
+    const root = repo({ 'shared/research/old.md': '# x\n', 'shared/context/a.md': '# a\n', 'site/real/research/old.md': '# y\n' },
+      'paths:\n  features: site/docs/features\n  archive: site/docs/archive\n  context: site/docs/context\n');
+    symlinkSync('../shared', join(root, 'site/docs'));
+    git(root, ['add', '-A'], daysAgo(30)); git(root, ['commit', '-q', '-m', 'link'], daysAgo(30));
+    expect(ageOut(root, ['--days', '14', '--apply'])).toMatchObject({ count: 0, docs: [], applied: false, skipped: [{ path: 'site/docs', reason: 'site/docs is a symlink: age-out reads only a real docs folder' }] });
+    const parent = repo({ 'real/docs/research/old.md': '# x\n', 'real/docs/context/a.md': '# a\n' },
+      'paths:\n  features: link/docs/features\n  archive: link/docs/archive\n  context: link/docs/context\n');
+    symlinkSync('real', join(parent, 'link'));
+    git(parent, ['add', '-A'], daysAgo(30)); git(parent, ['commit', '-q', '-m', 'link'], daysAgo(30));
+    expect(ageOut(parent, ['--days', '14']).skipped).toEqual([{ path: 'link/docs', reason: 'link is a symlink: age-out reads only a real docs folder' }]);
+    expect(git(parent, ['status', '--porcelain'])).toBe('');
+  });
+
+  it('[review-9-r2-3] a tracked symlink doc is never listed or moved; it is skipped with a reason', () => {
+    const root = repo({ 'docs/context/a.md': '# a\n', 'shared/real.md': '# r\n', 'docs/research/plain.md': '# p\n' });
+    symlinkSync('../../shared/real.md', join(root, 'docs/research/link.md'));
+    git(root, ['add', '-A'], daysAgo(30)); git(root, ['commit', '-q', '-m', 'link'], daysAgo(30));
+    const out = ageOut(root, ['--days', '14', '--apply']);
+    expect(listed(out)).toEqual(['docs/research/plain.md']);
+    expect(out.skipped).toEqual([{ path: 'docs/research/link.md', reason: 'It is a symlink: moving it would break its link.' }]);
+    expect(lstatSync(join(root, 'docs/research/link.md')).isSymbolicLink()).toBe(true);
+    expect(existsSync(join(root, 'docs/archive/working/research/link.md'))).toBe(false);
+  });
+
+  it('[review-9-r2-4] a docs root with no tracked file gives one skipped entry instead of an empty list', () => {
+    const root = repo({ 'notes/a.md': '# a\n' });
+    expect(ageOut(root, ['--days', '14'])).toMatchObject({ count: 0, docs: [], skipped: [{ path: 'docs', reason: 'Git tracks no file under docs' }] });
+  });
+
+  it('[review-9-r2-5] a project in a subfolder of its repository lists its old docs and skips a dirty one', () => {
+    const top = repo({ 'app/docs/context/a.md': '# a\n', 'app/docs/research/old.md': '# x\n', 'app/docs/research/dirty.md': '# d\n' });
+    put(top, 'app/docs/research/dirty.md', '# edited\n');
+    const out = ageOut(join(top, 'app'), ['--days', '14', '--apply']);
+    expect(listed(out)).toEqual(['docs/research/old.md']);
+    expect(out.skipped).toEqual([{ path: 'docs/research/dirty.md', reason: 'It has uncommitted changes.' }]);
+    expect(existsSync(join(top, 'app/docs/archive/working/research/old.md'))).toBe(true);
   });
 });

@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseYaml, readConfig } from './config.mjs';
@@ -769,43 +769,71 @@ function installedFiles(root) {
  * age-out: working docs with no commit for `days` days. A working doc is
  * Markdown under the docs root that no map reaches: not an entry file, a
  * README-like project file, a page in context, features or archive, a backlog
- * folder or backlog* file, CLAUDE.local.md, a path with a dot segment, a file
- * that .joycraft/installation.json lists, or a page linked, named or @-imported
- * from an entry file or a context page. A docs root of `.` gives one `skipped`
- * entry and lists nothing. A merge counts as a change to its first parent. `apply` moves each with git mv to
- * <archive>/working/<its path under the docs root> and commits nothing. A doc
- * with uncommitted changes, missing from the working tree, or whose target
- * exists is listed in `skipped` and not moved.
+ * folder or backlog* file, CLAUDE.local.md, a path with a dot segment under the
+ * docs root, a file that .joycraft/installation.json lists, or a page linked,
+ * named or @-imported from an entry file or a context page. A merge counts as a
+ * change to its first parent. `apply` moves each with git mv to
+ * <archive>/working/<its path under the docs root> and commits nothing.
+ * Nothing is dropped without a word: a docs root that cannot be read (`.`, a
+ * symlink on the way, no tracked files) gives one `skipped` entry, and a
+ * working doc that is a symlink, has no commit Git can show, has uncommitted
+ * changes, is missing from the working tree or whose target exists is listed
+ * in `skipped` and not moved.
  */
 export function ageOut({ root = process.cwd(), days, apply = false, now = Date.now() } = {}) {
   requireValue(Number.isInteger(days) && days > 0, 'cleanup.mjs age-out: --days must be a positive whole number');
   const paths = readConfig(root).paths;
   const { features, archive, context } = paths;
   const docs = docsRoot(paths);
+  const none = reason => ({ days, count: 0, docs: [], skipped: [{ path: docs, reason }], applied: false });
   // A docs root of `.` would make every Markdown file in the project a working doc.
-  if (docs === '.') return { days, count: 0, docs: [], skipped: [{ path: '.', reason: 'age-out needs a docs folder; the docs root is the project root' }], applied: false };
+  if (docs === '.') return none('age-out needs a docs folder; the docs root is the project root');
+  // Git lists a symlinked folder as one link, never the files behind it.
+  const parts = docs.split('/');
+  for (let at = 1; at <= parts.length; at += 1) {
+    const segment = parts.slice(0, at).join('/');
+    let link = false;
+    try { link = lstatSync(path.join(root, segment)).isSymbolicLink(); } catch { break; }
+    if (link) return none(`${segment} is a symlink: age-out reads only a real docs folder`);
+  }
+  // Mode 120000 is a symlink, 160000 a submodule: neither is a doc to move.
+  const entries = git(root, ['ls-files', '-s', '-z', '--', docs]).split('\0').filter(Boolean).map(line => {
+    const tab = line.indexOf('\t');
+    return { mode: line.slice(0, 6), file: line.slice(tab + 1) };
+  });
+  if (entries.length === 0) return none(`Git tracks no file under ${docs}`);
   const under = file => file.slice(docs.length + 1);
   const reached = mapReached(root, paths, docs);
   const installed = installedFiles(root);
   const working = file => {
     const name = path.posix.basename(file);
     return file.endsWith('.md') && !entryNames.includes(name) && name !== 'CLAUDE.local.md' && !projectFiles.test(name)
-      && !file.split('/').some(part => part.startsWith('.')) && !installed.has(file)
+      && !under(file).split('/').some(part => part.startsWith('.')) && !installed.has(file)
       && ![features, archive, context].some(folder => inside(file, folder)) && !reached.has(file)
       && !under(file).split('/').slice(0, -1).includes('backlog') && !name.toLowerCase().startsWith('backlog');
   };
-  const tracked = git(root, ['ls-files', '-z', '--', docs]).split('\0').filter(file => file && working(file));
+  const tracked = entries.filter(({ file }) => working(file));
+  // Log and status name files from the top of the repository; ls-files names them from root.
+  const prefix = git(root, ['rev-parse', '--show-prefix']);
+  const fromRoot = file => (prefix && file.startsWith(prefix) ? file.slice(prefix.length) : file);
   const last = new Map();
   for (const entry of git(root, ['log', '--format=%x00%ct', '--name-only', '--no-renames', '--diff-merges=first-parent', '--', docs]).split('\0').filter(Boolean)) {
     const [time, ...files] = entry.split('\n').filter(Boolean);
-    for (const file of files) if (!last.has(file)) last.set(file, Number(time) * 1000);
+    for (const file of files.map(fromRoot)) if (!last.has(file)) last.set(file, Number(time) * 1000);
   }
   // Uncommitted: staged or unstaged changes; -z keeps non-ASCII names raw.
-  const dirty = new Set(git(root, ['status', '--porcelain', '-z', '--no-renames', '--untracked-files=no', '--', docs], { raw: true }).split('\0').filter(Boolean).map(line => line.slice(3)));
+  const dirty = new Set(git(root, ['status', '--porcelain', '-z', '--no-renames', '--untracked-files=no', '--', docs], { raw: true }).split('\0').filter(Boolean).map(line => fromRoot(line.slice(3))));
   const skipped = [], old = [];
-  for (const file of tracked.filter(file => last.has(file) && now - last.get(file) > days * 86400000)) {
+  for (const { mode, file } of tracked) {
+    // A file added but not yet committed is new, not old.
+    if (!last.has(file)) { if (!dirty.has(file)) skipped.push({ path: file, reason: 'Git shows no commit for it, so its age is unknown.' }); continue; }
+    if (now - last.get(file) <= days * 86400000) continue;
     const doc = { path: file, days: Math.floor((now - last.get(file)) / 86400000), to: `${archive}/working/${under(file)}` };
-    if (dirty.has(file)) skipped.push({ path: file, reason: 'It has uncommitted changes.' });
+    let link = mode === '120000';
+    try { link ||= lstatSync(path.join(root, file)).isSymbolicLink(); } catch { /* missing: checked below */ }
+    if (link) skipped.push({ path: file, reason: 'It is a symlink: moving it would break its link.' });
+    else if (mode === '160000') skipped.push({ path: file, reason: 'It is a submodule, not a doc.' });
+    else if (dirty.has(file)) skipped.push({ path: file, reason: 'It has uncommitted changes.' });
     else if (!existsSync(path.join(root, file))) skipped.push({ path: file, reason: 'It is missing from the working tree.' });
     else if (existsSync(path.join(root, doc.to))) skipped.push({ path: file, reason: `${doc.to} already exists.` });
     else old.push(doc);
