@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "2ad1a29e6fd1d55f195ff5e76c85bfec039bc177",
+    "queuePath": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+    "specId": 1,
+    "specPath": "docs/features/2026-11-22-followups-1-9-2/specs/01-chained-gate-parts.md",
+    "criteria": [
+      {
+        "id": "spec-1-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/01-chained-gate-parts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/01-chained-gate-parts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "completion",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "0ea693791a5f5c89c03a3813c8c16dcee12185b242352e71d9dfa46f5cbca89f",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "9649c13560c39de9019a344934f4f3bc2fb6d9032dc4fec5d8f705043dd4101b",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/01-chained-gate-parts.md",
+        "kind": "requirement",
+        "sha256": "715b208c4a5a3373fa825419e1833300cee48654db4766dba12081a96bfb7c4f",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/completion.md",
+        "kind": "code",
+        "sha256": "698e67984a959744f40bb0b221c953665d4558c046f4faea55dc6c7162e4cb0d",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/completion.mjs",
+        "kind": "code",
+        "sha256": "fdf20f23cf091c65d090db486647458ef705da5fccf6f80c7ff7cc17a0520c06",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-report-gate.test.ts",
+        "kind": "check",
+        "sha256": "cde1e4cc411159f5cc04104762a1b07ff108e11076b0d740da0eae184a6475eb",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+          "anchors": [
+            "completion",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "8d9b082d5023e4985657eabf2168ea6b995dc2fe56c0795866db23ed12a032d9"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "aefa316572654beb1"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a85a7eefee650e535"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "unresolved": [],
+  "createdAt": "2026-11-22T17:56:37.359Z",
+  "flows": [
+    {
+      "id": "flow-gate-parts",
+      "subjectIdentity": "8d9b082d5023e4985657eabf2168ea6b995dc2fe56c0795866db23ed12a032d9",
+      "criteria": [
+        "spec-1-1"
+      ],
+      "representativeInput": "check-report fixtures with gate `npm test && npm run lint` (and `;`, `||` chains, a one-part gate) and observations npm test, npm run lint, npm lint, sh -c \"npm test\", focused runs",
+      "expected": "each gate part is refused (exit 2) naming the part; focused runs pass; the whole chained gate and a one-part gate keep the existing refusal",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-1] passed: the four part observations exit 2 with \"a part of the recorded tests.gate command\" and `npm run lint` is named; npm test tests/x.test.ts and npx vitest run tests/x.test.ts exit 0; `;` and `||` chains refuse a part; the whole chain and a one-part gate keep the old message. 7/7 tests in the file passed.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-1-reviewer-focused-20261122T175535622Z-69284-1.log",
+              "sha256": "c9bc580661b99f6e948b15b4847523725bbb55269d023438e5ccd2de995151f4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-report-gate.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; due at the review boundary per the brief.",
+        "Splitter edge cases (quoted &&/;, subshell, pipeline, trailing ;, no-space &&) probed by the reviewer with a scratch script extracting commandParts; results matched the spec, not kept as a receipt."
+      ]
+    },
+    {
+      "id": "flow-done-unchanged",
+      "subjectIdentity": "8d9b082d5023e4985657eabf2168ea6b995dc2fe56c0795866db23ed12a032d9",
+      "criteria": [
+        "spec-1-2"
+      ],
+      "representativeInput": "existing tests of tests/runtime-report-gate.test.ts (diff is append-only) plus a done spec re-finalized after the gate becomes a chain",
+      "expected": "existing tests pass unchanged; a done spec re-check stays done/unchanged",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "git show f74ab39 shows only an appended describe block; all five pre-existing tests and [AC:spec-1-2] passed (done, unchanged: true).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-1-reviewer-focused-20261122T175535622Z-69284-1.log",
+              "sha256": "c9bc580661b99f6e948b15b4847523725bbb55269d023438e5ccd2de995151f4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-report-gate.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; due at the review boundary per the brief."
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "at": "payload/.joycraft/runtime/completion.mjs:191",
+      "summary": "A one-part gate with a trailing separator (gate `npm test;`) is split to one part, so no part list is built, and the whole-gate match compares against `npm test;`; an observation `npm test` is not refused. Same as before this spec.",
+      "assumption": "Spec says a one-part gate behaves as today."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/completion.mjs:159",
+      "summary": "commandParts does not handle backslash-escaped quotes or a single `&` (background); rare in recorded gates.",
+      "assumption": "Brief scope keeps matcher prose/shell oddities out."
+    },
+    {
+      "id": "f3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/completion.md",
+      "summary": "completion.md does not name the gate-part rule; spec allows that (edit only if it names the rule, every-spec words unchanged). Not changed, correctly."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+// Spec 2 reviewer probe: lifts notFound/baseWord/ownNotFound/backlogFile verbatim from payload cleanup.mjs and runs edge cases.
+import fs from 'node:fs';
+import path from 'node:path';
+const root = process.argv[2];
+const src = fs.readFileSync(path.join(root, 'payload/.joycraft/runtime/cleanup.mjs'), 'utf8');
+const grab = re => { const m = src.match(re); if (!m) throw new Error(`not found: ${re}`); return m[0]; };
+const code = [
+  grab(/^const backlogFile = .*$/m),
+  grab(/^const notFound = .*$/m),
+  grab(/^const baseWord = .*$/m),
+  grab(/^function ownNotFound\(stderr, run\) \{[\s\S]*?\n\}/m),
+  'return { backlogFile, ownNotFound };',
+].join('\n');
+console.log('--- lifted source ---\n' + code + '\n---');
+const { backlogFile, ownNotFound } = new Function('path', code)(path);
+let bad = 0;
+const nf = [
+  ['sh: 1: x: not found', 'x | cat', true],
+  ['bash: x: command not found', 'x|cat', true],
+  ['bash: line 1: x: command not found', 'x && y', true],
+  ['/bin/sh: x: command not found', './bin/x', true],
+  ['zsh: command not found: x', 'x', true],
+  ['sh: 1: /opt/x: not found', '/opt/x arg', true],
+  ['sh: 1: x: not found\r', 'x', true],
+  ['noise\nsh: 1: x: not found\nmore', 'x | cat', true],
+  ['rule no-foo: not found', 'lint', false],
+  ['lint: rule no-foo: not found', 'lint', false],
+  ['sh: 1: other: not found', 'lint | cat', false],
+  ['eslint: config: not found', 'eslint .', false],
+];
+for (const [stderr, run, want] of nf) { const got = ownNotFound(stderr, run); if (got !== want) bad++; console.log(got === want ? 'ok ' : 'BAD', 'ownNotFound', JSON.stringify(stderr), JSON.stringify(run), got); }
+// repeat call: global regex state must not leak between calls
+const again = [ownNotFound('sh: 1: x: not found', 'x'), ownNotFound('sh: 1: x: not found', 'x')];
+if (again.join() !== 'true,true') bad++; console.log('repeat calls', again);
+const bl = [['Backlog/x.md', true], ['a/BACKLOG/b/c.md', true], ['notes/backlog/z.md', true], ['guides/x.md', false], ['backlogs/x.md', false], ['x/Backlog-ideas.md', true]];
+for (const [p, want] of bl) { const got = backlogFile(p); if (got !== want) bad++; console.log(got === want ? 'ok ' : 'BAD', 'backlogFile', p, got); }
+console.log(bad ? `${bad} BAD` : 'all ok');
+process.exit(bad ? 1 : 0);
