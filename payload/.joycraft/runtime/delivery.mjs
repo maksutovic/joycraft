@@ -106,6 +106,28 @@ async function invoke(argv, root) {
     child.on('error', reject); child.on('close', exitCode => resolveRun({ exitCode, stdout: stdout(), stderr: stderr() }));
   });
 }
+/** The `joycraft-evidence:` footer on a receipt's last line (evidence.mjs), or null. */
+function receiptFooter(bytes) {
+  const last = bytes.toString('utf8').replace(/\n$/, '').split('\n').at(-1) ?? '';
+  if (!last.startsWith('joycraft-evidence: ')) return null;
+  try { const value = JSON.parse(last.slice('joycraft-evidence: '.length)); return value && typeof value === 'object' ? value : null; } catch { return null; }
+}
+/** The footer's argv is the recorded gate: the same words, or a shell given the gate as its last `-c` argument. */
+function runsGate(argv, gate) {
+  if (!Array.isArray(argv) || !argv.every(value => typeof value === 'string')) return false;
+  const words = text => text.trim().split(/\s+/).join(' ');
+  return words(argv.join(' ')) === words(gate) || (argv.length >= 2 && ['-c', '/c', '-Command'].includes(argv.at(-2)) && words(argv.at(-1)) === words(gate));
+}
+/** Refuse a push unless the gate receipt shows the recorded gate, green, on a clean tree at this HEAD. */
+async function checkGateReceipt(root, gate, receipt, head) {
+  assertion(typeof receipt === 'string' && receipt, 'gate-receipt-required');
+  let bytes; try { bytes = await readFile(resolve(root, receipt)); } catch { throw new Error('gate-receipt-required'); }
+  const footer = receiptFooter(bytes);
+  assertion(footer && runsGate(footer.argv, gate), 'gate-receipt-not-gate');
+  assertion(footer.exitCode === 0, 'gate-receipt-red');
+  assertion(footer.dirty === false && footer.revision === head, 'gate-receipt-stale');
+  return { path: receipt, sha256: digest(bytes), revision: footer.revision };
+}
 const lockHeld = () => new Error('delivery-lock-exists-manual-diagnosis-required');
 async function takeLock(lock) {
   await mkdir(lock, { recursive: false, mode: 0o700 });
@@ -140,29 +162,35 @@ async function acquireLock(root, remote, branch) {
 }
 function validTarget(remote, branch) { return typeof remote === 'string' && remote && !remote.startsWith('-') && typeof branch === 'string' && branch && !branch.startsWith('-') && !/[\s~^:?*\\[\x00]/.test(branch); }
 
-export async function deliver({ root = process.cwd(), base, remote, branch, verifier } = {}) {
+/** Push HEAD after the checks. With a recorded tests.gate, a green gate receipt on HEAD
+ * (gateReceipt) replaces the verifier; without one, the verifier runs as before. */
+export async function deliver({ root = process.cwd(), base, remote, branch, verifier, gateReceipt } = {}) {
   root = resolve(root); assertion(validTarget(remote, branch), 'explicit-remote-and-branch-required');
+  const { testSettings } = await import('./coordinator.mjs');
+  const { gate } = testSettings(root);
   const lock = await acquireLock(root, remote, branch);
   try {
     const before = await stableState(root); const checked = await checkDelivery({ root, base });
     assertion(checked.head === before.head, 'head-changed-before-verifier');
-    const verifierReceipt = await invoke(verifier, root); assertion(verifierReceipt.exitCode === 0, `verifier-exit-${verifierReceipt.exitCode}`);
+    let proof;
+    if (gate) proof = { gateReceipt: await checkGateReceipt(root, gate, gateReceipt, before.head) };
+    else { const verifierReceipt = await invoke(verifier, root); assertion(verifierReceipt.exitCode === 0, `verifier-exit-${verifierReceipt.exitCode}`); proof = { verifier: verifierReceipt }; }
     const after = await stableState(root); assertion(JSON.stringify(before) === JSON.stringify(after), 'source-changed-during-verifier');
     await mergeState(root);
     const pushed = await run(root, ['push', remote, `${before.head}:refs/heads/${branch}`]);
     assertion(pushed.code === 0, 'push-failed');
-    return { ok: true, ...checked, pushedSha: before.head, remote, branch, verifier: verifierReceipt };
+    return { ok: true, ...checked, pushedSha: before.head, remote, branch, ...proof };
   } finally { await rm(lock, { recursive: true, force: false }); }
 }
 
-function usage() { throw new Error('Usage: delivery.mjs check --root <repo> --base <revision> | delivery.mjs push --root <repo> --base <revision> --remote <name> --branch <branch> -- <verifier> [args...]'); }
+function usage() { throw new Error('Usage: delivery.mjs check --root <repo> --base <revision> | delivery.mjs push --root <repo> --base <revision> --remote <name> --branch <branch> (--gate-receipt <receipt.log> | -- <verifier> [args...])'); }
 async function cli(argv) {
   const separator = argv.indexOf('--'); const own = separator < 0 ? argv : argv.slice(0, separator); const verifier = separator < 0 ? [] : argv.slice(separator + 1);
   const command = own.shift(); const flags = {};
-  for (let index = 0; index < own.length; index += 2) { const key = own[index]; const value = own[index + 1]; if (!['--root', '--base', '--remote', '--branch'].includes(key) || flags[key] !== undefined || value === undefined) usage(); flags[key] = value; }
+  for (let index = 0; index < own.length; index += 2) { const key = own[index]; const value = own[index + 1]; if (!['--root', '--base', '--remote', '--branch', '--gate-receipt'].includes(key) || flags[key] !== undefined || value === undefined) usage(); flags[key] = value; }
   if (!flags['--root'] || !flags['--base']) usage();
   if (command === 'check' && separator < 0) return checkDelivery({ root: flags['--root'], base: flags['--base'] });
-  if (command === 'push' && flags['--remote'] && flags['--branch'] && verifier.length) return deliver({ root: flags['--root'], base: flags['--base'], remote: flags['--remote'], branch: flags['--branch'], verifier });
+  if (command === 'push' && flags['--remote'] && flags['--branch']) return deliver({ root: flags['--root'], base: flags['--base'], remote: flags['--remote'], branch: flags['--branch'], verifier, gateReceipt: flags['--gate-receipt'] });
   usage();
 }
 if (import.meta.url === new URL(process.argv[1], 'file:').href) cli(process.argv.slice(2)).then(result => process.stdout.write(`${JSON.stringify(result)}\n`)).catch(error => { process.stderr.write(`${error.message}\n`); process.exitCode = 1; });
