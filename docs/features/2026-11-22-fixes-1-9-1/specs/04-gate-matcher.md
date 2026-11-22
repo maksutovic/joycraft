@@ -1,6 +1,6 @@
 ---
 id: 4
-status: todo
+status: in-review
 ---
 # gate-in-spec finds chained gates and reads the scope section, and the matcher's comment matches its code
 

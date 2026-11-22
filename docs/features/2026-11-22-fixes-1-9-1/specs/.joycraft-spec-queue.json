@@ -315,7 +315,7 @@
       "id": 4,
       "file": "04-gate-matcher.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -377,6 +377,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:57:02.479Z"
       }
     },
     {
