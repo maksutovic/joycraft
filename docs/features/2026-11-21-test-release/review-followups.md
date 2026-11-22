@@ -65,3 +65,7 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - A declaration of either path of a git rename covers both (test-changes.mjs:123); needed before spec 17's reviewers block on undeclared changes.
 - Limit `*Test`/`*Spec`/camelCase `*Test` folder rules to known test source sets (abTest/, ProductSpec.kt, LoadTest.java count today).
 - A removed gitlink under a tests folder is listed as a test; check the base object is a blob.
+
+## Word guard — fix
+- `[AC:spec-1-3]` adds 600 words to testing-review.md and expects a pass; on-demand spare is ~665 and falling. Make it add `min(600, spare)` so later legitimate growth cannot fail it.
+- Per-spec word-growth tests with hard-coded constants (specs 14, 15, 17, 23) will break on later legitimate growth; retire them once the feature is accepted, leaving the guard's two caps.
