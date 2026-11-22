@@ -1,10 +1,10 @@
 ---
-
-> Owner, 2026-11-21: fix the open items as 1.9.1. Also in 1.9.1: package.json, tsconfig*.json and lockfiles under the docs root never count as records. After 1.9.0 is on npm: update this repo, record its `tests:` tiers, then archive both features. Keep the archive-list kill criterion.
 status: backlog
 created: 2026-11-21
 priority: later
 ---
+
+> Owner, 2026-11-21: fix the open items as 1.9.1. Also in 1.9.1: package.json, tsconfig*.json and lockfiles under the docs root never count as records. After 1.9.0 is on npm: update this repo, record its `tests:` tiers, then archive both features. Keep the archive-list kill criterion.
 
 # 1.9.0 review follow-ups: what is still open
 
