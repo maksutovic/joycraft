@@ -42,8 +42,7 @@ Dispatch `collaboration.spawn_agent` with `fork_turns: "none"` and the packet's 
 
 When already dispatched as the independent reviewer, perform the review directly; do not recursively dispatch another reviewer. Read the parent brief, spec, queue entry, declared criteria and exact verification inputs. Use the supplied subject, set independence truthfully, and do not self-certify implementation from your own context.
 
-Read the diff of each existing test file. A removed assertion, a new skip or
-a changed expected value with no reason in the spec is a blocking finding.
+Read the diff of each changed test file and judge it by [test changes](../../../.joycraft/references/testing-review.md#test-changes).
 
 Review scope as well as behavior: determine whether the listed inputs and criteria cover the requested work, including relevant newly changed files. For a cross-boundary change, inspect the combined observable behavior across the relevant producer, consumer, state or storage boundary; separate green helpers, snapshots, or assertion counts do not establish that behavior. If a material counterpart or owning decision/context source was omitted, report the scope gap and require its exact path to be added before a fresh current review subject is prepared. Preserve the snapshot's implementation revision as provenance while checking its current bound inputs. A changed, missing, or renamed input makes the subject stale; do not substitute a newer HEAD as its identity.
 

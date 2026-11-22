@@ -18,6 +18,19 @@ For a rule over open-ended input (names, documents, classifications), add an
 **Open-input rule** line: the closed check set (path), which error costs more,
 and the pass threshold.
 
+## Test changes
+
+One bullet per test file the spec changes: path, class and the requiring line.
+Classes: 1 spec-mandated (the acceptance line states the new value); 2 same
+claim, changed test (a fault proof per file); 3 deleted, skipped or out of the
+gate (a ledger row and an owner yes per batch).
+
+```
+- `tests/a.test.ts` class 1: acceptance bullet 2 states the new value.
+```
+
+none
+
 ## Not covered
 
 Accepted limits and cases this spec deliberately leaves out.

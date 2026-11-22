@@ -41,3 +41,20 @@ times.
 At the end, when the project has no testing page, write `<context>/testing.md`
 from [the testing page template](testing-page.md), filled in with what the
 review found, and add the map row "A test run is slow or flaky".
+
+## Test changes
+
+Read for every spec that changes a test file. Decompose writes the spec's
+`## Test changes` section from the template's three classes. When a brief's
+"no weakened tests" contradicts the feature, ask the owner once.
+
+Reviewer rules:
+- Read `testChanges` from startup: `declared` (with class) and `undeclared`
+  changed test files. Judge each diff by its declaration, not as weakened.
+- Block only an undeclared change that no line requires.
+- A class-1 change passes when its acceptance line states the new value; class
+  2 needs its fault proof, class 3 its ledger row and owner yes.
+- A declaration of either path of a rename covers both.
+- A red or flaky test outside the spec's set is a follow-up, never a hold.
+- A changed test that reads a path under the features folder (`featurePaths`)
+  is a follow-up finding.

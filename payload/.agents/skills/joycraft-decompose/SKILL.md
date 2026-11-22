@@ -27,7 +27,9 @@ environment can show is not a criterion; list it under the spec's "Deferred unti
 deploy" section instead. Include the brief, spec and exact
 relevant code, test/configuration and fixture paths as verification inputs,
 updated as implementation reveals more. Each `Check:` names the spec's own test
-file or filter, never the project gate or full suite.
+file or filter, never the project gate or full suite. Write each spec's
+`## Test changes` section ([test changes](../../../.joycraft/references/testing-review.md#test-changes));
+when a brief's "no weakened tests" contradicts the feature, ask once.
 Declare a deletion only as an explicit
 non-requirement input with `state: 'absent'`; a rename needs the old absent input
 and the new present one. Change scope is opt-in:
