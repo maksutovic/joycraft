@@ -169,12 +169,78 @@ describe('gate receipt review-7 fixes', () => {
       expect(result.stderr.trim()).toBe('gate-receipt-not-gate');
       expect(remoteRef(remote)).toBe('');
     }
-    for (const shell of ['bash', '/bin/sh', 'C:\\Windows\\System32\\cmd.exe']) {
+    // [AC:spec-27-13] a Windows path is a shell only on Windows.
+    for (const shell of ['bash', '/bin/sh', ...(process.platform === 'win32' ? ['C:\\Windows\\System32\\cmd.exe'] : [])]) {
       footer(root, 'ok.log', { argv: [shell, shell.endsWith('cmd.exe') ? '/c' : '-c', 'node gate.mjs'], exitCode: 0, revision: head, dirty: false });
       const result = push(root, first, ['--gate-receipt', 'receipts/ok.log']);
       expect(result.status, `${shell}: ${result.stderr}`).toBe(0);
     }
     expect(remoteRef(remote)).toBe(head);
+  }, 30000);
+});
+
+describe('spec 27 delivery polish', () => {
+  it('[AC:spec-27-13] a plain gate in shell form splits on spaces and tabs only; a shell path inside the project or (POSIX) in Windows form is refused', () => {
+    const { root, remote, first, head } = deliveryFixture();
+    const refused: string[][] = [['sh', '-c', 'node\ngate.mjs'], ['sh', '-c', 'node\rgate.mjs'], [join(root, 'tools', 'sh'), '-c', 'node gate.mjs']];
+    if (process.platform !== 'win32') refused.push(['C:\\Program Files\\Git\\bin\\bash.exe', '-c', 'node gate.mjs']);
+    for (const argv of refused) {
+      footer(root, 'r.log', { argv, exitCode: 0, revision: head, dirty: false });
+      const result = push(root, first, ['--gate-receipt', 'receipts/r.log']);
+      expect(result.status, JSON.stringify(argv)).toBe(1);
+      expect(result.stderr.trim()).toBe('gate-receipt-not-gate');
+      expect(remoteRef(remote)).toBe('');
+    }
+    for (const argv of [['sh', '-c', 'node  gate.mjs'], ['sh', '-c', 'node\tgate.mjs'], ['/bin/sh', '-c', 'node gate.mjs']]) {
+      footer(root, 'ok.log', { argv, exitCode: 0, revision: head, dirty: false });
+      const result = push(root, first, ['--gate-receipt', 'receipts/ok.log']);
+      expect(result.status, `${JSON.stringify(argv)}: ${result.stderr}`).toBe(0);
+    }
+    expect(remoteRef(remote)).toBe(head);
+    const usage = node(root, 'delivery.mjs', []);
+    expect(usage.stderr).toContain('symlink');
+  }, 30000);
+
+  it('[AC:spec-27-14] a receipt on an ancestor of HEAD pushes when only docs-root paths changed since; any other path or a non-ancestor stays stale', () => {
+    const { root, remote, first, head } = deliveryFixture();
+    footer(root, 'gate.log', { argv: ['node', 'gate.mjs'], exitCode: 0, revision: head, dirty: false });
+    put(join(root, 'docs/features/f/notes.md'), 'records\n');
+    git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'records');
+    const docsOnly = push(root, first, ['--gate-receipt', 'receipts/gate.log']);
+    expect(docsOnly.status, docsOnly.stderr).toBe(0);
+    const out = JSON.parse(docsOnly.stdout);
+    expect(out.gateReceipt.revision).toBe(head);
+    expect(remoteRef(remote)).toBe(git(root, 'rev-parse', 'HEAD'));
+
+    put(join(root, 'tests/a.test.ts'), 'rewritten\n');
+    git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'archive rewrite');
+    const pushedBefore = remoteRef(remote);
+    const stale = push(root, first, ['--gate-receipt', 'receipts/gate.log']);
+    expect(stale.status).toBe(1);
+    expect(stale.stderr.trim()).toBe('gate-receipt-stale');
+    expect(remoteRef(remote)).toBe(pushedBefore);
+
+    // A revision that is not an ancestor of HEAD: a side commit.
+    git(root, 'checkout', '-q', '-b', 'side', first);
+    put(join(root, 'docs/side.md'), 'side\n');
+    git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'side');
+    const side = git(root, 'rev-parse', 'HEAD');
+    git(root, 'checkout', '-q', 'main');
+    footer(root, 'side.log', { argv: ['node', 'gate.mjs'], exitCode: 0, revision: side, dirty: false });
+    const notAncestor = push(root, first, ['--gate-receipt', 'receipts/side.log']);
+    expect(notAncestor.status).toBe(1);
+    expect(notAncestor.stderr.trim()).toBe('gate-receipt-stale');
+  }, 30000);
+
+  it('[AC:spec-27-14] a docs root of . gives no exemption', () => {
+    const { root, remote, first, head } = deliveryFixture('tests:\n  gate: node gate.mjs\npaths:\n  features: features\n  archive: archive\n  context: context\n');
+    footer(root, 'gate.log', { argv: ['node', 'gate.mjs'], exitCode: 0, revision: head, dirty: false });
+    put(join(root, 'features/f/notes.md'), 'records\n');
+    git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'records');
+    const result = push(root, first, ['--gate-receipt', 'receipts/gate.log']);
+    expect(result.status).toBe(1);
+    expect(result.stderr.trim()).toBe('gate-receipt-stale');
+    expect(remoteRef(remote)).toBe('');
   }, 30000);
 });
 

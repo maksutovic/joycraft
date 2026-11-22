@@ -56,3 +56,26 @@ describe('evidence.mjs machine-local environment map', () => {
     expect(readFileSync(join(none, 'receipts/a.log'), 'utf8').split('\n')[0]).toBe('undefined 1');
   });
 });
+
+describe('evidence.mjs environment map checks (spec 27)', () => {
+  it('[AC:spec-27-9] refuses bad names and NULs, never applies CI or JOYCRAFT_EVIDENCE in any case, and needs an ignored map', () => {
+    for (const body of [JSON.stringify({ '': '1' }), JSON.stringify({ 'A=B': '1' }), JSON.stringify({ A: 'x\u0000y' })]) {
+      const result = run(project(body), 'receipts/a.log');
+      expect(result.status, body).toBe(2);
+      expect(result.stderr).toContain(map);
+    }
+    const cased = project(JSON.stringify({ ci: '0', W: '3', joycraft_evidence: '0' }));
+    const ran = spawnSync(process.execPath, [script, 'run', '--receipt', 'receipts/a.log', '--', process.execPath, '-e', 'console.log(process.env.ci, process.env.joycraft_evidence)'], { cwd: cased, encoding: 'utf8' });
+    expect(ran.status, ran.stderr).toBe(0);
+    expect(JSON.parse(ran.stdout).env).toEqual(['W']);
+    if (process.platform !== 'win32') expect(readFileSync(join(cased, 'receipts/a.log'), 'utf8').split('\n')[0]).toBe('undefined undefined');
+
+    const unignored = project(JSON.stringify({ W: '3' }));
+    writeFileSync(join(unignored, '.gitignore'), 'receipts/\n');
+    const refused = run(unignored, 'receipts/a.log');
+    expect(refused.status).toBe(2);
+    expect(refused.stderr).toContain('must be git-ignored');
+    writeFileSync(join(unignored, '.gitignore'), 'receipts/\n.joycraft/local/\n');
+    expect(run(unignored, 'receipts/b.log').status).toBe(0);
+  });
+});

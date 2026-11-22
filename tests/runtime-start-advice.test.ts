@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -61,5 +61,41 @@ describe('session start advice from the tidy range', () => {
     const result = run(clone);
     expect(result.stderr).toBe('');
     expect(result.json.advice.filter(item => item.check === 'tidy')).toEqual([]);
+  });
+});
+
+describe('start advice polish (spec 27)', () => {
+  it('[AC:spec-27-17] an entry-check.mjs that throws on import gives the same wiring result with no tidy advice', () => {
+    const root = project({ removeSymbol: true });
+    const copy = join(tempDir(), 'runtime');
+    cpSync(dirname(wiring), copy, { recursive: true });
+    writeFileSync(join(copy, 'entry-check.mjs'), "throw new Error('broken entry-check');\n");
+    const normal = run(root);
+    const broken = spawnSync('node', [join(copy, 'wiring.mjs'), '--root', root], { cwd: root, encoding: 'utf8' });
+    const json = JSON.parse(broken.stdout) as { wired: boolean; advice: { check: string }[] };
+    expect(broken.status).toBe(normal.status);
+    expect(json.wired).toBe((normal.json as unknown as { wired: boolean }).wired);
+    expect(json.advice.filter(item => item.check === 'tidy')).toEqual([]);
+    expect(broken.stderr).toBe('');
+    expect(broken.stdout).not.toContain('broken entry-check');
+  });
+
+  it('[AC:spec-27-17] on the default branch the advice says recent commits removed the symbol', () => {
+    const root = tempDir();
+    git(root, ['init', '-q', '-b', 'main']);
+    put(join(root, 'AGENTS.md'), '# P\n\n## Context Map\n\n| Document | Read it when |\n|---|---|\n| `docs/context/guide.md` | Always |\n');
+    put(join(root, 'src/widget.ts'), 'export function getWidget() { return 1; }\nexport function keepMe() { return 2; }\n');
+    put(join(root, 'docs/context/guide.md'), '# Guide\n\nCall `getWidget` to get one.\n');
+    // The first commit is older than the 7-day window, so the range starts after it.
+    git(root, ['add', '-A']);
+    const old = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
+    execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', 'commit', '-q', '-m', 'init'], { cwd: root, env: { ...process.env, GIT_AUTHOR_DATE: old, GIT_COMMITTER_DATE: old } });
+    put(join(root, 'src/widget.ts'), 'export function keepMe() { return 2; }\n');
+    save(root, 'remove getWidget');
+    const advice = tidyAdvice(root);
+    expect(advice).toHaveLength(1);
+    const lines = advice[0].lines ?? [];
+    expect(lines.some(line => line.includes('recent commits removed'))).toBe(true);
+    expect(lines.some(line => line.includes('this branch'))).toBe(false);
   });
 });

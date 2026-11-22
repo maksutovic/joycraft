@@ -67,3 +67,30 @@ describe('check-report refuses a report that ran the gate', () => {
     expect(noGate.status, noGate.stderr).toBe(0);
   });
 });
+
+describe('report gate wrappers and a broken joycraft.yaml (spec 27)', () => {
+  it('[AC:spec-27-3] each shell or env wrapper of the gate is refused; more arguments pass; a broken joycraft.yaml refuses', () => {
+    const wrapped = [
+      ['bash', '-lc', 'pnpm verify'],
+      ['sh', '-c', 'pnpm verify', 'sh'],
+      ['zsh', '-c', 'pnpm verify'],
+      ['dash', '-c', 'pnpm verify'],
+      ['/usr/bin/env', 'bash', '-c', 'pnpm verify'],
+      ['env', 'CI=1', 'pnpm', 'verify'],
+    ];
+    for (const argv of wrapped) {
+      const result = checkReport(fixture({ gate: 'pnpm verify', argv }));
+      expect(result.status, JSON.stringify(argv)).toBe(2);
+      expect(result.stderr).toContain('tests.gate');
+    }
+    const more = checkReport(fixture({ gate: 'pnpm verify', argv: ['pnpm', 'verify', 'tests/x'] }));
+    expect(more.status, more.stderr).toBe(0);
+
+    const root = fixture({ gate: 'pnpm verify', argv: ['pnpm', 'test', 'tests/a.test.ts'] });
+    put(join(root, 'joycraft.yaml'), 'tests: [\n');
+    for (const result of [checkReport(root), finalize(root)]) {
+      expect(result.status, result.stderr).toBe(2);
+      expect(result.stderr).toContain('joycraft.yaml does not parse');
+    }
+  });
+});

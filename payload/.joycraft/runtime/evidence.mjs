@@ -218,21 +218,61 @@ const tailLines = 40;
 /** The 1-minute load average, or null where the platform has none (Windows reports 0). */
 const loadNow = () => (process.platform === 'win32' ? null : os.loadavg()[0]);
 
-/** The last bytes of a file (up to 256 KiB), as text. */
+/** The last whole lines of a file (up to 256 KiB), as text. When the window starts inside a
+ * line, that partial line is dropped, so the text starts at a line start and splits no UTF-8 character. */
 function readEnd(file, max = 262144) {
   const fd = openSync(file, 'r');
   try {
     const size = fstatSync(fd).size; const length = Math.min(size, max);
-    const buffer = Buffer.alloc(length);
-    readSync(fd, buffer, 0, length, size - length);
-    return buffer.toString('utf8');
+    const buffer = Buffer.alloc(length + 1);
+    const start = size - length;
+    // One byte more, when there is one, says whether the window starts at a line start.
+    const read = readSync(fd, buffer, 0, start > 0 ? length + 1 : length, start > 0 ? start - 1 : 0);
+    let bytes = buffer.subarray(0, read);
+    if (start > 0) {
+      const newline = bytes.indexOf(0x0a);
+      bytes = newline < 0 ? Buffer.alloc(0) : bytes.subarray(newline + 1);
+    }
+    return bytes.toString('utf8');
+  } finally { closeSync(fd); }
+}
+
+/** Whether a file is empty or ends with a newline. */
+function endsAtLineEnd(file) {
+  const fd = openSync(file, 'r');
+  try {
+    const size = fstatSync(fd).size;
+    if (size === 0) return true;
+    const byte = Buffer.alloc(1);
+    readSync(fd, byte, 0, 1, size - 1);
+    return byte[0] === 0x0a;
+  } finally { closeSync(fd); }
+}
+
+/** The file's last line (without its newline), however long, read back in 64 KiB steps. */
+function lastLine(file, step = 65536) {
+  const fd = openSync(file, 'r');
+  try {
+    let end = fstatSync(fd).size;
+    const one = Buffer.alloc(1);
+    if (end > 0) { readSync(fd, one, 0, 1, end - 1); if (one[0] === 0x0a) end -= 1; }
+    const chunks = [];
+    for (let position = end; position > 0;) {
+      const length = Math.min(step, position);
+      const chunk = Buffer.alloc(length);
+      readSync(fd, chunk, 0, length, position - length);
+      position -= length;
+      const newline = chunk.lastIndexOf(0x0a);
+      if (newline >= 0) { chunks.unshift(chunk.subarray(newline + 1)); break; }
+      chunks.unshift(chunk);
+    }
+    return Buffer.concat(chunks).toString('utf8');
   } finally { closeSync(fd); }
 }
 
 /** The parsed `joycraft-evidence:` footer on a receipt's last line, or null when it has none. */
 export function readFooter(file) {
-  const lines = readEnd(file, 65536).replace(/\n$/, '').split('\n');
-  const last = lines[lines.length - 1];
+  const last = lastLine(file);
   if (!last.startsWith(footerTag)) return null;
   try { const value = JSON.parse(last.slice(footerTag.length)); return record(value) ? value : null; } catch { return null; }
 }
@@ -247,19 +287,45 @@ function preparePatch(root, patch) {
   let status;
   try { status = git(['status', '--porcelain']); } catch { throw refusal('--patch needs a Git working tree'); }
   refuse(status.trim() === '', `--patch refuses a dirty tree; commit or remove these changes first:\n${status.trimEnd()}`);
+  // A project in a repository subfolder: Git paths are from the repository top, and
+  // git apply run here skips paths outside the subfolder without a word, so list them from the top.
+  let prefix, top;
+  try { prefix = git(['rev-parse', '--show-prefix']).trim(); top = git(['rev-parse', '--show-toplevel']).trim(); }
+  catch { throw refusal('--patch needs a Git working tree'); }
   let touched;
   try {
+    touched = execFileSync('git', ['apply', '--numstat', '-z', '--', path.resolve(root, patch)], { cwd: top, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
+      .split('\0').map(entry => entry.replace(/^[-\d]+\t[-\d]+\t/, '')).filter(Boolean);
     git(['apply', '--check', '--', patch]);
-    touched = git(['apply', '--numstat', '-z', '--', patch]).split('\0').map(entry => entry.replace(/^[-\d]+\t[-\d]+\t/, '')).filter(Boolean);
   } catch (error) { throw refusal(`The patch does not apply: ${patch}: ${String(error.stderr || error.message).trim()}`); }
-  for (const file of touched) refuse(relativePath(file) && file.split('/')[0] !== '.git', `The patch touches a path outside the project: ${file}`);
-  return { path: patch, sha256: sha256File(path.join(root, patch)), hashes: new Map(touched.map(file => [file, sha256File(path.join(root, file))])) };
+  const project = touched.map(file => {
+    refuse(file.startsWith(prefix), `The patch touches a path outside the project (${prefix.replace(/\/$/, '') || '.'}): ${file}`);
+    const inside = file.slice(prefix.length);
+    refuse(relativePath(inside) && inside.split('/')[0] !== '.git', `The patch touches a path outside the project: ${file}`);
+    return inside;
+  });
+  return { path: patch, prefix, sha256: sha256File(path.join(root, patch)), hashes: new Map(project.map(file => [file, sha256File(path.join(root, file))])), tree: treeState(root) };
 }
 
-/** Reverse an applied fault and compare every touched file with its hash from before. */
-function restorePatch(root, fault) {
+/** What a run could change besides the patched files: the status, HEAD and the stash. */
+function treeState(root) {
+  const read = args => { try { return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }); } catch { return null; } };
+  return {
+    status: (read(['status', '--porcelain', '--untracked-files=all', '-z']) ?? '').split('\0').filter(Boolean),
+    head: read(['rev-parse', '--verify', '-q', 'HEAD'])?.trim() ?? null,
+    stash: read(['rev-parse', '--verify', '-q', 'refs/stash'])?.trim() ?? null,
+  };
+}
+
+/** Reverse an applied fault. Restored only when every touched file has its hash from before and
+ * the status (the new receipt left out), HEAD and refs/stash are as they were. */
+function restorePatch(root, fault, receipt) {
   try { execFileSync('git', ['apply', '-R', '--', fault.path], { cwd: root, stdio: 'ignore' }); } catch { /* the hashes decide */ }
-  return [...fault.hashes].every(([file, before]) => sha256File(path.join(root, file)) === before);
+  if (![...fault.hashes].every(([file, before]) => sha256File(path.join(root, file)) === before)) return false;
+  const now = treeState(root);
+  const own = receipt === undefined ? null : `${fault.prefix}${receipt}`;
+  const status = now.status.filter(entry => entry !== `?? ${own}`);
+  return now.head === fault.tree.head && now.stash === fault.tree.stash && JSON.stringify(status) === JSON.stringify(fault.tree.status);
 }
 
 export const envMapPath = '.joycraft/local/evidence-env.json';
@@ -271,10 +337,19 @@ function readEnvMap(root) {
   let tracked = false;
   try { execFileSync('git', ['ls-files', '--error-unmatch', '--', envMapPath], { cwd: root, stdio: 'ignore' }); tracked = true; } catch { /* untracked or no Git */ }
   refuse(!tracked, `${envMapPath} is tracked by Git; it must stay machine-local`);
+  let inGit = false;
+  try { inGit = execFileSync('git', ['rev-parse', '--is-inside-work-tree'], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() === 'true'; } catch { /* no Git */ }
+  refuse(!inGit || gitIgnored(root, envMapPath), `${envMapPath} must be git-ignored, so it stays machine-local; add .joycraft/local/ to .gitignore`);
   let map;
   try { map = JSON.parse(readFileSync(file, 'utf8')); } catch (error) { throw refusal(`${envMapPath} is not valid JSON: ${error.message}`); }
   refuse(record(map) && Object.values(map).every(value => typeof value === 'string'), `${envMapPath} must be a JSON object of string names to string values`);
-  return map;
+  for (const [name, value] of Object.entries(map)) {
+    refuse(name !== '', `${envMapPath} has an empty name`);
+    refuse(!name.includes('='), `${envMapPath} has a name with "=": ${name}`);
+    refuse(!name.includes('\0') && !value.includes('\0'), `${envMapPath} has a NUL character in the name or value of ${JSON.stringify(name)}`);
+  }
+  // CI and JOYCRAFT_EVIDENCE are Joycraft's, in any letter case (Windows names ignore case).
+  return Object.fromEntries(Object.entries(map).filter(([name]) => !['CI', 'JOYCRAFT_EVIDENCE'].includes(name.toUpperCase())));
 }
 
 /**
@@ -301,7 +376,7 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
   refuse(Array.isArray(argv) && argv.length > 0 && argv.every(value => typeof value === 'string') && argv[0] !== '', `A command is needed after --. ${usage}`);
   refuse(Number.isSafeInteger(timeoutMs) && timeoutMs > 0 && timeoutMs <= 2 ** 31 - 1, `--timeout-ms must be a whole number of milliseconds from 1 to ${2 ** 31 - 1}`);
   const envMap = readEnvMap(root);
-  const applied = envMap && Object.keys(envMap).filter(name => name !== 'CI' && name !== 'JOYCRAFT_EVIDENCE');
+  const applied = envMap && Object.keys(envMap);
   const fault = patch === undefined ? null : preparePatch(root, patch);
   const { relative, file } = await receiptFile(root, receipt);
   const commit = revision(root);
@@ -312,54 +387,64 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
   const cores = os.availableParallelism();
   const loadStart = loadNow();
   const started = Date.now();
-  if (fault) {
-    try { execFileSync('git', ['apply', '--', fault.path], { cwd: root, stdio: 'ignore' }); } catch {
-      closeSync(fd); unlinkSync(file);
-      throw refusal(`The patch did not apply: ${fault.path}${restorePatch(root, fault) ? '' : '; the tree was NOT restored'}`);
-    }
-  }
-  let child;
-  try {
-    child = spawn(argv[0], argv.slice(1), { cwd: root, env: { ...process.env, ...envMap, CI: '1', JOYCRAFT_EVIDENCE: '1' }, stdio: ['ignore', fd, fd], detached: posix, windowsHide: true });
-    await new Promise((resolve, reject) => { child.once('spawn', resolve); child.once('error', reject); });
-  } catch (error) {
-    closeSync(fd);
-    unlinkSync(file);
-    if (fault && !restorePatch(root, fault)) throw refusal(`Could not start ${argv[0]}: ${error.message}; the patch was NOT restored: ${fault.path}`);
-    throw refusal(`Could not start ${argv[0]}: ${error.message}`);
-  }
-  // The child runs in its own group, so pass on a stop that reaches only this process.
-  const stop = signal => { if (posix) signalGroup(child.pid, 'SIGKILL'); else child.kill('SIGKILL'); if (fault) restorePatch(root, fault); process.exit(128 + (os.constants.signals[signal] ?? 1)); };
+  // The child runs in its own group, so pass on a stop that reaches only this process. The
+  // handlers are in place before the patch is applied: a stop before the child exists still restores it.
+  let child = null;
+  const stop = signal => {
+    if (child?.pid) { if (posix) signalGroup(child.pid, 'SIGKILL'); else child.kill('SIGKILL'); }
+    if (fault) restorePatch(root, fault, relative);
+    process.exit(128 + (os.constants.signals[signal] ?? 1));
+  };
   const signals = ['SIGINT', 'SIGTERM', 'SIGHUP'];
   for (const signal of signals) process.on(signal, stop);
-  let timedOut = false;
-  const exited = new Promise(resolve => child.once('exit', (code, signal) => resolve({ code, signal })));
-  const timer = setTimeout(() => { timedOut = true; if (posix) endGroup(child.pid); else child.kill('SIGKILL'); }, timeoutMs);
-  const { code, signal } = await exited;
-  clearTimeout(timer);
-  // Leftover processes in the group would keep writing to the receipt after it is hashed.
-  if (posix) await endGroup(child.pid);
-  for (const each of signals) process.off(each, stop);
-  try { fsyncSync(fd); } finally { closeSync(fd); }
-  const patchFacts = fault && { path: fault.path, sha256: fault.sha256, patched: true, restored: restorePatch(root, fault) };
-  const exitCode = timedOut ? null : code;
-  const wallMs = Date.now() - started;
-  const loadEnd = loadNow();
-  const facts = loadStart === null
-    ? { wallMs, load: null, cores, loaded: null }
-    : { wallMs, load: [loadStart, loadEnd], cores, loaded: loadStart > cores };
-  const output = readEnd(file);
-  const tail = exitCode === 0 ? undefined : output.replace(/\n$/, '').split('\n').slice(-tailLines).join('\n');
-  const footer = { ...facts, argv: [...argv], exitCode, timedOut, revision: commit.commit, dirty: commit.dirty, ...(applied ? { env: applied } : {}), ...(patchFacts ? { patch: patchFacts } : {}) };
-  appendFileSync(file, `${output === '' || output.endsWith('\n') ? '' : '\n'}${footerTag}${JSON.stringify(footer)}\n`);
-  const digest = createHash('sha256');
-  for await (const chunk of createReadStream(file)) digest.update(chunk);
-  return {
-    command: { argv: [...argv], exitCode },
-    receipts: [{ path: relative, sha256: digest.digest('hex') }],
-    timedOut, timeoutMs, ...(signal ? { signal } : {}), revision: commit, facts,
-    ...(tail === undefined ? {} : { tail }), ...(applied ? { env: applied } : {}), ...(patchFacts ? { patch: patchFacts } : {}),
-  };
+  try {
+    return await runChild();
+  } finally { for (const each of signals) process.off(each, stop); }
+
+  async function runChild() {
+    if (fault) {
+      try { execFileSync('git', ['apply', '--', fault.path], { cwd: root, stdio: 'ignore' }); } catch {
+        closeSync(fd); unlinkSync(file);
+        throw refusal(`The patch did not apply: ${fault.path}${restorePatch(root, fault, relative) ? '' : '; the tree was NOT restored'}`);
+      }
+    }
+    try {
+      child = spawn(argv[0], argv.slice(1), { cwd: root, env: { ...process.env, ...envMap, CI: '1', JOYCRAFT_EVIDENCE: '1' }, stdio: ['ignore', fd, fd], detached: posix, windowsHide: true });
+      await new Promise((resolve, reject) => { child.once('spawn', resolve); child.once('error', reject); });
+    } catch (error) {
+      closeSync(fd);
+      unlinkSync(file);
+      if (fault && !restorePatch(root, fault, relative)) throw refusal(`Could not start ${argv[0]}: ${error.message}; the patch was NOT restored: ${fault.path}`);
+      throw refusal(`Could not start ${argv[0]}: ${error.message}`);
+    }
+    let timedOut = false;
+    const exited = new Promise(resolve => child.once('exit', (code, signal) => resolve({ code, signal })));
+    const timer = setTimeout(() => { timedOut = true; if (posix) endGroup(child.pid); else child.kill('SIGKILL'); }, timeoutMs);
+    const { code, signal } = await exited;
+    clearTimeout(timer);
+    // Leftover processes in the group would keep writing to the receipt after it is hashed.
+    if (posix) await endGroup(child.pid);
+    try { fsyncSync(fd); } finally { closeSync(fd); }
+    const patchFacts = fault && { path: fault.path, sha256: fault.sha256, patched: true, restored: restorePatch(root, fault, relative) };
+    const exitCode = timedOut ? null : code;
+    const wallMs = Date.now() - started;
+    const loadEnd = loadNow();
+    const facts = loadStart === null
+      ? { wallMs, load: null, cores, loaded: null }
+      : { wallMs, load: [loadStart, loadEnd], cores, loaded: loadStart > cores };
+    const output = readEnd(file);
+    const tail = exitCode === 0 ? undefined : output.replace(/\n$/, '').split('\n').slice(-tailLines).join('\n');
+    const footer = { ...facts, argv: [...argv], exitCode, timedOut, revision: commit.commit, dirty: commit.dirty, ...(applied ? { env: applied } : {}), ...(patchFacts ? { patch: patchFacts } : {}) };
+    appendFileSync(file, `${endsAtLineEnd(file) ? '' : '\n'}${footerTag}${JSON.stringify(footer)}\n`);
+    const digest = createHash('sha256');
+    for await (const chunk of createReadStream(file)) digest.update(chunk);
+    return {
+      command: { argv: [...argv], exitCode },
+      receipts: [{ path: relative, sha256: digest.digest('hex') }],
+      timedOut, timeoutMs, ...(signal ? { signal } : {}), revision: commit, facts,
+      ...(tail === undefined ? {} : { tail }), ...(applied ? { env: applied } : {}), ...(patchFacts ? { patch: patchFacts } : {}),
+    };
+  }
 }
 
 export async function main(args = process.argv.slice(2)) {

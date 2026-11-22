@@ -20,19 +20,23 @@ const dataExtensions = new Set(['json', 'jsonl', 'yaml', 'yml', 'toml', 'csv', '
 const extensionOf = name => (name.includes('.') ? name.slice(name.lastIndexOf('.') + 1).toLowerCase() : '');
 
 // Folder names that hold tests across stacks, compared case-insensitively
-// (Swift Tests/, Kotlin and Android source sets such as androidTest and jvmTest,
-// C# App.Tests projects).
-const testSegments = new Set(['test', 'tests', 'spec', '__tests__', 'androidtest']);
-const isTestSegment = part => testSegments.has(part.toLowerCase()) || /^[a-z]+Test$/.test(part) || /\.Tests?$/.test(part);
+// (Swift Tests/, C# App.Tests projects), and the known Gradle, Kotlin and
+// Android test source sets, by their exact names. Another camelCase `*Test`
+// folder (abTest, loadTest) is not a test folder.
+const testSegments = new Set(['test', 'tests', 'spec', '__tests__']);
+const testSourceSets = new Set(['androidTest', 'androidUnitTest', 'androidInstrumentedTest', 'commonTest', 'jvmTest', 'jsTest', 'iosTest', 'nativeTest', 'integrationTest']);
+const isTestSegment = part => testSegments.has(part.toLowerCase()) || testSourceSets.has(part) || /\.Tests?$/.test(part);
 
-/** Whether a project path looks like a test by common naming conventions. */
+/** Whether a project path looks like a test by common naming conventions. A JVM-style
+ * `FooTest.java` or `BarSpec.kt` name counts only inside a test source set (src/test,
+ * src/jvmTest and the like), which the folder rule already covers: src/main/LoadTest.java
+ * is a load-test tool, not a test. */
 export function isTestPath(file) {
   const parts = String(file).split('/');
   const name = parts.at(-1);
   if (proseExtensions.has(extensionOf(name))) return false;
   return parts.slice(0, -1).some(isTestSegment)
     || /\.(?:test|spec|e2e|cy)\./.test(name) || /_(?:test|spec)\.[^.]+$/.test(name)
-    || /[a-z0-9](?:Test|Tests|Spec)\.(?:java|kt|kts|scala|groovy|cs|fs|vb|swift)$/.test(name)
     || name === 'tests.py' || name === 'conftest.py'
     || (/^test_/.test(name) && !/^test_(?:helpers?|utils?|support|data|fixtures?)(?:[._-]|$)/.test(name));
 }
@@ -48,8 +52,13 @@ function taggable(file) {
 const git = (root, args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024 });
 const nulList = text => text.split('\0').filter(Boolean);
 
-/** The bullets of a `## Test changes` section: `path`, class 1, 2 or 3, and the requiring line. "none" means none. */
+/** The bullets of a `## Test changes` section: `path` and class 1, 2 or 3. "none" means none. */
 export function declaredTestChanges(text, skipped = []) {
+  return declarations(text, skipped).map(({ path: file, class: cls }) => ({ path: file, class: cls }));
+}
+
+/** As declaredTestChanges, with each bullet's requiring text (the words after its class). */
+function declarations(text, skipped = []) {
   const lines = String(text).replace(/^﻿/, '').split(/\r?\n/);
   const start = lines.findIndex(line => /^#{1,6}\s+Test changes\s*$/i.test(line));
   if (start < 0) return [];
@@ -67,7 +76,8 @@ export function declaredTestChanges(text, skipped = []) {
     const cls = /\bclass\s*([123])\b/i.exec(item[1]);
     // A bullet with no requiring line after its class declares nothing.
     if (!file || !cls || !/\w/.test(item[1].slice(cls.index + cls[0].length))) continue;
-    try { declared.push({ path: relativePath(file[1]), class: Number(cls[1]) }); }
+    const requiring = item[1].slice(cls.index + cls[0].length).replace(/^[\s:,.;—–-]+/, '').replace(/\s+/g, ' ').trim();
+    try { declared.push({ path: relativePath(file[1]), class: Number(cls[1]), requiring }); }
     catch (error) { skipped.push({ path: file[1], reason: `declared path refused: ${error.message}` }); }
   }
   return declared;
@@ -78,10 +88,18 @@ export function testChanges({ root = process.cwd(), queuePath, specId, base }) {
   requireValue(typeof base === 'string' && /^[0-9a-f]{7,64}$/i.test(base), 'test-changes needs --base <sha>, the captured revision before dispatch');
   try { git(root, ['rev-parse', '--verify', '--quiet', `${base}^{commit}`]); }
   catch { throw new Error(`Base ${base} is not a commit in this repository`); }
+  try { git(root, ['merge-base', '--is-ancestor', base, 'HEAD']); }
+  catch { throw new Error(`Base ${base} is not an ancestor of HEAD; pass the revision captured before dispatch on this branch`); }
   const { spec, specPath } = readQueue({ root, queuePath, specId });
   const checks = new Set(spec.verification.inputs.filter(input => input.kind === 'check').map(input => relativePath(input.path)));
   // --no-renames: a rename is its old path deleted and its new path added, so
   // a declaration under either path matches and a deleted test stays visible.
+  // A declaration of either path of a Git rename covers both: git diff -M pairs them.
+  const partners = new Map();
+  const renames = nulList(git(root, ['diff', '-M', '--name-status', '-z', '--diff-filter=R', base, '--']));
+  for (let index = 0; index + 2 < renames.length; index += 3) {
+    partners.set(renames[index + 1], renames[index + 2]); partners.set(renames[index + 2], renames[index + 1]);
+  }
   const changed = [...new Set([...nulList(git(root, ['diff', '--name-only', '--no-renames', '-z', base, '--'])), ...nulList(git(root, ['ls-files', '--others', '--exclude-standard', '-z']))])].sort();
   const skipped = [];
   // A file's current text, or its base text when it was deleted. Null for a
@@ -97,8 +115,11 @@ export function testChanges({ root = process.cwd(), queuePath, specId, base }) {
     } catch (error) {
       if (error.code !== 'ENOENT') skipped.push({ path: file, reason: `unreadable: ${error.code ?? error.message}` });
       else {
-        try { text = git(root, ['show', `${base}:${file}`]); }
-        catch { skipped.push({ path: file, reason: 'deleted, and its base content is not a file' }); }
+        // A deleted path is a test only when its base object is a blob: a removed submodule is a commit.
+        let type = null;
+        try { type = /^\d+ (\w+) /.exec(git(root, ['ls-tree', '-z', base, '--', file]))?.[1] ?? null; } catch { /* not in the base tree */ }
+        if (type === 'blob') { try { text = git(root, ['show', `${base}:${file}`]); } catch { /* unreadable: skipped below */ } }
+        if (text === null) skipped.push({ path: file, reason: type === 'commit' ? 'deleted submodule, not a file' : 'deleted, and its base content is not a file' });
       }
     }
     contents.set(file, text);
@@ -119,17 +140,22 @@ export function testChanges({ root = process.cwd(), queuePath, specId, base }) {
   // that did not exist at the base declares nothing; all its bullets are later.
   let baseSpec = null;
   try { baseSpec = git(root, ['show', `${base}:./${specPath}`]); } catch { /* new since the base */ }
-  const current = declaredTestChanges(readFileSync(path.join(root, specPath), 'utf8'), skipped);
-  const declaredList = baseSpec === null ? [] : declaredTestChanges(baseSpec, []);
+  const current = declarations(readFileSync(path.join(root, specPath), 'utf8'), skipped);
+  const declaredList = baseSpec === null ? [] : declarations(baseSpec, []);
   const byPath = new Map(declaredList.map(item => [item.path, item]));
+  const declaration = file => byPath.get(file) ?? (partners.has(file) ? byPath.get(partners.get(file)) : undefined);
+  // A base declaration whose requiring text the current spec changed: same path and class, other words.
+  const rewritten = declaredList.filter(old => current.some(item => item.path === old.path && item.class === old.class && item.requiring !== old.requiring)
+    && !current.some(item => item.path === old.path && item.class === old.class && item.requiring === old.requiring)).map(item => item.path);
   const later = current.filter(item => !declaredList.some(old => old.path === item.path && old.class === item.class));
   const present = file => { try { return lstatSync(path.join(root, file)).isFile(); } catch { return false; } };
   const featurePaths = tests.filter(present).flatMap(file => read(file).split(/\r?\n/).flatMap((text, index) => (text.includes(`${folders.features}/`) ? [{ path: file, line: index + 1, text: text.trim() }] : [])));
   return {
     base, specId: spec.id, testFiles: tests,
-    declared: tests.filter(file => byPath.has(file)).map(file => byPath.get(file)),
-    undeclared: tests.filter(file => !byPath.has(file)),
-    addedAfterBase: later.filter(item => tests.includes(item.path)),
+    declared: tests.filter(file => declaration(file)).map(file => ({ path: file, class: declaration(file).class })),
+    undeclared: tests.filter(file => !declaration(file)),
+    addedAfterBase: later.filter(item => tests.includes(item.path)).map(({ path: file, class: cls }) => ({ path: file, class: cls })),
+    rewritten,
     featurePaths,
     skipped,
   };

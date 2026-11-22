@@ -254,3 +254,15 @@ describe('tidy --verify review-4-r2 fixes: the diff is read line by line', () =>
     expect(parseDiff(`@@ -5 +5 @@\n-old\n+new\n`).error).toMatch(/header Git did not write/);
   });
 });
+
+describe('tidy --verify ignores the user diff environment (spec 27)', () => {
+  it('[AC:spec-27-15] with GIT_DIFF_OPTS=--unified=5 set, verify accepts the valid fix as without it', () => {
+    const root = fixture();
+    fixLine(root);
+    let status = 0; let stdout = '';
+    try { stdout = execFileSync('node', [cleanup, 'tidy', '--verify'], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, GIT_DIFF_OPTS: '--unified=5', GIT_EXTERNAL_DIFF: 'false' } }); }
+    catch (error) { const e = error as { status: number; stdout: string }; status = e.status; stdout = e.stdout; }
+    expect(status, stdout).toBe(0);
+    expect(JSON.parse(stdout).status).toBe('pass');
+  });
+});

@@ -93,3 +93,18 @@ describe('checks: review fixes', () => {
     expect(readFileSync(join(joycraft, 'templates', 'joycraft.yaml'), 'utf8')).toMatch(/^#\s+timeout: \d+/m);
   });
 });
+
+describe('checks seam line forms (spec 27)', () => {
+  it('[AC:spec-27-16] reads the markdownlint-cli2 form and project-absolute paths; host:port lines are not findings', () => {
+    const root = project('checks:\n  - name: lint\n    run: sh lint2.sh\n');
+    put(root, 'lint2.sh', `echo "docs/a.md:3 MD013/line-length Line length"\necho "${root}/docs/a.md:4: bad"\necho "localhost:3000 ready"\necho "127.0.0.1:8080 listening"\nexit 1\n`);
+    const out = JSON.parse(node(root, [runtime('cleanup.mjs'), 'tidy']).stdout);
+    const found = out.findings.filter((item: { check: string }) => item.check === 'lint');
+    expect(found).toHaveLength(2);
+    expect(found).toEqual(expect.arrayContaining([
+      expect.objectContaining({ path: 'docs/a.md', line: 3, detail: 'MD013/line-length Line length' }),
+      expect.objectContaining({ path: 'docs/a.md', line: 4, detail: 'bad' }),
+    ]));
+    expect(readFileSync(join(joycraft, 'references', 'settings.md'), 'utf8')).toContain('line output format');
+  });
+});

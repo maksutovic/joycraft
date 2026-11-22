@@ -34,10 +34,12 @@ export function entryReport({ root = process.cwd(), now = Date.now() } = {}) {
  * never throws: a skipped or failed tidy gives null.
  */
 export function tidyAdvice({ root = process.cwd(), now = Date.now() } = {}) {
-  let fixable;
-  try { fixable = tidyReport({ root, now, quick: true, limit: 0 }).all.filter(item => item.fixable); } catch { return null; }
+  let report, fixable;
+  try { report = tidyReport({ root, now, quick: true, limit: 0 }); fixable = report.all.filter(item => item.fixable); } catch { return null; }
   if (fixable.length === 0) return null;
-  const lines = fixable.slice(0, 2).map(item => `${item.path}:${item.line} names ${item.symbol ?? item.check}, which this branch removed from the code.`);
+  // On the default branch the range is the recent commits (approximate), not a branch.
+  const remover = report.approximate ? 'which recent commits removed' : 'which this branch removed';
+  const lines = fixable.slice(0, 2).map(item => `${item.path}:${item.line} names ${item.symbol ?? item.check}, ${remover} from the code.`);
   const count = fixable.length === 1 ? '1 mapped doc line names' : `${fixable.length} mapped doc lines name`;
   lines.push(`${count} removed code: run \`node .joycraft/runtime/cleanup.mjs tidy\` now or at session end.`);
   return { check: 'tidy', path: fixable[0].path, lines, detail: lines.join(' '), fix: 'Run `node .joycraft/runtime/cleanup.mjs tidy` and fix the lines it names. Do not fix them at session start.' };

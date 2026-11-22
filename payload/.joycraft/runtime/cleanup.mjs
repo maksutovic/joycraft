@@ -1,9 +1,9 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseYaml, readConfig } from './config.mjs';
-import { requireValue } from './identity.mjs';
+import { isObject, parseJson, requireValue } from './identity.mjs';
 import { namesCommand } from './queue-check.mjs';
 import { projectStatus } from './status.mjs';
 import { managedState } from './wiring.mjs';
@@ -209,8 +209,8 @@ function gitIgnored(root, paths) {
 }
 
 // `raw` keeps leading spaces, which `git status --porcelain` output needs.
-function git(root, args, { raw = false } = {}) {
-  const out = execFileSync('git', gitArgs(args), { cwd: root, stdio: ['ignore', 'pipe', 'pipe'], ...gitOptions });
+function git(root, args, { raw = false, env } = {}) {
+  const out = execFileSync('git', gitArgs(args), { cwd: root, stdio: ['ignore', 'pipe', 'pipe'], ...gitOptions, ...(env ? { env } : {}) });
   return raw ? out : out.trim();
 }
 
@@ -557,7 +557,23 @@ child.on('exit', code => { clearTimeout(timer); process.exit(code ?? 1); });
 
 // `path:line: message`. The path starts with no space and holds none (a
 // Windows drive is allowed), so a stack-trace line ` at f (x.js:3:4)` is not one.
-const checkLine = /^((?:[A-Za-z]:[\\/])?[^\s:]+):(\d+):\s*(.*)$/gm;
+const checkLine = /^((?:[A-Za-z]:[\\/])?[^\s:]+):(\d+):\s*(.*)$/;
+// `path:line rule message` (markdownlint-cli2): only when the path ends in a file
+// extension with a letter, so `localhost:3000 ready` and `127.0.0.1:8080 listening` are not findings.
+const spacedLine = /^((?:[A-Za-z]:[\\/])?[^\s:]*[^\s:/\\.]\.(?=[\w-]*[A-Za-z])[\w-]+):(\d+)\s+(\S.*)$/;
+
+/** A checker's `path:line` output line as { file, line, message }, the path project-relative, or null. */
+export function checkFinding(text, root) {
+  const match = checkLine.exec(text) ?? spacedLine.exec(text);
+  if (!match) return null;
+  let file = match[1];
+  if (path.isAbsolute(file) || path.win32.isAbsolute(file)) {
+    const bases = [root]; try { bases.push(realpathSync(root)); } catch { /* the root as given */ }
+    const inside = bases.map(base => path.relative(base, file)).find(relative => relative && !relative.startsWith('..') && !path.isAbsolute(relative));
+    if (inside) file = inside.split(path.sep).join('/');
+  }
+  return { file: path.posix.normalize(file), line: Number(match[2]), message: match[3] };
+}
 
 /**
  * The project's own checkers (joycraft.yaml checks:). Each line of stdout or
@@ -577,11 +593,13 @@ function customChecks(root, checks, skipped) {
       skipped.push({ check: name, reason: `Command not found: ${run}` }); continue;
     }
     let found = 0;
-    for (const [, file, line, message] of output.matchAll(checkLine)) {
+    for (const text of output.split(/\r?\n/)) {
+      const finding = checkFinding(text, root);
+      if (!finding) continue;
       found += 1;
-      findings.push({ check: name, path: path.posix.normalize(file), line: Number(line), detail: message, fix: `Fix it as ${name} says, then run tidy again.`, fixable: false });
+      findings.push({ check: name, path: finding.file, line: finding.line, detail: finding.message, fix: `Fix it as ${name} says, then run tidy again.`, fixable: false });
     }
-    if (result.status !== 0 && found === 0) findings.push({ check: name, path: '.', detail: `${run} failed (exit ${result.status ?? result.signal}) with no path:line: output.`, fix: `Run ${run} and read its output.`, fixable: false });
+    if (result.status !== 0 && found === 0) findings.push({ check: name, path: '.', detail: `${run} failed (exit ${result.status ?? result.signal}) with no path:line output.`, fix: `Run ${run} and read its output.`, fixable: false });
   }
   return findings;
 }
@@ -609,7 +627,9 @@ export function tidyReport({ root = process.cwd(), base, now = Date.now(), limit
 }
 
 /** The diff of one file against HEAD as Git stores it: every byte as text, no driver, no textconv. */
-const rawDiff = (root, file, cached) => git(root, ['-c', 'diff.noprefix=false', '-c', 'diff.mnemonicPrefix=false', 'diff', ...(cached ? ['--cached'] : []), 'HEAD', '--text', '--no-textconv', '--no-ext-diff', '--no-color', '--no-renames', '-U0', '--', file], { raw: true });
+// GIT_DIFF_OPTS (such as --unified=5) and GIT_EXTERNAL_DIFF would change the hunks verify compares.
+const diffEnvironment = () => Object.fromEntries(Object.entries(process.env).filter(([name]) => !['GIT_DIFF_OPTS', 'GIT_EXTERNAL_DIFF'].includes(name.toUpperCase())));
+const rawDiff = (root, file, cached) => git(root, ['-c', 'diff.noprefix=false', '-c', 'diff.mnemonicPrefix=false', 'diff', ...(cached ? ['--cached'] : []), 'HEAD', '--text', '--no-textconv', '--no-ext-diff', '--no-color', '--no-renames', '-U0', '--', file], { raw: true, env: diffEnvironment() });
 // A diff header that changes no line: a mode, a type (symlink or file) or binary content.
 const notLines = /^(?:old mode|new mode|new file mode|deleted file mode|Binary files|GIT binary patch)/m;
 // The lines of a file diff header: everything Git may print before the first hunk.
@@ -860,7 +880,42 @@ export function ageOut({ root = process.cwd(), days, apply = false, now = Date.n
   return { days, count: old.length, docs: old, skipped, applied: apply };
 }
 
-const usage = 'Usage: cleanup.mjs [--checks | tidy [--base <ref>] [--verify] | age-out --days <n> [--apply]] [--root <project>]';
+const usage = 'Usage: cleanup.mjs [--checks | tidy [--base <ref>] [--verify] | age-out --days <n> [--apply] | gate-rule (--check | --record rewritten|kept)] [--root <project>]';
+
+const preferencesFile = '.joycraft/preferences.json';
+
+/** The project's preferences (schemaVersion 1 when absent), refusing a symlinked path, as archive.mjs does. */
+function readPreferences(root) {
+  let current = realpathSync(root);
+  for (const part of preferencesFile.split('/')) {
+    current = path.join(current, part);
+    if (!existsSync(current) && !isLink(current)) return { schemaVersion: 1 };
+    const stat = lstatSync(current);
+    requireValue(!stat.isSymbolicLink() && (part === 'preferences.json' ? stat.isFile() : stat.isDirectory()), `Expected a plain project file: ${preferencesFile}`);
+  }
+  const preferences = parseJson(readFileSync(current), preferencesFile);
+  requireValue(isObject(preferences), `${preferencesFile} must contain an object`);
+  return preferences;
+}
+function isLink(file) { try { return lstatSync(file).isSymbolicLink(); } catch { return false; } }
+
+/**
+ * The user's answer to the gate-rule offer, kept in preferences as `cleanup.gateRule`:
+ * `rewritten` or `kept`, else `unset`. `record` writes it and keeps the other keys.
+ */
+export function gateRulePreference({ root = process.cwd(), record } = {}) {
+  if (record === undefined) {
+    const value = readPreferences(root).cleanup?.gateRule;
+    return ['rewritten', 'kept'].includes(value) ? value : 'unset';
+  }
+  requireValue(['rewritten', 'kept'].includes(record), `cleanup.mjs gate-rule --record takes rewritten or kept, not ${record}`);
+  const preferences = readPreferences(root);
+  const target = path.join(realpathSync(root), preferencesFile), temporary = `${target}.cleanup-${process.pid}`;
+  mkdirSync(path.dirname(target), { recursive: true });
+  writeFileSync(temporary, `${JSON.stringify({ ...preferences, cleanup: { ...(isObject(preferences.cleanup) ? preferences.cleanup : {}), gateRule: record } }, null, 2)}\n`, { flag: 'wx', mode: 0o600 });
+  renameSync(temporary, target);
+  return record;
+}
 
 export async function main(argv = process.argv.slice(2)) {
   const args = [...argv];
@@ -887,6 +942,15 @@ export async function main(argv = process.argv.slice(2)) {
     const { all, ...result } = tidyReport({ root, base });
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     if (result.findings.length) process.exitCode = 2;
+    return result;
+  }
+  if (args[0] === 'gate-rule') {
+    args.shift();
+    const record = take('--record');
+    const check = has('--check');
+    requireValue(args.length === 0 && (record === undefined) === check, usage);
+    const result = gateRulePreference({ root, record });
+    process.stdout.write(`${result}\n`);
     return result;
   }
   if (args[0] === 'age-out') {
