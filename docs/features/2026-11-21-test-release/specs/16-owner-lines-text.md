@@ -1,6 +1,6 @@
 ---
 id: 16
-status: in-review
+status: done
 ---
 # Cleanup offers a rewrite of the owner's every-step gate lines, and update shows the finding once
 

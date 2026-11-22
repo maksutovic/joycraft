@@ -36,3 +36,8 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 
 ## Env map (spec 12) — fix
 - Validate names (non-empty, no `=`, no NUL in values) and name the map file in the error; compare CI/JOYCRAFT_EVIDENCE case-insensitively; refuse a map that is untracked but not ignored (`git check-ignore`).
+
+## Owner gate lines (spec 16) — fix
+- update.md:38 "When it reports `gate-rule`" should name `entry-check.mjs`.
+- Setup should also offer the rewrite (a fresh install meets it only in an attended cleanup).
+- A small runtime helper to record `cleanup.gateRule` in preferences.json (like `archive.mjs ignore --decline`) instead of hand-written JSON.
