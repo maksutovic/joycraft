@@ -232,13 +232,14 @@ describe('spec 27 delivery polish', () => {
     expect(notAncestor.stderr.trim()).toBe('gate-receipt-stale');
   }, 30000);
 
-  it('[review-27-7] only Markdown and JSON under the docs root, or any non-symlink file in a feature or archive folder, keeps an old receipt', () => {
+  it('[review-27-7] only Markdown and JSON under the docs root, or a non-symlink record file in a feature or archive folder, keeps an old receipt', () => {
     const cases: Array<[string, (root: string) => void, number]> = [
       ['context record', root => put(join(root, 'docs/context/log.md'), 'x\n'), 0],
       ['feature receipt log', root => put(join(root, 'docs/features/f/reviews/r.log'), 'x\n'), 0],
       ['archived receipt txt', root => put(join(root, 'docs/archive/f/reviews/p.mjs.txt'), 'x\n'), 0],
       ['code under context', root => put(join(root, 'docs/context/evil.test.ts'), 'x\n'), 1],
       ['code at the docs root', root => put(join(root, 'docs/run.mjs'), 'x\n'), 1],
+      ['source file in a feature folder', root => put(join(root, 'docs/features/f/probe.mjs'), 'x\n'), 1],
       ['symlink in a feature folder', root => { mkdirSync(join(root, 'docs/features/f'), { recursive: true }); symlinkSync('../../../gate.mjs', join(root, 'docs/features/f/x.md')); }, 1],
     ];
     for (const [name, change, status] of cases) {
@@ -251,6 +252,24 @@ describe('spec 27 delivery polish', () => {
       if (status) expect(result.stderr.trim()).toBe('gate-receipt-stale');
     }
   }, 60000);
+
+  it('[AC:spec-31-3] a feature or archive folder keeps an old receipt only for record extensions; a source file there needs the gate', () => {
+    const cases: Array<[string, number]> = [
+      ['docs/features/f/x_test.go', 1], ['docs/features/f/test_x.py', 1], ['docs/archive/f/a.test.ts', 1], ['docs/features/f/probe.mjs', 1],
+      ['docs/features/f/notes.log', 0], ['docs/features/f/r.txt', 0], ['docs/archive/f/c.diff', 0], ['docs/features/f/c.patch', 0],
+      ['docs/features/f/q.yaml', 0], ['docs/archive/f/q.yml', 0], ['docs/features/f/n.md', 0], ['docs/features/f/q.json', 0],
+    ];
+    for (const [path, status] of cases) {
+      const { root, remote, first, head } = deliveryFixture();
+      footer(root, 'gate.log', { argv: ['node', 'gate.mjs'], exitCode: 0, revision: head, dirty: false });
+      put(join(root, path), path.endsWith('.json') ? '{}\n' : 'x\n');
+      git(root, 'add', '.'); git(root, 'commit', '-q', '-m', path);
+      const result = push(root, first, ['--gate-receipt', 'receipts/gate.log']);
+      expect(result.status, `${path}: ${result.stderr}`).toBe(status);
+      if (status) { expect(result.stderr.trim()).toBe('gate-receipt-stale'); expect(remoteRef(remote)).toBe(''); }
+      else expect(remoteRef(remote)).toBe(git(root, 'rev-parse', 'HEAD'));
+    }
+  }, 120000);
 
   it('[AC:spec-27-14] a docs root of . gives no exemption', () => {
     const { root, remote, first, head } = deliveryFixture('tests:\n  gate: node gate.mjs\npaths:\n  features: features\n  archive: archive\n  context: context\n');

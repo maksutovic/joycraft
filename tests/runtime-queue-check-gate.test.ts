@@ -123,3 +123,24 @@ describe('queue-check gate matching in prose (spec 27)', () => {
     expect(line?.trimEnd().endsWith('ask the user now.')).toBe(true);
   });
 });
+
+describe('queue-check gate matching in prose (spec 31)', () => {
+  it('[AC:spec-31-1] prose words with apostrophes, hyphens, abbreviations, numbers, a bracket, & or an arrow after the gate name it', async () => {
+    const { namesCommand } = await import('../payload/.joycraft/runtime/queue-check.mjs');
+    const named = ["pnpm verify doesn't fail.", "pnpm verify isn't optional", 'pnpm verify e.g. twice', 'pnpm verify (the full suite)',
+      'pnpm verify → done', 'pnpm verify & lint', 'pnpm verify won’t pass', 'pnpm verify re-runs it', 'pnpm verify 2 times'];
+    for (const text of named) expect(namesCommand(text, 'pnpm verify'), text).toBe(true);
+  });
+
+  it('[AC:spec-31-2] a dash stuck to an argument stays an argument; the spec 4 and 27 argument forms still do not name the gate', async () => {
+    const { namesCommand } = await import('../payload/.joycraft/runtime/queue-check.mjs');
+    const args: Array<[string, string]> = [
+      ['pnpm test', 'pnpm test —run'], ['pnpm test', 'pnpm test–run'], ['pnpm test', 'pnpm test—tests/a.test.ts'],
+      ['pnpm test', 'Check: `pnpm test tests/x.test.ts` passes.'], ['pnpm test', 'Check: pnpm test tests/x.test.ts passes.'],
+      ['pnpm test', 'Check: pnpm test -- --run passes.'], ['pnpm test', 'Check: pnpm test x.test.ts'],
+      ['pnpm test', 'Check: pnpm test add.test.ts passes.'], ['cargo test', 'Check: cargo test a::b'],
+      ['cargo test', 'Check: cargo test parser::tests passes.'], ['pytest', 'Check: pytest tests.py passes.'],
+    ];
+    for (const [gate, text] of args) expect(namesCommand(text, gate), text).toBe(false);
+  });
+});
