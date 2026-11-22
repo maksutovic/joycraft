@@ -1,0 +1,28 @@
+PASS env: child sees CI=1 and JOYCRAFT_EVIDENCE=1 over parent values :: "1 1"
+PASS env: exit 0, no tail
+PASS hash: printed sha256 equals hash of whole file incl footer
+PASS hash: footer on its own last line after output without newline
+PASS hash: footer carries facts+argv+exitCode+revision+dirty :: {"wallMs":24,"load":[10.62646484375,10.62646484375],"cores":14,"loaded":false,"argv":["/Users/compiler/.nvm/versions/node/v24.22.0/bin/node","-e","process.stdout.write(\"no trailing newline\")"],"exitCode":0,"timedOut":false,"revision":"61b4975ad9585fdcfc13542d6834ef689b99f9da","dirty":false}
+PASS hash: changing footer exitCode changes sha256
+PASS hash: changing footer loaded changes sha256
+PASS win32: facts.load null and loaded null :: {"wallMs":24,"load":null,"cores":14,"loaded":null}
+PASS win32: footer load null and loaded null, exit 0
+PASS timeout: timedOut true, exitCode null :: {"timedOut":true,"exitCode":null,"signal":"SIGTERM"}
+PASS timeout: tail is last 40 output lines :: 40 t11 t50
+PASS timeout: footer timedOut true, exitCode null, sha covers it
+PASS long: tail ends with the last output line
+FOLLOW-UP long: 60 lines of 10 KiB, exit 4 -> tail has 26 lines (spec says 40); the 256 KiB read window cuts it
+INFO long: first tail line starts "xxxxxx" length 6043 (a full line is 10243 chars; starts with "021" when whole)
+PASS long: footer still parses after 600 KiB output
+INFO long: one 1 MiB line -> tail length 262144 (window 262144), lines 1
+PASS long: single huge line footer parses and sha covers file
+INFO long: multibyte 400 KB line -> tail starts with U+FFFD: true
+PASS empty: failing run with no output has tail "" and footer as only line :: ""
+PASS forge: child-printed footer is not the last line; real footer exitCode 3
+INFO forge: tail of failing forged run includes the child line: true
+PASS one receipt per run in the fixture
+PASS compat: readFooter on footer-less receipt is null (no throw)
+PASS compat: readFooter on empty receipt is null
+PASS compat: validateEvidence accepts an observation whose receipt has no footer :: {"ok":true,"errors":[]}
+probe: all checks pass
+joycraft-evidence: {"wallMs":1708,"load":[10.62646484375,10.015625],"cores":14,"loaded":false,"argv":["node","docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"],"exitCode":0,"timedOut":false,"revision":"642f8f5231e9cd3df0a2a4bcd8c22440e4504e06","dirty":true}

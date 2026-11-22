@@ -188,7 +188,7 @@
       "id": 3,
       "file": "03-run-facts.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -282,6 +282,10 @@
       },
       "submitted": {
         "at": "2026-11-22T02:21:05.861Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "sha256": "1383577b148d3a92f8a6435731f0e1a76be7e053f21cd597aeb1d94971796952"
       }
     },
     {
@@ -662,7 +666,7 @@
       "depends_on": [
         3
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -738,6 +742,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:25:10.096Z"
       }
     },
     {
@@ -746,7 +753,7 @@
       "depends_on": [
         3
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -802,6 +809,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:25:10.144Z"
       }
     },
     {

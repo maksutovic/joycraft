@@ -1,6 +1,6 @@
 ---
 id: 3
-status: in-review
+status: done
 ---
 # Every evidence run sets JOYCRAFT_EVIDENCE and records its run facts
 

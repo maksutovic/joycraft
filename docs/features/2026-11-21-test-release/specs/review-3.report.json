@@ -1,0 +1,475 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "091eda5283640938d3d2097d66faa765cc751210",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 3,
+    "specPath": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+    "criteria": [
+      {
+        "id": "spec-3-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-5",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "evidence-marker",
+            "context-and-authorization",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "4b1ee79f586c4c87a94b4437d21847ee679dcf23ea9541c4631854d5139d11c3",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "8a4f4b027b19df54b2fc7a0b0fba86551492778af8eb2553007a09ad967e8ed2",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+        "kind": "requirement",
+        "sha256": "5a5e30b63a0725674ad7fccf18c922c5a76c501b0cabfb317ad051532f449751",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/evidence.mjs",
+        "kind": "code",
+        "sha256": "14b33f9404529968bcd6303537771b2102952868ccf83267f79373662d090111",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "844c4ac3f87c69a7367f0e901716a90bb4eb832a205d1013536b965b1f98e570",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-evidence-facts.test.ts",
+        "kind": "check",
+        "sha256": "5fbc09ac0b416eb14929de8b4316a60e3f05fb10b02cf4ac56e79303b3c4f68e",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-evidence-receipt.test.ts",
+        "kind": "check",
+        "sha256": "1df508ca381a0241acd1591bf74d1bcf07c400efdc4e86873ccc8528d48fe34d",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          3
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "evidence-marker",
+            "context-and-authorization",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "45d588fc4b4a4a3ad9c2585bf988dec63129f30fb9eb2972cfe1e444f3ec03b8"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a0bee06bbb7735d8f"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a3b0a732e24484806"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-3-1-env",
+      "subjectIdentity": "45d588fc4b4a4a3ad9c2585bf988dec63129f30fb9eb2972cfe1e444f3ec03b8",
+      "criteria": [
+        "spec-3-1"
+      ],
+      "representativeInput": "evidence.mjs run with node -e \"console.log(process.env.CI, process.env.JOYCRAFT_EVIDENCE)\" (payload/.joycraft/runtime/evidence.mjs:323 at 091eda5)",
+      "expected": "The child sees CI=1 and JOYCRAFT_EVIDENCE=1; the receipt holds \"1 1\".",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-1] passes in the 25/25 run (exit 0). The review test run itself went through payload evidence.mjs; its receipt ends with a joycraft-evidence footer.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log",
+              "sha256": "2caaa780788edb600d132de1c53067c457f82ce60cfadd6b97e2bb1548938cb1"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-evidence-facts.test.ts",
+              "tests/runtime-evidence-receipt.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: with the parent env set to CI=false and JOYCRAFT_EVIDENCE=0, the child still printed \"1 1\" (both are set after the spread and after the env map at evidence.mjs:323). CI=1 is kept.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log",
+              "sha256": "6feb48b79da3b41747b37fbcd57833c772031756ccd4fb85497fffc8843c6934"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+              "sha256": "2a2aae374c7921525056cca0dbd4310136d7e9819cabad7eba983076959f651c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-3-2-facts",
+      "subjectIdentity": "45d588fc4b4a4a3ad9c2585bf988dec63129f30fb9eb2972cfe1e444f3ec03b8",
+      "criteria": [
+        "spec-3-2"
+      ],
+      "representativeInput": "printed JSON of evidence.mjs run; loadNow at evidence.mjs:219",
+      "expected": "facts has wallMs, load [start,end], cores = os.availableParallelism(), loaded = start load > cores; Windows gives load null and loaded null.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-2] passes. This review's own run printed facts {wallMs 1687, load [32.4, 32.4], cores 14, loaded true}.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log",
+              "sha256": "2caaa780788edb600d132de1c53067c457f82ce60cfadd6b97e2bb1548938cb1"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-evidence-facts.test.ts",
+              "tests/runtime-evidence-receipt.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: with process.platform forced to win32, facts were {load: null, loaded: null, cores 14} and the footer matched; the run exited 0, so no fact fails a run.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log",
+              "sha256": "6feb48b79da3b41747b37fbcd57833c772031756ccd4fb85497fffc8843c6934"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+              "sha256": "2a2aae374c7921525056cca0dbd4310136d7e9819cabad7eba983076959f651c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Windows was simulated by overriding process.platform on macOS; no real Windows host ran."
+      ]
+    },
+    {
+      "id": "spec-3-3-footer",
+      "subjectIdentity": "45d588fc4b4a4a3ad9c2585bf988dec63129f30fb9eb2972cfe1e444f3ec03b8",
+      "criteria": [
+        "spec-3-3"
+      ],
+      "representativeInput": "receipt bytes after a run; footer append at evidence.mjs:353-354, hash at 355-357",
+      "expected": "One last line \"joycraft-evidence: <JSON>\" with facts, argv, exitCode, revision, dirty, appended after exit and before the hash; printed sha256 = hash of the whole file.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-3] passes: one footer line, matches facts/argv/exitCode/revision/dirty, sha256 equals the file hash.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log",
+              "sha256": "2caaa780788edb600d132de1c53067c457f82ce60cfadd6b97e2bb1548938cb1"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-evidence-facts.test.ts",
+              "tests/runtime-evidence-receipt.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: the printed sha256 equals the hash of the file with the footer; output without a trailing newline still gets the footer on its own line; changing \"exitCode\":0 to 1 or flipping loaded in the footer changes the hash, so the footer cannot be altered without the recorded receipt hash failing. A child that prints its own \"joycraft-evidence:\" line does not win: the real footer (exitCode 3, with argv) is last. A footer-less (pre-change) receipt gives readFooter null without a throw, and validateEvidence accepts an observation whose receipt has no footer.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log",
+              "sha256": "6feb48b79da3b41747b37fbcd57833c772031756ccd4fb85497fffc8843c6934"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+              "sha256": "2a2aae374c7921525056cca0dbd4310136d7e9819cabad7eba983076959f651c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-3-4-tail",
+      "subjectIdentity": "45d588fc4b4a4a3ad9c2585bf988dec63129f30fb9eb2972cfe1e444f3ec03b8",
+      "criteria": [
+        "spec-3-4"
+      ],
+      "representativeInput": "100-line fixture exiting 3; timeout fixture; wide-line fixtures; tail at evidence.mjs:352",
+      "expected": "A non-zero or timed-out run prints tail = last 40 receipt lines before the footer; a passing run has no tail.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-4] passes: 40 lines, line 61 to line 100; passing run has no tail.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log",
+              "sha256": "2caaa780788edb600d132de1c53067c457f82ce60cfadd6b97e2bb1548938cb1"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-evidence-facts.test.ts",
+              "tests/runtime-evidence-receipt.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: a run killed at --timeout 800 ms gave timedOut true, exitCode null, tail t11..t50 (40 lines), and a hashed footer with timedOut true. A failing run with no output gives tail \"\". Very long output: with 60 lines of 10 KiB the tail ends with the last line but holds 26 lines (first one cut), because readEnd reads at most 256 KiB (follow-up f1); a 1 MiB single line gives a 256 KiB tail; a cut can start with U+FFFD in multibyte output.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log",
+              "sha256": "6feb48b79da3b41747b37fbcd57833c772031756ccd4fb85497fffc8843c6934"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+              "sha256": "2a2aae374c7921525056cca0dbd4310136d7e9819cabad7eba983076959f651c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "The 40-line count holds only while the last 40 lines fit in 256 KiB; see finding f1."
+      ]
+    },
+    {
+      "id": "spec-3-5-unchanged",
+      "subjectIdentity": "45d588fc4b4a4a3ad9c2585bf988dec63129f30fb9eb2972cfe1e444f3ec03b8",
+      "criteria": [
+        "spec-3-5"
+      ],
+      "representativeInput": "pnpm test tests/payload-guard.test.ts tests/runtime-evidence-receipt.test.ts (+ facts test), git show 88b12de --stat",
+      "expected": "No new file per run, exit codes 0/1/2 as before, [AC:vendored-open-issues] still passes.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "25/25 pass across the three files, including both [AC:vendored-open-issues] tests and the receipt tests. [AC:spec-3-5] shows a=0, b=1, reused path=2 and only the two receipts. Commit 88b12de changes only evidence.mjs, payload/PIN and the new test file, so no existing test file changed (Test changes: none holds).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log",
+              "sha256": "2caaa780788edb600d132de1c53067c457f82ce60cfadd6b97e2bb1548938cb1"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-evidence-facts.test.ts",
+              "tests/runtime-evidence-receipt.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: five runs in one fixture left exactly five receipts and no other file.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log",
+              "sha256": "6feb48b79da3b41747b37fbcd57833c772031756ccd4fb85497fffc8843c6934"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+              "sha256": "2a2aae374c7921525056cca0dbd4310136d7e9819cabad7eba983076959f651c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-tail-window",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/evidence.mjs:222",
+      "summary": "readEnd caps the read at 256 KiB, so when the last 40 lines are wider than that the tail has fewer than 40 lines and its first line is cut mid-line (60 lines of 10 KiB: 26 lines; a cut can begin with U+FFFD in multibyte output). The bound is sensible against huge JSON; the spec does not decide it. Either document \"last 40 lines, at most 256 KiB\" or drop the partial first line.",
+      "assumption": "A bounded tail is closest to the brief's intent (a short failing tail), so this does not fail spec-3-4, whose named check passes."
+    },
+    {
+      "id": "f2-footer-not-authentic",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/delivery.mjs:110",
+      "summary": "The footer is integrity-bound by the receipt hash only after it is recorded; nothing proves evidence.mjs wrote it. A hand-written receipt with a forged footer reads the same to readFooter and to delivery.mjs receiptFooter (spec 7 gate receipt). Outside spec 3; noted for the gate-receipt owner."
+    },
+    {
+      "id": "f3-duplicate-parser",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/delivery.mjs:110",
+      "summary": "delivery.mjs keeps its own copy of the footer parser instead of importing readFooter from evidence.mjs; the two can drift (delivery accepts any object, readFooter requires record())."
+    }
+  ],
+  "limits": [
+    "Windows load path simulated, not run on Windows.",
+    "Installed .joycraft/runtime/evidence.mjs is still the pre-change copy; the payload copy was reviewed and used."
+  ],
+  "createdAt": "2026-11-22T02:24:33.159Z"
+}
