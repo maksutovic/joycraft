@@ -1,0 +1,497 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "b7a86857176ced1c81f55244bdfdd2ee1268b21b",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 13,
+    "specPath": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+    "criteria": [
+      {
+        "id": "spec-13-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-13-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-13-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-named-files",
+            "archive-edit-tests"
+          ]
+        },
+        "sha256": "4a8779d2d05d6d8fb76d5458e2206e2f05f97228992efaa940573589b3df4829",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "fccce2d199b089c41b58bf2bcd571c5d3fd6ed6cc866c5672a3da203ddbb9aa6",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+        "kind": "requirement",
+        "sha256": "4f0d00bc4a4ce70d3f6e7b398356311ae13bd9d261eef4b09ea3d4cdf90e9379",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "e86b10b839a491b138a8da731324d8af0dd1696ce60e2e035f8edf9ebc51b242",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-as-is.test.ts",
+        "kind": "check",
+        "sha256": "db7b3881d80bae2c34a7636336f3a361d09b81563259b51372775b5f4aaf5293",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-links.test.ts",
+        "kind": "check",
+        "sha256": "c746fc0245496f546058e82aecb67d7f7ea3773caaff34f9e21a73f0e6528dcc",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-named-files.test.ts",
+        "kind": "check",
+        "sha256": "a0ab720965f992bb6e4b353da3139be14657f4bb0dbccc75026ae6cf057a09ce",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2,
+          5,
+          11,
+          13
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-named-files",
+            "archive-edit-tests"
+          ]
+        }
+      ]
+    },
+    "identity": "acd5fec444fe2cecb4bf86e0aec4342ff7075a9bc14b2c413815b6e0e1710058"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a465133b4c1fadef3"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "af5d1d00216634388"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "spec-13-1-preview",
+      "subjectIdentity": "acd5fec444fe2cecb4bf86e0aec4342ff7075a9bc14b2c413815b6e0e1710058",
+      "criteria": [
+        "spec-13-1"
+      ],
+      "representativeInput": "Spec fixture (test and script naming the folder); round-1 probe fixtures: migration, tracked symlink, look-alike folder names",
+      "expected": "namedFiles lists tracked non-Markdown files naming the folder with line and test flag, tests first; preview moves nothing",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-spec-tests.log",
+              "sha256": "e40222ca2247f8020f82bffe345edd1dccd77aaf2f439d5eae66df909340756f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "23/23 pass, exit 0; [AC:spec-13-1] passes."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-probe.log",
+              "sha256": "7bb5a1b4c90f119fabb3ba7cbec50689ea758f6db3b05b768086cc5d3e97ed76"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Tests listed first; migration listed with reportOnly: true (lines 42-55); symlink left out (99-106); docs/features/x-two, x.old and packages/app/docs/features/x are no longer rewritten (line 24)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-13-2-rewrite-green",
+      "subjectIdentity": "acd5fec444fe2cecb4bf86e0aec4342ff7075a9bc14b2c413815b6e0e1710058",
+      "criteria": [
+        "spec-13-2"
+      ],
+      "representativeInput": "Spec fixture; round-1 SIGTERM and SIGINT-to-group interrupts; new SIGKILL injected at 7 points (preload wraps fs/child_process); two features interrupted at once; hand-edited, corrupted and user-edited pending records",
+      "expected": "Moves only on green; after any interruption the next archive call restores everything and never reports archived; a pending record never causes data loss",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-spec-tests.log",
+              "sha256": "e40222ca2247f8020f82bffe345edd1dccd77aaf2f439d5eae66df909340756f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-13-2] and the new review-13-1 SIGTERM/SIGKILL tests pass."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-interrupt-sigterm.log",
+              "sha256": "2ab61b11aa3a04191d2ce63438d48bd9038e162641252a6d29f512d88760d529"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "interrupt",
+              "SIGTERM"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Round-1 f13-1 resolved for SIGTERM: tree clean, folder in place, test original; rerun preview is preview and apply is held (exit 2)."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-interrupt-sigint.log",
+              "sha256": "3126a82defddab99a0d92ec6d9d753033b35fdc29a8f3e9a24886320a9267f63"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "interrupt",
+              "SIGINT",
+              "group"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Round-1 f13-1 resolved for Ctrl-C to the group: same clean result."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-stages.log",
+              "sha256": "5e03d33fc3e1ab64e6411b093f0e07edbb21b9eaced4db995b918d7d22db8f41"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "sha256": "dac4601f3d7e57efaa9c45068bffc1691fc95e0783c62cd9ca0fa112b50253ec"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-kill.preload.mjs",
+              "sha256": "9af6de9b27c6019c2573380ce9caa6c37f00eec0682b9ac6ca6a92d7fcb1421c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "stages"
+            ],
+            "exitCode": 0
+          },
+          "result": "FAIL",
+          "actual": "SIGKILL after staging, before-rewrite, mid-rewrite, mid-test and after-green: next call returns held/interrupted, tree clean, files byte-identical, then a fresh apply archives (lines 24-54, 133-325). after-clear (green already accepted) stays archived (327-380), correct. FAIL: SIGKILL between the two renames (feature in docs/archive/.x.staging-*) - every later call exits 1 with No feature folder for x, the pending record is never read, nothing is restored (lines 56-109)."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-user-edits.log",
+              "sha256": "cc65b3699bbf9ef0c4bc8f2a7415a2a59487e34b34e24aa6121c29401a5abda5"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "sha256": "dac4601f3d7e57efaa9c45068bffc1691fc95e0783c62cd9ca0fa112b50253ec"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-kill.preload.mjs",
+              "sha256": "9af6de9b27c6019c2573380ce9caa6c37f00eec0682b9ac6ca6a92d7fcb1421c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "user-edits"
+            ],
+            "exitCode": 0
+          },
+          "result": "FAIL",
+          "actual": "After a mid-test kill the user writes docs/archive/x/NOTES.md and edits tests/x-a.test.mjs: the next call (a preview) deletes NOTES.md and overwrites the test edit (notesExists false, testKeptEdit false). After git restore . plus an edit in the archived copy, the next call deletes the archived copy with the edit (archivedCopyExists false, sourceHasEdit false). Untracked data is lost with no warning."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-two.log",
+              "sha256": "596836490df51ee126dea417f76655ae9d0322aaa0fe1d64732f8e6b3d755384"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "sha256": "dac4601f3d7e57efaa9c45068bffc1691fc95e0783c62cd9ca0fa112b50253ec"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-kill.preload.mjs",
+              "sha256": "9af6de9b27c6019c2573380ce9caa6c37f00eec0682b9ac6ca6a92d7fcb1421c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "two"
+            ],
+            "exitCode": 0
+          },
+          "result": "FAIL",
+          "actual": "x and y killed mid-test with a shared test: recovering x then y leaves tests/shared.test.mjs naming docs/archive/x/feature, a folder that no longer exists (lines 25-54); y then x is clean (79-108). Sequential: x killed, y archived green, then x recovered - restoring x reverts y's accepted rewrite of the shared test to docs/features/y, which has moved (110-127)."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-records.log",
+              "sha256": "6463f2a0319b2bc6789d5753976cdd6b5101ac894a9cee41bbf27243193bc532"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "sha256": "dac4601f3d7e57efaa9c45068bffc1691fc95e0783c62cd9ca0fa112b50253ec"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-kill.preload.mjs",
+              "sha256": "9af6de9b27c6019c2573380ce9caa6c37f00eec0682b9ac6ca6a92d7fcb1421c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "records"
+            ],
+            "exitCode": 0
+          },
+          "result": "FAIL",
+          "actual": "A hand-edited record with destination \"src\" makes a preview call delete src/ recursively (srcKeepExists false, git D src/keep.txt, lines 68-87); a record whose files[0].path is src/keep.txt (with a matching sha) overwrites it (89-108). A truncated record or a bad sha stops every call with exit 1 and nothing changes (lines 1-66): no data loss, no archived, but no recovery hint beyond the error."
+        }
+      ],
+      "limits": [
+        "Kill points were injected with a --import preload that SIGKILLs at a named fs or spawn call (spec-13-r2-kill.preload.mjs); the \"before-move\" point fires after staging, just before the first rename."
+      ]
+    },
+    {
+      "id": "spec-13-3-red-and-refusals",
+      "subjectIdentity": "acd5fec444fe2cecb4bf86e0aec4342ff7075a9bc14b2c413815b6e0e1710058",
+      "criteria": [
+        "spec-13-3"
+      ],
+      "representativeInput": "Spec red fixture and refusals; round-1 probe: CRLF red, symlink red, receipt home missing or tracked, a red test that edits files, --rewrite without --apply, ../, a directory, a migration",
+      "expected": "On red the rewritten files are byte-identical, nothing moves, held with the receipt; unlisted file or no tests.focused refuses exit 2 before any edit",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-spec-tests.log",
+              "sha256": "e40222ca2247f8020f82bffe345edd1dccd77aaf2f439d5eae66df909340756f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-13-3] passes; review-13-4/5 test shows testChanged and no empty archive home."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-probe.log",
+              "sha256": "7bb5a1b4c90f119fabb3ba7cbec50689ea758f6db3b05b768086cc5d3e97ed76"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "CRLF red byte-identical, clean (62-73); symlink red clean (114-124); receipt cases held and clean (126-161); refusals exit 2 with clean tree (169-185); --rewrite of a migration now refuses exit 2 (57-60); empty docs/archive no longer left (archiveThere false)."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f13r2-1-recovery-overwrites-and-deletes",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-13-2",
+      "at": "payload/.joycraft/runtime/archive.mjs:609",
+      "summary": "restorePending trusts the pending record and does not check the current tree. It writes the saved bytes over each listed file (line 613) even when the file has changed since archive rewrote it, and it deletes the whole destination and stage folders with rmSync recursive (line 619) whenever the source exists. It also accepts any project path from the record for destination, stage and files[].path. Reproduced: a user note in docs/archive/x is deleted; a test edit after the interruption is lost; after git restore ., an edited archived copy is deleted; a later green archive of a sibling feature has its shared-test rewrite reverted; recovering two interrupted features in one order leaves a shared test naming a missing folder; a hand-edited destination \"src\" deletes src/ (receipts review-13-r2-user-edits.log, review-13-r2-two.log, review-13-r2-records.log lines 68-108). This breaks the rule that a record never causes data loss. Suggested fix: store the after-rewrite sha for each file and restore a file only when its current bytes still match that sha (or the before bytes); otherwise leave the file and report it. Require destination to be <archive home>/<folder> and stage to be a .<folder>.staging-* folder in the archive home, and require files[] to be listed files. Remove only the files archive wrote in the holder (archive-recovery.json, archive-replay.json, evidence, restored requirements, unverified.md); if anything else is there, move the feature back and report the extra files instead of deleting them."
+    },
+    {
+      "id": "f13r2-2-staging-window-not-recovered",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-13-2",
+      "at": "payload/.joycraft/runtime/archive.mjs:680",
+      "summary": "archiveFeature calls resolveFolder before recoverPending. If the process dies between renameSync(source, stage/feature) and renameSync(stage, destination), the feature is only in docs/archive/.x.staging-*, which resolveFolder skips (dot-folder), so every later call exits 1 with \"No feature folder for x\" and never reads the pending record that holds the stage path (receipt review-13-r2-stages.log lines 56-109). Nothing is lost and nothing reports archived, but the next call does not restore. The window is two adjacent sync calls. Suggested fix: look for archive-pending/<name>.json (and dated matches) before resolveFolder, or let resolveFolder fall back to a pending record."
+    },
+    {
+      "id": "f13r2-3-corrupt-record-no-guidance",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:630",
+      "summary": "A truncated record stops every archive call with \"Invalid JSON: .joycraft/local/archive-pending/x.json\" while the folder stays at docs/archive/x and the tests stay rewritten (receipt review-13-r2-records.log lines 1-44). No data is lost, but the message does not say how to recover (for example: git restore the listed files, move docs/archive/x/feature back, delete the record).",
+      "assumption": "A corrupt record is rare; a plain recovery hint is enough."
+    },
+    {
+      "id": "f13r2-4-scope-dispatch-start",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:11",
+      "summary": "archive.mjs now imports templateArgv from payload/.joycraft/runtime/dispatch-start.mjs (changed in 4bbb34f), and --rewrite argv comes from it. That file is not a verification input of spec 13. Add payload/.joycraft/runtime/dispatch-start.mjs to the spec inputs before the next review subject.",
+      "assumption": "templateArgv is covered by the review-13-7 test; the gap is binding only."
+    }
+  ],
+  "limits": [
+    "Round-1 findings: f13-1 (SIGTERM/SIGINT interrupt) resolved; f13-2 over-match resolved; f13-4 partly resolved (testChanged lists what the red test changed; nothing is undone); f13-5 resolved; f13-6 resolved (migrations reportOnly, refused); f13-7 argv split resolved via templateArgv, scan cost unchanged; f13-3 non-UTF-8 bytes still become U+FFFD (receipt review-13-r2-probe.log lines 82-97). None repeated as new.",
+    "Test changes section says none; the only test diff is in tests/runtime-archive-named-files.test.ts, the spec's own new file (fixture signature refactor, new review-13 tests); no assertion removed. links/as-is tests unchanged.",
+    "Runs used committed bytes: git diff HEAD -- payload tests was empty at review time (HEAD b7a8685); probes ran in temp git repos only.",
+    "Trace: all three criteria have tagged tests."
+  ],
+  "createdAt": "2026-11-22T03:12:05.980602Z"
+}

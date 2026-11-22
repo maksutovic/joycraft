@@ -1,0 +1,109 @@
+
+=== corrupt record: preview
+{
+ "r": {
+  "exit": 1,
+  "signal": null,
+  "stderr": "Archive stopped: Invalid JSON: .joycraft/local/archive-pending/x.json"
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   "x"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": false
+  }
+ }
+}
+
+=== corrupt record: apply
+{
+ "r": {
+  "exit": 1,
+  "signal": null,
+  "stderr": "Archive stopped: Invalid JSON: .joycraft/local/archive-pending/x.json"
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   "x"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": false
+  }
+ }
+}
+
+=== bad sha record: preview
+{
+ "r": {
+  "exit": 1,
+  "signal": null,
+  "stderr": "Archive stopped: The pending archive record is damaged for tests/x-a.test.mjs; restore it from Git"
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   "x"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": false
+  }
+ }
+}
+
+=== edited destination=src: preview
+{
+ "r": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "srcKeepExists": false,
+ "after": {
+  "git": "D src/keep.txt",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== edited file path=src/keep.txt: preview
+{
+ "r": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "keep": "import { readFileSync } from 'node:fs';\n",
+ "after": {
+  "git": "M src/keep.txt",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+exit 0

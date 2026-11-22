@@ -1081,6 +1081,10 @@
           {
             "path": "tests/runtime-archive-as-is.test.ts",
             "kind": "check"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+            "kind": "code"
           }
         ],
         "criteria": [

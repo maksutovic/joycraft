@@ -1,0 +1,46 @@
+
+=== user edits: next call
+{
+ "r": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "briefKeptEdit": true,
+ "notesExists": false,
+ "testKeptEdit": false,
+ "after": {
+  "git": "M docs/features/x/brief.md",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== git restore then edit archived copy: next call
+{
+ "r2": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "archivedCopyExists": false,
+ "sourceHasEdit": false,
+ "after": {
+  "git": "",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+exit 0
