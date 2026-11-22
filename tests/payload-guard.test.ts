@@ -32,7 +32,7 @@ const FIELD_24_WORDS = 29919;
 // On-demand text is everything else: setup, update, cleanup, archive, the test
 // review, artifacts, settings, the session-end, cleanup, retro, context, entry
 // and ui-slice skills, and any new on-demand reference. It may grow by 2,000
-// words over its count before spec 1: 17,663 + 2,000 = 19,663.
+// words over its count before spec 1: 17,663 + 2,000 = 19,663 (raised to +3,500 below).
 //
 // Spec 1 cut two duplicates (setup.md's Claude worktree paragraph, a copy of
 // worktrees.md; joycraft-testing's acceptance-test paragraph). After it:
@@ -54,7 +54,9 @@ export const EVERY_SPEC_FILES: Record<string, string> = {
   '.joycraft/references/worktrees.md': 'every implementer and reviewer packet lists it in readFirst (dispatch-preflight.mjs)',
 };
 export const EVERY_SPEC_CAP = FIELD_24_WORDS - 17663;
-export const ON_DEMAND_CAP = 17663 + 2000;
+// Decision `on-demand-budget` = `plus-1500` (Max, 2026-11-21): on-demand text may
+// grow by 1,500 more words, 3,500 in all. The every-spec cap does not move.
+export const ON_DEMAND_CAP = 17663 + 3500;
 
 /** True when a payload text file is on-demand: every payload text file not in EVERY_SPEC_FILES. */
 export const isOnDemand = (path: string) => !(path in EVERY_SPEC_FILES);
@@ -343,13 +345,17 @@ describe('shipped payload text', () => {
     expect(over).toEqual([]);
   });
 
-  it('[AC:spec-1-3] 200 more words in the implement skill break the every-spec cap; up to 600 more in the test review do not', () => {
+  it('[AC:spec-1-3] 200 more words in the implement skill break the every-spec cap; 600 more in the test review do not', () => {
     // At least 200, and always one past the spare, so later cuts cannot make this pass without a regression.
     const spare = EVERY_SPEC_CAP - splitCap(treeBundle()).everySpec;
     expect(splitCap(grown('.agents/skills/joycraft-implement/SKILL.md', Math.max(200, spare + 1))).over).toEqual([expect.stringMatching(/^every-spec /)]);
-    // On-demand words a later spec spends shrink the room the test review has; 600 or all that is left (spec 18, class 1).
+    // 600 more on-demand words: no every-spec entry, and still under the on-demand cap.
+    const review = splitCap(grown('.joycraft/references/testing-review.md', 600));
+    expect(review.over.filter((entry) => entry.startsWith('every-spec '))).toEqual([]);
+    expect(review.onDemand).toBeLessThanOrEqual(ON_DEMAND_CAP);
+    // One word past the on-demand spare breaks only the on-demand cap.
     const onDemandSpare = ON_DEMAND_CAP - splitCap(treeBundle()).onDemand;
-    expect(splitCap(grown('.joycraft/references/testing-review.md', Math.min(600, onDemandSpare))).over).toEqual([]);
+    expect(splitCap(grown('.joycraft/references/testing-review.md', onDemandSpare + 1)).over).toEqual([expect.stringMatching(/^on-demand /)]);
   });
 
   it('[AC:spec-1-4] the duplicate worktree and acceptance-test paragraphs are cut, and worktrees.md keeps its copy', () => {
