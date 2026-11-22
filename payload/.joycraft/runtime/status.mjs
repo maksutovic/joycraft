@@ -3,6 +3,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { journalPath, validateOwnerAcceptance, visibleReports } from './completion.mjs';
 import { workPaths } from './config.mjs';
+import { readFooter } from './evidence.mjs';
 import { reviewRoundKey } from './dispatch-start.mjs';
 import { briefDecisionRecords, isObject, localPath, nonempty, parseJson, readLocal, sha256, snapshot, specStatus, validateQueue } from './identity.mjs';
 import { decide, listWorktrees } from './worktrees.mjs';
@@ -86,8 +87,36 @@ function worktreeCounts(root) {
   } catch { return null; }
 }
 
+/** The `.log` receipts in a feature folder and the receipts its reports cite, each counted once. */
+function receiptPaths(root, folder, queuePath, specs) {
+  const paths = new Set();
+  const home = path.join(root, folder);
+  if (existsSync(home)) {
+    for (const name of readdirSync(home, { recursive: true })) if (String(name).endsWith('.log')) paths.add(path.posix.join(folder, String(name).split(path.sep).join('/')));
+  }
+  for (const spec of specs) {
+    let reports = [];
+    try { reports = visibleReports({ root, queuePath, specId: spec.id }); } catch { /* unreadable reports cite nothing */ }
+    for (const { report } of reports) {
+      for (const flow of Array.isArray(report.flows) ? report.flows : []) for (const observation of Array.isArray(flow?.observations) ? flow.observations : []) {
+        for (const receipt of Array.isArray(observation?.receipts) ? observation.receipts : []) if (nonempty(receipt?.path)) paths.add(path.posix.normalize(receipt.path));
+      }
+    }
+  }
+  return [...paths];
+}
+
+/** One line when any receipt's footer says its run started above the core count; null otherwise. */
+function loadLine(root, receipts) {
+  const footers = receipts.map(receipt => { try { return readFooter(localPath(root, receipt)); } catch { return null; } }).filter(Boolean);
+  const loaded = footers.filter(footer => footer.loaded === true);
+  if (!loaded.length) return null;
+  const cores = Math.max(...loaded.map(footer => (Number.isInteger(footer.cores) ? footer.cores : 0)));
+  return `${loaded.length} of ${footers.length} test runs started above the core count (${cores} cores). Cap workers per run with the runner's own flag; see setup.`;
+}
+
 /** Report every queue's specs (in paths.features), drift between queue and frontmatter, features ready to archive,
- * and the questions for the user: follow-ups of accepted reports and decision-needed findings of current reports. */
+ * a feature's `load` line when its test runs started loaded, and the questions for the user: follow-ups of accepted reports and decision-needed findings of current reports. */
 export function projectStatus({ root = process.cwd(), fix = false } = {}) {
   const features = [];
   const drift = [];
@@ -128,7 +157,8 @@ export function projectStatus({ root = process.cwd(), fix = false } = {}) {
       if (spec.status === 'in-review') questions.push(...heldDecisions(root, queue.feature, queuePath, spec));
       return row;
     });
-    features.push({ feature: queue.feature, queuePath, pendingJournal, specs });
+    const load = loadLine(root, receiptPaths(root, folder, queuePath, queue.specs));
+    features.push({ feature: queue.feature, queuePath, pendingJournal, specs, ...(load ? { load } : {}) });
     if (queue.specs.every(spec => spec.status === 'done')) readyToArchive.push({ feature: queue.feature, folder, openDecisions: openDecisions(root, folder) });
   }
   return { features, drift, fixed, readyToArchive, worktrees: worktreeCounts(root), problems, questions, unreadReports, legacyDecisions };
