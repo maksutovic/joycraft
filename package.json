@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -11,8 +11,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.9.1",
-    "summary": "Fixes from the 1.9.0 reviews: chained gate commands and runner aliases are caught, docs-root manifests and lockfiles need the gate again, cleanup and archive find the project root from a subfolder, and archive's next step skips comment-only tests.",
+    "release": "1.9.2",
+    "summary": "Fixes from the 1.9.1 reviews: a report that ran one part of a chained gate is refused, jsconfig, deno.json and pnpm-workspace.yaml need the gate again under the docs root, cleanup skips a check as not found only for its own command, and archive reads every line ending.",
     "autoSafeEligible": false
   },
   "scripts": {

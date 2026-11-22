@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "d8ae9bb83cb9caf0670a166bd6e3774aa3c0da58",
+    "queuePath": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+    "specId": 5,
+    "specPath": "docs/features/2026-11-22-followups-1-9-2/specs/05-text-restore.md",
+    "criteria": [
+      {
+        "id": "spec-5-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/05-text-restore.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-5-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/05-text-restore.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "text",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "word-cap-split"
+          ]
+        },
+        "sha256": "c8d648963c1767404928fc18d79d4c37596a829687cd3cca95933d4523533e5f",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "07ecfd619d6a3305c9c4c267703e47b38dec4f7737153fde40e0d1fcf7618a60",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/05-text-restore.md",
+        "kind": "requirement",
+        "sha256": "fb03e87046e7c2d278a43bd5378e4f5e6fcc863d9e99056eaf331585588d6226",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "6fac8bce93c093edc5933e2b31905bba2918ef4252667185cacdb305b5568351",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/drift-tidy-text.test.ts",
+        "kind": "check",
+        "sha256": "1b76d2ecd9bf0a807e558c160ab13fba0eff6c8f519fb8d28a7722f7865d9483",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "7505e23414bca37c141d85dcc4b61927ec8381a1dfb9df399ec0b92c60efd624",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          5
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+          "anchors": [
+            "text",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "word-cap-split"
+          ]
+        }
+      ]
+    },
+    "identity": "61fcabcffc49bd0219bd2abe8aa6dbe18e059daa4b8ad07137aa94ed778f3103"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "aefa316572654beb1"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a1ceeed350c571de8"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "unresolved": [],
+  "createdAt": "2026-11-22T18:00:50.531Z",
+  "flows": [
+    {
+      "id": "flow-setup-phrases",
+      "subjectIdentity": "61fcabcffc49bd0219bd2abe8aa6dbe18e059daa4b8ad07137aa94ed778f3103",
+      "criteria": [
+        "spec-5-1"
+      ],
+      "representativeInput": "payload/.joycraft/references/setup.md after 6012f16; payload-guard word counts",
+      "expected": "worktrees section says \"its conventions\", ask-a-question rule says \"materially changes the next action\", setup.md words unchanged, no rule dropped",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-5-1] passed; payload-guard passed (on-demand at the base with 602 spare). wc -w setup.md = 3173 at 6012f16^ and at HEAD. Reviewer read the diff: the four edits are +3 \"and its conventions\", -1 \"home\", -2 \"and do not use it\" -> \"or use it\", -1 \"its path appears in an explicit project allowlist\" -> \"an explicit project allowlist names its path\", +1 \"materially\"; net 0. The non-Git/serial prohibition and the allowlist rule keep their meaning. 2 files, 23 tests passed.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-5-reviewer-focused-20261122T175956323Z-6513-1.log",
+              "sha256": "552850ecc7ddd436a4c0ddbcb02034bee83c80fe1cc67f7d2de6eed41494746a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; the brief runs the recorded gate once per spec, before review."
+      ]
+    },
+    {
+      "id": "flow-guard-comment",
+      "subjectIdentity": "61fcabcffc49bd0219bd2abe8aa6dbe18e059daa4b8ad07137aa94ed778f3103",
+      "criteria": [
+        "spec-5-2"
+      ],
+      "representativeInput": "git diff 6012f16^ 6012f16 -- tests/payload-guard.test.ts, and the unchanged guard run",
+      "expected": "only comment lines added by EVERY_SPEC_FILES recording word-cap-split = on-demand and why; every assertion unchanged and passing",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "payload-guard.test.ts: 16 tests passed, including [AC:spec-1-3] word caps.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-5-reviewer-focused-20261122T175956323Z-6513-1.log",
+              "sha256": "552850ecc7ddd436a4c0ddbcb02034bee83c80fe1cc67f7d2de6eed41494746a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "The diff adds 4 lines, all // comments directly above EVERY_SPEC_FILES, naming word-cap-split = on-demand (Max, 2026-11-22), the per-spec readers, the #test-changes and #test-only-specs anchors and when they are read. No other line in the file changed, and no later commit touches it. Together with the passing run this is honest evidence for \"passes unchanged in its assertions\".",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-5-reviewer-guard-diff.log",
+              "sha256": "b3f31a1052d0c63f58d56efd3ffa66fb618597d044818bb2c30cec82ae74b45f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "git",
+              "diff",
+              "6012f16^",
+              "6012f16",
+              "--",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; the brief runs the recorded gate once per spec, before review."
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/setup.md:247",
+      "summary": "The 1.9.1 original was a separate rule, \"Preserve an existing equivalent home and its conventions.\" The restored words are folded into \"keep bootstrap guidance in the existing docs/context/worktrees.md or another mapped worktree/bootstrap home and its conventions\", which grammatically attaches \"its\" to the second home only and reads as \"keep guidance in ... its conventions\", a weaker directive than \"preserve\". The criterion (the words \"its conventions\", keep an existing home's conventions) is met in substance.",
+      "assumption": "The spec asks for the phrase and the meaning, not the original sentence; a clearer wording at equal word count can come later."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/payload-guard.test.ts:41",
+      "summary": "Criterion spec-5-2 forbids an assertion change, so its [AC:spec-5-2] tag sits in a comment, not a test. trace.mjs counts it as traced. Evidence is the unchanged guard run plus the comment-only diff receipt; the tag itself is not a test."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+--- lifted source ---
+const backlogFile = relative => relative.toLowerCase().split('/').slice(0, -1).includes('backlog') || path.posix.basename(relative).toLowerCase().startsWith('backlog');
+const notFound = /^[^\s:]+:(?: (?:line )?\d+:)? (?:([^:\n]+): (?:command )?not found|command not found: (.+?))\s*$/gm;
+const baseWord = word => path.posix.basename(word.replace(/^['"]|['"]$/g, '').replaceAll('\\', '/'));
+function ownNotFound(stderr, run) {
+  const words = new Set(String(run).split(/[\s|&;()<>]+/).filter(Boolean).map(baseWord));
+  return [...String(stderr).matchAll(notFound)].some(match => words.has(baseWord((match[1] ?? match[2]).trim())));
+}
+return { backlogFile, ownNotFound };
+---
+ok  ownNotFound "sh: 1: x: not found" "x | cat" true
+ok  ownNotFound "bash: x: command not found" "x|cat" true
+ok  ownNotFound "bash: line 1: x: command not found" "x && y" true
+ok  ownNotFound "/bin/sh: x: command not found" "./bin/x" true
+ok  ownNotFound "zsh: command not found: x" "x" true
+ok  ownNotFound "sh: 1: /opt/x: not found" "/opt/x arg" true
+ok  ownNotFound "sh: 1: x: not found\r" "x" true
+ok  ownNotFound "noise\nsh: 1: x: not found\nmore" "x | cat" true
+ok  ownNotFound "rule no-foo: not found" "lint" false
+ok  ownNotFound "lint: rule no-foo: not found" "lint" false
+ok  ownNotFound "sh: 1: other: not found" "lint | cat" false
+ok  ownNotFound "eslint: config: not found" "eslint ." false
+repeat calls [ true, true ]
+ok  backlogFile Backlog/x.md true
+ok  backlogFile a/BACKLOG/b/c.md true
+ok  backlogFile notes/backlog/z.md true
+ok  backlogFile guides/x.md false
+ok  backlogFile backlogs/x.md false
+ok  backlogFile x/Backlog-ideas.md true
+all ok
+joycraft-evidence: {"wallMs":34,"load":[20.59716796875,20.59716796875],"cores":14,"loaded":true,"argv":["node",".joycraft/local/probe-fu2/spec-2-reviewer-probe.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"],"exitCode":0,"timedOut":false,"revision":"5022789e4b96244b6830c661842fe1f08d995e2e","dirty":true}

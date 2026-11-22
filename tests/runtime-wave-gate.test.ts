@@ -301,6 +301,25 @@ describe('spec 27 delivery polish', () => {
     expect(comment).toContain('lockfile');
   });
 
+  // Spec: docs/features/2026-11-22-followups-1-9-2/specs/03-more-manifests.md
+  it('[AC:spec-3-1] jsconfig, deno.json, deno.jsonc and pnpm-workspace.yaml under the docs root need the gate again; other JSON keeps the old receipt', () => {
+    const cases: Array<[string, number]> = [
+      ['docs/site/deno.json', 1], ['docs/features/x/pnpm-workspace.yaml', 1], ['docs/site/jsconfig.json', 1],
+      ['docs/archive/f/jsconfig.app.json', 1], ['docs/site/Deno.JSONC', 1], ['docs/site/PNPM-Workspace.yaml', 1],
+      ['docs/notes.json', 0],
+    ];
+    for (const [path, status] of cases) {
+      const { root, remote, first, head } = deliveryFixture();
+      footer(root, 'gate.log', { argv: ['node', 'gate.mjs'], exitCode: 0, revision: head, dirty: false });
+      put(join(root, path), /\.jsonc?$/i.test(path) ? '{}\n' : 'x\n');
+      git(root, 'add', '.'); git(root, 'commit', '-q', '-m', path);
+      const result = push(root, first, ['--gate-receipt', 'receipts/gate.log']);
+      expect(result.status, `${path}: ${result.stderr}`).toBe(status);
+      if (status) { expect(result.stderr.trim()).toBe('gate-receipt-stale'); expect(remoteRef(remote)).toBe(''); }
+      else expect(remoteRef(remote)).toBe(git(root, 'rev-parse', 'HEAD'));
+    }
+  }, 90000);
+
   // Spec 29: config now refuses a docs root of `.`, so delivery stops before any push.
   it('[AC:spec-27-14] a docs root of . gives no exemption', () => {
     const { root, remote, first, head } = deliveryFixture('tests:\n  gate: node gate.mjs\npaths:\n  features: features\n  archive: archive\n  context: context\n');

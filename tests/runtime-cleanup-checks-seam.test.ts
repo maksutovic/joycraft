@@ -124,3 +124,18 @@ describe('checks: 1.9.1 cleanup fixes', () => {
     ]);
   });
 });
+
+// Spec: docs/features/2026-11-22-followups-1-9-2/specs/02-cleanup-checker-fixes.md
+describe('checks: 1.9.2 own not-found line only', () => {
+  it('[AC:spec-2-1] a not-found line skips a check only when it names a word of run; a working checker that prints one is not skipped', () => {
+    const root = project('checks:\n  - name: piped\n    run: missing-tool-xyz | cat\n  - name: rules\n    run: sh rules.sh\n  - name: shell\n    run: sh nf.sh\n');
+    put(root, 'rules.sh', 'echo "rule no-foo: not found" >&2\necho "lint: rule no-foo: not found" >&2\necho "sh: 1: other-tool: not found" >&2\nexit 0\n');
+    put(root, 'nf.sh', 'echo "zsh: command not found: nf.sh" >&2\nexit 0\n');
+    const json = JSON.parse(node(root, [runtime('cleanup.mjs'), 'tidy']).stdout);
+    const of = (list: { check: string }[], check: string) => list.filter(item => item.check === check);
+    expect(of(json.skipped, 'piped')).toEqual([{ check: 'piped', reason: 'Command not found: missing-tool-xyz | cat' }]);
+    expect(of(json.skipped, 'rules')).toEqual([]);
+    expect(of(json.findings, 'rules')).toEqual([]);
+    expect(of(json.skipped, 'shell')).toEqual([{ check: 'shell', reason: 'Command not found: sh nf.sh' }]);
+  });
+});

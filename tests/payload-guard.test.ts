@@ -38,6 +38,10 @@ const FIELD_24_WORDS = 29919;
 // worktrees.md; joycraft-testing's acceptance-test paragraph). After it:
 // 12,150 every-spec words (106 spare) and 17,569 on-demand words (2,094 spare).
 
+// [AC:spec-5-2] Decision `word-cap-split` = `on-demand` (Max, 2026-11-22): `testing-review.md`
+// stays on-demand. Per-spec readers (reviewer, verify, implementer, decompose)
+// link only its `#test-changes` and `#test-only-specs` sections, and read them
+// only when a spec changes tests or is test-only; the rest is cleanup's test review.
 /** Every-spec text: each file with who reads it, and when. */
 export const EVERY_SPEC_FILES: Record<string, string> = {
   '.agents/skills/joycraft-implement/SKILL.md': 'the coordinator, for every spec it runs',

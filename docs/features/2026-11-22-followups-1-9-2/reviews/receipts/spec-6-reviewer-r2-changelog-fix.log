@@ -1,0 +1,39 @@
+commit c4f24feb636bbaddb2c16b3b217b162acdaa5c06
+Author: Maximilian Maksutovic <maksutovic@gmail.com>
+Date:   Sun Nov 22 10:04:40 2026 -0800
+
+    docs: state exactly which docs-root manifests 1.9.2 newly gates
+    
+    Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 9c6226b..15e83ba 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -14,10 +14,10 @@ and delivery. None blocked 1.9.1; this release fixes them.
+ 
+ ### Update notes
+ 
+-- **More manifests under the docs root need the gate again.** `jsconfig*.json`,
+-  `deno.json`, `deno.jsonc` and `pnpm-workspace.yaml` under the docs root, in
+-  feature and archive folders too, now need a fresh gate run before push, like
+-  `package.json`, `tsconfig*.json` and lockfiles since 1.9.1.
++- **More manifests under the docs root need the gate again.** `jsconfig*.json` and
++  `deno.json` now need a fresh gate run before push anywhere under the docs root,
++  and `pnpm-workspace.yaml` now also in feature and archive folders. `deno.jsonc`
++  is now named as a manifest; it already needed the gate.
+ 
+ ### Fixed
+ 
+@@ -26,8 +26,8 @@ and delivery. None blocked 1.9.1; this release fixes them.
+   them is refused like one that ran the whole gate.
+ - **Cleanup skips a check as "Command not found" only for its own command.** The
+   shell's not-found line must name a word of the check's `run`; a not-found line
+-  for a tool the check calls inside its own script no longer skips the check. `new-doc` skips a
+-  backlog folder in any case (`Backlog/`).
++  for a tool the check calls inside its own script no longer skips the check.
++  `new-doc` and age-out skip a backlog folder in any case (`Backlog/`).
+ - **Archive reads every line ending.** When it looks for files that name the
+   feature folder, it splits lines on CRLF, LF, a lone CR, U+2028 and U+2029. A
+   blank `--owner-instruction` now gets a plain message that it needs the owner's
+joycraft-evidence: {"wallMs":20,"load":[6.57861328125,6.57861328125],"cores":14,"loaded":false,"argv":["git","show","c4f24fe","--","CHANGELOG.md"],"exitCode":0,"timedOut":false,"revision":"c4f24feb636bbaddb2c16b3b217b162acdaa5c06","dirty":true}

@@ -1,0 +1,34 @@
+
+> joycraft@1.9.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-cleanup-checks-seam.test.ts tests/runtime-cleanup-tidy.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-cleanup-checks-seam.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 3782[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: in joycraft.yaml[2m > [22m[AC:spec-10-2] each path:line: message output line is a finding with the check name; other lines are ignored [33m 334[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: in joycraft.yaml[2m > [22m[AC:spec-10-3] a command not found is one skipped entry and tidy exits 0 [33m 347[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: review fixes[2m > [22m[review-a-5] stderr lines count, stack-trace lines do not [33m 339[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: review fixes[2m > [22m[review-a-5] a check past its timeout is skipped, even when it pipes [33m 1334[2mms[22m[39m
+   [33m[2m✓[22m[39m checks seam line forms (spec 27)[2m > [22m[AC:spec-27-16] reads the markdownlint-cli2 form and project-absolute paths; host:port lines are not findings [33m 352[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: 1.9.1 cleanup fixes[2m > [22m[AC:spec-3-4] a missing tool in a pipeline that exits 0 is skipped as not found; a check with a finding is unchanged [33m 391[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: 1.9.2 own not-found line only[2m > [22m[AC:spec-2-1] a not-found line skips a check only when it names a word of run; a working checker that prints one is not skipped [33m 430[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-tidy.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 8508[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] a feature branch uses the merge base with main [33m 587[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] a trunk-only repo uses the last 7 days, approximate [33m 744[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] a trunk-only repo uses at most 100 commits when the 7 days hold more [33m 337[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] after a squash merge the branch still measures from its fork point; --base overrides [33m 697[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy reports[2m > [22m[AC:spec-2-3] new-doc groups added Markdown by folder, outside features and archive [33m 381[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy reports[2m > [22m[AC:spec-2-4] at most 10 findings, context pages first, then more [33m 414[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy review fixes[2m > [22m[review-a-1] removing a 2.4 MB lockfile and a 2.4 MB source file does not overflow the Git buffer [33m 554[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy review fixes[2m > [22m[review-a-7] a detached HEAD at the trunk tip reads the recent window, like the trunk [33m 669[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy 1.9.1 cleanup fixes[2m > [22m[AC:spec-3-1] new-doc skips a backlog* file under the docs root, in any case; other new docs still count [33m 957[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy 1.9.1 cleanup fixes[2m > [22m[AC:spec-3-5] tidy run from a subfolder finds the project root: same findings, and its checks: run [33m 1914[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy 1.9.2 backlog folder in any case[2m > [22m[AC:spec-2-2] new-doc skips a file in a backlog folder of any letter case; other new docs still count [33m 992[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m22 passed[39m[22m[90m (22)[39m
+[2m   Start at [22m 09:56:36
+[2m   Duration [22m 8.71s[2m (transform 28ms, setup 0ms, collect 39ms, tests 12.29s, environment 0ms, prepare 59ms)[22m
+
+joycraft-evidence: {"wallMs":9433,"load":[20.45556640625,19.1376953125],"cores":14,"loaded":true,"argv":["pnpm","test","tests/runtime-cleanup-checks-seam.test.ts","tests/runtime-cleanup-tidy.test.ts"],"exitCode":0,"timedOut":false,"revision":"5022789e4b96244b6830c661842fe1f08d995e2e","dirty":false}

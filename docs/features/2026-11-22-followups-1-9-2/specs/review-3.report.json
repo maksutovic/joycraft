@@ -1,0 +1,225 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "d8ae9bb83cb9caf0670a166bd6e3774aa3c0da58",
+    "queuePath": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+    "specId": 3,
+    "specPath": "docs/features/2026-11-22-followups-1-9-2/specs/03-more-manifests.md",
+    "criteria": [
+      {
+        "id": "spec-3-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/03-more-manifests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/03-more-manifests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "delivery",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "8f4c0873f87061e7fd628105a3e2e4ee674e014d618f84021aad7f61a6c57654",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "f0ff169176bdd1258cab88d9426e1572035a3b61819139d4fb6912d6e3b67340",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/03-more-manifests.md",
+        "kind": "requirement",
+        "sha256": "3954022c4ab87a0fd92e7c97a4c65d743f83c5d9dd7d005d6cca1067865a7d96",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/delivery.md",
+        "kind": "code",
+        "sha256": "434f20a716ba7b53f7c21eef62602fb88e7e18ef0c11d9eea49cf889682130a7",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/delivery.mjs",
+        "kind": "code",
+        "sha256": "8169d25024d7b7970cbbc5b875c79fca4847c9572003e191475d7c54c849ca8e",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "7505e23414bca37c141d85dcc4b61927ec8381a1dfb9df399ec0b92c60efd624",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "20bee4f0aeeb38c9ba124d93fc5a1a9f7be5a5dc3a5697c836bffe5f389a2fb1",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "f6f09dfab92cff01600426f67e5800095967f757749483deef8f386feb62e79b",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          3
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+          "anchors": [
+            "delivery",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "8100f490d676c7922ac471153ece67d1e9179eec0e31141459a6b390bcdc892b"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "aefa316572654beb1"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a091a31eeb119284e"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "unresolved": [],
+  "createdAt": "2026-11-22T18:00:22.392Z",
+  "flows": [
+    {
+      "id": "flow-more-manifests",
+      "subjectIdentity": "8100f490d676c7922ac471153ece67d1e9179eec0e31141459a6b390bcdc892b",
+      "criteria": [
+        "spec-3-1"
+      ],
+      "representativeInput": "delivery push fixtures: a green gate receipt on the prior HEAD, then one commit adding docs/site/deno.json, docs/features/x/pnpm-workspace.yaml, docs/site/jsconfig.json, docs/archive/f/jsconfig.app.json, docs/site/Deno.JSONC, docs/site/PNPM-Workspace.yaml, or docs/notes.json",
+      "expected": "each manifest path is refused with gate-receipt-stale and nothing is pushed; docs/notes.json reuses the receipt and pushes",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-1] passed (7 cases incl. mixed case, archive folder, feature folder). Reviewer regex probe: deno.json, deno.jsonc, DENO.JSON, jsconfig.json, jsconfig.base.json, JSConfig.JSON, pnpm-workspace.yaml match; mydeno.json, deno.json.bak, notes.json, jsconfig.jsonc, pnpm-workspace.yml do not. The manifest check in docsOnlySince runs before the records-folder branch, so it holds anywhere under the docs root. 3 files, 45 tests passed.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-3-reviewer-focused-20261122T175937324Z-86344-1.log",
+              "sha256": "90181cb7aae9bd0a6d7724ec2ae74fb14f682ef11dfe7de139d04bee4e9e70b2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; due at the review boundary per the brief.",
+        "Round 2: round 1 went stale when spec 5 (6012f16) added a comment to tests/payload-guard.test.ts; tests rerun on current inputs at d8ae9bb."
+      ]
+    },
+    {
+      "id": "flow-manifest-text",
+      "subjectIdentity": "8100f490d676c7922ac471153ece67d1e9179eec0e31141459a6b390bcdc892b",
+      "criteria": [
+        "spec-3-2"
+      ],
+      "representativeInput": "installed delivery.md Clean-tree bullet and the docsOnlySince doc comment; payload-guard word counts",
+      "expected": "both name jsconfig*.json, deno.json, deno.jsonc, pnpm-workspace.yaml and the anywhere-under-the-docs-root rule; delivery.md words do not grow; on-demand stays at or below the base",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-2] passed; payload-guard passed with every-spec 12177 (79 spare) and on-demand 20561 (602 spare, equal to the base). wc -w of delivery.md is 596 before and after 5022789.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-3-reviewer-focused-20261122T175937324Z-86344-1.log",
+              "sha256": "90181cb7aae9bd0a6d7724ec2ae74fb14f682ef11dfe7de139d04bee4e9e70b2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; due at the review boundary per the brief.",
+        "Round 2: round 1 went stale when spec 5 (6012f16) added a comment to tests/payload-guard.test.ts; tests rerun on current inputs at d8ae9bb."
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/delivery.md:49",
+      "summary": "To keep the word count flat, \"so the run sees a clean tree at `HEAD`\" became \"so the run sees a clean `HEAD`\". The point is a clean working tree (dirty: false), so the shorter wording is a little less exact.",
+      "assumption": "The spec only fixes the word count; the meaning is still readable in context, so this is not a blocking defect."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/delivery.md:56",
+      "summary": "The reason \"so it stays a record\" for naming a probe script probe.mjs.txt was cut to save words. The instruction stays; only the reason is gone."
+    },
+    {
+      "id": "f3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-1-reviewer-focused-20261122T175535622Z-69284-1.log",
+      "summary": "Commit 5022789 also committed the spec-1 reviewer receipt. That file is outside this spec. It is harmless because receipts are tracked, but it is a stray path in the spec 3 commit."
+    }
+  ]
+}

@@ -170,3 +170,15 @@ describe('tidy 1.9.1 cleanup fixes', () => {
     expect(fromSub).toEqual(fromRoot);
   });
 });
+
+// Spec: docs/features/2026-11-22-followups-1-9-2/specs/02-cleanup-checker-fixes.md
+describe('tidy 1.9.2 backlog folder in any case', () => {
+  it('[AC:spec-2-2] new-doc skips a file in a backlog folder of any letter case; other new docs still count', () => {
+    const root = repo();
+    git(root, ['checkout', '-q', '-b', 'feature']);
+    for (const file of ['docs/Backlog/x.md', 'docs/BACKLOG/y.md', 'docs/notes/backlog/z.md', 'docs/guides/x.md']) put(join(root, file), '# x\n');
+    git(root, ['add', '.']); git(root, ['commit', '-q', '-m', 'docs']);
+    const docs = tidy(root).json.findings.filter((item: { check: string }) => item.check === 'new-doc');
+    expect(docs.map((item: { path: string; files: string[] }) => [item.path, item.files])).toEqual([['docs/guides', ['docs/guides/x.md']]]);
+  });
+});
