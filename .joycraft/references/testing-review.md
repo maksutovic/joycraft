@@ -1,6 +1,6 @@
 # Test review
 
-Opt-in, after a cleanup that a person asks for. Ask one time: "Do you want
+Opt-in, after a cleanup that a person asks for. Ask once: "Do you want
 a review of the tests and CI, with recommendations?" On no, stop.
 Unattended cleanup never asks, and never edits or deletes a test.
 The one exception: at archive, session end may change a folder path in a
@@ -72,10 +72,9 @@ nested runners, skip lists), never time budgets.
 
 The review itself edits no test. Write each change the person approves as a
 [test-only spec](#test-only-specs) for a queue, in decompose's format, with its
-`## Test changes` class: one file or one subsystem in each spec. A seam or a
-fix that the tests need goes first, in its own spec. A deletion names the claim
-the test protected, the test that now owns it or `claim retired: <owner
-decision>`, and the owner's yes; its ledger row carries a break-the-code
+`## Test changes` class: one file or one subsystem in each spec. A deletion
+names the claim the test protected, the test that now owns it or `claim
+retired: <owner decision>`, and the owner's yes; its ledger row carries a break-the-code
 receipt for the test that now owns the claim. Keep auth, permissions,
 persistence, migrations, security, external formats and release tests unless
 the owner says yes per batch. Report the full-suite time and run facts
@@ -146,14 +145,16 @@ For each test file it changes (class 2), the implementer:
 
 The reviewer reruns one saved fault and one of its own, in a tree it may
 change and restore. It aims its own fault at an assertion or behavior the diff
-removed, and checks out the base to run the old file on it. It checks that each
-old-run receipt carries the base revision and the same patch sha256 as the new
-runs. A reviewer in a separate tree gets the patches through a commit of the
-patch files (not the receipts) or through its packet. Its own patches and
-receipts go in a git-ignored path; only the final report receipts go in the
-feature folder, after its last fault run. A reviewer that shares the
-coordinator's tree runs no fault: it reads the saved receipts and states that
-as a limit. Block only when the old file catches a fault that the new file
-misses; any other survivor is a finding. The verdict states the proof's limit
-in one line: "the chosen faults are still caught; this does not show the test
-is as strong as before."
+removed, first a removed assertion that has no replacement, and checks out the
+base to run the old file on it. It checks that each old-run receipt carries the
+base revision and the same patch sha256 as the new runs, and each receipt's
+patch sha256 against the list committed before the test edit, with one saved
+fault per removed or changed assertion. A reviewer in a separate tree gets the
+patches through a commit of the patch files (not the receipts) or through its
+packet. Its own patches and receipts go in a git-ignored path; only the final
+report receipts go in the feature folder, after its last fault run. A reviewer
+that shares the coordinator's tree runs no fault: it reads the saved receipts
+and states that as a limit. Block only when the old file catches a fault that
+the new file misses; any other survivor is a finding. The verdict states the
+proof's limit in one line: "the chosen faults are still caught; this does not
+show the test is as strong as before."

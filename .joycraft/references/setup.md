@@ -245,25 +245,23 @@ command.
 For an observed Git project with a parallel-worker preference, keep bootstrap
 guidance in the existing `docs/context/worktrees.md` home or another mapped
 worktree/bootstrap home. If neither exists, setup may create
-`docs/context/worktrees.md` and add one concise `AGENTS.md` context-map link.
-Preserve an existing equivalent home and its conventions. Do not create a
-worktree document for a non-Git or explicitly serial project, and do not use it
-to turn setup into a questionnaire.
+`docs/context/worktrees.md` and add one `AGENTS.md` context-map link. Do not
+create a worktree document for a non-Git or explicitly serial project, and do
+not use it to turn setup into a questionnaire.
 
 Create a worker worktree before setup. Its first action, before editing or UI
 work, is to inspect the manifest, lockfile, and documented commands from inside
-that new worktree. A manifest command or observed lockfile can identify an
-appropriate dependency bootstrap such as `pnpm install --frozen-lockfile`, but
-setup never runs it automatically. Run a dependency command only when the
-current request authorizes it. Do not infer that a package manager, cache, port,
-browser, or other host feature exists because another worktree had one.
+that new worktree. A manifest command or observed lockfile can identify a
+dependency bootstrap such as `pnpm install --frozen-lockfile`. Run a dependency
+command only when the current request authorizes it. Do not infer that a
+package manager, cache, port, browser, or other host feature exists because
+another worktree had one.
 
 Use a gitignored file only when its path appears in an explicit project
-allowlist. Begin with an empty allowlist when no project policy exists. The
-project owner may authorize copying an allowed path from the same project's
-coordinator through native `.worktreeinclude` or an explicit manual equivalent.
-Do not copy files by default, including secrets, credentials, browser profiles,
-or host configuration.
+allowlist. The project owner may authorize copying an allowed path from the
+same project's coordinator through native `.worktreeinclude` or an explicit
+manual equivalent. Do not copy files by default, including secrets,
+credentials, browser profiles, or host configuration.
 
 Keep each worker's `node_modules`, build caches such as `.next`, runtime state,
 development-server port, and browser session separate. An immutable
@@ -297,7 +295,7 @@ routed, changed in place and kept current. There
 is no setup-complete sentinel: useful source content, not a flag, determines
 whether context is available.
 
-Outside setup's interview, ask only for missing human knowledge that materially
+Outside setup's interview, ask only for missing human knowledge that
 changes the next action. Prefer one short contextual question and continue
 independent work while it is pending. Do not generate a questionnaire or start
 building an imagined app.
@@ -316,7 +314,7 @@ change credentials, install dependencies, or replace the user's workflow.
 When `.joycraft/installation.json` lists the `claude` host, offer the [gates](gates.md) once, in one line; turn them on only on the user's yes.
 When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`, ask once whether search should skip the archive; rerun it with `--apply` on a yes, `--decline` on a no.
 When `node .joycraft/runtime/entry-check.mjs` reports `gate-rule` and `node .joycraft/runtime/cleanup.mjs gate-rule --check` prints `unset`, show the findings once with the before-and-after rewrite ([cleanup](cleanup.md)) as one question. Rewrite on a yes, and record the answer with `cleanup.mjs gate-rule --record rewritten` or `--record kept`.
-When the project already uses a doc or code checker (vale, knip), offer once to add it to `checks:` ([settings](settings.md)).
+When the project already uses a doc or code checker (vale, or knip through a wrapper that prints `path:line: message`), offer once to add it to `checks:` ([settings](settings.md)).
 
 ## Upgrade and agent onboarding
 

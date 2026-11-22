@@ -9,27 +9,26 @@ node .joycraft/runtime/delivery.mjs check --root . --base <reviewed-base>
 node .joycraft/runtime/delivery.mjs push --root . --base <reviewed-base> --remote origin --branch feature/example -- ./verify.sh
 ```
 
-The base is immediately resolved to a commit SHA and must be an ancestor of the
-captured `HEAD` (the same commit is valid). The check observes the
-committed `base..HEAD` range, rejects newly added conflict-marker lines, and parses
+The base resolves to a commit SHA that must be an ancestor of, or equal to,
+the captured `HEAD`. The check observes the
+committed `base..HEAD` range, rejects new conflict-marker lines, and parses
 only changed, nondeleted `.json` and `.jsonl` files from `HEAD`. It also rejects
 an unresolved index or active merge/cherry-pick/rebase state. Output is one JSON
-receipt with paths and SHAs; successful push receipts also contain verifier exit
-status and byte-count/digest metadata. Verifier output itself is drained without
-being retained or printed.
+receipt with paths and SHAs; a successful push receipt adds the verifier's exit
+status, byte count and digest. Verifier output is drained, never kept or printed.
 
-For `push`, a cooperative lock keyed by remote and branch sits in Git's common
-directory. It records PID and host, and takes a held lock only when that PID
-is not running on this host. It requires a clean tracked/index
+For `push`, a cooperative lock per remote and branch in Git's common directory
+records PID and host; a held lock is taken only when that PID is not running
+here. It requires a clean tracked/index
 state, captures `HEAD`, the semantic index tree and tracked-file hashes, runs
-the explicit verifier argv without a shell, and rejects a nonzero result. It
+the verifier argv without a shell, and rejects a nonzero result. It
 then proves those captured sources are unchanged before pushing the captured SHA
-with ordinary Git non-force semantics. A harmless Git index cache refresh, such
-as one caused by `git status`, does not change the semantic index binding.
+without force. An index cache refresh (from `git status`,
+say) does not change the semantic index tree.
 
-An exit-zero verifier is only an observed command result, not an independent
-PASS or review. This helper is not a sandbox and cannot guarantee that external
-writers cooperate.
+An exit-zero verifier is an observed result, not an independent
+PASS or review. This helper is no sandbox and cannot make external writers
+cooperate.
 
 ## Gate points and the gate receipt
 
@@ -45,13 +44,17 @@ run focused tests only; the coordinator runs the project gate (`tests.gate`).
   gate with shell syntax counts only as `<shell> -c "<gate>"` (see
   `delivery.mjs` usage); evidence.mjs runs no shell.
 - **Clean tree:** `delivery.mjs` rejects a receipt whose footer says
-  `dirty: true` as stale (`gate-receipt-stale`), and it needs the receipt
-  inside the project. Write the receipt to a git-ignored path, or commit
-  pending files first, so the run sees a clean tree at `HEAD`. A receipt must
-  be git-ignored or in a feature folder, as `evidence.mjs` enforces. A
-  receipt on an earlier revision still counts when every path changed since
-  is under the docs root: a Markdown or JSON file there, or a record in a
-  feature or archive folder. Any other changed path needs the gate again.
+  `dirty: true` as stale (`gate-receipt-stale`). Write the receipt to a
+  git-ignored path, or commit pending files first, so the run sees a clean
+  tree at `HEAD`. A receipt must be inside the project, git-ignored or in a
+  feature folder, as `evidence.mjs` enforces. A receipt on an earlier
+  revision still counts when every path changed since is under the docs
+  root: a Markdown or JSON file there, or a record
+  (`.md .json .log .txt .diff .patch .yaml .yml`) in a feature or archive
+  folder, never `package.json`, `tsconfig*.json` or a lockfile. Save a probe
+  script kept as a receipt with a `.txt` suffix (`probe.mjs.txt`) so it
+  stays a record. Any other
+  changed path needs the gate again.
 - **Push:** `delivery.mjs push ... --gate-receipt <path>.log` refuses without a
   green receipt for `HEAD`. A failed verifier stops delivery. Neither replaces
   independent review on the final integrated revision or authorizes a push.

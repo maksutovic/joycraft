@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { boundQueueForSubject, briefDecisionRecords, canonical, featureFolderMatches, isObject, isSha256, localPath, nonempty, normalizedQueueForSubject, parseJson, readLocal, readQueue, relativePath, requireValue, scopedRequirementForSubject, sha256, specStatus, subjectIdentity, validateIndependentReview } from './identity.mjs';
 import { validateEvidence } from './evidence.mjs';
 import { validateOwnerAcceptance, validateWaiver } from './completion.mjs';
-import { docsRoot } from './cleanup.mjs';
+import { docsRoot, projectRoot } from './cleanup.mjs';
 import { readConfig, workPaths } from './config.mjs';
 import { isTestPath } from './test-changes.mjs';
 
@@ -411,7 +411,7 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
     // As is: a spec that is not done, or whose acceptance does not hold, is listed, never accepted.
     let reason = item?.status === 'done' ? null : `status ${item?.status}`;
     if (!reason) { try { evidence.push(decide()); } catch (error) { reason = error.message; } }
-    if (reason) unverified.push({ id: item?.id, file: item?.file, status: item?.status, reason, missingReceipts: missingReceipts(root, item) });
+    if (reason) unverified.push({ id: item?.id, file: item?.file, status: item?.status, reason, missingReceipts: missingReceipts(root, item, path.posix.dirname(queuePath)) });
   }
   if (asIs) requireValue(Array.isArray(queue.specs) && queue.specs.length > 0, 'The queue has no specs');
   else requireValue(Array.isArray(queue.specs) && queue.specs.length > 0 && queue.specs.every(spec => spec.status === 'done'), 'Every spec must be done before archiving the whole feature');
@@ -441,8 +441,12 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
   return { schemaVersion: 1, feature, phase, source, destination, queuePath, namedFiles: namedFiles(root, source), attestation: parsedAttestation, evidence, requirementHistory, ...(asIs ? { asIs: { path: `${destination}/unverified.md`, ownerInstruction, unverified } } : {}), ...(reconciliation ? { reconciliation: { path: reconciliation.path, sha256: reconciliation.sha256, record: reconciliation.record } } : {}), featureFiles: files.sort((a, b) => a.path.localeCompare(b.path)), copiedEvidence: [...copies.values()].sort((a, b) => a.path.localeCompare(b.path)), historical: { codeInputHashesAreHistorical: true, currentAcceptanceRenewed: false, ...(reconciliation ? { acceptanceRecordsReconciled: true } : {}), ...(asIs ? { archivedAsIs: true } : {}) } };
 }
 
-/** Receipts and reports that a spec's acceptance records name but that are missing or changed. Reads only. */
-function missingReceipts(root, spec) {
+/**
+ * Receipts and reports that a spec's acceptance records name but that are missing or changed.
+ * With no record naming a report, the spec's latest report file in the queue's folder is read
+ * (`review-<id>.report.json`, or `review-<id>-r<n>.report.json` with the highest n). Reads only.
+ */
+function missingReceipts(root, spec, specsFolder) {
   const missing = [];
   const check = (file, digest) => {
     let bytes = null;
@@ -456,6 +460,7 @@ function missingReceipts(root, spec) {
     const bytes = check(record.path, record.sha256);
     if (bytes !== null && record === spec?.ownerAcceptance && record.legacy !== true) { try { reports.push(JSON.parse(bytes.toString('utf8')).review); } catch { /* not JSON */ } }
   }
+  if (!reports.some(item => isObject(item) && nonempty(item.path))) { const latest = latestReport(root, specsFolder, spec?.id); if (latest) reports.push({ path: latest }); }
   for (const review of reports.filter(item => isObject(item) && nonempty(item.path))) {
     const bytes = check(review.path, review.sha256);
     let report;
@@ -465,6 +470,16 @@ function missingReceipts(root, spec) {
     }
   }
   return [...new Set(missing)];
+}
+
+/** The spec's latest review report file in `folder`, or null: the plain name counts as round 1. */
+function latestReport(root, folder, id) {
+  if (!Number.isInteger(id) || !folder) return null;
+  let names;
+  try { names = readdirSync(localDirectory(root, folder)); } catch { return null; }
+  const round = name => { const match = new RegExp(`^review-${id}(?:-r(\\d+))?\\.report\\.json$`).exec(name); return match ? Number(match[1] ?? 1) : -1; };
+  const best = names.filter(name => round(name) >= 0).sort((a, b) => round(b) - round(a))[0];
+  return best ? `${folder}/${best}` : null;
 }
 
 /** The note an as-is archive carries: what was not accepted, and the owner's words. It claims no acceptance. */
@@ -518,11 +533,16 @@ const isMigrationPath = file => /(^|\/)migrations\//.test(file);
  * folder, tests first, each with its first naming line and that line's text. Archive only lists
  * them; the session-end agent changes the path in the listed tests after the move.
  */
+function folderPatterns(root, source) {
+  const folder = path.posix.basename(source);
+  return [namesFolder(source), ...(/^\d{4}-\d{2}-\d{2}-/.test(folder) ? [namesDated(folder, path.posix.basename(workPaths(root).features))] : [])];
+}
+
 function namedFiles(root, source) {
   if (!gitRoot(root)) return [];
   const { features, archive } = workPaths(root);
   const folder = path.posix.basename(source);
-  const patterns = [namesFolder(source), ...(/^\d{4}-\d{2}-\d{2}-/.test(folder) ? [namesDated(folder, path.posix.basename(features))] : [])];
+  const patterns = folderPatterns(root, source);
   // git grep reads only the text files that hold the folder name, never every tracked file or a binary.
   let candidates;
   try { candidates = gitIn(root, ['grep', '-I', '-l', '-z', '-F', '-e', folder]).split('\0').filter(Boolean); }
@@ -542,11 +562,56 @@ function namedFiles(root, source) {
 
 const refusal = message => Object.assign(new Error(message), { exitCode: 2 });
 
-/** After the move: the listed tests that still name the old folder path, for the agent to change. */
-function nextSteps(plan) {
+const hashCommentExtensions = new Set(['.py', '.sh', '.bash', '.rb', '.pl', '.r', '.yaml', '.yml', '.toml']);
+
+/**
+ * For each line of a file, whether it is surely a comment: `//`; `/*` or `<!--` with nothing after
+ * the close on that line; `*` inside a block a line starting `/*` opened; `#` in a file whose
+ * language comments with it. Any doubt counts as code, which only asks for a needless look.
+ */
+function commentLines(file, lines) {
+  const hash = hashCommentExtensions.has(path.extname(file).toLowerCase());
+  const closedClean = (text, open, close) => {
+    const end = text.indexOf(close, open.length);
+    return end < 0 ? 'open' : text.slice(end + close.length).trim() === '' ? 'closed' : 'code';
+  };
+  let inBlock = false;
+  return lines.map(line => {
+    const text = line.trim();
+    if (inBlock) {
+      const end = text.indexOf('*/');
+      if (end >= 0) inBlock = false;
+      return text.startsWith('*') && (end < 0 || text.slice(end + 2).trim() === '');
+    }
+    if (text.startsWith('//')) return true;
+    if (text.startsWith('/*')) {
+      const state = closedClean(text, '/*', '*/');
+      if (state === 'open') inBlock = true;
+      return state !== 'code';
+    }
+    if (text.startsWith('<!--')) return closedClean(text, '<!--', '-->') !== 'code';
+    return hash && text.startsWith('#');
+  });
+}
+
+/**
+ * After the move: the listed tests that still name the old folder path outside a comment, each at
+ * its first such line, for the agent to change. A test that names it only in sure comments looks to need no change.
+ */
+function nextSteps(root, plan) {
   const tests = plan.namedFiles.filter(file => file.test);
   if (!tests.length) return {};
-  return { next: `${tests.length} ${tests.length === 1 ? 'test still names' : 'tests still name'} \`${plan.source}\`: ${tests.map(file => `\`${file.path}:${file.line}\``).join(', ')}. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.` };
+  const patterns = folderPatterns(root, plan.source);
+  const code = tests.flatMap(file => {
+    let lines;
+    try { lines = readFileSync(path.join(root, file.path), 'utf8').split('\n'); } catch { return [{ path: file.path, line: file.line }]; }
+    const comments = commentLines(file.path, lines);
+    const line = lines.findIndex((each, at) => !comments[at] && patterns.some(pattern => pattern.test(each)));
+    return line < 0 ? [] : [{ path: file.path, line: line + 1 }];
+  });
+  if (!code.length) return { next: `The listed tests name \`${plan.source}\` only in comments, so no path change looks needed. Still run the gate: a red test means one reads the folder, so change its path there and commit the edit with the move.` };
+  const rest = code.length < tests.length ? ' The other listed tests name it only in comments and need no change.' : '';
+  return { next: `${code.length} ${code.length === 1 ? 'test still names' : 'tests still name'} \`${plan.source}\`: ${code.map(file => `\`${file.path}:${file.line}\``).join(', ')}. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.${rest}` };
 }
 
 export function archiveFeature(options) {
@@ -610,7 +675,7 @@ export function archiveFeature(options) {
   let links;
   try { links = relinkLive(root, plan); } catch (error) { links = { error: error.message }; }
   const afterArchive = runAfterArchive(root, plan);
-  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), ...notNeeded, ...nextSteps(plan), links, ...(afterArchive ? { afterArchive } : {}) };
+  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), ...notNeeded, ...nextSteps(root, plan), links, ...(afterArchive ? { afterArchive } : {}) };
 }
 
 const under = (file, folder) => folder === '.' || file === folder || file.startsWith(`${folder}/`);
@@ -685,7 +750,7 @@ function relinkLive(root, plan) {
     const local = path.join(root, file);
     let text;
     try { text = readFileSync(local, 'utf8'); } catch { continue; }
-    if (!file.endsWith('.md')) {
+    if (!/\.(?:md|markdown)$/i.test(file)) {
       if (names.test(text)) result.namedInOtherFiles.push(file);
       continue;
     }
@@ -783,21 +848,14 @@ function argumentsFor(argv) {
   for (let index = 0; index < args.length; index += 1) {
     if (['--apply', '--as-is'].includes(args[index])) { requireValue(flags[args[index]] === undefined, `Duplicate ${args[index]}`); flags[args[index]] = true; continue; }
     if (!['--feature', '--phase', '--attestation', '--reconciliation', '--owner-instruction'].includes(args[index])) throw refusal(`Unknown argument: ${args[index]}; nothing was changed`);
+    // A blank value or one that starts with -- gets the same message: the owner's words are missing.
+    requireValue(args[index] !== '--owner-instruction' || flags[args[index]] !== undefined || (nonempty(args[index + 1]) && !args[index + 1].startsWith('--')), '--owner-instruction needs the owner\'s words as its value; the text cannot start with --');
     requireValue(nonempty(args[index + 1]) && flags[args[index]] === undefined, `Invalid or duplicate argument: ${args[index]}`);
-    requireValue(args[index] !== '--owner-instruction' || !args[index + 1].startsWith('--'), '--owner-instruction needs the owner\'s words as its value; the text cannot start with --');
     flags[args[index]] = args[index + 1]; index += 1;
   }
   requireValue(flags['--feature'] && flags['--phase'] && flags['--attestation'], 'Archive needs --feature, --phase and --attestation');
   requireValue(!flags['--as-is'] || flags['--owner-instruction'], 'Archive --as-is needs --owner-instruction "<the owner\'s own words>"');
   return flags;
-}
-
-/** The project root: the nearest folder up from `start` that holds `.joycraft/`, else `start`. */
-function projectRoot(start = process.cwd()) {
-  for (let current = path.resolve(start); ; current = path.dirname(current)) {
-    try { if (lstatSync(path.join(current, '.joycraft')).isDirectory()) return current; } catch { /* keep looking */ }
-    if (path.dirname(current) === current) return path.resolve(start);
-  }
 }
 
 export function main(argv = process.argv.slice(2)) {
@@ -808,7 +866,7 @@ export function main(argv = process.argv.slice(2)) {
     return result;
   }
   const flags = argumentsFor(argv);
-  const result = archiveFeature({ feature: flags['--feature'], phase: flags['--phase'], attestation: flags['--attestation'], reconciliation: flags['--reconciliation'], asIs: flags['--as-is'] === true, ownerInstruction: flags['--owner-instruction'], apply: flags['--apply'] === true });
+  const result = archiveFeature({ root: projectRoot(), feature: flags['--feature'], phase: flags['--phase'], attestation: flags['--attestation'], reconciliation: flags['--reconciliation'], asIs: flags['--as-is'] === true, ownerInstruction: flags['--owner-instruction'], apply: flags['--apply'] === true });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   // The archive stands; exit 3 tells a caller that only the after-archive hook failed.
   if (result.afterArchive && !result.afterArchive.ok) process.exitCode = 3;
