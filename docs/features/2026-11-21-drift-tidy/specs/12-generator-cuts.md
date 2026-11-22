@@ -24,3 +24,7 @@ Anything in the brief's Scope and limits. Specs other than this one.
 - Files: `payload/.agents/skills/joycraft-session-end/SKILL.md`, `payload/.agents/skills/joycraft-cleanup/SKILL.md`, `payload/.joycraft/references/cleanup.md`, `payload/.joycraft/references/knowledge.md`, `payload/.joycraft/references/setup.md`.
 - Test: `tests/payload-guard.test.ts` (git fixtures in a temp dir, as `tests/runtime-archive-merge-amendment.test.ts` does). Tag each test `[AC:spec-12-<n>]`.
 - Gate: `pnpm test && pnpm typecheck`.
+
+## Decision needed
+
+Review round 1 (review-12.report.json) finding f1: brief decision `tidy-dirty-tree` (open). The blocking finding f2 is fixed in 0d6209d. Spec stays in-review until Max answers.
