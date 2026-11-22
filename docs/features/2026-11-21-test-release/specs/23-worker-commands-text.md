@@ -1,6 +1,6 @@
 ---
 id: 23
-status: in-review
+status: done
 ---
 # Agent files name the forbidden shell forms and point to the printed commands
 

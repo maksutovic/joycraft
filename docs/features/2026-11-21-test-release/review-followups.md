@@ -59,3 +59,4 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - joycraft-verify:51 "the packet's `commands.focused`" → "the startup output's `commands.focused`".
 - gate-in-spec checks only acceptance bullets; the scope section can still name the gate (queue-check.mjs:334).
 - Joycraft's own AGENTS.md "Run `pnpm test && pnpm typecheck` before committing" runs the gate on every commit: Max's call through the spec 16 gate-rule offer.
+- tests/text-worker-commands.test.ts:35 hard-codes pre-spec word counts; rebase it on the guard after acceptance (spec 23 review).
