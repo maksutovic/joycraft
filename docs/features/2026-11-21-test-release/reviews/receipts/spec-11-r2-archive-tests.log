@@ -1,0 +1,16 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-archive-named-files.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-archive-named-files.test.ts (3 tests) 1308ms
+   ✓ archive lists files that name the feature folder > [AC:spec-13-2] --apply --rewrite rewrites the test to the archive path, runs it green and archives  395ms
+   ✓ archive lists files that name the feature folder > [AC:spec-13-3] a red rewritten test is held and restored; an unlisted file or no tests.focused refuses before any edit  666ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  18:52:52
+   Duration  1.48s (transform 20ms, setup 0ms, collect 18ms, tests 1.31s, environment 0ms, prepare 43ms)
+

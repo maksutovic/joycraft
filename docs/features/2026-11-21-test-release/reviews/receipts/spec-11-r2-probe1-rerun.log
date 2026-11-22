@@ -1,0 +1,24 @@
+== 1. isTestPath
+node {"src/a.test.ts":true,"src/a.spec.js":true,"__tests__/a.js":true,"test/a.js":true,"tests/a.mjs":true,"e2e/login.e2e.ts":true,"cypress/e2e/a.cy.ts":true}
+python {"tests/test_a.py":true,"pkg/test_a.py":true,"pkg/a_test.py":true,"app/tests.py":true,"conftest.py":true}
+go {"pkg/a_test.go":true,"testdata/x.json":false}
+rust {"tests/integration.rs":true,"src/lib.rs":false,"benches/b.rs":false}
+java {"src/test/java/com/x/FooTest.java":true,"app/src/androidTest/java/FooTest.kt":true,"src/jvmTest/kotlin/FooTest.kt":true,"lib/FooTest.java":true}
+ruby {"spec/models/user_spec.rb":true,"test/models/user_test.rb":true,"app/user_spec.rb":true}
+swift_csharp {"Tests/AppTests/AppTests.swift":true,"App.Tests/FooTests.cs":true}
+falsePositive {"src/latest_value.ts":false,"src/contest/x.ts":false,"docs/spec/overview.md":false,"src/test_helpers_shared.ts":false}
+== 2. rename, deletion, untracked, staged
+git status --short: "D checks/verify.ts\n D tests/gone.test.ts\nR  tests/old.test.ts -> tests/new.test.ts\nM  tests/staged.test.ts\n?? tests/untracked.test.ts"
+result: {"testFiles":["checks/verify.ts","tests/gone.test.ts","tests/new.test.ts","tests/old.test.ts","tests/staged.test.ts","tests/untracked.test.ts"],"undeclared":["checks/verify.ts","tests/gone.test.ts","tests/new.test.ts","tests/old.test.ts","tests/staged.test.ts","tests/untracked.test.ts"]}
+git diff --name-status base: "R100\ttests/old.test.ts\ttests/renamed.test.ts"
+committed rename result: ["tests/old.test.ts","tests/renamed.test.ts"]
+== 3. changed submodule path
+git diff --name-only base2: "vendor/tests-lib"
+submodule result: []
+== 4. base handling (CLI)
+no --base: {"status":1,"stderr":"Test changes stopped: Usage: test-changes.mjs --queue <queue> --spec <id> --base <sha> [--root <project>]","stdoutStart":""}
+--base HEAD: {"status":1,"stderr":"Test changes stopped: test-changes needs --base <sha>, the captured revision before dispatch","stdoutStart":""}
+--base unknown sha: {"status":1,"stderr":"Test changes stopped: Base deadbeefdeadbeefdeadbeefdeadbeefdeadbeef is not a commit in this repository","stdoutStart":""}
+--base short real sha: {"status":0,"stderr":"","stdoutStart":"{\n  \"base\": \"3769195\",\n  \"specId\": 1,\n  \"testFiles\": [],\n  \""}
+== 5. unsafe backticked path in a Test changes bullet
+result: {"base":"2c3334487c1da72e5b94fdec4fb787d42fd68837","specId":1,"testFiles":["tests/a.test.ts"],"declared":[{"path":"tests/a.test.ts","class":2}],"undeclared":[],"featurePaths":[],"skipped":[{"path":"../outside.test.ts","reason":"declared path refused: Parent traversal is not allowed: ../outside.test.ts"}]}

@@ -1,0 +1,286 @@
+{
+  "schemaVersion": 1,
+  "packetPath": ".joycraft/local/packets/tr-reviewer-11-r2-spec-11.json",
+  "hooks": {
+    "enabled": false,
+    "eligible": false,
+    "reason": "hooks-not-installed"
+  },
+  "coordinator": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "host": "claude"
+  },
+  "reviewRound": 2,
+  "reviewLimit": 3,
+  "trace": {
+    "criteria": [
+      {
+        "id": "spec-11-1",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 57
+          },
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 91
+          },
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 102
+          },
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 110
+          }
+        ]
+      },
+      {
+        "id": "spec-11-2",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 66
+          },
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 119
+          }
+        ]
+      },
+      {
+        "id": "spec-11-3",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 77
+          }
+        ]
+      },
+      {
+        "id": "spec-11-4",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 83
+          },
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 133
+          }
+        ]
+      }
+    ],
+    "untraced": [],
+    "unknownTags": [
+      {
+        "id": "spec-1-1",
+        "file": "tests/runtime-test-changes.test.ts",
+        "line": 94
+      },
+      {
+        "id": "spec-1-1",
+        "file": "tests/runtime-test-changes.test.ts",
+        "line": 104
+      }
+    ],
+    "missingFiles": []
+  },
+  "testChanges": {
+    "base": "50e8d143f62b6273a690ad67a9b3bc7b2e991a2c",
+    "specId": 11,
+    "testFiles": [
+      "tests/payload-guard.test.ts",
+      "tests/runtime-archive-named-files.test.ts",
+      "tests/runtime-dispatch-commands.test.ts",
+      "tests/runtime-evidence-env.test.ts",
+      "tests/runtime-evidence-facts.test.ts",
+      "tests/runtime-evidence-patch.test.ts",
+      "tests/runtime-status-load.test.ts",
+      "tests/runtime-test-changes.test.ts",
+      "tests/runtime-wave-gate.test.ts",
+      "tests/text-owner-gate-lines.test.ts",
+      "tests/text-session-end-pr.test.ts",
+      "tests/text-sota-page.test.ts",
+      "tests/text-spec-tier.test.ts",
+      "tests/text-worker-commands.test.ts"
+    ],
+    "declared": [],
+    "undeclared": [
+      "tests/payload-guard.test.ts",
+      "tests/runtime-archive-named-files.test.ts",
+      "tests/runtime-dispatch-commands.test.ts",
+      "tests/runtime-evidence-env.test.ts",
+      "tests/runtime-evidence-facts.test.ts",
+      "tests/runtime-evidence-patch.test.ts",
+      "tests/runtime-status-load.test.ts",
+      "tests/runtime-test-changes.test.ts",
+      "tests/runtime-wave-gate.test.ts",
+      "tests/text-owner-gate-lines.test.ts",
+      "tests/text-session-end-pr.test.ts",
+      "tests/text-sota-page.test.ts",
+      "tests/text-spec-tier.test.ts",
+      "tests/text-worker-commands.test.ts"
+    ],
+    "featurePaths": [
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 19,
+        "text": "// Decision cap-raise = split-cap (docs/features/2026-11-21-test-release): the"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 205,
+        "text": "const specs = join(project, 'docs/features/demo/specs');"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 210,
+        "text": "inputs: [{ path: `docs/features/demo/specs/0${id}-a.md`, kind: 'requirement' }],"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 211,
+        "text": "criteria: [{ id: 'a', requirement: { path: `docs/features/demo/specs/0${id}-a.md`, anchor: 'a' }, requiredKinds: ['runtime'] }] } })) }));"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 215,
+        "text": "const queue = 'docs/features/demo/specs/.joycraft-spec-queue.json';"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 216,
+        "text": "const decision = 'docs/features/demo/specs/legacy-acceptance.json';"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 284,
+        "text": "// The field shape: docs/features/2026-11-17-demo with \"feature\": \"demo\"."
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 285,
+        "text": "const folder = 'docs/features/2026-11-17-demo';"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 286,
+        "text": "renameSync(join(project, 'docs/features/demo'), join(project, folder));"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 288,
+        "text": "writeFileSync(join(project, datedQueue), readFileSync(join(project, datedQueue), 'utf8').replaceAll('docs/features/demo/', `${folder}/`));"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 316,
+        "text": "renameSync(join(project, 'docs/features/demo'), join(project, 'docs/features/2026-11-17-checkout'));"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 317,
+        "text": "const moved = 'docs/features/2026-11-17-checkout/specs/.joycraft-spec-queue.json';"
+      },
+      {
+        "path": "tests/runtime-archive-named-files.test.ts",
+        "line": 12,
+        "text": "const source = 'docs/features/x';"
+      },
+      {
+        "path": "tests/runtime-dispatch-commands.test.ts",
+        "line": 10,
+        "text": "const folder = 'docs/features/2026-11-21-f';"
+      },
+      {
+        "path": "tests/runtime-evidence-facts.test.ts",
+        "line": 17,
+        "text": "mkdirSync(join(root, 'docs/features/x'), { recursive: true });"
+      },
+      {
+        "path": "tests/runtime-evidence-facts.test.ts",
+        "line": 18,
+        "text": "writeFileSync(join(root, 'docs/features/x/spec.md'), 'spec\\n');"
+      },
+      {
+        "path": "tests/runtime-status-load.test.ts",
+        "line": 10,
+        "text": "const folder = 'docs/features/demo';"
+      },
+      {
+        "path": "tests/runtime-test-changes.test.ts",
+        "line": 11,
+        "text": "const folder = 'docs/features/2026-11-21-f';"
+      },
+      {
+        "path": "tests/runtime-test-changes.test.ts",
+        "line": 79,
+        "text": "put(join(root, 'tests/b.test.ts'), \"import { readFileSync } from 'node:fs';\\nconst brief = readFileSync('docs/features/x/brief.md', 'utf8');\\n\");"
+      },
+      {
+        "path": "tests/runtime-test-changes.test.ts",
+        "line": 80,
+        "text": "expect(changes(root, base).featurePaths).toEqual([{ path: 'tests/b.test.ts', line: 2, text: \"const brief = readFileSync('docs/features/x/brief.md', 'utf8');\" }]);"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "line": 181,
+        "text": "const queuePath = 'docs/features/demo/specs/.joycraft-spec-queue.json';"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "line": 188,
+        "text": "inputs: [{ path: `docs/features/demo/specs/0${id}-s.md`, kind: 'requirement' }, { path: `src/${id}.ts`, kind: 'code' }, { path: check, kind: 'check' }],"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "line": 189,
+        "text": "criteria: [{ id: 'a', requirement: { path: `docs/features/demo/specs/0${id}-s.md`, anchor: 'a' }, requiredKinds: ['runtime'] }] } });"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "line": 190,
+        "text": "for (const id of [1, 2, 3]) put(join(root, `docs/features/demo/specs/0${id}-s.md`), `---\\nid: ${id}\\nstatus: todo\\n---\\n# S\\n`);"
+      },
+      {
+        "path": "tests/text-owner-gate-lines.test.ts",
+        "line": 7,
+        "text": "// Spec: docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md"
+      },
+      {
+        "path": "tests/text-session-end-pr.test.ts",
+        "line": 7,
+        "text": "// Spec: docs/features/2026-11-21-test-release/specs/25-session-end-pr.md"
+      },
+      {
+        "path": "tests/text-session-end-pr.test.ts",
+        "line": 43,
+        "text": "// Review 25: docs/features/2026-11-21-test-release/specs/review-25.report.json"
+      },
+      {
+        "path": "tests/text-sota-page.test.ts",
+        "line": 5,
+        "text": "// Spec: docs/features/2026-11-21-test-release/specs/20-sota-page.md"
+      },
+      {
+        "path": "tests/text-spec-tier.test.ts",
+        "line": 7,
+        "text": "// Spec: docs/features/2026-11-21-test-release/specs/14-tier-text.md"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "line": 7,
+        "text": "// Spec: docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md"
+      }
+    ],
+    "skipped": []
+  },
+  "commands": {
+    "focused": null,
+    "note": "No focused command: tests.focused is not recorded in joycraft.yaml.",
+    "checkReport": "node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research --queue docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json --spec 11 --report docs/features/2026-11-21-test-release/specs/review-11.report.json",
+    "finalizeReview": "node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json --spec 11 --report docs/features/2026-11-21-test-release/specs/review-11.report.json"
+  },
+  "ready": true
+}

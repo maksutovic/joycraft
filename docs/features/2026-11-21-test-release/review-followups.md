@@ -60,3 +60,8 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - gate-in-spec checks only acceptance bullets; the scope section can still name the gate (queue-check.mjs:334).
 - Joycraft's own AGENTS.md "Run `pnpm test && pnpm typecheck` before committing" runs the gate on every commit: Max's call through the spec 16 gate-rule offer.
 - tests/text-worker-commands.test.ts:35 hard-codes pre-spec word counts; rebase it on the guard after acceptance (spec 23 review).
+
+## Changed-test list (spec 11) — fix
+- A declaration of either path of a git rename covers both (test-changes.mjs:123); needed before spec 17's reviewers block on undeclared changes.
+- Limit `*Test`/`*Spec`/camelCase `*Test` folder rules to known test source sets (abTest/, ProductSpec.kt, LoadTest.java count today).
+- A removed gitlink under a tests folder is listed as a test; check the base object is a blob.

@@ -870,7 +870,7 @@
       "depends_on": [
         5
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -955,6 +955,10 @@
       },
       "submitted": {
         "at": "2026-11-22T02:42:30.520Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-11-r2.report.json",
+        "sha256": "8c2c4f4ae9d2c465e3c75dd0a1f548e5ee596a3b1dea914e02aa85d0f4bb0b1a"
       }
     },
     {
@@ -1036,7 +1040,7 @@
         2,
         11
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -1111,6 +1115,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:54:26.153Z"
       }
     },
     {
