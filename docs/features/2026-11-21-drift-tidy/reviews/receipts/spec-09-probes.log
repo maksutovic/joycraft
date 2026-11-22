@@ -1,0 +1,62 @@
+OBSERVED backtick-in-context listed: ["docs/research/anchor.md","docs/research/docsrel.md","docs/research/fenced.md","docs/research/line.md","docs/research/plain.md"]
+PASS backticked full path from a context page keeps the page
+PASS backticked ../ path from a context page keeps the page
+PASS an unreferenced research doc is listed
+INFO docs-root-relative `research/docsrel.md` listed: true
+INFO `docs/research/anchor.md#part` listed: true
+INFO `docs/research/line.md:12` listed: true
+OBSERVED nested-entry listed: ["docs/research/CLAUDE.local.md","docs/research/loose.md"]
+PASS nested entry case keeps docs/research/AGENTS.md
+PASS nested entry case keeps docs/research/CLAUDE.md
+PASS nested entry case keeps docs/research/AGENTS.override.md
+PASS nested entry case keeps docs/research/sibling.md
+PASS nested entry case keeps docs/research/named.md
+PASS nested entry case keeps docs/research/imported.md
+PASS nested entry case still lists loose.md
+INFO CLAUDE.local.md listed: true
+OBSERVED docs-root-dot listed: [".agents/skills/joycraft-verify/SKILL.md",".claude/agents/joycraft-reviewer.md",".claude/skills/joycraft-verify/SKILL.md",".github/copilot-instructions.md",".github/pull_request_template.md",".joycraft/references/cleanup.md","notes/old.md","src/lib/design.md"]
+OBSERVED docs-root-dot targets: ["archive/working/.agents/skills/joycraft-verify/SKILL.md","archive/working/.claude/agents/joycraft-reviewer.md","archive/working/.claude/skills/joycraft-verify/SKILL.md","archive/working/.github/copilot-instructions.md","archive/working/.github/pull_request_template.md","archive/working/.joycraft/references/cleanup.md","archive/working/notes/old.md","archive/working/src/lib/design.md"]
+PASS dot root lists notes/old.md
+PASS dot root keeps AGENTS.md
+PASS dot root keeps README.md
+PASS dot root keeps CHANGELOG.md
+PASS dot root keeps pkg/sub/AGENTS.md
+PASS dot root keeps backlog/x.md
+FAIL dot root keeps harness/tool file .claude/skills/joycraft-verify/SKILL.md
+FAIL dot root keeps harness/tool file .agents/skills/joycraft-verify/SKILL.md
+FAIL dot root keeps harness/tool file .joycraft/references/cleanup.md
+FAIL dot root keeps harness/tool file .claude/agents/joycraft-reviewer.md
+FAIL dot root keeps harness/tool file .github/pull_request_template.md
+FAIL dot root keeps harness/tool file .github/copilot-instructions.md
+INFO dot root lists src/lib/design.md: true
+OBSERVED dot root apply status: 0 moved: [".agents/skills/joycraft-verify/SKILL.md",".claude/agents/joycraft-reviewer.md",".claude/skills/joycraft-verify/SKILL.md",".github/copilot-instructions.md",".github/pull_request_template.md",".joycraft/references/cleanup.md","notes/old.md","src/lib/design.md"]
+FAIL after apply .claude/skills/joycraft-verify/SKILL.md still exists
+FAIL after apply .joycraft/references/cleanup.md still exists
+OBSERVED git status after dot apply:
+R  .agents/skills/joycraft-verify/SKILL.md -> archive/working/.agents/skills/joycraft-verify/SKILL.md
+R  .claude/agents/joycraft-reviewer.md -> archive/working/.claude/agents/joycraft-reviewer.md
+R  .claude/skills/joycraft-verify/SKILL.md -> archive/working/.claude/skills/joycraft-verify/SKILL.md
+R  .github/copilot-instructions.md -> archive/working/.github/copilot-instructions.md
+R  .github/pull_request_template.md -> archive/working/.github/pull_request_template.md
+R  .joycraft/references/cleanup.md -> archive/working/.joycraft/references/cleanup.md
+R  notes/old.md -> archive/working/notes/old.md
+R  src/lib/design.md -> archive/working/src/lib/design.md
+PASS apply made no commit
+OBSERVED docs/.joycraft listed: ["docs/.joycraft/notes.md","docs/research/x.md"]
+INFO docs/.joycraft/notes.md listed: true
+OBSERVED dirty listed: ["docs/research/ok.md","docs/research/with space.md"] skipped: ["docs/research/clash.md","docs/research/staged.md"]
+PASS staged-only change is skipped
+PASS target that exists is skipped, the existing target untouched
+PASS a name with a space moves
+PASS ok.md moves
+INFO staged deletion (git rm --cached) listed or skipped: absent
+PASS age-out --days 0 refuses with exit 1 :: Cleanup stopped: cleanup.mjs age-out: --days must be a positive whole number
+PASS age-out --days -3 refuses with exit 1 :: Cleanup stopped: cleanup.mjs age-out: --days must be a positive whole number
+PASS age-out --days 1.5 refuses with exit 1 :: Cleanup stopped: cleanup.mjs age-out: --days must be a positive whole number
+PASS age-out --days abc refuses with exit 1 :: Cleanup stopped: cleanup.mjs age-out: --days must be a positive whole number
+PASS age-out (no --days) refuses with exit 1 :: Cleanup stopped: cleanup.mjs age-out: --days must be a positive whole number
+OBSERVED non-git: 1 Cleanup stopped: Command failed: git -c core.quotepath=false ls-files -z -- docs
+fatal: not a git repository (or any of the parent directories): .git
+PASS a folder without Git stops with exit 1, not a crash trace
+INFO doc changed today only in a merge resolution listed as old: true [{"path":"docs/research/m.md","days":25,"to":"docs/archive/working/research/m.md"}]
+failures=8
