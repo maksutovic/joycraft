@@ -85,7 +85,9 @@ export function templateWords(template) {
  * by the spec's present `check` inputs in queue order, or the files appended
  * when it has no `{files}`. A `{files}` inside a larger word stays in place:
  * the text before it joins the first file and the text after it the last, as
- * an unquoted shell expansion would. Null, with a note, when either is missing. */
+ * an unquoted shell expansion would. A template with shell syntax outside
+ * quotes runs as `sh -c`, so the evidence step runs all of it. Null, with a
+ * note, when either is missing or the template has an unclosed quote. */
 export function focusedCommand({ root, spec, config }) {
   const template = config?.tests?.focused;
   const files = spec.verification.inputs.filter(input => input.kind === 'check' && input.state !== 'absent')
@@ -94,21 +96,54 @@ export function focusedCommand({ root, spec, config }) {
     const missing = [!template && 'tests.focused is not recorded in joycraft.yaml', files.length === 0 && 'the spec has no present check input'].filter(Boolean);
     return { focused: null, note: `No focused command: ${missing.join(' and ')}.` };
   }
-  const argv = templateArgv(template, files);
+  let argv;
+  try { argv = templateArgv(template, files); }
+  catch (error) {
+    if (/unclosed (single|double) quote/.test(error?.message ?? '')) return { focused: null, note: `No focused command: ${error.message}.` };
+    throw error;
+  }
   return { focused: { command: argv.map(shellQuote).join(' '), argv } };
 }
 
+/** True when a template holds shell syntax outside quotes: &&, ||, ;, |, <, >,
+ * $( or a backtick. Quoted text is skipped as templateWords reads it. */
+export function hasShellSyntax(template) {
+  for (let index = 0; index < template.length; index += 1) {
+    const char = template[index];
+    if (char === '\\') { index += 1; continue; }
+    if (char === "'") { const end = template.indexOf("'", index + 1); if (end === -1) return false; index = end; continue; }
+    if (char === '"') {
+      let end = index + 1;
+      for (; end < template.length && template[end] !== '"'; end += 1) if (template[end] === '\\') end += 1;
+      index = end; continue;
+    }
+    if (';|<>`&'.includes(char) && (char !== '&' || template[index + 1] === '&')) return true;
+    if (char === '$' && template[index + 1] === '(') return true;
+  }
+  return false;
+}
+
 /** The argv of a `tests.focused` template for these files: shell words, with
- * `{files}` expanded in place, or the files appended when it has no `{files}`. */
+ * `{files}` expanded in place, or the files appended when it has no `{files}`.
+ * Only the template's own text is expanded, never a file path, so a path that
+ * holds `{files}` stays literal. A template with shell syntax gives
+ * `sh -c <template with each file shell-quoted>`. */
 export function templateArgv(template, files) {
   const words = templateWords(template);
+  if (hasShellSyntax(template)) {
+    const quoted = files.map(shellQuote).join(' ');
+    return ['sh', '-c', template.includes('{files}') ? template.split('{files}').join(quoted) : `${template} ${quoted}`];
+  }
   const expand = word => {
-    const at = word.indexOf('{files}');
-    if (at === -1) return [word];
-    const expanded = [...files];
-    expanded[0] = word.slice(0, at) + expanded[0];
-    expanded[expanded.length - 1] += word.slice(at + '{files}'.length);
-    return expanded.flatMap((each, index) => (index === expanded.length - 1 ? expand(each) : [each]));
+    const parts = word.split('{files}');
+    const out = [];
+    let current = parts[0];
+    for (const part of parts.slice(1)) {
+      if (files.length === 1) { current += files[0] + part; continue; }
+      out.push(current + files[0], ...files.slice(1, -1));
+      current = files[files.length - 1] + part;
+    }
+    return [...out, current];
   };
   return words.some(word => word.includes('{files}')) ? words.flatMap(expand) : [...words, ...files];
 }

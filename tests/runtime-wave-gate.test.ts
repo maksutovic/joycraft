@@ -271,6 +271,7 @@ describe('spec 27 delivery polish', () => {
     }
   }, 120000);
 
+  // Spec 29: config now refuses a docs root of `.`, so delivery stops before any push.
   it('[AC:spec-27-14] a docs root of . gives no exemption', () => {
     const { root, remote, first, head } = deliveryFixture('tests:\n  gate: node gate.mjs\npaths:\n  features: features\n  archive: archive\n  context: context\n');
     footer(root, 'gate.log', { argv: ['node', 'gate.mjs'], exitCode: 0, revision: head, dirty: false });
@@ -278,7 +279,7 @@ describe('spec 27 delivery polish', () => {
     git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'records');
     const result = push(root, first, ['--gate-receipt', 'receipts/gate.log']);
     expect(result.status).toBe(1);
-    expect(result.stderr.trim()).toBe('gate-receipt-stale');
+    expect(result.stderr).toContain('docs root');
     expect(remoteRef(remote)).toBe('');
   }, 30000);
 });

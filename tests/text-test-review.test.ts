@@ -81,3 +81,25 @@ describe('test review as the cleanup path', () => {
     expect(text.replace(/\s+/g, ' ')).toContain('after a measurement');
   });
 });
+
+describe('test review SOTA cleanup gaps (spec 29)', () => {
+  it('[AC:spec-29-10] testing-review.md closes the spec 21 review gaps', () => {
+    const measure = section(REVIEW, 'Measure first');
+    expect(measure).toMatch(/Before measuring, offer the worker cap keyed on `JOYCRAFT_EVIDENCE`.*install it on the owner's yes/);
+    expect(measure).toContain('`--timeout-ms` sized for a slow suite');
+    expect(measure).toContain('Time each suspect file alone');
+    expect(measure).toContain('alternating order (ABAB, at least 3 runs each) at a like load');
+    expect(measure).toContain('report the always-on cost');
+    const find = section(REVIEW, 'Find');
+    expect(find).toContain('once shuffled and once at half the workers while another broad run is active');
+    expect(find).toContain('a duplicate-contract test');
+    expect(find).toContain('a test of a debugging probe');
+    const recommend = section(REVIEW, 'Recommend');
+    expect(recommend).toContain('The kept real case must still catch faults in the replaced code');
+    expect(recommend).toContain("a shrunk input's original value is checked as data");
+    const apply = section(REVIEW, 'Apply');
+    expect(apply).toContain('break-the-code receipt for the test that now owns the claim');
+    expect(apply).toContain('Keep auth, permissions, persistence, migrations, security, external formats and release tests unless the owner says yes per batch');
+    expect(section(REVIEW, 'Test-only specs')).toContain('runner config and global test setup');
+  });
+});

@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -125,11 +125,13 @@ describe('age-out review 9 fixes', () => {
   };
   const listed = (out: { docs: { path: string }[] }) => out.docs.map(doc => doc.path).sort();
 
-  it('[review-9-1] a docs root of `.` lists and moves nothing and gives one skipped entry', () => {
+  // Spec 29: config now refuses a docs root of `.` before age-out runs.
+  it('[review-9-1] a docs root of `.` exits 1 from config, naming the docs root, and moves nothing', () => {
     const root = repo({ 'context/a.md': '# a\n', 'notes/old.md': '# x\n', '.claude/skills/s/SKILL.md': '# s\n', '.joycraft/references/cleanup.md': '# r\n', 'src/lib/design.md': '# d\n' },
       'paths:\n  features: features\n  archive: archive\n  context: context\n');
-    const out = ageOut(root, ['--days', '14', '--apply']);
-    expect(out).toMatchObject({ count: 0, docs: [], applied: false, skipped: [{ path: '.', reason: 'age-out needs a docs folder; the docs root is the project root' }] });
+    const result = spawnSync('node', [cleanup, 'age-out', '--days', '14', '--apply'], { cwd: root, encoding: 'utf8' });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('docs root');
     expect(git(root, ['status', '--porcelain'])).toBe('');
     expect(existsSync(join(root, '.claude/skills/s/SKILL.md'))).toBe(true);
   });
@@ -166,12 +168,13 @@ describe('age-out review 9 fixes', () => {
 
   const dotDocs = 'paths:\n  features: .docs/features\n  archive: .docs/archive\n  context: .docs/context\n';
 
-  it('[review-9-r2-1] a dot-folder docs root lists its working docs and still skips dot segments under it', () => {
+  // Spec 29: config now refuses a hidden docs root before age-out runs.
+  it('[review-9-r2-1] a dot-folder docs root exits 1 from config, naming the docs root', () => {
     const root = repo({ '.docs/context/a.md': '# a\n', '.docs/research/old.md': '# x\n', '.docs/.drafts/x.md': '# d\n' }, dotDocs);
-    const out = ageOut(root, ['--days', '14']);
-    expect(listed(out)).toEqual(['.docs/research/old.md']);
-    expect(out.docs[0]).toMatchObject({ days: 30, to: '.docs/archive/working/research/old.md' });
-    expect(out.skipped).toEqual([]);
+    const result = spawnSync('node', [cleanup, 'age-out', '--days', '14'], { cwd: root, encoding: 'utf8' });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('docs root');
+    expect(git(root, ['status', '--porcelain'])).toBe('');
   });
 
   it('[review-9-r2-2] a symlinked docs root, or a symlink on the way to it, gives one skipped entry', () => {

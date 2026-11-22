@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -148,4 +148,42 @@ describe('task startup commands', () => {
     const run = spawnSync(process.execPath, ['.joycraft/runtime/evidence.mjs', 'run', '--receipt', reviewer, '--', process.execPath, '-e', '0'], { cwd: project.root, encoding: 'utf8' });
     expect(run.status, run.stderr).toBe(0);
   });
+
+  it('[AC:spec-29-1] a check path holding the literal {files} is never expanded again', () => {
+    const result = start(fixture({ focused: 'vitest run {files}', checks: ['tests/{files}.test.ts'] }), 'implementer');
+    expect(result.status, result.stderr).toBe(0);
+    expect(result.output.commands.focused.argv).toEqual(['vitest', 'run', 'tests/{files}.test.ts']);
+  });
+
+  it('[AC:spec-29-2] an unclosed quote in tests.focused gives focused null with a note, and startup exits 0', () => {
+    const single = start(fixture({ focused: "vitest run 'x {files}" }), 'implementer');
+    expect(single.status, single.stderr).toBe(0);
+    expect(single.output.commands.focused).toBeNull();
+    expect(single.output.commands.note).toContain('unclosed single quote');
+    const double = start(fixture({ focused: 'vitest run "x {files}' }), 'implementer');
+    expect(double.status, double.stderr).toBe(0);
+    expect(double.output.commands.focused).toBeNull();
+    expect(double.output.commands.note).toContain('unclosed double quote');
+  });
+
+  it('[AC:spec-29-3] a focused command with shell syntax runs as sh -c under evidence', () => {
+    const project = fixture({ focused: 'pnpm build && vitest run {files}', checks: ['tests/a.test.ts'] });
+    const result = start(project, 'implementer');
+    expect(result.status, result.stderr).toBe(0);
+    const { focused, evidence } = result.output.commands;
+    expect(focused.argv).toEqual(['sh', '-c', 'pnpm build && vitest run tests/a.test.ts']);
+    spawnSync('/bin/sh', ['-c', evidence], { cwd: project.root, encoding: 'utf8' });
+    const receipt = evidence.split(' ')[4];
+    const last = readFileSync(join(project.root, receipt), 'utf8').trimEnd().split('\n').pop() ?? '';
+    expect(last.startsWith('joycraft-evidence: ')).toBe(true);
+    const footer = JSON.parse(last.slice('joycraft-evidence: '.length));
+    expect(footer.argv.slice(0, 2)).toEqual(['sh', '-c']);
+    expect(footer.argv[2]).toBe('pnpm build && vitest run tests/a.test.ts');
+    for (const template of ['a || b', 'a; b', 'a | b', 'a < f', 'a > f', 'a $(b)', 'a `b`']) {
+      const shell = start(fixture({ focused: template, checks: ['tests/a.test.ts'] }), 'implementer').output.commands.focused;
+      expect(shell.argv, template).toEqual(['sh', '-c', `${template} tests/a.test.ts`]);
+    }
+    const quotedOnly = start(fixture({ focused: `runner "a && b" {files}`, checks: ['tests/a.test.ts'] }), 'implementer').output.commands.focused;
+    expect(quotedOnly.argv).toEqual(['runner', 'a && b', 'tests/a.test.ts']);
+  }, 60_000);
 });

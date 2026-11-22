@@ -11,7 +11,7 @@ Use this skill to carry out already-authorized specs in `docs/features/<slug>/sp
 Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec, the parent brief, the selected spec, and its declared verification inputs before changing code. Reuse current decisions and context; record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision. Do not require a new interview for settled work.
 
 For a change across state, data or producer/consumer boundaries, inspect the
-actual counterpart code and relevant owning decisions/context when available.
+actual counterpart code and relevant owning decisions/context.
 Add discovered material sources
 and relevant decision/context paths to exact verification inputs before
 review; report unresolved coverage. See
@@ -78,8 +78,8 @@ not unrelated authorized work.
 
 When a recorded tool breaks during a run, repair and record it as
 `$joycraft-verify` says, leave that spec `in-review`, and continue with the
-specs that do not depend on it. At the first hold, tell the user the spec, the
-tool, the cause and the repair tried. Session end lists every held
+specs that do not depend on it. At the first hold, tell the user the spec,
+tool, cause and repair tried. Session end lists every held
 spec.
 
 A tool break stops the whole queue only when the project will not build or
@@ -113,13 +113,14 @@ security, or other blanket authority. Report it as `done, owner-accepted with
 Workers run focused tests only. The coordinator runs the recorded gate alone
 through `evidence.mjs` at each point `coordinator.mjs gate-plan` prints, with
 the receipt at a git-ignored path or after committing pending files. No push
-without a green gate receipt (`delivery.mjs push --gate-receipt`; see
+without a green gate receipt (`delivery.mjs push --gate-receipt`, or
+`-- <verifier>` without `tests.gate`; see
 [checked delivery](../../../.joycraft/references/delivery.md)). On red,
 `coordinator.mjs gate-owner` picks the spec for the fix round, else bisect only
 the failing file, newest commit first; a second red holds the push. Unless
-`AGENTS.md` says otherwise, push after each green gate, open one PR when no spec
-can start, and read CI once, on the PR, after session end's push. After a second
-red CI run, stop and report.
+`AGENTS.md` says otherwise, push after each green gate (session end's one push
+opens the PR) and read CI once, on the PR, after session end's push. After a
+second red CI run, stop and report.
 
 After review and completion, continue with the next ready authorized spec.
 When no spec can start, that is, each remaining spec is held or waits on a

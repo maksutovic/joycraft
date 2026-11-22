@@ -55,6 +55,19 @@ describe('wave-gate and CI-once text', () => {
     expect(deliveryParagraph()).toMatch(/read CI once, on the PR, after session end's push\. After a second red CI run, stop and report\./);
   });
 
+  it('[AC:spec-29-7] the delivery paragraph leaves the PR to session end and names the verifier form without tests.gate', () => {
+    const paragraph = deliveryParagraph();
+    expect(paragraph).not.toContain('open one PR');
+    expect(paragraph).toContain("session end's one push opens the PR");
+    expect(paragraph).toContain('`-- <verifier>` without `tests.gate`');
+  });
+
+  // Decision cap-raise: the implement skill cannot grow. 1315 is its `wc -w` before spec 29;
+  // retire this constant with the other per-spec word tests once the feature is accepted.
+  it('[AC:spec-29-9] the implement skill is no longer than before spec 29', () => {
+    expect(raw(IMPLEMENT).split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(1315);
+  });
+
   it('[AC:spec-15-3] in wave mode the verifier states the gate is not run, and the project-gate tier names tests.gateRuns', () => {
     expect(flat(VERIFY)).toContain('in wave mode, state "gate not run; due at wave end"');
     const tier = flat(TESTING).match(/\*\*Project gate:\*\*[^*]*/)?.[0] ?? '';

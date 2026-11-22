@@ -11,6 +11,7 @@ anything, the tree holds the user's work: report what the steps below find, fix
 nothing, commit nothing of the user's and push nothing. Run each step in its
 read-only form only: `status.mjs` without `--fix`, `cleanup.mjs tidy` to report,
 the prune preview without `--apply`, the archive preview without `--apply`.
+Gate messages, cleanup fixes and the lease release also wait.
 
 The steps run in this order: records and their commit, one tidy commit,
 worktree prune, archive last with its commit, then one push that opens the PR.
@@ -51,9 +52,11 @@ Write nothing temporal into an entry file or a guide: a date, a status or a hand
 
 When independent reports suggest a reusable failure lesson, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md).
 
-Commit the records in their own commit, `docs: session-end records`, before
-tidy: `tidy --verify` refuses every changed file that no fixable finding names,
-so a record cannot ride in the tidy commit. With no record written, skip it.
+Run `joycraft-cleanup` in its session-end mode. Put its other findings on the
+session-end page; with none, say so in one line. Commit the records and
+cleanup's fixes in their own commit, `docs: session-end records`, before tidy:
+`tidy --verify` refuses every changed file that no fixable finding names, so a
+record cannot ride in the tidy commit. With no record or fix written, skip it.
 
 ## One tidy commit
 
@@ -61,9 +64,7 @@ Tidy without being asked. Run `node .joycraft/runtime/cleanup.mjs tidy` and fix
 only the lines its `fixable: true` findings name, never an entry file or rule
 text. When `cleanup.mjs tidy --verify` passes, make one commit with the message it
 prints; it carries only the tidy fixes. With no fix, it prints no message:
-make no commit. Then run `joycraft-cleanup`
-in its session-end mode. Put the other findings on the session-end page; with
-none, say so in one line.
+make no commit.
 
 ## Worktree prune
 
@@ -108,7 +109,8 @@ work and corrupt or missing evidence still block closure.
 
 After `--apply`, fix the tests the preview listed in `namedFiles` (see the
 archive guidance), then commit the move and those edits in their own commit,
-`docs: archive <slug>`.
+`docs: archive <slug>`. That commit takes every archive edit: the move, the live
+docs it relinked and the path edits in the tests the preview listed.
 
 ## One push
 

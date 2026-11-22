@@ -79,7 +79,7 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
      `joycraft.yaml`. Time the gate once: over about 60 s, record
      `gateRuns: wave`, else `gateRuns: spec`.
    - **The testing page**, when the project has none: write
-     `<context>/testing.md` from [the testing page template](testing-page.md),
+     `<context>/test-practices.md` from [the testing page template](testing-page.md),
      filled in for the project's stack, with the map row "A test run is slow or
      flaky". Explain its load order to the user in one line.
    - **Machine load**, when several agents will test on this machine: offer a

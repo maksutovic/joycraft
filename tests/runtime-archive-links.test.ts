@@ -106,14 +106,14 @@ describe('archive rewrites live links', () => {
     expect(result.links.rewritten).toEqual([{ path: 'docs/context/page.md', line: 12, from: '../features/x/brief.md', to: '../archive/x/feature/brief.md' }]);
   });
 
-  it('[review-b-6] with paths.* sharing no parent, entry files at any depth are listed, never rewritten', () => {
+  it('[review-b-6] with paths.* under one work folder, entry files at any depth are listed, never rewritten', () => {
     const entry = '# Agents\n\n[x](work/features/x/brief.md)\n';
     const nested = '# Claude\n\n[x](../work/features/x/brief.md)\n';
-    const root = fixture({ 'joycraft.yaml': 'paths:\n  features: work/features\n  archive: history/archive\n  context: notes\n', 'AGENTS.md': entry, 'pkg/CLAUDE.md': nested, 'README.md': '[x](work/features/x/brief.md)\n' }, 'work/features');
+    const root = fixture({ 'joycraft.yaml': 'paths:\n  features: work/features\n  archive: work/history\n  context: work/notes\n', 'AGENTS.md': entry, 'pkg/CLAUDE.md': nested, 'work/notes/README.md': '[x](../features/x/brief.md)\n' }, 'work/features');
     const result = apply(root);
     expect(readFileSync(join(root, 'AGENTS.md'), 'utf8')).toBe(entry);
     expect(readFileSync(join(root, 'pkg/CLAUDE.md'), 'utf8')).toBe(nested);
-    expect(result.links.rewritten).toEqual([{ path: 'README.md', line: 1, from: 'work/features/x/brief.md', to: 'history/archive/x/feature/brief.md' }]);
+    expect(result.links.rewritten).toEqual([{ path: 'work/notes/README.md', line: 1, from: '../features/x/brief.md', to: '../history/x/feature/brief.md' }]);
     expect(result.links.namedInMarkdown).toEqual(['AGENTS.md', 'pkg/CLAUDE.md']);
   });
 });

@@ -49,13 +49,19 @@ describe('the shipped testing page template', () => {
     expect(RUNNERS.filter(name => lower.includes(name))).toEqual([]);
   });
 
-  it('[AC:spec-20-3] setup and the test review write the page behind the narrow map row', () => {
+  // Spec 29: the project page is <context>/test-practices.md, titled "Test practices".
+  it('[AC:spec-20-3] [AC:spec-29-6] setup and the test review write the page behind the narrow map row', () => {
     for (const file of ['setup.md', 'testing-review.md']) {
       const text = flat(read(file));
       expect(text, file).toContain('testing-page.md');
-      expect(text, file).toContain('`<context>/testing.md`');
       expect(text, file).toContain('"A test run is slow or flaky"');
     }
+    for (const file of ['testing-page.md', 'setup.md', 'testing-review.md']) {
+      const text = flat(read(file));
+      expect(text, file).toContain('`<context>/test-practices.md`');
+      expect(text, file).not.toContain('`<context>/testing.md`');
+    }
+    expect(page).toMatch(/^# Test practices$/m);
     expect(flat(read('testing-review.md'))).toMatch(/when the project has no testing page/);
   });
 });

@@ -56,4 +56,16 @@ describe('joycraft.yaml tests section', () => {
     for (const key of ['focused', 'gate', 'full', 'gateRuns']) expect(body).toMatch(new RegExp(`^#\\s+${key}:`, 'm'));
     expect(body.slice(body.indexOf('# tests:'))).not.toMatch(/\d+\s*(s|seconds|cores)\b/);
   });
+
+  it('[AC:spec-29-5] a docs root that is the project root or a hidden folder exits 1 naming the docs root and the three paths', () => {
+    for (const [features, archive, context] of [['work', 'old', 'notes'], ['.docs/features', '.docs/archive', '.docs/context']]) {
+      const result = run(fixture(`paths:\n  features: ${features}\n  archive: ${archive}\n  context: ${context}\n`));
+      expect(result.status, features).toBe(1);
+      expect(result.stderr).toContain('docs root');
+      for (const folder of [features, archive, context]) expect(result.stderr).toContain(folder);
+    }
+    const defaults = run(fixture());
+    expect(defaults.status, defaults.stderr).toBe(0);
+    expect(JSON.parse(defaults.stdout).paths).toEqual({ features: 'docs/features', archive: 'docs/archive', context: 'docs/context' });
+  });
 });

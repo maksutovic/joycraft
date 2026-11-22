@@ -759,9 +759,13 @@ function readPreferences(root) {
 export function archiveIgnore({ root = process.cwd(), apply = false, decline = false } = {}) {
   const archive = workPaths(root).archive.replace(/\/+$/, '');
   const line = `${archive}/`, file = path.join(root, '.ignore');
-  const text = existsSync(file) ? readFileSync(file, 'utf8') : null;
+  let stat = null;
+  try { stat = lstatSync(file); } catch (error) { if (error?.code !== 'ENOENT') throw error; }
+  requireValue(!stat || (!stat.isSymbolicLink() && stat.isFile()), 'Expected a plain project file: .ignore is a symlink or not a file; nothing was changed');
+  const text = stat ? readFileSync(file, 'utf8') : null;
   // Git strips trailing spaces but keeps leading ones, which are part of the pattern.
-  const pattern = item => item.replace(/\s+$/, '').replace(/^\.?\//, '').replace(/\/\*\*$/, '').replace(/\/+$/, '');
+  // `<archive>/`, `<archive>/*` and `<archive>/**` all skip the archive's contents.
+  const pattern = item => item.replace(/\s+$/, '').replace(/^\.?\//, '').replace(/\/\*{1,2}$/, '').replace(/\/+$/, '');
   if ((text ?? '').split(/\r?\n/).map(pattern).includes(archive)) return { file: '.ignore', line, status: 'present' };
   if (decline) {
     const preferences = readPreferences(root);
@@ -793,10 +797,18 @@ function argumentsFor(argv) {
   return flags;
 }
 
+/** The project root: the nearest folder up from `start` that holds `.joycraft/`, else `start`. */
+function projectRoot(start = process.cwd()) {
+  for (let current = path.resolve(start); ; current = path.dirname(current)) {
+    try { if (lstatSync(path.join(current, '.joycraft')).isDirectory()) return current; } catch { /* keep looking */ }
+    if (path.dirname(current) === current) return path.resolve(start);
+  }
+}
+
 export function main(argv = process.argv.slice(2)) {
   if (argv[0] === 'ignore') {
     requireValue(argv.length === 2 && ['--check', '--apply', '--decline'].includes(argv[1]), 'Usage: archive.mjs ignore --check | --apply | --decline');
-    const result = archiveIgnore({ apply: argv[1] === '--apply', decline: argv[1] === '--decline' });
+    const result = archiveIgnore({ root: projectRoot(), apply: argv[1] === '--apply', decline: argv[1] === '--decline' });
     process.stdout.write(`${JSON.stringify(result)}\n`);
     return result;
   }

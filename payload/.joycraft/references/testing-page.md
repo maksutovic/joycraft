@@ -1,7 +1,7 @@
 # Testing page template
 
 Setup and the test review write the project's own testing page from this
-template, at `<context>/testing.md` (`paths.context`, `docs/context/testing.md`
+template, at `<context>/test-practices.md` (`paths.context`, `docs/context/test-practices.md`
 by default), with one map row: "A test run is slow or flaky". Write each
 principle as the project's decision, in its own stack and its own tools: name
 the real command, flag, folder or helper. Where the project has not decided
@@ -11,7 +11,7 @@ apply, with one line why. Keep it short; it is read only through its map row.
 ## The page
 
 ```markdown
-# Testing
+# Test practices
 
 How this project keeps its tests fast and honest: fewer slow and flaky reruns,
 so a queue spends its time on the work and not on waiting for the same tests

@@ -63,6 +63,26 @@ describe('session end review-25 fixes', () => {
   });
 });
 
+describe('session end names a commit for every edit', () => {
+  const sentence = (marker: string) => {
+    const at = flat.indexOf(marker);
+    expect(at, marker).toBeGreaterThan(-1);
+    return flat.slice(flat.lastIndexOf('. ', at) + 2, flat.indexOf('. ', at) + 1);
+  };
+
+  it('[AC:spec-29-8] the archive commit takes every archive edit, cleanup fixes go in the records commit, and a dirty tree holds gate messages, cleanup fixes and the lease', () => {
+    const archive = sentence('That commit takes every archive edit');
+    expect(archive).toContain('relinked');
+    expect(archive).toContain('preview listed');
+    expect(flat).not.toContain('--rewrite');
+    const records = sentence('`docs: session-end records`, before tidy');
+    expect(records).toContain('cleanup');
+    expect(flat.indexOf('joycraft-cleanup')).toBeLessThan(flat.indexOf('`docs: session-end records`'));
+    const dirty = flat.slice(flat.indexOf('git status --porcelain'), flat.indexOf('The steps run in this order'));
+    for (const words of ['gate messages', 'cleanup fixes', 'lease']) expect(dirty.toLowerCase(), words).toContain(words);
+  });
+});
+
 const cleanup = join(root, 'payload', '.joycraft', 'runtime', 'cleanup.mjs');
 const git = (cwd: string, ...args: string[]) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const put = (dir: string, file: string, body: string) => { mkdirSync(dirname(join(dir, file)), { recursive: true }); writeFileSync(join(dir, file), body); };

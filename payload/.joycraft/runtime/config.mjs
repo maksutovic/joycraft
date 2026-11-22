@@ -163,6 +163,14 @@ export function readConfig(root = process.cwd()) {
   for (const [ak, a] of Object.entries(paths)) for (const [bk, b] of Object.entries(paths)) {
     requireValue(a === b || !b.startsWith(`${a}/`) || (ak === 'context' && bk !== 'context'), `${configFile}: ${b} cannot sit inside ${a}`);
   }
+  // The docs root (the folders' common parent, as cleanup.mjs docsRoot reads it) holds every
+  // records-only change, so it can be neither the project root nor a hidden folder.
+  const parts = folders.map(folder => folder.split('/'));
+  const common = [];
+  for (let index = 0; parts.every(list => index < list.length && list[index] === parts[0][index]); index += 1) common.push(parts[0][index]);
+  requireValue(common.length > 0 && !common.some(part => part.startsWith('.')),
+    `${configFile}: the docs root (the common parent of paths.features ${paths.features}, paths.archive ${paths.archive} and paths.context ${paths.context}) is ${common.length ? `${common.join('/')}, a hidden folder` : 'the project root'}; put all three under one visible folder such as docs/`);
+
   const hooks = {};
   if (parsed.hooks?.afterArchive != null) {
     requireValue(typeof parsed.hooks.afterArchive === 'string' && parsed.hooks.afterArchive.trim(), `${configFile}: hooks.afterArchive must be a command`);

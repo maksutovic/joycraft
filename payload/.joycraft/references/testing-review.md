@@ -8,11 +8,15 @@ listed test.
 
 ## Measure first
 
-Run the full suite one time, with the runner's duration output, through
-`node .joycraft/runtime/evidence.mjs run --receipt <path>.log -- <full suite command>`.
-Report its run facts: `wallMs`, `load`, `cores` and `loaded`. A slow time on a
+Before measuring, offer the worker cap keyed on `JOYCRAFT_EVIDENCE` (see
+Find) and install it on the owner's yes. Run the full suite one time, with the runner's duration output, through
+`node .joycraft/runtime/evidence.mjs run --receipt <path>.log -- <full suite command>`,
+with a `--timeout-ms` sized for a slow suite. Report its run facts: `wallMs`, `load`, `cores` and `loaded`. A slow time on a
 `loaded` machine is not yet a slow test: note the load, and compare two times
-only at a like load. List the slowest files and their share of the time. Read
+only at a like load. List the slowest files and their share of the time.
+Time each suspect file alone. Compare before and after in alternating order
+(ABAB, at least 3 runs each) at a like load, and report the always-on cost:
+what every run pays. Read
 the CI workflows and count how many times one push and one merge run the full
 suite.
 
@@ -38,9 +42,12 @@ every focused run or gate loads. Then rank by the slowest file.
 - A change detector: it asserts exact prose that no code reads. A key or a
   marker that code parses stays.
 - A test with no real oracle: it compares a value with itself, its expected
-  value comes from the subject, or a mock supplies the behavior it asserts.
+  value comes from the subject, or a mock supplies the behavior it asserts;
+  also a duplicate-contract test (another test owns the same claim) and a test
+  of a debugging probe.
 - A slow file and its cause: a process, the network, a sleep, a large read.
-- A flaky test, an automatic retry, or a skip with no owner.
+- A flaky test, an automatic retry, or a skip with no owner. Probe for flakes
+  once shuffled and once at half the workers while another broad run is active.
 - The same suite in two workflows, or on push and on pull request.
 - `AGENTS.md` names no focused command, project gate or full suite.
 - A required check that is not required, so a red PR can merge.
@@ -53,7 +60,9 @@ Recommend the tiers of [running tests](testing.md#running-tests) as
 `AGENTS.md` commands. Recommend test selection from each spec's declared test
 files: a spec runs its own tests, and the gate runs once per spec or wave.
 For a slow real dependency, keep one end-to-end case on it and run the
-variations in-process through a seam, against the same assertions. Offer a
+variations in-process through a seam, against the same assertions. The kept
+real case must still catch faults in the replaced code, and a shrunk input's
+original value is checked as data. Offer a
 time limit or a result cache only after a measurement: count how often a run
 repeats an already tested tree first. Selection by imports misses tests that
 read files or start processes. Leave counts that only shrink (fixed waits,
@@ -66,10 +75,13 @@ The review itself edits no test. Write each change the person approves as a
 `## Test changes` class: one file or one subsystem in each spec. A seam or a
 fix that the tests need goes first, in its own spec. A deletion names the claim
 the test protected, the test that now owns it or `claim retired: <owner
-decision>`, and the owner's yes. Report the full-suite time and run facts
+decision>`, and the owner's yes; its ledger row carries a break-the-code
+receipt for the test that now owns the claim. Keep auth, permissions,
+persistence, migrations, security, external formats and release tests unless
+the owner says yes per batch. Report the full-suite time and run facts
 before and after the queue, measured the same way.
 
-At the end, when the project has no testing page, write `<context>/testing.md`
+At the end, when the project has no testing page, write `<context>/test-practices.md`
 from [the testing page template](testing-page.md), filled in with what the
 review found, and add the map row "A test run is slow or flaky".
 
@@ -111,7 +123,8 @@ Reviewer rules:
 
 ## Test-only specs
 
-A test-only spec changes tests, fixtures and test lists only: `git diff
+A test-only spec changes tests, fixtures and test lists only, and may change
+runner config and global test setup: `git diff
 --name-only` against its base lists no other file. A seam or a fix that the
 tests need goes first, in its own spec that leaves the tests untouched.
 

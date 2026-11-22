@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -43,11 +43,12 @@ describe('archive.mjs ignore', () => {
   });
 
   it('[AC:spec-6-2] a custom paths.archive in joycraft.yaml is used', () => {
-    const root = fixture('paths:\n  archive: work/old\n');
+    // Spec 29: docs/old keeps the docs root under docs/, which config now requires.
+    const root = fixture('paths:\n  archive: docs/old\n');
     put(join(root, '.ignore'), 'node_modules/');
-    expect(ignore(root, '--check')).toEqual({ file: '.ignore', line: 'work/old/', status: 'missing' });
+    expect(ignore(root, '--check')).toEqual({ file: '.ignore', line: 'docs/old/', status: 'missing' });
     ignore(root, '--apply');
-    expect(readFileSync(join(root, '.ignore'), 'utf8')).toBe('node_modules/\nwork/old/\n');
+    expect(readFileSync(join(root, '.ignore'), 'utf8')).toBe('node_modules/\ndocs/old/\n');
   });
 
   it('[AC:spec-6-3] setup.md and update.md each name archive.mjs ignore once', () => {
@@ -85,5 +86,32 @@ describe('archive.mjs ignore', () => {
       expect(text, name).toMatch(/archive\.mjs ignore --check`[^.]*`missing`/);
       expect(text, name).toContain('--decline');
     }
+  });
+
+  it('[AC:spec-29-4] a symlinked .ignore is refused; docs/archive/* counts as present; a run from a subfolder uses the root .ignore', () => {
+    const linked = fixture();
+    put(join(linked, 'shared.txt'), 'node_modules/\n');
+    symlinkSync('shared.txt', join(linked, '.ignore'));
+    for (const flag of ['--check', '--apply']) {
+      const result = spawnSync(process.execPath, [runtime, 'ignore', flag], { cwd: linked, encoding: 'utf8' });
+      expect(result.status, flag).toBe(1);
+      expect(result.stderr).toContain('.ignore');
+    }
+    expect(readFileSync(join(linked, 'shared.txt'), 'utf8')).toBe('node_modules/\n');
+    expect(lstatSync(join(linked, '.ignore')).isSymbolicLink()).toBe(true);
+
+    const star = fixture();
+    for (const spelling of ['docs/archive/*', '/docs/archive/*']) {
+      put(join(star, '.ignore'), `x\n${spelling}\n`);
+      expect(ignore(star, '--check').status, spelling).toBe('present');
+    }
+
+    const nested = fixture();
+    mkdirSync(join(nested, '.joycraft'), { recursive: true });
+    mkdirSync(join(nested, 'docs'), { recursive: true });
+    expect(ignore(join(nested, 'docs'), '--apply').status).toBe('added');
+    expect(readFileSync(join(nested, '.ignore'), 'utf8')).toBe('docs/archive/\n');
+    expect(existsSync(join(nested, 'docs', '.ignore'))).toBe(false);
+    expect(ignore(join(nested, 'docs'), '--check').status).toBe('present');
   });
 });
