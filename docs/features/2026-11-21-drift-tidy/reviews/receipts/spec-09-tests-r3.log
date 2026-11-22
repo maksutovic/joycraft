@@ -1,0 +1,17 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-cleanup-age-out.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-cleanup-age-out.test.ts (17 tests) 7080ms
+   ✓ age-out review fixes > [review-a-1] about 3 MB of log names does not overflow the Git buffer  3906ms
+   ✓ age-out review 9 fixes > [review-9-3] a doc changed in a merge counts as changed  373ms
+   ✓ age-out review 9 fixes > [review-9-r2-2] a symlinked docs root, or a symlink on the way to it, gives one skipped entry  364ms
+
+ Test Files  1 passed (1)
+      Tests  17 passed (17)
+   Start at  16:20:32
+   Duration  7.32s (transform 23ms, setup 0ms, collect 21ms, tests 7.08s, environment 0ms, prepare 48ms)
+

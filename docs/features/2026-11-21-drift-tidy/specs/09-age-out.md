@@ -1,6 +1,6 @@
 ---
 id: 9
-status: in-review
+status: done
 ---
 # The attended cleanup can archive old working docs
 
