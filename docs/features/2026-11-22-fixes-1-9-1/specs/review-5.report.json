@@ -1,0 +1,352 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "b80794c1251eaa49ab290432651e0729164e0864",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+    "specId": 5,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+    "criteria": [
+      {
+        "id": "spec-5-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-5-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-5-3",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-5-4",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "delivery",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "se-docs-root-manifests"
+          ]
+        },
+        "sha256": "53d1f6792e0939568e38ebae5bbfe04c4fb6e695d1170f85c36e209113158a30",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "68300acea5d4736e98831b83f2f3c0cd79058996973528e71ad1d9d6f89a3eec",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+        "kind": "requirement",
+        "sha256": "b6a6d5cdde74e66dc0096bc548f72507f150056b8b880a4d933c46a6455d7815",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/delivery.md",
+        "kind": "code",
+        "sha256": "85860c1b32faede31786c7403c820010fde43bdd1114f68ddcbe126f3f13fa8f",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/delivery.mjs",
+        "kind": "code",
+        "sha256": "9e7c6f4ff7821f86cfc60cfbfd020dd6cfba917bc3e3bb5d1f5f9143de60b5b2",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "3d6986aa8ee5ad8c03510e18c1031cb970b9e9e27889be11d9e1110625308b63",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "ebbc3dcfb23062fa309a414f84c09756ec543a0b601d36c71e3aaa7d058ec5da",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "8c5eb3ce549ed88560b7c71189ffc9382b27740cf9aea94d28fab6c85fdfd8be",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          5
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+          "anchors": [
+            "delivery",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "se-docs-root-manifests"
+          ]
+        }
+      ]
+    },
+    "identity": "59fe441a377c6c77b708dd476ea877d30801de4127d1c1c791648d679704b115"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a0dab65e948544ab1"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a0fa0d79f29561efd"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-5-1-manifests",
+      "subjectIdentity": "59fe441a377c6c77b708dd476ea877d30801de4127d1c1c791648d679704b115",
+      "criteria": [
+        "spec-5-1"
+      ],
+      "representativeInput": "manifest regex at payload/.joycraft/runtime/delivery.mjs:142, applied to the base name at :172 before the record checks",
+      "expected": "A change to docs/site/package.json, docs/site/tsconfig.build.json or docs/features/f/pnpm-lock.yaml makes an ancestor receipt stale (gate-receipt-stale); docs/site/data.json keeps it.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-5-reviewer-focused-20261122T070152217Z-5211-1.log",
+              "sha256": "c2a4b69be491155189e73089b94e19617d5b4e3b8ef7fc8e9e23b338fb88c7cd"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-5-1] (tests/runtime-wave-gate.test.ts:275) passes: the three named paths plus docs/archive/f/package-lock.json and docs/site/yarn.lock exit 1 with gate-receipt-stale and nothing pushed; docs/site/data.json and docs/features/f/notes.md push. 43 of 43 tests in the three files pass."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-5-reviewer-probe.log",
+              "sha256": "9b0e3c501d8b1634c7213b3c77e44cb3d672682ac8d7681955c729abf5f6bc80"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-5-reviewer-probe.mjs.txt",
+              "sha256": "3edccd9755214629a1c6337883997fbdf78e2c3add118537357ff5bea7212564"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "--input-type=module",
+              "-e",
+              "await import('node:fs').then(fs=>import('data:text/javascript,'+encodeURIComponent(fs.readFileSync('docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-5-reviewer-probe.mjs.txt','utf8'))))"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Probe of the same rule: Package.JSON, tsconfig.json, tsconfig.build.json, nested docs/site/node_modules/x/package.json, bun.lock, bun.lockb, deno.lock, yarn.lock, npm-shrinkwrap.json need the gate; package.json5 needs it too (not a record extension). jsconfig.json, my-package.json, package.json.md, deno.json, composer.json, pnpm-workspace.yaml and .yarnrc.yml stay records; probe.mjs.txt and tsconfig.json.txt stay records as the new text says."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-5-2-comment",
+      "subjectIdentity": "59fe441a377c6c77b708dd476ea877d30801de4127d1c1c791648d679704b115",
+      "criteria": [
+        "spec-5-2"
+      ],
+      "representativeInput": "doc comment above docsOnlySince at payload/.joycraft/runtime/delivery.mjs:143-150",
+      "expected": "The comment names package.json and lockfiles.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-5-reviewer-focused-20261122T070152217Z-5211-1.log",
+              "sha256": "c2a4b69be491155189e73089b94e19617d5b4e3b8ef7fc8e9e23b338fb88c7cd"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-5-2] (tests/runtime-wave-gate.test.ts:293) passes; it also checks the comment sits directly above the function. Source read: the comment lists package.json, tsconfig*.json and all seven lockfile names, matching the regex."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-5-3-clean-tree",
+      "subjectIdentity": "59fe441a377c6c77b708dd476ea877d30801de4127d1c1c791648d679704b115",
+      "criteria": [
+        "spec-5-3"
+      ],
+      "representativeInput": "Clean-tree item at payload/.joycraft/references/delivery.md:46-57",
+      "expected": "The item lists .md .json .log .txt .diff .patch .yaml .yml, says package.json, tsconfig*.json and lockfiles are never records, and gives the probe.mjs.txt rule.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-5-reviewer-focused-20261122T070152217Z-5211-1.log",
+              "sha256": "c2a4b69be491155189e73089b94e19617d5b4e3b8ef7fc8e9e23b338fb88c7cd"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-5-3] (tests/text-wave-gate.test.ts:94) passes. Diff read against e0eaa29: the five tightened opening sentences keep every rule (SHA resolution and ancestor-or-equal, conflict markers, JSON parse scope, merge-state refusal, receipt fields, drained output, lock per remote/branch with PID/host takeover, clean index, argv without a shell, non-force push, index-cache refresh, not a PASS, not a sandbox). Only the words 'immediately' and 'explicit' went. The moved 'inside the project' clause is true: evidence.mjs:198 and delivery.mjs:184 both enforce it."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-5-4-words",
+      "subjectIdentity": "59fe441a377c6c77b708dd476ea877d30801de4127d1c1c791648d679704b115",
+      "criteria": [
+        "spec-5-4"
+      ],
+      "representativeInput": "word caps in tests/payload-guard.test.ts:341 and :348",
+      "expected": "Every-spec words unchanged; on-demand words inside the cap with 600 words of headroom.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-5-reviewer-focused-20261122T070152217Z-5211-1.log",
+              "sha256": "c2a4b69be491155189e73089b94e19617d5b4e3b8ef7fc8e9e23b338fb88c7cd"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "payload-guard passes. Printed: every-spec 12177 (79 spare), on-demand 20562 (601 spare). b898d9c touches no EVERY_SPEC_FILES path (only delivery.md, delivery.mjs, PIN), so the every-spec count equals the pre-spec count. [AC:spec-1-3] needs 600 on-demand headroom and has 601."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-untraced-5-4",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-5-4",
+      "summary": "No test carries [AC:spec-5-4]; the criterion is checked by the existing word-cap tests [AC:spec-1-2]/[AC:spec-1-3] in tests/payload-guard.test.ts, which the spec names. Not a FAIL.",
+      "assumption": "The spec's own Check names the existing word-cap test, so no new tag was required."
+    },
+    {
+      "id": "f2-headroom-1-word",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/payload-guard.test.ts:348",
+      "summary": "On-demand headroom is now 601 against the 600-word [AC:spec-1-3] probe, so spec 6 (reference text) has 1 net word to add before that test breaks. Spec 6 must cut to pay for its additions.",
+      "assumption": "Spec 6 owns its own word budget."
+    },
+    {
+      "id": "f3-other-manifests",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/delivery.mjs:142",
+      "summary": "Probe: jsconfig.json, deno.json, composer.json under the docs root and pnpm-workspace.yaml or .yarnrc.yml in a feature folder still count as records. The decision names only package.json, tsconfig*.json and lockfiles, so this meets the spec; jsconfig.json, deno.json and pnpm-workspace.yaml are build config of the same kind and could join the list later. Over-matching (tsconfigs.json, nested node_modules package.json) only asks for a gate run, which is safe.",
+      "assumption": "The decision's list is the intended full scope for 1.9.1."
+    },
+    {
+      "id": "f4-never-clause-scope",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/delivery.md:54",
+      "summary": "The 'never package.json, tsconfig*.json or a lockfile' clause follows the feature/archive record list, so a reader could take it to bind only feature folders. The code applies it under the whole docs root. Minor wording."
+    }
+  ],
+  "limits": [
+    "Gate not run by the reviewer (spec review runs only the spec's three test files).",
+    "Test changes: test-changes.mjs (base e0eaa29) declares both changed test files class 1, no undeclared or rewritten files; both diffs only add new tests.",
+    "The installed .joycraft/ copies were not compared; payload/ is the source."
+  ],
+  "createdAt": "2026-11-22T07:03:46.861412Z"
+}

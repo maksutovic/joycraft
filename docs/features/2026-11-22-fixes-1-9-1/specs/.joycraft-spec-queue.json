@@ -390,7 +390,7 @@
       "id": 5,
       "file": "05-docs-root-manifests.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -480,6 +480,10 @@
       },
       "submitted": {
         "at": "2026-11-22T07:01:06.056Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-5.report.json",
+        "sha256": "5f2af84b02920c82ec422563c22378c7b5e6ceb417f8395733dc6ea39e56b2a0"
       }
     },
     {

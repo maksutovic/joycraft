@@ -12,3 +12,8 @@
 - Test edits beyond Test changes (retag [AC:spec-4-*] to [gate-base-*]; Notes-section case) are required by the spec; should have been declared.
 - Prose that literally names the gate before a chain (negated sentence, table row) matches; same class as before.
 - Fenced scope block outside a bullet matches only an exact gate line.
+
+## Spec 5 (PASS r1)
+- jsconfig.json, deno.json, pnpm-workspace.yaml still count as records (decision names only package.json, tsconfig*, lockfiles).
+- delivery.md:54 clause placement could read as feature/archive-only; code applies it under the whole docs root.
+- On-demand headroom 601 vs the 600-word probe (payload-guard.test.ts:348).
