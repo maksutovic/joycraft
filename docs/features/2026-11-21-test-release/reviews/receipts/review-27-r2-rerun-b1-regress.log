@@ -1,0 +1,5 @@
+"pnpm test" "Check: pnpm test add.test.ts passes." base: false head: false
+"pnpm test" "Check: pnpm test x.test.ts" base: false head: false
+"cargo test" "Check: cargo test parser::tests passes." base: false head: false
+"pytest" "Check: pytest tests.py passes." base: false head: false
+"pnpm test" "Check: pnpm test tests/x.test.ts" base: false head: false

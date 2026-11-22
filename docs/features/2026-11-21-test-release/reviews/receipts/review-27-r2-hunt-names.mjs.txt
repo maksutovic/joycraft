@@ -1,0 +1,88 @@
+// Round-2 hunt: namesCommand on realistic spec and AGENTS.md lines across stacks.
+// Columns: pre-spec base (edb34b6), round-1 code (f2dfe30~1), current HEAD. want: true = names the
+// gate (should be a gap), false = a different command or no gate, null = undecided by the spec.
+import { readFileSync } from 'node:fs';
+const [root, baseFile, r1File] = process.argv.slice(2);
+const load = file => { const src = readFileSync(file, 'utf8'); const body = src.slice(src.indexOf('const escape ='), src.indexOf('function label(')); return new Function(`${body}; return namesCommand;`.replace('export function', 'function'))(); };
+const base = load(baseFile), r1 = load(r1File);
+const { namesCommand } = await import(`${root}/payload/.joycraft/runtime/queue-check.mjs`);
+const cases = [
+  // npm / pnpm / yarn
+  ['npm test', 'Check: npm test passes.', true],
+  ['npm test', 'Check: npm test -- tests/a.test.js passes.', false],
+  ['npm test', 'Check: run npm test, then npm run lint.', true],
+  ['pnpm test', 'Check: pnpm test:unit passes.', false],
+  ['pnpm test', 'Check: pnpm test --filter api passes.', false],
+  ['pnpm test', 'Check: "pnpm test" passes.', true],
+  ['pnpm test', 'Check: pnpm test (the full suite) passes.', true],
+  ['pnpm test', 'Check: pnpm test → all green.', true],
+  ['pnpm test', 'Check: pnpm test & read the log.', true],
+  ['yarn test', 'Check: yarn test --watch=false', false],
+  ['yarn test', 'Check: yarn test src/a.spec.ts', false],
+  ['pnpm verify', "Check: pnpm verify doesn't fail.", true],
+  ['pnpm verify', "Check: pnpm verify isn't red.", true],
+  ['pnpm verify', 'Check: pnpm verify won’t fail.', true],
+  ['pnpm verify', 'Check: pnpm verify re-runs green.', true],
+  ['pnpm verify', 'Check: pnpm verify e.g. on CI.', true],
+  ['pnpm verify', 'Check: run pnpm verify 2 times.', true],
+  ['pnpm test', 'Check: pnpm test —run passes.', false],
+  ['pnpm test', 'Check: pnpm test –run passes.', false],
+  ['pnpm test', 'Check: pnpm test—tests/a.test.ts passes.', false],
+  // pytest
+  ['pytest', 'Check: pytest -q passes.', false],
+  ['pytest', 'Check: pytest tests/test_add.py passes.', false],
+  ['pytest', 'Check: pytest test_add.py::test_one passes.', false],
+  ['pytest', 'Check: pytest -k add passes.', false],
+  ['pytest', 'Check: run pytest before merging.', true],
+  ['pytest', 'Check: python -m pytest passes.', null],
+  ['pytest', 'Check: uv run pytest tests/test_a.py passes.', false],
+  ['pytest', 'Check: pytest-cov is installed.', false],
+  // go
+  ['go test ./...', 'Check: go test ./... passes.', true],
+  ['go test ./...', 'Check: `go test ./...` passes.', true],
+  ['go test ./...', 'Check: go test ./pkg/add passes.', false],
+  ['go test ./...', 'Check: go test ./... -run TestAdd passes.', false],
+  ['go test ./...', 'Check: go test ./... -race', false],
+  ['go test ./...', 'Check: `go test -run TestAdd ./pkg/add` passes.', false],
+  ['go test ./...', 'Check: go test ./...; it is slow.', true],
+  // cargo
+  ['cargo test', 'Check: cargo test parser::tests::ok passes.', false],
+  ['cargo test', 'Check: cargo test --lib passes.', false],
+  ['cargo test', 'Check: cargo test -p core passes.', false],
+  ['cargo test', 'Check: cargo test parse_ok passes.', false],
+  ['cargo test', 'Check: cargo test passes.', true],
+  ['cargo test', 'Check: `cargo test --test add` passes.', false],
+  // maven
+  ['mvn test', 'Check: mvn test -Dtest=FooTest passes.', false],
+  ['mvn test', 'Check: mvn test passes.', true],
+  ['mvn test', 'Check: ./mvnw test -Dtest=FooTest#bar passes.', false],
+  ['mvn test', 'Check: mvn -q test passes.', null],
+  // make
+  ['make test', 'Check: make test TEST=foo passes.', false],
+  ['make test', 'Check: make test-unit passes.', false],
+  ['make test', 'Check: make tests passes.', false],
+  ['make test', 'Check: make test V=1', false],
+  ['make test', 'Check: make test and read the log.', true],
+  // rspec
+  ['bundle exec rspec', 'Check: bundle exec rspec spec/models/user_spec.rb passes.', false],
+  ['bundle exec rspec', 'Check: bundle exec rspec spec/models/user_spec.rb:12 passes.', false],
+  ['bundle exec rspec', 'Check: bundle exec rspec --tag focus passes.', false],
+  ['bundle exec rspec', 'Check: bundle exec rspec passes.', true],
+  ['bundle exec rspec', 'Check: bundle exec rspec spec/ passes.', null],
+  // AGENTS.md lines (gate-rule)
+  ['pnpm test', '- Run pnpm test before committing.', true],
+  ['pnpm test', '- Run pnpm test add.test.ts before committing.', false],
+  ['pnpm test', '- Use `pnpm test tests/x.test.ts` for one file.', false],
+  ['pnpm test', '- Test one file: pnpm test -- tests/x.test.ts', false],
+  ['go test ./...', '- Run go test ./... before you push.', true],
+  ['go test ./...', '- Run `go test ./internal/...` for one package.', false],
+  ['cargo test', '- Use cargo test --doc for doc tests.', false],
+  ['make test', '- Never skip make test.', true],
+  ['pytest', '- Run pytest -x tests/unit for a quick loop.', false],
+  ['bundle exec rspec', '- Run bundle exec rspec spec/models for model changes.', false],
+];
+for (const [cmd, text, want] of cases) {
+  const [b, o, h] = [base(text, cmd), r1(text, cmd), namesCommand(text, cmd)];
+  const tag = want === null ? 'NOTE' : h === want ? 'OK  ' : 'BAD ';
+  console.log(`${tag} base=${b} r1=${o} head=${h} gate=${JSON.stringify(cmd)} ${JSON.stringify(text)}`);
+}

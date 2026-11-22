@@ -1,0 +1,8 @@
+A tracked (not ignored) receipt folder, plain fault: exit 1 restored true status-after="?? docs/features/x/a.log\n" 
+B subfolder project, not-ignored receipt, plain fault: exit 1 restored true status-after="?? app/docs/features/x/b.log\n" 
+C command creates an untracked file: exit 1 restored false 
+D command creates an ignored file (limit): exit 0 restored true 
+E command switches to a new branch at the same commit: exit 1 restored false branch-after=other 
+F command stages nothing but runs git add of the receipt dir keep: exit 1 restored true (tag only) 
+G SIGINT to the group during git apply: exit 2/null; git diff --quiet 0; stderr "Evidence run stopped: The patch did not apply: faults/f.diff"
+H SIGTERM during the child: exit 143/null; git diff --quiet 0

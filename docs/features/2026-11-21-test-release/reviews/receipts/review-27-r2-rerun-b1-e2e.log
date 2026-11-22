@@ -1,0 +1,6 @@
+base gate="pnpm test" "- It works. Check: pnpm test add.test.ts passes.": exit 0, gate-in-spec gaps 0
+head gate="pnpm test" "- It works. Check: pnpm test add.test.ts passes.": exit 0, gate-in-spec gaps 0
+base gate="cargo test" "- It parses. Check: cargo test parser::tests passes.": exit 0, gate-in-spec gaps 0
+head gate="cargo test" "- It parses. Check: cargo test parser::tests passes.": exit 0, gate-in-spec gaps 0
+base gate="pnpm test" "- It works. Check: pnpm test tests/add.test.ts passes.": exit 0, gate-in-spec gaps 0
+head gate="pnpm test" "- It works. Check: pnpm test tests/add.test.ts passes.": exit 0, gate-in-spec gaps 0

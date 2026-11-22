@@ -2472,7 +2472,8 @@
         25,
         27,
         28,
-        29
+        29,
+        31
       ],
       "status": "todo",
       "mode": "checkpoint",
@@ -2568,7 +2569,7 @@
         12,
         17
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -2866,6 +2867,10 @@
       },
       "submitted": {
         "at": "2026-11-22T04:01:44.777Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-27-r2.report.json",
+        "sha256": "272bcfafae5f694e0b35b170c5af56d7b39b6be8642c2b7bdbead7609acb9008"
       }
     },
     {
@@ -3303,6 +3308,84 @@
             "id": "spec-29-10",
             "requirement": {
               "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 31,
+      "file": "31-gate-matcher-and-records.md",
+      "depends_on": [
+        27
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "spec-tier",
+                "wave-gate"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/31-gate-matcher-and-records.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/queue-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/delivery.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-queue-check-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-wave-gate.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-31-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/31-gate-matcher-and-records.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-31-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/31-gate-matcher-and-records.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-31-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/31-gate-matcher-and-records.md",
               "anchor": "acceptance"
             },
             "requiredKinds": [

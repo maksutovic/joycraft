@@ -1,0 +1,50 @@
+// Probe spec 27 bullet 14: try to push non-docs changes through the docs-only receipt exemption.
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, realpathSync, writeFileSync, symlinkSync, rmSync, renameSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+const runtime = join(process.argv[2], 'payload/.joycraft/runtime');
+const git = (cwd, ...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@e.com', ...a], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const put = (f, b) => { mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, b); };
+function fixture(yaml = 'tests:\n  gate: node gate.mjs\n') {
+  const base = realpathSync(mkdtempSync(join(tmpdir(), 'p27-'))); const remote = join(base, 'r.git'); const root = join(base, 'w');
+  git(base, 'init', '-q', '--bare', remote); mkdirSync(root); git(root, 'init', '-q', '-b', 'main');
+  put(join(root, '.gitignore'), 'receipts/\n'); put(join(root, 'joycraft.yaml'), yaml); put(join(root, 'gate.mjs'), "console.log('ok')\n");
+  put(join(root, 'src/x.mjs'), 'export const x = 1;\n'); put(join(root, 'docs/features/f/a.md'), 'a\n');
+  git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'one'); const first = git(root, 'rev-parse', 'HEAD');
+  put(join(root, 'b.txt'), 'b\n'); git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'two');
+  git(root, 'remote', 'add', 'origin', remote);
+  return { root, first, head: git(root, 'rev-parse', 'HEAD') };
+}
+const receipt = (root, rev) => put(join(root, 'receipts/g.log'), `out\njoycraft-evidence: ${JSON.stringify({ argv: ['node', 'gate.mjs'], exitCode: 0, revision: rev, dirty: false, wallMs: 1, load: [1, 1], cores: 8, loaded: false, timedOut: false })}\n`);
+const push = (root, first) => { const r = spawnSync(process.execPath, [join(runtime, 'delivery.mjs'), 'push', '--root', root, '--base', first, '--remote', 'origin', '--branch', 'feature', '--gate-receipt', 'receipts/g.log'], { cwd: root, encoding: 'utf8' }); return r.status === 0 ? 'PUSHED' : `REFUSED ${r.stderr.trim()}`; };
+const commit = (root, m) => { git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', m); };
+const out = [];
+const scenario = (name, expect, fn, yaml) => { const f = fixture(yaml); receipt(f.root, f.head); fn(f); const got = push(f.root, f.first); out.push(`${got.startsWith(expect) ? 'OK  ' : 'BAD '} ${name}: expected ${expect}, got ${got}`); };
+scenario('docs-only commit', 'PUSHED', ({ root }) => { put(join(root, 'docs/features/f/n.md'), 'n\n'); commit(root, 'n'); });
+// Round 2: what the narrowed exemption (any non-symlink file in a feature or archive folder, or
+// Markdown/JSON elsewhere under the docs root) still lets through, and whether runners collect it.
+const run = (cwd, cmd, args) => { const r = spawnSync(cmd, args, { cwd, encoding: 'utf8', env: { ...process.env, GOFLAGS: '-mod=mod', GOTOOLCHAIN: 'local' } }); return `exit ${r.status} ${(r.stdout + r.stderr).split('\n').filter(l => /FAIL|fail|passed|failed|error|ok /.test(l)).slice(0, 3).join(' | ')}`; };
+scenario('JSON under the docs root outside records: docs/package.json', 'PUSHED', ({ root }) => { put(join(root, 'docs/package.json'), '{"name":"docs","scripts":{"test":"exit 1"}}\n'); commit(root, 'p'); });
+scenario('JSON under the docs root outside records: docs/tsconfig.json', 'PUSHED', ({ root }) => { put(join(root, 'docs/tsconfig.json'), '{"compilerOptions":{"strict":true}}\n'); commit(root, 'p'); });
+scenario('Markdown read by a doctest: docs/guide.md', 'PUSHED', ({ root }) => { put(join(root, 'docs/guide.md'), '```python\n>>> 1 + 1\n3\n```\n'); commit(root, 'p'); });
+scenario('Go test file in a feature folder', 'PUSHED', ({ root }) => { put(join(root, 'docs/features/f/x_test.go'), 'package f\nimport "testing"\nfunc TestX(t *testing.T) { t.Fatal("red") }\n'); commit(root, 'g'); });
+scenario('Go non-test probe in a feature folder', 'PUSHED', ({ root }) => { put(join(root, 'docs/features/f/probe.go'), 'package f\nfunc broken( {\n'); commit(root, 'g'); });
+scenario('pytest file in a feature folder', 'PUSHED', ({ root }) => { put(join(root, 'docs/features/f/test_probe.py'), 'def test_x():\n    assert False\n'); commit(root, 'py'); });
+scenario('conftest.py in an archive folder', 'PUSHED', ({ root }) => { put(join(root, 'docs/archive/f/conftest.py'), 'raise SystemExit(3)\n'); commit(root, 'py'); });
+scenario('vitest-style test in a feature folder', 'PUSHED', ({ root }) => { put(join(root, 'docs/features/f/x.test.ts'), 'x\n'); commit(root, 't'); });
+scenario('features folder is the docs root: code under it', 'PUSHED', ({ root }) => { put(join(root, 'docs/run.mjs'), 'x\n'); commit(root, 'c'); }, 'tests:\n  gate: node gate.mjs\npaths:\n  features: docs\n  archive: docs/archive\n  context: docs/context\n');
+for (const line of out) console.log(line);
+// Do the runners collect a file in a feature folder? Each project: one green test at the root and
+// one red test under docs/features/f/.
+const tmp = () => realpathSync(mkdtempSync(join(tmpdir(), 'p27c-')));
+{ const d = tmp(); put(join(d, 'go.mod'), 'module example.com/m\n\ngo 1.21\n'); put(join(d, 'a_test.go'), 'package m\nimport "testing"\nfunc TestA(t *testing.T) {}\n'); put(join(d, 'docs/features/f/x_test.go'), 'package f\nimport "testing"\nfunc TestX(t *testing.T) { t.Fatal("red in feature folder") }\n');
+  console.log('go test ./... with a red test in docs/features/f:', run(d, 'go', ['test', './...'])); }
+{ const d = tmp(); put(join(d, 'go.mod'), 'module example.com/m\n\ngo 1.21\n'); put(join(d, 'a_test.go'), 'package m\nimport "testing"\nfunc TestA(t *testing.T) {}\n'); put(join(d, 'docs/features/f/probe.go'), 'package f\nfunc broken( {\n');
+  console.log('go test ./... with a broken probe.go in docs/features/f:', run(d, 'go', ['test', './...'])); }
+{ const d = tmp(); put(join(d, 'tests/test_a.py'), 'def test_a():\n    assert True\n'); put(join(d, 'docs/features/f/test_probe.py'), 'def test_x():\n    assert False\n');
+  console.log('pytest (no config) with a red test in docs/features/f:', run(d, 'pytest', ['-q', '-p', 'no:cacheprovider'])); }
+{ const d = tmp(); put(join(d, 'pyproject.toml'), '[tool.pytest.ini_options]\ntestpaths = ["tests"]\n'); put(join(d, 'tests/test_a.py'), 'def test_a():\n    assert True\n'); put(join(d, 'docs/features/f/test_probe.py'), 'def test_x():\n    assert False\n');
+  console.log('pytest (testpaths = tests) with a red test in docs/features/f:', run(d, 'pytest', ['-q', '-p', 'no:cacheprovider'])); }
+{ const d = tmp(); put(join(d, 'Cargo.toml'), '[package]\nname = "m"\nversion = "0.1.0"\nedition = "2021"\n'); put(join(d, 'src/lib.rs'), '#[test]\nfn a() {}\n'); put(join(d, 'docs/features/f/x.rs'), '#[test]\nfn x() { panic!("red") }\n');
+  console.log('cargo test --offline with a red .rs file in docs/features/f:', run(d, 'cargo', ['test', '--offline', '-q'])); }
