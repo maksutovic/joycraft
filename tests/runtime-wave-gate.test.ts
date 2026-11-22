@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -270,6 +270,36 @@ describe('spec 27 delivery polish', () => {
       else expect(remoteRef(remote)).toBe(git(root, 'rev-parse', 'HEAD'));
     }
   }, 120000);
+
+  // Spec: docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md
+  it('[AC:spec-5-1] a manifest or lockfile under the docs root, feature folders too, needs the gate again; other JSON keeps the old receipt', () => {
+    const cases: Array<[string, number]> = [
+      ['docs/site/package.json', 1], ['docs/site/tsconfig.build.json', 1], ['docs/features/f/pnpm-lock.yaml', 1],
+      ['docs/archive/f/package-lock.json', 1], ['docs/site/yarn.lock', 1],
+      ['docs/site/data.json', 0], ['docs/features/f/notes.md', 0],
+    ];
+    for (const [path, status] of cases) {
+      const { root, remote, first, head } = deliveryFixture();
+      footer(root, 'gate.log', { argv: ['node', 'gate.mjs'], exitCode: 0, revision: head, dirty: false });
+      put(join(root, path), path.endsWith('.json') ? '{}\n' : 'x\n');
+      git(root, 'add', '.'); git(root, 'commit', '-q', '-m', path);
+      const result = push(root, first, ['--gate-receipt', 'receipts/gate.log']);
+      expect(result.status, `${path}: ${result.stderr}`).toBe(status);
+      if (status) { expect(result.stderr.trim()).toBe('gate-receipt-stale'); expect(remoteRef(remote)).toBe(''); }
+      else expect(remoteRef(remote)).toBe(git(root, 'rev-parse', 'HEAD'));
+    }
+  }, 90000);
+
+  it('[AC:spec-5-2] the doc comment above docsOnlySince names package.json and lockfiles', () => {
+    const source = readFileSync(join(runtime, 'delivery.mjs'), 'utf8');
+    const at = source.indexOf('async function docsOnlySince(');
+    const start = source.lastIndexOf('/**', at);
+    expect(at).toBeGreaterThan(-1);
+    const comment = source.slice(start, source.indexOf('*/', start));
+    expect(source.slice(source.indexOf('*/', start) + 2, at).trim()).toBe('');
+    expect(comment).toContain('package.json');
+    expect(comment).toContain('lockfile');
+  });
 
   // Spec 29: config now refuses a docs root of `.`, so delivery stops before any push.
   it('[AC:spec-27-14] a docs root of . gives no exemption', () => {
