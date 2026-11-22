@@ -12,6 +12,7 @@ export const defaults = Object.freeze({
   hooks: Object.freeze({}),
   cleanup: Object.freeze({ impact: Object.freeze([]), entryWords: 1000 }),
   checks: Object.freeze([]),
+  tests: Object.freeze({ gateRuns: 'spec' }),
 });
 
 function scalar(text, line) {
@@ -118,7 +119,26 @@ export function parseYaml(text) {
   return result;
 }
 
-const known = { paths: ['features', 'archive', 'context'], hooks: ['afterArchive'], cleanup: ['impact', 'entryWords'], checks: null };
+const known = { paths: ['features', 'archive', 'context'], hooks: ['afterArchive'], cleanup: ['impact', 'entryWords'], checks: null,
+  tests: ['focused', 'gate', 'full', 'gateRuns'] };
+const testCommands = ['focused', 'gate', 'full'];
+
+// tests: the project's test tiers. focused may hold {files}; gateRuns is a recorded
+// choice (per wave or per spec), never a duration.
+function readTests(parsed) {
+  const tests = { gateRuns: defaults.tests.gateRuns };
+  for (const key of testCommands) {
+    const value = parsed?.[key];
+    if (value == null && !Object.hasOwn(parsed ?? {}, key)) continue;
+    requireValue(typeof value === 'string' && value.trim(), `${configFile}: tests.${key} must be a command, not empty`);
+    tests[key] = value.trim();
+  }
+  if (parsed?.gateRuns != null || Object.hasOwn(parsed ?? {}, 'gateRuns')) {
+    requireValue(parsed.gateRuns === 'wave' || parsed.gateRuns === 'spec', `${configFile}: tests.gateRuns must be wave or spec, not ${JSON.stringify(parsed.gateRuns)}`);
+    tests.gateRuns = parsed.gateRuns;
+  }
+  return tests;
+}
 
 /** Read joycraft.yaml (or return defaults) and validate every known field. */
 export function readConfig(root = process.cwd()) {
@@ -168,7 +188,7 @@ export function readConfig(root = process.cwd()) {
     requireValue(entry.timeout == null || (typeof entry.timeout === 'number' && entry.timeout > 0 && Number.isFinite(entry.timeout)), `${label} (${entry.name}): timeout must be a positive number of seconds`);
   }
   return { source: configFile, paths, hooks, cleanup: { impact: impact.map(entry => ({ source: entry.source, docs: entry.docs.map(relativePath) })), entryWords },
-    checks: checks.map(({ name, run, timeout }) => ({ name, run, ...(timeout == null ? {} : { timeout }) })) };
+    checks: checks.map(({ name, run, timeout }) => ({ name, run, ...(timeout == null ? {} : { timeout }) })), tests: readTests(parsed.tests) };
 }
 
 /** Project-relative work folders for a project. */
