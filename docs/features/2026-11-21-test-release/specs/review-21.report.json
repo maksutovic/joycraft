@@ -1,0 +1,397 @@
+{
+ "schemaVersion": 1,
+ "subject": {
+  "schemaVersion": 1,
+  "implementationRevision": "8382a23e60b5bbd8afd147ca819b9746fef26750",
+  "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+  "specId": 21,
+  "specPath": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+  "criteria": [
+   {
+    "id": "spec-21-1",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "structural"
+    ]
+   },
+   {
+    "id": "spec-21-2",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "structural"
+    ]
+   },
+   {
+    "id": "spec-21-3",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "structural"
+    ]
+   },
+   {
+    "id": "spec-21-4",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   }
+  ],
+  "inputs": [
+   {
+    "path": "docs/features/2026-11-21-test-release/brief.md",
+    "kind": "requirement",
+    "scope": {
+     "anchors": [
+      "test-review-cleanup",
+      "sota-page",
+      "context-and-authorization",
+      "scope-and-limits"
+     ],
+     "decisionIds": [
+      "sota-knowledge-home",
+      "speed-work-in-queue",
+      "cap-raise"
+     ]
+    },
+    "sha256": "2a7b4f2e538805b8af4fa7098a86bba9d864b9029fcef123f4ca31aa772da835",
+    "normalization": "requirement-scope"
+   },
+   {
+    "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "kind": "requirement",
+    "sha256": "a61fc993560da117e9c55c471a8cbe127227af3afc55eb8226283d5c1d941777",
+    "normalization": "queue-scope"
+   },
+   {
+    "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+    "kind": "requirement",
+    "sha256": "13c0f373eea76a97d0eb7d3203de2d11e4561be5dee1776ad9038c8271e5c11d",
+    "normalization": "spec-status"
+   },
+   {
+    "path": "payload/.joycraft/references/artifacts.md",
+    "kind": "code",
+    "sha256": "b3d69dabce8b4df37da861b0e23bff83bd198d893f061741af1098cf8b64d19d",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/references/testing-review.md",
+    "kind": "code",
+    "sha256": "fb0846bf30ecb65e81752556744765554eec78234d04eb5e201943fd0bbfc14f",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/payload-guard.test.ts",
+    "kind": "check",
+    "sha256": "3d6986aa8ee5ad8c03510e18c1031cb970b9e9e27889be11d9e1110625308b63",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/text-test-review.test.ts",
+    "kind": "check",
+    "sha256": "473d29aad34b2b24f97f10e0dbd744e79ad6082c6802c7500b7732cbb4c1e5ef",
+    "normalization": "none"
+   }
+  ],
+  "binding": {
+   "version": 1,
+   "queue": {
+    "specIds": [
+     1,
+     2,
+     3,
+     5,
+     9,
+     11,
+     17,
+     18,
+     20,
+     21
+    ]
+   },
+   "governing": [
+    {
+     "path": "docs/features/2026-11-21-test-release/brief.md",
+     "anchors": [
+      "test-review-cleanup",
+      "sota-page",
+      "context-and-authorization",
+      "scope-and-limits"
+     ],
+     "decisionIds": [
+      "sota-knowledge-home",
+      "speed-work-in-queue",
+      "cap-raise"
+     ]
+    }
+   ]
+  },
+  "identity": "65c3883dce1fe0fde1635536285d15b03f049e36fdd28e1bc7c478d0628b5dc3"
+ },
+ "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+ "implementerActor": {
+  "host": "claude",
+  "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "agentId": "a970c154a44353c3a"
+ },
+ "reviewer": {
+  "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "actor": {
+   "host": "claude",
+   "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+   "agentId": "a9db6eb264524bcb4"
+  },
+  "independent": true,
+  "scopeReviewed": true
+ },
+ "verdict": "PASS",
+ "createdAt": "2026-11-22T03:42:41.379Z",
+ "flows": [
+  {
+   "id": "spec-21-1-measure-find",
+   "subjectIdentity": "65c3883dce1fe0fde1635536285d15b03f049e36fdd28e1bc7c478d0628b5dc3",
+   "criteria": [
+    "spec-21-1"
+   ],
+   "representativeInput": "payload/.joycraft/references/testing-review.md:7-44 at 8382a23; walk on a temp project with a fixed sleep, self-comparison, mock-supplied oracle, CI-keyed worker cap, nested runner, wall-clock flake and pbkdf2 global setup",
+   "expected": "Measure first runs the full suite once through evidence.mjs and reports run facts (load, cores); Find ranks by what every run pays, then the slowest file, and lists a CI-keyed control and a nested test runner.",
+   "observations": [
+    {
+     "kind": "structural",
+     "method": "command",
+     "result": "PASS",
+     "actual": "Scan: testing-review.md:9-15 evidence.mjs run --receipt command, wallMs/load/cores/loaded, like-load rule; 19-20 rank by what every run pays first, then slowest file; 28-30 CI-keyed control re-keyed on JOYCRAFT_EVIDENCE; 31-33 nested test runner; 38-39 no real oracle (self-comparison, subject-computed expected, mock-supplied behavior). Walk: following the text, one full run through the payload evidence.mjs printed facts {wallMs 1790, load [6.0,6.0], cores 14, loaded false}; the receipt shows runner concurrency=14 (CI=1), i.e. the CI-keyed local cap of 2 is off for agents, as the text predicts; a focused one-file run costs 218 ms with the global pbkdf2 setup vs 62 ms without, so ranking by what every run pays puts setup.mjs above the slowest file (the 1.5 s sleep); scans found the sleep, the CI control, the nested runner and both oracle defects. Tests 20/20 pass, exit 0.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-text-scan.log",
+       "sha256": "512350e43a3b33d3dc879851a8c2bce338c78027b765e9d1ec1aeb59315b7276"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-walk.log",
+       "sha256": "e976c34db881ab2b74cdf954e054f08f8080228310f83346e2fb4f8a210cd8db"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-walk.sh",
+       "sha256": "a702fa8ab99cabdcc7d8e1964a5e2b66ac703a71ed2a81ecc5a7ef4b16f5cd74"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-tests.log",
+       "sha256": "80bf9876ab3806f3a5dcb2e3d17f7e811f3b2464bdc10a8e0b5ecfd3da9eaf27"
+      }
+     ],
+     "command": {
+      "argv": [
+       "sh",
+       "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-walk.sh",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": [
+    "The flaky wall-clock test passed both full runs; the text gives no probe that surfaces it (see follow-up f1)."
+   ]
+  },
+  {
+   "id": "spec-21-2-apply",
+   "subjectIdentity": "65c3883dce1fe0fde1635536285d15b03f049e36fdd28e1bc7c478d0628b5dc3",
+   "criteria": [
+    "spec-21-2"
+   ],
+   "representativeInput": "payload/.joycraft/references/testing-review.md:60-68, 109-113; walk tree check",
+   "expected": "Apply writes each approved change as a test-only spec (#test-only-specs) for the queue; a deletion names the claim and the owner yes; suite time before and after; the review itself edits no test.",
+   "observations": [
+    {
+     "kind": "structural",
+     "method": "command",
+     "result": "PASS",
+     "actual": "Lines 62-68: \"The review itself edits no test\", test-only spec link to #test-only-specs (heading exists at 109), decompose format with ## Test changes class, one file or subsystem per spec, seam/fix first, deletion names the claim, the new owner test or claim retired, and the owner yes, full-suite time and run facts before and after the queue. Line 5 unattended rule unchanged. Walk: after measure and find, git diff --quiet against the base exit 0 and the tree is clean. Mapping the walk findings: sleep and flake fixes are class 2, the self-comparison and mock oracle fixes are class 2 or a class-3 deletion, the nested test moved to a tooling suite leaves the gate (class 3, line 102-103), the CI-keyed config is shared tooling (serial lane, line 80-82).",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-text-scan.log",
+       "sha256": "512350e43a3b33d3dc879851a8c2bce338c78027b765e9d1ec1aeb59315b7276"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-walk.log",
+       "sha256": "e976c34db881ab2b74cdf954e054f08f8080228310f83346e2fb4f8a210cd8db"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-walk.sh",
+       "sha256": "a702fa8ab99cabdcc7d8e1964a5e2b66ac703a71ed2a81ecc5a7ef4b16f5cd74"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-tests.log",
+       "sha256": "80bf9876ab3806f3a5dcb2e3d17f7e811f3b2464bdc10a8e0b5ecfd3da9eaf27"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "test",
+       "tests/text-test-review.test.ts",
+       "tests/payload-guard.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": [
+    "The walk drafted no specs into a real queue; the Apply mapping is a reading of the text, not a run of decompose."
+   ]
+  },
+  {
+   "id": "spec-21-3-artifacts",
+   "subjectIdentity": "65c3883dce1fe0fde1635536285d15b03f049e36fdd28e1bc7c478d0628b5dc3",
+   "criteria": [
+    "spec-21-3"
+   ],
+   "representativeInput": "payload/.joycraft/references/artifacts.md:42-56",
+   "expected": "artifacts.md, where decision options are written, offers a time limit or a result cache only after a measurement.",
+   "observations": [
+    {
+     "kind": "structural",
+     "method": "command",
+     "result": "PASS",
+     "actual": "artifacts.md:55-56 sits after the consequential-choice order (42-54) and before **Words.**: an option adding a time limit or result cache is offered only after a measurement, its example gives the measured time, load or repeat count. testing-review.md:54-56 repeats it with the repeat-count measure. [AC:spec-21-3] passes.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-text-scan.log",
+       "sha256": "512350e43a3b33d3dc879851a8c2bce338c78027b765e9d1ec1aeb59315b7276"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-tests.log",
+       "sha256": "80bf9876ab3806f3a5dcb2e3d17f7e811f3b2464bdc10a8e0b5ecfd3da9eaf27"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "test",
+       "tests/text-test-review.test.ts",
+       "tests/payload-guard.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-21-4-words",
+   "subjectIdentity": "65c3883dce1fe0fde1635536285d15b03f049e36fdd28e1bc7c478d0628b5dc3",
+   "criteria": [
+    "spec-21-4"
+   ],
+   "representativeInput": "pnpm test tests/text-test-review.test.ts tests/payload-guard.test.ts at 8382a23",
+   "expected": "payload-guard passes; every-spec words grow by at most 8; on-demand within budget.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "All 20 pass, exit 0. Guard prints every-spec 12166 (cap 12256, 90 spare), equal to the pre-spec count 12166 (+0); on-demand 20049 (cap 21163, 1114 spare). Both edited files are on-demand.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-tests.log",
+       "sha256": "80bf9876ab3806f3a5dcb2e3d17f7e811f3b2464bdc10a8e0b5ecfd3da9eaf27"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "test",
+       "tests/text-test-review.test.ts",
+       "tests/payload-guard.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  }
+ ],
+ "limits": [
+  "Toy-project walk on node:test only; no real field suite; the walk used the payload evidence.mjs because the installed .joycraft/runtime copy is older."
+ ],
+ "unresolved": [],
+ "findings": [
+  {
+   "id": "f1",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-21-1",
+   "at": "payload/.joycraft/references/testing-review.md:41",
+   "summary": "f1 (playbook 3.4.8): a flaky test is listed but nothing finds one. In the walk the wall-clock test passed both full runs. Add the cheap probe: one shuffled run, and one run at half the workers while another broad run is active.",
+   "assumption": "Not a stated criterion; closest to the brief intent of SOTA cleanup."
+  },
+  {
+   "id": "f2",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-21-2",
+   "at": "payload/.joycraft/references/testing-review.md:11-13,67-68",
+   "summary": "f2 (playbook 3.2): before/after is one sample each. Add: time each suspect file alone, and repeat baseline and candidate in alternating order (ABAB), at least 3 times each, at a like load, before claiming a speed-up."
+  },
+  {
+   "id": "f3",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-21-2",
+   "at": "payload/.joycraft/references/testing-review.md:65-67",
+   "summary": "f3 (playbook 3.5): a deletion ledger row lacks the break-the-code receipt for the test that now owns the claim, and the keep categories (auth, permissions, persistence, migrations, security, external formats, release) needing an owner yes per batch are absent."
+  },
+  {
+   "id": "f4",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-21-1",
+   "at": "payload/.joycraft/references/testing-review.md:7",
+   "summary": "f4 (playbook 3.1): no \"stop the bleeding\" step: install the worker cap (lane-cap, keyed on JOYCRAFT_EVIDENCE) before any speed measurement; the text only notes the load."
+  },
+  {
+   "id": "f5",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-21-1",
+   "at": "payload/.joycraft/references/testing-review.md:10",
+   "summary": "f5: the measure command has no --timeout-ms; evidence.mjs defaults to 300000 ms, so a slow suite (the case this review exists for) times out and reports no full timing. Name --timeout-ms for the full run."
+  },
+  {
+   "id": "f6",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-21-2",
+   "at": "payload/.joycraft/references/testing-review.md:111-112",
+   "summary": "f6: \"A test-only spec changes tests, fixtures and test lists only\" does not name runner config or global test setup, yet lines 80-82 put runner-config changes in the test-only lane and the walk CI-key and pbkdf2 fixes are of that kind. Say runner config and test setup count, and which class (no assertion change) they take."
+  },
+  {
+   "id": "f7",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-21-1",
+   "at": "payload/.joycraft/references/testing-review.md:53-58",
+   "summary": "f7 (playbook 3.4.6, 3.6): smaller gaps: duplicate contract and debugging-probe tests not in the junk rubric; the speed refactor omits \"the kept real case must kill the glue mutants\" and \"check a shrunk input original value as data\"; before/after omits the always-on cost."
+  },
+  {
+   "id": "f8",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-21-4",
+   "at": "tests/text-test-review.test.ts:25,91",
+   "summary": "f8: like text-fault-proof and text-lane-cap, the test pins EVERY_SPEC_BEFORE=12166 and a 12-file guard list, so the next spec that adds over 8 every-spec words or changes the list turns it red (a frozen-baseline check of the kind this review text tells projects to retire). Test changes says none while a new test file is added; the spec Tests line requires it, so not blocking."
+  }
+ ]
+}

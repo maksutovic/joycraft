@@ -1,6 +1,6 @@
 ---
 id: 21
-status: in-review
+status: done
 ---
 # The test review becomes the cleanup path for an existing suite
 

@@ -1930,7 +1930,7 @@
         18,
         20
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -2020,6 +2020,10 @@
       },
       "submitted": {
         "at": "2026-11-22T03:38:20.194Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-21.report.json",
+        "sha256": "3ba56b262cb9760c37ece5facc2834223e108f1aba9cb94d90a3e8c3a6f5be8c"
       }
     },
     {
@@ -3064,6 +3068,16 @@
             "requiredKinds": [
               "runtime"
             ]
+          },
+          {
+            "id": "spec-28-10",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
           }
         ]
       }
@@ -3181,6 +3195,10 @@
           {
             "path": "tests/payload-guard.test.ts",
             "kind": "check"
+          },
+          {
+            "path": "tests/text-test-review.test.ts",
+            "kind": "check"
           }
         ],
         "criteria": [
@@ -3266,6 +3284,16 @@
           },
           {
             "id": "spec-29-9",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-29-10",
             "requirement": {
               "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
               "anchor": "acceptance"
