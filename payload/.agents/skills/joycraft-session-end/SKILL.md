@@ -106,8 +106,9 @@ to satisfy old reports, or re-review done work only to move a folder. Report
 `archived with reconciliation`, never renewed acceptance. Unresolved product
 work and corrupt or missing evidence still block closure.
 
-After `--apply`, commit the move and any `--rewrite` edits in their own
-commit, `docs: archive <slug>`.
+After `--apply`, fix the tests the preview listed in `namedFiles` (see the
+archive guidance), then commit the move and those edits in their own commit,
+`docs: archive <slug>`.
 
 ## One push
 

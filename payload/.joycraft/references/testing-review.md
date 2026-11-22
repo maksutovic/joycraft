@@ -3,6 +3,8 @@
 Opt-in, after a cleanup that a person asks for. Ask one time: "Do you want
 a review of the tests and CI, with recommendations?" On no, stop.
 Unattended cleanup never asks, and never edits or deletes a test.
+The one exception: at archive, session end may change a folder path in a
+listed test.
 
 ## Measure first
 
@@ -104,7 +106,8 @@ Reviewer rules:
   conflicts with a later owner decision; it is class 3 too.
 - A red or flaky test outside the spec's set is a follow-up, never a hold.
 - A changed test that reads a path under the features folder (`featurePaths`)
-  is a follow-up finding.
+  is a follow-up finding; the fix is to move the file the test reads out of the
+  feature folder.
 
 ## Test-only specs
 

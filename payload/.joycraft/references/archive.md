@@ -201,6 +201,15 @@ links into the folder only in live Markdown outside the features and archive
 folders, never in entry files, reports or receipts; `links` lists the rewrites
 and, unedited, other files that link or name the folder.
 
+Read `namedFiles` in the preview; a listed comment needs no change. After
+`--apply`, change the folder path in each listed test that reads the folder, and
+nothing else in it. Never edit an applied migration. Run the gate: a
+changed file outside the docs root makes its receipt stale, and the push is
+refused. Commit the edits with the move, one feature per commit. When a test
+stays red, move the folder back, delete the archive record folder, restore the
+changed files with Git until `git status` prints nothing, and report the feature
+as not archived. A path built in pieces from a variable is not listed.
+
 The staging directory receives `archive-recovery.json` before any copy or move,
 and the marker remains in the final archive as immutable move provenance. If the
 final rename fails, the runtime restores the source directory; when it cannot
