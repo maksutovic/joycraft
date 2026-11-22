@@ -1,6 +1,6 @@
 ---
 id: 8
-status: in-review
+status: done
 ---
 # cleanup flags an owner rule line that names the gate
 

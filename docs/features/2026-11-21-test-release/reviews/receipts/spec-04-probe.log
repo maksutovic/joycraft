@@ -1,0 +1,38 @@
+ok   prose, end of sentence: namesCommand("The suite passes. Check: run pnpm verify.", "pnpm verify") = true (probe expectation true)
+ok   prose, more words after: namesCommand("Check: run pnpm verify before merging.", "pnpm verify") = false (probe expectation false)
+ok   code span: namesCommand("Check: `pnpm verify` passes.", "pnpm verify") = true (probe expectation true)
+ok   code span, extra args: namesCommand("Check: `pnpm verify --filter a` passes.", "pnpm verify") = false (probe expectation false)
+ok   double spaces in text: namesCommand("Check: `pnpm   verify` passes.", "pnpm verify") = true (probe expectation true)
+ok   tab in recorded command: namesCommand("Check: `pnpm verify`.", "pnpm\tverify") = true (probe expectation true)
+ok   npm test prefix of focused: namesCommand("Check: `npm test -- tests/x` passes.", "npm test") = false (probe expectation false)
+ok   npm test exact: namesCommand("Check: `npm test` passes.", "npm test") = true (probe expectation true)
+ok   npm test then comma: namesCommand("Check: npm test, then lint.", "npm test") = true (probe expectation true)
+ok   npm test:unit (script name): namesCommand("Check: `npm test:unit`.", "npm test") = false (probe expectation false)
+ok   run-script prefix: namesCommand("Check: `npx npm test`.", "npm test") = true (probe expectation true)
+ok   env prefix: namesCommand("Check: `CI=1 pnpm verify`.", "pnpm verify") = true (probe expectation true)
+ok   words: the project gate: namesCommand("Check: the project gate passes.", "pnpm verify") = false (probe expectation false)
+ok   compound gate exact: namesCommand("Check: `pnpm test && pnpm typecheck`.", "pnpm test && pnpm typecheck") = true (probe expectation true)
+ok   compound gate in focused bullet: namesCommand("Check: `pnpm test tests/x.test.ts`.", "pnpm test && pnpm typecheck") = false (probe expectation false)
+ok   compound gate extended: namesCommand("Check: `pnpm test && pnpm typecheck && pnpm lint`.", "pnpm test && pnpm typecheck") = false (probe expectation false)
+ok   parenthesised: namesCommand("Check: (pnpm verify).", "pnpm verify") = true (probe expectation true)
+ok   quoted: namesCommand("Check: \"pnpm verify\".", "pnpm verify") = true (probe expectation true)
+ok   em dash after: namesCommand("Check: pnpm verify — then ship.", "pnpm verify") = false (probe expectation false)
+ok   negated mention: namesCommand("Do not run `pnpm verify` here. Check: `pnpm test tests/x.test.ts`.", "pnpm verify") = true (probe expectation true)
+ok   inside word: namesCommand("Check: `xpnpm verify`.", "pnpm verify") = false (probe expectation false)
+fenced bullet text: "It works. Check: run ```sh pnpm verify ```" -> namesCommand = false
+fenced bullet + prose text: "It works. Check: run ```sh pnpm verify ``` Then more prose." -> namesCommand = false
+e2e npm test gate vs focused npm test -- tests/x: exit 0, gate gaps 0
+e2e npm test gate named exactly: exit 2, gate gaps 1
+    Joycraft queue check: docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json spec 1 (docs/features/2026-11-21-f/specs/01-a.md:9): the acceptance bullet names the recorded gate or full command `npm test`; a spec checks with its own test files, and the gate runs at the review boundary or wave end. Add it to the brief as an open decision and ask the user now.
+e2e gate and full both named in one bullet: exit 2, gate gaps 2
+    Joycraft queue check: docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json spec 1 (docs/features/2026-11-21-f/specs/01-a.md:9): the acceptance bullet names the recorded gate or full command `pnpm verify`; a spec checks with its own test files, and the gate runs at the review boundary or wave end. Add it to the brief as an open decision and ask the user now.
+    Joycraft queue check: docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json spec 1 (docs/features/2026-11-21-f/specs/01-a.md:9): the acceptance bullet names the recorded gate or full command `pnpm verify:all`; a spec checks with its own test files, and the gate runs at the review boundary or wave end. Add it to the brief as an open decision and ask the user now.
+e2e gate equals full (dedupe): exit 2, gate gaps 1
+    Joycraft queue check: docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json spec 1 (docs/features/2026-11-21-f/specs/01-a.md:9): the acceptance bullet names the recorded gate or full command `pnpm verify`; a spec checks with its own test files, and the gate runs at the review boundary or wave end. Add it to the brief as an open decision and ask the user now.
+e2e two bullets naming the gate: exit 2, gate gaps 2
+    Joycraft queue check: docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json spec 1 (docs/features/2026-11-21-f/specs/01-a.md:9): the acceptance bullet names the recorded gate or full command `pnpm verify`; a spec checks with its own test files, and the gate runs at the review boundary or wave end. Add it to the brief as an open decision and ask the user now.
+    Joycraft queue check: docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json spec 1 (docs/features/2026-11-21-f/specs/01-a.md:10): the acceptance bullet names the recorded gate or full command `pnpm verify`; a spec checks with its own test files, and the gate runs at the review boundary or wave end. Add it to the brief as an open decision and ask the user now.
+e2e the project gate in words: exit 0, gate gaps 0
+e2e fenced block inside bullet: exit 0, gate gaps 0
+e2e broken joycraft.yaml: exit 0, gate gaps 0
+namesCommand probe mismatches vs reviewer expectation: 0

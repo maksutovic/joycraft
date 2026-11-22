@@ -1,6 +1,6 @@
 ---
 id: 4
-status: in-review
+status: done
 ---
 # queue-check reports a spec whose acceptance names the gate
 

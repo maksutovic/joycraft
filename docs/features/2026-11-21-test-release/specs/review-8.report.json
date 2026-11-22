@@ -1,0 +1,327 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "cf6f37bf6b4a4beb00ea7b00cd42a35539497ec5",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 8,
+    "specPath": "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+    "criteria": [
+      {
+        "id": "spec-8-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-8-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-8-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "owner-gate-lines",
+            "context-and-authorization",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "d6a7926775709b63b169f3364c1cc8be7eccc90ae024c69e8b29bbde02bc1637",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "e19fa28db70f0b1435de87de5d3a5a1f27fe70921ccf46629c0a85c50545ae40",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+        "kind": "requirement",
+        "sha256": "504b8704e3728c4f53319aaa52f10ebb7bdeda147d1e3ff1f385260a5d5ce14b",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "4f4f08d25000335ed625ff22550a2a7b98b24b0ca6110bce307acbb4845c4444",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-checks.test.ts",
+        "kind": "check",
+        "sha256": "0ce92b357bf46ab8756e5721849b09166af47f0f745e0d50abe3ac38b1f9a574",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-gate-rule.test.ts",
+        "kind": "check",
+        "sha256": "c42e2c3f8cba66c78c20eb3c90c73cee827a3f91218df88a45b5bbdc4193aa6b",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2,
+          8
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "owner-gate-lines",
+            "context-and-authorization",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "06886aed679580ef9303560aca2541ff7512b2f44ed01cb7c114dfd6dcc65598"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a465133b4c1fadef3"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a26ad0566e91130b8"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-8-1-rule-line",
+      "subjectIdentity": "06886aed679580ef9303560aca2541ff7512b2f44ed01cb7c114dfd6dcc65598",
+      "criteria": [
+        "spec-8-1"
+      ],
+      "representativeInput": "Fixture AGENTS.md with \"Run `pnpm verify` after every change.\" and tests.gate: pnpm verify (payload/.joycraft/runtime/cleanup.mjs:375-384 at 50e8d14)",
+      "expected": "Exactly one gate-rule finding with path AGENTS.md, line 3, command pnpm verify.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-8-1] passes in the 10/10 run (exit 0): one finding, AGENTS.md line 3, command pnpm verify.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-tests.log",
+              "sha256": "c33f7b2ec52387a75573955ae9e7dd19d545028afe888486d1ff21d42d06e986"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-gate-rule.test.ts",
+              "tests/runtime-cleanup-checks.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe (17 fixtures, 0 mismatches): one finding with path, line and command for a plain line, a list item, a nested list item, a blockquote, CLAUDE.md (tests.full command), and AGENTS.md plus CLAUDE.md together. The gate named twice on one line gives one finding; gate equal to full is deduped. Longer commands (`pnpm verify tests/a.test.ts`, `pnpm verify --watch`, `pnpm verifyx`) give none, per the spec-4 whole-command rule.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.log",
+              "sha256": "4ec4397a41187d1156e403774b21bc63b871d55daa7c73cc15a071c937454d32"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs",
+              "sha256": "2f96902eadbcd684b342f5444cd806daafce1b4b8b91c8eaed3093d17f4e7c02"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-8-2-table-and-no-gate",
+      "subjectIdentity": "06886aed679580ef9303560aca2541ff7512b2f44ed01cb7c114dfd6dcc65598",
+      "criteria": [
+        "spec-8-2"
+      ],
+      "representativeInput": "Same fixture's `| Project gate | pnpm verify |` row; same fixture with no tests: in joycraft.yaml",
+      "expected": "No finding for the table row; no gate-rule finding at all without a recorded gate.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-8-2] passes: no finding at the table row line, and an empty list for the fixture without tests:.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-tests.log",
+              "sha256": "c33f7b2ec52387a75573955ae9e7dd19d545028afe888486d1ff21d42d06e986"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-gate-rule.test.ts",
+              "tests/runtime-cleanup-checks.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: an indented table row gives none; fenced blocks (``` and ~~~, and an unclosed fence) give none; no tests: gives none; context pages are not scanned.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.log",
+              "sha256": "4ec4397a41187d1156e403774b21bc63b871d55daa7c73cc15a071c937454d32"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs",
+              "sha256": "2f96902eadbcd684b342f5444cd806daafce1b4b8b91c8eaed3093d17f4e7c02"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-8-3-checks-listing",
+      "subjectIdentity": "06886aed679580ef9303560aca2541ff7512b2f44ed01cb7c114dfd6dcc65598",
+      "criteria": [
+        "spec-8-3"
+      ],
+      "representativeInput": "cleanup.mjs --checks; pnpm test tests/runtime-cleanup-checks.test.ts",
+      "expected": "gate-rule is printed as a report check and the checks-listing test passes with it in checkList.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "runtime-cleanup-checks.test.ts 7/7 pass, including [AC:spec-1-1], which compares the --checks ids with every check id the source emits; [AC:spec-8-3] passes. Test changes: none holds: commit 50e8d14 adds only the new test file and changes no existing test file; payload/PIN matches (pin-payload --check).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-tests.log",
+              "sha256": "c33f7b2ec52387a75573955ae9e7dd19d545028afe888486d1ff21d42d06e986"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-cleanup-gate-rule.test.ts",
+              "tests/runtime-cleanup-checks.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: --checks prints exactly one line \"gate-rule\\treport\\tAn entry-file line outside a table that names the recorded tests.gate or tests.full command\". entry-check gateChecks does not include it, so it stays advisory.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.log",
+              "sha256": "4ec4397a41187d1156e403774b21bc63b871d55daa7c73cc15a071c937454d32"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs",
+              "sha256": "2f96902eadbcd684b342f5444cd806daafce1b4b8b91c8eaed3093d17f4e7c02"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-prose-gate-then-word",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/queue-check.mjs:218",
+      "summary": "Without backticks, \"Run pnpm verify after every change.\" gives no finding: namesCommand treats a following word as a possible argument. \"Run pnpm verify.\" is found. The spec asks to match whole commands as spec 4 does, and its stated check uses backticks, so this passes; owner may want prose rules caught too.",
+      "assumption": "The spec-4 whole-command matcher is mandated; prose followed by a word is out of the stated check."
+    },
+    {
+      "id": "f2-table-detection",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:379",
+      "summary": "A table is any line whose trimmed text starts with \"|\". A GFM table written without leading pipes is flagged, and a table row inside a blockquote (\"> | gate | pnpm verify |\") is flagged. Both are rare."
+    },
+    {
+      "id": "f3-root-entry-only",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:342",
+      "summary": "Only the root AGENTS.md and CLAUDE.md are scanned (as the other entry-file checks do); a nested package AGENTS.md naming the gate is not flagged."
+    }
+  ],
+  "limits": [
+    "Installed .joycraft/runtime/cleanup.mjs was not reviewed; the payload copy is the source and was used.",
+    "The rewrite offer and update notice are spec 16, out of scope here."
+  ],
+  "createdAt": "2026-11-22T02:32:17.089Z"
+}
