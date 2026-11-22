@@ -1,5 +1,7 @@
+import { constants as bufferConstants } from 'node:buffer';
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
-import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, rmdirSync, writeFileSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
+import { closeSync, cpSync, existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, rmdirSync, statSync, writeFileSync, writeSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -555,8 +557,17 @@ function planRewrite(root, plan, rewrite) {
   const run = targets.length ? targets : files;
   let argv;
   try { argv = templateArgv(focused, run); } catch (error) { throw refusal(error.message); }
+  // The pending record keeps each file's bytes as base64 in one JSON string, so the files must fit in it.
+  let kept = 0;
+  for (const file of files) {
+    const size = statSync(path.join(root, file)).size;
+    kept += Math.ceil(size / 3) * 4;
+    if (kept > recordBudget) throw refusal(`--rewrite ${file} is too large to rewrite (${size} bytes): archive keeps a copy of every rewritten file in its pending record, which holds about ${Math.floor(recordBudget * 3 / 4 / 1048576)} MB in all; nothing was edited. Leave ${file} out of --rewrite and change ${plan.source} to ${plan.destination}/feature in it by hand after the archive`);
+  }
   return { files: files.map(file => { const before = readFileSync(path.join(root, file)); return { path: file, before, after: rewriteBytes(before, plan.source, `${plan.destination}/feature`) }; }), argv };
 }
+
+const recordBudget = Math.floor(bufferConstants.MAX_STRING_LENGTH * 0.9);
 
 /** The machine-local folder, made git-ignored when archive creates it. */
 function ensureLocal(root) {
@@ -576,12 +587,60 @@ const pendingHome = '.joycraft/local/archive-pending';
 const pendingFile = folder => `${pendingHome}/${folder}.json`;
 
 function writePending(root, record) {
+  const text = `${JSON.stringify(record)}\n`;
   ensureLocal(root);
   const target = path.join(realpathSync(root), pendingFile(path.posix.basename(record.source)));
   mkdirSync(path.dirname(target), { recursive: true, mode: 0o700 });
-  const temporary = `${target}.${process.pid}`;
-  writeFileSync(temporary, `${JSON.stringify(record)}\n`, { mode: 0o600 });
-  renameSync(temporary, target);
+  // Exclusive create: a second --apply of the same folder refuses here, before it stages anything.
+  let fd;
+  try { fd = openSync(target, 'wx', 0o600); }
+  catch (error) {
+    if (error.code === 'EEXIST') throw refusal(`Another archive --apply --rewrite of ${record.source} holds ${pendingFile(path.posix.basename(record.source))}; nothing was changed. Archive again when it has finished`);
+    throw error;
+  }
+  try { writeSync(fd, text); } finally { closeSync(fd); }
+}
+
+/**
+ * The run that owns a pending record: its process id, that process's start time (when `ps` can
+ * read it) and a run id. A record whose owner is alive belongs to a live run, which no other call
+ * may undo; recovery runs only when the owner is gone.
+ */
+const liveRuns = new Set();
+
+function processStart(pid) {
+  if (process.platform === 'win32') return { known: false };
+  try {
+    const out = execFileSync('ps', ['-o', 'stat=', '-o', 'lstart=', '-p', String(pid)], { encoding: 'utf8', env: { ...process.env, LC_ALL: 'C' }, stdio: ['ignore', 'pipe', 'ignore'] }).trim();
+    const [state, ...start] = out.split(/\s+/);
+    if (!state) return { known: false };
+    const started = Date.parse(start.join(' '));
+    return { known: true, zombie: state.startsWith('Z'), started: Number.isFinite(started) ? started : null };
+  } catch { return { known: false }; }
+}
+
+const runOwner = run => ({ pid: process.pid, started: processStart(process.pid).started ?? null, run });
+
+function ownerAlive(owner) {
+  if (!isObject(owner) || !Number.isInteger(owner.pid) || owner.pid <= 0) return false;
+  if (owner.pid === process.pid) return typeof owner.run === 'string' && liveRuns.has(owner.run);
+  try { process.kill(owner.pid, 0); } catch (error) { if (error.code !== 'EPERM') return false; }
+  const now = processStart(owner.pid);
+  if (now.known && now.zombie) return false;
+  if (now.known && typeof owner.started === 'number' && typeof now.started === 'number' && Math.abs(now.started - owner.started) > 1000) return false;
+  return true;
+}
+
+/** The owner a record names, read from its first bytes when the whole record is not readable yet. */
+function ownerOf(text) {
+  const match = /^\{"owner":\{"pid":(\d+),"started":(null|\d+),"run":"([0-9a-f-]+)"\}/.exec(text);
+  return match ? { pid: Number(match[1]), started: match[2] === 'null' ? null : Number(match[2]), run: match[3] } : null;
+}
+
+function inProgress(root, folder, owner) {
+  const source = featurePath(root, folder);
+  return { status: 'held', reason: 'in-progress', pending: pendingFile(folder), source, pid: owner.pid,
+    message: `An archive --apply --rewrite of ${source} is running now (process ${owner.pid}), so archive changed nothing. Wait for it to finish, then archive again.` };
 }
 
 const clearPending = (root, source) => rmSync(path.join(realpathSync(root), pendingFile(path.posix.basename(source))), { force: true });
@@ -709,7 +768,7 @@ function removePlaced(root, holder, expected) {
  * back and remove what archive placed. When anything differs, nothing changes and the differences
  * are returned.
  */
-function restoreRecord(root, folder, record) {
+function restoreRecord(root, folder, record, { only } = {}) {
   const problems = recordProblems(root, folder, record);
   if (problems.length) return { restored: false, differences: problems.map(problem => `the pending record is refused: ${problem}`) };
   const { source, destination, stage } = record;
@@ -732,7 +791,8 @@ function restoreRecord(root, folder, record) {
     differences.push(`the feature folder must be at exactly one of ${source}, ${stage}/feature or ${destination}/feature; it is at ${places.join(' and ') || 'none of them'}`);
   }
   const restore = [];
-  for (const file of record.files) {
+  // `only`: the files this run has written so far; the others were never touched, so they are left as they are.
+  for (const file of record.files.filter(each => !only || only.has(each.path))) {
     const local = projectTarget(root, file.path);
     const current = existsSync(local) && lstatSync(local).isFile() ? sha256(readFileSync(local)) : null;
     if (current === file.after) restore.push(file);
@@ -770,9 +830,22 @@ function heldUnverified(root, folder, record, differences, extra = {}) {
 function recoverPending(root, name) {
   const folder = pendingFor(root, name);
   if (!folder) return null;
-  let record;
-  try { record = JSON.parse(readFileSync(path.join(realpathSync(root), pendingFile(folder)), 'utf8')); }
-  catch (error) { return heldUnverified(root, folder, null, [`${pendingFile(folder)} is not a readable JSON record (${error.message})`]); }
+  const file = path.join(realpathSync(root), pendingFile(folder));
+  let record, text = '', failure;
+  // A live run writes its record in one write; a reader that sees it half written waits briefly.
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    try { text = readFileSync(file, 'utf8'); record = JSON.parse(text); failure = null; break; }
+    catch (error) {
+      failure = error;
+      if (error.code === 'ENOENT') return null;
+      const owner = ownerOf(text);
+      if (owner && ownerAlive(owner)) return inProgress(root, folder, owner);
+      if (owner === null && text.length > 0) break;
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 50);
+    }
+  }
+  if (failure) return heldUnverified(root, folder, null, [`${pendingFile(folder)} is not a readable JSON record (${failure.message})`]);
+  if (isObject(record) && ownerAlive(record.owner)) return inProgress(root, folder, record.owner);
   let outcome;
   try { outcome = restoreRecord(root, folder, record); } catch (error) { outcome = { restored: false, differences: [error.message] }; }
   if (!outcome.restored) return heldUnverified(root, folder, record, outcome.differences);
@@ -790,7 +863,15 @@ function undoRun(root, plan, record) {
  * A SIGINT, SIGTERM or SIGHUP during the run stops the test, restores and moves back, then exits.
  */
 async function rewriteAndTest(root, plan, rewrite, record) {
-  for (const file of rewrite.files) writeFileSync(path.join(root, file.path), file.after);
+  // Right before each write the file must still be the bytes archive read; a save in between stops the run.
+  const written = new Set();
+  for (const file of rewrite.files) {
+    const local = path.join(root, file.path);
+    const current = existsSync(local) && lstatSync(local).isFile() ? readFileSync(local) : null;
+    if (current === null || !current.equals(file.before)) return { changed: file.path, written };
+    writeFileSync(local, file.after);
+    written.add(file.path);
+  }
   ensureLocal(root);
   const receipt = `.joycraft/local/receipts/archive-${plan.feature}-${new Date().toISOString().replace(/[-:.]/g, '')}.log`;
   const evidence = path.join(path.dirname(fileURLToPath(import.meta.url)), 'evidence.mjs');
@@ -826,6 +907,21 @@ async function rewriteAndTest(root, plan, rewrite, record) {
 }
 
 export async function archiveFeature(options) {
+  const run = randomUUID();
+  liveRuns.add(run);
+  try { return await archiveRun(options, run); } finally { liveRuns.delete(run); }
+}
+
+/** Held unless the destination holds the feature folder and the source is gone. Null when archived. */
+function notArchived(root, plan, extra = {}) {
+  const there = existsSync(projectTarget(root, `${plan.destination}/feature`)), gone = !existsSync(projectTarget(root, plan.source));
+  if (there && gone) return null;
+  const what = [there ? null : `${plan.destination}/feature is missing`, gone ? null : `${plan.source} still exists`].filter(Boolean).join(' and ');
+  return { status: 'held', reason: 'not-archived', source: plan.source, destination: plan.destination, ...extra,
+    message: `Archive finished its steps, but ${what}, so it does not report archived. Run git status, check both places, and archive again.` };
+}
+
+async function archiveRun(options, run) {
   const root = options.root ?? process.cwd();
   // Pending records first: an interrupted move can leave the folder only in a staging folder.
   const recovered = recoverPending(root, featureName(options.feature));
@@ -855,10 +951,11 @@ export async function archiveFeature(options) {
     ...(note === null ? [] : [{ path: 'unverified.md', sha256: sha256(Buffer.from(note)) }]),
     { path: 'archive-replay.json', sha256: sha256(Buffer.from(replayText)) },
   ];
-  const pending = rewrite && { schemaVersion: 2, kind: 'joycraft-archive-pending', feature: plan.feature, source: plan.source, destination: plan.destination, stage, createdHome, statusBefore: gitStatus(root),
+  const pending = rewrite && { owner: runOwner(run), schemaVersion: 2, kind: 'joycraft-archive-pending', feature: plan.feature, source: plan.source, destination: plan.destination, stage, createdHome, statusBefore: gitStatus(root),
     files: rewrite.files.map(file => ({ path: file.path, sha256: sha256(file.before), after: sha256(file.after), bytes: file.before.toString('base64') })),
     placed, featureFiles: plan.featureFiles.map(file => ({ path: `feature/${file.path.slice(plan.source.length + 1)}`, sha256: file.sha256 })) };
   if (pending) writePending(root, pending);
+  else if (pendingFor(root, path.posix.basename(plan.source)) === path.posix.basename(plan.source)) throw refusal(`Another archive --apply --rewrite of ${plan.source} started meanwhile; nothing was changed. Archive again when it has finished`);
   mkdirSync(stageLocal, { recursive: true, mode: 0o700 });
   try {
     writeFileSync(path.join(stageLocal, 'archive-recovery.json'), recoveryText, { flag: 'wx', mode: 0o600 });
@@ -902,13 +999,33 @@ export async function archiveFeature(options) {
       if (!undone.restored) return heldUnverified(root, path.posix.basename(plan.source), pending, undone.differences, { error: error.message });
       throw new Error(`Archive stopped before accepting the move: ${error.message}. The feature folder and the listed files were restored.`);
     }
+    if (tested.changed) {
+      // A save to a listed file after archive read it: undo only what this run did, keep the save.
+      const folder = path.posix.basename(plan.source);
+      const changed = `${tested.changed} changed after archive read it (a save while archive was staging)`;
+      let undone;
+      try { undone = restoreRecord(root, folder, pending, { only: tested.written }); } catch (error) { undone = { restored: false, differences: [error.message] }; }
+      if (!undone.restored) return heldUnverified(root, folder, pending, [changed, ...undone.differences]);
+      return { status: 'held', reason: 'edited-during-archive', changed: tested.changed, source: plan.source, destination: plan.destination,
+        message: `${changed}, so archive wrote nothing more, undid its own changes and moved the feature folder back to ${plan.source}; your save is kept and nothing is archived. Archive again.` };
+    }
     if (tested.exitCode !== 0) {
       const undone = undoRun(root, plan, pending);
       if (!undone.restored) return heldUnverified(root, path.posix.basename(plan.source), pending, undone.differences, { test: tested, testChanged: changedSince(root, pending.statusBefore) });
       return { status: 'held', source: plan.source, destination: plan.destination, rewritten: rewrite.files.map(file => file.path), test: tested, testChanged: changedSince(root, pending.statusBefore),
         reason: `The rewritten tests failed (${tested.command}); the files were restored and nothing moved. Read ${tested.receipt}, fix the tests or leave them out of --rewrite, and archive again.` };
     }
+    // The record must still be this run's, and the folder where this run put it.
+    let own = null;
+    try { own = JSON.parse(readFileSync(path.join(realpathSync(root), pendingFile(path.posix.basename(plan.source))), 'utf8')); } catch { /* checked below */ }
+    if (own?.owner?.run !== run) return { status: 'held', reason: 'not-archived', source: plan.source, destination: plan.destination, test: tested,
+      message: `The pending record of this run is gone or was replaced while the tests ran, so archive does not report archived. Run git status, check ${plan.source} and ${plan.destination}, and archive again.` };
+    const missing = notArchived(root, plan, { test: tested });
+    if (missing) return missing;
     clearPending(root, plan.source);
+  } else {
+    const missing = notArchived(root, plan);
+    if (missing) return missing;
   }
   let links;
   try { links = relinkLive(root, plan); } catch (error) { links = { error: error.message }; }

@@ -343,3 +343,93 @@ describe('archive review 13 round 2 fixes', () => {
     expect(Buffer.compare(readFileSync(join(root, 'tests/two-tier.test.mjs')), Buffer.concat([Buffer.from(briefTest('docs/archive/x/feature')), tail]))).toBe(0);
   });
 });
+
+// Round 3: a preload that saves a listed file while archive stages, or reports one listed file as huge.
+const racePreload = join(preloadHome, 'race.mjs');
+writeFileSync(racePreload, `import fs from 'node:fs';
+import { syncBuiltinESMExports } from 'node:module';
+const file = process.env.JC_EDIT_FILE, big = process.env.JC_BIG_FILE;
+if (file) {
+  const rename = fs.renameSync; let done = false;
+  fs.renameSync = function (from, to) {
+    if (!done && String(to).endsWith('/feature') && String(from).includes('/docs/features/')) { done = true; fs.appendFileSync(file, '// user save\\n'); }
+    return rename.apply(this, arguments);
+  };
+}
+if (big) {
+  const stat = fs.statSync;
+  fs.statSync = function (target) { const out = stat.apply(this, arguments); if (String(target).endsWith(big)) Object.defineProperty(out, 'size', { value: 2 ** 31 }); return out; };
+}
+syncBuiltinESMExports();
+`);
+// Green after a pause, so a second call lands while the first run's test is running.
+const slowGreen = `import { writeFileSync } from 'node:fs';\n// docs/features/x\nwriteFileSync('.joycraft/local/test.pid', String(process.pid));\nsetTimeout(() => process.exit(0), 2500);\n`;
+
+describe('archive review 13 round 3 fixes', () => {
+  it('[review-13-r3-1] a preview and a second --apply during a live green run change nothing; the first run archives', async () => {
+    const root = fixture({ focused, testBody: slowGreen });
+    const run = spawn(process.execPath, [runtime, 'archive', '--feature', 'x', '--phase', 'session-end', '--attestation', '.joycraft/local/attest.json', '--apply', '--rewrite', 'tests/two-tier.test.mjs'], { cwd: root, stdio: ['ignore', 'pipe', 'pipe'] });
+    let out = '';
+    run.stdout.on('data', chunk => { out += chunk; });
+    const exited = new Promise<number | null>(resolve => run.once('close', code => resolve(code)));
+    await until(() => existsSync(join(root, '.joycraft/local/test.pid')));
+    const record = readFileSync(pendingRecord(root));
+    const during = status(root);
+    expect(JSON.parse(record.toString()).owner.pid).toBe(run.pid);
+    const preview = archive(root);
+    expect(preview.status, preview.stderr).toBe(2);
+    expect(preview.output).toMatchObject({ status: 'held', reason: 'in-progress', pid: run.pid });
+    const second = archive(root, '--apply', '--rewrite', 'tests/two-tier.test.mjs');
+    expect(second.status, second.stderr).toBe(2);
+    expect(second.output).toMatchObject({ status: 'held', reason: 'in-progress' });
+    // Nothing moved back, nothing restored, the live run's record untouched.
+    expect(status(root)).toBe(during);
+    expect(Buffer.compare(readFileSync(pendingRecord(root)), record)).toBe(0);
+    expect(existsSync(join(root, 'docs/archive/x/feature/brief.md'))).toBe(true);
+    expect(await exited).toBe(0);
+    expect(JSON.parse(out).status).toBe('archived');
+    expect(existsSync(join(root, 'docs/archive/x/feature/brief.md'))).toBe(true);
+    expect(existsSync(join(root, source))).toBe(false);
+    expect(existsSync(pendingRecord(root))).toBe(false);
+    expect(readFileSync(join(root, 'tests/two-tier.test.mjs'), 'utf8')).toContain('docs/archive/x/feature');
+  }, 20000);
+
+  it('[review-13-r3-1] a record whose process is gone is recovered; a second --apply refuses at the exclusive record', () => {
+    const root = fixture({ focused });
+    interrupt(root, 'x', ['tests/two-tier.test.mjs']);
+    expect(archive(root).output).toMatchObject({ status: 'held', reason: 'interrupted' });
+    expect(status(root)).toBe('');
+    // A record held by a live process (this one) refuses a new --apply before it stages anything.
+    mkdirSync(dirname(pendingRecord(root)), { recursive: true });
+    writeFileSync(pendingRecord(root), `${JSON.stringify({ owner: { pid: process.pid, started: null, run: '00000000-0000-0000-0000-000000000000' } })}\n`);
+    const refused = archive(root, '--apply', '--rewrite', 'tests/two-tier.test.mjs');
+    expect(refused.output).toMatchObject({ status: 'held', reason: 'in-progress', pid: process.pid });
+    expect(existsSync(join(root, 'docs/archive'))).toBe(false);
+    expect(existsSync(join(root, source, 'brief.md'))).toBe(true);
+  });
+
+  for (const red of [false, true]) {
+    it(`[review-13-r3-2] a save to a listed test while archive stages is kept (${red ? 'red' : 'green'})`, () => {
+      const root = fixture({ focused, brief: red ? '# Brief: fail\n' : '# Brief\n', extra: { 'tests/other.test.mjs': briefTest(source) } });
+      const file = join(root, 'tests/two-tier.test.mjs');
+      const result = archiveAs('x', root, ['--apply', '--rewrite', 'tests/other.test.mjs', '--rewrite', 'tests/two-tier.test.mjs'], { NODE_OPTIONS: `--import=${racePreload}`, JC_EDIT_FILE: file });
+      expect(result.status, result.stderr).toBe(2);
+      expect(result.output).toMatchObject({ status: 'held', reason: 'edited-during-archive', changed: 'tests/two-tier.test.mjs' });
+      expect(readFileSync(file, 'utf8')).toBe(`${briefTest(source)}// user save\n`);
+      // The file archive already rewrote is back, the folder is back, nothing is left behind.
+      expect(status(root)).toBe('M tests/two-tier.test.mjs');
+      expect(existsSync(join(root, source, 'brief.md'))).toBe(true);
+      expect(existsSync(join(root, 'docs/archive'))).toBe(false);
+      expect(existsSync(pendingRecord(root))).toBe(false);
+    });
+  }
+
+  it('[review-13-r3-3] a file too large to rewrite refuses, naming it, before any change', () => {
+    const root = fixture({ focused });
+    const result = archiveAs('x', root, ['--apply', '--rewrite', 'tests/two-tier.test.mjs'], { NODE_OPTIONS: `--import=${racePreload}`, JC_BIG_FILE: 'tests/two-tier.test.mjs' });
+    expect(result.status).toBe(2);
+    expect(result.stderr).toMatch(/--rewrite tests\/two-tier\.test\.mjs is too large to rewrite/);
+    expect(status(root)).toBe('');
+    expect(existsSync(pendingRecord(root))).toBe(false);
+  });
+});
