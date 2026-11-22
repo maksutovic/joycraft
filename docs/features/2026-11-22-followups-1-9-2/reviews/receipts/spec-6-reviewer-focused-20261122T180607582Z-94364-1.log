@@ -1,0 +1,29 @@
+
+> joycraft@1.9.2 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/public-docs.test.ts tests/release-preparation.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/public-docs.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 35[2mms[22m[39m
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-9NlGqG/remote.git
+ * [new branch]      main -> main
+Cloning into '/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-9NlGqG/work'...
+done.
+Switched to a new branch 'release/joycraft'
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-9NlGqG/remote.git
+ * [new branch]      release/joycraft -> release/joycraft
+Switched to branch 'main'
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-9NlGqG/remote.git
+   c2c6812..113bfb4  main -> main
+ [32m✓[39m tests/release-preparation.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 2260[2mms[22m[39m
+   [33m[2m✓[22m[39m release preparation[2m > [22mcoalesces docs pushes after a prepared baseline while retaining later product changes [33m 495[2mms[22m[39m
+   [33m[2m✓[22m[39m release preparation[2m > [22mpacks once, retains a sha512 digest, and binds the descriptor to the version [33m 302[2mms[22m[39m
+   [33m[2m✓[22m[39m release preparation[2m > [22mrefreshes an existing release branch with ordinary Git operations and edits one PR [33m 963[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m39 passed[39m[22m[90m (39)[39m
+[2m   Start at [22m 10:06:11
+[2m   Duration [22m 2.47s[2m (transform 64ms, setup 0ms, collect 67ms, tests 2.29s, environment 0ms, prepare 98ms)[22m
+
+joycraft-evidence: {"wallMs":3125,"load":[8.4755859375,8.1171875],"cores":14,"loaded":false,"argv":["pnpm","test","tests/public-docs.test.ts","tests/release-preparation.test.ts"],"exitCode":0,"timedOut":false,"revision":"c4f24feb636bbaddb2c16b3b217b162acdaa5c06","dirty":false}

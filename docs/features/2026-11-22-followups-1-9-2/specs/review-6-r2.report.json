@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "c4f24feb636bbaddb2c16b3b217b162acdaa5c06",
+    "queuePath": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+    "specId": 6,
+    "specPath": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+    "criteria": [
+      {
+        "id": "spec-6-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-6-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "code",
+        "sha256": "8817c825fc2969522bd623f40361e166d8cdad2a13103a730387bfee5f9b3872",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "a8f9ffd9cdf4bb4de85743a1e305aad4a39f22a40ca2e632d8b04d7573d13589",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "0a7c0d49fa69c676f63d3be81ee8753a533d62689f9e7b14a109324138aad7ff",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+        "kind": "requirement",
+        "sha256": "9d7ab4e284d9f20ce57db92a4b13dd73524be2cc3395f643a6f8ed0b18f3370f",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "package.json",
+        "kind": "code",
+        "sha256": "2ed14118fef031d9beb478fefea8fff408ddc264d0f07a13eda641cda9aab223",
+        "normalization": "none"
+      },
+      {
+        "path": "src/joycraft-release.json",
+        "kind": "code",
+        "sha256": "45dde88216198a569d28afd37496255e67c0d6baa2880046c77da23a9527994c",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/public-docs.test.ts",
+        "kind": "check",
+        "sha256": "7321336f372d60316e8809f5529811b155ba87e29d7121e7f51ce549e5a951b5",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/release-preparation.test.ts",
+        "kind": "check",
+        "sha256": "32ae9ce8e74fbe4fdd872c1859b29a9e130f6c19b0a744132421085554204d9c",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "98a4dcba4c82ccba6df3347617fc7a5d6ef77b28634b9861b00d047044732e3a"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a534a154cad5346d1"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a8fb52fcf268e656a"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "unresolved": [],
+  "createdAt": "2026-11-22T18:07:01.808Z",
+  "flows": [
+    {
+      "id": "flow-release-fields",
+      "subjectIdentity": "98a4dcba4c82ccba6df3347617fc7a5d6ef77b28634b9861b00d047044732e3a",
+      "criteria": [
+        "spec-6-1"
+      ],
+      "representativeInput": "package.json, src/joycraft-release.json, tests/public-docs.test.ts at c4f24fe (diff 6f87984~1..HEAD)",
+      "expected": "version, joycraft.release, releaseVersion 1.9.2; one-line summary <= 300 chars; test diff only adds [AC:spec-6-1] to the two release-fields titles",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Focused run: 2 files, 39 tests passed, exit 0, at c4f24fe clean. Diff read: version, joycraft.release and releaseVersion are 1.9.2; summary is 269 chars, one line, about 1.9.2; public-docs.test.ts diff changes only the two it() titles (adds [AC:spec-6-1]), no assertion change, class 1 as ## Test changes says. c4f24fe touches only CHANGELOG.md.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-focused-20261122T180607582Z-94364-1.log",
+              "sha256": "f08a4f8e3d83bc9461075225b4a79ff44c5d37280f7f901c32736e00222497e9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; the brief runs the recorded gate once per spec, before review."
+      ]
+    },
+    {
+      "id": "flow-changelog",
+      "subjectIdentity": "98a4dcba4c82ccba6df3347617fc7a5d6ef77b28634b9861b00d047044732e3a",
+      "criteria": [
+        "spec-6-2"
+      ],
+      "representativeInput": "CHANGELOG.md 1.9.2 entry after c4f24fe vs delivery.mjs at v1.9.1 and at c4f24fe; cleanup.mjs backlogFile diff since v1.9.1",
+      "expected": "Update notes name only manifests that newly need the gate (f1 fixed); other lines match the code; release-preparation.test.ts unchanged and passing",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "tests/release-preparation.test.ts passed in the focused run; git diff 6f87984~1 HEAD -- tests/release-preparation.test.ts is empty.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-focused-20261122T180607582Z-94364-1.log",
+              "sha256": "f08a4f8e3d83bc9461075225b4a79ff44c5d37280f7f901c32736e00222497e9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "v1.9.1 delivery.mjs line 142 manifest regex lacks jsconfig*.json, deno.json(c), pnpm-workspace.yaml; lines 173-174: feature/archive records are .md .json .log .txt .diff .patch .yaml .yml, elsewhere .md .json. So in 1.9.1 jsconfig*.json and deno.json were records anywhere, pnpm-workspace.yaml only in feature/archive folders, deno.jsonc never.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-delivery-1-9-1.log",
+              "sha256": "ded222576aecd7af91ce56b03bd278e4d97831d70369264aa57eb95baa985037"
+            }
+          ],
+          "command": {
+            "argv": [
+              "git",
+              "show",
+              "v1.9.1:payload/.joycraft/runtime/delivery.mjs"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "delivery.mjs at c4f24fe line 142 adds jsconfig.*\\.json, deno\\.jsonc?, pnpm-workspace\\.yaml to the manifest regex, checked before the record rules (line 173). So newly gated: jsconfig*.json and deno.json anywhere under the docs root, pnpm-workspace.yaml in feature/archive folders; deno.jsonc unchanged in behavior.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-r2-delivery-head.log",
+              "sha256": "d4b2ba2b727298d4c67c432b5fd790998b7962c27113890b5959943c431b5279"
+            }
+          ],
+          "command": {
+            "argv": [
+              "git",
+              "show",
+              "c4f24fe:payload/.joycraft/runtime/delivery.mjs"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "c4f24fe rewrites CHANGELOG.md:17-20 to say exactly the above (f1 fixed), and changes the cleanup line to \"new-doc and age-out skip a backlog folder in any case\": git diff v1.9.1 HEAD of cleanup.mjs changes only the shared backlogFile (line 185) to lowercase the path, used by new-doc (547) and age-out (879), so the line is accurate. The 1.9.1 records correction and .mjs.txt line were checked PASS in round 1 and are unchanged.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-r2-changelog-fix.log",
+              "sha256": "d51f236ea7f38dd76ed1be4d4a1d08852aa9f40c898552b63d579712756e020c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "git",
+              "show",
+              "c4f24fe",
+              "--",
+              "CHANGELOG.md"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; the brief runs the recorded gate once per spec, before review."
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "f4",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "package.json:15",
+      "summary": "joycraft.summary says \"jsconfig, deno.json and pnpm-workspace.yaml need the gate again under the docs root\"; pnpm-workspace.yaml newly needs it only in feature and archive folders. True as a statement of 1.9.2 behavior and a 300-char one-liner, so not blocking; the CHANGELOG has the exact scope.",
+      "assumption": "A one-line summary may be less precise than the CHANGELOG entry it points to."
+    }
+  ]
+}

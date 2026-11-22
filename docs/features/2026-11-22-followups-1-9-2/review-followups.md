@@ -21,3 +21,8 @@
 ## Spec 5 (PASS r1)
 - f1: `setup.md:247` folds "its conventions" into the keep-guidance sentence, where "its" attaches only to the second home and "keep" is weaker than the old "preserve"; a same-length rewording could fix it later.
 - f2: the `[AC:spec-5-2]` tag sits in a comment, since the criterion forbids an assertion change; evidence is the unchanged guard run plus a diff receipt.
+
+## Spec 6 (FAIL r1, PASS r2)
+- r1 f1 (fixed in c4f24fe): the 1.9.2 update note overclaimed; `deno.jsonc` already needed the gate, and `pnpm-workspace.yaml` already needed it outside feature and archive folders.
+- r1 f2: criterion spec-6-2 has no test tag, because `release-preparation.test.ts` must stay unchanged; the evidence is the passing run and an empty diff.
+- r2 f4: the `joycraft.summary` line says `pnpm-workspace.yaml` needs the gate again "under the docs root"; it is new only inside feature and archive folders (the CHANGELOG gives the exact scope).
