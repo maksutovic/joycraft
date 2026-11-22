@@ -48,6 +48,10 @@ Read for every spec that changes a test file. Decompose writes the spec's
 `## Test changes` section from the template's three classes. When a brief's
 "no weakened tests" contradicts the feature, ask the owner once.
 
+Specs that delete tests or change shared test tooling (runner config, guards,
+selection lists) take the one serial lane (`execution.parallel: false`); other
+test-only specs may run in parallel.
+
 Reviewer rules:
 - Read `testChanges` from startup: `declared` (with class) and `undeclared`
   changed test files. Judge each diff by its declaration, not as weakened.

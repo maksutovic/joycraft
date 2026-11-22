@@ -81,7 +81,15 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
    - **The testing page**, when the project has none: write
      `<context>/testing.md` from [the testing page template](testing-page.md),
      filled in for the project's stack, with the map row "A test run is slow or
-     flaky". Explain its load order to the user in one line. When the runner
+     flaky". Explain its load order to the user in one line.
+   - **Machine load**, when several agents will test on this machine: offer a
+     worker cap in the project's own runner config, keyed on
+     `JOYCRAFT_EVIDENCE` (set on every Joycraft test run), never on `CI`,
+     which teammates and CI also set. Explain why in the same step: an
+     overloaded machine makes slow and flaky runs that agents then rerun, and
+     the reruns cost more time than the cap. The order is: run less (each
+     spec runs its own tests), then cap workers per run (cores ÷ agents), then
+     a project-owned slot for broad runs, which Joycraft does not ship. When the runner
      config cannot hold a worker cap, put the runner's worker variable in the
      machine-local `.joycraft/local/evidence-env.json`, which `evidence.mjs`
      applies to every run, never in a tracked file.

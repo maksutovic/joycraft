@@ -35,7 +35,7 @@ retry, a sleep, a skip or a special case for a test's input to get a pass. If an
 looks wrong, report `spec gap: test is wrong` with the reason; never edit,
 skip or delete it to pass.
 
-Run each command once, in single-run mode with `CI=1` and a 300000 ms
+Run each command once, in single-run mode with `CI=1`, `JOYCRAFT_EVIDENCE=1` and a 300000 ms
 timeout, through
 `node .joycraft/runtime/evidence.mjs run --receipt <path>.log -- <command...>`
 (`--timeout-ms <n>` changes the limit). It uses no shell, saves raw output
@@ -43,9 +43,9 @@ to a new git-ignored or feature-folder receipt, and prints the
 `revision` it ran on. Never start watch mode. Copy the printed `command`,
 `revision` and `receipts` into the observation. It exits 1 when the command
 fails, is killed or times out, and still writes the receipt; exit 2 means it
-refused to run. Set the host tool timeout to at least this limit. A timeout
-during parallel runs is not yet a hang: rerun once, alone. If it times out
-again, report it with the receipt. Never wait in a foreground loop: start a
+refused to run. Set the host tool timeout to at least this limit. When N workers
+share the machine, give each test run at most cores ÷ N workers with the
+runner's own flag; a second timeout is reported with both receipts. Never wait in a foreground loop: start a
 long command in the background and act on its completion notice. Never give
 a verdict while your own command is still running.
 

@@ -28,8 +28,9 @@ const guard = () => {
   return { everySpec: [...block.matchAll(/^\s+'([^']+)':/gm)].map(([, path]) => path), onDemandCap: 17663 + 2000 };
 };
 
-// The guard's every-spec count at the commit before this spec (08beda2).
-const EVERY_SPEC_BEFORE = 12139;
+// The guard's every-spec count at the commit before this spec (08beda2), plus later growth:
+// spec 19 (lane-cap) added 7 words (a class-1 change).
+const EVERY_SPEC_BEFORE = 12139 + 7;
 
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true, maxRetries: 5 }); });
