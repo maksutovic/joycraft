@@ -111,8 +111,9 @@ function loadLine(root, receipts) {
   const footers = receipts.map(receipt => { try { return readFooter(localPath(root, receipt)); } catch { return null; } }).filter(Boolean);
   const loaded = footers.filter(footer => footer.loaded === true);
   if (!loaded.length) return null;
-  const cores = Math.max(...loaded.map(footer => (Number.isInteger(footer.cores) ? footer.cores : 0)));
-  return `${loaded.length} of ${footers.length} test runs started above the core count (${cores} cores). Cap workers per run with the runner's own flag; see setup.`;
+  const counts = [...new Set(loaded.map(footer => footer.cores).filter(cores => Number.isInteger(cores) && cores > 0))].sort((a, b) => a - b);
+  const list = counts.length < 2 ? counts.join('') : `${counts.slice(0, -1).join(', ')} and ${counts.at(-1)}`;
+  return `${loaded.length} of ${footers.length} test runs started above the core count${counts.length ? ` (${list} cores)` : ''}. An overloaded machine makes slow, flaky runs that agents rerun. Cap workers per run with the runner's own flag; see setup.`;
 }
 
 /** Report every queue's specs (in paths.features), drift between queue and frontmatter, features ready to archive,

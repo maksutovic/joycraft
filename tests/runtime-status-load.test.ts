@@ -45,7 +45,7 @@ describe('status.mjs load line', () => {
       flows: [{ observations: [{ receipts: paths.map(path => ({ path, sha256: '0'.repeat(64) })) }] }] });
     put(join(root, folder, 'reviews/r1.json'), JSON.stringify(cites(['receipts/c.log', `${folder}/receipts/a.log`])));
     put(join(root, folder, 'reviews/r2.json'), JSON.stringify(cites(['receipts/c.log'])));
-    expect(status(root).load).toBe("2 of 3 test runs started above the core count (14 cores). Cap workers per run with the runner's own flag; see setup.");
+    expect(status(root).load).toBe("2 of 3 test runs started above the core count (14 cores). An overloaded machine makes slow, flaky runs that agents rerun. Cap workers per run with the runner's own flag; see setup.");
   });
 
   it('[AC:spec-10-2] no loaded run, or receipts without a footer, give no load field', () => {
@@ -57,5 +57,23 @@ describe('status.mjs load line', () => {
     receipt(old, `${folder}/receipts/a.log`);
     receipt(old, `${folder}/receipts/b.log`);
     expect(status(old)).not.toHaveProperty('load');
+  });
+});
+
+describe('status.mjs load line wording (spec 27)', () => {
+  it('[AC:spec-27-10] says why, names each distinct core count, and drops the count when no footer has one', () => {
+    const mixed = project();
+    receipt(mixed, `${folder}/receipts/a.log`, { load: [20, 18], loaded: true, cores: 8 });
+    receipt(mixed, `${folder}/receipts/b.log`, { load: [20, 18], loaded: true, cores: 16 });
+    receipt(mixed, `${folder}/receipts/c.log`, { load: [20, 18], loaded: true, cores: 16 });
+    const line = status(mixed).load;
+    expect(line).toContain('(8 and 16 cores)');
+    expect(line).toContain('An overloaded machine makes slow, flaky runs that agents rerun.');
+    const none = project();
+    receipt(none, `${folder}/receipts/a.log`, { load: [20, 18], loaded: true, cores: undefined });
+    const bare = status(none).load;
+    expect(bare).toBe("1 of 1 test runs started above the core count. An overloaded machine makes slow, flaky runs that agents rerun. Cap workers per run with the runner's own flag; see setup.");
+    expect(bare).not.toContain('(0 cores)');
+    expect(bare).not.toContain('(');
   });
 });
