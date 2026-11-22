@@ -39,8 +39,8 @@ setup.
 7. **Extend before adding.** Add a case to the module's existing test file
    before creating a new file.
 8. **Flaky means defective.** A test that passes and fails on the same code
-   is a defect to fix; never retry a test into a pass. Run a new test file
-   `<n>` times before it counts.
+   is a defect to fix; never retry a test into a pass. Run a new or changed test
+   file `<n>` times before it counts.
 9. **Never special-case a test.** Never special-case a test's input in the
    code, and never edit the check that judges the change.
 
