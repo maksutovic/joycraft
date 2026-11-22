@@ -45,9 +45,47 @@ function earlierReviews({ roots, queuePath, spec }) {
   return rounds;
 }
 
+/** One word as a POSIX shell reads it: bare when it holds only safe
+ * characters, otherwise single-quoted with each embedded quote as '\''. */
+export function shellQuote(word) {
+  const text = String(word);
+  return /^[A-Za-z0-9_./:=@%+,-]+$/.test(text) ? text : `'${text.replace(/'/g, "'\\''")}'`;
+}
+
+/** The words of a command template, split as a shell would: whitespace
+ * separates words, single quotes keep everything literal, double quotes keep
+ * whitespace and honor a backslash before " or \. */
+export function templateWords(template) {
+  const words = [];
+  let word = null;
+  for (let index = 0; index < template.length; index += 1) {
+    const char = template[index];
+    if (/\s/.test(char)) { if (word !== null) { words.push(word); word = null; } continue; }
+    word ??= '';
+    if (char === "'") {
+      const end = template.indexOf("'", index + 1);
+      requireValue(end !== -1, `tests.focused has an unclosed single quote: ${template}`);
+      word += template.slice(index + 1, end); index = end;
+    } else if (char === '"') {
+      let end = index + 1;
+      for (; end < template.length && template[end] !== '"'; end += 1) {
+        if (template[end] === '\\' && (template[end + 1] === '"' || template[end + 1] === '\\')) end += 1;
+        word += template[end];
+      }
+      requireValue(end < template.length, `tests.focused has an unclosed double quote: ${template}`);
+      index = end;
+    } else if (char === '\\' && index + 1 < template.length) { word += template[index + 1]; index += 1; }
+    else word += char;
+  }
+  if (word !== null) words.push(word);
+  return words;
+}
+
 /** The focused test command for a spec: `tests.focused` with `{files}` replaced
  * by the spec's present `check` inputs in queue order, or the files appended
- * when it has no `{files}`. Null, with a note, when either is missing. */
+ * when it has no `{files}`. A `{files}` inside a larger word stays in place:
+ * the text before it joins the first file and the text after it the last, as
+ * an unquoted shell expansion would. Null, with a note, when either is missing. */
 export function focusedCommand({ root, spec, config }) {
   const template = config?.tests?.focused;
   const files = spec.verification.inputs.filter(input => input.kind === 'check' && input.state !== 'absent')
@@ -56,23 +94,37 @@ export function focusedCommand({ root, spec, config }) {
     const missing = [!template && 'tests.focused is not recorded in joycraft.yaml', files.length === 0 && 'the spec has no present check input'].filter(Boolean);
     return { focused: null, note: `No focused command: ${missing.join(' and ')}.` };
   }
-  const words = template.trim().split(/\s+/);
-  const argv = words.includes('{files}') ? words.flatMap(word => (word === '{files}' ? files : [word])) : [...words, ...files];
-  return { focused: { command: argv.join(' '), argv } };
+  const words = templateWords(template);
+  const expand = word => {
+    const at = word.indexOf('{files}');
+    if (at === -1) return [word];
+    const expanded = [...files];
+    expanded[0] = word.slice(0, at) + expanded[0];
+    expanded[expanded.length - 1] += word.slice(at + '{files}'.length);
+    return expanded.flatMap((each, index) => (index === expanded.length - 1 ? expand(each) : [each]));
+  };
+  const argv = words.some(word => word.includes('{files}')) ? words.flatMap(expand) : [...words, ...files];
+  return { focused: { command: argv.map(shellQuote).join(' '), argv } };
 }
 
-// Each step a worker runs, as one plain command with literal paths, so a
-// worktree-isolated host never refuses a compound form (&&, ;, |, $(, heredoc,
-// source or cd).
+let receiptCounter = 0;
+
+// Each step a worker runs, as one plain command with literal, shell-quoted
+// paths, so a worktree-isolated host never refuses a compound form (&&, ;, |,
+// $(, heredoc, source or cd) and a path with a space survives the paste.
+// Reviewer receipts go to <feature>/reviews/receipts/ beside the review
+// evidence; implementer receipts go to <feature>/receipts/.
 function workerCommands({ root, queuePath, spec, role, reportPath, featureFolder, focused }) {
-  const stamp = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
-  const receipt = path.posix.join(featureFolder, 'receipts', `spec-${spec.id}-${role}-focused-${stamp}.log`);
+  const stamp = `${new Date().toISOString().replace(/[-:.]/g, '')}-${process.pid}-${receiptCounter += 1}`;
+  const receiptFolder = role === 'reviewer' ? path.posix.join(featureFolder, 'reviews', 'receipts') : path.posix.join(featureFolder, 'receipts');
+  const receipt = path.posix.join(receiptFolder, `spec-${spec.id}-${role}-focused-${stamp}.log`);
+  const line = words => words.map(shellQuote).join(' ');
   const steps = {};
-  if (focused) steps.evidence = `node .joycraft/runtime/evidence.mjs run --receipt ${receipt} -- ${focused.command}`;
-  if (role === 'implementer') steps.submit = `node .joycraft/runtime/completion.mjs submit --queue ${queuePath} --spec ${spec.id}`;
+  if (focused) steps.evidence = `${line(['node', '.joycraft/runtime/evidence.mjs', 'run', '--receipt', receipt, '--'])} ${focused.command}`;
+  if (role === 'implementer') steps.submit = line(['node', '.joycraft/runtime/completion.mjs', 'submit', '--queue', queuePath, '--spec', spec.id]);
   else {
-    steps.checkReport = `node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root ${root} --queue ${queuePath} --spec ${spec.id} --report ${reportPath}`;
-    steps.finalizeReview = `node .joycraft/runtime/completion.mjs finalize-review --queue ${queuePath} --spec ${spec.id} --report ${reportPath}`;
+    steps.checkReport = line(['node', '.joycraft/runtime/dispatch-preflight.mjs', 'check-report', '--worker-root', root, '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
+    steps.finalizeReview = line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
   }
   return steps;
 }
