@@ -36,3 +36,7 @@
 - f1: `//` or `*` lines inside a template literal count as comments (rules a, c as written); "run the gate" catches a real read.
 - f2: `#` inside a Python triple-quoted string counts as a comment (rule d is by extension).
 - f3: lines split on \n only; CR-only or U+2028 files read as one line (rare).
+
+## Spec 8 (PASS r1)
+- CHANGELOG.md:20 "Before, they counted as records" is true for package.json, tsconfig*.json and pnpm-lock.yaml; yarn.lock, bun.lockb, deno.lock already needed the gate.
+- CHANGELOG omits the delivery.md `.mjs.txt` probe-suffix guidance.
