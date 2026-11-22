@@ -65,3 +65,38 @@ describe('queue-check gate-in-spec', () => {
     expect(noGate.status).toBe(0);
   });
 });
+
+describe('queue-check gate matching in prose (spec 27)', () => {
+  it('[AC:spec-27-1] plain text followed by a word or a dash, and a fenced line holding only the gate, name it; argument forms do not', () => {
+    const named = [
+      '- The suite passes. Check: run pnpm verify before merging.',
+      '- The suite passes. Check: pnpm verify — then read the log.',
+      '- The suite passes. Check: run this:\n\n  ```\n  pnpm verify\n  ```',
+    ];
+    for (const acceptance of named) {
+      const result = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance }));
+      expect(result.gates, acceptance).toHaveLength(1);
+      expect(result.status).toBe(2);
+    }
+    const notNamed = [
+      '- It works. Check: `pnpm test tests/x.test.ts` passes.',
+      '- It works. Check: pnpm test tests/x.test.ts passes.',
+      '- It works. Check: pnpm test -- --run passes.',
+    ];
+    for (const acceptance of notNamed) {
+      const result = check(fixture({ tests: { gate: 'pnpm test' }, acceptance }));
+      expect(result.gates, acceptance).toHaveLength(0);
+      expect(result.stderr).not.toContain('gate-in-spec');
+    }
+  });
+
+  it('[AC:spec-27-2] the gate gap ends with the spec-command next step; a missing-check gap still asks the user', () => {
+    const gate = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance: '- It works. Check: run pnpm verify before merging.' }));
+    expect(gate.gates).toHaveLength(1);
+    expect(gate.gates[0].trimEnd().endsWith("Use the spec's own test command instead.")).toBe(true);
+    expect(gate.gates[0]).not.toContain('ask the user');
+    const missing = check(fixture({ acceptance: '- It works with no check.' }));
+    const line = missing.stderr.split('\n').find(item => item.includes('has no `Check:`'));
+    expect(line?.trimEnd().endsWith('ask the user now.')).toBe(true);
+  });
+});

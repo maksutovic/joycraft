@@ -12,6 +12,8 @@ import { briefDecisionRecords, featureFolderMatches, isObject, localPath, parseJ
 // is not done: an archived queue cites paths that have since moved.
 
 const nextStep = 'Add it to the brief as an open decision and ask the user now.';
+// A gate in a spec is the decomposer's to fix, not a question for the user.
+const gateNextStep = "Use the spec's own test command instead.";
 
 function legacySchema(queue) {
   if (!isObject(queue)) return false;
@@ -197,7 +199,15 @@ export function acceptanceBullets(text) {
     unclosed: block && block.column === null ? block.line : null,
     bullets: bullets.map(bullet => {
       const joined = bullet.lines.map(item => item.line).join(' ').replace(/\s+/g, ' ').trim();
-      return { line: bullet.line, text: joined, hasCheck: /\bCheck:/.test(joined), plainCheck: plainCheck(bullet.lines) };
+      // The lines inside a fence in the bullet, without the fence lines.
+      const fenced = [];
+      let fence = null;
+      for (const item of bullet.lines) {
+        const marker = item.hidden ? /^\s*(`{3,}|~{3,})/.exec(item.line)?.[1] : null;
+        if (fence) { if (marker && marker[0] === fence[0] && marker.length >= fence.length && /^\s*[`~]+\s*$/.test(item.line)) fence = null; else if (item.hidden) fenced.push(item.line); else fence = null; }
+        else if (marker) fence = marker;
+      }
+      return { line: bullet.line, text: joined, fenced, hasCheck: /\bCheck:/.test(joined), plainCheck: plainCheck(bullet.lines) };
     }),
   };
 }
@@ -206,17 +216,40 @@ const escape = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const normalize = text => String(text).replace(/\s+/g, ' ').trim();
 
 /**
- * Whether `text` names `command` as a whole command: whitespace-normalized, it
- * starts after the text start, a space, a backtick, a quote or a bracket, and
- * ends at the end of the text, a backtick (the end of a code span) or
- * punctuation that ends a word. More arguments make it a different command, so
- * `pnpm test tests/x.test.ts` does not name `pnpm test`.
+ * Whether `text` names `command` as a whole command, whitespace-normalized.
+ * In a code span (CommonMark backtick runs; a fenced block joined into the
+ * text reads as one) the command must end the span, after the span start, a
+ * space, a quote or a bracket. In plain text it starts after the text start,
+ * a space, a code span, a quote or a bracket, and ends at the text end, a code
+ * span, punctuation that ends a word, a plain word of letters only ("run pnpm
+ * verify before merging") or a dash (`—`, `–` or ` - `). More arguments make
+ * it a different command: a next word with `/`, `.`, `-` or `=` (as in
+ * `pnpm test tests/x.test.ts` or `pnpm test -- --run`) does not name `pnpm test`.
  */
 export function namesCommand(text, command) {
   const wanted = normalize(command);
   if (!wanted) return false;
-  const pattern = new RegExp(`(?:^|(?<=[\\s\`"'(\\[]))${escape(wanted)}(?=$|\`|[.,;:!?)\\]"']+(?:\\s|$|\`))`);
-  return pattern.test(normalize(text));
+  const source = String(text);
+  const code = [];
+  let plain = '';
+  let at = 0;
+  while (at < source.length) {
+    if (source[at] !== '`') { plain += source[at]; at += 1; continue; }
+    const run = /^`+/.exec(source.slice(at))[0];
+    const closer = new RegExp(`(?<!\`)${run}(?!\`)`, 'g');
+    closer.lastIndex = at + run.length;
+    const close = closer.exec(source);
+    if (!close) { plain += run; at += run.length; continue; }
+    code.push(source.slice(at + run.length, close.index));
+    plain += '\u0001';
+    at = close.index + run.length;
+  }
+  const command_ = escape(wanted);
+  const inCode = new RegExp(`(?:^|(?<=[\\s"'(\\[]))${command_}[.,;:!?)\\]"']*$`, 'u');
+  if (code.some(span => inCode.test(normalize(span)))) return true;
+  const end = `$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001)|\\s\\p{L}+(?=$|\\s|\\u0001|[.,;:!?)\\]"'])|\\s?[—–](?=\\s|$)|\\s-(?=\\s|$)`;
+  const inPlain = new RegExp(`(?:^|(?<=[\\s\\u0001"'(\\[]))${command_}(?=${end})`, 'u');
+  return inPlain.test(normalize(plain));
 }
 
 function label(text) {
@@ -272,7 +305,7 @@ export function checkQueue({ root = process.cwd(), queuePath }) {
       message: `Joycraft queue check: skipped ${queuePath}; ${queue.schemaVersion == null ? 'it has no schemaVersion' : `its schemaVersion ${JSON.stringify(queue.schemaVersion)} predates 1`}.` };
   }
   const gaps = [];
-  const gap = (kind, specId, item, text) => gaps.push({ kind, specId, item, message: `Joycraft queue check: ${queuePath} ${text} ${nextStep}` });
+  const gap = (kind, specId, item, text) => gaps.push({ kind, specId, item, message: `Joycraft queue check: ${queuePath} ${text} ${kind === 'gate-in-spec' ? gateNextStep : nextStep}` });
 
   // Unknown and circular dependencies are gaps, not a broken queue: report them
   // and validate the rest of the queue without them.
@@ -332,7 +365,7 @@ export function checkQueue({ root = process.cwd(), queuePath }) {
         if (!bullet.hasCheck) gap('missing-check', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet "${label(bullet.text)}" has no \`Check:\`.`);
         else if (!bullet.plainCheck) gap('missing-check', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet "${label(bullet.text)}" has a \`Check:\` only in code or a comment.`);
         for (const command of gateCommands) {
-          if (namesCommand(bullet.text, command)) gap('gate-in-spec', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet names the recorded gate or full command \`${command}\`; a spec checks with its own test files, and the gate runs at the review boundary or wave end.`);
+          if (namesCommand(bullet.text, command) || bullet.fenced.some(line => normalize(line) === command)) gap('gate-in-spec', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet names the recorded gate or full command \`${command}\`; a spec checks with its own test files, and the gate runs at the review boundary or wave end.`);
         }
       }
     }

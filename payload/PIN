@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-e359c9c8a702",
-  "commit": "e359c9c8a7022cc4bf7338567c2031b93f0af33acbb878cfa0d6ec26e8d668f5",
+  "tag": "payload-1bd9dbfe9dff",
+  "commit": "1bd9dbfe9dffa7227b21d8b84efc5a5bd1240c77fe655919adf2fc40f92b9f8b",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -52,7 +52,7 @@
     ".joycraft/runtime/artifacts/preferences.mjs": "b9c6bcbd796c31096085d96dcfb9ac63c62f5d7c13670aa7fec6f1f7189bbe8c",
     ".joycraft/runtime/artifacts/render.mjs": "79d5a5628542ec87740096ef697fc1efa8649c5546ae72b449f43bc5c810035d",
     ".joycraft/runtime/artifacts/server.mjs": "b7e5efab7ef8afc060b56278e6bc7f21bff325ddd4f64a6dde8e1051647851ff",
-    ".joycraft/runtime/cleanup.mjs": "4f4f08d25000335ed625ff22550a2a7b98b24b0ca6110bce307acbb4845c4444",
+    ".joycraft/runtime/cleanup.mjs": "8f33a970a8e6e69ca75f1866dfaca54bf5fcc629c3e938eca4798dd47bba6d24",
     ".joycraft/runtime/completion.mjs": "7a579f189fd60e081cbbf9e8b896bfe4b93c7800bd1d229df2dce5429650603f",
     ".joycraft/runtime/config.mjs": "d4200b6ae396ba9a0a6b990320b7b67e04cf5453a36414d13d23b5e203eeb3d6",
     ".joycraft/runtime/context/cli.mjs": "40adc206c8c3b7f4f5bedffb097d9ae1b0718f0586a055796e4987e9c3088eee",
@@ -67,7 +67,7 @@
     ".joycraft/runtime/gate.mjs": "b6c65645f939a2b41adbad3c712683c3458385cea4de446707b95559e1bbcea3",
     ".joycraft/runtime/identity.mjs": "87860a0fe61461b18a0fa4eb43f7c7e40bdd1540005dd0b45e377f298453a42c",
     ".joycraft/runtime/kickoff.mjs": "9d96998bff94662863182b9a922f26732c649b7a0b0130b6da7d63ec73eb3590",
-    ".joycraft/runtime/queue-check.mjs": "c8dc12f0a192229b7e31d8bd1d88fe572a22b5b6689f184bd42b299b66f261fa",
+    ".joycraft/runtime/queue-check.mjs": "b0332795ee71c1829c0c164627eeebf231803dc0da18c194dbc911ac1bcdd2f2",
     ".joycraft/runtime/redact.mjs": "cc8c0fe5e8d8fe78116ef126f6eee757a247739084e19c342bcf09a2b06524bc",
     ".joycraft/runtime/retro.mjs": "6f3664b0d50c12d4f2d8eef4b4d0d62897939d03e45860d4dcf35c0f5f92677c",
     ".joycraft/runtime/review-tools.json": "e0b0f5625654bba5f02d49710356aa1740fd42dd282eef6a29af361396915763",

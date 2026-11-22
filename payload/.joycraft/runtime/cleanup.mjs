@@ -1,9 +1,9 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseYaml, readConfig } from './config.mjs';
-import { requireValue } from './identity.mjs';
+import { isObject, parseJson, requireValue } from './identity.mjs';
 import { namesCommand } from './queue-check.mjs';
 import { projectStatus } from './status.mjs';
 import { managedState } from './wiring.mjs';
@@ -860,7 +860,42 @@ export function ageOut({ root = process.cwd(), days, apply = false, now = Date.n
   return { days, count: old.length, docs: old, skipped, applied: apply };
 }
 
-const usage = 'Usage: cleanup.mjs [--checks | tidy [--base <ref>] [--verify] | age-out --days <n> [--apply]] [--root <project>]';
+const usage = 'Usage: cleanup.mjs [--checks | tidy [--base <ref>] [--verify] | age-out --days <n> [--apply] | gate-rule (--check | --record rewritten|kept)] [--root <project>]';
+
+const preferencesFile = '.joycraft/preferences.json';
+
+/** The project's preferences (schemaVersion 1 when absent), refusing a symlinked path, as archive.mjs does. */
+function readPreferences(root) {
+  let current = realpathSync(root);
+  for (const part of preferencesFile.split('/')) {
+    current = path.join(current, part);
+    if (!existsSync(current) && !isLink(current)) return { schemaVersion: 1 };
+    const stat = lstatSync(current);
+    requireValue(!stat.isSymbolicLink() && (part === 'preferences.json' ? stat.isFile() : stat.isDirectory()), `Expected a plain project file: ${preferencesFile}`);
+  }
+  const preferences = parseJson(readFileSync(current), preferencesFile);
+  requireValue(isObject(preferences), `${preferencesFile} must contain an object`);
+  return preferences;
+}
+function isLink(file) { try { return lstatSync(file).isSymbolicLink(); } catch { return false; } }
+
+/**
+ * The user's answer to the gate-rule offer, kept in preferences as `cleanup.gateRule`:
+ * `rewritten` or `kept`, else `unset`. `record` writes it and keeps the other keys.
+ */
+export function gateRulePreference({ root = process.cwd(), record } = {}) {
+  if (record === undefined) {
+    const value = readPreferences(root).cleanup?.gateRule;
+    return ['rewritten', 'kept'].includes(value) ? value : 'unset';
+  }
+  requireValue(['rewritten', 'kept'].includes(record), `cleanup.mjs gate-rule --record takes rewritten or kept, not ${record}`);
+  const preferences = readPreferences(root);
+  const target = path.join(realpathSync(root), preferencesFile), temporary = `${target}.cleanup-${process.pid}`;
+  mkdirSync(path.dirname(target), { recursive: true });
+  writeFileSync(temporary, `${JSON.stringify({ ...preferences, cleanup: { ...(isObject(preferences.cleanup) ? preferences.cleanup : {}), gateRule: record } }, null, 2)}\n`, { flag: 'wx', mode: 0o600 });
+  renameSync(temporary, target);
+  return record;
+}
 
 export async function main(argv = process.argv.slice(2)) {
   const args = [...argv];
@@ -887,6 +922,15 @@ export async function main(argv = process.argv.slice(2)) {
     const { all, ...result } = tidyReport({ root, base });
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     if (result.findings.length) process.exitCode = 2;
+    return result;
+  }
+  if (args[0] === 'gate-rule') {
+    args.shift();
+    const record = take('--record');
+    const check = has('--check');
+    requireValue(args.length === 0 && (record === undefined) === check, usage);
+    const result = gateRulePreference({ root, record });
+    process.stdout.write(`${result}\n`);
     return result;
   }
   if (args[0] === 'age-out') {
