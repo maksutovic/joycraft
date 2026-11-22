@@ -109,9 +109,12 @@ describe('test-changes', () => {
 
   it('[AC:spec-11-1] matches test layouts across stacks and leaves look-alikes out', async () => {
     const { isTestPath } = await import(join(runtime, 'test-changes.mjs'));
-    const tests = ['Tests/AppTests/AppTests.swift', 'app/src/androidTest/java/Foo.kt', 'lib/FooTest.java', 'src/main/BarTest.kt', 'App.Tests/FooTests.cs',
-      'app/models/user_spec.rb', 'app/tests.py', 'conftest.py', 'pkg/test_a.py', 'e2e/login.e2e.ts', 'cypress/a.cy.ts', 'src/a.test.ts', 'pkg/a_test.go'];
-    const others = ['docs/spec/overview.md', 'tests/README.md', 'src/test_helpers_shared.ts', 'src/latest_value.ts', 'src/contest/x.ts', 'src/lib.rs'];
+    // [AC:spec-27-12] lib/FooTest.java and src/main/BarTest.kt moved to others: a *Test name counts only inside a test source set.
+    const tests = ['Tests/AppTests/AppTests.swift', 'app/src/androidTest/java/Foo.kt', 'App.Tests/FooTests.cs',
+      'app/models/user_spec.rb', 'app/tests.py', 'conftest.py', 'pkg/test_a.py', 'e2e/login.e2e.ts', 'cypress/a.cy.ts', 'src/a.test.ts', 'pkg/a_test.go',
+      'src/test/java/FooTest.java', 'app/src/jvmTest/kotlin/BarSpec.kt'];
+    const others = ['docs/spec/overview.md', 'tests/README.md', 'src/test_helpers_shared.ts', 'src/latest_value.ts', 'src/contest/x.ts', 'src/lib.rs',
+      'lib/FooTest.java', 'src/main/BarTest.kt', 'abTest/x.ts', 'src/main/ProductSpec.kt', 'src/main/LoadTest.java'];
     expect(tests.filter(file => !isTestPath(file))).toEqual([]);
     expect(others.filter(file => isTestPath(file))).toEqual([]);
   });
@@ -162,5 +165,57 @@ describe('test-changes', () => {
     expect(result.warnings).toEqual([expect.stringMatching(/^No changed-test list: Base deadbeef\w* is not a commit/)]);
     expect(result.testChanges.error).toMatch(/not a commit/);
     expect(reviewerStart(project, ['--changes-base', project.base])).not.toHaveProperty('warnings');
+  });
+});
+
+describe('test-changes base, declarations and file rules (spec 27)', () => {
+  it('[AC:spec-27-11] a base that is not an ancestor of HEAD exits 1', () => {
+    const { root, base } = fixture();
+    git(root, 'checkout', '-q', '-b', 'side', base);
+    put(join(root, 'src/c.ts'), 'side\n');
+    git(root, 'commit', '-qam', 'side');
+    const side = git(root, 'rev-parse', 'HEAD');
+    git(root, 'checkout', '-q', 'main');
+    const result = spawnSync(process.execPath, [join(runtime, 'test-changes.mjs'), '--queue', queuePath, '--spec', '1', '--base', side, '--root', root], { encoding: 'utf8' });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain('not an ancestor of HEAD');
+  });
+
+  it('[AC:spec-27-11] a class-1 bullet whose requiring text changed after the base is listed under rewritten', () => {
+    const { root, base } = fixture({ testChanges: '- `tests/a.test.ts`, class 1: acceptance bullet 1 states the new value.\n- `tests/b.test.ts`, class 1: acceptance bullet 1 adds a case.' });
+    const spec = join(root, folder, 'specs/01-a.md');
+    put(spec, readFileSync(spec, 'utf8').replace('states the new value', 'drops the old assertion'));
+    put(join(root, 'tests/a.test.ts'), 'after\n');
+    const result = changes(root, base);
+    expect(result.rewritten).toEqual(['tests/a.test.ts']);
+    expect(result.declared).toEqual([{ path: 'tests/a.test.ts', class: 1 }]);
+  });
+
+  it('[AC:spec-27-12] a declaration of one path of a rename covers both paths', () => {
+    const { root } = fixture({ testChanges: '- `tests/renamed.test.ts`, class 2: acceptance bullet 1 moves the file.' });
+    put(join(root, 'tests/old.test.ts'), 'a body long enough to be detected as a rename\n'.repeat(5));
+    git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'more');
+    const base = git(root, 'rev-parse', 'HEAD');
+    git(root, 'mv', 'tests/old.test.ts', 'tests/renamed.test.ts'); git(root, 'commit', '-q', '-m', 'rename');
+    const result = changes(root, base);
+    expect(result.declared).toEqual([{ path: 'tests/old.test.ts', class: 2 }, { path: 'tests/renamed.test.ts', class: 2 }]);
+    expect(result.undeclared).toEqual([]);
+  });
+
+  it('[AC:spec-27-12] JVM-style names count only in a test source set; a removed submodule is skipped, not a test', async () => {
+    const { isTestPath } = await import(join(runtime, 'test-changes.mjs'));
+    for (const file of ['abTest/x.ts', 'src/main/ProductSpec.kt', 'src/main/LoadTest.java', 'lib/FooTest.java', 'src/main/BarTest.kt']) expect(isTestPath(file), file).toBe(false);
+    for (const file of ['src/test/java/FooTest.java', 'app/src/jvmTest/kotlin/BarSpec.kt', 'app/src/androidTest/java/Foo.kt']) expect(isTestPath(file), file).toBe(true);
+
+    const sub = fixture();
+    const project = fixture();
+    git(project.root, 'submodule', 'add', '-q', sub.root, 'tests/vendor-lib');
+    git(project.root, 'commit', '-q', '-m', 'add sub');
+    const base = git(project.root, 'rev-parse', 'HEAD');
+    git(project.root, 'rm', '-q', 'tests/vendor-lib');
+    git(project.root, 'commit', '-q', '-m', 'remove sub');
+    const result = changes(project.root, base);
+    expect(result.testFiles).not.toContain('tests/vendor-lib');
+    expect(result.skipped.map((item: { path: string }) => item.path)).toContain('tests/vendor-lib');
   });
 });
