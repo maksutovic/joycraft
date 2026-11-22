@@ -2461,7 +2461,10 @@
         22,
         23,
         24,
-        25
+        25,
+        27,
+        28,
+        29
       ],
       "status": "todo",
       "mode": "checkpoint",
@@ -2538,6 +2541,733 @@
             "id": "spec-26-4",
             "requirement": {
               "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 27,
+      "file": "27-polish-runtime.md",
+      "depends_on": [
+        7,
+        9,
+        11,
+        12,
+        17
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "context-and-authorization",
+                "scope-and-limits",
+                "spec-tier",
+                "wave-gate",
+                "owner-gate-lines",
+                "declared-test-changes",
+                "fault-proof",
+                "evidence-marker",
+                "load-guidance",
+                "worker-commands",
+                "session-end-pr"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/review-followups.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/queue-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/completion.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/evidence.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/status.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/test-changes.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/delivery.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/wiring.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/entry-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/settings.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-queue-check-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-cleanup-gate-rule.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-report-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-evidence-receipt.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-evidence-patch.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-evidence-env.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-status-load.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-test-changes.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-wave-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-cleanup-tidy-verify.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-cleanup-checks-seam.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-start-advice.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-27-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-5",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-6",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-7",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-8",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-9",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-10",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-11",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-12",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-13",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-14",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-15",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-16",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-27-17",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 28,
+      "file": "28-polish-text.md",
+      "depends_on": [
+        1,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        22,
+        23,
+        25,
+        27
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "context-and-authorization",
+                "scope-and-limits",
+                "sota-page",
+                "owner-gate-lines",
+                "lane-cap",
+                "load-guidance",
+                "spec-tier",
+                "wave-gate"
+              ],
+              "decisionIds": [
+                "cap-raise",
+                "sota-knowledge-home"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/review-followups.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-page.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/update.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/delivery.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-spec-tier.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-wave-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-worker-commands.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-test-changes.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-fewer-tests.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-fault-proof.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-lane-cap.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-sota-page.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-owner-gate-lines.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-28-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-28-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-28-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-28-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-28-5",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-28-6",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-28-7",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-28-8",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-28-9",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 29,
+      "file": "29-polish-archive-dispatch.md",
+      "depends_on": [
+        5,
+        13,
+        18,
+        21,
+        22,
+        24,
+        28
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "context-and-authorization",
+                "scope-and-limits",
+                "worker-commands",
+                "sota-page",
+                "wave-gate",
+                "session-end-pr",
+                "archive-tests"
+              ],
+              "decisionIds": [
+                "cap-raise",
+                "session-end-push-order"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/review-followups.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/config.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-page.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-review.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-dispatch-commands.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-ignore.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-config-tests.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-cleanup-age-out.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-links.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-sota-page.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-wave-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-session-end-pr.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-29-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-29-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-29-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-29-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-29-5",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-29-6",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-29-7",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-29-8",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "structural"
+            ]
+          },
+          {
+            "id": "spec-29-9",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
               "anchor": "acceptance"
             },
             "requiredKinds": [
