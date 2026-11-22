@@ -35,6 +35,11 @@ Use the version from `latest`:
    When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`,
    ask once whether search should skip the archive; rerun it with `--apply` on
    a yes, `--decline` on a no.
+   When it reports `gate-rule` and `.joycraft/preferences.json` has no
+   `cleanup.gateRule`, show the findings once with the before-and-after
+   rewrite ([cleanup](cleanup.md)) as one question. Rewrite on a yes. Record
+   the answer as `cleanup.gateRule`: `rewritten` or `kept`, keeping the other
+   keys, so no later update asks again.
 4. Tell the user in plain words what is different now. For a `minor` or
    `migration`, name what the user can now do or say, one line per release since
    the old version, from the listed release summaries and the changelog when you can read it. When

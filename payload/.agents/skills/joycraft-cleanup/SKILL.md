@@ -29,7 +29,7 @@ Read [cleanup reference](../../../.joycraft/references/cleanup.md) first.
   `node .joycraft/runtime/entry-check.mjs block` and remove an older Joycraft
   line beside it, and re-point a dead path that has one unique Git rename.
   Put the other findings on the session-end page in one list. Change no rule
-  and no other line, and do not start the pass.
+  and no other line, a `gate-rule` line included, and do not start the pass.
 - **"Tidy now".** Run `node .joycraft/runtime/cleanup.mjs tidy` and do the
   session-end tidy step.
 - **Setup calls this skill.** Do steps 1 and 2 of the pass and hand the
@@ -40,6 +40,13 @@ Read [cleanup reference](../../../.joycraft/references/cleanup.md) first.
 Follow the reference: the steps, in order. Code proves what is implemented,
 not what was intended. Never delete a context page to clear a finding; merge
 or redirect it.
+
+## Gate lines
+
+In an attended cleanup, turn all `gate-rule` findings into one decision: for
+each line, the before (the line as it is) and the after (the gate runs once on
+the integrated revision, and each spec runs its focused tests). Rewrite a line
+only on the owner's yes; never unattended.
 
 ## Hand off
 

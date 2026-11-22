@@ -14,6 +14,11 @@ page with `type: log` or `type: history` frontmatter, `decision-log.md` and
 `shipped*.md`. `entry-check.mjs lost --base <rev>` lists the lines
 that a change dropped.
 
+`gate-rule` names an entry-file rule line, outside a table, that names the
+recorded `tests.gate` or `tests.full` command, so every agent runs it after
+each change. The line is the owner's rule: `joycraft-cleanup` offers its
+rewrite as one decision, and `update` shows it once.
+
 ## One pass
 
 `AGENTS.md` is the entry file: it is loaded in every session. Its Context Map
