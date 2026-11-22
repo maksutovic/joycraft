@@ -684,6 +684,79 @@
       }
     },
     {
+      "id": 9,
+      "file": "09-comment-detection.md",
+      "depends_on": [
+        1
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "archive"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-archive-named-files.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-ignore.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-9-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-3",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
       "id": 8,
       "file": "08-release-1-9-1.md",
       "depends_on": [
@@ -693,7 +766,8 @@
         4,
         5,
         6,
-        7
+        7,
+        9
       ],
       "status": "todo",
       "mode": "checkpoint",
