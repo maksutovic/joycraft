@@ -19,6 +19,8 @@ Brief `fewer-better-tests`: one test may cover several checks and extending an e
 
 none
 
+- Spec 1 cut a `joycraft-testing` paragraph that was not a full duplicate; keep its two lost rules in the text this spec writes: "Do not commit tests of one-off run state" and that a test may be removed when it "conflicts with a later owner decision" (review of spec 1, finding f3). Check: rg finds both phrases in the payload.
+
 ## Not covered
 
 Anything in the brief's Scope and limits. Joycraft names no test runner: text says "the runner's own flag". Specs other than this one.

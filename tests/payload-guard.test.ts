@@ -21,21 +21,22 @@ const FIELD_24_WORDS = 29919;
 //
 // Every-spec text is what an agent reads while it works a spec: the implement,
 // verify, decompose and testing skills, the implementer and reviewer agent
-// files, and the references those always read per spec. Other references they
-// link (worktrees, architecture, artifacts, delivery, recurring failures) are
-// read only "when" a condition holds, so they are on-demand. Every-spec text
+// files, and the references those always read per spec, including worktrees.md,
+// which every dispatch packet lists in readFirst (dispatch-preflight.mjs). Other
+// references they link (architecture, artifacts, delivery, recurring failures)
+// are read only "when" a condition holds, so they are on-demand. Every-spec text
 // stays flat: its cap is the field-24 total minus the on-demand words measured
-// at the commit before spec 1 (f157616: 29,864 words in all, 10,848 every-spec,
-// 19,016 on-demand), so 29,919 - 19,016 = 10,903.
+// at the commit before spec 1 (f157616: 29,864 words in all, 12,201 every-spec,
+// 17,663 on-demand), so 29,919 - 17,663 = 12,256.
 //
 // On-demand text is everything else: setup, update, cleanup, archive, the test
 // review, artifacts, settings, the session-end, cleanup, retro, context, entry
 // and ui-slice skills, and any new on-demand reference. It may grow by 2,000
-// words over its count before spec 1: 19,016 + 2,000 = 21,016.
+// words over its count before spec 1: 17,663 + 2,000 = 19,663.
 //
 // Spec 1 cut two duplicates (setup.md's Claude worktree paragraph, a copy of
 // worktrees.md; joycraft-testing's acceptance-test paragraph). After it:
-// 10,797 every-spec words (106 spare) and 18,922 on-demand words (2,094 spare).
+// 12,150 every-spec words (106 spare) and 17,569 on-demand words (2,094 spare).
 
 /** Every-spec text: each file with who reads it, and when. */
 export const EVERY_SPEC_FILES: Record<string, string> = {
@@ -50,9 +51,10 @@ export const EVERY_SPEC_FILES: Record<string, string> = {
   '.joycraft/references/dispatch.md': 'implement and the implementer run its dispatch preflight on every spec',
   '.joycraft/references/completion.md': 'the reviewer reads it at start; verify and implement use it to submit and accept',
   '.joycraft/references/gates.md': 'the gate check and Stop hook run on every spec once gates are on',
+  '.joycraft/references/worktrees.md': 'every implementer and reviewer packet lists it in readFirst (dispatch-preflight.mjs)',
 };
-export const EVERY_SPEC_CAP = FIELD_24_WORDS - 19016;
-export const ON_DEMAND_CAP = 19016 + 2000;
+export const EVERY_SPEC_CAP = FIELD_24_WORDS - 17663;
+export const ON_DEMAND_CAP = 17663 + 2000;
 
 /** True when a payload text file is on-demand: every payload text file not in EVERY_SPEC_FILES. */
 export const isOnDemand = (path: string) => !(path in EVERY_SPEC_FILES);
@@ -116,7 +118,6 @@ const terms: [string, RegExp][] = [
 const allowlist: { file: string; line: RegExp; reason: string }[] = [
   { file: '.joycraft/references/settings.md', line: /hooks\.afterArchive/, reason: 'the after-archive setting runs a project command; Joycraft ships it' },
   { file: '.joycraft/references/worktrees.md', line: /WorktreeCreate/, reason: "Claude Code's own WorktreeCreate hook, not a Joycraft hook" },
-  { file: '.joycraft/references/setup.md', line: /WorktreeCreate/, reason: "Claude Code's own WorktreeCreate hook, not a Joycraft hook" },
   { file: '.joycraft/references/gates.md', line: /\bStop\b/, reason: 'the gate Stop hook ships with the gates reference' },
 ];
 
@@ -343,7 +344,9 @@ describe('shipped payload text', () => {
   });
 
   it('[AC:spec-1-3] 200 more words in the implement skill break the every-spec cap; 600 more in the test review do not', () => {
-    expect(splitCap(grown('.agents/skills/joycraft-implement/SKILL.md', 200)).over).toEqual([expect.stringMatching(/^every-spec /)]);
+    // At least 200, and always one past the spare, so later cuts cannot make this pass without a regression.
+    const spare = EVERY_SPEC_CAP - splitCap(treeBundle()).everySpec;
+    expect(splitCap(grown('.agents/skills/joycraft-implement/SKILL.md', Math.max(200, spare + 1))).over).toEqual([expect.stringMatching(/^every-spec /)]);
     expect(splitCap(grown('.joycraft/references/testing-review.md', 600)).over).toEqual([]);
   });
 
@@ -353,7 +356,7 @@ describe('shipped payload text', () => {
     expect(bundle.read('.joycraft/references/setup.md')).toMatch(/resource-lease convention/);
     expect(bundle.read('.joycraft/references/worktrees.md')).toMatch(/A `WorktreeCreate` hook replaces creation/);
     expect(bundle.read('.agents/skills/joycraft-testing/SKILL.md')).not.toMatch(/sized like neighboring tests/);
-    expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(10848);
+    expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(12201);
   });
 
   it('every relative link and named reference or runtime path is shipped', () => {

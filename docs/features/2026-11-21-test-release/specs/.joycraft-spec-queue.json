@@ -1963,6 +1963,16 @@
             "requiredKinds": [
               "runtime"
             ]
+          },
+          {
+            "id": "spec-22-5",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
           }
         ]
       }
