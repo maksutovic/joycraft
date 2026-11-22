@@ -1,4 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -128,5 +129,34 @@ describe('archive.mjs ignore', () => {
     const source = readFileSync(runtime, 'utf8');
     expect(source).not.toMatch(/function projectRoot/);
     expect(source).toMatch(/import \{[^}]*\bprojectRoot\b[^}]*\} from '\.\/cleanup\.mjs'/);
+  });
+
+  it('[AC:spec-9-3] archive from a subfolder previews and applies against the project root', () => {
+    const root = fixture();
+    const folder = 'docs/features/x', queuePath = `${folder}/specs/.joycraft-spec-queue.json`, attest = '.joycraft/local/attest.json';
+    put(join(root, `${folder}/brief.md`), '# Brief\n');
+    put(join(root, `${folder}/specs/01-a.md`), '---\nid: 1\nstatus: done\n---\n# A\n');
+    const decision = JSON.stringify({ schemaVersion: 1, kind: 'legacy', queuePath, statement: 'Accept it as it is.', statedAt: '2026-11-21T00:00:00Z', specs: [1], reason: 'Done before the gates.' });
+    put(join(root, `${folder}/specs/legacy.json`), decision);
+    const sha256 = createHash('sha256').update(Buffer.from(decision)).digest('hex');
+    put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature: 'x', specs: [{ id: 1, file: '01-a.md', status: 'done', mode: 'batch', depends_on: [], verification: { inputs: [] }, ownerAcceptance: { path: `${folder}/specs/legacy.json`, sha256, legacy: true } }] }));
+    put(join(root, 'docs/context/decision-log.md'), '# Decisions\n');
+    put(join(root, '.gitignore'), '.joycraft/local/\n');
+    put(join(root, attest), JSON.stringify({ schemaVersion: 1, phase: 'session-end', host: { sessionId: 's', quiescent: true, activeWorkers: [], dependentWork: [] }, durableContext: { carried: true, references: ['docs/context/decision-log.md'] } }));
+    put(join(root, 'tests/c.test.ts'), `const p = '${folder}/brief.md';\n`);
+    put(join(root, 'src/deep/keep.txt'), 'k\n');
+    git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'feature');
+    const deep = join(root, 'src', 'deep');
+    const run = (cwd: string, ...extra: string[]) => spawnSync(process.execPath, [runtime, 'archive', '--feature', 'x', '--phase', 'session-end', '--attestation', attest, ...extra], { cwd, encoding: 'utf8' });
+    const fromRoot = run(root), fromSub = run(deep);
+    expect([fromRoot.status, fromRoot.stderr]).toEqual([0, '']);
+    expect([fromSub.status, fromSub.stderr]).toEqual([0, '']);
+    expect(JSON.parse(fromSub.stdout)).toEqual(JSON.parse(fromRoot.stdout));
+    const applied = run(deep, '--apply');
+    expect([applied.status, applied.stderr]).toEqual([0, '']);
+    expect(JSON.parse(applied.stdout).status).toBe('archived');
+    expect(existsSync(join(root, folder))).toBe(false);
+    expect(existsSync(join(root, 'docs/archive/x'))).toBe(true);
+    expect(execFileSync('find', ['.'], { cwd: deep, encoding: 'utf8' }).trim().split('\n').sort()).toEqual(['.', './keep.txt']);
   });
 });

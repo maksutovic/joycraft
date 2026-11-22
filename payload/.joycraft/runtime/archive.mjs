@@ -562,11 +562,41 @@ function namedFiles(root, source) {
 
 const refusal = message => Object.assign(new Error(message), { exitCode: 2 });
 
-const isCommentLine = line => /^(?:\/\/|\/\*|\*|#|<!--)/.test(line.trim());
+const hashCommentExtensions = new Set(['.py', '.sh', '.bash', '.rb', '.pl', '.r', '.yaml', '.yml', '.toml']);
+
+/**
+ * For each line of a file, whether it is surely a comment: `//`; `/*` or `<!--` with nothing after
+ * the close on that line; `*` inside a block a line starting `/*` opened; `#` in a file whose
+ * language comments with it. Any doubt counts as code, which only asks for a needless look.
+ */
+function commentLines(file, lines) {
+  const hash = hashCommentExtensions.has(path.extname(file).toLowerCase());
+  const closedClean = (text, open, close) => {
+    const end = text.indexOf(close, open.length);
+    return end < 0 ? 'open' : text.slice(end + close.length).trim() === '' ? 'closed' : 'code';
+  };
+  let inBlock = false;
+  return lines.map(line => {
+    const text = line.trim();
+    if (inBlock) {
+      const end = text.indexOf('*/');
+      if (end >= 0) inBlock = false;
+      return text.startsWith('*') && (end < 0 || text.slice(end + 2).trim() === '');
+    }
+    if (text.startsWith('//')) return true;
+    if (text.startsWith('/*')) {
+      const state = closedClean(text, '/*', '*/');
+      if (state === 'open') inBlock = true;
+      return state !== 'code';
+    }
+    if (text.startsWith('<!--')) return closedClean(text, '<!--', '-->') !== 'code';
+    return hash && text.startsWith('#');
+  });
+}
 
 /**
  * After the move: the listed tests that still name the old folder path outside a comment, each at
- * its first such line, for the agent to change. A test that names it only in comments needs no change.
+ * its first such line, for the agent to change. A test that names it only in sure comments looks to need no change.
  */
 function nextSteps(root, plan) {
   const tests = plan.namedFiles.filter(file => file.test);
@@ -575,10 +605,11 @@ function nextSteps(root, plan) {
   const code = tests.flatMap(file => {
     let lines;
     try { lines = readFileSync(path.join(root, file.path), 'utf8').split('\n'); } catch { return [{ path: file.path, line: file.line }]; }
-    const line = lines.findIndex(each => !isCommentLine(each) && patterns.some(pattern => pattern.test(each)));
+    const comments = commentLines(file.path, lines);
+    const line = lines.findIndex((each, at) => !comments[at] && patterns.some(pattern => pattern.test(each)));
     return line < 0 ? [] : [{ path: file.path, line: line + 1 }];
   });
-  if (!code.length) return { next: `The listed tests name \`${plan.source}\` only in comments and need no change. Leave their paths as they are.` };
+  if (!code.length) return { next: `The listed tests name \`${plan.source}\` only in comments, so no path change looks needed. Still run the gate: a red test means one reads the folder, so change its path there and commit the edit with the move.` };
   const rest = code.length < tests.length ? ' The other listed tests name it only in comments and need no change.' : '';
   return { next: `${code.length} ${code.length === 1 ? 'test still names' : 'tests still name'} \`${plan.source}\`: ${code.map(file => `\`${file.path}:${file.line}\``).join(', ')}. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.${rest}` };
 }
