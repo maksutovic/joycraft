@@ -43,7 +43,9 @@ Before any archival, route each reusable fact the session established (a decisio
 
 Write nothing temporal into an entry file or a guide: a date, a status or a hand-off goes to its record, as the [cleanup reference](../../../.joycraft/references/cleanup.md#what-to-find-on-each-page) says.
 
-Then tidy without being asked. Commit the session's other edits first. Run
+Then tidy without being asked, on a clean tree only: when `git status
+--porcelain` prints anything, report the tidy findings, fix nothing and commit
+nothing of the user's. Run
 `node .joycraft/runtime/cleanup.mjs tidy` and fix only the lines its
 `fixable: true` findings name, never an entry file or rule text. When
 `cleanup.mjs tidy --verify` passes, make one commit with the message it

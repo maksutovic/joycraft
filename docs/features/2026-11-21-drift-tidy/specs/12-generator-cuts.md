@@ -27,4 +27,4 @@ Anything in the brief's Scope and limits. Specs other than this one.
 
 ## Decision needed
 
-Review round 1 (review-12.report.json) finding f1: brief decision `tidy-dirty-tree` (open). The blocking finding f2 is fixed in 0d6209d. Spec stays in-review until Max answers.
+Review round 1 (review-12.report.json) finding f1: brief decision `tidy-dirty-tree` (open). The blocking finding f2 is fixed in 0d6209d. Max answered `tidy-dirty-tree` (custom: session end runs only on a clean, committed tree). The skill now tidies only on a clean tree and never commits the user's edits.
