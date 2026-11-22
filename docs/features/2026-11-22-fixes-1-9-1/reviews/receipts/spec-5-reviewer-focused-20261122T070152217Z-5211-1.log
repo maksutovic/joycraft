@@ -1,0 +1,38 @@
+
+> joycraft@1.9.0 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-wave-gate.test.ts tests/text-wave-gate.test.ts tests/payload-guard.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/text-wave-gate.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 332[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12177 (cap 12256, 79 spare)
+on-demand words: 20562 (cap 21163, 601 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1359[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 349[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 355[2mms[22m[39m
+ [32m✓[39m tests/runtime-wave-gate.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 26401[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-1] refuses a missing, non-gate, red or stale receipt with its own code and pushes nothing [33m 1982[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-2] a green gate receipt on HEAD pushes without a second verifier [33m 503[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-2] a project with no tests.gate keeps the -- <verifier> push [33m 515[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-1] refuses a green receipt of a non-shell program given -c "<gate>" [33m 443[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-1] still accepts a real shell receipt of sh -c "<gate>" [33m 606[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-3] reads the footer with evidence.mjs readFooter: only the last line, only an object [33m 551[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-4] refuses a gate receipt outside the project root [33m 553[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-r2-1] a gate with shell syntax needs the shell form: split words are refused, a red sh -c run is refused [33m 855[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-r2-1] the same gate pushes through sh -c when every command is green [33m 695[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-r2-2] a shell form whose program is a relative path is refused; a bare name or absolute path is accepted [33m 1596[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-27-13] a plain gate in shell form splits on spaces and tabs only; a shell path inside the project or (POSIX) in Windows form is refused [33m 2236[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-27-14] a receipt on an ancestor of HEAD pushes when only docs-root paths changed since; any other path or a non-ancestor stays stale [33m 1368[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[review-27-7] only Markdown and JSON under the docs root, or a non-symlink record file in a feature or archive folder, keeps an old receipt [33m 3525[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-31-3] a feature or archive folder keeps an old receipt only for record extensions; a source file there needs the gate [33m 7085[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-5-1] a manifest or lockfile under the docs root, feature folders too, needs the gate again; other JSON keeps the old receipt [33m 3472[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m43 passed[39m[22m[90m (43)[39m
+[2m   Start at [22m 23:01:55
+[2m   Duration [22m 26.59s[2m (transform 45ms, setup 0ms, collect 93ms, tests 28.09s, environment 0ms, prepare 99ms)[22m
+
+joycraft-evidence: {"wallMs":27161,"load":[4.9541015625,3.98876953125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-wave-gate.test.ts","tests/text-wave-gate.test.ts","tests/payload-guard.test.ts"],"exitCode":0,"timedOut":false,"revision":"b80794c1251eaa49ab290432651e0729164e0864","dirty":false}

@@ -1,0 +1,26 @@
+manifest regex: /^(?:package\.json|package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|deno\.lock|tsconfig.*\.json)$/i
+code (needs gate)      docs/site/package.json
+code (needs gate)      docs/site/Package.JSON
+code (needs gate)      docs/site/tsconfig.json
+code (needs gate)      docs/site/tsconfig.build.json
+record (keeps receipt)  docs/site/jsconfig.json
+code (needs gate)      docs/site/package.json5
+code (needs gate)      docs/site/node_modules/x/package.json
+record (keeps receipt)  docs/site/my-package.json
+record (keeps receipt)  docs/site/package.json.md
+record (keeps receipt)  docs/site/data.json
+record (keeps receipt)  docs/site/deno.json
+record (keeps receipt)  docs/site/composer.json
+code (needs gate)      docs/features/f/pnpm-lock.yaml
+record (keeps receipt)  docs/features/f/pnpm-workspace.yaml
+code (needs gate)      docs/features/f/bun.lock
+code (needs gate)      docs/features/f/bun.lockb
+code (needs gate)      docs/features/f/deno.lock
+code (needs gate)      docs/features/f/yarn.lock
+code (needs gate)      docs/archive/f/npm-shrinkwrap.json
+code (needs gate)      docs/features/f/probe.mjs
+record (keeps receipt)  docs/features/f/probe.mjs.txt
+record (keeps receipt)  docs/features/f/tsconfig.json.txt
+record (keeps receipt)  docs/features/f/notes.md
+record (keeps receipt)  docs/features/f/.yarnrc.yml
+joycraft-evidence: {"wallMs":29,"load":[2.9521484375,2.9521484375],"cores":14,"loaded":false,"argv":["node","--input-type=module","-e","await import('node:fs').then(fs=>import('data:text/javascript,'+encodeURIComponent(fs.readFileSync('docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-5-reviewer-probe.mjs.txt','utf8'))))"],"exitCode":0,"timedOut":false,"revision":"b80794c1251eaa49ab290432651e0729164e0864","dirty":true}

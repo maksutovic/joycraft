@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 // Spec: docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md
+// Spec: docs/features/2026-11-22-fixes-1-9-1/specs/06-reference-text.md (spec-6 tests)
 const root = join(__dirname, '..');
 const raw = (path: string) => readFileSync(join(root, 'payload', path), 'utf8');
 const flat = (path: string) => raw(path).replace(/\s+/g, ' ');
@@ -113,5 +114,13 @@ describe('fault proof text', () => {
     const refused = run('sum.diff', '.joycraft/local/faults/sum-untracked.log');
     expect(refused.status).toBe(2);
     expect(refused.stderr).toMatch(/refuses a dirty tree/);
+  });
+
+  it('[AC:spec-6-3] the reviewer checks receipt sha256s against the pinned list, one saved fault per removed or changed assertion, aimed at one with no replacement', () => {
+    const text = section(REVIEW, 'Test-only specs');
+    expect(text).toContain('against the list committed before the test edit');
+    expect(text).toContain('one saved fault per removed or changed assertion');
+    expect(text).toContain('no replacement');
+    expect(text).toMatch(/aims its own fault at an assertion or behavior the diff removed, first a removed assertion that has no replacement/);
   });
 });

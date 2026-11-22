@@ -1,0 +1,5 @@
+ package.json              | 6 +++---
+ src/joycraft-release.json | 2 +-
+ tests/public-docs.test.ts | 4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+joycraft-evidence: {"wallMs":23,"load":[10.29345703125,10.29345703125],"cores":14,"loaded":false,"argv":["git","diff","--stat","origin/main","HEAD","--","tests/release-preparation.test.ts","package.json","src/joycraft-release.json","tests/public-docs.test.ts"],"exitCode":0,"timedOut":false,"revision":"788eda9a5b2beece87ecf3c2c767ed0b883b099f","dirty":true}

@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 // Spec: docs/features/2026-11-21-test-release/specs/20-sota-page.md
+// Spec: docs/features/2026-11-22-fixes-1-9-1/specs/06-reference-text.md (spec-6 tests)
 const references = join(__dirname, '..', 'payload', '.joycraft', 'references');
 const read = (file: string) => readFileSync(join(references, file), 'utf8');
 const flat = (text: string) => text.replace(/\s+/g, ' ');
@@ -63,5 +64,18 @@ describe('the shipped testing page template', () => {
     }
     expect(page).toMatch(/^# Test practices$/m);
     expect(flat(read('testing-review.md'))).toMatch(/when the project has no testing page/);
+  });
+
+  const decision = (n: number) => flat(page.slice(page.indexOf('## Decisions'), page.indexOf('## When a run is slow'))).split(/ (?=\d\. \*\*)/)[n];
+
+  it('[AC:spec-6-4] decision 8 runs a new or changed test file <n> times before it counts', () => {
+    expect(decision(8)).toContain('Run a new or changed test file `<n>` times before it counts.');
+  });
+
+  it('[AC:spec-6-5] the worker cap keys on JOYCRAFT_EVIDENCE, never on CI, and tests never wait a fixed delay', () => {
+    const text = flat(page);
+    expect(decision(2)).toMatch(/keys on `JOYCRAFT_EVIDENCE`, never on `CI`/);
+    expect(text).toMatch(/keys on `JOYCRAFT_EVIDENCE`, never on `CI`/);
+    expect(decision(3)).toContain('never a fixed delay');
   });
 });

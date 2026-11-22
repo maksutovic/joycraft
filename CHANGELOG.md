@@ -7,6 +7,59 @@ claim that a release has shipped.
 
 ---
 
+## 1.9.1 — Fixes from the 1.9.0 reviews
+
+Reviewers of 1.9.0 left small gaps open: two in the gate matchers that a user can
+hit, a few in archive and cleanup, and reference text that said less than the code
+does. None blocked 1.9.0; this release fixes them.
+
+### Update notes
+
+- **Manifests under the docs root need the gate again.** `package.json`,
+  `tsconfig*.json` and lockfiles under the docs root now need a fresh gate run
+  before push, in feature and archive folders too. Before, they counted as records,
+  so an older gate receipt still let the push through.
+- **Cleanup and archive find the project root from a subfolder.** With no `--root`,
+  `cleanup.mjs` and `archive.mjs` start from the nearest folder up that holds
+  `.joycraft/`, so tidy run from `docs/guides` reads the project's `joycraft.yaml`
+  and runs its `checks:`.
+
+### Fixed
+
+- **Chained gates are caught.** `gate-in-spec` now finds the recorded gate before
+  `&&`, `||`, `|` or `2>&1`, and also reads the spec's Implementation and
+  verification scope section.
+- **Runner aliases are caught.** The report gate check drops a leading `npx`,
+  `pnpm exec`, `npm exec` and the `run` of `pnpm run`, `npm run` or `yarn run`
+  before it compares, so `npx vitest run` matches a `vitest run` gate. A focused
+  run still passes. Re-checking a spec that is already done no longer refuses the
+  report it accepted before `tests.gate` was recorded.
+- **Archive relinks Markdown in any case.** `.MD` and `.markdown` files that link
+  into the feature folder are rewritten like `.md` files.
+- **Archive's next step skips comment-only tests.** It names a listed test only
+  where the test names the feature folder outside a comment, and calls a line a
+  comment only when it surely is one: any doubt counts as code. When every listed
+  test names the folder only in comments, it says no path change looks needed and
+  still tells the agent to run the gate.
+- **As-is archive lists an in-review spec's receipts.** With no acceptance record
+  naming a report, it reads the spec's latest review report and lists each receipt
+  that is missing or changed.
+- **A blank `--owner-instruction` is refused plainly:** the message says it needs
+  the owner's words.
+- **Cleanup fixes.** `new-doc` skips backlog files; age-out lists a doc whose name
+  holds a tab or a quote; a docs root whose case differs from the one Git tracks is
+  named as such; a `checks:` command whose missing tool hides behind a pipe is
+  skipped with "Command not found".
+
+### Changed
+
+- **Reference text says what the code does:** the `--checks` list (kind and gate),
+  knip's `path:line: message` wrapper, the reviewer's pinned fault list, "a new or
+  changed test file", the archive relink scope, and the record extensions in
+  `delivery.md`.
+- **The payload guard pins the 12 every-spec paths,** so dropping one fails the
+  guard instead of moving its words to the on-demand budget.
+
 ## 1.9.0 — Drift tidy, and tests that cost less time
 
 Two features ship together. Drift tidy: guides kept naming code a session had

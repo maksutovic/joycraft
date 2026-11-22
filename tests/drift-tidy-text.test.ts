@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 // Spec: docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md
+// Spec: docs/features/2026-11-22-fixes-1-9-1/specs/06-reference-text.md (spec-6 tests)
 // Text checks on single payload files; the word cap (AC 5) lives in payload-guard.test.ts.
 const payload = join(__dirname, '..', 'payload');
 const read = (file: string) => readFileSync(join(payload, file), 'utf8');
@@ -41,5 +42,17 @@ describe('skills call tidy and Joycraft writes less', () => {
     const sentences = read('.joycraft/references/setup.md').replace(/\s+/g, ' ').split(/(?<=\.)\s/).filter(line => line.includes('`checks:`'));
     expect(sentences).toHaveLength(1);
     expect(sentences[0]).toMatch(/already uses a doc or code checker/);
+  });
+
+  it('[AC:spec-6-1] cleanup.md says --checks lists each check\'s kind and whether it is a gate', () => {
+    expect(cleanupRef.replace(/\s+/g, ' ')).toContain('its kind, and whether it is a gate');
+  });
+
+  it('[AC:spec-6-2] the one setup sentence that offers checks: says knip needs a path:line: message wrapper', () => {
+    const sentences = read('.joycraft/references/setup.md').replace(/\s+/g, ' ').split(/(?<=\.)\s/).filter(line => line.includes('`checks:`'));
+    expect(sentences).toHaveLength(1);
+    expect(sentences[0]).toContain('knip');
+    expect(sentences[0]).toContain('path:line: message');
+    expect(sentences[0]).toMatch(/knip through a wrapper that prints `path:line: message`/);
   });
 });

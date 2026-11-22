@@ -1,0 +1,23 @@
+# spec 6 reviewer probe: word counts at base and implementation, and one fault per doc edit.
+set -u
+S=/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad
+echo "== words at 7e13c91~1"; (cd $S/wt-base6 && npx vitest run tests/payload-guard.test.ts 2>&1 | grep -E "words:|Tests ")
+echo "== words at 7e13c91"; (cd $S/wt-impl6 && npx vitest run tests/payload-guard.test.ts 2>&1 | grep -E "words:|Tests ")
+cd $S/wt-impl6
+for f in cleanup.md setup.md testing-review.md testing-page.md; do
+  git show 7e13c91~1:payload/.joycraft/references/$f > payload/.joycraft/references/$f
+  echo "== fault: revert $f to 7e13c91~1"
+  npx vitest run tests/drift-tidy-text.test.ts tests/text-fault-proof.test.ts tests/text-sota-page.test.ts 2>&1 | grep -E "^ *×|Tests "
+  git checkout -- payload
+done
+sed -i '' 's/never a fixed delay/a short delay/' payload/.joycraft/references/testing-page.md
+echo "== fault: drop 'never a fixed delay'"; npx vitest run tests/text-sota-page.test.ts 2>&1 | grep -E "^ *×|Tests "; git checkout -- payload
+sed -i '' 's/never on `CI`/or on `CI`/' payload/.joycraft/references/testing-page.md
+echo "== fault: 'never on CI' -> 'or on CI'"; npx vitest run tests/text-sota-page.test.ts 2>&1 | grep -E "^ *×|Tests "; git checkout -- payload
+echo "== cut-line cross-checks in HEAD payload"
+cd /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+grep -n "seam or a fix" payload/.joycraft/references/testing-review.md
+grep -n "install dependencies" payload/.joycraft/references/setup.md
+grep -n "explicit project" payload/.joycraft/references/setup.md
+grep -n "another mapped" payload/.joycraft/references/setup.md
+grep -n "missing human knowledge" payload/.joycraft/references/setup.md

@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "3c8a10d77c67dbb36026d7e74a3e93e2151e58c8",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+    "specId": 4,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-1/specs/04-gate-matcher.md",
+    "criteria": [
+      {
+        "id": "spec-4-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/04-gate-matcher.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/04-gate-matcher.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-3",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/04-gate-matcher.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "queue-check",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "2a021ad2dcc16aa282ef67cf060bfcbeaeedeabed1892a7bf7e96adaa5be8a3a",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "369bc92d0fb03459c0434b91af14355bd9c9187e8d4934bb0c00fe305d1f9f38",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/04-gate-matcher.md",
+        "kind": "requirement",
+        "sha256": "c47c3a30f034789eb860a164b266123e4898d7a18ada2ced4a6b89a0e23f4e2a",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/queue-check.mjs",
+        "kind": "code",
+        "sha256": "9af03506c0fe30836491d6b014afe4e6800d34b7fe14364916a50a352ee5b856",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-queue-check-gate.test.ts",
+        "kind": "check",
+        "sha256": "d340e39ba3d292bc1e63c6b11cf1be1fd13f9f743e60624c92744b0c976fef5d",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          4
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+          "anchors": [
+            "queue-check",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "6ac8796888b94201331a9d8c430b8b1e6c5cc680fffbadf8bcf5962c1c451148"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a0e0325aaa46901bc"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "aa54563d9cf696f07"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-4-1-chains",
+      "subjectIdentity": "6ac8796888b94201331a9d8c430b8b1e6c5cc680fffbadf8bcf5962c1c451148",
+      "criteria": [
+        "spec-4-1"
+      ],
+      "representativeInput": "chain ending at payload/.joycraft/runtime/queue-check.mjs:274, used by inCode and the plain end pattern",
+      "expected": "The four chained texts name pnpm verify; pnpm verify-all, pnpm verify tests/a.test.ts and pnpm verify --run do not.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-4-reviewer-focused-20261122T065731718Z-16576-1.log",
+              "sha256": "ff72d1fa8e48ae59d52622c67cd032ab286454d12ac28adc94f5871d3449e55b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-queue-check-gate.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-4-1] (tests/runtime-queue-check-gate.test.ts:149) passes: all seven cases as stated, plus a chained acceptance bullet gives one gate-in-spec gap and exit 2. 11 of 11 tests in the file pass."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-4-reviewer-probe.log",
+              "sha256": "44b88e7f69e1b20d26ee6705b3e60f11fba7f27017add63cd06c429b6117a0c5"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-4-reviewer-probe.mjs.txt",
+              "sha256": "249ad060e269536735786a0d068b40f4c3214080ec77107698d4530f4a33804b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p4.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Probe: an argument or flag before a chain (pnpm verify tests/a.test.ts && x, pnpm verify --run | tee log), pnpm verify-all && x, > log, unspaced ; and &&, a trailing && and ||| stay false. A full gate \"pnpm test && pnpm typecheck\" still matches itself and is not matched by \"pnpm test && pnpm typecheck-all\"."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-4-2-scope-section",
+      "subjectIdentity": "6ac8796888b94201331a9d8c430b8b1e6c5cc680fffbadf8bcf5962c1c451148",
+      "criteria": [
+        "spec-4-2"
+      ],
+      "representativeInput": "sectionBullets at payload/.joycraft/runtime/queue-check.mjs:129 and the scope loop at :411-420",
+      "expected": "A todo spec whose scope bullet names the gate gets one gate-in-spec gap at that line with the \"the recorded gate\" message; \"the recorded gate\" gives none; a done spec is skipped.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-4-reviewer-focused-20261122T065731718Z-16576-1.log",
+              "sha256": "ff72d1fa8e48ae59d52622c67cd032ab286454d12ac28adc94f5871d3449e55b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-queue-check-gate.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-4-2] (tests/runtime-queue-check-gate.test.ts:160) passes: one gap at 01-a.md:14 with the message, checkQueue gaps are exactly [[gate-in-spec,14]], a top-level fence line gives 01-a.md:16, \"the recorded gate\" gives none and exit 0, a done spec gives none."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-4-reviewer-probe.log",
+              "sha256": "44b88e7f69e1b20d26ee6705b3e60f11fba7f27017add63cd06c429b6117a0c5"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-4-reviewer-probe.mjs.txt",
+              "sha256": "249ad060e269536735786a0d068b40f4c3214080ec77107698d4530f4a33804b"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-4-reviewer-queue-check.log",
+              "sha256": "77fa5df7d4878a813d2d6b4d8960f050500a906f977dc9e2817ed42310be777d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p4.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Probe: sectionBullets reads an indented fence in a bullet (via bullet.fenced), a top-level fence line, bullets of a ### subsection, and skips an HTML comment block, a plain paragraph and the next ## section. queue-check on this queue exits 0, so this queue's own specs stay clean."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-4-3-comment",
+      "subjectIdentity": "6ac8796888b94201331a9d8c430b8b1e6c5cc680fffbadf8bcf5962c1c451148",
+      "criteria": [
+        "spec-4-3"
+      ],
+      "representativeInput": "namesCommand doc comment at payload/.joycraft/runtime/queue-check.mjs:231-254",
+      "expected": "The comment says a word starting with - is an argument, re-runs is prose, lists &&, ||, |, 2>&1, and no longer holds \"`:`, `-` or `=`\".",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-4-reviewer-focused-20261122T065731718Z-16576-1.log",
+              "sha256": "ff72d1fa8e48ae59d52622c67cd032ab286454d12ac28adc94f5871d3449e55b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-queue-check-gate.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-4-3] (tests/runtime-queue-check-gate.test.ts:184) passes. Source read agrees: the comment lists the chain endings and the redirect/; exclusions, and the old \"`:`, `-` or `=`\" phrase is gone."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-retag-undeclared",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-queue-check-gate.test.ts:38",
+      "summary": "Three older tests from the archived test-release feature had the tags [AC:spec-4-1..3]; the implementer renamed them to [gate-base-1..3]. The Test changes section does not name this. The change is title-only (no assertion, input or count changes) and it is needed so trace maps spec-4-* only to this spec's tests. It weakens no check. Older [AC:spec-27-*]/[AC:spec-31-*] tags in the same file were left as they were and show as unknown tags; this is harmless but inconsistent. Decompose could name such retags in Test changes.",
+      "assumption": "A title-only retag that the \"Tag each new test [AC:spec-4-<n>]\" line needs counts as required, not as an undeclared weakening."
+    },
+    {
+      "id": "f2-notes-move",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-queue-check-gate.test.ts:60",
+      "summary": "The old case \"a gate in the scope section gives no gap\" (old [AC:spec-4-3]) directly conflicts with acceptance bullet 2, which makes that a gap. The implementer moved the gate bullet into a ## Notes section, so the remaining claim (a gate outside acceptance and scope gives no gap) is still tested. The scope claim it gave up is now asserted the other way, more strongly, by [AC:spec-4-2]. This is required by bullet 2, so it is not blocking, but Test changes did not declare the edit to an existing case.",
+      "assumption": "Rule: block only an undeclared change that no line requires; bullet 2 requires this change."
+    },
+    {
+      "id": "f3-prose-chain-mentions",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/queue-check.mjs:274",
+      "summary": "Probe: prose with a chain token after the command now matches, for example \"If it fails, run `pnpm verify` || ask the owner.\", \"We considered pnpm verify && friends but chose not to.\", \"Do not run pnpm verify && pnpm lint here\" and a table row \"| pnpm verify | the gate |\". Each sentence names the gate literally. The matcher already flagged such mentions before this spec when a prose word or punctuation followed, so this adds no new class of false positive. A negated or table mention is the only case a user might call a false positive. The gap message tells the author to rewrite it.",
+      "assumption": "gate-in-spec is meant to flag any naming of the gate in these sections, as the base tests (e.g. \"run pnpm verify.\") show."
+    },
+    {
+      "id": "f4-scope-fence-chain",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/queue-check.mjs:414",
+      "summary": "A top-level fenced line in the scope section matches only when it equals the gate exactly. So a fenced \"pnpm verify && pnpm lint\" is not found there, while the same text in a bullet or an indented fence in a bullet is found by namesCommand. This keeps the acceptance-side fenced rule (\"the same match\"), so it meets the spec. Consider namesCommand for fenced lines too.",
+      "assumption": "The spec's \"same match\" means the acceptance check's exact-line rule for fences."
+    }
+  ],
+  "limits": [
+    "Gate not run by the reviewer (spec review runs only tests/runtime-queue-check-gate.test.ts).",
+    "Test changes: test-changes.mjs (base c3194ad) declares tests/runtime-queue-check-gate.test.ts class 1. tests/runtime-wave-gate.test.ts and tests/text-wave-gate.test.ts show as undeclared, but they are spec 5 work by another agent in this checkout, not part of 4b76534, and were not reviewed here.",
+    "The featurePaths hit at tests/runtime-queue-check-gate.test.ts:9 is a temp-fixture folder name, not a read of this repo's feature folder.",
+    "The installed .joycraft/runtime/queue-check.mjs copy was not compared; payload/ is the source."
+  ],
+  "createdAt": "2026-11-22T06:59:23.038427Z"
+}

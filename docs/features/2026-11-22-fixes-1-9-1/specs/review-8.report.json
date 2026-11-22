@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "788eda9a5b2beece87ecf3c2c767ed0b883b099f",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+    "specId": 8,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-1/specs/08-release-1-9-1.md",
+    "criteria": [
+      {
+        "id": "spec-8-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/08-release-1-9-1.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-8-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/08-release-1-9-1.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "code",
+        "sha256": "be177fde66ef2e61cb65fcb5401ae41b136796ef1411102a0f47fe7b417fdb65",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "se-followups"
+          ]
+        },
+        "sha256": "bfd182b320393f5014517c83bc6c645070fc0973652b54fca27fcbef8a268e70",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "835743f3dcba3254359575fb9407a5029f2b0b1ecac59f74f5dee64ff2a01e32",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/08-release-1-9-1.md",
+        "kind": "requirement",
+        "sha256": "98d0cee926297ceade197e4e109484742d8ea1895e9a7e737922028d91b8fd5d",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "package.json",
+        "kind": "code",
+        "sha256": "db66f656f38d1fa576cff3d08d6bd449612f4b3d9783b99bfae3e8a04f72ac13",
+        "normalization": "none"
+      },
+      {
+        "path": "src/joycraft-release.json",
+        "kind": "code",
+        "sha256": "297a3fda63a9b6350cfd92741fb2497cbf355c2eb6482de6e9acd6bdc9a85050",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/public-docs.test.ts",
+        "kind": "check",
+        "sha256": "fa32b7b024fd75d4e5b948e1eb4aa40ae4f2c0e2b43dd8b3315df0a42ff12283",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/release-preparation.test.ts",
+        "kind": "check",
+        "sha256": "32ae9ce8e74fbe4fdd872c1859b29a9e130f6c19b0a744132421085554204d9c",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "se-followups"
+          ]
+        }
+      ]
+    },
+    "identity": "d0778412b7e29efe533a2d92fdb0ff57144344f3c32760ddef3dd76027f70911"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a1d4392dcd4345c7c"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "aae34210c868d0651"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "createdAt": "2026-11-22T07:27:03.000Z",
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-8-1-release-fields",
+      "subjectIdentity": "d0778412b7e29efe533a2d92fdb0ff57144344f3c32760ddef3dd76027f70911",
+      "criteria": [
+        "spec-8-1"
+      ],
+      "representativeInput": "[AC:spec-8-1] tests/public-docs.test.ts:79 and :86",
+      "expected": "version, joycraft.release and releaseVersion are 1.9.1; summary is one line of at most 300 characters; CHANGELOG has a '## 1.9.1 — ' entry above 1.9.0.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-8-reviewer-focused-20261122T072528918Z-18902-1.log",
+              "sha256": "8785fd58b0e08e491e1e5dbefbfc8d79196ef5e3948676bb4e60af714585d37b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "39 of 39 tests in 2 files pass after pnpm build, including both [AC:release-fields] [AC:spec-8-1] tests. package.json version and joycraft.release are 1.9.1, src/joycraft-release.json releaseVersion is 1.9.1, the summary is one line (about 230 characters), and '## 1.9.1 — Fixes from the 1.9.0 reviews' sits directly above '## 1.9.0 —' with an '### Update notes' line naming package.json, tsconfig*.json and lockfiles under the docs root. The public-docs diff adds only the [AC:spec-8-1] tag to two titles (class 1, as Test changes declares)."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-8-reviewer-release-prep-unchanged.log",
+              "sha256": "1c2ba9b39b4ca030bf2946a9c725f0610a9f831899b9bfaa8ec8f8cfe4de2a90"
+            }
+          ],
+          "command": {
+            "argv": [
+              "git",
+              "diff",
+              "--stat",
+              "origin/main",
+              "HEAD",
+              "--",
+              "tests/release-preparation.test.ts",
+              "package.json",
+              "src/joycraft-release.json",
+              "tests/public-docs.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Release diff touches package.json (version, release, summary), src/joycraft-release.json (releaseVersion) and tests/public-docs.test.ts (two title tags); tests/release-preparation.test.ts is not in the diff."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-8-2-changelog",
+      "subjectIdentity": "d0778412b7e29efe533a2d92fdb0ff57144344f3c32760ddef3dd76027f70911",
+      "criteria": [
+        "spec-8-2"
+      ],
+      "representativeInput": "tests/release-preparation.test.ts (unchanged) and the CHANGELOG 1.9.1 entry checked by hand against specs 1-7 and 9",
+      "expected": "The CHANGELOG entry lists the fixes in a few lines with the docs-root manifest update note; release-preparation passes unchanged.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-8-reviewer-focused-20261122T072528918Z-18902-1.log",
+              "sha256": "8785fd58b0e08e491e1e5dbefbfc8d79196ef5e3948676bb4e60af714585d37b"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "tests/release-preparation.test.ts passes, and the diff receipt shows it unchanged from origin/main. Every CHANGELOG 1.9.1 claim was checked against the landed code: runner aliases (completion.mjs runnerCommand: npx, pnpm/npm exec, run of pnpm/npm/yarn run) and the done re-check skip (gateRuns false when status is done); chained gates and the scope section (queue-check.mjs chain pattern, sectionBullets for implementation-and-verification-scope); manifests (delivery.mjs manifest regex checked before the record rule); projectRoot exported from cleanup.mjs and used by cleanup main and archive main; .MD/.markdown relink; comment-only next with the run-the-gate text (spec 9); latestReport receipts for an unaccepted spec; blank --owner-instruction message; new-doc backlogFile, age-out -z, case-mismatch message, piped notFound skip; reference text in cleanup.md, setup.md, testing-review.md, testing-page.md, archive.md and delivery.md; payload guard pin. No claim lacks code. The entry names no field project, person, private path or commit SHA (grep for hex runs, /Users, names: none)."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "limits": [
+    "Gate not run (reviewer runs only the spec's own tests, per the brief); due at the coordinator's gate."
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-spec-8-2-untraced",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-8-2",
+      "summary": "spec-8-2 has no [AC:spec-8-2] tagged test: the spec asks release-preparation.test.ts to pass unchanged, so adding a tag would break 'unchanged'. Covered by the focused run and the diff receipt."
+    },
+    {
+      "id": "f2-update-note-before-wording",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "CHANGELOG.md:20",
+      "summary": "Update note says the manifests 'counted as records' before. True for package.json and tsconfig*.json anywhere under the docs root and for pnpm-lock.yaml in feature/archive folders, but yarn.lock, bun.lockb and deno.lock never matched a record extension, so they already needed the gate. Slight overstatement; harmless."
+    },
+    {
+      "id": "f3-probe-txt-advice-omitted",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/delivery.md:54",
+      "summary": "delivery.md now tells agents to save a probe script kept as a receipt with a .txt suffix; the CHANGELOG 'Changed' line mentions only 'the record extensions in delivery.md'. Minor omission of a user-visible instruction."
+    },
+    {
+      "id": "f4-spec-text-says-1-to-7",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-1/specs/08-release-1-9-1.md",
+      "summary": "The spec bullet says the entry lists specs 1 to 7, but the queue makes spec 8 depend on spec 9 too; commit 8e6abf8 added spec 9's change (sure-comment rule and run-the-gate text). The entry covers 1-7 and 9, which is the brief's intent."
+    },
+    {
+      "id": "f5-docs-sync",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-8-2",
+      "summary": "The spec says to run /release-docs-sync before the PR; that is a PR-time step for the coordinator, not checked here."
+    }
+  ]
+}

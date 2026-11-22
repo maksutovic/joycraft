@@ -325,7 +325,22 @@ describe('shipped payload text', () => {
     }
   });
 
-  it('[AC:spec-1-1] lists every-spec files that exist, and the two groups cover exactly the payload text', () => {
+  it('[AC:spec-1-1] [AC:spec-7-1] lists every-spec files that exist, and the two groups cover exactly the payload text', () => {
+    // The 12 every-spec paths, pinned: dropping or adding one fails here instead of moving its words to the on-demand budget.
+    expect(Object.keys(EVERY_SPEC_FILES).sort()).toEqual([
+      '.agents/skills/joycraft-implement/SKILL.md',
+      '.agents/skills/joycraft-verify/SKILL.md',
+      '.agents/skills/joycraft-decompose/SKILL.md',
+      '.agents/skills/joycraft-testing/SKILL.md',
+      '.claude/agents/joycraft-implementer.md',
+      '.claude/agents/joycraft-reviewer.md',
+      '.joycraft/references/testing.md',
+      '.joycraft/references/workflow.md',
+      '.joycraft/references/dispatch.md',
+      '.joycraft/references/completion.md',
+      '.joycraft/references/gates.md',
+      '.joycraft/references/worktrees.md',
+    ].sort());
     const bundle = treeBundle();
     for (const path of Object.keys(EVERY_SPEC_FILES)) expect(bundle.files.has(path), path).toBe(true);
     const text = [...bundle.files].filter(isPayloadText);
@@ -338,7 +353,7 @@ describe('shipped payload text', () => {
     }
   });
 
-  it('[AC:spec-1-2] every-spec and on-demand words stay under their own caps', () => {
+  it('[AC:spec-1-2] [AC:spec-7-2] every-spec and on-demand words stay under their own caps', () => {
     const { everySpec, onDemand, over } = splitCap(treeBundle());
     console.log(`every-spec words: ${everySpec} (cap ${EVERY_SPEC_CAP}, ${EVERY_SPEC_CAP - everySpec} spare)`);
     console.log(`on-demand words: ${onDemand} (cap ${ON_DEMAND_CAP}, ${ON_DEMAND_CAP - onDemand} spare)`);

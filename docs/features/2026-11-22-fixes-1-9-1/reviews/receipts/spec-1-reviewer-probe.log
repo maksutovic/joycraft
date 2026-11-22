@@ -1,0 +1,23 @@
+A trailing // after a string path: {"listed":"tests/p1.test.ts:1","applyStatus":0,"next":"1 test still names `docs/features/x`: `tests/p1.test.ts:2`. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.","called":"needs change","verdict":"ok"}
+A /* */ block body line without a leading *: {"listed":"tests/p2.test.ts:2","applyStatus":0,"next":"1 test still names `docs/features/x`: `tests/p2.test.ts:2`. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.","called":"needs change","verdict":"false needs-change (safe direction)"}
+A code after a closed /* */ on the same line: {"listed":"tests/p3.test.ts:1","applyStatus":0,"next":"The listed tests name `docs/features/x` only in comments and need no change. Leave their paths as they are.","called":"comment-only","verdict":"FALSE COMMENT-ONLY (dangerous)"}
+A python # comment then string: {"listed":"tests/test_p4.py:1","applyStatus":0,"next":"1 test still names `docs/features/x`: `tests/test_p4.py:2`. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.","called":"needs change","verdict":"ok"}
+A python # comment only: {"listed":"tests/test_p5.py:1","applyStatus":0,"next":"The listed tests name `docs/features/x` only in comments and need no change. Leave their paths as they are.","called":"comment-only","verdict":"ok"}
+A shell # comment then string: {"listed":"tests/p6.test.sh:1","applyStatus":0,"next":"1 test still names `docs/features/x`: `tests/p6.test.sh:2`. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.","called":"needs change","verdict":"ok"}
+A URL with // inside a string, then the path: {"listed":"tests/p7.test.ts:1","applyStatus":0,"next":"1 test still names `docs/features/x`: `tests/p7.test.ts:1`. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.","called":"needs change","verdict":"ok"}
+A JS private class field #dir: {"listed":"tests/p8.test.ts:2","applyStatus":0,"next":"The listed tests name `docs/features/x` only in comments and need no change. Leave their paths as they are.","called":"comment-only","verdict":"FALSE COMMENT-ONLY (dangerous)"}
+A Markdown bullet inside a template-literal fixture: {"listed":"tests/p9.test.ts:2","applyStatus":0,"next":"The listed tests name `docs/features/x` only in comments and need no change. Leave their paths as they are.","called":"comment-only","verdict":"FALSE COMMENT-ONLY (dangerous)"}
+B preview status root/sub: [0,0,""]
+B preview plans equal: true
+B apply from sub: {"status":0,"stderr":"","destination":"docs/archive/x","movedAtRoot":true,"strayInSub":false,"next":"1 test still names `docs/features/x`: `tests/c.test.ts:1`. Change the folder path in each test that reads it, run the gate, and commit the edits with the move."}
+C r1 only: {"status":0,"missing":["docs/reviews/x/gone-review-1.txt"]}
+C r1,r2: {"status":0,"missing":["docs/reviews/x/gone-review-1-r2.txt"]}
+C r2,r3: {"status":0,"missing":["docs/reviews/x/gone-review-1-r3.txt"]}
+C r9,r10: {"status":0,"missing":["docs/reviews/x/gone-review-1-r10.txt"]}
+C other spec review-12 only: {"status":0,"missing":[]}
+D owner-instruction "   ": {"status":1,"stderr":"Archive stopped: --owner-instruction needs the owner's words as its value; the text cannot start with --"}
+D owner-instruction "": {"status":1,"stderr":"Archive stopped: --owner-instruction needs the owner's words as its value; the text cannot start with --"}
+D owner-instruction "\t\n": {"status":1,"stderr":"Archive stopped: --owner-instruction needs the owner's words as its value; the text cannot start with --"}
+D owner-instruction "--apply": {"status":1,"stderr":"Archive stopped: --owner-instruction needs the owner's words as its value; the text cannot start with --"}
+D duplicate owner-instruction: {"status":1,"stderr":"Archive stopped: Invalid or duplicate argument: --owner-instruction"}
+D folder still in place, tree clean: [true,""]

@@ -1,0 +1,243 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "d11ccbd6ee0fcea546384f4cbb8a51f2ed132010",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+    "specId": 7,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-1/specs/07-pin-every-spec-list.md",
+    "criteria": [
+      {
+        "id": "spec-7-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/07-pin-every-spec-list.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-7-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/07-pin-every-spec-list.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "tests",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "6985ef2651d8eac269d1e7bffb2d1fc96288ce9609704843394ebd82d310cbe9",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "6d55a64f3665f7846fcc505c27323dcd93ec03caf95208cde3682edc60beb0b6",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/07-pin-every-spec-list.md",
+        "kind": "requirement",
+        "sha256": "60f2acabee042f8764527bb9fceb19fe692920480941ffbb75007e6119fb841e",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "d501f506737aee40417420ef62c2a30fd65c1e6ce0ef83f2004bd5d66e380f8e",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          7
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+          "anchors": [
+            "tests",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "f6f25142002e744d658a1f1b0f500f7187214d3b3485dbd77cd21135566155c6"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "aac956ec165e274c8"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a516d217365c667dd"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-7-1-pinned-list",
+      "subjectIdentity": "f6f25142002e744d658a1f1b0f500f7187214d3b3485dbd77cd21135566155c6",
+      "criteria": [
+        "spec-7-1"
+      ],
+      "representativeInput": "literal 12-path toEqual at tests/payload-guard.test.ts:329-343 in the [AC:spec-1-1] [AC:spec-7-1] test (:328)",
+      "expected": "The sorted keys of EVERY_SPEC_FILES equal the literal 12 paths; removing or adding one entry fails that assertion.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-7-reviewer-focused-20261122T070752046Z-88623-1.log",
+              "sha256": "65d4c16364f2eafcce9a3513a93c6db11cdce5a5e2c26c194df03a2d4144bb1e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "16 of 16 tests pass, including [AC:spec-1-1] [AC:spec-7-1]. The literal list holds exactly the 12 paths the spec names, sorted on both sides."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-7-reviewer-probe.log",
+              "sha256": "e95751a4f78c9a60bb64d765204469d2f992b711d5376bc79dfa02d13528a344"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-7-reviewer-probe.sh.txt",
+              "sha256": "e94dfafcdee518fbde67e95f0330f2f4a4062dd22e95508e4105a3af2dc141fb"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-7-reviewer-probe.sh.txt"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Scratch copies in tests/ (deleted after; git status clean for tests/). (a) HEAD test with .claude/agents/joycraft-reviewer.md removed from EVERY_SPEC_FILES: the [AC:spec-7-1] test fails at the pinned toEqual (line 329); its 322 words move to on-demand (every-spec 11855, on-demand 20883) and [AC:spec-1-2] still passes. (b) The pre-spec test with the same removal: [AC:spec-1-1] and [AC:spec-1-2] pass; only [AC:spec-1-3] fails, by chance (on-demand headroom fell to 280 < 600). (c) HEAD test with a 13th entry (setup.md): the pinned toEqual fails at line 331. Real file never edited, so no restore was needed."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-7-2-nothing-else",
+      "subjectIdentity": "f6f25142002e744d658a1f1b0f500f7187214d3b3485dbd77cd21135566155c6",
+      "criteria": [
+        "spec-7-2"
+      ],
+      "representativeInput": "[AC:spec-1-2] [AC:spec-7-2] cap test at tests/payload-guard.test.ts:356",
+      "expected": "Caps and other tests unchanged and green; printed counts equal the counts before this spec.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-7-reviewer-focused-20261122T070752046Z-88623-1.log",
+              "sha256": "65d4c16364f2eafcce9a3513a93c6db11cdce5a5e2c26c194df03a2d4144bb1e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Printed: every-spec 12177 (cap 12256, 79 spare), on-demand 20561 (cap 21163, 602 spare). Diff 1780c88..429d63f on tests/payload-guard.test.ts: two test titles gain a tag and one assertion block is added; no cap, helper or other test changes. git diff 1780c88 HEAD -- payload/ is empty."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-7-reviewer-probe.log",
+              "sha256": "e95751a4f78c9a60bb64d765204469d2f992b711d5376bc79dfa02d13528a344"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-7-reviewer-probe.sh.txt",
+              "sha256": "e94dfafcdee518fbde67e95f0330f2f4a4062dd22e95508e4105a3af2dc141fb"
+            }
+          ],
+          "command": {
+            "argv": [
+              "sh",
+              "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-7-reviewer-probe.sh.txt"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Probe (d): the pre-spec test (429d63f^) on the same payload prints every-spec 12177 and on-demand 20561, the same counts, 16 of 16 pass."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-testing-review-read-every-review",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-verify/SKILL.md:45",
+      "summary": "Pin vs the real load set: 11 of the 12 paths are named unconditionally per spec by the six skill/agent files or the packet readFirst (dispatch-preflight.mjs:400: testing skill, testing.md, completion.md, dispatch.md, worktrees.md; decompose names workflow.md#commitment-and-queue at :11). But testing-review.md is also named unconditionally: verify SKILL.md:45 and joycraft-reviewer.md:29-30 say to judge each changed test file by #test-changes, joycraft-implementer.md:30 and decompose SKILL.md:31 name it too, and every spec carries a Test changes section. It stays on-demand (the [AC:spec-1-1] test asserts it is on-demand). Moving it would put the every-spec count far over its cap.",
+      "assumption": "The 1.9.0 split-cap decision classed the test review on-demand, and this spec forbids changing the split rule; the pin matches that decision, not a fresh crawl."
+    },
+    {
+      "id": "f2-gates-md-named-by-no-every-spec-file",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/payload-guard.test.ts:53",
+      "summary": ".joycraft/references/gates.md is named by no every-spec skill or agent file, by the packet readFirst, or by gate.mjs; only setup.md:314 and the entry skill (:112) link it. Its every-spec reason (\"the gate check and Stop hook run on every spec once gates are on\") is runtime behavior, not text an agent reads per spec. The pin keeps it every-spec as the spec says.",
+      "assumption": "Keeping it every-spec is the stricter (lower-cap) reading and matches the spec."
+    },
+    {
+      "id": "f3-trace-unknown-tags",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/payload-guard.test.ts:159",
+      "summary": "trace reports the vendored-* and spec-1-* tags as unknownTags for this queue; expected, since they belong to earlier features."
+    }
+  ],
+  "limits": [
+    "Gate not run by the reviewer (spec review runs only tests/payload-guard.test.ts).",
+    "Test changes: test-changes.mjs (base 1780c88) declares tests/payload-guard.test.ts class 1 with no undeclared, added or rewritten files; the diff only adds a tag pair and one assertion. Class 1 needs no kill-set fault proof; the reviewer shares the coordinator tree, so it ran no evidence.mjs --patch faults and used scratch copies of the test file instead.",
+    "Probe receipts carry revision 9c955ac (dirty: other agents' untracked receipts); spec 7 inputs are unchanged between d11ccbd and that revision."
+  ],
+  "createdAt": "2026-11-22T07:09:53.605Z"
+}

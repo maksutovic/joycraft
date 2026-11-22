@@ -1,0 +1,33 @@
+ok   gate="pnpm build" ran=["pnpm","run","build"] want=refuse got=refuse :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm build`; a spec review runs the spec's own focused tests, so rerun wi
+ok   gate="pnpm run build" ran=["pnpm","build"] want=refuse got=refuse :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm run build`; a spec review runs the spec's own focused tests, so reru
+ok   gate="npm test" ran=["npm","run","test"] want=refuse got=refuse :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `npm test`; a spec review runs the spec's own focused tests, so rerun with
+ok   gate="yarn verify" ran=["yarn","run","verify"] want=refuse got=refuse :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `yarn verify`; a spec review runs the spec's own focused tests, so rerun w
+ok   gate="npx vitest run" ran=["vitest","run"] want=refuse got=refuse :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `npx vitest run`; a spec review runs the spec's own focused tests, so reru
+ok   gate="vitest run" ran=["npm","exec","vitest","run"] want=refuse got=refuse :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `vitest run`; a spec review runs the spec's own focused tests, so rerun wi
+ok   gate="vitest run" ran=["sh","-c","npx vitest run"] want=refuse got=refuse :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `vitest run`; a spec review runs the spec's own focused tests, so rerun wi
+ok   gate="vitest run" ran=["npx","vitest","run","tests/a.test.ts"] want=pass got=pass
+ok   gate="vitest run" ran=["pnpm","exec","vitest","run","tests/a.test.ts"] want=pass got=pass
+ok   gate="pnpm test" ran=["pnpm","run","test","tests/a.test.ts"] want=pass got=pass
+ok   gate="pnpm test" ran=["pnpm","test","tests/a.test.ts"] want=pass got=pass
+ok   gate="pnpm test && pnpm typecheck" ran=["pnpm","test","tests/a.test.ts"] want=pass got=pass
+ok   gate="pnpm test && pnpm typecheck" ran=["pnpm","run","test"] want=pass got=pass
+ok   gate="pnpm build" ran=["npm","run","build"] want=pass got=pass
+ok   gate="pnpm run" ran=["pnpm","run"] want=refuse got=refuse :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm run`; a spec review runs the spec's own focused tests, so rerun with
+ok   gate="vitest run" ran=["pnpm","run","vitest","run"] want=pass got=pass
+ok   gate="run" ran=["npx","run"] want=refuse got=refuse :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `run`; a spec review runs the spec's own focused tests, so rerun with thos
+ok   gate="vitest" ran=["npx","vitest","run"] want=pass got=pass
+done-path accept first: 0 {
+  "status": "done",
+  "unchanged": false,
+  "acceptedReport": {
+    "path": "d
+done-path same report: 0 {
+  "status": "done",
+  "unchanged": true,
+  "acceptedReport": {
+    "path": "do
+done-path different gate report: 1 :: Completion stopped: Done spec already has a different accepted report; it cannot be silently replaced
+done-path different focused report: 1 :: Completion stopped: Done spec already has a different accepted report; it cannot be silently replaced
+check-report on done spec with gate report: 2 :: Dispatch stopped: Report flows[0].observations[0] ran the recorded tests.gate command `pnpm verify`; a spec review runs the spec's own focused tests, so rerun w
+PROBE: all cases as expected
+joycraft-evidence: {"wallMs":3672,"load":[4.30712890625,4.30712890625],"cores":14,"loaded":false,"argv":["node",".joycraft/local/probes/spec-2-probe.mjs"],"exitCode":0,"timedOut":false,"revision":"646a904b17694775b1c545b1bc1a79b1b1fb10a4","dirty":true}

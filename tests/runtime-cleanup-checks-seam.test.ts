@@ -108,3 +108,19 @@ describe('checks seam line forms (spec 27)', () => {
     expect(readFileSync(join(joycraft, 'references', 'settings.md'), 'utf8')).toContain('line output format');
   });
 });
+
+// Spec: docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md
+describe('checks: 1.9.1 cleanup fixes', () => {
+  it('[AC:spec-3-4] a missing tool in a pipeline that exits 0 is skipped as not found; a check with a finding is unchanged', () => {
+    const root = project('checks:\n  - name: piped\n    run: missing-tool-xyz | cat\n  - name: found\n    run: missing-tool-xyz | sh ok.sh\n');
+    put(root, 'ok.sh', 'echo "docs/context/a.md:3: Use the active voice."\n');
+    const out = node(root, [runtime('cleanup.mjs'), 'tidy']);
+    const json = JSON.parse(out.stdout);
+    expect(json.skipped.filter((item: { check: string }) => item.check === 'piped')).toEqual([{ check: 'piped', reason: 'Command not found: missing-tool-xyz | cat' }]);
+    expect(json.findings.filter((item: { check: string }) => item.check === 'piped')).toEqual([]);
+    expect(json.skipped.filter((item: { check: string }) => item.check === 'found')).toEqual([]);
+    expect(json.findings.filter((item: { check: string }) => item.check === 'found')).toEqual([
+      expect.objectContaining({ path: 'docs/context/a.md', line: 3, detail: 'Use the active voice.' }),
+    ]);
+  });
+});

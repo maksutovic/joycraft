@@ -1,0 +1,22 @@
+#!/bin/sh
+# Spec 7 reviewer probe (fx-reviewer-7). Run from the project root as: sh <this file>
+# Scratch copies of tests/payload-guard.test.ts only; the real test file is never edited.
+# A: HEAD test with '.claude/agents/joycraft-reviewer.md' removed from EVERY_SPEC_FILES (expect FAIL at the pin).
+# B: pre-spec test (429d63f^) with the same removal (shows the old guard passed: the words moved to on-demand silently).
+# C: HEAD test with a 13th entry added (expect FAIL at the pin).
+# D: pre-spec test unchanged (printed counts before this spec).
+T=tests/payload-guard.test.ts
+git show 429d63f^:$T > tests/zz-spec7-before.test.ts
+grep -v "^  '.claude/agents/joycraft-reviewer.md': 'each reviewer" $T > tests/zz-spec7-a-removed.test.ts
+grep -v "^  '.claude/agents/joycraft-reviewer.md': 'each reviewer" tests/zz-spec7-before.test.ts > tests/zz-spec7-b-before-removed.test.ts
+perl -pe "s|^(  '.joycraft/references/worktrees.md': 'every implementer)|  '.joycraft/references/setup.md': 'probe extra',\n\$1|" $T > tests/zz-spec7-c-added.test.ts
+for f in a-removed b-before-removed c-added before; do
+  echo "=== probe $f"
+  grep -c "joycraft-reviewer.md': 'each reviewer" tests/zz-spec7-$f.test.ts
+  grep -c "setup.md': 'probe extra'" tests/zz-spec7-$f.test.ts
+  pnpm test tests/zz-spec7-$f.test.ts 2>&1 | grep -E "words:|✓|×|FAIL|passed|failed|toEqual|Expected|Received|^\s+[-+] " | sed 's/\x1b\[[0-9;]*m//g' | head -40
+  echo "exit-section-end $f"
+done
+rm -f tests/zz-spec7-before.test.ts tests/zz-spec7-a-removed.test.ts tests/zz-spec7-b-before-removed.test.ts tests/zz-spec7-c-added.test.ts
+git status --short tests/
+echo probe-done

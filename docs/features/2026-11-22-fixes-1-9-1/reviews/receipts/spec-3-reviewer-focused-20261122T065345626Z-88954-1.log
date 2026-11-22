@@ -1,0 +1,36 @@
+
+> joycraft@1.9.0 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-cleanup-tidy.test.ts tests/runtime-cleanup-age-out.test.ts tests/runtime-cleanup-checks-seam.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-cleanup-checks-seam.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 3639[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: in joycraft.yaml[2m > [22m[AC:spec-10-2] each path:line: message output line is a finding with the check name; other lines are ignored [33m 387[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: in joycraft.yaml[2m > [22m[AC:spec-10-3] a command not found is one skipped entry and tidy exits 0 [33m 377[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: review fixes[2m > [22m[review-a-5] stderr lines count, stack-trace lines do not [33m 383[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: review fixes[2m > [22m[review-a-5] a check past its timeout is skipped, even when it pipes [33m 1398[2mms[22m[39m
+   [33m[2m✓[22m[39m checks seam line forms (spec 27)[2m > [22m[AC:spec-27-16] reads the markdownlint-cli2 form and project-absolute paths; host:port lines are not findings [33m 386[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: 1.9.1 cleanup fixes[2m > [22m[AC:spec-3-4] a missing tool in a pipeline that exits 0 is skipped as not found; a check with a finding is unchanged [33m 422[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-tidy.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 5973[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] a feature branch uses the merge base with main [33m 676[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] a trunk-only repo uses the last 7 days, approximate [33m 808[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] a trunk-only repo uses at most 100 commits when the 7 days hold more [33m 397[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] after a squash merge the branch still measures from its fork point; --base overrides [33m 858[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-2] a shallow clone and a plain folder each give one skipped entry and exit 0 [33m 308[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy reports[2m > [22m[AC:spec-2-3] new-doc groups added Markdown by folder, outside features and archive [33m 439[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy reports[2m > [22m[AC:spec-2-4] at most 10 findings, context pages first, then more [33m 406[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy review fixes[2m > [22m[review-a-1] removing a 2.4 MB lockfile and a 2.4 MB source file does not overflow the Git buffer [33m 525[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy review fixes[2m > [22m[review-a-7] a detached HEAD at the trunk tip reads the recent window, like the trunk [33m 460[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy 1.9.1 cleanup fixes[2m > [22m[AC:spec-3-1] new-doc skips a backlog* file under the docs root, in any case; other new docs still count [33m 388[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy 1.9.1 cleanup fixes[2m > [22m[AC:spec-3-5] tidy run from a subfolder finds the project root: same findings, and its checks: run [33m 708[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-age-out.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 7276[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out review fixes[2m > [22m[review-a-1] about 3 MB of log names does not overflow the Git buffer [33m 4195[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out review 9 fixes[2m > [22m[review-9-3] a doc changed in a merge counts as changed [33m 316[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m39 passed[39m[22m[90m (39)[39m
+[2m   Start at [22m 22:53:50
+[2m   Duration [22m 7.46s[2m (transform 58ms, setup 0ms, collect 89ms, tests 16.89s, environment 0ms, prepare 104ms)[22m
+
+joycraft-evidence: {"wallMs":8089,"load":[5.6533203125,5.6064453125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-cleanup-tidy.test.ts","tests/runtime-cleanup-age-out.test.ts","tests/runtime-cleanup-checks-seam.test.ts"],"exitCode":0,"timedOut":false,"revision":"c3194ade42056c7117379d6daa57b0074ce03317","dirty":false}

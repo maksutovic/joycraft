@@ -89,4 +89,12 @@ describe('wave-gate and CI-once text', () => {
     expect(page).toContain('git-ignored or in a feature folder');
     expect(page).toMatch(/A receipt on an earlier revision still counts when every path changed since is under the docs root.*Any other changed path needs the gate again\./);
   });
+
+  // Spec: docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md
+  it('[AC:spec-5-3] the Clean-tree item lists the record extensions, never-record manifests and the .mjs.txt probe suffix', () => {
+    const page = readFileSync(join(installed(), 'delivery.md'), 'utf8').replace(/\s+/g, ' ');
+    const item = page.match(/\*\*Clean tree:\*\*.*?(?= - \*\*)/)?.[0] ?? '';
+    for (const text of ['.md .json .log .txt .diff .patch .yaml .yml', '`package.json`', '`tsconfig*.json`', 'lockfile', '.mjs.txt']) expect(item).toContain(text);
+    expect(item).toContain('.patch');
+  });
 });

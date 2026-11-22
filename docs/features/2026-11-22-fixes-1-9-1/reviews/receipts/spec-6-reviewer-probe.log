@@ -1,0 +1,36 @@
+== words at 7e13c91~1
+[22m[39mevery-spec words: 12177 (cap 12256, 79 spare)
+on-demand words: 20562 (cap 21163, 601 spare)
+[2m      Tests [22m [1m[32m16 passed[39m[22m[90m (16)[39m
+== words at 7e13c91
+[22m[39mevery-spec words: 12177 (cap 12256, 79 spare)
+on-demand words: 20561 (cap 21163, 602 spare)
+[2m      Tests [22m [1m[32m16 passed[39m[22m[90m (16)[39m
+== fault: revert cleanup.md to 7e13c91~1
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m21 passed[39m[22m[90m (22)[39m
+== fault: revert setup.md to 7e13c91~1
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m21 passed[39m[22m[90m (22)[39m
+== fault: revert testing-review.md to 7e13c91~1
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m21 passed[39m[22m[90m (22)[39m
+== fault: revert testing-page.md to 7e13c91~1
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m21 passed[39m[22m[90m (22)[39m
+== fault: drop 'never a fixed delay'
+[31m     → expected '3. **No real time.** Tests use `<cloc…' to contain 'never a fixed delay'[39m
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[31m[1mAssertionError[22m: expected '3. **No real time.** Tests use `<cloc…' to contain 'never a fixed delay'[39m
+Received: [31m"[7m3. **No real time.** Tests use `<clock or virtual-time helper>` and wait for a signal, a short[27m delay[7m.[27m"[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (6)[39m
+== fault: 'never on CI' -> 'or on CI'
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (6)[39m
+== cut-line cross-checks in HEAD payload
+127:--name-only` against its base lists no other file. A seam or a fix that the
+313:change credentials, install dependencies, or replace the user's workflow.
+260:Use a gitignored file only when its path appears in an explicit project
+246:guidance in the existing `docs/context/worktrees.md` home or another mapped
+298:Outside setup's interview, ask only for missing human knowledge that
+joycraft-evidence: {"wallMs":9238,"load":[26.86181640625,23.580078125],"cores":14,"loaded":true,"argv":["bash","docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-6-reviewer-probe.sh.txt"],"exitCode":0,"timedOut":false,"revision":"d11ccbd6ee0fcea546384f4cbb8a51f2ed132010","dirty":true}

@@ -1,0 +1,22 @@
+// Spec 5 reviewer probe: replays the docsOnlySince path rule from payload/.joycraft/runtime/delivery.mjs.
+import { readFileSync } from 'node:fs';
+const src = readFileSync('payload/.joycraft/runtime/delivery.mjs', 'utf8');
+const manifest = new RegExp(...(() => { const m = src.match(/const manifest = \/(.*)\/(\w*);/); return [m[1], m[2]]; })());
+const docs = 'docs', records = ['docs/features', 'docs/archive'];
+const isRecordPath = (path) => {
+  if (!path.startsWith(`${docs}/`)) return false;
+  if (manifest.test(path.split('/').at(-1))) return false;
+  if (records.some(f => path.startsWith(`${f}/`))) return /\.(?:md|json|log|txt|diff|patch|ya?ml)$/i.test(path);
+  return /\.(?:md|json)$/i.test(path);
+};
+const cases = [
+  'docs/site/package.json', 'docs/site/Package.JSON', 'docs/site/tsconfig.json', 'docs/site/tsconfig.build.json',
+  'docs/site/jsconfig.json', 'docs/site/package.json5', 'docs/site/node_modules/x/package.json',
+  'docs/site/my-package.json', 'docs/site/package.json.md', 'docs/site/data.json', 'docs/site/deno.json',
+  'docs/site/composer.json', 'docs/features/f/pnpm-lock.yaml', 'docs/features/f/pnpm-workspace.yaml',
+  'docs/features/f/bun.lock', 'docs/features/f/bun.lockb', 'docs/features/f/deno.lock', 'docs/features/f/yarn.lock',
+  'docs/archive/f/npm-shrinkwrap.json', 'docs/features/f/probe.mjs', 'docs/features/f/probe.mjs.txt',
+  'docs/features/f/tsconfig.json.txt', 'docs/features/f/notes.md', 'docs/features/f/.yarnrc.yml',
+];
+console.log('manifest regex:', manifest);
+for (const c of cases) console.log(`${isRecordPath(c) ? 'record (keeps receipt)' : 'code (needs gate)    '}  ${c}`);

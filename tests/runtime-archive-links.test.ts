@@ -125,4 +125,14 @@ describe('archive rewrites live links', () => {
     expect(readFileSync(join(root, 'docs/guide.md'), 'utf8')).toBe('[x](archive/x/feature/brief.md)\n');
     expect(result.links.rewritten).toEqual([{ path: 'docs/guide.md', line: 1, from: 'features/x/brief.md', to: 'archive/x/feature/brief.md' }]);
   });
+
+  it('[AC:spec-1-1] a .MD and a .markdown file are rewritten like .md; a .txt that names the folder is listed, unedited', () => {
+    const txt = 'See docs/features/x/brief.md.\n';
+    const root = fixture({ 'docs/guide.MD': 'See [b](features/x/brief.md).\n', 'docs/notes.markdown': 'See [b](features/x/brief.md).\n', 'docs/plain.txt': txt });
+    const result = apply(root);
+    for (const file of ['docs/guide.MD', 'docs/notes.markdown']) expect(readFileSync(join(root, file), 'utf8'), file).toBe('See [b](archive/x/feature/brief.md).\n');
+    expect(result.links.rewritten.map((item: { path: string }) => item.path).sort()).toEqual(['docs/guide.MD', 'docs/notes.markdown']);
+    expect(result.links.namedInOtherFiles).toContain('docs/plain.txt');
+    expect(readFileSync(join(root, 'docs/plain.txt'), 'utf8')).toBe(txt);
+  });
 });

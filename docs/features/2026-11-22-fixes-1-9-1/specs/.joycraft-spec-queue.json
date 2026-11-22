@@ -1,0 +1,856 @@
+{
+  "schemaVersion": 1,
+  "feature": "fixes-1-9-1",
+  "specs": [
+    {
+      "id": 1,
+      "file": "01-archive-fixes.md",
+      "depends_on": [
+        3
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "archive",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "archive-list-kill"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/archive.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-archive-links.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-as-is.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-named-files.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-ignore.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-archive-tests.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-1-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-3",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-4",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-5",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-6",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-7",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T07:11:21.820Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-1.report.json",
+        "sha256": "6496178b107a0b631c807b9ae6c9e87b8b784f873ccf8ee628722012363d9ffa"
+      }
+    },
+    {
+      "id": 2,
+      "file": "02-report-gate-aliases.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "completion",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/specs/02-report-gate-aliases.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/completion.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-report-gate.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-2-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/02-report-gate-aliases.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/02-report-gate-aliases.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:49:26.509Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-2.report.json",
+        "sha256": "aceec7eed855d35a7acabdc5b2a875bb90965c0df1b068e7301f3c41fa13be0b"
+      }
+    },
+    {
+      "id": 3,
+      "file": "03-cleanup-fixes.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "cleanup",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-cleanup-tidy.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-cleanup-age-out.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-cleanup-checks-seam.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-3-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-3",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-4",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-5",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:53:11.852Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-3.report.json",
+        "sha256": "5485603d5d58b5f3dcd615cb9bd8406e6a845035976fd9b629a00fbaae9e17a8"
+      }
+    },
+    {
+      "id": 4,
+      "file": "04-gate-matcher.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "queue-check",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/specs/04-gate-matcher.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/queue-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-queue-check-gate.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-4-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/04-gate-matcher.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/04-gate-matcher.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-3",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/04-gate-matcher.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:57:02.479Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-4.report.json",
+        "sha256": "c40c9d8f64f1453d9e3a3d76c4225b3293bae15af413d8733ca8df3f287a7c85"
+      }
+    },
+    {
+      "id": 5,
+      "file": "05-docs-root-manifests.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "delivery",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "se-docs-root-manifests"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/delivery.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/delivery.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-wave-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-wave-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-5-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-3",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-4",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/05-docs-root-manifests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T07:01:06.056Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-5.report.json",
+        "sha256": "5f2af84b02920c82ec422563c22378c7b5e6ceb417f8395733dc6ea39e56b2a0"
+      }
+    },
+    {
+      "id": 6,
+      "file": "06-reference-text.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "text",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/specs/06-reference-text.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/references/cleanup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-review.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/testing-page.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/drift-tidy-text.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-fault-proof.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-sota-page.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-6-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/06-reference-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/06-reference-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-3",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/06-reference-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-4",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/06-reference-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-5",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/06-reference-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-6",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/06-reference-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T07:05:30.938Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-6.report.json",
+        "sha256": "427950da5d346b1c67bc15a7bdfc54d9530805b3bd7358f2afbe6bfd442a6616"
+      }
+    },
+    {
+      "id": 7,
+      "file": "07-pin-every-spec-list.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "tests",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/specs/07-pin-every-spec-list.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-7-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/07-pin-every-spec-list.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-7-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/07-pin-every-spec-list.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T07:07:18.811Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-7.report.json",
+        "sha256": "9ab30e9d51e224c9ee8c6c8260b97b04049e1f8d5d244b3664a5f5d1adcb6cb3"
+      }
+    },
+    {
+      "id": 9,
+      "file": "09-comment-detection.md",
+      "depends_on": [
+        1
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "archive"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-archive-named-files.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-ignore.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-9-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-3",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T07:20:34.423Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-9.report.json",
+        "sha256": "29d1edbfaebffcdfe51dda1c14f57d355918c904e4bb8c42f573fa260fa5ded8"
+      }
+    },
+    {
+      "id": 8,
+      "file": "08-release-1-9-1.md",
+      "depends_on": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        9
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "release",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "se-followups"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-1/specs/08-release-1-9-1.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "package.json",
+            "kind": "code"
+          },
+          {
+            "path": "src/joycraft-release.json",
+            "kind": "code"
+          },
+          {
+            "path": "CHANGELOG.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/public-docs.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/release-preparation.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-8-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/08-release-1-9-1.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-8-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/specs/08-release-1-9-1.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-22T07:24:59.277Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-8.report.json",
+        "sha256": "1a67d5a4f09f2b1b15d9731e2884488f5ee4c1cbb79ded5b503964c80bac6317"
+      }
+    }
+  ]
+}

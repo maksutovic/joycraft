@@ -220,4 +220,79 @@ describe('archive owner check of spec 13', () => {
       expect(later.output).toMatchObject({ status: 'archived', unchanged: true });
     });
   }
+
+  it('[AC:spec-1-5] next names only tests that name the folder outside a comment, at that line; namedFiles matches the preview', () => {
+    const spec = `// Spec: ${source}/specs/01-a.md\n`;
+    const check = (extra: Record<string, string>) => {
+      const root = fixture({ extra });
+      // The fixture's own two-tier test names the folder in code; drop it so only `extra` counts.
+      rmSync(join(root, 'tests/two-tier.test.mjs')); git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'only extra');
+      const preview = listed(root);
+      const result = archive(root, '--apply');
+      expect(result.status, result.stderr).toBe(0);
+      return { preview, next: result.output.next as string, root };
+    };
+    // (a) two tests that name the folder only in `// Spec:` lines.
+    const a = check({ 'tests/a.test.ts': spec, 'tests/b.test.ts': `${spec}import x from 'y';\n` });
+    expect(a.next).toContain('no path change looks needed');
+    expect(a.next).not.toContain('Change the folder path');
+    expect(a.preview.filter((file: { test: boolean }) => file.test).map((file: { path: string }) => file.path)).toEqual(['tests/a.test.ts', 'tests/b.test.ts']);
+    // (b) one comment-only test plus one whose path sits in a string.
+    const b = check({ 'tests/a.test.ts': spec, 'tests/c.test.ts': `import x from 'y';\nconst at = '${source}/brief.md';\n` });
+    expect(b.next).toMatch(/^1 test still names `docs\/features\/x`: `tests\/c\.test\.ts:2`\./);
+    expect(b.next).not.toContain('tests/a.test.ts');
+    // (c) a `// Spec:` line 1 and a string path at line 9.
+    const c = check({ 'tests/d.test.ts': `${spec}${'// more\n'.repeat(7)}const at = '${source}/brief.md';\n` });
+    expect(c.next).toContain('`tests/d.test.ts:9`');
+    expect(c.next).not.toContain('tests/d.test.ts:1`');
+    for (const { preview } of [a, b, c]) {
+      const named = preview.find((file: { path: string }) => file.path.startsWith('tests/'));
+      expect(named.line).toBe(1);
+      expect(named.text).toBe(spec.trim());
+    }
+  });
+
+  /** After a real --apply with only `extra` as tests: the `next` message. */
+  const nextAfterApply = (extra: Record<string, string>) => {
+    const root = fixture({ extra });
+    rmSync(join(root, 'tests/two-tier.test.mjs')); git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'only extra');
+    const result = archive(root, '--apply');
+    expect(result.status, result.stderr).toBe(0);
+    expect(existsSync(join(root, source))).toBe(false);
+    return result.output.next as string;
+  };
+
+  it('[AC:spec-9-1] only sure comments are comment-only; a closed /* */ before code, a .ts #field and a bare * line are code', () => {
+    const code: [string, string][] = [
+      ['tests/p1.test.ts', `/* x */ const p = '${source}/a';\n`],
+      ['tests/p2.test.ts', `class A {\n  #dir = '${source}';\n}\n`],
+      ['tests/p3.test.ts', `const md = \`\n* [b](${source}/c.md)\n\`;\nexport { md };\n`],
+    ];
+    for (const [file, body] of code) {
+      const lineNo = body.split('\n').findIndex(each => each.includes(source)) + 1;
+      const next = nextAfterApply({ [file]: body });
+      expect(next, file).toMatch(/^1 test still names/);
+      expect(next, file).toContain(`\`${file}:${lineNo}\``);
+    }
+    const comments: Record<string, string> = {
+      'tests/test_q1.py': `# ${source}\nimport os\n# see ${source}/brief.md\n`,
+      'tests/q2.test.ts': `// Spec: ${source}/x.md\nexport {};\n`,
+      'tests/q3.test.ts': `/**\n * Reads nothing; documented in\n * ${source}/brief.md\n */\nexport {};\n`,
+    };
+    for (const [file, body] of Object.entries(comments)) {
+      const next = nextAfterApply({ [file]: body });
+      expect(next, file).toContain('only in comments');
+      expect(next, file).not.toContain('still name');
+    }
+    const all = nextAfterApply(comments);
+    expect(all).toContain('only in comments');
+    expect(all).not.toContain('still name');
+  });
+
+  it('[AC:spec-9-2] when every listed test names the folder only in comments, next says to run the gate', () => {
+    const next = nextAfterApply({ 'tests/a.test.ts': `// Spec: ${source}/specs/01-a.md\n`, 'tests/test_b.py': `# ${source}\n` });
+    expect(next).toContain('no path change looks needed');
+    expect(next).toContain('run the gate');
+    expect(next).not.toContain('Leave their paths as they are');
+  });
 });
