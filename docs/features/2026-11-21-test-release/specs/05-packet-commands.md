@@ -1,6 +1,6 @@
 ---
 id: 5
-status: in-review
+status: done
 ---
 # Task startup prints the focused command and the worker's commands ready to paste
 

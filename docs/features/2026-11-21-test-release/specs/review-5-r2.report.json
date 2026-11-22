@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "7f7a27bf65ad8c436d0adb9a6f2fad383c6918f9",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 5,
+    "specPath": "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+    "criteria": [
+      {
+        "id": "spec-5-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-5-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-5-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "spec-tier",
+            "worker-commands",
+            "context-and-authorization",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "f37542e5fee7bcca264fb85f3deb316d6a04bf842f5c669fccf7d6e7e6cd9d2a",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "86b188671804d18d92a47de59eed3c1c537badeaf3e19e2fb058c9d5fec69786",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+        "kind": "requirement",
+        "sha256": "a15d9ea46daedd21e2f9e5cc29cdb8ecd64193c5bcfbd8db32c5f4e08925a727",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+        "kind": "code",
+        "sha256": "a3e02acb18a14e441736f06600d155e4ff6df00e4c62fbc58c8a9a573592db69",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-dispatch-commands.test.ts",
+        "kind": "check",
+        "sha256": "82e9a953b355feeb068986448966f4bcb2d553e48eef1e2f906a6231c3797a8f",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2,
+          5
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "spec-tier",
+            "worker-commands",
+            "context-and-authorization",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "90bacfb9a46a17468cb93960da23b43b5e8e9393815f7d1dd33830592a25a754"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a465133b4c1fadef3"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "aaebc482071bae995"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-5-1-focused",
+      "subjectIdentity": "90bacfb9a46a17468cb93960da23b43b5e8e9393815f7d1dd33830592a25a754",
+      "criteria": [
+        "spec-5-1"
+      ],
+      "representativeInput": "tests.focused \"pnpm test {files}\" / \"node {files}\" with check inputs in queue order, both roles; a template without {files}; committed HEAD bytes (payload/.joycraft/runtime/dispatch-start.mjs:89-108) installed into fixtures from a git-archive copy",
+      "expected": "commands.focused = {command, argv} with {files} replaced by present check inputs in queue order, files appended when absent, for both roles",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-tests.log",
+              "sha256": "a2654a7a5e93b02127595a00ef89e153aa0d2445499135c1e69ea39115bb5195"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-dispatch-commands.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-5-1] passes in the 7/7 run (exit 0): exact command and argv for both roles; \"npx vitest run\" gets the files appended."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.log",
+              "sha256": "49aca0e07a0e9cc0ddd916d59b8df31f63acdecd3e12aa245950bbe803ca24fd"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.mjs",
+              "sha256": "4d117c7beded40cb50b7bf2ab941bdf335754699f55d14d7d6ecd91203f7a6f2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.mjs",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r5r2/tree"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Probe fixtures (plain, space, quotes, $, backticks, unicode, glob chars in root and check paths): both roles exit 0, focused.argv equals the queue-order check paths, and focused.command run through /bin/sh passes those exact paths to the program (ARGV lines match). Probe exit 0 (227 checks ok, 0 failed); out-of-criterion cases (Windows-style root and check inputs, $( inside a path) are logged as INFO-NOT-OK and recorded as follow-ups f6/f8."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-5-2-plain-commands",
+      "subjectIdentity": "90bacfb9a46a17468cb93960da23b43b5e8e9393815f7d1dd33830592a25a754",
+      "criteria": [
+        "spec-5-2"
+      ],
+      "representativeInput": "Startup for both roles; every printed command run exactly as printed via /bin/sh -c from the worker root, in roots and check paths containing space, ', \", $, backticks, unicode, ~ # * ? [ ] ! ( ) { } &; workerCommands at payload/.joycraft/runtime/dispatch-start.mjs:117-130",
+      "expected": "evidence, submit (implementer), checkReport and finalizeReview (reviewer) present; none matches the forbidden pattern; each runs as printed, odd paths included (round-1 f1)",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-tests.log",
+              "sha256": "a2654a7a5e93b02127595a00ef89e153aa0d2445499135c1e69ea39115bb5195"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-dispatch-commands.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-5-2] and [review-5-1] pass: entries present, no forbidden form, printed commands run through /bin/sh with a space in root or check path."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.log",
+              "sha256": "49aca0e07a0e9cc0ddd916d59b8df31f63acdecd3e12aa245950bbe803ca24fd"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.mjs",
+              "sha256": "4d117c7beded40cb50b7bf2ab941bdf335754699f55d14d7d6ecd91203f7a6f2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.mjs",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r5r2/tree"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Round-1 cases rerun: the space-in-root checkReport now prints --worker-root '<root>' and stops only on ENOENT for the absent report at the correct absolute path; the space-in-check evidence run exits 0. New cases: every root and check fixture with ', \", $, backticks, unicode or glob characters prints quoted commands that run as printed (evidence exit 0, submit exit 0, check-report/finalize-review parse and stop only on the absent report). shellQuote round-trips 18 odd words through /bin/sh printf exactly. No forbidden match for ordinary paths; a path that itself contains $( ; or | is quoted and runs, but the literal regex still matches it (follow-up f6)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-5-3-null-note",
+      "subjectIdentity": "90bacfb9a46a17468cb93960da23b43b5e8e9393815f7d1dd33830592a25a754",
+      "criteria": [
+        "spec-5-3"
+      ],
+      "representativeInput": "Fixtures without tests.focused and with tests.focused but no check inputs; implementer startup",
+      "expected": "commands.focused null with a note naming the missing piece; startup exits 0",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-tests.log",
+              "sha256": "a2654a7a5e93b02127595a00ef89e153aa0d2445499135c1e69ea39115bb5195"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-dispatch-commands.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-5-3] passes: notes name tests.focused and the check input; both exit 0."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f5-files-literal-recursion",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/dispatch-start.mjs:104",
+      "summary": "expand() recurses into the last expanded word, which includes the last file path. A check input whose path contains the literal text {files} (e.g. tests/{files}.mjs) with any template using {files} recurses forever: \"Maximum call stack size exceeded\" and startup stops with exit 1 (receipt spec-05-r2-probe.log). Fix: recurse only into the template suffix, e.g. expand the suffix first and join its first word to the last file.",
+      "assumption": "A check path containing the placeholder text is not a realistic input, so this does not fail spec-5-1; the coordinator may treat it as blocking since it is in the changed code."
+    },
+    {
+      "id": "f6-forbidden-text-in-quoted-path",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/dispatch-start.mjs:125",
+      "summary": "A root or check path that itself contains $( ; | or && is single-quoted and runs correctly as printed, but the printed string still matches the spec's literal forbidden regex, so a text-based guard may refuse it. The spec's check uses ordinary paths.",
+      "assumption": "Paths with shell operators are outside the spec's intent."
+    },
+    {
+      "id": "f7-template-shell-semantics",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/dispatch-start.mjs:58",
+      "summary": "templateWords treats $VAR, backticks and && in tests.focused as literal text and the printed command quotes them ('$VAR', '&&'), so an env-var reference in a template no longer expands. Unquoted backslashes are POSIX escapes, so node C:\\tools\\run.js becomes C:toolsrun.js. A whitespace-only template yields the files alone as the command. An unclosed quote throws and stops startup with exit 1, while a broken joycraft.yaml is otherwise swallowed (line 216); a note like spec-5-3's would be gentler.",
+      "assumption": "The spec does not decide template syntax beyond {files}; literal words are the safer reading."
+    },
+    {
+      "id": "f8-windows-paths",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.log",
+      "summary": "Windows-style inputs are not reachable through startup on POSIX: a worker root containing backslashes fails before Joycraft code runs (Node ERR_INVALID_MODULE_SPECIFIER loading the entry script), and backslash or drive-letter check inputs are refused by the existing path validator. shellQuote output is POSIX single-quoting, which cmd.exe/PowerShell do not read the same way; a native-Windows paste was not tested.",
+      "assumption": "Pre-existing behavior outside this spec; POSIX shells are the target."
+    }
+  ],
+  "limits": [
+    "Round-1 findings re-judged, not repeated: f1-unquoted-paths RESOLVED (shellQuote at dispatch-start.mjs:51; round-1 space-in-root and space-in-check cases now run as printed); f2-files-in-word RESOLVED ({files} replaced in place, quoted template words kept; see f5); f3-receipt-stamp RESOLVED (ms+pid+counter, probe saw distinct paths); f4-reviewer-receipt-folder RESOLVED (reviewer receipts under reviews/receipts/).",
+    "Committed bytes judged: HEAD extracted with git archive into a scratch copy (dispatch-start.mjs sha a3e02acb..., equal to the working copy); the spec's tests ran in the checkout after confirming payload/, src/ and tests/ had no diff from HEAD.",
+    "The installed .joycraft/runtime in this checkout predates the change; the payload copy was exercised through fixture installs.",
+    "Commands were run through /bin/sh -c; the Claude Code worktree guard itself was not invoked.",
+    "Round 2 fix was by tr-fix-5 (aa35e36e62eafa8be); the queue's implementer actor test-lane-a (a465133b4c1fadef3) is used, as the brief directs."
+  ],
+  "createdAt": "2026-11-22T02:42:00.000Z"
+}

@@ -45,3 +45,7 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 ## Session end (spec 25) — fix
 - Name the commit for every edit: the archive commit takes all archive edits (moves, relinked live docs, rewritten tests); cleanup's session-end fixes go in the records commit.
 - Dirty tree: say gate messages, cleanup fixes and the lease release also wait.
+
+## Startup commands (spec 5) — fix
+- `expand()` recurses forever on a path containing the literal `{files}`; recurse only into the template text (dispatch-start.mjs:104).
+- An unclosed quote in `tests.focused` should give a note, not exit 1.
