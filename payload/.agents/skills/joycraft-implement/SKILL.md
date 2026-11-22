@@ -12,8 +12,7 @@ Read the project's entry file (`AGENTS.md`), then each page whose context-map ro
 
 For a change across state, data or producer/consumer boundaries, inspect the
 actual counterpart code and relevant owning decisions/context when available.
-Missing context permits explicit assumptions and progress on understood scope;
-it does not require an architecture document. Add discovered material sources
+Add discovered material sources
 and relevant existing decision/context paths to exact verification inputs before
 review, reporting unresolved coverage. See
 [focused discovery](../../../.joycraft/references/architecture.md)
@@ -24,7 +23,6 @@ dependency is `done`; a merge or `in-review` status is insufficient. Dispatch
 preflight checks this against the actual queue. Preserve the limits of an
 explicitly owner-accepted dependency. Choose independent ready work while an
 affected branch waits for review, environment repair or a recorded owner hold.
-Keep unfinished independent work visible.
 
 For normal native execution, the host launches the selected worker first. The
 child bootstraps from its actual root, then runs `dispatch-start.mjs --role
@@ -56,7 +54,7 @@ isolation cannot be obtained, replan the affected wave and set the current
 queue entry's `execution.parallel` to `false` before dispatch, recording why;
 then run it serially. Otherwise leave it unstarted.
 
-Implement the spec and run meaningful checks and any relevant rendered inspection during implementation. Do not defer ordinary checks to the batch boundary. Run tests in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Write one focused test per acceptance `Check:`, from the spec rather than the code, and tag it with its queue criterion ID as `[AC:<criterion-id>]` in the test name or a comment; if a criterion or test looks wrong, report a spec gap instead of editing it to pass. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
+Implement the spec; run checks and any relevant rendered inspection as you go, in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Write one focused test per acceptance `Check:`, from the spec rather than the code, and tag it with its queue criterion ID as `[AC:<criterion-id>]` in the test name or a comment; if a criterion or test looks wrong, report a spec gap instead of editing it to pass. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
 
 Honor the queue's commit mode. In `batch`, commit and review the independent ready
 wave at its boundary before advancing its dependents; do not wait for an entire
@@ -69,7 +67,7 @@ agent type when installed) with its raw requirements and project context. A work
 At the review boundary, invoke `$joycraft-verify`. Use the single native
 `dispatch-start.mjs --role reviewer` flow to snapshot the current subject,
 verify worker delivery, prepare and bind the bounded packet. Supply only
-observed host capabilities and raw current sources, including relevant coupled
+observed host capabilities and raw current sources, including coupled
 sources discovered during implementation; never a desired verdict or reasoning.
 It needs actual host session/agent identity and available current authority
 as described in [dispatch guidance](../../../.joycraft/references/dispatch.md).
@@ -113,13 +111,15 @@ continue only within those accepted limits; it does not gain deployment,
 security, or other blanket authority. Report it as `done, owner-accepted with
 <limits>`, never as PASS or verified.
 
-For authorized Git delivery, follow the project's verification and independent
-review policy on the final integrated revision before the final push. Use
-[checked delivery](../../../.joycraft/references/delivery.md) for a
-fail-stop, revision-bound verifier/push when useful. A failed verifier stops
-delivery; `delivery.mjs` cannot replace independent review or authorize a
-push. Unless `AGENTS.md` says otherwise, push after each accepted spec, open
-one PR when no spec can start, and read CI after each push. After a second
+Workers run focused tests only. The coordinator runs the recorded gate alone
+through `evidence.mjs` at each point `coordinator.mjs gate-plan` prints, with
+the receipt at a git-ignored path or after committing pending files. No push
+without a green gate receipt (`delivery.mjs push --gate-receipt`; see
+[checked delivery](../../../.joycraft/references/delivery.md)). On red,
+`coordinator.mjs gate-owner` picks the spec for the fix round, else bisect only
+the failing file, newest commit first; a second red holds the push. Unless
+`AGENTS.md` says otherwise, push after each green gate, open one PR when no spec
+can start, and read CI once, on the PR, after session end's push. After a second
 red CI run, stop and report.
 
 After review and completion, continue with the next ready authorized spec.

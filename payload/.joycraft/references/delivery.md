@@ -30,3 +30,31 @@ as one caused by `git status`, does not change the semantic index binding.
 An exit-zero verifier is only an observed command result, not an independent
 PASS or review. This helper is not a sandbox and cannot guarantee that external
 writers cooperate.
+
+## Gate points and the gate receipt
+
+`joycraft-implement` follows this section on every push. Workers and reviewers
+run focused tests only; the coordinator runs the project gate (`tests.gate`).
+
+- **When:** `node .joycraft/runtime/coordinator.mjs gate-plan --queue <queue>`
+  prints the gate points. `tests.gateRuns: spec` (the default) gives one point
+  per spec, so a solo user with one fast gate still knows which spec broke it;
+  `wave` gives one per integrated wave, for a slow gate.
+- **How:** run the gate alone on the integrated revision, through
+  `node .joycraft/runtime/evidence.mjs run --receipt <path>.log -- <gate>`. A
+  gate with shell syntax counts only as `<shell> -c "<gate>"` (see
+  `delivery.mjs` usage); evidence.mjs runs no shell.
+- **Clean tree:** `delivery.mjs` rejects a receipt whose footer says
+  `dirty: true` as stale (`gate-receipt-stale`), and it needs the receipt
+  inside the project. Write the receipt to a git-ignored path, or commit
+  pending files first, so the run sees a clean tree at `HEAD`.
+- **Push:** `delivery.mjs push ... --gate-receipt <path>.log` refuses without a
+  green receipt for `HEAD`. A failed verifier stops delivery. Neither replaces
+  independent review on the final integrated revision or authorizes a push.
+- **On red:** `node .joycraft/runtime/coordinator.mjs gate-owner --queue <queue> --file <failing file>...`
+  names the spec whose inputs hold the failing file; that spec gets the fix
+  round. With no owner, bisect only the failing file, newest commit first. A
+  second red holds the push and is reported.
+- **CI:** read it once, on the PR, after session end's push (commit, then one
+  push). After a second red CI run, stop and report. A project's own
+  `AGENTS.md` push rule wins.

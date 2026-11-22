@@ -23,9 +23,9 @@ Commands are in `AGENTS.md`. Run tests in three tiers:
 - **While you work:** run only the tests for the code you changed: one file,
   package or name filter. If `AGENTS.md` names no focused command, find the
   filter in the runner's help or the CI file, and report the command.
-- **Project gate:** run it one time on the final commit of a spec. A review
-  fix runs focused tests only. A commit that changes only Joycraft records
-  needs no test run.
+- **Project gate:** the coordinator runs it at each `gate-plan` point (per
+  spec or per wave, `tests.gateRuns`); workers and reviewers run focused tests
+  only. A commit that changes only Joycraft records needs no test run.
 - **Full suite:** run it one time on the final integrated revision: in CI
   when the project has CI, else locally before the push.
 
