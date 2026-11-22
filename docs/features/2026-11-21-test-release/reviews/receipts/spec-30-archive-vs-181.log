@@ -1,0 +1,142 @@
+diff --git a/payload/.joycraft/runtime/archive.mjs b/payload/.joycraft/runtime/archive.mjs
+index a0859dd..81d8bcc 100644
+--- a/payload/.joycraft/runtime/archive.mjs
++++ b/payload/.joycraft/runtime/archive.mjs
+@@ -6,6 +6,7 @@ import { boundQueueForSubject, briefDecisionRecords, canonical, featureFolderMat
+ import { validateEvidence } from './evidence.mjs';
+ import { validateOwnerAcceptance, validateWaiver } from './completion.mjs';
+ import { readConfig, workPaths } from './config.mjs';
++import { isTestPath } from './test-changes.mjs';
+ 
+ const featureName = value => {
+   requireValue(typeof value === 'string' && /^[a-z0-9][a-z0-9-]*$/.test(value), 'Feature must be a lowercase slug');
+@@ -436,7 +437,7 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
+   };
+   collect(source);
+   const requirementHistory = [...new Map(evidence.flatMap(decision => decision.requirementHistory ?? []).map(record => [canonical(record), record])).values()];
+-  return { schemaVersion: 1, feature, phase, source, destination, queuePath, attestation: parsedAttestation, evidence, requirementHistory, ...(asIs ? { asIs: { path: `${destination}/unverified.md`, ownerInstruction, unverified } } : {}), ...(reconciliation ? { reconciliation: { path: reconciliation.path, sha256: reconciliation.sha256, record: reconciliation.record } } : {}), featureFiles: files.sort((a, b) => a.path.localeCompare(b.path)), copiedEvidence: [...copies.values()].sort((a, b) => a.path.localeCompare(b.path)), historical: { codeInputHashesAreHistorical: true, currentAcceptanceRenewed: false, ...(reconciliation ? { acceptanceRecordsReconciled: true } : {}), ...(asIs ? { archivedAsIs: true } : {}) } };
++  return { schemaVersion: 1, feature, phase, source, destination, queuePath, namedFiles: namedFiles(root, source), attestation: parsedAttestation, evidence, requirementHistory, ...(asIs ? { asIs: { path: `${destination}/unverified.md`, ownerInstruction, unverified } } : {}), ...(reconciliation ? { reconciliation: { path: reconciliation.path, sha256: reconciliation.sha256, record: reconciliation.record } } : {}), featureFiles: files.sort((a, b) => a.path.localeCompare(b.path)), copiedEvidence: [...copies.values()].sort((a, b) => a.path.localeCompare(b.path)), historical: { codeInputHashesAreHistorical: true, currentAcceptanceRenewed: false, ...(reconciliation ? { acceptanceRecordsReconciled: true } : {}), ...(asIs ? { archivedAsIs: true } : {}) } };
+ }
+ 
+ /** Receipts and reports that a spec's acceptance records name but that are missing or changed. Reads only. */
+@@ -497,18 +498,74 @@ function replayManifest(plan) {
+   return { schemaVersion: 1, kind: 'joycraft-archive-replay', feature: plan.feature, archivedAt: new Date().toISOString(), phase: plan.phase, source: plan.source, evidence: plan.evidence, ...(plan.reconciliation ? { reconciliation: plan.reconciliation } : {}), ...(plan.asIs ? { asIs: { ...plan.asIs, sha256: sha256(Buffer.from(unverifiedNote(plan))) } } : {}), durableContext: plan.attestation.durableContext, hostSession: plan.attestation.host.sessionId, historical: plan.historical, files: map };
+ }
+ 
++// The feature folder as the project names it: its own features home, bare or after ./, never
++// inside a longer path (packages/app/docs/features/x), and ending at a path boundary, so
++// docs/features/x.old and docs/features/x-two are other folders.
++const escaped = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
++const pathStart = '(?:(?<![\\w./-])|(?<=(?<![\\w./-])\\./))';
++const namesFolder = source => new RegExp(`${pathStart}${escaped(source)}(?=$|/|[^\\w.-]|\\.(?!\\w))`);
++// A dated folder name (YYYY-MM-DD-...) is unique enough to match alone: as a whole quoted token
++// ('docs', 'features', '<name>') or as the first part of a path ('<name>/brief.md').
++const namesDated = name => new RegExp(`(?<=["'\`])${escaped(name)}(?=["'\`])|${pathStart}${escaped(name)}(?=/)`);
++// A migration may already be applied somewhere: archive marks it so the agent leaves it as it is.
++const isMigrationPath = file => /(^|\/)migrations\//.test(file);
++
++/**
++ * Tracked non-Markdown files outside the features and archive folders that name the feature
++ * folder, tests first, each with its first naming line and that line's text. Archive only lists
++ * them; the session-end agent changes the path in the listed tests after the move.
++ */
++function namedFiles(root, source) {
++  if (!gitRoot(root)) return [];
++  const { features, archive } = workPaths(root);
++  const folder = path.posix.basename(source);
++  const patterns = [namesFolder(source), ...(/^\d{4}-\d{2}-\d{2}-/.test(folder) ? [namesDated(folder)] : [])];
++  // git grep reads only the text files that hold the folder name, never every tracked file or a binary.
++  let candidates;
++  try { candidates = gitIn(root, ['grep', '-I', '-l', '-z', '-F', '-e', folder]).split('\0').filter(Boolean); }
++  catch (error) { if (error.status === 1) return []; throw error; }
++  const found = [];
++  for (const file of candidates) {
++    if (file.endsWith('.md') || under(file, features) || under(file, archive)) continue;
++    let lines;
++    try { if (!lstatSync(path.join(root, file)).isFile()) continue; lines = readFileSync(path.join(root, file), 'utf8').split('\n'); } catch { continue; }
++    const line = lines.findIndex(each => patterns.some(pattern => pattern.test(each)));
++    if (line < 0) continue;
++    const test = isTestPath(file);
++    found.push({ path: file, line: line + 1, text: lines[line].replace(/\r$/, ''), test, ...(!test && isMigrationPath(file) ? { migration: true } : {}) });
++  }
++  return found.sort((a, b) => Number(b.test) - Number(a.test) || a.path.localeCompare(b.path));
++}
++
++const refusal = message => Object.assign(new Error(message), { exitCode: 2 });
++
++/** After the move: the listed tests that still name the old folder path, for the agent to change. */
++function nextSteps(plan) {
++  const tests = plan.namedFiles.filter(file => file.test);
++  if (!tests.length) return {};
++  return { next: `${tests.length} ${tests.length === 1 ? 'test still names' : 'tests still name'} \`${plan.source}\`: ${tests.map(file => `\`${file.path}:${file.line}\``).join(', ')}. Change the folder path in each test that reads it, run the gate, and commit the edits with the move.` };
++}
++
+ export function archiveFeature(options) {
+   const plan = previewArchiveFeature(options);
+   if (plan.existing) return { status: 'archived', unchanged: true, destination: plan.destination, manifest: plan.manifest, historical: plan.historical, ...(plan.unverified ? { unverified: plan.unverified } : {}) };
+   const notNeeded = options.asIs === true && !plan.asIs ? { asIs: 'not-needed' } : {};
+   if (options.apply !== true) return { status: 'preview', plan, ...notNeeded };
+   const root = options.root ?? process.cwd();
+-  // Revalidate every input immediately before changing paths, so a preview cannot race a writer.
+-  const fresh = previewArchiveFeature({ ...options, root, apply: false });
+-  requireValue(canonical({ ...plan, attestation: undefined }) === canonical({ ...fresh, attestation: undefined }), 'Archive inputs changed after preview; rerun the session-end preflight');
+-  const stage = `${workPaths(root).archive}/.${path.posix.basename(plan.destination)}.staging-${process.pid}-${Date.now()}`;
+-  const stageLocal = projectTarget(root, stage), destinationLocal = projectTarget(root, plan.destination), sourceLocal = localDirectory(root, plan.source);
+-  requireValue(!existsSync(stageLocal) && !existsSync(destinationLocal), 'Archive collision detected before move');
++  // Another archive of this folder that moves it while this run checks makes these checks fail
++  // on a vanished path; that is a refusal (nothing was changed), not a crash.
++  const movedMeanwhile = error => error?.exitCode === undefined && !existsSync(projectTarget(root, plan.source))
++    ? refusal(`Another archive --apply moved ${plan.source} while this run was checking it; this run changed nothing. Run the archive preview to see the result`)
++    : error;
++  let stage, stageLocal, destinationLocal, sourceLocal;
++  try {
++    // Revalidate every input immediately before changing paths, so a preview cannot race a writer.
++    const fresh = previewArchiveFeature({ ...options, root, apply: false });
++    requireValue(canonical({ ...plan, attestation: undefined }) === canonical({ ...fresh, attestation: undefined }), 'Archive inputs changed after preview; rerun the session-end preflight');
++    stage = `${workPaths(root).archive}/.${path.posix.basename(plan.destination)}.staging-${process.pid}-${Date.now()}`;
++    stageLocal = projectTarget(root, stage); destinationLocal = projectTarget(root, plan.destination); sourceLocal = localDirectory(root, plan.source);
++    requireValue(!existsSync(stageLocal) && !existsSync(destinationLocal), 'Archive collision detected before move');
++  } catch (error) { throw movedMeanwhile(error); }
+   mkdirSync(stageLocal, { recursive: true, mode: 0o700 });
+   try {
+     writeFileSync(path.join(stageLocal, 'archive-recovery.json'), `${JSON.stringify({ schemaVersion: 1, kind: 'joycraft-archive-recovery', feature: plan.feature, source: plan.source, destination: plan.destination, stage, phase: plan.phase, featureFiles: plan.featureFiles, copiedEvidence: plan.copiedEvidence, requirementHistory: plan.requirementHistory }, null, 2)}\n`, { flag: 'wx', mode: 0o600 });
+@@ -534,6 +591,12 @@ export function archiveFeature(options) {
+     renameSync(stageLocal, destinationLocal);
+   } catch (error) {
+     const stagedFeature = path.join(stageLocal, 'feature');
++    if (!existsSync(stagedFeature) && !existsSync(sourceLocal)) {
++      // This run never moved the feature folder, yet it is gone: another archive run moved it.
++      // This run's stage folder holds only copies, so it is removed.
++      rmSync(stageLocal, { recursive: true, force: true });
++      throw refusal(`${plan.source} was moved by another archive run while this run was staging; this run never moved it, removed its own stage folder and changed nothing else. Run the archive preview to see the result`);
++    }
+     let restored = true;
+     try { if (existsSync(stagedFeature) && !existsSync(sourceLocal)) renameSync(stagedFeature, sourceLocal); } catch { restored = false; }
+     restored = restored && existsSync(sourceLocal) && !existsSync(stagedFeature);
+@@ -544,7 +607,7 @@ export function archiveFeature(options) {
+   let links;
+   try { links = relinkLive(root, plan); } catch (error) { links = { error: error.message }; }
+   const afterArchive = runAfterArchive(root, plan);
+-  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), ...notNeeded, links, ...(afterArchive ? { afterArchive } : {}) };
++  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), ...notNeeded, ...nextSteps(plan), links, ...(afterArchive ? { afterArchive } : {}) };
+ }
+ 
+ /** The common parent folder of the context, features and archive homes ('.' when they share none). */
+@@ -720,7 +783,8 @@ function argumentsFor(argv) {
+   const flags = {};
+   for (let index = 0; index < args.length; index += 1) {
+     if (['--apply', '--as-is'].includes(args[index])) { requireValue(flags[args[index]] === undefined, `Duplicate ${args[index]}`); flags[args[index]] = true; continue; }
+-    requireValue(['--feature', '--phase', '--attestation', '--reconciliation', '--owner-instruction'].includes(args[index]) && nonempty(args[index + 1]) && flags[args[index]] === undefined, `Invalid or duplicate argument: ${args[index]}`);
++    if (!['--feature', '--phase', '--attestation', '--reconciliation', '--owner-instruction'].includes(args[index])) throw refusal(`Unknown argument: ${args[index]}; nothing was changed`);
++    requireValue(nonempty(args[index + 1]) && flags[args[index]] === undefined, `Invalid or duplicate argument: ${args[index]}`);
+     requireValue(args[index] !== '--owner-instruction' || !args[index + 1].startsWith('--'), '--owner-instruction needs the owner\'s words as its value; the text cannot start with --');
+     flags[args[index]] = args[index + 1]; index += 1;
+   }
+@@ -745,5 +809,5 @@ export function main(argv = process.argv.slice(2)) {
+ }
+ 
+ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+-  try { main(); } catch (error) { process.stderr.write(`Archive stopped: ${error.message}\n`); process.exitCode = 1; }
++  try { main(); } catch (error) { process.stderr.write(`Archive stopped: ${error.message}\n`); process.exitCode = error.exitCode ?? 1; }
+ }
+exit=0

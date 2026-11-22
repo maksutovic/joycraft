@@ -3348,7 +3348,7 @@
         27,
         31
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -3467,6 +3467,10 @@
       },
       "submitted": {
         "at": "2026-11-22T05:04:28.563Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-30.report.json",
+        "sha256": "514bf5735c0c75c9206264acdc2f22ee4f630b32ff2b9172bc87dd97b7fac918"
       }
     },
     {

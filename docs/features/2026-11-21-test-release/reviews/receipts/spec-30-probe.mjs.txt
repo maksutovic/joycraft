@@ -1,0 +1,53 @@
+// Probe spec 30 namedFiles edge cases and preview read-only on a git fixture.
+import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { mkdirSync, mkdtempSync, writeFileSync, realpathSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+const runtime = join(process.argv[2], 'payload/.joycraft/runtime/archive.mjs');
+const git = (cwd, ...a) => execFileSync('git', ['-c','user.name=t','-c','user.email=t@e.com',...a], { cwd, encoding: 'utf8' }).trim();
+const put = (f, b) => { mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, b); };
+const hash = b => createHash('sha256').update(Buffer.from(b)).digest('hex');
+const d = '2026-11-21-x', src = `docs/features/${d}`;
+const root = realpathSync(mkdtempSync(join(tmpdir(), 'p30-')));
+git(root, 'init', '-q', '-b', 'main');
+const q = `${src}/specs/.joycraft-spec-queue.json`;
+put(join(root, `${src}/brief.md`), '# B\n');
+put(join(root, `${src}/specs/01-a.md`), '---\nid: 1\nstatus: done\n---\n# A\n');
+const dec = JSON.stringify({ schemaVersion: 1, kind: 'legacy', queuePath: q, statement: 'Accept it as it is.', statedAt: '2026-11-21T00:00:00Z', specs: [1], reason: 'r' });
+put(join(root, `${src}/specs/legacy.json`), dec);
+put(join(root, q), JSON.stringify({ schemaVersion: 1, feature: 'x', specs: [{ id: 1, file: '01-a.md', status: 'done', mode: 'batch', depends_on: [], verification: { inputs: [] }, ownerAcceptance: { path: `${src}/specs/legacy.json`, sha256: hash(dec), legacy: true } }] }));
+put(join(root, 'docs/context/decision-log.md'), '# D\n');
+put(join(root, '.gitignore'), '.att/\n');
+put(join(root, '.att/a.json'), JSON.stringify({ schemaVersion: 1, phase: 'session-end', host: { sessionId: 's', quiescent: true, activeWorkers: [], dependentWork: [] }, durableContext: { carried: true, references: ['docs/context/decision-log.md'] } }));
+const cases = {
+  'tests/dotdot.test.ts': `const p = '../${src}/brief.md';\n`,
+  'tests/tmpl.test.ts': 'const p = `${root}/' + src + '/brief.md`;\n',
+  'tests/mid.test.ts': `const p = 'features/${d}/brief.md';\n`,
+  'tests/dq.test.ts': `const p = "${d}";\n`,
+  'tests/backslash.test.ts': `const p = 'docs\\\\features\\\\${d}';\n`,
+  'tests/prefix.test.ts': `const p = 'x${d}/brief.md';\n`,
+  'tests/suffix.test.ts': `const p = '${d}x/brief.md';\n`,
+  'tests/json.json': `{"k": "${src}/brief.md"}\n`,
+  'tests/fixtures/guard.json': `{"k": "${d}/brief.md"}\n`,
+  'src/app.ts': `// ${d}\n`,
+  'assets/b.bin': Buffer.concat([Buffer.from([0,1,2,0]), Buffer.from(`${src}/brief.md`)]),
+};
+for (const [f, b] of Object.entries(cases)) put(join(root, f), b);
+git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'i');
+const before = git(root, 'status', '--porcelain', '--ignored', '--untracked-files=all');
+const r = spawnSync(process.execPath, [runtime, 'archive', '--feature', 'x', '--phase', 'session-end', '--attestation', '.att/a.json'], { cwd: root, encoding: 'utf8' });
+console.log('preview exit', r.status, r.stderr);
+const plan = JSON.parse(r.stdout).plan;
+for (const f of plan.namedFiles) console.log('LISTED', JSON.stringify(f));
+for (const f of Object.keys(cases)) if (!plan.namedFiles.some(x => x.path === f)) console.log('NOT LISTED', f);
+console.log('status unchanged', before === git(root, 'status', '--porcelain', '--ignored', '--untracked-files=all'));
+const a = spawnSync(process.execPath, [runtime, 'archive', '--feature', 'x', '--phase', 'session-end', '--attestation', '.att/a.json', '--apply'], { cwd: root, encoding: 'utf8' });
+console.log('apply exit', a.status, a.stderr);
+console.log('next', JSON.parse(a.stdout).next);
+console.log('changed', git(root, 'status', '--porcelain', '--untracked-files=all'));
+console.log('local exists', existsSync(join(root, '.joycraft/local')));
+const u = spawnSync(process.execPath, [runtime, 'archive', '--feature', 'x', '--bogus'], { cwd: root, encoding: 'utf8' });
+console.log('unknown exit', u.status, u.stderr.trim());
+const v = spawnSync(process.execPath, [runtime, 'archive', '--feature'], { cwd: root, encoding: 'utf8' });
+console.log('missing value exit', v.status, v.stderr.trim());
