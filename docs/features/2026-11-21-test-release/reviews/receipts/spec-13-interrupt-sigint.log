@@ -1,0 +1,28 @@
+
+=== interrupt SIGINT group state
+{
+ "status": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/two-tier.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+ "ignored": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/two-tier.test.mjs\n?? docs/archive/\n!! .joycraft/",
+ "sourceThere": false,
+ "archiveThere": true,
+ "archiveEntries": [
+  "x"
+ ],
+ "test": "// docs/archive/x/feature\nsetTimeout(() => process.exit(1), 4000);\n"
+}
+
+=== rerun preview
+{
+ "status": 0,
+ "s": "archived",
+ "unchanged": true,
+ "err": ""
+}
+
+=== rerun apply
+{
+ "status": 0,
+ "s": "archived",
+ "unchanged": true,
+ "err": ""
+}
