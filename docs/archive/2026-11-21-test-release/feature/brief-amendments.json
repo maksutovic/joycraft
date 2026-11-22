@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "joycraft-brief-amendments",
+  "brief": "docs/features/2026-11-21-test-release/brief.md",
+  "amendments": [
+    {
+      "commit": "a3138e3d0317ae39a89b4b383ec1f79109d29c37",
+      "fromSha256": "9816e79f1c5e597e98f0723ecf7954a5af0ee5aab987c4ee3924d02134c78a11",
+      "toSha256": "790832a2184fd5a1ade1e9423494f4e5f22829d88a9a9d23e26ed51b32f75682",
+      "decisions": [
+        "archive-edit-tests",
+        "session-end-push-order",
+        "wave-gate-default",
+        "test-only-lane",
+        "cap-raise"
+      ],
+      "summary": "Records the owner's answers: archive-edit-tests = yes, session-end-push-order = commit-then-push, wave-gate-default = per-wave-if-slow, test-only-lane = shared-only, cap-raise = split-cap."
+    },
+    {
+      "commit": "f157616a263266a867dbd897cf67ebae84be6eda",
+      "fromSha256": "790832a2184fd5a1ade1e9423494f4e5f22829d88a9a9d23e26ed51b32f75682",
+      "toSha256": "c106dfd0bc280960c235d69a892377770bfc0f157a275c70c6c6c1f2dd5db2aa",
+      "decisions": [
+        "wave-gate-default",
+        "archive-edit-tests",
+        "sota-knowledge-home",
+        "archive-named-files"
+      ],
+      "summary": "Decompose rewrites the decision sections with the answers Max gave in a3138e3 and notes that archive-named-files is settled by archive-edit-tests."
+    },
+    {
+      "commit": "e753f7e5d9414eea5fb8962a9c0f8018289f65fa",
+      "fromSha256": "c106dfd0bc280960c235d69a892377770bfc0f157a275c70c6c6c1f2dd5db2aa",
+      "toSha256": "2c33b7ebd593d3d6d53b9b4d6935cfad544b5d474e7fa53783bed0cded195a85",
+      "decisions": [
+        "on-demand-budget"
+      ],
+      "summary": "Asks the owner: on-demand-budget."
+    },
+    {
+      "commit": "5deec22b581ce0ad371bc31998fd644ac4256cd7",
+      "fromSha256": "2c33b7ebd593d3d6d53b9b4d6935cfad544b5d474e7fa53783bed0cded195a85",
+      "toSha256": "73de0ad0eea61357414f36ac8afbec7882a1d621d5ea9884a38cfcd4bad000f3",
+      "decisions": [
+        "on-demand-budget"
+      ],
+      "summary": "Records the owner's answers: on-demand-budget = plus-1500."
+    },
+    {
+      "commit": "5a0c22f1ba59d768447a3051fa9154bc163f8d3c",
+      "fromSha256": "73de0ad0eea61357414f36ac8afbec7882a1d621d5ea9884a38cfcd4bad000f3",
+      "toSha256": "68e1e01d8e157f3a651490bde8266c990e6887c1d27ceaa62449842dd6b0a082",
+      "decisions": [
+        "archive-rewrite-route"
+      ],
+      "summary": "Asks the owner: archive-rewrite-route."
+    },
+    {
+      "commit": "853bfcc4f0db915f2f86d7143e7b4e34182de243",
+      "fromSha256": "68e1e01d8e157f3a651490bde8266c990e6887c1d27ceaa62449842dd6b0a082",
+      "toSha256": "0e6fc1343f2f1935fe149bccf1111eb74de161253303a411a5a4a6a7002b6c44",
+      "decisions": [
+        "archive-rewrite-route"
+      ],
+      "summary": "Records the owner's answers: archive-rewrite-route = fix-and-accept."
+    },
+    {
+      "commit": "edb34b6b1a94b9a369391ba34c616a7c84d2304b",
+      "fromSha256": "0e6fc1343f2f1935fe149bccf1111eb74de161253303a411a5a4a6a7002b6c44",
+      "toSha256": "dc1c1f51981e6e8dd99c95c60839eda56ec2087c1563485a55dfabb1892ba8c4",
+      "decisions": [
+        "archive-accept-mechanism"
+      ],
+      "summary": "Asks the owner: archive-accept-mechanism."
+    },
+    {
+      "commit": "8c74cd29a7085d1b8a38de63731148e4004e049a",
+      "fromSha256": "dc1c1f51981e6e8dd99c95c60839eda56ec2087c1563485a55dfabb1892ba8c4",
+      "toSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+      "decisions": [
+        "archive-accept-mechanism"
+      ],
+      "summary": "Records the owner's answers: archive-accept-mechanism = split."
+    },
+    {
+      "commit": "7a0a18cd65f21f94f3946f294132e9d782d79844",
+      "fromSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+      "toSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+      "decisions": [
+        "archive-test-editor",
+        "archive-red-path",
+        "archive-in-place",
+        "archive-spec-13-close"
+      ],
+      "summary": "Asks the owner: archive-test-editor, archive-red-path, archive-in-place, archive-spec-13-close."
+    },
+    {
+      "commit": "46125484f05cee24098fd03f5b61517c0a58a861",
+      "fromSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+      "toSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+      "decisions": [
+        "archive-test-editor",
+        "archive-red-path",
+        "archive-in-place",
+        "archive-spec-13-close"
+      ],
+      "summary": "Records the owner's answers: archive-test-editor = agent, archive-red-path = agent-undoes, archive-in-place = keep-move, archive-spec-13-close = replace."
+    },
+    {
+      "commit": "d670e7190e518f0a0534912469e7b73aca7f8b07",
+      "fromSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+      "toSha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+      "decisions": [
+        "archive-test-editor",
+        "archive-edit-tests"
+      ],
+      "summary": "The archive-edit-tests section now follows the archive-panel ruling: archive lists, session end repoints the tests (archive-test-editor = agent)."
+    }
+  ]
+}

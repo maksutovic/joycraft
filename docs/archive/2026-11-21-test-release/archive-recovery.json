@@ -1,0 +1,2001 @@
+{
+  "schemaVersion": 1,
+  "kind": "joycraft-archive-recovery",
+  "feature": "test-release",
+  "source": "docs/features/2026-11-21-test-release",
+  "destination": "docs/archive/2026-11-21-test-release",
+  "stage": "docs/archive/.2026-11-21-test-release.staging-12822-1795328969616",
+  "phase": "session-end",
+  "featureFiles": [
+    {
+      "path": "docs/features/2026-11-21-test-release/archive-reconciliation.json",
+      "sha256": "11bb1a1823c8478ccec76bfc02b003515b1cb501f2948a9105bc3d0d3e08ee09"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/artifact-accept.json",
+      "sha256": "93cd04876b89bb88765acd86de15d7b9221e9a007d5e6841cc4fa1b81b428104"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/artifact-archive-panel.json",
+      "sha256": "67ad288f21b28016444fad13beeed5c938b26ae31217c6ad3d91c8f7caff74bc"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/artifact-archive.json",
+      "sha256": "bf81967da47b941b86fee9f66a1bbbe5579f69536be163c6b17e6d81a2d010d9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/artifact-budget.json",
+      "sha256": "ebb6dd780fa0bcdda997ca876343b981547130d4b673f23aab84d3d16f28328d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/artifact.json",
+      "sha256": "62b802cbee2c35e18f397409d28b2ff3d1b6f27481c76ab64145db5b593eaeb8"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/brief-amendments.json",
+      "sha256": "55f2ba03e52663604545d32a3b212d02939d98781153b6aa1131c4f417034883"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/brief.md",
+      "sha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/owner-acceptance-13.json",
+      "sha256": "3745ecb6cd6bd93dff34a6f62c1c15eb9cd588027d60f8962b68633c3465ad6f"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/review-followups.md",
+      "sha256": "20ba2e0f64c62716208d5d5ba66af36ab99081ed191673bd8a0f47e6f525ab80"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-interrupt-sigint.log",
+      "sha256": "3126a82defddab99a0d92ec6d9d753033b35fdc29a8f3e9a24886320a9267f63"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-interrupt-sigterm.log",
+      "sha256": "2ab61b11aa3a04191d2ce63438d48bd9038e162641252a6d29f512d88760d529"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-probe.log",
+      "sha256": "7bb5a1b4c90f119fabb3ba7cbec50689ea758f6db3b05b768086cc5d3e97ed76"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-records.log",
+      "sha256": "6463f2a0319b2bc6789d5753976cdd6b5101ac894a9cee41bbf27243193bc532"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-spec-tests.log",
+      "sha256": "e40222ca2247f8020f82bffe345edd1dccd77aaf2f439d5eae66df909340756f"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-stages.log",
+      "sha256": "5e03d33fc3e1ab64e6411b093f0e07edbb21b9eaced4db995b918d7d22db8f41"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-two.log",
+      "sha256": "596836490df51ee126dea417f76655ae9d0322aaa0fe1d64732f8e6b3d755384"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r2-user-edits.log",
+      "sha256": "cc65b3699bbf9ef0c4bc8f2a7415a2a59487e34b34e24aa6121c29401a5abda5"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-probe.log",
+      "sha256": "2fefa6d8a5465612d01297b217d5de0dddc3f1b4911821697e736ad938c496c7"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-probe1-rerun.log",
+      "sha256": "45cd619a1a62ccd11dad3b936c541202d5d0a4f2d9e1c759f8a34d8d64affcb3"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-r2probe-records.log",
+      "sha256": "e70a655188f24d617dac3f87c14337bfc5b00827c9784da5fd7b60e75db83b78"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-r2probe-stages.log",
+      "sha256": "63e99feeedba93c06953980970f987c76651dd451dc582c8f9fd568e9c460ccd"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-r2probe-two.log",
+      "sha256": "8dfad4b618641063ae5d53a760afc74ebe1c258161bb61a6f71c5d9e4a13b532"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-r2probe-user-edits.log",
+      "sha256": "3a94ef2326d18012c7a23ebb0b15184a58dac4a0165ff0ef5de8d0787b6019c8"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-spec-tests.log",
+      "sha256": "98ba1c39019e0801f8f8437d0f520099a79ceb6e487f276cad28d3cd7772191c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-spec-tests.log",
+      "sha256": "5d809427b8062f1a7e06883c2864a1935791a943bfaf51bd98d6a406d1a02669"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-hunt-docs.log",
+      "sha256": "9854ba4cf9d564cbe581ae7a130e3993b6d8da49c89b2ee35501dd99849afebc"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-hunt-docs.mjs.txt",
+      "sha256": "7d9b1bcf070385db91600d83d2b3f16bbf8913ce2608f5307c93e3487e4bceda"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-hunt-names.log",
+      "sha256": "5a9d48a5103de1362ba476ba4a198cee558dcdddd39ef91e9bd45c74908657f3"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-hunt-names.mjs.txt",
+      "sha256": "3aef9e4c924483a30481d6a0048eed1dec3e1a1a29c5daa77d4b81a8a684dd66"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-rerun-b1-e2e.log",
+      "sha256": "d8c807c44ddcf3388ec5b693124e3773b33872cfe2afd972139d8d11d7307b18"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-rerun-b1-regress.log",
+      "sha256": "e82ac066a49fdf301fc9d4408bf419d8f314ae6831367e6a46249155a5f4fa53"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-rerun-b1.log",
+      "sha256": "41962bd23395d4b3485ec36efcec227d6bd68fbf89c5395dd85a1fb0f263f7f8"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-rerun-b14.log",
+      "sha256": "18a622e2f70b42a74fd6343464a16f2b24572b64480b7992bfa66362716705a6"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-rerun-b3.log",
+      "sha256": "25e9d7f22e0e4dea4d190424f3f38d5ab0d4b82312b68be4a1056e03acc6b3cf"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-rerun-b678.log",
+      "sha256": "a996f181421cc84142159c78b7453bf97ed5b3302493ecdcf15af03c7071f8e8"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-27-r2-spec-tests.log",
+      "sha256": "522fdb0c781da99d12f8b5d4217df392810494a6f8ba63fb84738d896de8cf91"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+      "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-gate-rule-probe.log",
+      "sha256": "5b8d0f955684259bb2ab137a49594e260c6ecb19e83847be00be665fa1dce8bc"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-source-probe.log",
+      "sha256": "dc13e4e326c66e8c4457d6eb7b03b2d3758cbf5f8f54f2a9e9583d3c36bcf318"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-typecheck.log",
+      "sha256": "51e242f92931cc054f790a28ef03173d2b25f0dbdb305560c2170dd22ae6222d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-unused.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-docs.log",
+      "sha256": "7b818940c070d98c60989795859febd46c5f330b9ab7f14f89522b33828e41ef"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-docs.mjs.txt",
+      "sha256": "46ce042e69386e2ad5838d9aa9c2c6b06612fd680cad7d27335025c84fc3e7be"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-names.log",
+      "sha256": "b7c8e36dd3e559b0b7f0dc207ca926ca2a080d8c709b496dadcbbc60d42410e3"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-hunt-names.mjs.txt",
+      "sha256": "f49e6db9b2a8612e97a56729e4f3cf696c6829a8ee62daa2b22c0d004e5ad940"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-pin-check.log",
+      "sha256": "423d69c177cfe4c1e8e2a1470ccfaffa5a844cacdd6c138ef337c6bb078e97e2"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-31-spec-tests.log",
+      "sha256": "52b4632d9832e632bb47b406f17b8011a11387434cc936480d84d8cef2b71129"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.log",
+      "sha256": "99bdbb2dc25d66d2c5c8979522392bc1fc8c1869a0fc72aaa5fcbf31a1adcccc"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.mjs",
+      "sha256": "3a695e78fe3998f5aab9bf4a2390fc79a167ecf159b0935e0fc8dc95647cfec9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.log",
+      "sha256": "0ccbcbddf7c897e58891a89f68785ac84090f8fe619690a5ae32a9695054ee61"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.mjs",
+      "sha256": "c72839fbe0e20817021d31f3c91fc41f8411696054697a41ab5921cb2bdedf37"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-tests.log",
+      "sha256": "7e5291a084787077c7f75105dac1207fb3d356aad785945618f9fef03f9a1293"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-tests.log",
+      "sha256": "21e85ffe3bba019c5858a9b72ebe1f13ef1d413b0b588b90c540d3388f908e3b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.log",
+      "sha256": "6d4542c1ca1b381b425df62bd59248f0b2daeba479929ac8291dae44e8a8438f"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs",
+      "sha256": "b7ecb2ab879621fe0388d3f316e5cf3efdf38ba8cab8e2f78cc4b82c30cbaf34"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-02-tests.log",
+      "sha256": "8d8743871bc283d9d6efea32595ac1d57caa347d46a8663fe52e030a857b33ce"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log",
+      "sha256": "6feb48b79da3b41747b37fbcd57833c772031756ccd4fb85497fffc8843c6934"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs",
+      "sha256": "2a2aae374c7921525056cca0dbd4310136d7e9819cabad7eba983076959f651c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log",
+      "sha256": "2caaa780788edb600d132de1c53067c457f82ce60cfadd6b97e2bb1548938cb1"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.log",
+      "sha256": "836cf48edd5f350776c3fdd5fb39997f04ed6457f04dddbb158a0416896a0dd0"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs",
+      "sha256": "d603d854f2d1408faf581acdcdadce1c04c4c11d252fb6631ae4be830cde7193"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-04-tests.log",
+      "sha256": "cef5e5f555dfb40ad17db42231148ffc127bfd8f969546d6d63e74fa9d5f8c16"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-probe.log",
+      "sha256": "ff83182d766429ba6702630440610b5db5302c1917c4958aaeaa77937c645bde"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-probe.mjs",
+      "sha256": "9f5d9352813f6d4cb772843fd02df35a5147b49b11cfe39f347c4408ca64a9f0"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.log",
+      "sha256": "49aca0e07a0e9cc0ddd916d59b8df31f63acdecd3e12aa245950bbe803ca24fd"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.mjs",
+      "sha256": "4d117c7beded40cb50b7bf2ab941bdf335754699f55d14d7d6ecd91203f7a6f2"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-tests.log",
+      "sha256": "a2654a7a5e93b02127595a00ef89e153aa0d2445499135c1e69ea39115bb5195"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-tests.log",
+      "sha256": "fc9215032cf60685f96ed874689c792cc46ff03e9d0945e827f54c817c5885b6"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-check.log",
+      "sha256": "61b8721e8410b1f1dc0804a15426a2899e9e54fff5c73164c7d6c7f13c5e0e8e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-reports.log",
+      "sha256": "c8a81e65990c56bf1d8f3224f7b7fd2bc2c84feb100cb78aace314ebc68383a6"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-reports.mjs",
+      "sha256": "7b1453732a3b584ed1cc3e05d426d8c6b270786d5f7071a8ce7bf821a6d3dead"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.log",
+      "sha256": "afd5613e71ff442d95d8441c763c9c8ef6671b199c107e104911170e62a31584"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.mjs",
+      "sha256": "d2b5c4db73bbf5ea806b5377c88a9b583beba27eaadb5e236d5366ac26f2b20f"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-tests.log",
+      "sha256": "16946e010e883cc700dd3a3ca27066756e8a2cd71ef571d6402c8ce39c4dab9b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.log",
+      "sha256": "af0139b62cb0549a3b11a23f78a826bbc083a9b9456e62dee26fdef0e4bec59a"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs",
+      "sha256": "51d1a7509234c3ba5a01849cea055eeb13aa7290550d37363db1f53ff86c4a29"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe-rerun.log",
+      "sha256": "44006a6331b1c43a1e4ca155e7ac18b172bdcfd76bba0bf0ac2dff7b358f9b79"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe.log",
+      "sha256": "e2974e8f434c05a3eea269d727b74501b7bb5c902f96e008c50108834b3f2589"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe.mjs",
+      "sha256": "122dae300f3796ed4844169efa4732cf1ca414ed97ff4b600a3ea11b2338d55f"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-tests.log",
+      "sha256": "961302d604b2c704524458d9196d0c434a148f453934c3a57c607d7131a00bcd"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe.log",
+      "sha256": "c84fc21e13c414de17735816e1f5f698d32eecc7adb5f0f9cb3eed41b0debdc1"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe.mjs",
+      "sha256": "195b08d79e64c7dab19c8f9951785c1e6ec71a133b2215790c5a43d8d6f0dd6f"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe1-rerun.log",
+      "sha256": "44006a6331b1c43a1e4ca155e7ac18b172bdcfd76bba0bf0ac2dff7b358f9b79"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe2-rerun.log",
+      "sha256": "a14b21ac2e7b9d1cb3b595467940dfd4df35c1db3d3507cfa11899e58b25ad95"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-tests.log",
+      "sha256": "22820651369684c52a41e22e09ea6789b5e501ab1dad7af4e9c1f302390fc9c5"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-tests.log",
+      "sha256": "76db27f0c3775d92b529186152fc10c7b66d5e3b4eb5b09625553c9f9b0317d3"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.log",
+      "sha256": "4ec4397a41187d1156e403774b21bc63b871d55daa7c73cc15a071c937454d32"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs",
+      "sha256": "2f96902eadbcd684b342f5444cd806daafce1b4b8b91c8eaed3093d17f4e7c02"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-tests.log",
+      "sha256": "c33f7b2ec52387a75573955ae9e7dd19d545028afe888486d1ff21d42d06e986"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.log",
+      "sha256": "c49fce661deb0e8b1aee67e5085fc29da5cad0e8ee42094dc18ad7aa8956b9a2"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh",
+      "sha256": "8f4837969b713220a4a819a3395a613275ecf25aeee9385ea175cb07af79487d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.log",
+      "sha256": "e059b540bdb682479465ee1a2a7cfc1086a93ff0d233c060812d6cb2ffbfe637"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs",
+      "sha256": "15d45c924127b6e667e530d0b6883416efa4811bc5f179ef8cf9f5fe3b47c546"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-signal-window.log",
+      "sha256": "adfccd9279235a22c16c8d7e6bd53718123d85ce66fc6c7da4931f72569a4934"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-signal-window.mjs",
+      "sha256": "a99b54741aeb2840804558d0e0965fad94820ff2b71e3ca3fa8ce110392d0df4"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log",
+      "sha256": "d7162012222e6a3049ac65c83e8cf55f57aa554b10c71519138204c43f4062bc"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.log",
+      "sha256": "29145923dccd50620787d11688f58f833e8078dec775c5edd652940d773646fc"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.mjs",
+      "sha256": "a737cf5019a43bb37dd9c3fcd28a460a3fb7d358191513e9856bc441069daa68"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-tests.log",
+      "sha256": "68afdcc4201ee98ba855e6cb9f6bcf749e0cfec5348a3aab65d8ba73ba5ba79d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-probe.log",
+      "sha256": "da38fd02f480b52a363ed8adda59f2c0b098ac87570034537812cde4397cb0cd"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-probe.mjs",
+      "sha256": "b19416d8cd3bab625b8c110afe25f6bd197dc9ac81e1bde88e4327f411e059ac"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-r2-archive-tests.log",
+      "sha256": "ea659e77b57aa56c1d1536cefb3fb09dfccddb1c017c2f7568827c3ed999bcbc"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-r2-probe.log",
+      "sha256": "763ad9e08fb469662510c59b2fb54a27861b3f106eebecc1422d1142141880ec"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-r2-probe.mjs",
+      "sha256": "c24514031d957cc8065f9918dcbe30a9a2699b49b6ab28e67cdbcd22895035fe"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-r2-probe1-rerun.log",
+      "sha256": "d8f896cf4e7ad4063dc404a5f2405c594f8b2e1a01ffddb255efe577c05e7c92"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-r2-startup-base.log",
+      "sha256": "1278ebc0619709a1995ddb4b6f6135b18c6aa11c59047075ebb514c1c05aa4d3"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-r2-tests.log",
+      "sha256": "2b24990f61b4e785ebea7886b7b1e754f9eb4bdef17f9e4a2da6ce39586f414e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-startup-bad-base.log",
+      "sha256": "3d4f4b8f1220176e58bbaaafa614bca367a1141682098b6138e8c171543510ea"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-startup-base.log",
+      "sha256": "d7f8fcbfbc4b568c97a3df4012e33abbf3763f99e82850b0930b8c3ca29afa6f"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-tests.log",
+      "sha256": "af5c8ed5823ebb1953bac73faaab1527ae26970ee1c233f0a60ec3aa01aeb5e4"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.log",
+      "sha256": "e272d47a6fde57d09bc133caf9c4fe19d318f2a08078f8247902211121df6ed9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.mjs",
+      "sha256": "7b658053fd9645ec61e8f5252d00ac4fe82823ef095021876755e0a43ba8c715"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-tests.log",
+      "sha256": "bab0a5dbb46f8596a8455057673a82acf2dc87d2cb8dbdc710a9d7f63790ca87"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-interrupt-sigint.log",
+      "sha256": "1b1e4bf15198c5bde600f3fceb76a1c31d1c1fe285894074a5d855a07a402840"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-interrupt-sigterm.log",
+      "sha256": "6329fd78012732f2b03734c27b301f81b07bd66b24191e0d428b39743eb1fb66"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-owner-check.md",
+      "sha256": "845ff2c54fbbf8bf1a85119d5859ee13cb6710007c3fe36eb34c4467203758c2"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.log",
+      "sha256": "4651e1e64119ede99e3ce555b02b47be57d7a6dcec387e9b1488bfbe59699aa1"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+      "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-kill.preload.mjs",
+      "sha256": "9af6de9b27c6019c2573380ce9caa6c37f00eec0682b9ac6ca6a92d7fcb1421c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+      "sha256": "dac4601f3d7e57efaa9c45068bffc1691fc95e0783c62cd9ca0fa112b50253ec"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r3-edit.preload.mjs",
+      "sha256": "8776c3bc7c6d5e25497e9017bcb1956acc477a325ec148d683e0257636182af8"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r3-probe.mjs",
+      "sha256": "9c7dbbe8110442981edc9604fd9c4837e6436d71c89702330704aacd35da1972"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.log",
+      "sha256": "52bbb77775e1454db86783930aedb53544a6b6b83ebac0a8d902ccc844c63823"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.mjs",
+      "sha256": "5f75c72b054624dd227ff41ca8eec6691c5214e263ae23ea3f7f57aabed3a493"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-tests.log",
+      "sha256": "f4f7c2e51d194601f2d614120e567f5e484e2cae965e3230652ae498ba3fe78a"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-probe.log",
+      "sha256": "2656d3d4b971bef73b79009b44e581a11b3cfe27c833d70ff5601ded528ac99c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-probe.mjs",
+      "sha256": "01e8d6bc4be55cd4b227dc2395aac6f5fc3869248e0ae4978b2212fc74b7cdb0"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-changed-since-r2.log",
+      "sha256": "a779fcde4b8ba5e438b1609c720ff7c9b0b548d612c201b15ffb2ffd3c0a302e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-tests.log",
+      "sha256": "26d4ecacf982443ed0dcc398450441d4f6d9f1fee089fe84a8edb9a063c30cbe"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-text-scan.log",
+      "sha256": "44bd5c23fbce242198805b8456d4795c8204bb3a3070f97cf4081243ca99909c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-tests.log",
+      "sha256": "93bcebc326342b332c08ede9afbd6e901ec36247969b8314449e80dde6cf0db5"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-text-scan.log",
+      "sha256": "9ce29ec38af1a8a22dab2d4ea51314855ca1b22f489cfb31248d1e13ca2dd8cd"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.log",
+      "sha256": "cda55a093e96a619494b9560a55bbd89e3423725f5fc2b0a9e09fea33948543e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs",
+      "sha256": "d3baee3feca461d38dc9a88892597c3332191c663ac8c32f22acfcfcd13a6251"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-tests.log",
+      "sha256": "b5baa46631ae980b95c5b73ca26cf6dd5d88cf132435e7202c134cdbca9a2580"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-probe.log",
+      "sha256": "0abfa53dd559311a561facf33d50d2334a2e49797b80e742dad288a9fc7fdfe7"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-probe.mjs",
+      "sha256": "e7ad53534668e3d49f072cbd086c714bbc0f1fb1e802384f2d8769d7f7f84813"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-probe.log",
+      "sha256": "15efd8ce16fa3276778c242ac49b44a6dd9106e0773aebc124522b6e5844c6de"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-probe.mjs",
+      "sha256": "974467fa315753e21e44e6730b008b9b2441aef88d81d2ae029a6c4604445d39"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-tests.log",
+      "sha256": "983000a29f69ae748a25e908ec1930915047adb3e5b58213958c889c4d217124"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-r2-text-scan.log",
+      "sha256": "7b69048298ab00650a7ab0ad4e9f3c8abd998b386b18888d1c14b2690b7d5e7c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-tests.log",
+      "sha256": "fb6c3fa3584ddf72fccfe9ac663f7c1a9f8f813b178b3f49c7015bc6f09c3393"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-text-scan.log",
+      "sha256": "781fc64b9f9e98dbea255deeb4bd046e1b03139d9f8ca9a75cc90594a29f1392"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-every-spec-count.log",
+      "sha256": "8d4fbd4a14369dab30266e885219fbcc2dffdb9a4adbb21c7b0c203dfef5e507"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-attack.log",
+      "sha256": "03c911b5e45858dbaeb427469dced120f9e7313184eac961449830a9d15cbc0a"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-attack.mjs",
+      "sha256": "54ff57753591cfe0d3e7fb3fa44b6d543798a0d0f50e138f9fbc715dce28cc09"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-tests.log",
+      "sha256": "ea79f8dce8e17f8f5a60bf4faa2b0b21a83366fb711cd6cc7145f28dcfd6355b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-text-scan.log",
+      "sha256": "f6655d13928486b384ae59fd40db16d8d0eded3778b48a13366b3082b51b7ace"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-r2-walk.log",
+      "sha256": "f05095365a9c799e288bc8bb5f302faa5ec1491eda048b407e910b4557236706"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-test-changes.log",
+      "sha256": "f21b9662cb65de58a6dfa142f821d67b61b9c10fff4bc3b3336451bb6959e5f9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-test-diffs.log",
+      "sha256": "90c030e19eeea8adfe240d82854546d3b6da8eea3f1ea7a5ad59d92ef63753fe"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-tests.log",
+      "sha256": "021ce45b0ba50f7870f4d96fc3ea5127ef7bb8acdb3987561e2c6fb9f69817c6"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-text-scan.log",
+      "sha256": "e76c71c3ab1dcd6db80217eb23d9b253ed3a92e582553b71b2afdcdb45fc23c5"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-walk.log",
+      "sha256": "b1dbaa563b99c9a5c6ff12398d6089977d043a868bebd47ebcbb38cfdad8173e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-18-walk.mjs",
+      "sha256": "01b535832efb94bb46b3a132f266af749995fb77529a181b562d69d2a554e1c3"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-every-spec-before-after.txt",
+      "sha256": "ee716b71cbbc7ad1e71f63047e48e02a117218f9463ad740134da77b366f039a"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-probe-siblings.log",
+      "sha256": "a0aa387c46a7e74dfe860549a27cd8050272130babb08ad3315ba78263b0793e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-tests.log",
+      "sha256": "292d033cff41107a711f03cd303f4997d209c6fa23c4d9ba0bf733e89201aa12"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-19-text-scan.log",
+      "sha256": "11132dd432378bf4df4c975436b85cd1ee10770c7332eb7d96279994ce5b4337"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.log",
+      "sha256": "03676f9b6b0582fcdcf154ce42df526bc3447f54dca655a9ed56ab81186ec174"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs",
+      "sha256": "3f80fbd538347a9ff4798783b66cc438b55c33245ecfd2e0f49c48cb59096fbe"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-tests.log",
+      "sha256": "1a03453b8729715c1a42318b5e13b5f1bbcd3636b3b592c640d23819126d050d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-tests.log",
+      "sha256": "80bf9876ab3806f3a5dcb2e3d17f7e811f3b2464bdc10a8e0b5ecfd3da9eaf27"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-text-scan.log",
+      "sha256": "512350e43a3b33d3dc879851a8c2bce338c78027b765e9d1ec1aeb59315b7276"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-walk.log",
+      "sha256": "e976c34db881ab2b74cdf954e054f08f8080228310f83346e2fb4f8a210cd8db"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-21-walk.sh",
+      "sha256": "a702fa8ab99cabdcc7d8e1964a5e2b66ac703a71ed2a81ecc5a7ef4b16f5cd74"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-failfirst.log",
+      "sha256": "9b2d7b07a62211941d0d6f4ff1afbba49016083f0e757421b8619f1eca1e4c09"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-failfirst.mjs",
+      "sha256": "4095dab2edb2aba1b55c81f5deac0401f27d018fd7cf741629d4166ef9fe94a5"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.log",
+      "sha256": "d86dcf77d1ea182dab80f791cfcc74c3b31f75c91fc010fc839de6944412c4fa"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.mjs",
+      "sha256": "e93beb3813b757f7e902cfe0fb017152c30349b296c64e9d5f1d054e25729634"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-r2-probe.log",
+      "sha256": "5b6eaf3f770203a47d8443db268989c90e65f9738d029a2de7035f17331413bd"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-r2-probe.mjs",
+      "sha256": "e04151f1cdfd99700fad7ae2f2d249e8c6d24a0dc88dc6ef59ad7fd7ee14c15b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-r2-tests.log",
+      "sha256": "592c7f5b99d9c1cd5384683f66aa3b0ef8b7635b7304ac6345b8820cc00a42ba"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-tests.log",
+      "sha256": "fc75cd22924c2c848ae2e8831a0fbd57d8c64f6712e1531fe7fe6b1bbf2efdd0"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-probe.log",
+      "sha256": "f0cfab50cdc1192a88d8b65cc37af0453abac88c3c2afc357676b1b49b27c93b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-probe.mjs",
+      "sha256": "a585ad285a82519ddcac20aee09c6f5aa8d9c3b75908818a478687b11a054fe4"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-23-r1-tests.log",
+      "sha256": "f75b4acd647947e391c21d8e051b218cf33aa25a5a4599737d9431dcc8991eb2"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-probe.log",
+      "sha256": "6986fd819bc1939d9ca0fad135382d435b7f5b55839f25397696610046d28024"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-probe.sh.txt",
+      "sha256": "dd4b3319ad61d966b50e51646668d5c9b118fe2bc42ce0137e40d5b1244bc8c9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-24-tests.log",
+      "sha256": "7e416fc5ed3538efdc2b4e122320050ac72b933b187e15f28d55572379bd1d4e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-every-spec-list.txt",
+      "sha256": "b4adad2649b6542e7d18b474b3254fc6f2ca38d40ba6cd6c767238ecd8182c63"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-source-scan.txt",
+      "sha256": "7e95043e40529e81ef89da79a56dd7883e37a369636a78ae1d3f12d280db514d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt",
+      "sha256": "6f20436f23088023f3a1dde6e3dea00311071b1c80e3f5c129525a207dd49737"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.sh.txt",
+      "sha256": "41aed083e1169e1629fafbe37dc0cb97c51505894b65a6b167f7a22901e7079e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.txt",
+      "sha256": "becb88ddd6804325b3440ff3a9db54578e4d1ced25670bffab43552e38cd48d4"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-source-scan.txt",
+      "sha256": "69d9a05469b2385a506fbd39729e78d4c9d5ca9e409aeb612f94e05624d84d57"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-tests.txt",
+      "sha256": "752a62c95c2aac0e125482126d1c909000cc1ed97c13ab173b75ae3dd5dee22e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-tidy-verify-record-edit.txt",
+      "sha256": "34403b0fe760b583d06c4360dfc98373fb81d8d6d6736eb5fe747dd0404d307c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-ci.log",
+      "sha256": "be10a57c35692c7b14fd637814bd0b9f1fb6b93ee3b3464c93574c51a16a4790"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-init.log",
+      "sha256": "4a1b8e99e1610a788df937b7ff5d1fa2b68be2afe38a3f7ee8f9fdd006ac6307"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-markers.log",
+      "sha256": "2aed7de801bb5f4e68852ddbfb7d0124e5e5fe2bd54158b63a5cd7a0f07b7f80"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-probe.log",
+      "sha256": "53457ef86d315061242e4ff75b2c18fa241a8dec3250d65cab7a2aba04f29d4d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-public-docs.log",
+      "sha256": "582a4446451cfc3cad927c0389e5d754901aef160e0c0efefa45812c10e527e0"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-r2-probe.log",
+      "sha256": "aedc16f4028bce29dddfe6ae49c90b3856e39ffa1b0304bf92323366de60a122"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-r2-tests.log",
+      "sha256": "413580172c1ae4caa6118f437503eaf797d10d6f164c7b6cb9a9b8c7e7722bfe"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-26-tests.log",
+      "sha256": "d1e86def4da156c35bdfa8aa41c4bee677afb491007c73c2fa5f77c01df531f1"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1-e2e.log",
+      "sha256": "6d1ac573325a7934a58951c419880d78cf05f4f4c38f376e756c52574f97ab1a"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1-e2e.mjs.txt",
+      "sha256": "6357859eeddde80220725f0a851a60b9f4d4e7fa81eb092f2f3293538a709fa8"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1-regress.log",
+      "sha256": "7cc9501c8b9b5012d8834ea8964862b7a4f0e2466ac561eb4bb53d7358a97ee7"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1-regress.mjs.txt",
+      "sha256": "fe9e059bc39ec1016b11fb9a3505f6836ed11cdf79df09bd3ef6932173b159da"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1.log",
+      "sha256": "0fab3a3a3cd37554e4eddc31df2e1adf71500474ad86809dc5ef182502770f3d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1.mjs.txt",
+      "sha256": "5cb6ed0f10985010e03d308f28f490566d62e647a9d9b93b1afaaff373144688"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b14.log",
+      "sha256": "2c4c0b08fd1b93bb722771a879cb2757b99d9f856991e79e79812f6e16f0e9ab"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b14.mjs.txt",
+      "sha256": "69dfd0079e36a46fdd2232b1c0092c38c455a63cc5ed247a20fc3b0b0f0eca26"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b3.log",
+      "sha256": "d66b9e9434dff6413866a6da4768c0a959e579b82488df3f094c86dff45ea76b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b3.mjs.txt",
+      "sha256": "8e56233707290fba79a77db5f8416e60818ecc7abc2b8aa0342b915edf54ba40"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b678.log",
+      "sha256": "b06158e5f20c8043d81a3258667985ac15bb102427640a603806cf5b5ea9ac62"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b678.mjs.txt",
+      "sha256": "658f2c20b621d3fff191573ba1d722aa1f573c2e10f759e895b17ed0397104ec"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+      "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-config.mjs.txt",
+      "sha256": "62600da54cc537d1215cba8f3ee90cb5f70a581ba83ad5049ab5763f740c7e55"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-dispatch.mjs.txt",
+      "sha256": "8d5b5fba19517d64d28be6ad5212b6633eb4d3b4566461721f42fc2db4ae3ed1"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe-quoted.mjs.txt",
+      "sha256": "694b031910a40fe28c06ce323a7a70ce308ea99bc76527dcbe0cc1addd879c5b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-probe.log",
+      "sha256": "fd0739db1751f2e1f0bdcee67d1ce9255eea3d9c534a84850aa834604b998bd1"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-29-tests.log",
+      "sha256": "3ae11c4fde5bd37e7c8e38a8537c22a38754bfbb3c261a4bd713b61fd7066ca9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-30-archive-vs-181.log",
+      "sha256": "90b5816d9fb70869b83c592ceb6f6ed4fa3cd8bbd24162f2ddea4f2cdf2ac75a"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-30-grep.log",
+      "sha256": "8dbbb08f2e1d858f0496e093d9b2ee2795b5ab167ff5d77ec160410b929c0a6c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-30-probe.log",
+      "sha256": "51443fe09ac196cbc73d77a88ef3afaaf469d5b649988558a72a9afaa7b15bb0"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-30-probe.mjs.txt",
+      "sha256": "17d5d0031cb4b5765466cf2661c0b38a0f4904cdb875f3d28bd52365a19b737c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-30-test-diff.log",
+      "sha256": "0bba148d5a055de8b62214a2da6c6f5eb355d2ab9451eb51b10216aa77b37b77"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-30-tests.log",
+      "sha256": "c3c31344698bf78ae14c59d4a2f3d55e336be02dccfda076cacbdebc11ca064e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-probe.log",
+      "sha256": "5c59aeba14057edc12edb0c87bc1b32f35a7edb3b4d11096a3b36edfa22458c5"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-probe.mjs.txt",
+      "sha256": "870df953c2613456a164b6d8add2161a182a705e11f3f262a398c663e347ace3"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-source.log",
+      "sha256": "116c18d96f8e8ad18cd0301a48295d2dea7a78e64c466d692571ab27223989f6"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-tests.log",
+      "sha256": "416a4bb5bdc7feed2c88943961ac6f0bba7d2fb2a5306c02a3c592ac3c1aaf7d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-32-words-base.log",
+      "sha256": "d0c3fd03c5d76be1464204f81e699f299ce6cd4831fd3991df4e95e04687a9d1"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+      "sha256": "807ee77d8db560c93e5779c2669f6512d7965324bd1493e0ff3f0ef768d378e0"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+      "sha256": "6c80a2922a8829961ab6c502ff832e26947a095bb55d118199b273d59ba154db"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+      "sha256": "3c3b74ce608ed0fb28f94e297924ed893b6734140b7b66743356d854bf867429"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+      "sha256": "aef51fed7ec7e0a1c444c9b6318c4dbb781d1edce1e44f9b9e0ec31cbc34cb1f"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+      "sha256": "454eed41e780839b653502ec7c079b22fd3bf5483d590ed09a8570f7e4665ca9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+      "sha256": "6c88c54a8158bf3b0a26d33f72fc63be2c645b9d707311a36d662d5ae8443c48"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/06-report-gate.md",
+      "sha256": "df7d590b731a125d3f24be831adfdaeac739aa399880a5dec3b4734e88fdf402"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+      "sha256": "7c4e679a1841422883f76e11bf7ebee79601fce8242730c7a8bb2dddf7f6e9a9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+      "sha256": "6a44755783e66cf5d0345e37a711d7fb72b240b4ce60c5809e674fff0e38397b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+      "sha256": "14d85a35a36e2368226e35e39ce45cf48bc28879f493f84c5f8accc075012fd8"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/10-load-line.md",
+      "sha256": "e2c89c1febf560dcbec0f910d4e209ccf718a442e8d571224bb83fa042cb3b49"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+      "sha256": "57a0589babde6f65c6ffb86b3d4ba85a26963d09204451a5b44c9f88247a2dbb"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/12-env-map.md",
+      "sha256": "c9608212fdff51f43bc4e735e966628b311b2d3608ee30563b64ccbeb455bd01"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+      "sha256": "10572765e8e5400e2ede7314293f804e17b6ef0b819d78a59e72c9f36faabc4b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+      "sha256": "d61277719893fddb7d5a9abd237ebf8028acb26edada344009e7074df04d2edc"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+      "sha256": "a1661be5623977c819898255edeb717bdbb439db46cd00b572a91dc9f163296e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+      "sha256": "402e4e079977d1111f19d91b8ba89ebcb4d8e5178370ac99023f8e7ef7e8a917"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+      "sha256": "c888d66cf4ee454cfa5b23d4e829ef4ec4aaa1021aeb8f8a66d913e79182a832"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+      "sha256": "e78822fde561d57654eca3569ccc19eabd4ed56ea5e3c74337bfe06a38d50bea"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md",
+      "sha256": "9beac1371142539e288f527a8d8cca0001c9c00cf5faed0d3ad3dc8fb698ea37"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+      "sha256": "ff07fff904131eebd4cbd66ac2617d64bc9d1c1c9c6ac1dbee6aa9339b75faf2"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/21-test-review-cleanup.md",
+      "sha256": "820b58c6188b618b971de2b6de49472dc823325321e40ecb9639f5e7dee85f49"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+      "sha256": "02373e1e729b557565d968031d8b63c6bf578e61e661a21cabb1192d42a9c5fc"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md",
+      "sha256": "26edba05703a5a38a241f373cc8f9b83abc2b0b7822290bc54e6fd43479df5ad"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md",
+      "sha256": "c094cdf0cd965745a201000de849096dfae8aa4b0a88f27a41e39bbf3154521d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+      "sha256": "90d5702dc8997a607b7d9d9a0968a6a7756012e15136913d6bb86eb512196c24"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/26-release-proof.md",
+      "sha256": "32885df4638e18da8cf8859234b3f45c5e228edd6ed23cb76a635ef57f849597"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+      "sha256": "77ade9e970f0f3ca07dd1e5852a8d380da58089576af283f261918d024cb53a0"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+      "sha256": "141d5327c1fb3ae6ab344db7923c6fa6fcdfb080fb95108c1f4561a8dd65cea4"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/29-polish-archive-dispatch.md",
+      "sha256": "5a288e4c25e418b3fb78dc990e0d338f6c882990f349058af117c42dd2e318df"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/30-archive-lists-only.md",
+      "sha256": "199c47709c6594384be9c255fa48ece2b8469f728637149fc0a4bf08506b67e4"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/31-gate-matcher-and-records.md",
+      "sha256": "5d5b9fe0505796f175585d1b80b62dd2391bb1c4a1cf39f2ce0122767886ab11"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+      "sha256": "7f67be18962cdd1b999eed54e422b7fcae809a40db5a10dd3012ceafb9a9fdf6"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/receipts/proof-ci.log",
+      "sha256": "7729a8f810755f99314fcdd5129ecb4895f66f58af5ec57fd7cb5f7794bd8b26"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/receipts/proof-ci.md",
+      "sha256": "ccf9e8f2ad9603cb68ea0ac18ff4b3ac0dd07e123fc67ac98504d6402bca1be8"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/receipts/proof-init.md",
+      "sha256": "062cf69be26b423aeb8b29cd26f9728c22cbb1a33771ea0618bcbd56884c4e12"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/receipts/proof-markers.log",
+      "sha256": "9888e7c8111aa9d849d57784a6f7a00b5c6a9c32368a718329feafb80d9a0a8d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/receipts/proof-patch-fault.diff",
+      "sha256": "7b04fe7d4482aeeefcee412bc8d2a58ed1f800a4eea5b0d07f2c52692b662bec"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/receipts/proof-patch-result.json",
+      "sha256": "371003e9a741014b50d260cd2230e4f9b18b6a1059e5897a4a8c90dde21b03a1"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/receipts/proof-patch.log",
+      "sha256": "f9127bb99cf204ff8b14688ea337007f4884551c728b7ead632ab9694a71d24f"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/receipts/proof-patch.md",
+      "sha256": "0754a59755a7e3faa25fc69be3337a48af3e7c00208f4a2d343ff9b3376e2aa9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+      "sha256": "da1f46247bcfba5d30832f2f2b750e445fc65911016df02b8b91337c83933b09"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+      "sha256": "7ae2247edeeee6642e819a2d0362d33a7691066893cab4391a0d6f0ef40a97b0"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+      "sha256": "88b03842420e552e3ec33fbb64a6c7ae0dd3b26e15ca2f405aef50fa97dd5d4a"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-11-r2.report.json",
+      "sha256": "8c2c4f4ae9d2c465e3c75dd0a1f548e5ee596a3b1dea914e02aa85d0f4bb0b1a"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-11.report.json",
+      "sha256": "1d2912efab1bc22d3114250fa26a3e6927a0eb9fc0b3ab1d5641664cd370cb61"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+      "sha256": "c062fe9c26702d77515f725b98210e60d880a595bfa78b5c4cf3b26c30010556"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-13-r2.report.json",
+      "sha256": "b44e4d8e45285961c9647c942b798a17217333d3b54c63c78f17670a3f1abf46"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-13-r3.report.json",
+      "sha256": "7bb6d77264afc82ce77cf9287f6d53b11b604bbd47223ae905b53c24fd71f1b8"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-13.report.json",
+      "sha256": "b33278d924e94ccd65c8ffb389e8d34f2f493083738d84bbc1e365a84ec662a9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-14.report.json",
+      "sha256": "1a48d4cc4a430b93fbd33a5dc35938288e0853507bb0168b6b01d1dde3225243"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-15-r3.report.json",
+      "sha256": "e4f458be44f2e89db58dee91c248e853c7091a7d98d8dcc68447374123dcd6d2"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-15.report.json",
+      "sha256": "f31dc41a05aebce492ee598757b8483639fcedef3a4e1dbe33dd091e6337b04d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+      "sha256": "61269079acfa02ef1fca365d3c504eca1c3e01aec1da5f06b0ce9a2403b6b358"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-17-r2.report.json",
+      "sha256": "87062627854a9203a362ad40765825d6c8365336b140aac3669fa32c7d0ba7f2"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-17.report.json",
+      "sha256": "bfc05c39a72bb943bfe0a8f54fc71320efc145a9d6cdd86ebd79ea2033a4861b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-18-r2.report.json",
+      "sha256": "d65f1845c1002641bd4afe366e2d57683a38c98589a2ce771408cdca5eb16a43"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-18.report.json",
+      "sha256": "0ba7137d6a91e02cc870fb2373c68d75da9538c9ef9403aa294ab689d76efcb4"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-19.report.json",
+      "sha256": "9de082c3d37dfeba51377ac953895d8a4fd0858f8e3433ac501cf907b16c714c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+      "sha256": "fdafcef5580b9fe8c99970af3cfc9089d7984a7ef248d724e5ed4275e76ff034"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+      "sha256": "d08ebf8716c3e36b358ec86febdaf9f37ab88413b29f9bb1e9db73459c58f1f8"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-21.report.json",
+      "sha256": "3ba56b262cb9760c37ece5facc2834223e108f1aba9cb94d90a3e8c3a6f5be8c"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-22-r2.report.json",
+      "sha256": "5b52f206501a5a4b8f5470919445474bd06d4aac0f29b06cdd6f48d0da9ffd32"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-22.report.json",
+      "sha256": "a0a153b478de41c9e1046e91734443cc87445d532f87c2a033cf51bb19e69825"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-23.report.json",
+      "sha256": "dfdd629ed91f82c62ab8d651286fe8a8c45d400a5fa4f04c9a9f1231184b0203"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-24.report.json",
+      "sha256": "0e3d0e7dbaf93e1021fed1d5a310783f170364302af32c756d8c63b39829c1e6"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+      "sha256": "71fc633348f157098998fbfe09a070247c02a88cd59dbea2cfc86147220c409f"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+      "sha256": "bd4991d7b754bb496804462039d7eccee71df93aa7ee60225d84b344648973b5"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-26-r2.report.json",
+      "sha256": "d2c6f91756b13d4056547f4e6945170f851a54ebcd756b7c771b93fcbfc4af2e"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-26.report.json",
+      "sha256": "d13950b3d7b77a853e5ea42ef926ec0d43f7b21cd1e05f48e362c529d2721ea7"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-27-r2.report.json",
+      "sha256": "272bcfafae5f694e0b35b170c5af56d7b39b6be8642c2b7bdbead7609acb9008"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-27.report.json",
+      "sha256": "e9d07762517b4768cf74a8eaec480a7c09a37b34529f139961549e65300413c2"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-28.report.json",
+      "sha256": "6b08f06ee2461c4303e635efe8c232376216de8a46efd03c00333fa70c747594"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-29.report.json",
+      "sha256": "8a4c6ab6abbb2f987f9234a685232e27bc4e6f7c2cd2ce707817f7345d4523e6"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+      "sha256": "1383577b148d3a92f8a6435731f0e1a76be7e053f21cd597aeb1d94971796952"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-30.report.json",
+      "sha256": "514bf5735c0c75c9206264acdc2f22ee4f630b32ff2b9172bc87dd97b7fac918"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-31.report.json",
+      "sha256": "f4621329ab1c25e82e57d5c812b247f137664b18604e72b4f9040ec6f5ba9163"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-32.report.json",
+      "sha256": "f0b5321a08a2b96dcc3249a3833be981333d247d7c308a6c89ded10e19bac9a9"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+      "sha256": "3a6b260a5c5d93df7384749780744de13678901c6d1820e8b5250badcb372fdc"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+      "sha256": "95a2073d472ca20aa45b5d8ea34657bb31a1afbf271fd749cdb94c36931abe24"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+      "sha256": "d918693bf7e0fc3adefac7adc8b1ca48e483c9d1d0bb64558c242712946f76ae"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+      "sha256": "d72d336b76f1967f2f5c93c2a2f2dc5309154f8ec399766b757c05c7e6d4fa5b"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+      "sha256": "43696db1dfa13710b7fea9d67b57cccf537c3d2b0d64501dddbe9656c94dc305"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-7-r3.report.json",
+      "sha256": "a010630aacb251a01aa11155ab1a571ee3aae94d28c49ab127e31832bbf7c3f6"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+      "sha256": "5d1da543909a6f4328e89a82d4357a5ad876f36a222c4fdd759d879ec0a0f13d"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+      "sha256": "a7e9f30326bca8dc5e92352ee3faa9118cd46f2919be429b43b42fa9ed556cbf"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+      "sha256": "2e2d191ec81ebac97de357858e576e35cb6d33a323b8839492d0b00b6ae4f7dd"
+    }
+  ],
+  "copiedEvidence": [],
+  "requirementHistory": [
+    {
+      "path": "docs/features/2026-11-21-test-release/brief.md",
+      "normalization": "requirement-scope",
+      "scope": {
+        "anchors": [
+          "evidence-marker",
+          "context-and-authorization",
+          "scope-and-limits"
+        ]
+      },
+      "acceptedSha256": "4b1ee79f586c4c87a94b4437d21847ee679dcf23ea9541c4631854d5139d11c3",
+      "acceptedCommit": "f157616a263266a867dbd897cf67ebae84be6eda",
+      "restoredSha256": "c106dfd0bc280960c235d69a892377770bfc0f157a275c70c6c6c1f2dd5db2aa",
+      "laterCommits": [
+        "e753f7e5d9414eea5fb8962a9c0f8018289f65fa",
+        "5deec22b581ce0ad371bc31998fd644ac4256cd7",
+        "5a0c22f1ba59d768447a3051fa9154bc163f8d3c",
+        "853bfcc4f0db915f2f86d7143e7b4e34182de243",
+        "edb34b6b1a94b9a369391ba34c616a7c84d2304b",
+        "cf2d42bb5953a410d09d435adceb0bd8f65abffb",
+        "8c74cd29a7085d1b8a38de63731148e4004e049a",
+        "7a0a18cd65f21f94f3946f294132e9d782d79844",
+        "46125484f05cee24098fd03f5b61517c0a58a861",
+        "d670e7190e518f0a0534912469e7b73aca7f8b07",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ],
+      "amendments": [
+        {
+          "commit": "e753f7e5d9414eea5fb8962a9c0f8018289f65fa",
+          "fromSha256": "c106dfd0bc280960c235d69a892377770bfc0f157a275c70c6c6c1f2dd5db2aa",
+          "toSha256": "2c33b7ebd593d3d6d53b9b4d6935cfad544b5d474e7fa53783bed0cded195a85",
+          "decisions": [
+            "on-demand-budget"
+          ],
+          "summary": "Asks the owner: on-demand-budget."
+        },
+        {
+          "commit": "5deec22b581ce0ad371bc31998fd644ac4256cd7",
+          "fromSha256": "2c33b7ebd593d3d6d53b9b4d6935cfad544b5d474e7fa53783bed0cded195a85",
+          "toSha256": "73de0ad0eea61357414f36ac8afbec7882a1d621d5ea9884a38cfcd4bad000f3",
+          "decisions": [
+            "on-demand-budget"
+          ],
+          "summary": "Records the owner's answers: on-demand-budget = plus-1500."
+        },
+        {
+          "commit": "5a0c22f1ba59d768447a3051fa9154bc163f8d3c",
+          "fromSha256": "73de0ad0eea61357414f36ac8afbec7882a1d621d5ea9884a38cfcd4bad000f3",
+          "toSha256": "68e1e01d8e157f3a651490bde8266c990e6887c1d27ceaa62449842dd6b0a082",
+          "decisions": [
+            "archive-rewrite-route"
+          ],
+          "summary": "Asks the owner: archive-rewrite-route."
+        },
+        {
+          "commit": "853bfcc4f0db915f2f86d7143e7b4e34182de243",
+          "fromSha256": "68e1e01d8e157f3a651490bde8266c990e6887c1d27ceaa62449842dd6b0a082",
+          "toSha256": "0e6fc1343f2f1935fe149bccf1111eb74de161253303a411a5a4a6a7002b6c44",
+          "decisions": [
+            "archive-rewrite-route"
+          ],
+          "summary": "Records the owner's answers: archive-rewrite-route = fix-and-accept."
+        },
+        {
+          "commit": "edb34b6b1a94b9a369391ba34c616a7c84d2304b",
+          "fromSha256": "0e6fc1343f2f1935fe149bccf1111eb74de161253303a411a5a4a6a7002b6c44",
+          "toSha256": "dc1c1f51981e6e8dd99c95c60839eda56ec2087c1563485a55dfabb1892ba8c4",
+          "decisions": [
+            "archive-accept-mechanism"
+          ],
+          "summary": "Asks the owner: archive-accept-mechanism."
+        },
+        {
+          "commit": "8c74cd29a7085d1b8a38de63731148e4004e049a",
+          "fromSha256": "dc1c1f51981e6e8dd99c95c60839eda56ec2087c1563485a55dfabb1892ba8c4",
+          "toSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+          "decisions": [
+            "archive-accept-mechanism"
+          ],
+          "summary": "Records the owner's answers: archive-accept-mechanism = split."
+        },
+        {
+          "commit": "7a0a18cd65f21f94f3946f294132e9d782d79844",
+          "fromSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+          "toSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Asks the owner: archive-test-editor, archive-red-path, archive-in-place, archive-spec-13-close."
+        },
+        {
+          "commit": "46125484f05cee24098fd03f5b61517c0a58a861",
+          "fromSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "toSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Records the owner's answers: archive-test-editor = agent, archive-red-path = agent-undoes, archive-in-place = keep-move, archive-spec-13-close = replace."
+        },
+        {
+          "commit": "d670e7190e518f0a0534912469e7b73aca7f8b07",
+          "fromSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "toSha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+          "decisions": [
+            "archive-test-editor",
+            "archive-edit-tests"
+          ],
+          "summary": "The archive-edit-tests section now follows the archive-panel ruling: archive lists, session end repoints the tests (archive-test-editor = agent)."
+        }
+      ]
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/brief.md",
+      "normalization": "requirement-scope",
+      "scope": {
+        "anchors": [
+          "spec-tier",
+          "context-and-authorization",
+          "scope-and-limits"
+        ]
+      },
+      "acceptedSha256": "0449d824dc6392bc46a2a8680d460e096488a56a6abb9e57ef589f083221d171",
+      "acceptedCommit": "f157616a263266a867dbd897cf67ebae84be6eda",
+      "restoredSha256": "c106dfd0bc280960c235d69a892377770bfc0f157a275c70c6c6c1f2dd5db2aa",
+      "laterCommits": [
+        "e753f7e5d9414eea5fb8962a9c0f8018289f65fa",
+        "5deec22b581ce0ad371bc31998fd644ac4256cd7",
+        "5a0c22f1ba59d768447a3051fa9154bc163f8d3c",
+        "853bfcc4f0db915f2f86d7143e7b4e34182de243",
+        "edb34b6b1a94b9a369391ba34c616a7c84d2304b",
+        "cf2d42bb5953a410d09d435adceb0bd8f65abffb",
+        "8c74cd29a7085d1b8a38de63731148e4004e049a",
+        "7a0a18cd65f21f94f3946f294132e9d782d79844",
+        "46125484f05cee24098fd03f5b61517c0a58a861",
+        "d670e7190e518f0a0534912469e7b73aca7f8b07",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ],
+      "amendments": [
+        {
+          "commit": "e753f7e5d9414eea5fb8962a9c0f8018289f65fa",
+          "fromSha256": "c106dfd0bc280960c235d69a892377770bfc0f157a275c70c6c6c1f2dd5db2aa",
+          "toSha256": "2c33b7ebd593d3d6d53b9b4d6935cfad544b5d474e7fa53783bed0cded195a85",
+          "decisions": [
+            "on-demand-budget"
+          ],
+          "summary": "Asks the owner: on-demand-budget."
+        },
+        {
+          "commit": "5deec22b581ce0ad371bc31998fd644ac4256cd7",
+          "fromSha256": "2c33b7ebd593d3d6d53b9b4d6935cfad544b5d474e7fa53783bed0cded195a85",
+          "toSha256": "73de0ad0eea61357414f36ac8afbec7882a1d621d5ea9884a38cfcd4bad000f3",
+          "decisions": [
+            "on-demand-budget"
+          ],
+          "summary": "Records the owner's answers: on-demand-budget = plus-1500."
+        },
+        {
+          "commit": "5a0c22f1ba59d768447a3051fa9154bc163f8d3c",
+          "fromSha256": "73de0ad0eea61357414f36ac8afbec7882a1d621d5ea9884a38cfcd4bad000f3",
+          "toSha256": "68e1e01d8e157f3a651490bde8266c990e6887c1d27ceaa62449842dd6b0a082",
+          "decisions": [
+            "archive-rewrite-route"
+          ],
+          "summary": "Asks the owner: archive-rewrite-route."
+        },
+        {
+          "commit": "853bfcc4f0db915f2f86d7143e7b4e34182de243",
+          "fromSha256": "68e1e01d8e157f3a651490bde8266c990e6887c1d27ceaa62449842dd6b0a082",
+          "toSha256": "0e6fc1343f2f1935fe149bccf1111eb74de161253303a411a5a4a6a7002b6c44",
+          "decisions": [
+            "archive-rewrite-route"
+          ],
+          "summary": "Records the owner's answers: archive-rewrite-route = fix-and-accept."
+        },
+        {
+          "commit": "edb34b6b1a94b9a369391ba34c616a7c84d2304b",
+          "fromSha256": "0e6fc1343f2f1935fe149bccf1111eb74de161253303a411a5a4a6a7002b6c44",
+          "toSha256": "dc1c1f51981e6e8dd99c95c60839eda56ec2087c1563485a55dfabb1892ba8c4",
+          "decisions": [
+            "archive-accept-mechanism"
+          ],
+          "summary": "Asks the owner: archive-accept-mechanism."
+        },
+        {
+          "commit": "8c74cd29a7085d1b8a38de63731148e4004e049a",
+          "fromSha256": "dc1c1f51981e6e8dd99c95c60839eda56ec2087c1563485a55dfabb1892ba8c4",
+          "toSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+          "decisions": [
+            "archive-accept-mechanism"
+          ],
+          "summary": "Records the owner's answers: archive-accept-mechanism = split."
+        },
+        {
+          "commit": "7a0a18cd65f21f94f3946f294132e9d782d79844",
+          "fromSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+          "toSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Asks the owner: archive-test-editor, archive-red-path, archive-in-place, archive-spec-13-close."
+        },
+        {
+          "commit": "46125484f05cee24098fd03f5b61517c0a58a861",
+          "fromSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "toSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Records the owner's answers: archive-test-editor = agent, archive-red-path = agent-undoes, archive-in-place = keep-move, archive-spec-13-close = replace."
+        },
+        {
+          "commit": "d670e7190e518f0a0534912469e7b73aca7f8b07",
+          "fromSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "toSha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+          "decisions": [
+            "archive-test-editor",
+            "archive-edit-tests"
+          ],
+          "summary": "The archive-edit-tests section now follows the archive-panel ruling: archive lists, session end repoints the tests (archive-test-editor = agent)."
+        }
+      ]
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/brief.md",
+      "normalization": "requirement-scope",
+      "scope": {
+        "anchors": [
+          "spec-tier",
+          "worker-commands",
+          "context-and-authorization",
+          "scope-and-limits"
+        ]
+      },
+      "acceptedSha256": "f37542e5fee7bcca264fb85f3deb316d6a04bf842f5c669fccf7d6e7e6cd9d2a",
+      "acceptedCommit": "f157616a263266a867dbd897cf67ebae84be6eda",
+      "restoredSha256": "c106dfd0bc280960c235d69a892377770bfc0f157a275c70c6c6c1f2dd5db2aa",
+      "laterCommits": [
+        "e753f7e5d9414eea5fb8962a9c0f8018289f65fa",
+        "5deec22b581ce0ad371bc31998fd644ac4256cd7",
+        "5a0c22f1ba59d768447a3051fa9154bc163f8d3c",
+        "853bfcc4f0db915f2f86d7143e7b4e34182de243",
+        "edb34b6b1a94b9a369391ba34c616a7c84d2304b",
+        "cf2d42bb5953a410d09d435adceb0bd8f65abffb",
+        "8c74cd29a7085d1b8a38de63731148e4004e049a",
+        "7a0a18cd65f21f94f3946f294132e9d782d79844",
+        "46125484f05cee24098fd03f5b61517c0a58a861",
+        "d670e7190e518f0a0534912469e7b73aca7f8b07",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ],
+      "amendments": [
+        {
+          "commit": "e753f7e5d9414eea5fb8962a9c0f8018289f65fa",
+          "fromSha256": "c106dfd0bc280960c235d69a892377770bfc0f157a275c70c6c6c1f2dd5db2aa",
+          "toSha256": "2c33b7ebd593d3d6d53b9b4d6935cfad544b5d474e7fa53783bed0cded195a85",
+          "decisions": [
+            "on-demand-budget"
+          ],
+          "summary": "Asks the owner: on-demand-budget."
+        },
+        {
+          "commit": "5deec22b581ce0ad371bc31998fd644ac4256cd7",
+          "fromSha256": "2c33b7ebd593d3d6d53b9b4d6935cfad544b5d474e7fa53783bed0cded195a85",
+          "toSha256": "73de0ad0eea61357414f36ac8afbec7882a1d621d5ea9884a38cfcd4bad000f3",
+          "decisions": [
+            "on-demand-budget"
+          ],
+          "summary": "Records the owner's answers: on-demand-budget = plus-1500."
+        },
+        {
+          "commit": "5a0c22f1ba59d768447a3051fa9154bc163f8d3c",
+          "fromSha256": "73de0ad0eea61357414f36ac8afbec7882a1d621d5ea9884a38cfcd4bad000f3",
+          "toSha256": "68e1e01d8e157f3a651490bde8266c990e6887c1d27ceaa62449842dd6b0a082",
+          "decisions": [
+            "archive-rewrite-route"
+          ],
+          "summary": "Asks the owner: archive-rewrite-route."
+        },
+        {
+          "commit": "853bfcc4f0db915f2f86d7143e7b4e34182de243",
+          "fromSha256": "68e1e01d8e157f3a651490bde8266c990e6887c1d27ceaa62449842dd6b0a082",
+          "toSha256": "0e6fc1343f2f1935fe149bccf1111eb74de161253303a411a5a4a6a7002b6c44",
+          "decisions": [
+            "archive-rewrite-route"
+          ],
+          "summary": "Records the owner's answers: archive-rewrite-route = fix-and-accept."
+        },
+        {
+          "commit": "edb34b6b1a94b9a369391ba34c616a7c84d2304b",
+          "fromSha256": "0e6fc1343f2f1935fe149bccf1111eb74de161253303a411a5a4a6a7002b6c44",
+          "toSha256": "dc1c1f51981e6e8dd99c95c60839eda56ec2087c1563485a55dfabb1892ba8c4",
+          "decisions": [
+            "archive-accept-mechanism"
+          ],
+          "summary": "Asks the owner: archive-accept-mechanism."
+        },
+        {
+          "commit": "8c74cd29a7085d1b8a38de63731148e4004e049a",
+          "fromSha256": "dc1c1f51981e6e8dd99c95c60839eda56ec2087c1563485a55dfabb1892ba8c4",
+          "toSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+          "decisions": [
+            "archive-accept-mechanism"
+          ],
+          "summary": "Records the owner's answers: archive-accept-mechanism = split."
+        },
+        {
+          "commit": "7a0a18cd65f21f94f3946f294132e9d782d79844",
+          "fromSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+          "toSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Asks the owner: archive-test-editor, archive-red-path, archive-in-place, archive-spec-13-close."
+        },
+        {
+          "commit": "46125484f05cee24098fd03f5b61517c0a58a861",
+          "fromSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "toSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Records the owner's answers: archive-test-editor = agent, archive-red-path = agent-undoes, archive-in-place = keep-move, archive-spec-13-close = replace."
+        },
+        {
+          "commit": "d670e7190e518f0a0534912469e7b73aca7f8b07",
+          "fromSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "toSha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+          "decisions": [
+            "archive-test-editor",
+            "archive-edit-tests"
+          ],
+          "summary": "The archive-edit-tests section now follows the archive-panel ruling: archive lists, session end repoints the tests (archive-test-editor = agent)."
+        }
+      ]
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/brief.md",
+      "normalization": "requirement-scope",
+      "scope": {
+        "anchors": [
+          "owner-gate-lines",
+          "context-and-authorization",
+          "scope-and-limits"
+        ]
+      },
+      "acceptedSha256": "d6a7926775709b63b169f3364c1cc8be7eccc90ae024c69e8b29bbde02bc1637",
+      "acceptedCommit": "f157616a263266a867dbd897cf67ebae84be6eda",
+      "restoredSha256": "c106dfd0bc280960c235d69a892377770bfc0f157a275c70c6c6c1f2dd5db2aa",
+      "laterCommits": [
+        "e753f7e5d9414eea5fb8962a9c0f8018289f65fa",
+        "5deec22b581ce0ad371bc31998fd644ac4256cd7",
+        "5a0c22f1ba59d768447a3051fa9154bc163f8d3c",
+        "853bfcc4f0db915f2f86d7143e7b4e34182de243",
+        "edb34b6b1a94b9a369391ba34c616a7c84d2304b",
+        "cf2d42bb5953a410d09d435adceb0bd8f65abffb",
+        "8c74cd29a7085d1b8a38de63731148e4004e049a",
+        "7a0a18cd65f21f94f3946f294132e9d782d79844",
+        "46125484f05cee24098fd03f5b61517c0a58a861",
+        "d670e7190e518f0a0534912469e7b73aca7f8b07",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ],
+      "amendments": [
+        {
+          "commit": "e753f7e5d9414eea5fb8962a9c0f8018289f65fa",
+          "fromSha256": "c106dfd0bc280960c235d69a892377770bfc0f157a275c70c6c6c1f2dd5db2aa",
+          "toSha256": "2c33b7ebd593d3d6d53b9b4d6935cfad544b5d474e7fa53783bed0cded195a85",
+          "decisions": [
+            "on-demand-budget"
+          ],
+          "summary": "Asks the owner: on-demand-budget."
+        },
+        {
+          "commit": "5deec22b581ce0ad371bc31998fd644ac4256cd7",
+          "fromSha256": "2c33b7ebd593d3d6d53b9b4d6935cfad544b5d474e7fa53783bed0cded195a85",
+          "toSha256": "73de0ad0eea61357414f36ac8afbec7882a1d621d5ea9884a38cfcd4bad000f3",
+          "decisions": [
+            "on-demand-budget"
+          ],
+          "summary": "Records the owner's answers: on-demand-budget = plus-1500."
+        },
+        {
+          "commit": "5a0c22f1ba59d768447a3051fa9154bc163f8d3c",
+          "fromSha256": "73de0ad0eea61357414f36ac8afbec7882a1d621d5ea9884a38cfcd4bad000f3",
+          "toSha256": "68e1e01d8e157f3a651490bde8266c990e6887c1d27ceaa62449842dd6b0a082",
+          "decisions": [
+            "archive-rewrite-route"
+          ],
+          "summary": "Asks the owner: archive-rewrite-route."
+        },
+        {
+          "commit": "853bfcc4f0db915f2f86d7143e7b4e34182de243",
+          "fromSha256": "68e1e01d8e157f3a651490bde8266c990e6887c1d27ceaa62449842dd6b0a082",
+          "toSha256": "0e6fc1343f2f1935fe149bccf1111eb74de161253303a411a5a4a6a7002b6c44",
+          "decisions": [
+            "archive-rewrite-route"
+          ],
+          "summary": "Records the owner's answers: archive-rewrite-route = fix-and-accept."
+        },
+        {
+          "commit": "edb34b6b1a94b9a369391ba34c616a7c84d2304b",
+          "fromSha256": "0e6fc1343f2f1935fe149bccf1111eb74de161253303a411a5a4a6a7002b6c44",
+          "toSha256": "dc1c1f51981e6e8dd99c95c60839eda56ec2087c1563485a55dfabb1892ba8c4",
+          "decisions": [
+            "archive-accept-mechanism"
+          ],
+          "summary": "Asks the owner: archive-accept-mechanism."
+        },
+        {
+          "commit": "8c74cd29a7085d1b8a38de63731148e4004e049a",
+          "fromSha256": "dc1c1f51981e6e8dd99c95c60839eda56ec2087c1563485a55dfabb1892ba8c4",
+          "toSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+          "decisions": [
+            "archive-accept-mechanism"
+          ],
+          "summary": "Records the owner's answers: archive-accept-mechanism = split."
+        },
+        {
+          "commit": "7a0a18cd65f21f94f3946f294132e9d782d79844",
+          "fromSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+          "toSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Asks the owner: archive-test-editor, archive-red-path, archive-in-place, archive-spec-13-close."
+        },
+        {
+          "commit": "46125484f05cee24098fd03f5b61517c0a58a861",
+          "fromSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "toSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Records the owner's answers: archive-test-editor = agent, archive-red-path = agent-undoes, archive-in-place = keep-move, archive-spec-13-close = replace."
+        },
+        {
+          "commit": "d670e7190e518f0a0534912469e7b73aca7f8b07",
+          "fromSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "toSha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+          "decisions": [
+            "archive-test-editor",
+            "archive-edit-tests"
+          ],
+          "summary": "The archive-edit-tests section now follows the archive-panel ruling: archive lists, session end repoints the tests (archive-test-editor = agent)."
+        }
+      ]
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/brief.md",
+      "normalization": "requirement-scope",
+      "scope": {
+        "anchors": [
+          "declared-test-changes",
+          "archive-tests",
+          "context-and-authorization",
+          "scope-and-limits"
+        ],
+        "decisionIds": [
+          "archive-named-files",
+          "archive-edit-tests"
+        ]
+      },
+      "acceptedSha256": "f83b31bf1c39adc6722b5f25c3b074bd41d6fc372bd8f65d2f79dc0df6a8cdca",
+      "acceptedCommit": "46125484f05cee24098fd03f5b61517c0a58a861",
+      "restoredSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+      "laterCommits": [
+        "d670e7190e518f0a0534912469e7b73aca7f8b07",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ],
+      "amendments": [
+        {
+          "commit": "d670e7190e518f0a0534912469e7b73aca7f8b07",
+          "fromSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "toSha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+          "decisions": [
+            "archive-test-editor",
+            "archive-edit-tests"
+          ],
+          "summary": "The archive-edit-tests section now follows the archive-panel ruling: archive lists, session end repoints the tests (archive-test-editor = agent)."
+        }
+      ]
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/brief.md",
+      "normalization": "requirement-scope",
+      "scope": {
+        "anchors": [
+          "archive-tests",
+          "context-and-authorization",
+          "scope-and-limits"
+        ],
+        "decisionIds": [
+          "archive-named-files",
+          "archive-edit-tests"
+        ]
+      },
+      "acceptedSha256": "4a8779d2d05d6d8fb76d5458e2206e2f05f97228992efaa940573589b3df4829",
+      "acceptedCommit": "46125484f05cee24098fd03f5b61517c0a58a861",
+      "restoredSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+      "laterCommits": [
+        "d670e7190e518f0a0534912469e7b73aca7f8b07",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ],
+      "amendments": [
+        {
+          "commit": "d670e7190e518f0a0534912469e7b73aca7f8b07",
+          "fromSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "toSha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+          "decisions": [
+            "archive-test-editor",
+            "archive-edit-tests"
+          ],
+          "summary": "The archive-edit-tests section now follows the archive-panel ruling: archive lists, session end repoints the tests (archive-test-editor = agent)."
+        }
+      ]
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+      "normalization": "spec-status",
+      "acceptedSha256": "7efe3320503ea12748ace0693bc11673da7862c9c4d6f65bf9b2d9977da77c81",
+      "acceptedCommit": "a18ca53da001a1d24be5d3350eaa8201db294036",
+      "restoredSha256": "95fa457c28c0fd30af70174939d8aefa7d19d911d67176897ad89049f6c3b277",
+      "laterCommits": [
+        "5a0c22f1ba59d768447a3051fa9154bc163f8d3c",
+        "ba6e174ebe50f30eb03ceea8aecfad8ce07ac3a1",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ],
+      "reconciliationEntry": 0,
+      "reconciliationSha256": "11bb1a1823c8478ccec76bfc02b003515b1cb501f2948a9105bc3d0d3e08ee09"
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/brief.md",
+      "normalization": "requirement-scope",
+      "scope": {
+        "anchors": [
+          "declared-test-changes",
+          "archive-tests",
+          "context-and-authorization",
+          "scope-and-limits"
+        ],
+        "decisionIds": [
+          "test-only-product-code",
+          "cap-raise"
+        ]
+      },
+      "acceptedSha256": "6ecd6df1913ace149e010120b88c0e13fba4186b8512be6bdbefab0b445f6721",
+      "acceptedCommit": "46125484f05cee24098fd03f5b61517c0a58a861",
+      "restoredSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+      "laterCommits": [
+        "d670e7190e518f0a0534912469e7b73aca7f8b07",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ],
+      "amendments": [
+        {
+          "commit": "d670e7190e518f0a0534912469e7b73aca7f8b07",
+          "fromSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "toSha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+          "decisions": [
+            "archive-test-editor",
+            "archive-edit-tests"
+          ],
+          "summary": "The archive-edit-tests section now follows the archive-panel ruling: archive lists, session end repoints the tests (archive-test-editor = agent)."
+        }
+      ]
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/brief.md",
+      "normalization": "requirement-scope",
+      "scope": {
+        "anchors": [
+          "context-and-authorization",
+          "scope-and-limits",
+          "spec-tier",
+          "wave-gate",
+          "owner-gate-lines",
+          "declared-test-changes",
+          "fault-proof",
+          "evidence-marker",
+          "load-guidance",
+          "worker-commands",
+          "session-end-pr"
+        ]
+      },
+      "acceptedSha256": "fb74be059ee3ff97f31b16366f879da35994130bf9ab9091a771248589da11ec",
+      "acceptedCommit": "8c74cd29a7085d1b8a38de63731148e4004e049a",
+      "restoredSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+      "laterCommits": [
+        "7a0a18cd65f21f94f3946f294132e9d782d79844",
+        "46125484f05cee24098fd03f5b61517c0a58a861",
+        "d670e7190e518f0a0534912469e7b73aca7f8b07",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ],
+      "amendments": [
+        {
+          "commit": "7a0a18cd65f21f94f3946f294132e9d782d79844",
+          "fromSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+          "toSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Asks the owner: archive-test-editor, archive-red-path, archive-in-place, archive-spec-13-close."
+        },
+        {
+          "commit": "46125484f05cee24098fd03f5b61517c0a58a861",
+          "fromSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "toSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Records the owner's answers: archive-test-editor = agent, archive-red-path = agent-undoes, archive-in-place = keep-move, archive-spec-13-close = replace."
+        },
+        {
+          "commit": "d670e7190e518f0a0534912469e7b73aca7f8b07",
+          "fromSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "toSha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+          "decisions": [
+            "archive-test-editor",
+            "archive-edit-tests"
+          ],
+          "summary": "The archive-edit-tests section now follows the archive-panel ruling: archive lists, session end repoints the tests (archive-test-editor = agent)."
+        }
+      ]
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/review-followups.md",
+      "normalization": "none",
+      "acceptedSha256": "01a4f9c3a5095f0c7613bc669670db9cb182b09a8004c592375bbb04f1e95d60",
+      "acceptedCommit": "1b81b0d9820f95591da5f1d2896fa9f952e23040",
+      "restoredSha256": "01a4f9c3a5095f0c7613bc669670db9cb182b09a8004c592375bbb04f1e95d60",
+      "laterCommits": [
+        "18144feda58f19bb3dd6741491070ab7957cf6f0",
+        "b2f2466453f871c88c454f161b0eee5bcbe0d35e",
+        "ce0b5606a699ba8d5e81db9e4c311d5b774fb9f3",
+        "99ec658a073f1de7b32eb0188305290c60f6b928",
+        "ae1b50201d6b67574fff3960d19910770e80ecc5",
+        "e95301fc4b80e5b570b279363260c1ff2fd55125",
+        "6163e655888d72d9cf10c5c764092506f3881770",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ]
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/review-followups.md",
+      "normalization": "none",
+      "acceptedSha256": "e41e6a4a6480661206924dd4e5beeec515ef464ce7b1f934eb087e97420ba369",
+      "acceptedCommit": "ae1b50201d6b67574fff3960d19910770e80ecc5",
+      "restoredSha256": "e41e6a4a6480661206924dd4e5beeec515ef464ce7b1f934eb087e97420ba369",
+      "laterCommits": [
+        "e95301fc4b80e5b570b279363260c1ff2fd55125",
+        "6163e655888d72d9cf10c5c764092506f3881770",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ]
+    },
+    {
+      "path": "docs/features/2026-11-21-test-release/brief.md",
+      "normalization": "requirement-scope",
+      "scope": {
+        "anchors": [
+          "spec-tier",
+          "wave-gate"
+        ]
+      },
+      "acceptedSha256": "82badbdbf1276f074bbaf1442c205cf52fed241be365a9bd1b61ffedb8314f02",
+      "acceptedCommit": "8c74cd29a7085d1b8a38de63731148e4004e049a",
+      "restoredSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+      "laterCommits": [
+        "7a0a18cd65f21f94f3946f294132e9d782d79844",
+        "46125484f05cee24098fd03f5b61517c0a58a861",
+        "d670e7190e518f0a0534912469e7b73aca7f8b07",
+        "0772933a46b2f3d6f694dc7caee04c92d10a80e6"
+      ],
+      "amendments": [
+        {
+          "commit": "7a0a18cd65f21f94f3946f294132e9d782d79844",
+          "fromSha256": "c368a70f36c2df3e62f2039ebcd13aa4829220854d35707b7fce2dbba7aa5bad",
+          "toSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Asks the owner: archive-test-editor, archive-red-path, archive-in-place, archive-spec-13-close."
+        },
+        {
+          "commit": "46125484f05cee24098fd03f5b61517c0a58a861",
+          "fromSha256": "6c52a7e0fda20d257e971438b890c09de802c0cc54b08d18ec8eae98f5728c2c",
+          "toSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "decisions": [
+            "archive-test-editor",
+            "archive-red-path",
+            "archive-in-place",
+            "archive-spec-13-close"
+          ],
+          "summary": "Records the owner's answers: archive-test-editor = agent, archive-red-path = agent-undoes, archive-in-place = keep-move, archive-spec-13-close = replace."
+        },
+        {
+          "commit": "d670e7190e518f0a0534912469e7b73aca7f8b07",
+          "fromSha256": "8b7e1dd6f6c7b9953b54ae1c2559f32a44fd0a221d5cd1cd99a0756f1d398756",
+          "toSha256": "6e5fd24420e9c772dfdd5fcfb1af4c28e5dc2ecb91d50d6eba8d75c55a4ca094",
+          "decisions": [
+            "archive-test-editor",
+            "archive-edit-tests"
+          ],
+          "summary": "The archive-edit-tests section now follows the archive-panel ruling: archive lists, session end repoints the tests (archive-test-editor = agent)."
+        }
+      ]
+    }
+  ]
+}
