@@ -1,6 +1,6 @@
 ---
 id: 1
-status: in-review
+status: done
 ---
 # The payload guard counts every-spec text and on-demand text separately
 

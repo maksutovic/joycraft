@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-split-cap.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -91,6 +91,10 @@
       },
       "submitted": {
         "at": "2026-11-22T02:13:46.517Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "sha256": "da1f46247bcfba5d30832f2f2b750e445fc65911016df02b8b91337c83933b09"
       }
     },
     {

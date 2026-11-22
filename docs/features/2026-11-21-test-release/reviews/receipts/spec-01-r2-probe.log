@@ -1,0 +1,30 @@
+EVERY_SPEC_FILES in test: 12 [".agents/skills/joycraft-implement/SKILL.md",".agents/skills/joycraft-verify/SKILL.md",".agents/skills/joycraft-decompose/SKILL.md",".agents/skills/joycraft-testing/SKILL.md",".claude/agents/joycraft-implementer.md",".claude/agents/joycraft-reviewer.md",".joycraft/references/testing.md",".joycraft/references/workflow.md",".joycraft/references/dispatch.md",".joycraft/references/completion.md",".joycraft/references/gates.md",".joycraft/references/worktrees.md"]
+
+== 1/2. counts
+base f157616: every-spec 12201 on-demand 17663 total 29864
+caps: every-spec 12256 on-demand 19663
+HEAD: every-spec 12150 (spare 106) on-demand 17569 (spare 2094) total 29719
+payload-guard.test.ts:29: // at the commit before spec 1 (f157616: 29,864 words in all, 12,201 every-spec,
+payload-guard.test.ts:30: // 17,663 on-demand), so 29,919 - 17,663 = 12,256.
+payload-guard.test.ts:35: // words over its count before spec 1: 17,663 + 2,000 = 19,663.
+payload-guard.test.ts:39: // 12,150 every-spec words (106 spare) and 17,569 on-demand words (2,094 spare).
+payload-guard.test.ts:56: export const EVERY_SPEC_CAP = FIELD_24_WORDS - 17663;
+payload-guard.test.ts:57: export const ON_DEMAND_CAP = 17663 + 2000;
+payload-guard.test.ts:359: expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(12201);
+
+== 3. packet readFirst
+readFirst: ["AGENTS.md",".claude/skills/joycraft-verify/SKILL.md",".claude/skills/joycraft-testing/SKILL.md",".joycraft/references/testing.md",".joycraft/references/completion.md",".joycraft/references/dispatch.md",".joycraft/references/worktrees.md",".joycraft/contracts/types.d.ts",".joycraft/runtime/completion.mjs",".joycraft/runtime/identity.mjs",".joycraft/runtime/evidence.mjs",".joycraft/runtime/dispatch-preflight.mjs",".joycraft/runtime/dispatch-start.mjs",".joycraft/runtime/scope.mjs"]
+payload text in readFirst but not in EVERY_SPEC_FILES: []
+
+== 4. allowlist
+allowlist entries naming setup.md: 0
+setup.md lines matching guarded terms or WorktreeCreate: 0
+
+== 5. fixture size Math.max(200, spare + 1) vs spare
+spare 0: adds 200, over by 200 -> fails cap (as required)
+spare 106: adds 200, over by 94 -> fails cap (as required)
+spare 199: adds 200, over by 1 -> fails cap (as required)
+spare 200: adds 201, over by 1 -> fails cap (as required)
+spare 500: adds 501, over by 1 -> fails cap (as required)
+spare 2000: adds 2001, over by 1 -> fails cap (as required)
+exit 0
