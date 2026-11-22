@@ -1,6 +1,6 @@
 ---
 id: 5
-status: todo
+status: in-review
 ---
 # setup.md gets back two dropped phrases, and the guard records the word-cap split
 

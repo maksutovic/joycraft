@@ -282,7 +282,7 @@
       "id": 5,
       "file": "05-text-restore.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -341,6 +341,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T17:59:34.250Z"
       }
     },
     {
