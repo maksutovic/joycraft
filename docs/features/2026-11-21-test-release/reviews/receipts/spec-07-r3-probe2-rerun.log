@@ -1,0 +1,46 @@
+A1 /usr/bin/BASH -c gate (case-insensitive FS runs bash) evidence exit=2
+A1 /usr/bin/BASH -c gate (case-insensitive FS runs bash) :: exit=1 stderr="gate-receipt-required" remoteRef=none
+A2 /bin/Sh -c gate evidence exit=0
+A2 /bin/Sh -c gate :: exit=0 stderr="" remoteRef=HEAD
+A3 bash -c gate with red gate evidence exit=1
+A3 bash -c gate with red gate :: exit=1 stderr="gate-receipt-red" remoteRef=none
+A4 ./sh -c gate, ./sh is a committed no-op script, real gate red evidence exit=0
+A4 ./sh -c gate, ./sh is a committed no-op script, real gate red :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+A5 tools/bash -c gate, committed no-op script, real gate red evidence exit=0
+A5 tools/bash -c gate, committed no-op script, real gate red :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+A6 /bin/echo.exe-style name: sh.exe absent -> spawn error evidence exit=2
+A6 /bin/echo.exe-style name: sh.exe absent -> spawn error :: exit=1 stderr="gate-receipt-required" remoteRef=none
+A7 bash -lc gate (refused form) evidence exit=0
+A7 bash -lc gate (refused form) :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+A8 bash -c gate extraArg evidence exit=0
+A8 bash -c gate extraArg :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+A9 env bash -c gate evidence exit=0
+A9 env bash -c gate :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+A1b hand /usr/bin/BASH -c gate :: exit=0 stderr="" remoteRef=HEAD
+B1 hand CMD.EXE /c gate :: exit=0 stderr="" remoteRef=HEAD
+B2 hand powershell.exe -Command gate :: exit=0 stderr="" remoteRef=HEAD
+B3 hand pwsh -command (lowercase flag) :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+B4 hand cmd -c gate :: exit=0 stderr="" remoteRef=HEAD
+B5 genuine cmd.exe /c gate on mac evidence exit=2
+B5 genuine cmd.exe /c gate on mac :: exit=1 stderr="gate-receipt-required" remoteRef=none
+B6 genuine pwsh -Command gate on mac (pwsh absent?) evidence exit=2
+B6 genuine pwsh -Command gate on mac (pwsh absent?) :: exit=1 stderr="gate-receipt-required" remoteRef=none
+C1 receipts/link.log -> file outside project :: exit=1 stderr="gate-receipt-outside-project" remoteRef=none
+C2 receipts/up/outside.log via dir symlink :: exit=1 stderr="gate-receipt-outside-project" remoteRef=none
+C3 receipt path is the project root itself :: exit=1 stderr="gate-receipt-outside-project" remoteRef=none
+C4 receipt path is a missing file :: exit=1 stderr="gate-receipt-required" remoteRef=none
+C5 symlink inside project -> genuine green receipt inside :: exit=0 stderr="" remoteRef=HEAD
+C6 --root via symlinked alias, absolute receipt under alias :: exit=0 stderr="" remoteRef=HEAD
+D1 dirty missing :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+D2 dirty "false" string :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+D3 dirty 0 :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+D4 exitCode "0" string :: exit=1 stderr="gate-receipt-red" remoteRef=none
+D5 revision upper-case :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+D6 short revision :: exit=1 stderr="gate-receipt-stale" remoteRef=none
+E1 gate "node gate.mjs && node gate2.mjs" run as exact words (gate2 red never runs) evidence exit=0
+E1 gate "node gate.mjs && node gate2.mjs" run as exact words (gate2 red never runs) :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+E2 same gate via sh -c (gate2 red runs) evidence exit=1
+E2 same gate via sh -c (gate2 red runs) :: exit=1 stderr="gate-receipt-red" remoteRef=none
+E3 single argv element "node gate.mjs" (no such program) evidence exit=2
+E3 single argv element "node gate.mjs" (no such program) :: exit=1 stderr="gate-receipt-required" remoteRef=none
+exit=0

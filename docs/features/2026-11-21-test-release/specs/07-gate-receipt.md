@@ -1,6 +1,6 @@
 ---
 id: 7
-status: in-review
+status: done
 ---
 # Delivery needs a green gate receipt, and the coordinator plans gate runs and finds the owning spec
 

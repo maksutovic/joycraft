@@ -1,0 +1,467 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "58f2c69a426a4b827bc76bb53c46cb825db0bcc3",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 7,
+    "specPath": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+    "criteria": [
+      {
+        "id": "spec-7-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-7-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-7-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-7-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "wave-gate",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "wave-gate-default"
+          ]
+        },
+        "sha256": "89fff2def5afd1332a9a435dede86478da9387aeaec066ebc6911a81d74a5ba9",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "0d4888a1b47ccf1f7dbdd46225a62e98460dc6fc3a6247a3e5761a5bbb0ad27f",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+        "kind": "requirement",
+        "sha256": "8b945c039bd24eb6fab1a6cf16d1135742b325b4e9e9dc3f8b5a3559be3de283",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/coordinator.mjs",
+        "kind": "code",
+        "sha256": "5b35cad593728c21f81bdf3036b33df9b2af9e2be1f32c33c220167798e5c917",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/delivery.mjs",
+        "kind": "code",
+        "sha256": "0088454fce59e8a5dfef5c9e7e1204faec20a6ca2335c8332ed4dc6145ffdddd",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-delivery-lock.test.ts",
+        "kind": "check",
+        "sha256": "0e7dc57e970d0d0ff57d23e49c617bf85ceeba6cbf75ad87cc67cc43ab6915d3",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "ecd5741aca9e08d44e1ad219e3b76b73755401914e25576e0bed8212cf441f23",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2,
+          3,
+          7
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "wave-gate",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "wave-gate-default"
+          ]
+        }
+      ]
+    },
+    "identity": "c02b5ce40796cca865a99c244f5894ebcf84d5d0486bbc91bd9525bc497e6563"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a0bee06bbb7735d8f"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "adbfe86dbcfa3f0bf"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-7-1-refusals",
+      "subjectIdentity": "c02b5ce40796cca865a99c244f5894ebcf84d5d0486bbc91bd9525bc497e6563",
+      "criteria": [
+        "spec-7-1"
+      ],
+      "representativeInput": "delivery.mjs push --gate-receipt <log> against a bare local remote (runsGate payload/.joycraft/runtime/delivery.mjs:120-129, checkGateReceipt :131-143)",
+      "expected": "Exit 1 and no remote ref unless the footer shows the recorded gate command, exitCode 0, dirty false and revision = HEAD; each refusal has its own code.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-7-1] and all [review-7-*] / [review-7-r2-*] tests pass (18/18 in the two spec files, exit 0).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-tests.log",
+              "sha256": "22820651369684c52a41e22e09ea6789b5e501ab1dad7af4e9c1f302390fc9c5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/runtime-delivery-lock.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-1 probe rerun: forged footer still pushes (stated limit); red, stale, dirty, other command, extra args, sh -c gate || true, /bin/echo -c gate, node -e 0 -c gate, footer not on last line and receipt outside the project are all refused with their own code; remote ref does not move.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe1-rerun.log",
+              "sha256": "44006a6331b1c43a1e4ca155e7ac18b172bdcfd76bba0bf0ac2dff7b358f9b79"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs",
+              "sha256": "51d1a7509234c3ba5a01849cea055eeb13aa7290550d37363db1f53ff86c4a29"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs",
+              "."
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-2 probe rerun: E1 (gate with && run as split words, gate2 red) is now gate-receipt-not-gate with no remote ref; E2 red; A4/A5 relative project scripts ./sh and tools/bash now refused not-gate; other results as in round 2.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe2-rerun.log",
+              "sha256": "a14b21ac2e7b9d1cb3b595467940dfd4df35c1db3d3507cfa11899e58b25ad95"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe.mjs",
+              "sha256": "122dae300f3796ed4844169efa4732cf1ca414ed97ff4b600a3ea11b2338d55f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe.mjs",
+              "."
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-3 probe: shell form with double spaces or tabs in an && gate, single for double quotes, quoted gate split into words, env prefixes (env node, env sh -c, env CI=1 sh -c), sh -c \"<gate>; true\", \"<gate> || true\", \"<gate>\\ntrue\", \"<gate>;\", plain gate + \" #\", C:\\x\\notbash.exe are refused not-gate; leading/trailing whitespace, BOM and NBSP around an && gate give genuine red receipts that are refused red; sh /c and bash -Command run red. Accepted forms that do not run the gate need a deliberate fake (see follow-ups).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe.log",
+              "sha256": "c84fc21e13c414de17735816e1f5f698d32eecc7adb5f0f9cb3eed41b0debdc1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe.mjs",
+              "sha256": "195b08d79e64c7dab19c8f9951785c1e6ec71a133b2215790c5a43d8d6f0dd6f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe.mjs",
+              "."
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "A forged footer still pushes (stated limit in the usage text). A deliberately placed fake shell (absolute path to a project script, a C:/x/bash lookalike directory on POSIX, a symlink named bash on PATH or elsewhere) or a newline written into a plain gate's -c line still passes; these are deliberate, the same class as the forged footer."
+      ]
+    },
+    {
+      "id": "spec-7-2-green",
+      "subjectIdentity": "c02b5ce40796cca865a99c244f5894ebcf84d5d0486bbc91bd9525bc497e6563",
+      "criteria": [
+        "spec-7-2"
+      ],
+      "representativeInput": "deliver() at payload/.joycraft/runtime/delivery.mjs:177-196",
+      "expected": "A green gate receipt on HEAD pushes with no second verifier; no tests.gate keeps -- <verifier>; existing delivery tests pass.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Both [AC:spec-7-2] tests and the 6 unchanged runtime-delivery-lock tests pass; [review-7-r2-1] sh -c && gate green pushes HEAD.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-tests.log",
+              "sha256": "22820651369684c52a41e22e09ea6789b5e501ab1dad7af4e9c1f302390fc9c5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/runtime-delivery-lock.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-1 probe case 7 (genuine green receipt on HEAD) pushes, remote ref = HEAD; round-3 Q4 (quoted gate via exact sh -c) and E5 (gate with = via sh -c) push HEAD.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe1-rerun.log",
+              "sha256": "44006a6331b1c43a1e4ca155e7ac18b172bdcfd76bba0bf0ac2dff7b358f9b79"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs",
+              "sha256": "51d1a7509234c3ba5a01849cea055eeb13aa7290550d37363db1f53ff86c4a29"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe.log",
+              "sha256": "c84fc21e13c414de17735816e1f5f698d32eecc7adb5f0f9cb3eed41b0debdc1"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe.mjs",
+              "sha256": "195b08d79e64c7dab19c8f9951785c1e6ec71a133b2215790c5a43d8d6f0dd6f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs",
+              "."
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-7-3-plan",
+      "subjectIdentity": "c02b5ce40796cca865a99c244f5894ebcf84d5d0486bbc91bd9525bc497e6563",
+      "criteria": [
+        "spec-7-3"
+      ],
+      "representativeInput": "coordinator.mjs gate-plan (unchanged since round 1)",
+      "expected": "2 gate points with wave and 3 with spec for the 3-spec two-wave fixture.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-7-3] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-tests.log",
+              "sha256": "22820651369684c52a41e22e09ea6789b5e501ab1dad7af4e9c1f302390fc9c5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/runtime-delivery-lock.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-1 probe case 9 rerun: waves [[2,4],[3]], 2 gate points.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe1-rerun.log",
+              "sha256": "44006a6331b1c43a1e4ca155e7ac18b172bdcfd76bba0bf0ac2dff7b358f9b79"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs",
+              "sha256": "51d1a7509234c3ba5a01849cea055eeb13aa7290550d37363db1f53ff86c4a29"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs",
+              "."
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-7-4-owner",
+      "subjectIdentity": "c02b5ce40796cca865a99c244f5894ebcf84d5d0486bbc91bd9525bc497e6563",
+      "criteria": [
+        "spec-7-4"
+      ],
+      "representativeInput": "coordinator.mjs gate-owner --file (unchanged since round 1)",
+      "expected": "Specs whose verification inputs hold each file, else bisect.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-7-4] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-tests.log",
+              "sha256": "22820651369684c52a41e22e09ea6789b5e501ab1dad7af4e9c1f302390fc9c5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/runtime-wave-gate.test.ts",
+              "tests/runtime-delivery-lock.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-1 probe 9b/9c rerun: shared file [2,3], [1], [4]; no --file exits 1.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r3-probe1-rerun.log",
+              "sha256": "44006a6331b1c43a1e4ca155e7ac18b172bdcfd76bba0bf0ac2dff7b358f9b79"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs",
+              "sha256": "51d1a7509234c3ba5a01849cea055eeb13aa7290550d37363db1f53ff86c4a29"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs",
+              "."
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "r2-f6-resolved",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "at": "payload/.joycraft/runtime/delivery.mjs:120",
+      "summary": "Round-2 blocking f6-exact-words-shell-operator is resolved in e1ced9f: a gate with shell syntax only counts in the shell form with the exact (trimmed) line; split words are refused (round-2 probe E1 now gate-receipt-not-gate; test [review-7-r2-1]). Round-1 f1 stays resolved (5d, 5e refused). Round-2 f7 is narrowed: relative ./sh and tools/bash are refused (A4, A5; test [review-7-r2-2]). Round-2 f8 (pwsh -command case, cmd -c) is unchanged and not repeated."
+    },
+    {
+      "id": "f9-plain-gate-newline",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/delivery.mjs:125",
+      "summary": "For a plain gate, the shell-form line is compared after splitting on any whitespace, so a newline between words passes; a shell runs each line as a separate command. Probe P1: gate \"node gate.mjs true\" (gate red), genuine receipt of sh -c \"node gate.mjs\\ntrue\" is green and pushes. Realistic gates end in a non-command word and stay red (P2 \"... test\" is red). Simple fix: for a plain gate also require the line to hold no shell syntax (shellSyntax includes \\n), or split only on spaces and tabs.",
+      "assumption": "Needs a newline deliberately written into the -c argument and a gate whose last word is a passing command; no ordinary mistake produces it, so it is the deliberate-fake class, not a spec-7-1 failure."
+    },
+    {
+      "id": "f10-absolute-or-path-fake-shell",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/delivery.mjs:113",
+      "summary": "The f7 fix rejects only relative program paths. Still accepted: an absolute path to a committed no-op project script named bash (C5), a POSIX relative path that looks like a Windows drive path, C:/x/bash, because win32.isAbsolute is true (C4), and a symlink named bash on PATH or elsewhere pointing to echo/true (S1, S3). All need a deliberate fake; refusing absolute paths inside the project root and win32 paths on POSIX would close C4 and C5. State it with the forged-footer limit.",
+      "assumption": "Same class as the stated forged-footer limit and the round-2 f7 follow-up."
+    }
+  ],
+  "limits": [
+    "cmd.exe and powershell are not on this Mac: Windows paths were checked with hand-written footers only.",
+    "Installed .joycraft/runtime/delivery.mjs is not the reviewed copy; the payload copy was reviewed and run.",
+    "Other reviewers had uncommitted files in the tree during the runs (spec 11 receipts)."
+  ],
+  "createdAt": "2026-11-22T02:49:00.818490Z"
+}

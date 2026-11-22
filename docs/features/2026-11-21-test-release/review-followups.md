@@ -50,3 +50,7 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - `expand()` recurses forever on a path containing the literal `{files}`; recurse only into the template text (dispatch-start.mjs:104).
 - An unclosed quote in `tests.focused` should give a note, not exit 1.
 - The startup evidence step appends `focused.command`; a focused command with shell syntax (`&&`) then runs under the caller's shell, not under evidence. Use the shell form for it, as delivery requires for the gate (dispatch-start.mjs:123).
+
+## Gate receipt (spec 7) — fix
+- Plain gate in shell form: refuse shell syntax (newline, `;`) in the line too, or split only on spaces/tabs (delivery.mjs:125).
+- Refuse a shell path inside the project, and Windows-form paths on POSIX (delivery.mjs:113). State the symlinked-shell case beside the forged-footer limit.

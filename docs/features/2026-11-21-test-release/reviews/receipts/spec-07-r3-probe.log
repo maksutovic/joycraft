@@ -1,0 +1,68 @@
+Q1 gate with && run via sh -c with double spaces (gate2 red) evidence exit=1
+Q1 gate with && run via sh -c with double spaces (gate2 red) :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+Q2 gate with && via sh -c with tab instead of space evidence exit=1
+Q2 gate with && via sh -c with tab instead of space :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+Q3 quoted gate node -e "process.exit(0)" run via sh -c with single quotes evidence exit=0
+Q3 quoted gate node -e "process.exit(0)" run via sh -c with single quotes :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+Q4 quoted gate run via sh -c exactly (green) evidence exit=0
+Q4 quoted gate run via sh -c exactly (green) :: exit=0 stderr="" remoteRef=HEAD
+Q5 quoted gate run as split words [node,-e,"process.exit(0)"] (quotes kept) evidence exit=0
+Q5 quoted gate run as split words [node,-e,"process.exit(0)"] (quotes kept) :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+P1 plain gate "node gate.mjs true", sh -c "node gate.mjs\ntrue" (gate red, last line true) evidence exit=0
+P1 plain gate "node gate.mjs true", sh -c "node gate.mjs\ntrue" (gate red, last line true) :: exit=0 stderr="" remoteRef=HEAD
+P2 plain gate "pnpm test"-style "node gate.mjs test" via sh -c "node gate.mjs\ntest" evidence exit=1
+P2 plain gate "pnpm test"-style "node gate.mjs test" via sh -c "node gate.mjs\ntest" :: exit=1 stderr="gate-receipt-red" remoteRef=none
+P3 plain gate run via sh -c with a tab between words (same command) evidence exit=0
+P3 plain gate run via sh -c with a tab between words (same command) :: exit=0 stderr="" remoteRef=HEAD
+P4 plain gate with words if/then/time: "time node gate.mjs" as exact words evidence exit=0
+P4 plain gate with words if/then/time: "time node gate.mjs" as exact words :: exit=0 stderr="" remoteRef=HEAD
+P5 plain gate with @ + , : words as exact words evidence exit=0
+P5 plain gate with @ + , : words as exact words :: exit=0 stderr="" remoteRef=HEAD
+P6 plain gate via sh -c "node gate.mjs #" evidence exit=0
+P6 plain gate via sh -c "node gate.mjs #" :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+P7 plain gate via sh -c with NBSP between words (sh sees one word) evidence exit=1
+P7 plain gate via sh -c with NBSP between words (sh sees one word) :: exit=1 stderr="gate-receipt-red" remoteRef=none
+E1 env node gate.mjs evidence exit=0
+E1 env node gate.mjs :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+E2 env sh -c gate evidence exit=0
+E2 env sh -c gate :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+E3 env CI=1 sh -c gate evidence exit=0
+E3 env CI=1 sh -c gate :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+E4 gate "env CI=1 node gate.mjs" (has =) as exact words evidence exit=0
+E4 gate "env CI=1 node gate.mjs" (has =) as exact words :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+E5 gate "env CI=1 node gate.mjs" via sh -c evidence exit=0
+E5 gate "env CI=1 node gate.mjs" via sh -c :: exit=0 stderr="" remoteRef=HEAD
+W1 recorded gate has surrounding spaces, bash -c trimmed gate (gate2 red) evidence exit=1
+W1 recorded gate has surrounding spaces, bash -c trimmed gate (gate2 red) :: exit=1 stderr="gate-receipt-red" remoteRef=none
+W2 bash -c "  <gate>\n" (gate2 red) evidence exit=1
+W2 bash -c "  <gate>\n" (gate2 red) :: exit=1 stderr="gate-receipt-red" remoteRef=none
+W3 bash -c "\uFEFF<gate>" (BOM trimmed by JS, not by bash) evidence exit=1
+W3 bash -c "\uFEFF<gate>" (BOM trimmed by JS, not by bash) :: exit=1 stderr="gate-receipt-red" remoteRef=none
+W4 bash -c "<gate>\u00a0" (NBSP trimmed by JS, not by bash) evidence exit=1
+W4 bash -c "<gate>\u00a0" (NBSP trimmed by JS, not by bash) :: exit=1 stderr="gate-receipt-red" remoteRef=none
+C1 C:\x\notbash.exe -c gate [hand] :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+C2 C:\x\bash.exe -c gate [hand] :: exit=0 stderr="" remoteRef=HEAD
+C3 \\server\share\sh.exe -c gate (UNC) [hand] :: exit=0 stderr="" remoteRef=HEAD
+C4 C:/x/bash -c gate on POSIX: relative dir "C:" with a committed no-op script, real gate red evidence exit=0
+C4 C:/x/bash -c gate on POSIX: relative dir "C:" with a committed no-op script, real gate red :: exit=0 stderr="" remoteRef=HEAD
+C5 absolute path to a committed no-op project script tools/bash, real gate red evidence exit=0
+C5 absolute path to a committed no-op project script tools/bash, real gate red :: exit=0 stderr="" remoteRef=HEAD
+S1 PATH dir with bash -> /bin/echo, bash -c gate, real gate red evidence exit=0
+S1 PATH dir with bash -> /bin/echo, bash -c gate, real gate red :: exit=0 stderr="" remoteRef=HEAD
+S2 PATH dir with sh -> /bin/sh (real shell via symlink), real gate green evidence exit=0
+S2 PATH dir with sh -> /bin/sh (real shell via symlink), real gate green :: exit=0 stderr="" remoteRef=HEAD
+S3 absolute symlink outside project named bash -> /usr/bin/true, real gate red evidence exit=0
+S3 absolute symlink outside project named bash -> /usr/bin/true, real gate red :: exit=0 stderr="" remoteRef=HEAD
+X1 sh -c "<gate>; true" (plain gate red) evidence exit=0
+X1 sh -c "<gate>; true" (plain gate red) :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+X2 sh -c "<gate> || true" (&& gate, gate2 red) evidence exit=0
+X2 sh -c "<gate> || true" (&& gate, gate2 red) :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+X3 sh -c "<gate>\ntrue" (&& gate, gate2 red) evidence exit=0
+X3 sh -c "<gate>\ntrue" (&& gate, gate2 red) :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+X4 sh -c "<gate>;" (&& gate, gate2 red) evidence exit=1
+X4 sh -c "<gate>;" (&& gate, gate2 red) :: exit=1 stderr="gate-receipt-not-gate" remoteRef=none
+F1 sh /c gate (sh reads script file /c) evidence exit=1
+F1 sh /c gate (sh reads script file /c) :: exit=1 stderr="gate-receipt-red" remoteRef=none
+F2 bash -Command gate evidence exit=1
+F2 bash -Command gate :: exit=1 stderr="gate-receipt-red" remoteRef=none
+exit=0

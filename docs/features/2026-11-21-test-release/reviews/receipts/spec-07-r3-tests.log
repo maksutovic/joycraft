@@ -1,0 +1,25 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-delivery-lock.test.ts (6 tests) 2378ms
+   ✓ delivery lock holder > [AC:lock-dead-holder-taken] takes a lock whose recorded PID is not running on this host and pushes  668ms
+   ✓ delivery lock holder > [AC:lock-dead-takeover-taken] takes over a takeover directory that a dead taker left behind  611ms
+   ✓ delivery lock holder > [AC:lock-records-holder] a free lock records this PID and host and is released after the push  583ms
+ ✓ tests/runtime-wave-gate.test.ts (12 tests) 9369ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-1] refuses a missing, non-gate, red or stale receipt with its own code and pushes nothing  1928ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-2] a green gate receipt on HEAD pushes without a second verifier  603ms
+   ✓ delivery needs a green gate receipt > [AC:spec-7-2] a project with no tests.gate keeps the -- <verifier> push  591ms
+   ✓ gate receipt review-7 fixes > [review-7-1] refuses a green receipt of a non-shell program given -c "<gate>"  462ms
+   ✓ gate receipt review-7 fixes > [review-7-1] still accepts a real shell receipt of sh -c "<gate>"  668ms
+   ✓ gate receipt review-7 fixes > [review-7-3] reads the footer with evidence.mjs readFooter: only the last line, only an object  622ms
+   ✓ gate receipt review-7 fixes > [review-7-4] refuses a gate receipt outside the project root  620ms
+   ✓ gate receipt review-7 fixes > [review-7-r2-1] a gate with shell syntax needs the shell form: split words are refused, a red sh -c run is refused  948ms
+   ✓ gate receipt review-7 fixes > [review-7-r2-1] the same gate pushes through sh -c when every command is green  725ms
+   ✓ gate receipt review-7 fixes > [review-7-r2-2] a shell form whose program is a relative path is refused; a bare name or absolute path is accepted  2010ms
+
+ Test Files  2 passed (2)
+      Tests  18 passed (18)
+   Start at  18:48:07
+   Duration  9.56s (transform 46ms, setup 0ms, collect 41ms, tests 11.75s, environment 0ms, prepare 66ms)
+
+exit=0
