@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "feature": "followups-1-9-2",
+  "specs": [
+    {
+      "id": 1,
+      "file": "01-chained-gate-parts.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "completion",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/specs/01-chained-gate-parts.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/completion.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/completion.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-report-gate.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-1-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/01-chained-gate-parts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/01-chained-gate-parts.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "file": "02-cleanup-checker-fixes.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "cleanup",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/specs/02-cleanup-checker-fixes.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-cleanup-checks-seam.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-cleanup-tidy.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-2-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/02-cleanup-checker-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/02-cleanup-checker-fixes.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "file": "03-more-manifests.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "delivery",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/specs/03-more-manifests.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/delivery.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/delivery.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-wave-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-wave-gate.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-3-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/03-more-manifests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/03-more-manifests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "file": "04-archive-lines.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "archive",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/specs/04-archive-lines.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-archive-as-is.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-archive-named-files.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-4-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/04-archive-lines.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/04-archive-lines.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "file": "05-text-restore.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "text",
+                "scope-and-limits"
+              ],
+              "decisionIds": [
+                "word-cap-split"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/specs/05-text-restore.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/drift-tidy-text.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-5-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/05-text-restore.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/05-text-restore.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "file": "06-release-1-9-2.md",
+      "depends_on": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "release",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "package.json",
+            "kind": "code"
+          },
+          {
+            "path": "src/joycraft-release.json",
+            "kind": "code"
+          },
+          {
+            "path": "CHANGELOG.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/public-docs.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/release-preparation.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-6-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
