@@ -55,6 +55,9 @@ Reviewer rules:
 - A class-1 change passes when its acceptance line states the new value; class
   2 needs its fault proof, class 3 its ledger row and owner yes.
 - A declaration of either path of a rename covers both.
+- A new skip, in a file or a list, and a test that leaves the gate count as
+  removals (class 3). A test may be removed when it
+  conflicts with a later owner decision; it is class 3 too.
 - A red or flaky test outside the spec's set is a follow-up, never a hold.
 - A changed test that reads a path under the features folder (`featurePaths`)
   is a follow-up finding.

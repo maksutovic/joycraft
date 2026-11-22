@@ -31,7 +31,7 @@ Commands are in `AGENTS.md`. Run tests in three tiers:
 
 A pass on a rerun is FLAKY, not PASS. Record a follow-up with both receipts
 and continue, unless the test covers this spec's criterion. Never add a
-retry, a sleep or a skip to get a pass. If an existing test or a criterion
+retry, a sleep, a skip or a special case for a test's input to get a pass. If an existing test or a criterion
 looks wrong, report `spec gap: test is wrong` with the reason; never edit,
 skip or delete it to pass.
 
