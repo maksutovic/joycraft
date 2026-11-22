@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "40d0029b605ec4e5f238e9a613aeaf48ef2bb815",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 17,
+    "specPath": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+    "criteria": [
+      {
+        "id": "spec-17-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-17-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-17-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-17-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "declared-test-changes",
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "test-only-product-code",
+            "cap-raise"
+          ]
+        },
+        "sha256": "6ecd6df1913ace149e010120b88c0e13fba4186b8512be6bdbefab0b445f6721",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "663f7eb39e295c5dbf1bf58800b3792aa65464b6b725cd632117650f196f7865",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/17-test-changes-text.md",
+        "kind": "requirement",
+        "sha256": "62c0aa4de3077df565917aabc938529f25de2e3a5adb590d5199eea4140bbe16",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-decompose/SKILL.md",
+        "kind": "code",
+        "sha256": "492fbd7a736992cca033c6221531cc16a01cdeb4339ad1fbc5a1f18a7bb53f77",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+        "kind": "code",
+        "sha256": "4fd23c74344e815ffd485f35b26515caae8129e4a8e5f9860449e362c136554d",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.claude/agents/joycraft-reviewer.md",
+        "kind": "code",
+        "sha256": "2ad505e55b548d88b41add804dade016c20c569c0fce40d66c7905f8e5adc8d7",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing-review.md",
+        "kind": "code",
+        "sha256": "8c4beba70ad2b5f2b9e810ee5a0bab582af26fc08669a9cf94e3c9d653e8ab71",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/templates/spec.md",
+        "kind": "code",
+        "sha256": "222235072309a572ea8f0625467d5911fdaf14f10c8c54ab2e6c4fad488a3aab",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "e9f3623b14b2fea3eaa8b597355b57f8e85c5ef1ab918c049a5caf156758d9c5",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-test-changes.test.ts",
+        "kind": "check",
+        "sha256": "d06a6679e0214fcd1e19228289b6132c5b3e0951b1fe192f427859763c914da6",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          5,
+          11,
+          17
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "declared-test-changes",
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "test-only-product-code",
+            "cap-raise"
+          ]
+        }
+      ]
+    },
+    "identity": "2e3148bb18665be5f43e302d34cb106dd4d6aa0a59ba661c73eebe6c6642a653"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a1c4095e1ee3dcc85"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a15509f8192599267"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "createdAt": "2026-11-22T03:03:19.698Z",
+  "flows": [
+    {
+      "id": "spec-17-1-template",
+      "subjectIdentity": "2e3148bb18665be5f43e302d34cb106dd4d6aa0a59ba661c73eebe6c6642a653",
+      "criteria": [
+        "spec-17-1"
+      ],
+      "representativeInput": "payload/.joycraft/templates/spec.md at 40d0029 (exported tree), tests/text-test-changes.test.ts [AC:spec-17-1]",
+      "expected": "Template has ## Test changes, default none, three classes; test-changes.mjs parses its example bullet.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Template section has \"none\" and classes 1 spec-mandated / 2 same claim, changed test (fault proof per file) / 3 deleted, skipped or out of the gate (ledger row + owner yes per batch). [AC:spec-17-1] passes on the committed bytes (20/20 tests, exit 0): the fenced example declares nothing when left as is, and as the section body declares tests/a.test.ts class 1 with tests/b.test.ts undeclared.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-tests.log",
+              "sha256": "fb6c3fa3584ddf72fccfe9ac663f7c1a9f8f813b178b3f49c7015bc6f09c3393"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-text-scan.log",
+              "sha256": "781fc64b9f9e98dbea255deeb4bd046e1b03139d9f8ca9a75cc90594a29f1392"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "--root",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r17-export",
+              "tests/text-test-changes.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-17-2-reviewer-rules",
+      "subjectIdentity": "2e3148bb18665be5f43e302d34cb106dd4d6aa0a59ba661c73eebe6c6642a653",
+      "criteria": [
+        "spec-17-2"
+      ],
+      "representativeInput": "payload/.joycraft/references/testing-review.md:45-60 at 40d0029; probe fixtures A1-A3 (honest) and B1-B7 (adversarial) through payload test-changes.mjs",
+      "expected": "The section owns reviewer rules that pass intended test changes and block a weakened test sneaked through.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "FAIL",
+          "actual": "Every listed rule phrase is present and [AC:spec-17-2] passes, and honest cases pass: A1 class 1 with the new value in its acceptance line, A2 class 2 with fault proof, A3 class 3 with ledger row + owner yes all list as declared and the rules pass them; B1 undeclared assertion removal lists as undeclared and blocks (1.8.0 protection kept for undeclared changes, as a superset). But declarations are unconditional: test-changes.mjs reports declared on path+class alone (B2 file declared class 1 while an unrelated assertion is dropped, B3 class 1 whose line states no value, B4 bare bullet with no requiring line, B7 a declaration the implementer added after the base all print declared, undeclared: []). The rules then say \"Block only an undeclared change that no line requires\" (line 54) and \"Judge each diff by its declaration, not as weakened\" (line 53); the class conditions say only \"passes when\" / \"needs\" (lines 55-56) with no consequence. A reviewer following the text literally passes B2, B3, B4 and B7, which 1.8.0 blocked.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-probe.log",
+              "sha256": "0abfa53dd559311a561facf33d50d2334a2e49797b80e742dad288a9fc7fdfe7"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-probe.mjs",
+              "sha256": "e7ad53534668e3d49f072cbd086c714bbc0f1fb1e802384f2d8769d7f7f84813"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-text-scan.log",
+              "sha256": "781fc64b9f9e98dbea255deeb4bd046e1b03139d9f8ca9a75cc90594a29f1392"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-probe.mjs",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r17-export"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-17-3-pointers",
+      "subjectIdentity": "2e3148bb18665be5f43e302d34cb106dd4d6aa0a59ba661c73eebe6c6642a653",
+      "criteria": [
+        "spec-17-3"
+      ],
+      "representativeInput": "verify SKILL.md:45, joycraft-reviewer.md:28-29, decompose SKILL.md:30-32 at 40d0029",
+      "expected": "Old blocking sentence gone; all three point to testing-review.md#test-changes; decompose writes the section and asks once.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "The diff replaces the old sentence in verify and reviewer with a pointer to testing-review.md#test-changes; decompose says to write each spec's ## Test changes section and ask once when \"no weakened tests\" contradicts the feature. [AC:spec-17-3] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-text-scan.log",
+              "sha256": "781fc64b9f9e98dbea255deeb4bd046e1b03139d9f8ca9a75cc90594a29f1392"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-tests.log",
+              "sha256": "fb6c3fa3584ddf72fccfe9ac663f7c1a9f8f813b178b3f49c7015bc6f09c3393"
+            }
+          ],
+          "command": {
+            "argv": [
+              "git",
+              "diff",
+              "2e2c472",
+              "40d0029",
+              "--",
+              "payload/.joycraft/references/testing-review.md",
+              "payload/.joycraft/templates/spec.md",
+              "payload/.agents/skills/joycraft-verify/SKILL.md",
+              "payload/.claude/agents/joycraft-reviewer.md",
+              "payload/.agents/skills/joycraft-decompose/SKILL.md"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-17-4-words",
+      "subjectIdentity": "2e3148bb18665be5f43e302d34cb106dd4d6aa0a59ba661c73eebe6c6642a653",
+      "criteria": [
+        "spec-17-4"
+      ],
+      "representativeInput": "tests/payload-guard.test.ts printed counts at 40d0029; wc -w of the 12 every-spec files at 08118b2^ and 08118b2",
+      "expected": "Every-spec growth at most 15; on-demand inside budget.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Guard passes; printed every-spec words 12142 (cap 12256), on-demand 18998 (cap 19663). Every-spec files went 12153 -> 12142 across 08118b2 (verify -15, reviewer -16, decompose +20): -11, within +15.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-17-tests.log",
+              "sha256": "fb6c3fa3584ddf72fccfe9ac663f7c1a9f8f813b178b3f49c7015bc6f09c3393"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "--root",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r17-export",
+              "tests/text-test-changes.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-declaration-unconditional",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-17-2",
+      "at": "payload/.joycraft/references/testing-review.md:53-56",
+      "summary": "A declaration licenses the whole file with no stated consequence when it fails. \"Block only an undeclared change that no line requires\" plus \"Judge each diff by its declaration, not as weakened\" let a reviewer pass: a declared class-1 file that also drops an unrelated assertion (probe B2), a class-1 bullet whose line states no new value (B3), a bare bullet with no requiring line (B4). The 1.8.0 rule blocked all three. Fix in the same section, keeping the brief's \"block only undeclared\": define declared, e.g. \"A declaration covers only the change its line requires and its class proves (class 1: the stated value; class 2: the fault proof; class 3: the ledger row and owner yes). Anything else in the diff is undeclared.\" Add a probe-style test that a class-1 declaration without a stated value, or with an extra removed assertion, is not covered."
+    },
+    {
+      "id": "f2-self-declaration",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-17-2",
+      "at": "payload/.joycraft/references/testing-review.md:52-54",
+      "summary": "test-changes.mjs reads the spec's current text, so an implementer that adds its own ## Test changes bullet after the base turns an undeclared weakening into a declared one (probe B7: base section \"none\", implementer adds class 2 and drops an assertion; startup shows declared, undeclared []). The rules never say declarations come from decompose (the spec at the base). Fix: one rule, \"A declaration added or changed after the base counts only with a line that requires it; otherwise the change is undeclared\", or have test-changes.mjs read the spec at --base."
+    },
+    {
+      "id": "f3-no-testchanges-at-startup",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/testing-review.md:52",
+      "summary": "assumption: payload startup prints testChanges only when the coordinator passes --changes-base; without it nothing is printed (no warning), and this repo's installed .joycraft/runtime/dispatch-start.mjs has no testChanges at all (this review's startup had none). The rule \"Read testChanges from startup\" needs a fallback: when it is missing, run test-changes.mjs with the spec's base or ask the coordinator, and never read missing as none."
+    },
+    {
+      "id": "f4-rename-visibility",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/testing-review.md:57",
+      "summary": "test-changes.mjs uses --no-renames, so a rename shows as one declared and one undeclared path (probe B5) or two undeclared (B6). \"A declaration of either path of a rename covers both\" is right, but the text does not say how the reviewer sees the pair (git diff -M <base>) or that a rename that drops assertions is class 3, not class 2. With f1 fixed, class 2's fault proof (spec 18) is what catches a hidden deletion."
+    },
+    {
+      "id": "f5-required-undeclared-deletion",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/testing-review.md:54",
+      "summary": "An undeclared deletion or skip that an acceptance line \"requires\" passes the block rule without the class-3 ledger row and owner yes. The brief's rule allows this literally; consider \"a required change still needs its class condition\"."
+    },
+    {
+      "id": "f6-new-test-files",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/templates/spec.md:21",
+      "summary": "\"One bullet per test file the spec changes\" reads as covering new test files too, yet this spec adds tests/text-test-changes.test.ts with Test changes: none (correctly passed as undeclared-but-required). Saying \"each existing test file\" avoids decomposers listing every new test."
+    }
+  ]
+}

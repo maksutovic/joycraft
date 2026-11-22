@@ -1,0 +1,93 @@
+diff --git a/payload/.agents/skills/joycraft-decompose/SKILL.md b/payload/.agents/skills/joycraft-decompose/SKILL.md
+index 6fc098a..50a0f6f 100644
+--- a/payload/.agents/skills/joycraft-decompose/SKILL.md
++++ b/payload/.agents/skills/joycraft-decompose/SKILL.md
+@@ -27,7 +27,9 @@ environment can show is not a criterion; list it under the spec's "Deferred unti
+ deploy" section instead. Include the brief, spec and exact
+ relevant code, test/configuration and fixture paths as verification inputs,
+ updated as implementation reveals more. Each `Check:` names the spec's own test
+-file or filter, never the project gate or full suite.
++file or filter, never the project gate or full suite. Write each spec's
++`## Test changes` section ([test changes](../../../.joycraft/references/testing-review.md#test-changes));
++when a brief's "no weakened tests" contradicts the feature, ask once.
+ Declare a deletion only as an explicit
+ non-requirement input with `state: 'absent'`; a rename needs the old absent input
+ and the new present one. Change scope is opt-in:
+diff --git a/payload/.agents/skills/joycraft-verify/SKILL.md b/payload/.agents/skills/joycraft-verify/SKILL.md
+index 73540c6..eef072a 100644
+--- a/payload/.agents/skills/joycraft-verify/SKILL.md
++++ b/payload/.agents/skills/joycraft-verify/SKILL.md
+@@ -42,8 +42,7 @@ Dispatch `collaboration.spawn_agent` with `fork_turns: "none"` and the packet's
+ 
+ When already dispatched as the independent reviewer, perform the review directly; do not recursively dispatch another reviewer. Read the parent brief, spec, queue entry, declared criteria and exact verification inputs. Use the supplied subject, set independence truthfully, and do not self-certify implementation from your own context.
+ 
+-Read the diff of each existing test file. A removed assertion, a new skip or
+-a changed expected value with no reason in the spec is a blocking finding.
++Read the diff of each changed test file and judge it by [test changes](../../../.joycraft/references/testing-review.md#test-changes).
+ 
+ Review scope as well as behavior: determine whether the listed inputs and criteria cover the requested work, including relevant newly changed files. For a cross-boundary change, inspect the combined observable behavior across the relevant producer, consumer, state or storage boundary; separate green helpers, snapshots, or assertion counts do not establish that behavior. If a material counterpart or owning decision/context source was omitted, report the scope gap and require its exact path to be added before a fresh current review subject is prepared. Preserve the snapshot's implementation revision as provenance while checking its current bound inputs. A changed, missing, or renamed input makes the subject stale; do not substitute a newer HEAD as its identity.
+ 
+diff --git a/payload/.claude/agents/joycraft-reviewer.md b/payload/.claude/agents/joycraft-reviewer.md
+index adda4d9..ba54185 100644
+--- a/payload/.claude/agents/joycraft-reviewer.md
++++ b/payload/.claude/agents/joycraft-reviewer.md
+@@ -25,8 +25,8 @@ message.
+ Judge the current code against every acceptance bullet and its `Check:`, and
+ against the owner intent in the brief. Do not run the project gate again; run
+ the spec's own tests once (`.joycraft/references/testing.md#running-tests`).
+-Read the diff of each existing test file: a removed assertion, a new skip or a
+-changed expected value with no reason in the spec is a blocking finding. Never
++Read the diff of each changed test file and judge it by
++`.joycraft/references/testing-review.md#test-changes`. Never
+ give a verdict while a command you started is still running.
+ 
+ Startup output includes `trace`: each criterion with its `[AC:<id>]` tests. Report
+diff --git a/payload/.joycraft/references/testing-review.md b/payload/.joycraft/references/testing-review.md
+index 88c53c4..7378135 100644
+--- a/payload/.joycraft/references/testing-review.md
++++ b/payload/.joycraft/references/testing-review.md
+@@ -41,3 +41,20 @@ times.
+ At the end, when the project has no testing page, write `<context>/testing.md`
+ from [the testing page template](testing-page.md), filled in with what the
+ review found, and add the map row "A test run is slow or flaky".
++
++## Test changes
++
++Read for every spec that changes a test file. Decompose writes the spec's
++`## Test changes` section from the template's three classes. When a brief's
++"no weakened tests" contradicts the feature, ask the owner once.
++
++Reviewer rules:
++- Read `testChanges` from startup: `declared` (with class) and `undeclared`
++  changed test files. Judge each diff by its declaration, not as weakened.
++- Block only an undeclared change that no line requires.
++- A class-1 change passes when its acceptance line states the new value; class
++  2 needs its fault proof, class 3 its ledger row and owner yes.
++- A declaration of either path of a rename covers both.
++- A red or flaky test outside the spec's set is a follow-up, never a hold.
++- A changed test that reads a path under the features folder (`featurePaths`)
++  is a follow-up finding.
+diff --git a/payload/.joycraft/templates/spec.md b/payload/.joycraft/templates/spec.md
+index 046ccd4..b508788 100644
+--- a/payload/.joycraft/templates/spec.md
++++ b/payload/.joycraft/templates/spec.md
+@@ -18,6 +18,19 @@ For a rule over open-ended input (names, documents, classifications), add an
+ **Open-input rule** line: the closed check set (path), which error costs more,
+ and the pass threshold.
+ 
++## Test changes
++
++One bullet per test file the spec changes: path, class and the requiring line.
++Classes: 1 spec-mandated (the acceptance line states the new value); 2 same
++claim, changed test (a fault proof per file); 3 deleted, skipped or out of the
++gate (a ledger row and an owner yes per batch).
++
++```
++- `tests/a.test.ts` class 1: acceptance bullet 2 states the new value.
++```
++
++none
++
+ ## Not covered
+ 
+ Accepted limits and cases this spec deliberately leaves out.
