@@ -86,3 +86,7 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 
 ## Fault proof (spec 18 r2) — fix
 - The reviewer checks each receipt's patch sha256 against the list committed before the test edit, checks the list has one fault per removed or changed assertion, and aims its own fault at a removed assertion with no replacement (testing-review.md:104-106).
+
+## After spec 28 — for spec 29
+- Pin the 12 EVERY_SPEC_FILES paths in the guard so moving a file to on-demand fails a test (spec 28 review f3).
+- text-sota-page: assert the cap keys on JOYCRAFT_EVIDENCE never CI and "never a fixed delay" (f4); decision 8 says "new and changed" test files (f5).

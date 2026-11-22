@@ -1,0 +1,801 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "3a9fec838419bc62996388a6c81a973c59657bda",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 28,
+    "specPath": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+    "criteria": [
+      {
+        "id": "spec-28-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-28-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-28-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-28-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-28-5",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-28-6",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-28-7",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-28-8",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-28-9",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-28-10",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "context-and-authorization",
+            "scope-and-limits",
+            "sota-page",
+            "owner-gate-lines",
+            "lane-cap",
+            "load-guidance",
+            "spec-tier",
+            "wave-gate"
+          ],
+          "decisionIds": [
+            "cap-raise",
+            "sota-knowledge-home"
+          ]
+        },
+        "sha256": "54b9545f47ae4468c4384dec437c0ea2250d9f0ad4e0d280b2d9bf9e334b2ba8",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/review-followups.md",
+        "kind": "requirement",
+        "sha256": "01a4f9c3a5095f0c7613bc669670db9cb182b09a8004c592375bbb04f1e95d60",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "c8aadcf8bcf4c1f27b176fad677e0a7a6f51c7792259006ae7073611ad7317d5",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/28-polish-text.md",
+        "kind": "requirement",
+        "sha256": "7cad0c5dd181febf61b132e911de17bd78108f89359917211be9264465de60ff",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+        "kind": "code",
+        "sha256": "34828d3c341a877714f30b79f5b56eb95ce98ed8da0b5c8723db824192de4264",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/delivery.md",
+        "kind": "code",
+        "sha256": "e62a37d3180ad23ee0817ee79a2f3400820595c900c152f7c39bcdd5c23e39a7",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "76eed2a8c624232234026d9056eab92d29a646ee0ecafc32303172fd307a15f9",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing-page.md",
+        "kind": "code",
+        "sha256": "8db02185d635c2c95a2e213fa10a336e574d1821b7b0c4b796b335d3f7f4f9d2",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing.md",
+        "kind": "code",
+        "sha256": "8882ec478956b07d6f166bac0e38bf4bbf0e29c7d8dcc3d286ef34e2a70bb190",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/update.md",
+        "kind": "code",
+        "sha256": "afddd3d7aebf09553d52878793e787e5ee0c7e771a9a3f640457ae1f19cd0809",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "3d6986aa8ee5ad8c03510e18c1031cb970b9e9e27889be11d9e1110625308b63",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-fault-proof.test.ts",
+        "kind": "check",
+        "sha256": "ea90430b240de8a4ce71d5534a0753de85c00f2e5486f02813f8a434b4fb6032",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-fewer-tests.test.ts",
+        "kind": "check",
+        "sha256": "063873b7ea54c78e8928dc2f1eadb205e9104350949a308024f0fb9b910b6675",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-lane-cap.test.ts",
+        "kind": "check",
+        "sha256": "bf79173e59fb6ba12dfbdbee6f0bfb26250992126c87e3e18c59e3e066e6b4af",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-owner-gate-lines.test.ts",
+        "kind": "check",
+        "sha256": "d25971b51345c685878f15c6ea36ce7c981d7b19a0e373c7230a29b756b07c00",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-sota-page.test.ts",
+        "kind": "check",
+        "sha256": "5b3ee2d2544d52b882f06d7a9efa993c59f1998a2ed51498cf62701ac5711e5e",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-spec-tier.test.ts",
+        "kind": "check",
+        "sha256": "79f660a7598336f26ef3f9a26e7b143b07fb43065b39dc8ab0565b1a869a004a",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-test-changes.test.ts",
+        "kind": "check",
+        "sha256": "0842bb7e40be8f707c14535a069c502ebe50cb50669764bf93d278b7b2607320",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "a23712fd7e03d9587616e2bf7a74145f2c2452b0ea96f52368210d8755d382ad",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "kind": "check",
+        "sha256": "ff2e98e6c7a59256d9d2cac2066cadb1249e0edcea716695a40fe417f8f87b61",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          22,
+          23,
+          25,
+          27,
+          28
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "context-and-authorization",
+            "scope-and-limits",
+            "sota-page",
+            "owner-gate-lines",
+            "lane-cap",
+            "load-guidance",
+            "spec-tier",
+            "wave-gate"
+          ],
+          "decisionIds": [
+            "cap-raise",
+            "sota-knowledge-home"
+          ]
+        }
+      ]
+    },
+    "identity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a3c51a4cf87bbd2f2"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "af1d40c32088aa8a7"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-28-1-flow",
+      "subjectIdentity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495",
+      "criteria": [
+        "spec-28-1"
+      ],
+      "representativeInput": "payload/.joycraft/references/testing-page.md decisions block",
+      "expected": "Nine numbered decisions; 1 folds commands, own tests and full-suite-once; 8 flaky means defective; 9 never special-case; 2-7 keep their text",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "testing-page.md holds decisions 1-9 in order (probe prints each). Decision 1: focused while working, gate once per spec, full suite only on the integrated revision or in CI, each spec names its own focused tests and never names the gate. Decision 8: Flaky means defective, never retry a test into a pass, run a new test file `<n>` times before it counts. Decision 9: never special-case a test's input in the code, never edit the check that judges the change. Decisions 2-7 keep their old text (workers with JOYCRAFT_EVIDENCE/CI keying, no real time, resources, time reported, assertions from the spec, extend before adding). Filling-in and load-order cross-references renumbered to decisions 2 and 4; no other payload file cites a testing-page decision number. The principles match the playbook's strongest [S] rules (P1 no special-casing/judging check out of reach, P2 workers, P3 oracle from spec, P5 time/resources, P7 flaky means defective, P8 tiers, P9 time is a report) and Max's sota-knowledge-home note (reruns, per-spec tests not the gate). [AC:spec-20-1][AC:spec-28-1] in tests/text-sota-page.test.ts:16 passes and checks each of the nine spec patterns in its own decision, in order.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-source-probe.log",
+              "sha256": "dc13e4e326c66e8c4457d6eb7b03b2d3758cbf5f8f54f2a9e9583d3c36bcf318"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+              "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r28/probe-source.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-28-2-flow",
+      "subjectIdentity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495",
+      "criteria": [
+        "spec-28-2"
+      ],
+      "representativeInput": "testing-page.md markdown fence",
+      "expected": "Benefit line inside the copied markdown block",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "The line 'fewer slow and flaky reruns, so a queue spends its time on the work' is inside the ```markdown fence (intro paragraph of the page) and no longer in the preamble before it. [AC:spec-28-2] tests/text-sota-page.test.ts:39 passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-source-probe.log",
+              "sha256": "dc13e4e326c66e8c4457d6eb7b03b2d3758cbf5f8f54f2a9e9583d3c36bcf318"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+              "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r28/probe-source.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-28-3-flow",
+      "subjectIdentity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495",
+      "criteria": [
+        "spec-28-3"
+      ],
+      "representativeInput": "setup.md finish-setup offers; update.md step 3",
+      "expected": "Attended gate-rule offer in setup and update, recorded with cleanup.mjs gate-rule --record",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "setup.md:318 adds the offer: entry-check.mjs reports gate-rule and cleanup.mjs gate-rule --check prints unset, show findings once with the before-and-after rewrite as one question, rewrite on yes, record with --record rewritten or --record kept. update.md:38 begins the quoted sentence; the old hand-written cleanup.gateRule JSON text ('keeping the other keys') is gone. Probe of payload cleanup.mjs (spec-27 helper): --check prints unset on a fresh project, --record kept/rewritten print and persist the value while keeping other preference keys, --check then prints it, an unknown value exits 1. [AC:spec-16-2][AC:spec-28-3] tests/text-owner-gate-lines.test.ts:41 passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-source-probe.log",
+              "sha256": "dc13e4e326c66e8c4457d6eb7b03b2d3758cbf5f8f54f2a9e9583d3c36bcf318"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+              "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-gate-rule-probe.log",
+              "sha256": "5b8d0f955684259bb2ab137a49594e260c6ecb19e83847be00be665fa1dce8bc"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r28/probe-source.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-28-4-flow",
+      "subjectIdentity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495",
+      "criteria": [
+        "spec-28-4"
+      ],
+      "representativeInput": "setup.md Machine load step",
+      "expected": "Phrase about computing the cap at run time",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "setup.md:91-92 reads 'cores ÷ agents, computed from the core count at run time, never this machine's number'. [AC:spec-28-4] tests/text-lane-cap.test.ts:66 passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-source-probe.log",
+              "sha256": "dc13e4e326c66e8c4457d6eb7b03b2d3758cbf5f8f54f2a9e9583d3c36bcf318"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+              "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r28/probe-source.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-28-5-flow",
+      "subjectIdentity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495",
+      "criteria": [
+        "spec-28-5"
+      ],
+      "representativeInput": "payload joycraft-verify/SKILL.md",
+      "expected": "Verify names the startup output's commands.focused",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "The sentence 'Take runtime evidence once from the spec's own tests (the startup output's `commands.focused`), never the project gate' is present (payload line 49; the spec's ':51' locator is two lines off) and the old 'packet's' wording is gone. [AC:spec-14-2][AC:spec-28-5] tests/text-spec-tier.test.ts:44 passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-source-probe.log",
+              "sha256": "dc13e4e326c66e8c4457d6eb7b03b2d3758cbf5f8f54f2a9e9583d3c36bcf318"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+              "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r28/probe-source.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-28-6-flow",
+      "subjectIdentity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495",
+      "criteria": [
+        "spec-28-6"
+      ],
+      "representativeInput": "payload testing.md running tests",
+      "expected": "Second-run sentence",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "testing.md:47-49 holds the exact spec sentence (cores ÷ N workers with the runner's own flag; after a timeout run once more with that cap; a second timeout reported with both receipts). [AC:spec-19-1][AC:spec-28-6] tests/text-lane-cap.test.ts:41 passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-source-probe.log",
+              "sha256": "dc13e4e326c66e8c4457d6eb7b03b2d3758cbf5f8f54f2a9e9583d3c36bcf318"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+              "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r28/probe-source.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-28-7-flow",
+      "subjectIdentity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495",
+      "criteria": [
+        "spec-28-7"
+      ],
+      "representativeInput": "payload delivery.md clean-tree bullet",
+      "expected": "Receipt locations and docs-only ancestor rule",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "delivery.md:50-54 says a receipt must be git-ignored or in a feature folder as evidence.mjs enforces (evidence.mjs:208 refuses otherwise), and that an earlier-revision receipt counts when every changed path is under the docs root (Markdown or JSON there, or a record in a feature or archive folder); any other path needs the gate again. This matches delivery.mjs docsOnlySince after spec 31 (record extensions under features/archive, md/json elsewhere under the docs root). [AC:spec-28-7] tests/text-wave-gate.test.ts:74 passes against the installed delivery.md.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-source-probe.log",
+              "sha256": "dc13e4e326c66e8c4457d6eb7b03b2d3758cbf5f8f54f2a9e9583d3c36bcf318"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+              "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r28/probe-source.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-28-8-flow",
+      "subjectIdentity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495",
+      "criteria": [
+        "spec-28-8"
+      ],
+      "representativeInput": "Retired tags and unused names in the seven files",
+      "expected": "No retired tag under tests/; guard passes with both counts; no unused name",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "No [AC:spec-14-5|15-4|23-3|17-4|22-4|18-4|19-4|21-4] tag remains under tests/ (probe). payload-guard.test.ts passes (16 tests) and prints 'every-spec words: 12178 (cap 12256, 78 spare)' and 'on-demand words: 20203 (cap 21163, 960 spare)'. The guard's two caps use the same file classification, file set and on-demand number (17663 + 3500) as the retired tests.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+              "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/text-spec-tier.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/text-test-changes.test.ts",
+              "tests/text-fewer-tests.test.ts",
+              "tests/text-fault-proof.test.ts",
+              "tests/text-lane-cap.test.ts",
+              "tests/text-sota-page.test.ts",
+              "tests/text-owner-gate-lines.test.ts",
+              "tests/text-test-review.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "pnpm typecheck exits 0, but tsconfig.json includes only src and excludes tests, so it cannot report unused names in tests (follow-up f2). The reviewer ran tsc --noUnusedLocals --noUnusedParameters on the eight edited test files: exit 0, no output, so no unused import, helper or constant remains.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-typecheck.log",
+              "sha256": "51e242f92931cc054f790a28ef03173d2b25f0dbdb305560c2170dd22ae6222d"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-unused.log",
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "tsc",
+              "--noEmit",
+              "--noUnusedLocals",
+              "--noUnusedParameters",
+              "--skipLibCheck",
+              "--target",
+              "ES2022",
+              "--module",
+              "ES2022",
+              "--moduleResolution",
+              "bundler",
+              "--types",
+              "node",
+              "tests/text-spec-tier.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/text-test-changes.test.ts",
+              "tests/text-fewer-tests.test.ts",
+              "tests/text-fault-proof.test.ts",
+              "tests/text-lane-cap.test.ts",
+              "tests/text-test-review.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-28-9-flow",
+      "subjectIdentity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495",
+      "criteria": [
+        "spec-28-9"
+      ],
+      "representativeInput": "Guard every-spec count before and after",
+      "expected": "Every-spec words grow by at most 12; on-demand inside its cap",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Guard prints every-spec 12178 and on-demand 20203. The reviewer counted the same file groups with git show at 471ff8a (before this spec): every-spec 12166, on-demand 20059; at 35a7b85 and HEAD 3a9fec8: 12178 and 20203. Growth +12 every-spec (verify +1, testing.md +11), exactly the allowance; on-demand +144, 960 under its cap. The merged spec 31 changed no counted text.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+              "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/text-spec-tier.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/text-test-changes.test.ts",
+              "tests/text-fewer-tests.test.ts",
+              "tests/text-fault-proof.test.ts",
+              "tests/text-lane-cap.test.ts",
+              "tests/text-sota-page.test.ts",
+              "tests/text-owner-gate-lines.test.ts",
+              "tests/text-test-review.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-28-10-flow",
+      "subjectIdentity": "87cea14ba8da4ac0a72d48072481d95dd76812b611b9377a565f2eaeddf49495",
+      "criteria": [
+        "spec-28-10"
+      ],
+      "representativeInput": "tests/text-test-review.test.ts",
+      "expected": "[AC:spec-21-4] retired; no EVERY_SPEC_BEFORE; guard caps pass",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "tests/text-test-review.test.ts no longer holds EVERY_SPEC_BEFORE or [AC:spec-21-4] (probe; file sha256 978947804b139790f628ee9463690fa52fbfb00af913459fa52216c0e3956fd4 at 3a9fec8, recorded because the file is not a verification input, follow-up f1); its remaining 3 tests pass and the guard caps pass.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-28-focused.log",
+              "sha256": "532fe87921ae424f3704aaa3a49adecead5a0ce47d7e76d7ae1078d8070ef912"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "tests/text-spec-tier.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/text-test-changes.test.ts",
+              "tests/text-fewer-tests.test.ts",
+              "tests/text-fault-proof.test.ts",
+              "tests/text-lane-cap.test.ts",
+              "tests/text-sota-page.test.ts",
+              "tests/text-owner-gate-lines.test.ts",
+              "tests/text-test-review.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-test-review-file-unbound",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-28-10",
+      "at": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+      "assumption": "Bullet 10 requires the removal and the owner instruction ('retire per-spec word constants') covers it, so the 'same ledger row' wording declares it.",
+      "summary": "tests/text-test-review.test.ts is changed by this spec and is the subject of criterion spec-28-10, but it is not a verification input and the ## Test changes list names only nine files, so test-changes.mjs reports it undeclared and a later edit to it would not stale this subject. The ledger row says 'seven' tests; this is the eighth. Add the path to the spec's inputs and a class-3 bullet in a later spec or the archive pass. Its sha256 at review is recorded in the spec-28-10 observation."
+    },
+    {
+      "id": "f2-typecheck-excludes-tests",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-28-8",
+      "at": "tsconfig.json:18",
+      "assumption": "The intent of bullet 8's typecheck check is 'no unused name left'; the reviewer checked that directly.",
+      "summary": "pnpm typecheck compiles src only (include src, exclude tests) and has no noUnusedLocals, so it can never report an unused name in tests/. The check in bullet 8 is vacuous; the reviewer's tsc --noUnusedLocals run on the eight files was clean (receipt review-28-unused.log). Later specs should not cite pnpm typecheck for test-file hygiene."
+    },
+    {
+      "id": "f3-every-spec-list-unpinned",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-28-8",
+      "at": "tests/payload-guard.test.ts:328",
+      "assumption": "The owner instruction retires these pins with the word constants; the guard caps remain the protection.",
+      "summary": "Besides word constants, the retired tests pinned that EVERY_SPEC_FILES has 12 entries, that verify is in it and testing-review/artifacts/setup are not, and (spec-15-4, spec-22-4) that the implement skill itself does not grow. The guard's spec-1-1 compares the every-spec group with EVERY_SPEC_FILES itself, so dropping a file from that list moves its words to the on-demand budget (960 spare) and passes. It is still a guard edit that testing-review treats as a declared test change, so it is not silent to a reviewer, but no test catches it. A cheap fix: pin the 12 every-spec paths in spec-1-1. Per-file growth is now bounded only by the 78-word every-spec spare."
+    },
+    {
+      "id": "f4-sota-patterns-shorter",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-28-1",
+      "at": "tests/text-sota-page.test.ts:22",
+      "assumption": "The spec states these exact patterns, so the class-1 change is declared.",
+      "summary": "The new patterns /cores ÷ agents workers/ and /No real time/ drop the old checks that decision 2 keys the cap on JOYCRAFT_EVIDENCE and never on CI, and that decision 3 says never a fixed delay. The page still says both; no other test asserts them."
+    },
+    {
+      "id": "f5-text-nits",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-28-1",
+      "at": "payload/.joycraft/references/testing-page.md:43",
+      "assumption": "The spec chose 'a new test file'.",
+      "summary": "Decision 8 repeats only new test files; playbook P7 says repeat new and changed test files before they count. Also: testing.md:51 changed 'your own command' to 'your command' (unrequested, harmless); setup.md:91-92 wraps the new phrase mid-line; the spec's 'joycraft-verify/SKILL.md:51' locator is line 49."
+    }
+  ],
+  "createdAt": "2026-11-22T04:34:41.000Z"
+}

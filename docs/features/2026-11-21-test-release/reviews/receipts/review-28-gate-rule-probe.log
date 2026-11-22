@@ -1,0 +1,12 @@
+gate-rule --check -> exit 0 stdout="unset" stderr=""
+gate-rule --record kept -> exit 0 stdout="kept" stderr=""
+gate-rule --check -> exit 0 stdout="kept" stderr=""
+gate-rule --record rewritten -> exit 0 stdout="rewritten" stderr=""
+gate-rule --check -> exit 0 stdout="rewritten" stderr=""
+gate-rule --record maybe -> exit 1 stdout="" stderr="Cleanup stopped: cleanup.mjs gate-rule --record takes rewritten or kept, not maybe"
+preferences: {
+  "other": 1,
+  "cleanup": {
+    "gateRule": "rewritten"
+  }
+}

@@ -1,6 +1,6 @@
 ---
 id: 28
-status: in-review
+status: done
 ---
 # Polish the text from the independent reviews' follow-ups, and retire the per-spec word tests
 
