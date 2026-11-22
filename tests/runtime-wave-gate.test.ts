@@ -88,6 +88,51 @@ describe('delivery needs a green gate receipt', () => {
   });
 });
 
+describe('gate receipt review-7 fixes', () => {
+  const evidence = (root: string, receipt: string, argv: string[]) => node(root, 'evidence.mjs', ['run', '--receipt', receipt, '--', ...argv]);
+
+  it('[review-7-1] refuses a green receipt of a non-shell program given -c "<gate>"', () => {
+    const { root, remote, first } = deliveryFixture();
+    expect(evidence(root, 'receipts/echo.log', ['/bin/echo', '-c', 'node gate.mjs']).status).toBe(0);
+    const result = push(root, first, ['--gate-receipt', 'receipts/echo.log']);
+    expect(result.status).toBe(1);
+    expect(result.stderr.trim()).toBe('gate-receipt-not-gate');
+    expect(remoteRef(remote)).toBe('');
+  }, 30000);
+
+  it('[review-7-1] still accepts a real shell receipt of sh -c "<gate>"', () => {
+    const { root, remote, first, head } = deliveryFixture();
+    expect(evidence(root, 'receipts/sh.log', ['/bin/sh', '-c', 'node gate.mjs']).status).toBe(0);
+    const result = push(root, first, ['--gate-receipt', 'receipts/sh.log']);
+    expect(result.status, result.stderr).toBe(0);
+    expect(remoteRef(remote)).toBe(head);
+  }, 30000);
+
+  it('[review-7-3] reads the footer with evidence.mjs readFooter: only the last line, only an object', () => {
+    const { root, remote, first, head } = deliveryFixture();
+    put(join(root, 'receipts/array.log'), `out\njoycraft-evidence: ${JSON.stringify([{ argv: ['node', 'gate.mjs'], exitCode: 0, revision: head, dirty: false }])}\n`);
+    put(join(root, 'receipts/after.log'), `joycraft-evidence: ${JSON.stringify({ argv: ['node', 'gate.mjs'], exitCode: 0, revision: head, dirty: false })}\nmore output\n`);
+    for (const name of ['array.log', 'after.log']) {
+      const result = push(root, first, ['--gate-receipt', `receipts/${name}`]);
+      expect(result.status, name).toBe(1);
+      expect(result.stderr.trim()).toBe('gate-receipt-not-gate');
+    }
+    expect(remoteRef(remote)).toBe('');
+  }, 30000);
+
+  it('[review-7-4] refuses a gate receipt outside the project root', () => {
+    const { root, remote, first, head } = deliveryFixture();
+    const outside = join(dirname(root), 'outside.log');
+    put(outside, `out\njoycraft-evidence: ${JSON.stringify({ argv: ['node', 'gate.mjs'], exitCode: 0, revision: head, dirty: false })}\n`);
+    for (const receipt of [outside, '../outside.log']) {
+      const result = push(root, first, ['--gate-receipt', receipt]);
+      expect(result.status, receipt).toBe(1);
+      expect(result.stderr.trim()).toBe('gate-receipt-outside-project');
+    }
+    expect(remoteRef(remote)).toBe('');
+  }, 30000);
+});
+
 const queuePath = 'docs/features/demo/specs/.joycraft-spec-queue.json';
 /** Specs 1 and 2 start at once; spec 3 waits on spec 1, so the queue has two waves. */
 function queueFixture(gateRuns?: string) {

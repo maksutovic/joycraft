@@ -4,9 +4,10 @@
  * isolate other writers.
  */
 import { createHash } from 'node:crypto';
+import { realpathSync } from 'node:fs';
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { hostname } from 'node:os';
-import { dirname, isAbsolute, join, resolve } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { spawn } from 'node:child_process';
 import { TextDecoder } from 'node:util';
 
@@ -106,23 +107,25 @@ async function invoke(argv, root) {
     child.on('error', reject); child.on('close', exitCode => resolveRun({ exitCode, stdout: stdout(), stderr: stderr() }));
   });
 }
-/** The `joycraft-evidence:` footer on a receipt's last line (evidence.mjs), or null. */
-function receiptFooter(bytes) {
-  const last = bytes.toString('utf8').replace(/\n$/, '').split('\n').at(-1) ?? '';
-  if (!last.startsWith('joycraft-evidence: ')) return null;
-  try { const value = JSON.parse(last.slice('joycraft-evidence: '.length)); return value && typeof value === 'object' ? value : null; } catch { return null; }
-}
+/** Shells that run their last argument as a command line after -c, /c or -Command. */
+const shells = new Set(['sh', 'bash', 'zsh', 'dash', 'cmd', 'powershell', 'pwsh']);
+const isShell = program => shells.has(program.split(/[\\/]/).at(-1).toLowerCase().replace(/\.exe$/, ''));
 /** The footer's argv is the recorded gate: the same words, or a shell given the gate as its last `-c` argument. */
 function runsGate(argv, gate) {
   if (!Array.isArray(argv) || !argv.every(value => typeof value === 'string')) return false;
   const words = text => text.trim().split(/\s+/).join(' ');
-  return words(argv.join(' ')) === words(gate) || (argv.length >= 2 && ['-c', '/c', '-Command'].includes(argv.at(-2)) && words(argv.at(-1)) === words(gate));
+  return words(argv.join(' ')) === words(gate)
+    || (argv.length === 3 && isShell(argv[0]) && ['-c', '/c', '-Command'].includes(argv[1]) && words(argv[2]) === words(gate));
 }
-/** Refuse a push unless the gate receipt shows the recorded gate, green, on a clean tree at this HEAD. */
+/** Refuse a push unless the gate receipt, inside the project, shows the recorded gate, green, on a clean tree at this HEAD. */
 async function checkGateReceipt(root, gate, receipt, head) {
   assertion(typeof receipt === 'string' && receipt, 'gate-receipt-required');
-  let bytes; try { bytes = await readFile(resolve(root, receipt)); } catch { throw new Error('gate-receipt-required'); }
-  const footer = receiptFooter(bytes);
+  const { readFooter } = await import('./evidence.mjs');
+  let file; try { file = realpathSync(resolve(root, receipt)); } catch { throw new Error('gate-receipt-required'); }
+  const inside = relative(realpathSync(root), file);
+  assertion(inside !== '' && inside !== '..' && !inside.startsWith(`..${sep}`) && !isAbsolute(inside), 'gate-receipt-outside-project');
+  let bytes; try { bytes = await readFile(file); } catch { throw new Error('gate-receipt-required'); }
+  const footer = readFooter(file);
   assertion(footer && runsGate(footer.argv, gate), 'gate-receipt-not-gate');
   assertion(footer.exitCode === 0, 'gate-receipt-red');
   assertion(footer.dirty === false && footer.revision === head, 'gate-receipt-stale');
@@ -183,7 +186,9 @@ export async function deliver({ root = process.cwd(), base, remote, branch, veri
   } finally { await rm(lock, { recursive: true, force: false }); }
 }
 
-function usage() { throw new Error('Usage: delivery.mjs check --root <repo> --base <revision> | delivery.mjs push --root <repo> --base <revision> --remote <name> --branch <branch> (--gate-receipt <receipt.log> | -- <verifier> [args...])'); }
+function usage() { throw new Error('Usage: delivery.mjs check --root <repo> --base <revision> | delivery.mjs push --root <repo> --base <revision> --remote <name> --branch <branch> (--gate-receipt <receipt.log> | -- <verifier> [args...])\n' +
+  'With tests.gate recorded, --gate-receipt must name a receipt inside the project whose evidence.mjs footer ran the gate as its exact words, or as sh/bash/zsh/dash -c, cmd /c or powershell/pwsh -Command "<gate>" (no other flags, such as -lc), exit 0, on a clean tree at HEAD. ' +
+  'This check stops mistakes such as a red, stale or wrong receipt; it does not stop a hand-forged receipt, because the footer is not signed.'); }
 async function cli(argv) {
   const separator = argv.indexOf('--'); const own = separator < 0 ? argv : argv.slice(0, separator); const verifier = separator < 0 ? [] : argv.slice(separator + 1);
   const command = own.shift(); const flags = {};
