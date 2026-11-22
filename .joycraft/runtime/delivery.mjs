@@ -139,13 +139,14 @@ function runsGate(argv, gate, root) {
   return plain && argv.length === expected.length && argv.every((value, index) => value === expected[index]);
 }
 /** File names that are code under the docs root (see docsOnlySince). */
-const manifest = /^(?:package\.json|package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|deno\.lock|tsconfig.*\.json)$/i;
+const manifest = /^(?:package\.json|package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|deno\.lock|tsconfig.*\.json|jsconfig.*\.json|deno\.jsonc?|pnpm-workspace\.yaml)$/i;
 /** Every path changed from `revision` to `head` is a record session end writes, so the gate ran on
  * the same code: a record file (.md, .json, .log, .txt, .diff, .patch, .yaml, .yml) under
  * paths.features or paths.archive (feature folders, moved whole by an archive, with their receipts),
  * or a Markdown or JSON file elsewhere under the docs root (never `.`). A symlink or submodule on
  * either side, or any other file (a source file in a feature folder too), needs the gate again.
- * A manifest is code, never a record, in feature and archive folders too: package.json, tsconfig*.json
+ * A manifest is code, never a record, anywhere under the docs root, feature and archive folders
+ * included: package.json, tsconfig*.json, jsconfig*.json, deno.json, deno.jsonc, pnpm-workspace.yaml
  * and every lockfile (package-lock.json, npm-shrinkwrap.json, pnpm-lock.yaml, yarn.lock, bun.lock,
  * bun.lockb, deno.lock). */
 async function docsOnlySince(root, revision, head) {

@@ -152,20 +152,52 @@ function runnerCommand(text) {
   return run ? `${run[1]} ${run[2]}` : line;
 }
 
+/**
+ * The parts of a chained command (`a && b`, `a || b`, `a; b`), split outside quotes
+ * and parentheses. A subshell or a pipeline part is kept as written.
+ */
+function commandParts(text) {
+  const parts = [];
+  let part = '', quote = '', depth = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i];
+    if (quote) { if (char === quote) quote = ''; part += char; continue; }
+    if (char === '"' || char === "'") { quote = char; part += char; continue; }
+    if (char === '(') depth += 1;
+    if (char === ')' && depth) depth -= 1;
+    const pair = text.slice(i, i + 2);
+    if (!depth && (pair === '&&' || pair === '||' || char === ';')) {
+      parts.push(part); part = '';
+      if (char !== ';') i += 1;
+      continue;
+    }
+    part += char;
+  }
+  parts.push(part);
+  return parts.map(normalizeCommand).filter(Boolean);
+}
+
 /** A spec review runs the spec's own tests; the recorded gate and full commands
- * run at the review boundary or wave end. A report that ran one is refused (exit 2). */
+ * run at the review boundary or wave end. A report that ran one, or one part of a
+ * chained one, is refused (exit 2). */
 function refuseGateRuns(root, report) {
   let tests;
   // A joycraft.yaml that does not parse never passes: the gate it records is unknown.
   try { tests = readConfig(root).tests; } catch (error) { throw refused(new Error(`joycraft.yaml does not parse, so the recorded tests.gate is unknown; fix joycraft.yaml and check the report again (${error.message})`)); }
   const gates = [['tests.gate', tests.gate], ['tests.full', tests.full]].filter(([, command]) => command).map(([key, command]) => [key, normalizeCommand(command), runnerCommand(command)]);
   if (!gates.length) return;
+  const parts = gates.flatMap(([key, whole]) => {
+    const split = commandParts(whole);
+    return split.length > 1 ? split.map(part => [key, part, runnerCommand(part)]) : [];
+  });
   report.flows.forEach((flow, flowIndex) => (Array.isArray(flow?.observations) ? flow.observations : []).forEach((observation, index) => {
     const argv = observation?.command?.argv;
     if (!Array.isArray(argv) || !argv.every(item => typeof item === 'string')) return;
     const ran = runnerCommand(ranCommand(argv));
     const match = gates.find(([, , command]) => command === ran);
     if (match) throw refused(new Error(`Report flows[${flowIndex}].observations[${index}] ran the recorded ${match[0]} command \`${match[1]}\`; a spec review runs the spec's own focused tests, so rerun with those and correct the report`));
+    const part = parts.find(([, , command]) => command === ran);
+    if (part) throw refused(new Error(`Report flows[${flowIndex}].observations[${index}] ran \`${part[1]}\`, a part of the recorded ${part[0]} command; a spec review runs the spec's own focused tests, so rerun with those and correct the report`));
   }));
 }
 

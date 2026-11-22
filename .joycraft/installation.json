@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "joycraft": "1.9.1",
-  "tag": "payload-d099e90b2a73",
-  "sourceRevision": "d099e90b2a735cdb78511139de0e2e4ae9262c958d4eef41106df3d2a01f626a",
+  "joycraft": "1.9.2",
+  "tag": "payload-31bb492e23f1",
+  "sourceRevision": "31bb492e23f193db369b081976734ca22dc88e4fba2eb96b81cc4713f91a380c",
   "harness": "claude",
   "hosts": [
     "claude",
@@ -162,7 +162,7 @@
     },
     {
       "path": ".joycraft/references/delivery.md",
-      "sha256": "85860c1b32faede31786c7403c820010fde43bdd1114f68ddcbe126f3f13fa8f"
+      "sha256": "434f20a716ba7b53f7c21eef62602fb88e7e18ef0c11d9eea49cf889682130a7"
     },
     {
       "path": ".joycraft/references/dispatch.md",
@@ -194,7 +194,7 @@
     },
     {
       "path": ".joycraft/references/setup.md",
-      "sha256": "609ca4d3bb6a9aebab4a9a8c76e0eacf7687bb20e3c7d97e2fefad16dd48e417"
+      "sha256": "6fac8bce93c093edc5933e2b31905bba2918ef4252667185cacdb305b5568351"
     },
     {
       "path": ".joycraft/references/testing-page.md",
@@ -222,7 +222,7 @@
     },
     {
       "path": ".joycraft/runtime/archive.mjs",
-      "sha256": "15385ed3768e8ad35491c36c784655d124efc3256b2ede0898eddeb83b34351a"
+      "sha256": "0ddc418758d6a06e66910f7efe4b0311241a3bda6c1c646b29a7f730e4e210a2"
     },
     {
       "path": ".joycraft/runtime/artifacts/cli.mjs",
@@ -254,11 +254,11 @@
     },
     {
       "path": ".joycraft/runtime/cleanup.mjs",
-      "sha256": "eb4a14a248c28ce07c6c8fd55ccce8a1eb94ab09a47fbbb94da7068ecde67bdc"
+      "sha256": "9016d7dd0ddbc3638d34a2e70768c985b7ce17812086b11383aec2c0fa640cd4"
     },
     {
       "path": ".joycraft/runtime/completion.mjs",
-      "sha256": "a0ef278c2d757e024d253d971da24efd3abb6ec69000e26d59ee77f1459c0217"
+      "sha256": "fdf20f23cf091c65d090db486647458ef705da5fccf6f80c7ff7cc17a0520c06"
     },
     {
       "path": ".joycraft/runtime/config.mjs",
@@ -282,7 +282,7 @@
     },
     {
       "path": ".joycraft/runtime/delivery.mjs",
-      "sha256": "9e7c6f4ff7821f86cfc60cfbfd020dd6cfba917bc3e3bb5d1f5f9143de60b5b2"
+      "sha256": "8169d25024d7b7970cbbc5b875c79fca4847c9572003e191475d7c54c849ca8e"
     },
     {
       "path": ".joycraft/runtime/dispatch-preflight.mjs",
