@@ -615,7 +615,7 @@
       "id": 7,
       "file": "07-pin-every-spec-list.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -663,6 +663,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T07:07:18.811Z"
       }
     },
     {
