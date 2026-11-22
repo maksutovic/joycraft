@@ -212,13 +212,17 @@ export async function startDispatch(options, nativeEvent) {
     try { changes = testChanges({ root, queuePath, specId: spec.id, base: options.changesBase }); }
     catch (error) { changes = { error: error.message }; }
   }
+  // A wrong base never stops startup, but the reviewer must not read an empty list as "no test changes".
+  const warnings = changes?.error
+    ? [`No changed-test list: ${changes.error}. Startup did not compare test files; ask the coordinator for the spec's captured base before judging test changes.`]
+    : [];
   let config = null;
   try { config = readConfig(root); } catch { /* A broken joycraft.yaml is reported by config.mjs. */ }
   const { focused, note } = focusedCommand({ root, spec, config });
   const commands = { focused, ...(note ? { note } : {}),
     ...workerCommands({ root, queuePath, spec, role: options.role, reportPath: packet.outputContract.reportPath,
       featureFolder: path.posix.dirname(path.posix.dirname(queuePath)), focused }) };
-  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(trace ? { trace } : {}), ...(changes ? { testChanges: changes } : {}), commands,
+  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(warnings.length ? { warnings } : {}), ...(trace ? { trace } : {}), ...(changes ? { testChanges: changes } : {}), commands,
     ready: !hookConfig.enabled || hooks.eligible === true };
 }
 

@@ -1,12 +1,12 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, realpathSync, rmSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { applyInstall, planInstall } from '../src/install-v1.js';
 
 const runtime = join(__dirname, '..', 'payload', '.joycraft', 'runtime');
-const git = (cwd: string, ...args: string[]) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const git = (cwd: string, ...args: string[]) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', '-c', 'protocol.file.allow=always', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const put = (file: string, body: string) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
 const folder = 'docs/features/2026-11-21-f';
 const queuePath = `${folder}/specs/.joycraft-spec-queue.json`;
@@ -87,5 +87,55 @@ describe('test-changes', () => {
     expect(withBase.testChanges.undeclared).toEqual(['tests/b.test.ts']);
     const without = reviewerStart(project, []);
     expect(without).not.toHaveProperty('testChanges');
+  });
+  it('[AC:spec-11-1] lists a renamed test under both paths and a deleted tag-only test from its base', () => {
+    const { root } = fixture();
+    put(join(root, 'tests/old.test.ts'), 'a body long enough to be detected as a rename\n'.repeat(5));
+    put(join(root, 'checks/verify.ts'), '// [AC:spec-1-1]\n');
+    git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'more');
+    const second = git(root, 'rev-parse', 'HEAD');
+    git(root, 'mv', 'tests/old.test.ts', 'tests/renamed.test.ts'); git(root, 'commit', '-q', '-m', 'rename');
+    unlinkSync(join(root, 'checks/verify.ts'));
+    expect(changes(root, second).testFiles).toEqual(['checks/verify.ts', 'tests/old.test.ts', 'tests/renamed.test.ts']);
+  });
+
+  it('[AC:spec-11-1] applies the AC tag rule only to code files outside the work folders', () => {
+    const { root, base } = fixture();
+    const tagged = '// [AC:spec-1-1]\n';
+    for (const file of ['src/check.ts', 'notes/plan.md', 'logs/run.log', 'data/report.json', `${folder}/reviews/receipts/probe.mjs`, `${folder}/specs/review-1.report.json`, '.joycraft/runtime/x.mjs'])
+      put(join(root, file), tagged);
+    expect(changes(root, base).testFiles).toEqual(['src/check.ts']);
+  });
+
+  it('[AC:spec-11-1] matches test layouts across stacks and leaves look-alikes out', async () => {
+    const { isTestPath } = await import(join(runtime, 'test-changes.mjs'));
+    const tests = ['Tests/AppTests/AppTests.swift', 'app/src/androidTest/java/Foo.kt', 'lib/FooTest.java', 'src/main/BarTest.kt', 'App.Tests/FooTests.cs',
+      'app/models/user_spec.rb', 'app/tests.py', 'conftest.py', 'pkg/test_a.py', 'e2e/login.e2e.ts', 'cypress/a.cy.ts', 'src/a.test.ts', 'pkg/a_test.go'];
+    const others = ['docs/spec/overview.md', 'tests/README.md', 'src/test_helpers_shared.ts', 'src/latest_value.ts', 'src/contest/x.ts', 'src/lib.rs'];
+    expect(tests.filter(file => !isTestPath(file))).toEqual([]);
+    expect(others.filter(file => isTestPath(file))).toEqual([]);
+  });
+
+  it('[AC:spec-11-2] skips a submodule path and a refused declared path without losing the result', () => {
+    const sub = fixture();
+    const project = fixture({ testChanges: '- `../outside.test.ts`, class 1: line.\n- `tests/a.test.ts`, class 2: line.' });
+    git(project.root, 'submodule', 'add', '-q', sub.root, 'vendor/tests-lib');
+    git(project.root, 'commit', '-q', '-m', 'add sub');
+    const base = git(project.root, 'rev-parse', 'HEAD');
+    put(join(sub.root, 'z.txt'), 'z\n'); git(sub.root, 'add', '-A'); git(sub.root, 'commit', '-q', '-m', 'z');
+    git(join(project.root, 'vendor/tests-lib'), 'pull', '-q', 'origin', 'main');
+    put(join(project.root, 'tests/a.test.ts'), 'after\n');
+    const result = changes(project.root, base);
+    expect(result).toMatchObject({ testFiles: ['tests/a.test.ts'], declared: [{ path: 'tests/a.test.ts', class: 2 }], undeclared: [] });
+    expect(result.skipped.map((item: { path: string }) => item.path).sort()).toEqual(['../outside.test.ts', 'vendor/tests-lib']);
+  });
+
+  it('[AC:spec-11-4] reviewer startup with an unknown --changes-base says so plainly and stays ready', () => {
+    const project = fixture({ install: true });
+    const result = reviewerStart(project, ['--changes-base', 'deadbeefdeadbeefdeadbeefdeadbeefdeadbeef']);
+    expect(result.ready).toBe(true);
+    expect(result.warnings).toEqual([expect.stringMatching(/^No changed-test list: Base deadbeef\w* is not a commit/)]);
+    expect(result.testChanges.error).toMatch(/not a commit/);
+    expect(reviewerStart(project, ['--changes-base', project.base])).not.toHaveProperty('warnings');
   });
 });
