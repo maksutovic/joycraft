@@ -97,4 +97,15 @@ describe('wave-gate and CI-once text', () => {
     for (const text of ['.md .json .log .txt .diff .patch .yaml .yml', '`package.json`', '`tsconfig*.json`', 'lockfile', '.mjs.txt']) expect(item).toContain(text);
     expect(item).toContain('.patch');
   });
+
+  // Spec: docs/features/2026-11-22-followups-1-9-2/specs/03-more-manifests.md
+  it('[AC:spec-3-2] the Clean-tree item and the docsOnlySince comment name the new manifests and the anywhere-under-the-docs-root rule', () => {
+    const page = readFileSync(join(installed(), 'delivery.md'), 'utf8').replace(/\s+/g, ' ');
+    const item = page.match(/\*\*Clean tree:\*\*.*?(?= - \*\*)/)?.[0] ?? '';
+    for (const text of ['`jsconfig*.json`', '`deno.json`', '`deno.jsonc`', '`pnpm-workspace.yaml`', 'Anywhere under the docs root, a manifest is never a record']) expect(item).toContain(text);
+    const source = readFileSync(join(root, 'payload/.joycraft/runtime/delivery.mjs'), 'utf8');
+    const at = source.indexOf('async function docsOnlySince(');
+    const comment = source.slice(source.lastIndexOf('/**', at), at).replace(/\n\s*\* ?/g, ' ');
+    for (const text of ['jsconfig*.json', 'deno.json', 'deno.jsonc', 'pnpm-workspace.yaml', 'anywhere under the docs root']) expect(comment).toContain(text);
+  });
 });

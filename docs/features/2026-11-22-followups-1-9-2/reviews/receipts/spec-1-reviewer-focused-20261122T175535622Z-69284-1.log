@@ -1,0 +1,22 @@
+
+> joycraft@1.9.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-report-gate.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-report-gate.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 7060[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-1] a report whose observation ran the recorded gate is refused, also in a shell form [33m 495[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-2] a report that ran only focused commands passes, and a project with no gate is not checked [33m 405[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate wrappers and a broken joycraft.yaml (spec 27)[2m > [22m[AC:spec-27-3] each shell or env wrapper of the gate is refused; more arguments pass; a broken joycraft.yaml refuses [33m 1739[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate runner aliases and a done spec re-check (1.9.1 spec 2)[2m > [22m[AC:spec-2-1] npx, pnpm exec and the run of pnpm run name the same gate; a focused npx run passes [33m 1039[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate runner aliases and a done spec re-check (1.9.1 spec 2)[2m > [22m[AC:spec-2-2] a done spec re-checked with its accepted report is unchanged after tests.gate is recorded; an in-review one is refused [33m 584[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-1] one part of a chained gate is refused like the whole gate; focused runs and a one-part gate are unchanged [33m 2448[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-2] a done spec re-checked with a report that ran a gate part stays done; gateRuns still turns the check off [33m 349[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m7 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 09:55:40
+[2m   Duration [22m 7.28s[2m (transform 18ms, setup 0ms, collect 20ms, tests 7.06s, environment 0ms, prepare 47ms)[22m
+
+joycraft-evidence: {"wallMs":7933,"load":[47.33740234375,41.34326171875],"cores":14,"loaded":true,"argv":["pnpm","test","tests/runtime-report-gate.test.ts"],"exitCode":0,"timedOut":false,"revision":"2ad1a29e6fd1d55f195ff5e76c85bfec039bc177","dirty":true}

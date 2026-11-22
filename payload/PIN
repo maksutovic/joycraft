@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-d25d6bc95d60",
-  "commit": "d25d6bc95d60ea9e9419b9425feac566e83224c977739c84bf3561ec26275683",
+  "tag": "payload-8a24e08e6786",
+  "commit": "8a24e08e6786d6bd2a5957a059273c89b22021ea7609afb2cc78b775927ba1c2",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -29,7 +29,7 @@
     ".joycraft/references/cleanup.md": "5c4e99118f913e62024e86a23256b2c34a888bc40313234df9b2532a3d220f77",
     ".joycraft/references/completion.md": "698e67984a959744f40bb0b221c953665d4558c046f4faea55dc6c7162e4cb0d",
     ".joycraft/references/context.md": "b94dd48a427aaafe826116bac100375cbae565b1ba3239fd7812c56eac724577",
-    ".joycraft/references/delivery.md": "85860c1b32faede31786c7403c820010fde43bdd1114f68ddcbe126f3f13fa8f",
+    ".joycraft/references/delivery.md": "434f20a716ba7b53f7c21eef62602fb88e7e18ef0c11d9eea49cf889682130a7",
     ".joycraft/references/dispatch.md": "9020619c87f444c1f5f17230be9610441f27eba36818173e661d3f8df6b0b123",
     ".joycraft/references/doc-cleanup-LICENSE.md": "a9e210590e2d0ebf719fe3801f1c0fda8f940af28656ff36e908c4315d94f886",
     ".joycraft/references/gates.md": "8b24d60bc4995c224d37876f0d7279e6fc1e0ac67a3799201274830c21ea3ace",
@@ -59,7 +59,7 @@
     ".joycraft/runtime/context/index.mjs": "5a69d33d9a1a66ef23301e952ecb1ec427ff4b0baf408ede67a2600d3f2a173c",
     ".joycraft/runtime/context/search.mjs": "e32a42ba9b168ca7c68fed46d47a79250c27aa4c07c0835feae084b5d1e0d0ca",
     ".joycraft/runtime/coordinator.mjs": "5b35cad593728c21f81bdf3036b33df9b2af9e2be1f32c33c220167798e5c917",
-    ".joycraft/runtime/delivery.mjs": "9e7c6f4ff7821f86cfc60cfbfd020dd6cfba917bc3e3bb5d1f5f9143de60b5b2",
+    ".joycraft/runtime/delivery.mjs": "8169d25024d7b7970cbbc5b875c79fca4847c9572003e191475d7c54c849ca8e",
     ".joycraft/runtime/dispatch-preflight.mjs": "2cfc7509e06e9189d572a8b1c5fdf5544e2f0d020a1a71da66ecf09b0fc841b5",
     ".joycraft/runtime/dispatch-start.mjs": "b737cff8b44de1aa18c5a7ddb05dd2929089e8bade6960ddf0b49d1025285d53",
     ".joycraft/runtime/entry-check.mjs": "46ab7c137d690b39dd3d711d09f3f907df6543fb9e597d5ef5de4019fbdd74d9",
