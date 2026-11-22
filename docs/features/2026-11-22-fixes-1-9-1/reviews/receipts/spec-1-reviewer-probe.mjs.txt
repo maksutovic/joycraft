@@ -1,0 +1,102 @@
+// Reviewer probe for 1.9.1 spec 1: comment detection in `next`, archive from a subfolder,
+// latest-report choice for r2/r3/r10, blank owner instruction. Run: node <this> <project-root>
+import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+
+const project = process.argv[2];
+const runtime = join(project, 'payload', '.joycraft', 'runtime', 'archive.mjs');
+const git = (cwd, ...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const put = (file, body) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
+const hash = body => createHash('sha256').update(Buffer.from(body)).digest('hex');
+const attest = '.joycraft/local/attest.json';
+const dirs = [];
+
+function fixture(extra, { status = 'done' } = {}) {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-probe-191-1-')));
+  dirs.push(root);
+  const folder = 'docs/features/x', queuePath = `${folder}/specs/.joycraft-spec-queue.json`;
+  git(root, 'init', '-q', '-b', 'main');
+  put(join(root, `${folder}/brief.md`), '# Brief\n');
+  put(join(root, `${folder}/specs/01-a.md`), `---\nid: 1\nstatus: ${status}\n---\n# A\n`);
+  const decision = JSON.stringify({ schemaVersion: 1, kind: 'legacy', queuePath, statement: 'Accept it as it is.', statedAt: '2026-11-21T00:00:00Z', specs: [1], reason: 'Done before the gates.' });
+  put(join(root, `${folder}/specs/legacy.json`), decision);
+  const spec = { id: 1, file: '01-a.md', status, mode: 'batch', depends_on: [], verification: { inputs: [] }, ...(status === 'done' ? { ownerAcceptance: { path: `${folder}/specs/legacy.json`, sha256: hash(decision), legacy: true } } : {}) };
+  put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature: 'x', specs: [spec] }));
+  put(join(root, 'docs/context/decision-log.md'), '# Decisions\n');
+  put(join(root, '.gitignore'), `${dirname(attest)}/\n`);
+  put(join(root, attest), JSON.stringify({ schemaVersion: 1, phase: 'session-end', host: { sessionId: 's', quiescent: true, activeWorkers: [], dependentWork: [] }, durableContext: { carried: true, references: ['docs/context/decision-log.md'] } }));
+  for (const [file, body] of Object.entries(extra)) put(join(root, file), body);
+  git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'init');
+  return root;
+}
+const run = (cwd, ...extra) => {
+  const r = spawnSync(process.execPath, [runtime, 'archive', '--feature', 'x', '--phase', 'session-end', '--attestation', attest, ...extra], { cwd, encoding: 'utf8' });
+  let output = null; try { output = JSON.parse(r.stdout); } catch {}
+  return { status: r.status, stderr: r.stderr, output };
+};
+const log = (name, value) => console.log(`${name}: ${JSON.stringify(value)}`);
+
+// A. Comment detection: each case is one test file; "reads" says whether its code reads the folder.
+const cases = [
+  ['trailing // after a string path', 'tests/p1.test.ts', `// Spec: docs/features/x/specs/01-a.md\nconst p = 'docs/features/x/brief.md'; // read the brief\n`, true],
+  ['/* */ block body line without a leading *', 'tests/p2.test.ts', `/*\n  docs/features/x/brief.md\n*/\nexport {};\n`, false],
+  ['code after a closed /* */ on the same line', 'tests/p3.test.ts', `/* brief */ const p = 'docs/features/x/brief.md';\n`, true],
+  ['python # comment then string', 'tests/test_p4.py', `# Spec: docs/features/x/specs/01-a.md\np = "docs/features/x/brief.md"\n`, true],
+  ['python # comment only', 'tests/test_p5.py', `# Spec: docs/features/x/specs/01-a.md\nimport os\n`, false],
+  ['shell # comment then string', 'tests/p6.test.sh', `# Spec: docs/features/x/specs/01-a.md\ncat "docs/features/x/brief.md"\n`, true],
+  ['URL with // inside a string, then the path', 'tests/p7.test.ts', `const u = 'https://example.com//a'; const p = 'docs/features/x/brief.md';\n`, true],
+  ['JS private class field #dir', 'tests/p8.test.ts', `class A {\n  #dir = 'docs/features/x';\n  read() { return this.#dir; }\n}\n`, true],
+  ['Markdown bullet inside a template-literal fixture', 'tests/p9.test.ts', `const md = \`\n* [b](docs/features/x/brief.md)\n\`;\nexport { md };\n`, true],
+];
+for (const [name, file, body, reads] of cases) {
+  const root = fixture({ [file]: body });
+  const preview = run(root);
+  const listed = preview.output?.plan?.namedFiles?.find(item => item.path === file);
+  const applied = run(root, '--apply');
+  const next = applied.output?.next ?? null;
+  const called = next === null ? 'no next' : /need no change/.test(next) && !/still name/.test(next) ? 'comment-only' : 'needs change';
+  const verdict = !listed ? 'not listed' : reads && called === 'comment-only' ? 'FALSE COMMENT-ONLY (dangerous)' : !reads && called === 'needs change' ? 'false needs-change (safe direction)' : 'ok';
+  log(`A ${name}`, { listed: listed ? `${listed.path}:${listed.line}` : null, applyStatus: applied.status, next, called, verdict });
+}
+
+// B. Archive subcommand from a subfolder: preview and apply find the root.
+{
+  const root = fixture({ 'tests/c.test.ts': `const p = 'docs/features/x/brief.md';\n`, 'src/deep/keep.txt': 'k\n' });
+  mkdirSync(join(root, '.joycraft'), { recursive: true });
+  const fromRoot = run(root);
+  const fromSub = run(join(root, 'src', 'deep'));
+  log('B preview status root/sub', [fromRoot.status, fromSub.status, fromSub.stderr]);
+  log('B preview plans equal', JSON.stringify(fromRoot.output?.plan) === JSON.stringify(fromSub.output?.plan));
+  const applied = run(join(root, 'src', 'deep'), '--apply');
+  log('B apply from sub', { status: applied.status, stderr: applied.stderr, destination: applied.output?.destination, movedAtRoot: existsSync(join(root, 'docs/archive/x/feature/brief.md')), strayInSub: existsSync(join(root, 'src/deep/docs')) , next: applied.output?.next });
+}
+
+// C. latest report choice: in-review spec with review-1, -r2, -r3, -r10 files.
+{
+  const gone = n => JSON.stringify({ schemaVersion: 1, verdict: 'FAIL', flows: [{ observations: [{ receipts: [{ path: `docs/reviews/x/gone-${n}.txt`, sha256: hash('g') }] }] }] });
+  const sets = { 'r1 only': ['review-1.report.json'], 'r1,r2': ['review-1.report.json', 'review-1-r2.report.json'], 'r2,r3': ['review-1-r2.report.json', 'review-1-r3.report.json'], 'r9,r10': ['review-1-r9.report.json', 'review-1-r10.report.json'], 'other spec review-12 only': ['review-12.report.json'] };
+  for (const [name, names] of Object.entries(sets)) {
+    const extra = {}; for (const each of names) extra[`docs/features/x/specs/${each}`] = gone(each.replace(/\.report\.json$/, ''));
+    const root = fixture(extra, { status: 'in-review' });
+    const r = run(root, '--as-is', '--owner-instruction', 'Archive it as it is.', '--apply');
+    const note = r.status === 0 ? readFileSync(join(root, 'docs/archive/x/unverified.md'), 'utf8') : r.stderr;
+    log(`C ${name}`, { status: r.status, missing: [...note.matchAll(/Missing or changed: `([^`]+)`/g)].map(m => m[1]) });
+  }
+}
+
+// D. blank owner instruction variants.
+{
+  const root = fixture({}, { status: 'in-review' });
+  for (const value of ['   ', '', '\t\n', '--apply']) {
+    const r = run(root, '--as-is', '--owner-instruction', value);
+    log(`D owner-instruction ${JSON.stringify(value)}`, { status: r.status, stderr: r.stderr.trim() });
+  }
+  const dup = run(root, '--as-is', '--owner-instruction', 'a', '--owner-instruction', 'b');
+  log('D duplicate owner-instruction', { status: dup.status, stderr: dup.stderr.trim() });
+  log('D folder still in place, tree clean', [existsSync(join(root, 'docs/features/x/brief.md')), git(root, 'status', '--porcelain')]);
+}
+
+for (const dir of dirs) rmSync(dir, { recursive: true, force: true });

@@ -1,0 +1,615 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "4dade804f0ddfe5b5512c953f04c51466809f148",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+    "specId": 1,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+    "criteria": [
+      {
+        "id": "spec-1-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-3",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-4",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-5",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-6",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-7",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "archive",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-list-kill"
+          ]
+        },
+        "sha256": "3013de32581544d8e9f3035a7bec2da17607e30836cf1c9cfd9a6a2d648713f8",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "a4e4d8d0ce6578ba285add4f0b9431dbbe7306feb39cca175c3ef2f2e965054e",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/01-archive-fixes.md",
+        "kind": "requirement",
+        "sha256": "9e5c4a0f98c7c6b2877a0f8ec3fd23e595ac05f8f73b09cfaf36862fb4c4d19e",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/archive.md",
+        "kind": "code",
+        "sha256": "4ff6a1e172ec003569c24e208d81b0121a88416f4879921e4b9f51ab8f76e05f",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "54721985aa1e841c8b6443fd00a05a68a7240ab383f60c82000f9e6a6ea3a5bc",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "eb4a14a248c28ce07c6c8fd55ccce8a1eb94ab09a47fbbb94da7068ecde67bdc",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "d501f506737aee40417420ef62c2a30fd65c1e6ce0ef83f2004bd5d66e380f8e",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-as-is.test.ts",
+        "kind": "check",
+        "sha256": "8374111ec9fa8feadf907f7481e9487d424bcbefad066c9605e8ad4cee8ac999",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-ignore.test.ts",
+        "kind": "check",
+        "sha256": "13353cb2dc3789ca87d4d23bacc1c322ba0445ee4bf7812dfcbaf0f3453fcd67",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-links.test.ts",
+        "kind": "check",
+        "sha256": "b7a4a021d6e348617bf463a058ede7308e14f830005e75ed8a20c30efb2c1645",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-named-files.test.ts",
+        "kind": "check",
+        "sha256": "4deb57323acba26599b2eb8c99f24a75fb8ecc039e3f96606ea8f864d3ddb632",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-archive-tests.test.ts",
+        "kind": "check",
+        "sha256": "c5ddaf9c900b60f70ee13c8ae7ccf6b3b755086cf4e684823b151ab17132101f",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          3
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+          "anchors": [
+            "archive",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-list-kill"
+          ]
+        }
+      ]
+    },
+    "identity": "0cca86c95ce790f67b660973ebfb4aa6640559ce553912a1a4a56f0eb0ad7287"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a2601c46da033a78b"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a588b2e7168e882ad"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "createdAt": "2026-11-22T07:15:03.107Z",
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-1-1-any-case-markdown",
+      "subjectIdentity": "0cca86c95ce790f67b660973ebfb4aa6640559ce553912a1a4a56f0eb0ad7287",
+      "criteria": [
+        "spec-1-1"
+      ],
+      "representativeInput": "[AC:spec-1-1] tests/runtime-archive-links.test.ts:129",
+      "expected": "docs/guide.MD and docs/notes.markdown rewritten to the archive path; docs/plain.txt listed under namedInOtherFiles, unedited.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-focused-20261122T071216137Z-25012-1.log",
+              "sha256": "0297a0b1658ec63d6917d836c2799cb5aed8cfe957c46a7703d027314dc2d3e6"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "58 of 58 tests in 6 files pass, including [AC:spec-1-1]. relinkLive now tests /\\.(?:md|markdown)$/i (archive.mjs:722)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-1-2-docs-root-sentence",
+      "subjectIdentity": "0cca86c95ce790f67b660973ebfb4aa6640559ce553912a1a4a56f0eb0ad7287",
+      "criteria": [
+        "spec-1-2"
+      ],
+      "representativeInput": "[AC:spec-1-2] tests/text-archive-tests.test.ts:68",
+      "expected": "The \"Apply rewrites links\" sentence says \"under the docs root\"; [AC:spec-24-1] and [AC:spec-32-3] still pass unchanged.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-focused-20261122T071216137Z-25012-1.log",
+              "sha256": "0297a0b1658ec63d6917d836c2799cb5aed8cfe957c46a7703d027314dc2d3e6"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-1-2] passes; [AC:spec-24-1] (:26) and [AC:spec-32-3] (:40) pass and the diff only adds a test to text-archive-tests.test.ts. archive.md:195-197 now reads \"only in live Markdown under the docs root, outside the features and archive folders\"."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-1-3-latest-report",
+      "subjectIdentity": "0cca86c95ce790f67b660973ebfb4aa6640559ce553912a1a4a56f0eb0ad7287",
+      "criteria": [
+        "spec-1-3"
+      ],
+      "representativeInput": "[AC:spec-1-3] tests/runtime-archive-as-is.test.ts:131 and probe section C",
+      "expected": "With no record naming a report, the highest-round review-<id>[-r<n>].report.json in the queue folder is read and its missing receipts listed; none listed with no file.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-focused-20261122T071216137Z-25012-1.log",
+              "sha256": "0297a0b1658ec63d6917d836c2799cb5aed8cfe957c46a7703d027314dc2d3e6"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-1-3] passes: review-2 alone lists gone.txt; review-2 plus review-2-r2 lists nothing; no file lists nothing."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-probe.log",
+              "sha256": "725d7fbacc5732d3f5f89aa71429ec28ede4691d7855fe0671283dce56796782"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-probe.mjs.txt",
+              "sha256": "26ecb96518696d7fd42c6c7223923dccc821743d60df7b18d7c0bec33281f932"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probes/spec-1-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Probe C (in-review spec 1, as-is apply): r1 only -> gone-review-1; r1+r2 -> gone-review-1-r2 only; r2+r3 -> gone-review-1-r3 only; r9+r10 -> gone-review-1-r10 only (numeric, not lexical); review-12.report.json alone is not read for spec 1."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-1-4-blank-owner-instruction",
+      "subjectIdentity": "0cca86c95ce790f67b660973ebfb4aa6640559ce553912a1a4a56f0eb0ad7287",
+      "criteria": [
+        "spec-1-4"
+      ],
+      "representativeInput": "[AC:spec-1-4] tests/runtime-archive-as-is.test.ts:150 and probe section D",
+      "expected": "Whitespace-only --owner-instruction refused with the same message as a -- value, never \"Invalid or duplicate\"; nothing changed.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-focused-20261122T071216137Z-25012-1.log",
+              "sha256": "0297a0b1658ec63d6917d836c2799cb5aed8cfe957c46a7703d027314dc2d3e6"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-1-4] passes: non-zero exit, \"needs the owner's words\", stderr equal to the -- case, folder in place, clean tree."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-probe.log",
+              "sha256": "725d7fbacc5732d3f5f89aa71429ec28ede4691d7855fe0671283dce56796782"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-probe.mjs.txt",
+              "sha256": "26ecb96518696d7fd42c6c7223923dccc821743d60df7b18d7c0bec33281f932"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probes/spec-1-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Probe D: \"   \", \"\", \"\\t\\n\" and \"--apply\" all exit 1 with the same message; a real duplicate still gets \"Invalid or duplicate argument\"; folder in place, git status clean."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-1-5-quiet-next",
+      "subjectIdentity": "0cca86c95ce790f67b660973ebfb4aa6640559ce553912a1a4a56f0eb0ad7287",
+      "criteria": [
+        "spec-1-5"
+      ],
+      "representativeInput": "[AC:spec-1-5] tests/runtime-archive-named-files.test.ts:224 and probe section A",
+      "expected": "next names only tests with a non-comment naming line, at that line; comment-only tests get \"need no change\"; namedFiles unchanged.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-focused-20261122T071216137Z-25012-1.log",
+              "sha256": "0297a0b1658ec63d6917d836c2799cb5aed8cfe957c46a7703d027314dc2d3e6"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-1-5] passes cases (a), (b) and (c). namedFiles: the only change is extracting the patterns expression into folderPatterns (archive.mjs:536-539), byte-for-byte the old inline expression; the .md skip and line choice are unchanged."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-probe.log",
+              "sha256": "725d7fbacc5732d3f5f89aa71429ec28ede4691d7855fe0671283dce56796782"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-probe.mjs.txt",
+              "sha256": "26ecb96518696d7fd42c6c7223923dccc821743d60df7b18d7c0bec33281f932"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probes/spec-1-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Probe A (9 one-test fixtures, real --apply): trailing // after a string path, # comment then string in .py and .sh, and a URL with // in a string are all called \"needs change\" at the right line; .py with only # lines is comment-only. Per the spec's own comment rule, three test files that read the folder are called comment-only: a line starting /* brief */ then code, a JS private field #dir = 'docs/features/x', and a template-literal fixture line starting \"* [b](docs/features/x/...)\". See finding f1."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-1-6-one-root-rule",
+      "subjectIdentity": "0cca86c95ce790f67b660973ebfb4aa6640559ce553912a1a4a56f0eb0ad7287",
+      "criteria": [
+        "spec-1-6"
+      ],
+      "representativeInput": "[AC:spec-1-6] tests/runtime-archive-ignore.test.ts:118 and probe section B",
+      "expected": "archive.mjs imports projectRoot from cleanup.mjs, holds no copy; ignore --check and archive from a subfolder find the root.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-focused-20261122T071216137Z-25012-1.log",
+              "sha256": "0297a0b1658ec63d6917d836c2799cb5aed8cfe957c46a7703d027314dc2d3e6"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-1-6] passes: ignore --check from src/deep prints the root status; source has no function projectRoot and imports it from ./cleanup.mjs."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-probe.log",
+              "sha256": "725d7fbacc5732d3f5f89aa71429ec28ede4691d7855fe0671283dce56796782"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-probe.mjs.txt",
+              "sha256": "26ecb96518696d7fd42c6c7223923dccc821743d60df7b18d7c0bec33281f932"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probes/spec-1-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Probe B (the archive subcommand path the tests do not cover): preview from src/deep exits 0 with a plan identical to the root preview; --apply from src/deep moves the folder to docs/archive/x at the root, creates nothing under src/deep, and gives the expected next."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-1-7-words",
+      "subjectIdentity": "0cca86c95ce790f67b660973ebfb4aa6640559ce553912a1a4a56f0eb0ad7287",
+      "criteria": [
+        "spec-1-7"
+      ],
+      "representativeInput": "word-cap test tests/payload-guard.test.ts:356 (tagged [AC:spec-1-2] [AC:spec-7-2] from earlier features)",
+      "expected": "Every-spec words unchanged; on-demand inside the cap.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-1-reviewer-focused-20261122T071216137Z-25012-1.log",
+              "sha256": "0297a0b1658ec63d6917d836c2799cb5aed8cfe957c46a7703d027314dc2d3e6"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-ignore.test.ts",
+              "tests/text-archive-tests.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Cap test passes. Printed every-spec 12177 (cap 12256), on-demand 20561 (cap 21163, 602 spare): identical to the spec-7 reviewer receipt on the parent payload (spec-7-reviewer-focused-20261122T070752046Z-88623-1.log). git diff 12a0d14 HEAD -- payload/ touches only archive.md (on-demand, net 0 words), archive.mjs and PIN."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-false-comment-only",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:565",
+      "summary": "Dangerous direction, reproducible (probe A): isCommentLine calls a line a comment by its first characters alone, exactly as the spec defines, so a test whose only naming line is (1) `/* x */ const p = 'docs/features/x/...'`, (2) a JS/TS private class field `#dir = 'docs/features/x'`, or (3) a Markdown bullet `* [b](docs/features/x/...)` inside a template-literal fixture gets \"only in comments and need no change. Leave their paths as they are.\" while the test reads the path. Not blocking: the code follows the stated criterion's definition, and namedFiles still lists the file in the preview and the session-end text, and the gate after the move catches a broken read. Suggested fix: count # as a comment only in #-comment languages (.py, .sh, .rb, .yaml, .toml), count /* only when the line ends inside the comment or after */ with nothing more, and count a leading * only inside an open /* block; or keep the comment-only wording softer (\"appear to name it only in comments; check them\").",
+      "assumption": "The spec's comment definition is the owner-approved rule; tightening it is a new spec, not a repair of this one."
+    },
+    {
+      "id": "f2-block-body-noise",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:565",
+      "summary": "Safe direction: a /* ... */ block body line without a leading * (probe A case 2) counts as code, so next asks for a change the test does not need. Harmless noise; block tracking would fix it with f1."
+    },
+    {
+      "id": "f3-blank-instruction-wording",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:821",
+      "summary": "Implementer gap 1 judged acceptable: the spec requires the same message for a blank value as for a -- value, so the shared text is correct; its tail \"the text cannot start with --\" is slightly off for a blank value. A later wording could end \"...as its value: not blank, not starting with --\". Ordering is right: a duplicate still gets the duplicate message (probe D)."
+    },
+    {
+      "id": "f4-archive-subfolder-untested",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:838",
+      "summary": "Implementer gap 2: main now passes root: projectRoot() to archiveFeature, which the spec bullet names (\"archive.mjs archive ... from a subfolder\"), but only ignore --check has a test. Probe B shows preview and apply from a subfolder work. Add a subfolder archive preview test to runtime-archive-ignore or runtime-archive-named-files."
+    },
+    {
+      "id": "f5-latest-report-choice",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:476",
+      "summary": "Latest-report choice judged right for the r<n> naming the dispatch helper uses: plain name = round 1, rounds compare numerically (r10 beats r9), and the anchored regex keeps review-12 out of spec 1. Only the queue folder is searched, as the spec says; a report written elsewhere (reviews/) is not found. A stray review-<id>-r1.report.json next to the plain file ties at round 1 and the pick then depends on readdir order; harmless in practice."
+    },
+    {
+      "id": "f6-trace-tag-collision",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/payload-guard.test.ts:356",
+      "summary": "spec-1-7 is untraced, and the trace maps this spec's spec-1-1..spec-1-4 also to payload-guard tests tagged [AC:spec-1-*] by an earlier feature. The word-cap test that checks spec-1-7 carries [AC:spec-1-2]. Trace ids are not feature-scoped; worth a note for the trace tool."
+    },
+    {
+      "id": "f7-namedfiles-equality-check",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-archive-named-files.test.ts:249",
+      "summary": "\"namedFiles equals the list the preview gives\" is checked as the preview entry's line 1 and text, not as a before/after comparison; the source diff shows namedFiles logic unchanged (patterns moved into folderPatterns verbatim), so this holds structurally."
+    }
+  ]
+}

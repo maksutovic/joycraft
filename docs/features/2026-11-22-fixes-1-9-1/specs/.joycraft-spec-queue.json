@@ -8,7 +8,7 @@
       "depends_on": [
         3
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -144,6 +144,10 @@
       },
       "submitted": {
         "at": "2026-11-22T07:11:21.820Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-1.report.json",
+        "sha256": "6496178b107a0b631c807b9ae6c9e87b8b784f873ccf8ee628722012363d9ffa"
       }
     },
     {

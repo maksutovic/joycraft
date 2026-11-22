@@ -1,0 +1,41 @@
+
+> joycraft@1.9.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-archive-links.test.ts tests/runtime-archive-as-is.test.ts tests/runtime-archive-named-files.test.ts tests/runtime-archive-ignore.test.ts tests/text-archive-tests.test.ts tests/payload-guard.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/text-archive-tests.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12177 (cap 12256, 79 spare)
+on-demand words: 20561 (cap 21163, 602 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1571[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 412[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 417[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-ignore.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 1599[2mms[22m[39m
+   [33m[2m✓[22m[39m archive.mjs ignore[2m > [22m[review-b-7] a line with leading spaces is not the archive line; CRLF stays CRLF; equivalent spellings count as present [33m 373[2mms[22m[39m
+   [33m[2m✓[22m[39m archive.mjs ignore[2m > [22m[AC:spec-29-4] a symlinked .ignore is refused; docs/archive/* counts as present; a run from a subfolder uses the root .ignore [33m 488[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-links.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 2444[2mms[22m[39m
+   [33m[2m✓[22m[39m archive rewrites live links[2m > [22m[review-b-2] a tracked symlink to a file outside the project is not followed or rewritten [33m 300[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-as-is.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 2684[2mms[22m[39m
+   [33m[2m✓[22m[39m archive as is[2m > [22m[AC:spec-8-1] a feature with one in-review spec is refused by default and archived with --as-is --owner-instruction [33m 348[2mms[22m[39m
+   [33m[2m✓[22m[39m archive as is[2m > [22m[AC:spec-8-2] unverified.md names the spec, the missing receipt and the instruction; queue and report bytes are preserved; nothing claims acceptance [33m 322[2mms[22m[39m
+   [33m[2m✓[22m[39m archive as is[2m > [22m[review-b-5] a repeat archive of an as-is archive names the unverified note [33m 330[2mms[22m[39m
+   [33m[2m✓[22m[39m archive as is[2m > [22m[AC:spec-1-3] an in-review spec lists the missing receipts of its latest report file in the specs folder [33m 707[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-named-files.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 3870[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists files that name the feature folder[2m > [22m[AC:spec-13-1] the preview, strict and as-is, lists the test first and the script, and moves nothing [33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-1] a strict and an --as-is preview write nothing and move nothing, also beside an old pending record [33m 303[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-2] namedFiles lists the full path, split segments and the dated name, not look-alikes; marks only a non-test migration [33m 387[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-3] --apply moves as 1.8.1 does, edits nothing outside the docs root, and names each listed test in next [33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-4] --rewrite is an unknown argument, and neither a preview nor an --apply writes under .joycraft/local [33m 353[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (check) [33m 351[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (stage) [33m 386[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[AC:spec-1-5] next names only tests that name the folder outside a comment, at that line; namedFiles matches the preview [33m 940[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[32m58 passed[39m[22m[90m (58)[39m
+[2m   Start at [22m 23:12:25
+[2m   Duration [22m 4.08s[2m (transform 82ms, setup 0ms, collect 166ms, tests 12.19s, environment 0ms, prepare 263ms)[22m
+
+joycraft-evidence: {"wallMs":4692,"load":[8.30419921875,8.03955078125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-archive-links.test.ts","tests/runtime-archive-as-is.test.ts","tests/runtime-archive-named-files.test.ts","tests/runtime-archive-ignore.test.ts","tests/text-archive-tests.test.ts","tests/payload-guard.test.ts"],"exitCode":0,"timedOut":false,"revision":"4dade804f0ddfe5b5512c953f04c51466809f148","dirty":true}

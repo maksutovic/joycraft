@@ -25,3 +25,9 @@
 ## Spec 7 (PASS r1)
 - testing-review.md is read on nearly every spec (verify skill, reviewer/implementer agents, decompose) but counted on-demand; moving it would exceed the every-spec cap (owner call on the split).
 - gates.md is every-spec but no per-spec file names it (runtime-only justification).
+
+## Spec 1 (PASS r1)
+- f1 (dangerous direction): archive.mjs:565 calls a test comment-only when a line starts with a closed `/* x */` then code, a JS `#private` field, or a `* [link](...)` bullet inside a template fixture; `next` then says "need no change". Fixed by spec 9.
+- f3: blank owner instruction message ends "cannot start with --".
+- f4: no test for `archive` subcommand from a subfolder (probe passed). Spec 9.
+- f6: trace ids clash with older features (payload-guard [AC:spec-1-*]).
