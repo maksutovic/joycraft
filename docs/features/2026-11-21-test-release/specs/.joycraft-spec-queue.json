@@ -2265,7 +2265,7 @@
       "depends_on": [
         1
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -2353,6 +2353,10 @@
       },
       "submitted": {
         "at": "2026-11-22T02:31:01.160Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "sha256": "71fc633348f157098998fbfe09a070247c02a88cd59dbea2cfc86147220c409f"
       }
     },
     {

@@ -1,6 +1,6 @@
 ---
 id: 25
-status: in-review
+status: done
 ---
 # Session end rides the PR: clean tree, records, tidy commit, prune, archive, one push
 

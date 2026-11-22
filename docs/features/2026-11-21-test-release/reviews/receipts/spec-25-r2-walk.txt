@@ -1,0 +1,303 @@
+=== (a) clean tree, branch, record to write ===
+$ git status --porcelain
+[exit 0]
+$ node .joycraft/runtime/status.mjs --fix
+{
+  "features": [
+    {
+      "feature": "demo",
+      "queuePath": "docs/features/demo/specs/.joycraft-spec-queue.json",
+      "pendingJournal": false,
+      "specs": [
+        {
+          "id": 1,
+          "file": "docs/features/demo/specs/01-a.md",
+          "queue": "done",
+          "frontmatter": "done"
+        }
+      ]
+    }
+  ],
+  "drift": [],
+  "fixed": [
+    {
+      "feature": "demo",
+      "specId": 1,
+      "file": "docs/features/demo/specs/01-a.md",
+      "from": "in-review",
+      "to": "done"
+    }
+  ],
+  "readyToArchive": [
+    {
+      "feature": "demo",
+      "folder": "docs/features/demo",
+      "openDecisions": []
+    }
+  ],
+  "worktrees": {
+    "owned": 0,
+    "prunable": 0,
+    "unknown": 0
+  },
+  "problems": [],
+  "questions": [],
+  "unreadReports": [
+    {
+      "feature": "demo",
+      "specId": 1,
+      "path": "docs/features/demo/specs/review-1.report.json",
+      "reason": "The accepted report is missing or changed here, so its follow-ups cannot be listed."
+    }
+  ],
+  "legacyDecisions": []
+}
+[exit 0]
+-- Records step writes a decision answer
+$ git -c user.name=t -c user.email=t@example.com add -A
+[exit 0]
+$ git -c user.name=t -c user.email=t@example.com commit -q -m docs: session-end records
+[exit 0]
+$ node .joycraft/runtime/cleanup.mjs tidy
+{
+  "base": "cce6854e96af956d0bfffa254ae7948cbf6422d3",
+  "head": "fd91bc5f270f67b4f7010e01c15692c2460ca95d",
+  "approximate": false,
+  "findings": [
+    {
+      "check": "gone-symbol",
+      "path": "docs/context/guide.md",
+      "line": 5,
+      "symbol": "getWidget",
+      "fixable": true,
+      "detail": "Names getWidget, which this range removed from the code; no code at fd91bc5 has it.",
+      "fix": "Fix this line to name the current code, or remove it."
+    }
+  ],
+  "more": 0,
+  "standing": 1,
+  "skipped": []
+}
+[exit 2]
+-- fix the named line
+$ node .joycraft/runtime/cleanup.mjs tidy --verify
+{
+  "status": "pass",
+  "base": "cce6854e96af956d0bfffa254ae7948cbf6422d3",
+  "head": "fd91bc5f270f67b4f7010e01c15692c2460ca95d",
+  "cleared": 1,
+  "remaining": [],
+  "refused": [],
+  "message": "docs: tidy 1 doc line after fd91bc5\n\nJoycraft-Tidy: cce6854e96af956d0bfffa254ae7948cbf6422d3..fd91bc5f270f67b4f7010e01c15692c2460ca95d"
+}
+[exit 0]
+$ git -c user.name=t -c user.email=t@example.com commit -q -a -m docs: tidy 1 doc line after fd91bc5
+
+Joycraft-Tidy: cce6854e96af956d0bfffa254ae7948cbf6422d3..fd91bc5f270f67b4f7010e01c15692c2460ca95d
+[exit 0]
+$ node .joycraft/runtime/worktrees.mjs prune
+{
+  "applied": false,
+  "into": "HEAD",
+  "plan": []
+}
+[exit 0]
+$ node .joycraft/runtime/worktrees.mjs prune --apply
+{
+  "applied": true,
+  "into": "HEAD",
+  "plan": []
+}
+[exit 0]
+$ git status --porcelain
+[exit 0]
+$ git log --oneline
+039a5a2 docs: tidy 1 doc line after fd91bc5
+fd91bc5 docs: session-end records
+7dcec49 remove getWidget
+cce6854 init
+[exit 0]
+$ git remote
+[exit 0]
+-- control: record left uncommitted with the tidy fix (round-1 shape)
+$ node .joycraft/runtime/cleanup.mjs tidy --verify
+{
+  "status": "refused",
+  "base": "cce6854e96af956d0bfffa254ae7948cbf6422d3",
+  "head": "d836786b791ec0d0cd1f8adf68924c8c7391a1a4",
+  "cleared": 0,
+  "remaining": [],
+  "refused": [
+    {
+      "path": "docs/context/decision-log.md",
+      "reason": "No fixable tidy finding names this file."
+    }
+  ],
+  "message": null
+}
+[exit 2]
+-- no-fix case: records committed, nothing to tidy
+$ node .joycraft/runtime/cleanup.mjs tidy --verify
+{
+  "status": "clean",
+  "base": "cce6854e96af956d0bfffa254ae7948cbf6422d3",
+  "head": "31e0124bc03f67ebb5ea645254a1db3bdb31c89f",
+  "cleared": 0,
+  "remaining": [],
+  "refused": [],
+  "message": null
+}
+[exit 0]
+=== (b) dirty tree ===
+$ git status --porcelain
+ M src/widget.ts
+?? notes.txt
+[exit 0]
+$ node .joycraft/runtime/status.mjs
+{
+  "features": [
+    {
+      "feature": "demo",
+      "queuePath": "docs/features/demo/specs/.joycraft-spec-queue.json",
+      "pendingJournal": false,
+      "specs": [
+        {
+          "id": 1,
+          "file": "docs/features/demo/specs/01-a.md",
+          "queue": "done",
+          "frontmatter": "in-review"
+        }
+      ]
+    }
+  ],
+  "drift": [
+    {
+      "feature": "demo",
+      "specId": 1,
+      "file": "docs/features/demo/specs/01-a.md",
+      "queue": "done",
+      "frontmatter": "in-review",
+      "fixable": true,
+      "reason": "The queue records an accepted completion; the frontmatter lags."
+    }
+  ],
+  "fixed": [],
+  "readyToArchive": [
+    {
+      "feature": "demo",
+      "folder": "docs/features/demo",
+      "openDecisions": []
+    }
+  ],
+  "worktrees": {
+    "owned": 0,
+    "prunable": 0,
+    "unknown": 0
+  },
+  "problems": [],
+  "questions": [],
+  "unreadReports": [
+    {
+      "feature": "demo",
+      "specId": 1,
+      "path": "docs/features/demo/specs/review-1.report.json",
+      "reason": "The accepted report is missing or changed here, so its follow-ups cannot be listed."
+    }
+  ],
+  "legacyDecisions": []
+}
+[exit 2]
+$ node .joycraft/runtime/gate.mjs check
+Joycraft gate: demo spec 1 (docs/features/demo/specs/01-a.md) drifted: queue says done, spec frontmatter says in-review. The queue records an accepted completion. Run node .joycraft/runtime/status.mjs --fix
+[exit 2]
+$ node .joycraft/runtime/cleanup.mjs tidy
+{
+  "base": "cce6854e96af956d0bfffa254ae7948cbf6422d3",
+  "head": "02e8cb584f89036ac8b2e9f3ed3e30e4ae93d998",
+  "approximate": false,
+  "findings": [
+    {
+      "check": "gone-symbol",
+      "path": "docs/context/guide.md",
+      "line": 5,
+      "symbol": "getWidget",
+      "fixable": true,
+      "detail": "Names getWidget, which this range removed from the code; no code at 02e8cb5 has it.",
+      "fix": "Fix this line to name the current code, or remove it."
+    }
+  ],
+  "more": 0,
+  "standing": 2,
+  "skipped": []
+}
+[exit 2]
+$ node .joycraft/runtime/worktrees.mjs prune
+{
+  "applied": false,
+  "into": "HEAD",
+  "plan": []
+}
+[exit 0]
+$ node .joycraft/runtime/archive.mjs archive --feature demo --phase session-end --attestation .joycraft/local/att.json
+Archive stopped: Verification needs at least one criterion
+[exit 1]
+tree+history hash before=75fa07dc4ecdfa176758a68c51232cc2ee3b289a  - after=75fa07dc4ecdfa176758a68c51232cc2ee3b289a  -
+UNCHANGED: read-only forms wrote nothing tracked and made no commit
+=== (c) solo repo, no remote, work on main ===
+$ git remote
+[exit 0]
+$ node .joycraft/runtime/cleanup.mjs tidy
+{
+  "base": "cce6854e96af956d0bfffa254ae7948cbf6422d3",
+  "head": "880fa0115390220417edea4aaafb0ccf5aa2df9f",
+  "approximate": true,
+  "findings": [
+    {
+      "check": "gone-symbol",
+      "path": "docs/context/guide.md",
+      "line": 5,
+      "symbol": "getWidget",
+      "fixable": true,
+      "detail": "Names getWidget, which this range removed from the code; no code at 880fa01 has it.",
+      "fix": "Fix this line to name the current code, or remove it."
+    }
+  ],
+  "more": 0,
+  "standing": 2,
+  "skipped": []
+}
+[exit 2]
+$ node .joycraft/runtime/cleanup.mjs tidy --verify
+{
+  "status": "pass",
+  "base": "cce6854e96af956d0bfffa254ae7948cbf6422d3",
+  "head": "880fa0115390220417edea4aaafb0ccf5aa2df9f",
+  "cleared": 1,
+  "remaining": [],
+  "refused": [],
+  "message": "docs: tidy 1 doc line after 880fa01\n\nJoycraft-Tidy: cce6854e96af956d0bfffa254ae7948cbf6422d3..880fa0115390220417edea4aaafb0ccf5aa2df9f"
+}
+[exit 0]
+$ git -c user.name=t -c user.email=t@example.com commit -q -a -m docs: tidy 1 doc line after 880fa01
+
+Joycraft-Tidy: cce6854e96af956d0bfffa254ae7948cbf6422d3..880fa0115390220417edea4aaafb0ccf5aa2df9f
+[exit 0]
+$ git status --porcelain
+[exit 0]
+$ git log --oneline
+4eba866 docs: tidy 1 doc line after 880fa01
+880fa01 docs: session-end records
+02e8cb5 remove getWidget
+cce6854 init
+[exit 0]
+$ git push
+fatal: No configured push destination.
+Either specify the URL from the command-line or configure a remote repository using
+
+    git remote add <name> <url>
+
+and then push using the remote name
+
+    git push <name>
+
+[exit 128]

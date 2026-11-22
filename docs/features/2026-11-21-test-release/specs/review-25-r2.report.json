@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "f4e1df8af7fe99f93938cc0fffbe698228f5b530",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 25,
+    "specPath": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+    "criteria": [
+      {
+        "id": "spec-25-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-25-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-25-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-25-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "session-end-pr",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "session-end-push-order",
+            "cap-raise"
+          ]
+        },
+        "sha256": "45d6a9b984e533c3424ae54880fc8bbbbf679f03ca61ba776558ea7f9a7d2245",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "aa4bb13a4a8e34102178d7766b714727bcbd541cdb5154b02fc8d590f5d486d1",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+        "kind": "requirement",
+        "sha256": "943e1ed06e99bb448dc30c416e02d9c5bde5c66e84996f55c9923ab2b4674ba8",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+        "kind": "code",
+        "sha256": "8a889baa02fe8fe8889224114ed8ea8bde60570bc4079fa619c7afbdb501657a",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/drift-tidy-text.test.ts",
+        "kind": "check",
+        "sha256": "952806a19e2ef7658065a66560e0b902ebbdc5a5ba9e2234abdbe9d142dffe1e",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "e9f3623b14b2fea3eaa8b597355b57f8e85c5ef1ab918c049a5caf156758d9c5",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-session-end-pr.test.ts",
+        "kind": "check",
+        "sha256": "fb9e7a5911704606af147bc7c782a94fefc05be24281ac90939d58b682133c8c",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          25
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "session-end-pr",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "session-end-push-order",
+            "cap-raise"
+          ]
+        }
+      ]
+    },
+    "identity": "07c1832de19b33d62a16a22f49626cb68cd3aac5975a182cb410524876c2e40a"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ab041cf96c503b99a"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "ae25bb12b17a5605e"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-25-1-clean-tree",
+      "criteria": [
+        "spec-25-1"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-session-end/SKILL.md at 253e6b5 (unchanged through HEAD)",
+      "expected": "git status --porcelain appears before the first .joycraft/runtime/ command; on output the skill reports, fixes nothing and commits nothing of the user's.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "SKILL.md:9 runs `git status --porcelain`; first runtime command is SKILL.md:35. SKILL.md:10-13 says report, fix nothing, commit nothing of the user's, push nothing, and now names the read-only form of status, tidy, prune and archive.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-source-scan.txt",
+              "sha256": "7e95043e40529e81ef89da79a56dd7883e37a369636a78ae1d3f12d280db514d"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Walk (b), dirty tree (M src/widget.ts, ?? notes.txt): status.mjs, gate.mjs check, cleanup.mjs tidy, worktrees.mjs prune (preview) and the archive preview ran; a hash of git status, git diff, the untracked file and git log was identical before and after: no tracked write, no commit.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.txt",
+              "sha256": "becb88ddd6804325b3440ff3a9db54578e4d1ced25670bffab43552e38cd48d4"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.sh.txt",
+              "sha256": "41aed083e1169e1629fafbe37dc0cb97c51505894b65a6b167f7a22901e7079e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "bash",
+              "spec-25-r2-walk.sh"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-25-1] and [review-25-2] pass; 28/28 tests across the three named files, exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt",
+              "sha256": "6f20436f23088023f3a1dde6e3dea00311071b1c80e3f5c129525a207dd49737"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-session-end-pr.test.ts",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "subjectIdentity": "07c1832de19b33d62a16a22f49626cb68cd3aac5975a182cb410524876c2e40a",
+      "limits": []
+    },
+    {
+      "id": "spec-25-2-order",
+      "criteria": [
+        "spec-25-2"
+      ],
+      "representativeInput": "SKILL.md section order and commits",
+      "expected": "status.mjs, tidy --verify, worktrees.mjs prune, archive.mjs archive, one push in that order; the records can be committed and tidy --verify then passes; hold sentence kept.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "Order: status.mjs (35), records commit (54-56), tidy --verify (62), worktrees.mjs prune (70), archive.mjs archive (93-94) with its commit (109-110), one push (114). \"it carries the records\" is gone; \"it carries only the tidy fixes\" at 63. Hold sentence at 41-42.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-source-scan.txt",
+              "sha256": "7e95043e40529e81ef89da79a56dd7883e37a369636a78ae1d3f12d280db514d"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Walk (a), clean branch tree: status.mjs --fix repaired a lagging frontmatter (in-review -> done) and a decision-log answer was written; committed as `docs: session-end records`; tidy found getWidget at guide.md:5; after the fix tidy --verify gave status pass, exit 0 and a message; the tidy commit left git status empty; prune preview and --apply had an empty plan. Control (round-1 shape, record left uncommitted): tidy --verify refused decision-log.md, exit 2. No-fix case: status clean, message null, so no tidy commit.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.txt",
+              "sha256": "becb88ddd6804325b3440ff3a9db54578e4d1ced25670bffab43552e38cd48d4"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.sh.txt",
+              "sha256": "41aed083e1169e1629fafbe37dc0cb97c51505894b65a6b167f7a22901e7079e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "bash",
+              "spec-25-r2-walk.sh"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-25-2], [review-25-1] (text and git-fixture runtime test) and drift-tidy-text.test.ts pass.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt",
+              "sha256": "6f20436f23088023f3a1dde6e3dea00311071b1c80e3f5c129525a207dd49737"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-session-end-pr.test.ts",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "subjectIdentity": "07c1832de19b33d62a16a22f49626cb68cd3aac5975a182cb410524876c2e40a",
+      "limits": []
+    },
+    {
+      "id": "spec-25-3-after-merge",
+      "criteria": [
+        "spec-25-3"
+      ],
+      "representativeInput": "SKILL.md One push section",
+      "expected": "\"read-only\" present; no post-merge phase, merged-PR detector or sessionEnd.commits; no-remote case covered.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "SKILL.md:116-117 says the next session start checks, read-only, that the change deployed and works; grep for post-merge|merged-PR detector|sessionEnd.commits finds nothing (exit 1). SKILL.md:115-116 adds the no-remote clause.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-source-scan.txt",
+              "sha256": "7e95043e40529e81ef89da79a56dd7883e37a369636a78ae1d3f12d280db514d"
+            }
+          ]
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Walk (c), solo repo on main with no remote: tidyRange took the approximate 7-day range; records commit, tidy fix, tidy --verify pass, tidy commit, clean tree; git push fails with \"No configured push destination\" (exit 128), the case the new clause tells the agent to skip and report as local.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.txt",
+              "sha256": "becb88ddd6804325b3440ff3a9db54578e4d1ced25670bffab43552e38cd48d4"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.sh.txt",
+              "sha256": "41aed083e1169e1629fafbe37dc0cb97c51505894b65a6b167f7a22901e7079e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "bash",
+              "spec-25-r2-walk.sh"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-25-3] and [review-25-3] pass; drift-tidy-text.test.ts 4/4.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt",
+              "sha256": "6f20436f23088023f3a1dde6e3dea00311071b1c80e3f5c129525a207dd49737"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-session-end-pr.test.ts",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "subjectIdentity": "07c1832de19b33d62a16a22f49626cb68cd3aac5975a182cb410524876c2e40a",
+      "limits": []
+    },
+    {
+      "id": "spec-25-4-every-spec",
+      "criteria": [
+        "spec-25-4"
+      ],
+      "representativeInput": "pnpm test tests/payload-guard.test.ts",
+      "expected": "Guard passes; every-spec count not above the count before this spec.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "payload-guard.test.ts 16/16; every-spec words: 12150 (cap 12256), same as round 1. joycraft-session-end is not an every-spec file (round-1 receipt spec-25-every-spec-list.txt), so the fix's added lines cannot raise it.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt",
+              "sha256": "6f20436f23088023f3a1dde6e3dea00311071b1c80e3f5c129525a207dd49737"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-every-spec-list.txt",
+              "sha256": "b4adad2649b6542e7d18b474b3254fc6f2ca38d40ba6cd6c767238ecd8182c63"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-session-end-pr.test.ts",
+              "tests/drift-tidy-text.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "subjectIdentity": "07c1832de19b33d62a16a22f49626cb68cd3aac5975a182cb410524876c2e40a",
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-resolved",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-session-end/SKILL.md:54-56",
+      "assumption": "Round-1 f1 is closed; this entry records the check, not a new problem.",
+      "summary": "Round-1 blocking f1 resolved: the records now get their own commit before tidy, and the tidy commit carries only tidy fixes. Walk (a) and the new git-fixture test show tidy --verify passing after the records commit; the round-1 shape still refuses (exit 2). No action."
+    },
+    {
+      "id": "f5-unnamed-edits-after-tidy",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-session-end/SKILL.md:17",
+      "assumption": "In most sessions the Joycraft block is current and the archive relinks nothing, so the three named commits cover the edits.",
+      "summary": "Round-1 f2 resolved (archive commit named, --rewrite edits included). Two edits are still in no named commit: joycraft-cleanup session-end mode (run after the tidy commit, SKILL.md:64-65) may replace the Joycraft block in an entry file or re-point a dead path, and archive --apply also relinks live docs (archive.mjs:625, relinkLive at :700). Suggest: the archive commit takes the move and every edit archive made, and cleanup's session-end fixes go in the records commit or their own."
+    },
+    {
+      "id": "f6-dirty-tree-gate-and-cleanup",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-session-end/SKILL.md:11-13",
+      "assumption": "\"fix nothing\" governs: on a dirty tree the agent reports the gate message and the cleanup findings and does not act on them.",
+      "summary": "Round-1 f3 resolved for the four commands named. On a dirty tree, gate.mjs check still prints \"Run node .joycraft/runtime/status.mjs --fix\" (walk b) and the Records step says \"Do the step each gate message names\" (SKILL.md:37); the read-only list does not name gate messages, joycraft-cleanup session-end fixes, or the lease release. \"Fix nothing\" covers them; one more clause would remove the doubt."
+    },
+    {
+      "id": "f4-resolved",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-session-end/SKILL.md:115-116",
+      "assumption": "Round-1 f4 is closed; this entry records the check.",
+      "summary": "Round-1 f4 resolved: with no remote the skill makes the same commits, skips the push and says the work is local. Walk (c) confirms tidy works there. A repo with a remote but no PR host (plain git server) is still not named; low value."
+    }
+  ],
+  "limits": [
+    "Text spec: the walk ran the committed runtime (payload/.joycraft/runtime at HEAD via git archive) on temp git fixtures, acting as the agent. archive --apply was not run end to end: a fixture with a fully accepted, receipt-bound queue was not built; the archive preview stopped on the fixture queue (no criteria) and wrote nothing. The archive commit text was checked against archive.mjs (renameSync, relinkLive; no commit).",
+    "Test changes: spec says none. 253e6b5 changes only tests/text-session-end-pr.test.ts, the file this spec created; no assertion removed, no skip added (existing tests unchanged; new describe blocks appended).",
+    "Judged committed bytes: the four spec inputs at HEAD hash to the packet values; other agents committed unrelated work during the review (HEAD moved f4e1df8 -> 6f23653) without touching them.",
+    "Installed .claude/skills copy of joycraft-session-end not checked; the spec edits payload only."
+  ],
+  "createdAt": "2026-11-22T02:40:30.550Z"
+}

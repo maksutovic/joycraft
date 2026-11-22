@@ -41,3 +41,7 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - update.md:38 "When it reports `gate-rule`" should name `entry-check.mjs`.
 - Setup should also offer the rewrite (a fresh install meets it only in an attended cleanup).
 - A small runtime helper to record `cleanup.gateRule` in preferences.json (like `archive.mjs ignore --decline`) instead of hand-written JSON.
+
+## Session end (spec 25) — fix
+- Name the commit for every edit: the archive commit takes all archive edits (moves, relinked live docs, rewritten tests); cleanup's session-end fixes go in the records commit.
+- Dirty tree: say gate messages, cleanup fixes and the lease release also wait.
