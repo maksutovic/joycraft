@@ -17,3 +17,7 @@
 ## Spec 4 (PASS r1)
 - f1: `archive.mjs` `markdownLines` (Markdown link rewrites) and the as-is note's owner-instruction quote still split on `\n` only.
 - f2: the 1.9.1 `[AC:spec-1-4]` test in `tests/runtime-archive-as-is.test.ts` was reworded to the new blank-instruction message (required by spec 4, not listed in its Test changes).
+
+## Spec 5 (PASS r1)
+- f1: `setup.md:247` folds "its conventions" into the keep-guidance sentence, where "its" attaches only to the second home and "keep" is weaker than the old "preserve"; a same-length rewording could fix it later.
+- f2: the `[AC:spec-5-2]` tag sits in a comment, since the criterion forbids an assertion change; evidence is the unchanged guard run plus a diff receipt.

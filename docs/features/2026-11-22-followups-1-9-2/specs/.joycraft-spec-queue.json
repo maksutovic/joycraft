@@ -290,7 +290,7 @@
       "id": 5,
       "file": "05-text-restore.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -352,6 +352,10 @@
       },
       "submitted": {
         "at": "2026-11-22T17:59:34.250Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-5.report.json",
+        "sha256": "cdf01c5a346823e09348fff1723663458e0463d9e88c434ab1ef6c129861ebdb"
       }
     },
     {
