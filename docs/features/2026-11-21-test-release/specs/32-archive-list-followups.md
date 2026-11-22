@@ -1,6 +1,6 @@
 ---
 id: 32
-status: todo
+status: in-review
 ---
 # Archive lists three more path spellings, words its refusal plainly, and the text covers the ruling's skip and no-gate steps
 
