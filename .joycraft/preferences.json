@@ -3,5 +3,8 @@
   "questions": {
     "pacing": "page",
     "surface": "artifact"
+  },
+  "cleanup": {
+    "gateRule": "rewritten"
   }
 }

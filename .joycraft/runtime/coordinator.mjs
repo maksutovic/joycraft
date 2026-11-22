@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { readConfig } from './config.mjs';
 import { isObject, nonempty, parseJson, readLocal, relativePath, requireValue, validateQueue } from './identity.mjs';
 
 // One session coordinates a queue at a time. The lease is a coordination record
@@ -166,11 +167,57 @@ export function show({ root = process.cwd(), queuePath, staleMinutes = staleMinu
   return { feature, lease, stale: lease ? isStale(lease, now, staleMinutes) : null };
 }
 
+/** joycraft.yaml's `tests:` section: `{ focused?, gate?, full?, gateRuns }`.
+ * Read through readConfig (spec 2). */
+export function testSettings(root = process.cwd()) {
+  return readConfig(root).tests;
+}
+
+/** The waves of unfinished specs (dependency levels; done specs are satisfied) and the gate points:
+ * one per wave when tests.gateRuns is `wave`, one per spec when it is `spec`. */
+export function gatePlan({ root = process.cwd(), queuePath }) {
+  queuePath = relativePath(queuePath);
+  const queue = parseJson(readLocal(root, queuePath), queuePath);
+  validateQueue(queue, { select: () => false });
+  const open = new Map(queue.specs.filter(spec => spec.status !== 'done').map(spec => [spec.id, spec]));
+  const levels = new Map();
+  const level = (id, seen = new Set()) => {
+    if (levels.has(id)) return levels.get(id);
+    requireValue(!seen.has(id), `Spec ${id} depends on itself through ${[...seen].join(' -> ')}`);
+    seen.add(id);
+    const deps = (open.get(id).depends_on ?? []).filter(dep => open.has(dep));
+    const value = deps.length ? 1 + Math.max(...deps.map(dep => level(dep, seen))) : 0;
+    levels.set(id, value);
+    return value;
+  };
+  const waves = [];
+  for (const id of open.keys()) (waves[level(id)] ??= []).push(id);
+  const { gateRuns } = testSettings(root);
+  const gatePoints = gateRuns === 'wave'
+    ? waves.map((specs, index) => ({ wave: index + 1, specs }))
+    : waves.flatMap((specs, index) => specs.map(id => ({ wave: index + 1, specs: [id] })));
+  return { feature: queue.feature, gateRuns, waves, gatePoints };
+}
+
+/** For each failing file, the specs whose verification inputs hold it, or `bisect` when none does. */
+export function gateOwner({ root = process.cwd(), queuePath, files }) {
+  queuePath = relativePath(queuePath);
+  requireValue(Array.isArray(files) && files.length > 0, 'gate-owner needs at least one --file <path>');
+  const queue = parseJson(readLocal(root, queuePath), queuePath);
+  validateQueue(queue, { select: () => false });
+  return { feature: queue.feature, files: files.map(file => {
+    const wanted = path.posix.normalize(file).replace(/^\.\//, '');
+    const specs = queue.specs.filter(spec => (spec.verification?.inputs ?? []).some(input => input?.path === wanted)).map(spec => spec.id);
+    return { file: wanted, specs: specs.length ? specs : 'bisect' };
+  }) };
+}
+
 export async function main(argv = process.argv.slice(2)) {
   const [command, ...rest] = argv;
   const flags = {};
   for (let index = 0; index < rest.length; index += 1) {
     if (rest[index] === '--take-over') { flags[rest[index]] = true; continue; }
+    if (rest[index] === '--file') { (flags['--file'] ??= []).push(rest[index + 1]); index += 1; continue; }
     flags[rest[index]] = rest[index + 1]; index += 1;
   }
   const root = path.resolve(flags['--root'] ?? '.');
@@ -182,7 +229,9 @@ export async function main(argv = process.argv.slice(2)) {
   else if (command === 'heartbeat') result = heartbeat(options);
   else if (command === 'release') result = release(options);
   else if (command === 'show') result = show(options);
-  else throw new Error('Usage: coordinator.mjs claim --queue <queue> --session <id> [--host <host>] [--take-over] | heartbeat|release --queue <queue> --session <id> | show --queue <queue> [--root <project>] [--stale-minutes <n>]');
+  else if (command === 'gate-plan') result = gatePlan(options);
+  else if (command === 'gate-owner') result = gateOwner({ ...options, files: flags['--file'] });
+  else throw new Error('Usage: coordinator.mjs claim --queue <queue> --session <id> [--host <host>] [--take-over] | heartbeat|release --queue <queue> --session <id> | show|gate-plan --queue <queue> | gate-owner --queue <queue> --file <path>... [--root <project>] [--stale-minutes <n>]');
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   return result;
 }

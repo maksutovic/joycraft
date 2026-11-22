@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "kind": "joycraft-archive-reconciliation",
+  "feature": "test-release",
+  "createdAt": "2026-11-22T06:40:00Z",
+  "instruction": "Max, 2026-11-22: \"merged, run the update and archive\". Max, 2026-11-21, decision archive-spec-13-close = replace: \"Spec 13 stays done as history. Spec 30 becomes 'archive lists; the rewrite code is removed', with normal reviews.\"",
+  "reason": "Commit 5a0c22f appended a \"## Decision needed\" section to spec 13 after its round-3 review, recording the hold and Max's answers archive-rewrite-route and archive-accept-mechanism.",
+  "resolution": "Keep today's spec 13 text as the history of how it closed; archive the round-3 accepted version beside it. Spec 13 stays done, owner-accepted with the limits in owner-acceptance-13.json; spec 30 replaced its rewrite code.",
+  "limitations": [
+    "Historical archival only; no renewed acceptance of current requirements.",
+    "Spec 13 remains owner-accepted with the two round-3 findings as limits; spec 30 removed the code they concern."
+  ],
+  "entries": [
+    {
+      "report": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-13-r3.report.json",
+        "sha256": "7bb6d77264afc82ce77cf9287f6d53b11b604bbd47223ae905b53c24fd71f1b8"
+      },
+      "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+      "normalization": "spec-status",
+      "acceptedSha256": "7efe3320503ea12748ace0693bc11673da7862c9c4d6f65bf9b2d9977da77c81",
+      "currentSha256": "10572765e8e5400e2ede7314293f804e17b6ef0b819d78a59e72c9f36faabc4b",
+      "reason": "Commit 5a0c22f added the \"## Decision needed\" section after the round-3 review; ba6e174 set status done at owner acceptance.",
+      "resolution": "The added section only records the owner decisions that closed the spec; the accepted round-3 text is restored into the archive."
+    }
+  ]
+}

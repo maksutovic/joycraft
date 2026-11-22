@@ -2,6 +2,7 @@ import { closeSync, existsSync, fsyncSync, lstatSync, mkdirSync, openSync, readF
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { readConfig } from './config.mjs';
 import { briefDecisionRecords, canonical, isObject, isSha256, localPath, nonempty, parseJson, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, subjectIdentity, validateIndependentReview } from './identity.mjs';
 
 export { snapshot } from './identity.mjs';
@@ -116,11 +117,51 @@ function refuseHeldFindings(report, specId) {
   if (reasons.length) throw refused(new Error(`Report has ${reasons.join('; ')}`));
 }
 
+const normalizeCommand = text => String(text).replace(/\s+/g, ' ').trim();
+const shellNames = new Set(['sh', 'bash', 'zsh', 'dash']);
+/**
+ * The command an observation ran, as one line. Wrappers are unwrapped: a leading
+ * `env` with its NAME=value settings (`env CI=1 pnpm verify`, `/usr/bin/env bash -c ...`),
+ * and a shell given the command after a flag group that ends in `c` (`sh -c`, `bash -lc`,
+ * `zsh -c`, `dash -c`), also with more arguments after the command (`sh -c <command> sh`).
+ */
+function ranCommand(argv) {
+  let rest = [...argv];
+  for (;;) {
+    const program = path.posix.basename(String(rest[0] ?? '').replaceAll('\\', '/'));
+    if (program === 'env') {
+      rest = rest.slice(1);
+      while (rest.length && (/^[A-Za-z_][A-Za-z0-9_]*=/.test(rest[0]) || rest[0] === '-i' || rest[0] === '--')) rest = rest.slice(1);
+      continue;
+    }
+    if (shellNames.has(program) && /^-[a-z]*c$/.test(rest[1] ?? '') && rest.length >= 3) return normalizeCommand(rest[2]);
+    return normalizeCommand(rest.join(' '));
+  }
+}
+
+/** A spec review runs the spec's own tests; the recorded gate and full commands
+ * run at the review boundary or wave end. A report that ran one is refused (exit 2). */
+function refuseGateRuns(root, report) {
+  let tests;
+  // A joycraft.yaml that does not parse never passes: the gate it records is unknown.
+  try { tests = readConfig(root).tests; } catch (error) { throw refused(new Error(`joycraft.yaml does not parse, so the recorded tests.gate is unknown; fix joycraft.yaml and check the report again (${error.message})`)); }
+  const gates = [['tests.gate', tests.gate], ['tests.full', tests.full]].filter(([, command]) => command).map(([key, command]) => [key, normalizeCommand(command)]);
+  if (!gates.length) return;
+  report.flows.forEach((flow, flowIndex) => (Array.isArray(flow?.observations) ? flow.observations : []).forEach((observation, index) => {
+    const argv = observation?.command?.argv;
+    if (!Array.isArray(argv) || !argv.every(item => typeof item === 'string')) return;
+    const ran = ranCommand(argv);
+    const match = gates.find(([, command]) => command === ran);
+    if (match) throw refused(new Error(`Report flows[${flowIndex}].observations[${index}] ran the recorded ${match[0]} command \`${match[1]}\`; a spec review runs the spec's own focused tests, so rerun with those and correct the report`));
+  }));
+}
+
 function validatePassingReport(root, report, state, reportPath) {
   validateReview({ root, report, state, reportPath });
   refuseHeldFindings(report, state.spec.id);
   requireValue(report.verdict === 'PASS', 'Report verdict must be PASS; FAIL or UNVERIFIED cannot complete a spec');
   requireValue(report.unresolved.length === 0, 'Report has unresolved review findings');
+  refuseGateRuns(root, report);
 }
 
 /**

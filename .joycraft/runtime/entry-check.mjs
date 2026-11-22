@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { cleanupReport } from './cleanup.mjs';
+import { cleanupReport, tidyReport } from './cleanup.mjs';
 import { managedBlock } from './wiring.mjs';
 
 // Entry files by name: the root pair, an AGENTS.md in a folder below, and the Codex override file.
@@ -26,6 +26,23 @@ export function entryReport({ root = process.cwd(), now = Date.now() } = {}) {
     // In file order, so a reader can go down the file once.
     .sort((a, b) => a.path.localeCompare(b.path) || (a.line ?? Infinity) - (b.line ?? Infinity));
   return { gate: findings.filter(item => item.level === 'gate').length, advisory: findings.filter(item => item.level === 'advisory').length, findings };
+}
+
+/**
+ * Start advice: at most 3 lines when the tidy range left fixable findings in
+ * map-reached pages, the last naming the tidy command. It never edits a file and
+ * never throws: a skipped or failed tidy gives null.
+ */
+export function tidyAdvice({ root = process.cwd(), now = Date.now() } = {}) {
+  let report, fixable;
+  try { report = tidyReport({ root, now, quick: true, limit: 0 }); fixable = report.all.filter(item => item.fixable); } catch { return null; }
+  if (fixable.length === 0) return null;
+  // On the default branch the range is the recent commits (approximate), not a branch.
+  const remover = report.approximate ? 'which recent commits removed' : 'which this branch removed';
+  const lines = fixable.slice(0, 2).map(item => `${item.path}:${item.line} names ${item.symbol ?? item.check}, ${remover} from the code.`);
+  const count = fixable.length === 1 ? '1 mapped doc line names' : `${fixable.length} mapped doc lines name`;
+  lines.push(`${count} removed code: run \`node .joycraft/runtime/cleanup.mjs tidy\` now or at session end.`);
+  return { check: 'tidy', path: fixable[0].path, lines, detail: lines.join(' '), fix: 'Run `node .joycraft/runtime/cleanup.mjs tidy` and fix the lines it names. Do not fix them at session start.' };
 }
 
 const git = (root, args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 256 * 1024 * 1024 });

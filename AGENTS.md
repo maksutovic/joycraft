@@ -12,10 +12,10 @@ The `joycraft` npm package. Its CLI installs and updates Joycraft, a skill bundl
 
 ## Rules
 
-- Run `pnpm test && pnpm typecheck` before committing. `pnpm test` runs once in an agent shell or CI; do not add `--run`.
+- While a spec is built, run only its own test files (the focused test). The gate in the Commands table runs once per spec, before it is accepted; `joycraft.yaml` records both. `pnpm test` runs once in an agent shell or CI; do not add `--run`.
 - Commit style: `verb: concise message`.
 - Work on a feature branch with a descriptive name (`feature/<spec-name>`). Never push to main; every change reaches main through a PR.
-- Push after each accepted spec. Open one PR when no spec of the queue can start.
+- Push after each accepted spec. Session end opens one PR when no spec of the queue can start.
 - Implement from the atomic specs in `docs/features/<slug>/specs/`.
 - Run `/release-docs-sync` before `gh pr create`: a PR that touches `src/`, `scripts/` or `payload/` must change `CHANGELOG.md` or carry a `Docs: none — <reason>` line in its body.
 - A merge to main that changes a product path (`isProductPath` in `scripts/release-preparation.mjs`) publishes to npm and needs its release fields; a docs-only merge publishes nothing. Do not introduce a second release PR, manual promotion approval or new credential gate without the maintainer's explicit approval.

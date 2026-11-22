@@ -8,16 +8,6 @@ the context map from the repository and a short interview with the user. The
 interview is part of every setup. Work inside the current project. A
 read-only request gets the findings reported, not written.
 
-## Contents
-
-- [Set up the context map](#set-up-the-context-map)
-- [Kickoff for a new project](#kickoff-for-a-new-project)
-- [Review loop tools](#review-loop-tools)
-- [Project-owned worktrees](#project-owned-worktrees)
-- [Knowledge grows with the work](#knowledge-grows-with-the-work)
-- [Finish setup and continue](#finish-setup-and-continue)
-- [Upgrade and agent onboarding](#upgrade-and-agent-onboarding)
-
 ## Set up the context map
 
 The context map in `AGENTS.md` is the index of project memory
@@ -84,6 +74,26 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
      reformats theirs.
      Every row targets a file that exists after the write.
    - **Homes**, only with content, routed by [knowledge.md](knowledge.md).
+   - **Test commands**: beside the `AGENTS.md` Commands table, write
+     `tests.focused` (with `{files}`), `tests.gate` and `tests.full` to
+     `joycraft.yaml`. Time the gate once: over about 60 s, record
+     `gateRuns: wave`, else `gateRuns: spec`.
+   - **The testing page**, when the project has none: write
+     `<context>/test-practices.md` from [the testing page template](testing-page.md),
+     filled in for the project's stack, with the map row "A test run is slow or
+     flaky". Explain its load order to the user in one line.
+   - **Machine load**, when several agents will test on this machine: offer a
+     worker cap in the project's own runner config, keyed on
+     `JOYCRAFT_EVIDENCE` (set on every Joycraft test run), never on `CI`,
+     which teammates and CI also set. Explain why in the same step: an
+     overloaded machine makes slow and flaky runs that agents then rerun, and
+     the reruns cost more time than the cap. The order is: run less (each
+     spec runs its own tests), then cap workers per run (cores ÷ agents, computed from the core count at
+     run time, never this machine's number), then
+     a project-owned slot for broad runs, which Joycraft does not ship. When the runner
+     config cannot hold a worker cap, put the runner's worker variable in the
+     machine-local `.joycraft/local/evidence-env.json`, which `evidence.mjs`
+     applies to every run, never in a tracked file.
    - **`CLAUDE.md`**, only when `.joycraft/installation.json` lists the
      `claude` host: missing → create it as `@AGENTS.md` followed by an empty
      `## Claude Code` section; present without an `@AGENTS.md` line → add
@@ -263,16 +273,6 @@ resource-lease convention and record the owner, resource, and release condition.
 If no lease convention or isolated alternative exists, treat the shared resource
 as unavailable until the project owner establishes one.
 
-Do not silently write host configuration. Verify that the active host created an
-isolated worktree from the intended base before worker start. In Claude Code,
-the default base is its default branch; use an observed `worktree.baseRef: head`
-policy or verify the captured current commit. A Claude `.worktreeinclude` copies
-only matched gitignored files for native isolated workers; a `WorktreeCreate`
-hook replaces creation and disables that automatic include. `CLAUDE_PROJECT_DIR`
-is the original project while the event working directory is the active
-worktree. On other hosts, use an observed native-isolation capability or an
-explicit manual Git-worktree workflow.
-
 ## Knowledge grows with the work
 
 Which home holds which kind of fact, and when to create one, is in
@@ -286,10 +286,9 @@ settings, and never overwrite it. `node .joycraft/runtime/config.mjs` prints the
 settings in effect.
 
 Only the context homes are current project knowledge. `docs/features/` is working
-material: a brief or spec there can be out of date until the feature is archived,
-and `docs/archive/` is history. Context retrieval and any project wiki or doc audit
-should treat both as non-authoritative and must not link to them as current
-truth.
+material (a brief or spec there can be out of date until the feature is
+archived) and `docs/archive/` is history: retrieval, wikis and doc audits treat
+both as non-authoritative and never link to them as current truth.
 
 The brief retains decision authority under `workflow.md`; the context document
 and decision log must not become competing answer stores. Later accepted facts
@@ -315,6 +314,9 @@ Step 5 of [Set up the context map](#set-up-the-context-map) is the finish
 check; also check that command claims match their cited source. Setup does not
 change credentials, install dependencies, or replace the user's workflow.
 When `.joycraft/installation.json` lists the `claude` host, offer the [gates](gates.md) once, in one line; turn them on only on the user's yes.
+When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`, ask once whether search should skip the archive; rerun it with `--apply` on a yes, `--decline` on a no.
+When `node .joycraft/runtime/entry-check.mjs` reports `gate-rule` and `node .joycraft/runtime/cleanup.mjs gate-rule --check` prints `unset`, show the findings once with the before-and-after rewrite ([cleanup](cleanup.md)) as one question. Rewrite on a yes, and record the answer with `cleanup.mjs gate-rule --record rewritten` or `--record kept`.
+When the project already uses a doc or code checker (vale, knip), offer once to add it to `checks:` ([settings](settings.md)).
 
 ## Upgrade and agent onboarding
 

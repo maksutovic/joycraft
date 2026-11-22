@@ -3,8 +3,10 @@ import { existsSync, mkdirSync, realpathSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { assertReviewAllowed, visibleReports } from './completion.mjs';
+import { readConfig } from './config.mjs';
 import { readLease } from './coordinator.mjs';
 import { prepareDispatch } from './dispatch-preflight.mjs';
+import { testChanges } from './test-changes.mjs';
 import { traceSpec } from './trace.mjs';
 import { canonical, isObject, localPath, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, validateNativeActor } from './identity.mjs';
 
@@ -41,6 +43,131 @@ function earlierReviews({ roots, queuePath, spec }) {
     }
   }
   return rounds;
+}
+
+/** One word as a POSIX shell reads it: bare when it holds only safe
+ * characters, otherwise single-quoted with each embedded quote as '\''. */
+export function shellQuote(word) {
+  const text = String(word);
+  return /^[A-Za-z0-9_./:=@%+,-]+$/.test(text) ? text : `'${text.replace(/'/g, "'\\''")}'`;
+}
+
+/** The words of a command template, split as a shell would: whitespace
+ * separates words, single quotes keep everything literal, double quotes keep
+ * whitespace and honor a backslash before " or \. */
+export function templateWords(template) {
+  const words = [];
+  let word = null;
+  for (let index = 0; index < template.length; index += 1) {
+    const char = template[index];
+    if (/\s/.test(char)) { if (word !== null) { words.push(word); word = null; } continue; }
+    word ??= '';
+    if (char === "'") {
+      const end = template.indexOf("'", index + 1);
+      requireValue(end !== -1, `tests.focused has an unclosed single quote: ${template}`);
+      word += template.slice(index + 1, end); index = end;
+    } else if (char === '"') {
+      let end = index + 1;
+      for (; end < template.length && template[end] !== '"'; end += 1) {
+        if (template[end] === '\\' && (template[end + 1] === '"' || template[end + 1] === '\\')) end += 1;
+        word += template[end];
+      }
+      requireValue(end < template.length, `tests.focused has an unclosed double quote: ${template}`);
+      index = end;
+    } else if (char === '\\' && index + 1 < template.length) { word += template[index + 1]; index += 1; }
+    else word += char;
+  }
+  if (word !== null) words.push(word);
+  return words;
+}
+
+/** The focused test command for a spec: `tests.focused` with `{files}` replaced
+ * by the spec's present `check` inputs in queue order, or the files appended
+ * when it has no `{files}`. A `{files}` inside a larger word stays in place:
+ * the text before it joins the first file and the text after it the last, as
+ * an unquoted shell expansion would. A template with shell syntax outside
+ * quotes runs as `sh -c`, so the evidence step runs all of it. Null, with a
+ * note, when either is missing or the template has an unclosed quote. */
+export function focusedCommand({ root, spec, config }) {
+  const template = config?.tests?.focused;
+  const files = spec.verification.inputs.filter(input => input.kind === 'check' && input.state !== 'absent')
+    .map(input => relativePath(input.path)).filter(file => existsSync(path.join(root, file)));
+  if (!template || files.length === 0) {
+    const missing = [!template && 'tests.focused is not recorded in joycraft.yaml', files.length === 0 && 'the spec has no present check input'].filter(Boolean);
+    return { focused: null, note: `No focused command: ${missing.join(' and ')}.` };
+  }
+  let argv;
+  try { argv = templateArgv(template, files); }
+  catch (error) {
+    if (/unclosed (single|double) quote/.test(error?.message ?? '')) return { focused: null, note: `No focused command: ${error.message}.` };
+    throw error;
+  }
+  return { focused: { command: argv.map(shellQuote).join(' '), argv } };
+}
+
+/** True when a template holds shell syntax outside quotes: &&, ||, ;, |, <, >,
+ * $( or a backtick. Quoted text is skipped as templateWords reads it. */
+export function hasShellSyntax(template) {
+  for (let index = 0; index < template.length; index += 1) {
+    const char = template[index];
+    if (char === '\\') { index += 1; continue; }
+    if (char === "'") { const end = template.indexOf("'", index + 1); if (end === -1) return false; index = end; continue; }
+    if (char === '"') {
+      let end = index + 1;
+      for (; end < template.length && template[end] !== '"'; end += 1) if (template[end] === '\\') end += 1;
+      index = end; continue;
+    }
+    if (';|<>`&'.includes(char) && (char !== '&' || template[index + 1] === '&')) return true;
+    if (char === '$' && template[index + 1] === '(') return true;
+  }
+  return false;
+}
+
+/** The argv of a `tests.focused` template for these files: shell words, with
+ * `{files}` expanded in place, or the files appended when it has no `{files}`.
+ * Only the template's own text is expanded, never a file path, so a path that
+ * holds `{files}` stays literal. A template with shell syntax gives
+ * `sh -c <template with each file shell-quoted>`. */
+export function templateArgv(template, files) {
+  const words = templateWords(template);
+  if (hasShellSyntax(template)) {
+    const quoted = files.map(shellQuote).join(' ');
+    return ['sh', '-c', template.includes('{files}') ? template.split('{files}').join(quoted) : `${template} ${quoted}`];
+  }
+  const expand = word => {
+    const parts = word.split('{files}');
+    const out = [];
+    let current = parts[0];
+    for (const part of parts.slice(1)) {
+      if (files.length === 1) { current += files[0] + part; continue; }
+      out.push(current + files[0], ...files.slice(1, -1));
+      current = files[files.length - 1] + part;
+    }
+    return [...out, current];
+  };
+  return words.some(word => word.includes('{files}')) ? words.flatMap(expand) : [...words, ...files];
+}
+
+let receiptCounter = 0;
+
+// Each step a worker runs, as one plain command with literal, shell-quoted
+// paths, so a worktree-isolated host never refuses a compound form (&&, ;, |,
+// $(, heredoc, source or cd) and a path with a space survives the paste.
+// Reviewer receipts go to <feature>/reviews/receipts/ beside the review
+// evidence; implementer receipts go to <feature>/receipts/.
+function workerCommands({ root, queuePath, spec, role, reportPath, featureFolder, focused }) {
+  const stamp = `${new Date().toISOString().replace(/[-:.]/g, '')}-${process.pid}-${receiptCounter += 1}`;
+  const receiptFolder = role === 'reviewer' ? path.posix.join(featureFolder, 'reviews', 'receipts') : path.posix.join(featureFolder, 'receipts');
+  const receipt = path.posix.join(receiptFolder, `spec-${spec.id}-${role}-focused-${stamp}.log`);
+  const line = words => words.map(shellQuote).join(' ');
+  const steps = {};
+  if (focused) steps.evidence = `${line(['node', '.joycraft/runtime/evidence.mjs', 'run', '--receipt', receipt, '--'])} ${focused.command}`;
+  if (role === 'implementer') steps.submit = line(['node', '.joycraft/runtime/completion.mjs', 'submit', '--queue', queuePath, '--spec', spec.id]);
+  else {
+    steps.checkReport = line(['node', '.joycraft/runtime/dispatch-preflight.mjs', 'check-report', '--worker-root', root, '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
+    steps.finalizeReview = line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
+  }
+  return steps;
 }
 
 class ReviewLimitError extends Error {
@@ -82,6 +209,7 @@ export async function startDispatch(options, nativeEvent) {
   requireValue(gitIgnored(root, outPath), `Packet output must be git-ignored so it never becomes a scope path: ${outPath}; use .joycraft/local/packets/`);
   const { queue, queuePath, spec, specPath } = readQueue({ root, queuePath: options.queuePath, specId: options.specId });
   requireValue(options.role === 'implementer' || options.role === 'reviewer', 'Task startup role must be implementer or reviewer');
+  requireValue(options.changesBase === undefined || options.role === 'reviewer', '--changes-base is for reviewer startup');
   // A claimed queue takes work only from its coordinator, so a second session's
   // instructions cannot reach this worker. An unclaimed queue keeps 1.0.0 behavior.
   const lease = readLease(root, queue.feature);
@@ -109,8 +237,8 @@ export async function startDispatch(options, nativeEvent) {
   const review = rounds === undefined ? {}
     : { reviewRound: rounds.size + (rounds.has(reviewRoundKey(packet.subject)) ? 0 : 1), reviewLimit };
   const runtime = await hookRuntime();
-  const config = runtime ? await runtime.readConfig(root) : { enabled: false };
-  const hooks = config.enabled
+  const hookConfig = runtime ? await runtime.readConfig(root) : { enabled: false };
+  const hooks = hookConfig.enabled
     ? { enabled: true, ...await runtime.bindPreparedSource({ event: nativeEvent, packetPath: outPath }) }
     : { enabled: false, eligible: false, reason: runtime ? 'hooks-disabled' : 'hooks-not-installed' };
   // The reviewer sees which criteria have a tagged test. It reports; it never blocks startup.
@@ -119,8 +247,24 @@ export async function startDispatch(options, nativeEvent) {
     try { const { criteria, untraced, unknownTags, missingFiles, note } = traceSpec({ root, queuePath: options.queuePath, specId: options.specId }); trace = { criteria, untraced, unknownTags, missingFiles, ...(note ? { note } : {}) }; }
     catch (error) { trace = { error: error.message }; }
   }
-  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(trace ? { trace } : {}),
-    ready: !config.enabled || hooks.eligible === true };
+  // The coordinator passes the spec's captured base; startup never guesses one.
+  let changes;
+  if (options.changesBase !== undefined) {
+    try { changes = testChanges({ root, queuePath, specId: spec.id, base: options.changesBase }); }
+    catch (error) { changes = { error: error.message }; }
+  }
+  // A wrong base never stops startup, but the reviewer must not read an empty list as "no test changes".
+  const warnings = changes?.error
+    ? [`No changed-test list: ${changes.error}. Startup did not compare test files; ask the coordinator for the spec's captured base before judging test changes.`]
+    : [];
+  let config = null;
+  try { config = readConfig(root); } catch { /* A broken joycraft.yaml is reported by config.mjs. */ }
+  const { focused, note } = focusedCommand({ root, spec, config });
+  const commands = { focused, ...(note ? { note } : {}),
+    ...workerCommands({ root, queuePath, spec, role: options.role, reportPath: packet.outputContract.reportPath,
+      featureFolder: path.posix.dirname(path.posix.dirname(queuePath)), focused }) };
+  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(warnings.length ? { warnings } : {}), ...(trace ? { trace } : {}), ...(changes ? { testChanges: changes } : {}), commands,
+    ready: !hookConfig.enabled || hooks.eligible === true };
 }
 
 function gitIgnored(root, relative) {
@@ -137,7 +281,7 @@ export async function main(argv = process.argv.slice(2)) {
   const flags = {};
   const allowed = new Set(['--worker-root', '--expected-manifest', '--queue', '--spec', '--role', '--implementer-session',
     '--implementer-host', '--implementer-agent', '--out', '--brief', '--capabilities', '--coordinator', '--parallel',
-    '--access', '--base-revision', '--native-session', '--native-agent', '--native-host', '--coordinator-session']);
+    '--access', '--base-revision', '--native-session', '--native-agent', '--native-host', '--coordinator-session', '--changes-base']);
   for (let index = 0; index < argv.length; index += 2) {
     const key = argv[index]; const value = argv[index + 1];
     requireValue(allowed.has(key) && typeof value === 'string' && value && !value.startsWith('--') && flags[key] === undefined,
@@ -157,7 +301,7 @@ export async function main(argv = process.argv.slice(2)) {
     outPath: flags['--out'], briefPath: flags['--brief'], availableCapabilities: flags['--capabilities'].split(',').filter(Boolean),
     coordinatorRoot: flags['--coordinator'], parallel: flags['--parallel'] === undefined ? undefined : flags['--parallel'] === 'true',
     access: flags['--access'], baseRevision: flags['--base-revision'], nativeHost: flags['--native-host'],
-    coordinatorSession: flags['--coordinator-session'],
+    coordinatorSession: flags['--coordinator-session'], changesBase: flags['--changes-base'],
   }, { cwd: flags['--worker-root'], session_id: flags['--native-session'], ...(flags['--native-agent'] ? { agent_id: flags['--native-agent'] } : {}) });
   const { packet, ...status } = result;
   process.stdout.write(`${JSON.stringify(status, null, 2)}\n`);
