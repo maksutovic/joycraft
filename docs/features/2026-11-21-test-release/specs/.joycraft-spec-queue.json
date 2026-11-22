@@ -3136,7 +3136,7 @@
         28,
         30
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -3349,6 +3349,10 @@
       },
       "submitted": {
         "at": "2026-11-22T05:23:28.697Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-29.report.json",
+        "sha256": "8a4c6ab6abbb2f987f9234a685232e27bc4e6f7c2cd2ce707817f7345d4523e6"
       }
     },
     {
@@ -3616,6 +3620,14 @@
           {
             "path": "tests/payload-guard.test.ts",
             "kind": "check"
+          },
+          {
+            "path": "payload/.joycraft/runtime/cleanup.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-archive-links.test.ts",
+            "kind": "check"
           }
         ],
         "criteria": [
@@ -3651,6 +3663,16 @@
           },
           {
             "id": "spec-32-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-32-5",
             "requirement": {
               "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
               "anchor": "acceptance"

@@ -1,0 +1,3 @@
+const root = process.argv[2];
+const m = await import(`${root}/payload/.joycraft/runtime/dispatch-start.mjs`);
+for (const t of ['a && vitest "{files}"', "a && vitest '{files}'", 'a && vitest --x={files}']) console.log(JSON.stringify(t), JSON.stringify(m.templateArgv(t, ['x y.ts', 'b.ts'])));

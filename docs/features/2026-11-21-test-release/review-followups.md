@@ -106,3 +106,10 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - f4: archive.md:206 has no fallback when no gate is recorded (ruling: run the tests it changed).
 - f5: tests/text-archive-tests.test.ts:49 redundant split/join.
 - f6 (owner): kill criterion — drop the list if two archives in a row list only files nobody should edit.
+
+## Spec 29 review (PASS, round 1)
+- f1: archive.mjs docsRoot stops one folder short of cleanup.mjs's rule (context: docs → '.'). Moved to spec 32 bullet 5.
+- f2: spec 29 Test changes should have listed the [review-9-r2-1] and [AC:spec-27-14] edits.
+- f3: docs root '.' branches in cleanup.mjs (:533, :822) and delivery.mjs unsafe('.') are now unreachable guards.
+- f4: shell-form detection misses lone `&`, `FOO=1` prefix, `$HOME`, `#`, and `$(`/backtick inside double quotes; a quoted `{files}` in a shell template double-quotes. Rare; left.
+- f5: implement skill dropped "when available" in one sentence.
