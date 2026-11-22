@@ -1,0 +1,59 @@
+exit 0 
+{
+ "rewritten": [
+  {
+   "path": "docs/context/p.md",
+   "line": 3,
+   "from": "../features/x/brief.md",
+   "to": "../archive/x/feature/brief.md"
+  },
+  {
+   "path": "docs/context/p.md",
+   "line": 3,
+   "from": "../features/x",
+   "to": "../archive/x/feature"
+  },
+  {
+   "path": "docs/context/p.md",
+   "line": 3,
+   "from": "./../features/x/specs/01-a.md?q=1#h",
+   "to": "../archive/x/feature/specs/01-a.md?q=1#h"
+  },
+  {
+   "path": "docs/context/p.md",
+   "line": 5,
+   "from": "../features/x/brief.md",
+   "to": "../archive/x/feature/brief.md"
+  },
+  {
+   "path": "docs/research/deep/q.md",
+   "line": 1,
+   "from": "../../features/x/brief.md",
+   "to": "../../archive/x/feature/brief.md"
+  },
+  {
+   "path": "docs/untracked.md",
+   "line": 1,
+   "from": "features/x/brief.md",
+   "to": "archive/x/feature/brief.md"
+  }
+ ],
+ "namedInMarkdown": [
+  "docs/context/p.md"
+ ],
+ "namedInOtherFiles": []
+}
+"# P\r\n\r\n[a](<../archive/x/feature/brief.md>) [b](../archive/x/feature \"t\") [c](../features/xy/a.md) [d](../archive/x/feature/specs/01-a.md?q=1#h)\r\n\r\n![img](../archive/x/feature/brief.md) and prose docs/features/x.\r\n"
+[e](../../archive/x/feature/brief.md)
+ [g](features/x/brief.md)
+ [h](archive/x/feature/brief.md)
+
+ M docs/context/p.md
+ D docs/features/x/brief.md
+ D docs/features/x/specs/.joycraft-spec-queue.json
+ D docs/features/x/specs/01-a.md
+ D docs/features/x/specs/legacy.json
+ M docs/research/deep/q.md
+?? docs/archive/
+?? docs/untracked.md
+

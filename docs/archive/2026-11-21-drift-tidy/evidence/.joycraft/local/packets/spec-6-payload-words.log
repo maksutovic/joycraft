@@ -1,0 +1,13 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-12-5] ships fewer than 29,917 words after the drift-tidy cuts
+[22m[39mpayload words: 29834
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m14 tests[22m[2m | [22m[33m12 skipped[39m[2m)[22m[32m 14[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m2 passed[39m[22m[2m | [22m[33m12 skipped[39m[90m (14)[39m
+[2m   Start at [22m 15:28:53
+[2m   Duration [22m 385ms[2m (transform 40ms, setup 0ms, collect 39ms, tests 14ms, environment 0ms, prepare 107ms)[22m
+

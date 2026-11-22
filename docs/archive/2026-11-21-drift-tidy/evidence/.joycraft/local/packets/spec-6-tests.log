@@ -1,0 +1,11 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-archive-ignore.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 782[2mms[22m[39m
+   [33m[2m✓[22m[39m archive.mjs ignore[2m > [22m[review-b-7] a line with leading spaces is not the archive line; CRLF stays CRLF; equivalent spellings count as present [33m 316[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 15:28:47
+[2m   Duration [22m 975ms[2m (transform 18ms, setup 0ms, collect 15ms, tests 782ms, environment 0ms, prepare 44ms)[22m
+

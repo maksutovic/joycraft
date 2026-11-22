@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-archive-links.test.ts (7 tests) 1032ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  15:32:21
+   Duration  1.20s (transform 18ms, setup 0ms, collect 18ms, tests 1.03s, environment 0ms, prepare 34ms)
+

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "kind": "joycraft-brief-amendments",
+  "brief": "docs/features/2026-11-21-drift-tidy/brief.md",
+  "amendments": [
+    {
+      "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+      "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+      "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+      "decisions": [
+        "tidy-dirty-tree"
+      ],
+      "summary": "Asks the owner: tidy-dirty-tree."
+    },
+    {
+      "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+      "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+      "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+      "decisions": [
+        "tidy-dirty-tree"
+      ],
+      "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+    }
+  ]
+}

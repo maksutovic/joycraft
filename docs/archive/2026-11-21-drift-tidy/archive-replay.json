@@ -1,0 +1,1565 @@
+{
+  "schemaVersion": 1,
+  "kind": "joycraft-archive-replay",
+  "feature": "drift-tidy",
+  "archivedAt": "2026-11-22T06:28:24.624Z",
+  "phase": "session-end",
+  "source": "docs/features/2026-11-21-drift-tidy",
+  "evidence": [
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-1.report.json",
+      "sha256": "e54d4ad60fb1d808518fb11311daf43b8c5e0c790ce8a14e33b2bd95ac84c9d7",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-1.report.json",
+        "sha256": "e54d4ad60fb1d808518fb11311daf43b8c5e0c790ce8a14e33b2bd95ac84c9d7",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+          "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-probes.log",
+          "sha256": "4bfaaa003f2adb27aadda10148ea2cd74d80b312055fd985bb69b3a2779ed0f8"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+          "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+          "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+          "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-probes.log",
+          "sha256": "4bfaaa003f2adb27aadda10148ea2cd74d80b312055fd985bb69b3a2779ed0f8"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+          "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-probes.log",
+          "sha256": "4bfaaa003f2adb27aadda10148ea2cd74d80b312055fd985bb69b3a2779ed0f8"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-2.report.json",
+      "sha256": "1f87f14c122a6a1c29322d0615bc2c63ac5366dcd6661a53040e17fbd1d1ae59",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-2.report.json",
+        "sha256": "1f87f14c122a6a1c29322d0615bc2c63ac5366dcd6661a53040e17fbd1d1ae59",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-tests.log",
+          "sha256": "e1d892d32a15ef5133ee125425cda788c7bb3d9678ccf2be2b93614a87365a8f"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-probes.log",
+          "sha256": "ff53c12bf956c309dcf6cb2568d45227d1e94a8e619685c1e2f50ffabf49fe5b"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-tests.log",
+          "sha256": "e1d892d32a15ef5133ee125425cda788c7bb3d9678ccf2be2b93614a87365a8f"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-probes.log",
+          "sha256": "ff53c12bf956c309dcf6cb2568d45227d1e94a8e619685c1e2f50ffabf49fe5b"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-tests.log",
+          "sha256": "e1d892d32a15ef5133ee125425cda788c7bb3d9678ccf2be2b93614a87365a8f"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-probes.log",
+          "sha256": "ff53c12bf956c309dcf6cb2568d45227d1e94a8e619685c1e2f50ffabf49fe5b"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-tests.log",
+          "sha256": "e1d892d32a15ef5133ee125425cda788c7bb3d9678ccf2be2b93614a87365a8f"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-probes.log",
+          "sha256": "ff53c12bf956c309dcf6cb2568d45227d1e94a8e619685c1e2f50ffabf49fe5b"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-3.report.json",
+      "sha256": "6de22c6b7f7d2d19206b145637c8f5fe06b7b30d85f55d88347f30af4bf2b1d6",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-3.report.json",
+        "sha256": "6de22c6b7f7d2d19206b145637c8f5fe06b7b30d85f55d88347f30af4bf2b1d6",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-tests.log",
+          "sha256": "89f975fcec23ebae98d46f4deea805017f174d2d879fc37daf0fd105c0ba7ea5"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-probe.log",
+          "sha256": "1a59fd70e4dec5952c9570dde89b321c3a04a8673468e5639caf88d0978c1862"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-tests.log",
+          "sha256": "89f975fcec23ebae98d46f4deea805017f174d2d879fc37daf0fd105c0ba7ea5"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-probe.log",
+          "sha256": "1a59fd70e4dec5952c9570dde89b321c3a04a8673468e5639caf88d0978c1862"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-tests.log",
+          "sha256": "89f975fcec23ebae98d46f4deea805017f174d2d879fc37daf0fd105c0ba7ea5"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-probe.log",
+          "sha256": "1a59fd70e4dec5952c9570dde89b321c3a04a8673468e5639caf88d0978c1862"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-tests.log",
+          "sha256": "89f975fcec23ebae98d46f4deea805017f174d2d879fc37daf0fd105c0ba7ea5"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-probe.log",
+          "sha256": "1a59fd70e4dec5952c9570dde89b321c3a04a8673468e5639caf88d0978c1862"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-4-r3.report.json",
+      "sha256": "6d8a0d9fb061011aced70488ac3dc31e760dfa32e0583e0839fb18271c5d94b6",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-4-r3.report.json",
+        "sha256": "6d8a0d9fb061011aced70488ac3dc31e760dfa32e0583e0839fb18271c5d94b6",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests-r3.log",
+          "sha256": "af6e15682b7582f591895f3eb80021de500ea3df46ebeb812439a15c61c27555"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r3.log",
+          "sha256": "e68eedfc48e4fe38bbfde46c74ee4e62938c2d4a151b70f7fbe84c092da86b00"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+          "sha256": "3ebf76b6db21f48042484b2b8d7c28e0da597b67019ea0a9f417a77d1bb460af"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2-r3.log",
+          "sha256": "c8a7f1e9c31e55993ef8ebe0ab74eab8dd3d7f6a88ceb176e5d0570de318f77d"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+          "sha256": "490bc825cb59cbc2474bd5c5020305038a37bddbeea865a7699fe7a0c24e8134"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r3-new.log",
+          "sha256": "f6b8a626304326b0ed3ee1a66c75e32e8c5b137f821f2cf238136d734bf8a67a"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r3.mjs",
+          "sha256": "e414dea2276f73868714250d772f0aedd258eac13ecc2b6a2dd2d6b4bdad0bff"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests-r3.log",
+          "sha256": "af6e15682b7582f591895f3eb80021de500ea3df46ebeb812439a15c61c27555"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r3.log",
+          "sha256": "e68eedfc48e4fe38bbfde46c74ee4e62938c2d4a151b70f7fbe84c092da86b00"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+          "sha256": "3ebf76b6db21f48042484b2b8d7c28e0da597b67019ea0a9f417a77d1bb460af"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2-r3.log",
+          "sha256": "c8a7f1e9c31e55993ef8ebe0ab74eab8dd3d7f6a88ceb176e5d0570de318f77d"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+          "sha256": "490bc825cb59cbc2474bd5c5020305038a37bddbeea865a7699fe7a0c24e8134"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r3-new.log",
+          "sha256": "f6b8a626304326b0ed3ee1a66c75e32e8c5b137f821f2cf238136d734bf8a67a"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r3.mjs",
+          "sha256": "e414dea2276f73868714250d772f0aedd258eac13ecc2b6a2dd2d6b4bdad0bff"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests-r3.log",
+          "sha256": "af6e15682b7582f591895f3eb80021de500ea3df46ebeb812439a15c61c27555"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r3-new.log",
+          "sha256": "f6b8a626304326b0ed3ee1a66c75e32e8c5b137f821f2cf238136d734bf8a67a"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r3.mjs",
+          "sha256": "e414dea2276f73868714250d772f0aedd258eac13ecc2b6a2dd2d6b4bdad0bff"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-5.report.json",
+      "sha256": "df26a233cc984b74258ae1cdfcf754e4fcc967a13e14d3b84fb4fed112ae8f22",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-5.report.json",
+        "sha256": "df26a233cc984b74258ae1cdfcf754e4fcc967a13e14d3b84fb4fed112ae8f22",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-block.log",
+          "sha256": "8aa6d271c6ab13d53deb89c675dc35138afcb2537c58ec4896aff13ce4de9aa7"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-tests.log",
+          "sha256": "c67701b13667897f572e7731084f6a4516a7468c81cef9b7f7c912b24581165a"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-probe.log",
+          "sha256": "c74068f7e155705c3580f43015b80b68bcb3b2566fc87e30202aed4f50977651"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-state.log",
+          "sha256": "49f029f2429c15d89cf5e25d70fc667dbfd7aaf76c243d1602754a710b2b1230"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-tests.log",
+          "sha256": "c67701b13667897f572e7731084f6a4516a7468c81cef9b7f7c912b24581165a"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-repo-root.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-pin.log",
+          "sha256": "423d69c177cfe4c1e8e2a1470ccfaffa5a844cacdd6c138ef337c6bb078e97e2"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-tests.log",
+          "sha256": "c67701b13667897f572e7731084f6a4516a7468c81cef9b7f7c912b24581165a"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-6.report.json",
+      "sha256": "48009a19a685b10257e8168d8bf6dccb30d4e33ab0aa6ddb2d45b19fc1ebd947",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-6.report.json",
+        "sha256": "48009a19a685b10257e8168d8bf6dccb30d4e33ab0aa6ddb2d45b19fc1ebd947",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": ".joycraft/local/packets/spec-6-tests.log",
+          "sha256": "a5e531270c5df211513dea27595aa9e436e12e87c4568fd92c935dd004365f0e"
+        },
+        {
+          "path": ".joycraft/local/packets/spec-6-tests.log",
+          "sha256": "a5e531270c5df211513dea27595aa9e436e12e87c4568fd92c935dd004365f0e"
+        },
+        {
+          "path": ".joycraft/local/packets/spec-6-tests.log",
+          "sha256": "a5e531270c5df211513dea27595aa9e436e12e87c4568fd92c935dd004365f0e"
+        },
+        {
+          "path": ".joycraft/local/packets/spec-6-payload-words.log",
+          "sha256": "184b62e75f380bb90f675bf09a650bf9ddac444a8d0f7662fe5d15f19bb49e07"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-7.report.json",
+      "sha256": "7dd15e824402291e96b9bc93657346ad4c87f727defa6ebdb17c2e06c0ceb649",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-7.report.json",
+        "sha256": "7dd15e824402291e96b9bc93657346ad4c87f727defa6ebdb17c2e06c0ceb649",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": ".joycraft/local/packets/spec-7-tests.log",
+          "sha256": "9e75b587618bbc7a6cc7b2d90e331e7e601958ef06216ee1b7e4dcf7a673761a"
+        },
+        {
+          "path": ".joycraft/local/packets/spec-7-probe.log",
+          "sha256": "21ea8948ed00fdcc8b1db52cb667cfb749cc46ff94d096f208364d398bbb97b3"
+        },
+        {
+          "path": ".joycraft/local/packets/spec-7-tests.log",
+          "sha256": "9e75b587618bbc7a6cc7b2d90e331e7e601958ef06216ee1b7e4dcf7a673761a"
+        },
+        {
+          "path": ".joycraft/local/packets/spec-7-tests.log",
+          "sha256": "9e75b587618bbc7a6cc7b2d90e331e7e601958ef06216ee1b7e4dcf7a673761a"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-8.report.json",
+      "sha256": "f145b63afdaa3c4e68b75a1329b20e5f22dfae938d8408fab4901cc4179a9250",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-8.report.json",
+        "sha256": "f145b63afdaa3c4e68b75a1329b20e5f22dfae938d8408fab4901cc4179a9250",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-tests.log",
+          "sha256": "5f7d863056f7fa8aecc7842683071014d616100ee42ce9a6ec4f08fcc641e4db"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probes.log",
+          "sha256": "749c86f2d2cab799c3fc0dd682093307c72d89f19249313e23a0379ff38d1169"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probe.mjs",
+          "sha256": "8ee9c34aaf672829c1ae385f636d4ca809396aa596b5389cd4ed597c75d53cc9"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-tests.log",
+          "sha256": "5f7d863056f7fa8aecc7842683071014d616100ee42ce9a6ec4f08fcc641e4db"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probes.log",
+          "sha256": "749c86f2d2cab799c3fc0dd682093307c72d89f19249313e23a0379ff38d1169"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probe.mjs",
+          "sha256": "8ee9c34aaf672829c1ae385f636d4ca809396aa596b5389cd4ed597c75d53cc9"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-tests.log",
+          "sha256": "5f7d863056f7fa8aecc7842683071014d616100ee42ce9a6ec4f08fcc641e4db"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probes.log",
+          "sha256": "749c86f2d2cab799c3fc0dd682093307c72d89f19249313e23a0379ff38d1169"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probe.mjs",
+          "sha256": "8ee9c34aaf672829c1ae385f636d4ca809396aa596b5389cd4ed597c75d53cc9"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-9-r3.report.json",
+      "sha256": "429c70f637e186ead5a85c0e0387f04b86d625c77d0d4c8812982dfc631e3492",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-9-r3.report.json",
+        "sha256": "429c70f637e186ead5a85c0e0387f04b86d625c77d0d4c8812982dfc631e3492",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-tests-r3.log",
+          "sha256": "9b599a377369e1e4bd01d9bb4f049738760af1382e2f7350b8259b34da3d0125"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r2-r3.log",
+          "sha256": "9096717360551037df7082570c9e79a52fafc7f9e9fe74a5f2f2f49c0aa4e021"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r2.mjs",
+          "sha256": "bf07b1d624c6eb3e79ac6418691bbbb78e288879b4732ed9b3e9684cd3b286ac"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r3-new.log",
+          "sha256": "c95a1030ef3f67b4f746d72dcd22f2be2a035af7a2e9a10f44904117b9f9a076"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r3.mjs",
+          "sha256": "63e71d7e0026bd6e6bfc286bd72988b46963325b38065deac9b4a1f4130fa2ba"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-tests-r3.log",
+          "sha256": "9b599a377369e1e4bd01d9bb4f049738760af1382e2f7350b8259b34da3d0125"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r3-new.log",
+          "sha256": "c95a1030ef3f67b4f746d72dcd22f2be2a035af7a2e9a10f44904117b9f9a076"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r3.mjs",
+          "sha256": "63e71d7e0026bd6e6bfc286bd72988b46963325b38065deac9b4a1f4130fa2ba"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r2-r3.log",
+          "sha256": "9096717360551037df7082570c9e79a52fafc7f9e9fe74a5f2f2f49c0aa4e021"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r2.mjs",
+          "sha256": "bf07b1d624c6eb3e79ac6418691bbbb78e288879b4732ed9b3e9684cd3b286ac"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-tests-r3.log",
+          "sha256": "9b599a377369e1e4bd01d9bb4f049738760af1382e2f7350b8259b34da3d0125"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-10.report.json",
+      "sha256": "adfee82693ac5afc4254f8ffdf929937465a2a85e36dc72849f1264ecca02c44",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-10.report.json",
+        "sha256": "adfee82693ac5afc4254f8ffdf929937465a2a85e36dc72849f1264ecca02c44",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-tests.log",
+          "sha256": "eb255945c3e7602c0422ffbe6cf9c69702856cd9ee1ebcc28ff422763b52d4f0"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probes.log",
+          "sha256": "bbb5f91d7760049361fb422f64eb4e37a89d0bf9ee77eea92264544730bf5b32"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs",
+          "sha256": "d6ef000d4cc5a12df914a0f59b7dc8c59a72daebab92015eeddbc47052afc8a3"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-tests.log",
+          "sha256": "eb255945c3e7602c0422ffbe6cf9c69702856cd9ee1ebcc28ff422763b52d4f0"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probes.log",
+          "sha256": "bbb5f91d7760049361fb422f64eb4e37a89d0bf9ee77eea92264544730bf5b32"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs",
+          "sha256": "d6ef000d4cc5a12df914a0f59b7dc8c59a72daebab92015eeddbc47052afc8a3"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-tests.log",
+          "sha256": "eb255945c3e7602c0422ffbe6cf9c69702856cd9ee1ebcc28ff422763b52d4f0"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probes.log",
+          "sha256": "bbb5f91d7760049361fb422f64eb4e37a89d0bf9ee77eea92264544730bf5b32"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs",
+          "sha256": "d6ef000d4cc5a12df914a0f59b7dc8c59a72daebab92015eeddbc47052afc8a3"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-tests.log",
+          "sha256": "eb255945c3e7602c0422ffbe6cf9c69702856cd9ee1ebcc28ff422763b52d4f0"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-words.log",
+          "sha256": "63069303003e7547d9f45f1ef3a0b2a7ab4f6a3752b1856ef2d549b6f8d3d743"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-pin.log",
+          "sha256": "6a6a629b9ba6cab1795828ee8bc7e175993919218ec136af03b9e2e2a17849e2"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-11.report.json",
+      "sha256": "1ce7942745fb5bd273b28fa922042b459c988bdda2a23b4d0e4f80bfc71c2e5a",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-11.report.json",
+        "sha256": "1ce7942745fb5bd273b28fa922042b459c988bdda2a23b4d0e4f80bfc71c2e5a",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-tests.log",
+          "sha256": "7e1e6f8a20d9c4c7d241bddd7572222e8773bd2c35baa66415a8a2cb18216dda"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probes.log",
+          "sha256": "dff4b2d0723ae99cdfe4cc7e1a62210db0ebee609ccf6912cb082f3c45786b90"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probe.mjs",
+          "sha256": "31a6ebffc852246ce4e373d2a323813b60e2ff9780ece30b307de03cf2f4203b"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-tests.log",
+          "sha256": "7e1e6f8a20d9c4c7d241bddd7572222e8773bd2c35baa66415a8a2cb18216dda"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probes.log",
+          "sha256": "dff4b2d0723ae99cdfe4cc7e1a62210db0ebee609ccf6912cb082f3c45786b90"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probe.mjs",
+          "sha256": "31a6ebffc852246ce4e373d2a323813b60e2ff9780ece30b307de03cf2f4203b"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-cost.log",
+          "sha256": "3e6b1da22e09fe64bf287c6188a2fa86e5502ad57a8a1b0e311f6d61ad9b1708"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-tests.log",
+          "sha256": "7e1e6f8a20d9c4c7d241bddd7572222e8773bd2c35baa66415a8a2cb18216dda"
+        }
+      ],
+      "limitations": [],
+      "requirementHistory": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+          "normalization": "none",
+          "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+          "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+          "laterCommits": [
+            "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+          ],
+          "amendments": [
+            {
+              "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+              "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+              "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Asks the owner: tidy-dirty-tree."
+            },
+            {
+              "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+              "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+              "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+              "decisions": [
+                "tidy-dirty-tree"
+              ],
+              "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-21-drift-tidy/specs/review-12-r2.report.json",
+      "sha256": "115cd3be706ca2952a21cd23893f5f382ad8fe62a78a3c7f53ab522ba59adc15",
+      "report": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-12-r2.report.json",
+        "sha256": "115cd3be706ca2952a21cd23893f5f382ad8fe62a78a3c7f53ab522ba59adc15",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests-r2.log",
+          "sha256": "223a0068f0930a72f324571f8d48c60acbe44a4d48f551fbded59151c11fde0a"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-cleantree-r2.log",
+          "sha256": "d3b8c93f4fba9b78ba621a7723d8f9745fd938145ef3a3af886bbe107243406c"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-cleantree-probe-r2.mjs",
+          "sha256": "bb26b4e47494cbcb8fcbefc5dba59af379e1185c49c8945b0b8c169da4f717cb"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests-r2.log",
+          "sha256": "223a0068f0930a72f324571f8d48c60acbe44a4d48f551fbded59151c11fde0a"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests-r2.log",
+          "sha256": "223a0068f0930a72f324571f8d48c60acbe44a4d48f551fbded59151c11fde0a"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests-r2.log",
+          "sha256": "223a0068f0930a72f324571f8d48c60acbe44a4d48f551fbded59151c11fde0a"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests-r2.log",
+          "sha256": "223a0068f0930a72f324571f8d48c60acbe44a4d48f551fbded59151c11fde0a"
+        },
+        {
+          "path": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-pin-r2.log",
+          "sha256": "423d69c177cfe4c1e8e2a1470ccfaffa5a844cacdd6c138ef337c6bb078e97e2"
+        }
+      ],
+      "limitations": []
+    }
+  ],
+  "durableContext": {
+    "carried": true,
+    "references": [
+      "docs/context/decision-log.md",
+      "docs/context/shipped.md",
+      "docs/context/dangerous-assumptions.md"
+    ]
+  },
+  "hostSession": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "historical": {
+    "codeInputHashesAreHistorical": true,
+    "currentAcceptanceRenewed": false
+  },
+  "files": [
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/brief-amendments.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/brief-amendments.json",
+      "sha256": "b1354b0129f89dc3af9aab8b0360d98d8b5c4425ce45d44e536e87ed34548f1f",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/brief.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/brief.md",
+      "sha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-probes.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-01-probes.log",
+      "sha256": "4bfaaa003f2adb27aadda10148ea2cd74d80b312055fd985bb69b3a2779ed0f8",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-01-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-01-tests.log",
+      "sha256": "c9a29c3060554e60df407fc4603458d72a5dd7e5534d9a87f597d129f1802889",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-probes.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-02-probes.log",
+      "sha256": "ff53c12bf956c309dcf6cb2568d45227d1e94a8e619685c1e2f50ffabf49fe5b",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-02-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-02-tests.log",
+      "sha256": "e1d892d32a15ef5133ee125425cda788c7bb3d9678ccf2be2b93614a87365a8f",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-probe.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-03-probe.log",
+      "sha256": "1a59fd70e4dec5952c9570dde89b321c3a04a8673468e5639caf88d0978c1862",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-03-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-03-tests.log",
+      "sha256": "89f975fcec23ebae98d46f4deea805017f174d2d879fc37daf0fd105c0ba7ea5",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r2.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-probe-r2.mjs",
+      "sha256": "490bc825cb59cbc2474bd5c5020305038a37bddbeea865a7699fe7a0c24e8134",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe-r3.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-probe-r3.mjs",
+      "sha256": "e414dea2276f73868714250d772f0aedd258eac13ecc2b6a2dd2d6b4bdad0bff",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probe.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-probe.mjs",
+      "sha256": "3ebf76b6db21f48042484b2b8d7c28e0da597b67019ea0a9f417a77d1bb460af",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2-new.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-probes-r2-new.log",
+      "sha256": "7b97d014b75de93b2d3814567bc11d696ab944004881707983e53e2c457ab8a2",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2-r3.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-probes-r2-r3.log",
+      "sha256": "c8a7f1e9c31e55993ef8ebe0ab74eab8dd3d7f6a88ceb176e5d0570de318f77d",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r2.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-probes-r2.log",
+      "sha256": "dbd118fb27fe418e39d761be43711b29ad1932226a778c4dc2cf64e86f355d17",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r3-new.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-probes-r3-new.log",
+      "sha256": "f6b8a626304326b0ed3ee1a66c75e32e8c5b137f821f2cf238136d734bf8a67a",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes-r3.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-probes-r3.log",
+      "sha256": "e68eedfc48e4fe38bbfde46c74ee4e62938c2d4a151b70f7fbe84c092da86b00",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-probes.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-probes.log",
+      "sha256": "2460c8cb389b8988eb97b772bace52e4245083c9d0db6fcd317fdaff96df85bb",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests-r2.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-tests-r2.log",
+      "sha256": "d7136ea3db33a7cb011c788d960c09ce55dfc77cf59e5a64dbe0e342a53620f4",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests-r3.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-tests-r3.log",
+      "sha256": "af6e15682b7582f591895f3eb80021de500ea3df46ebeb812439a15c61c27555",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-04-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-04-tests.log",
+      "sha256": "8a3362347cab12dc694ea3912f6df42a1a1ae938d42ef39ed7e52643e298c234",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-block.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-05-block.log",
+      "sha256": "8aa6d271c6ab13d53deb89c675dc35138afcb2537c58ec4896aff13ce4de9aa7",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-pin.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-05-pin.log",
+      "sha256": "423d69c177cfe4c1e8e2a1470ccfaffa5a844cacdd6c138ef337c6bb078e97e2",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-probe.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-05-probe.log",
+      "sha256": "c74068f7e155705c3580f43015b80b68bcb3b2566fc87e30202aed4f50977651",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-repo-root.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-05-repo-root.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-state.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-05-state.log",
+      "sha256": "49f029f2429c15d89cf5e25d70fc667dbfd7aaf76c243d1602754a710b2b1230",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-05-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-05-tests.log",
+      "sha256": "c67701b13667897f572e7731084f6a4516a7468c81cef9b7f7c912b24581165a",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-pin.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-08-pin.log",
+      "sha256": "6a6a629b9ba6cab1795828ee8bc7e175993919218ec136af03b9e2e2a17849e2",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probe.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-08-probe.mjs",
+      "sha256": "8ee9c34aaf672829c1ae385f636d4ca809396aa596b5389cd4ed597c75d53cc9",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-probes.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-08-probes.log",
+      "sha256": "749c86f2d2cab799c3fc0dd682093307c72d89f19249313e23a0379ff38d1169",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-08-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-08-tests.log",
+      "sha256": "5f7d863056f7fa8aecc7842683071014d616100ee42ce9a6ec4f08fcc641e4db",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r2.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-probe-r2.mjs",
+      "sha256": "bf07b1d624c6eb3e79ac6418691bbbb78e288879b4732ed9b3e9684cd3b286ac",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe-r3.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-probe-r3.mjs",
+      "sha256": "63e71d7e0026bd6e6bfc286bd72988b46963325b38065deac9b4a1f4130fa2ba",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probe.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-probe.mjs",
+      "sha256": "61124862a8d8986a9f3bde85cab4c8904c21c4be69157dd65c3f5223f7f35be3",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-new-r2.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-probes-new-r2.log",
+      "sha256": "5ededd7f08d2fd72ff3763312a64e91b6379019d7888bb8e3fca7da8748b78f0",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r1-r3.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-probes-r1-r3.log",
+      "sha256": "a717c02525361fbbb200aab20499bc021dab1bdcd46a847e44e6c6476d0e81f7",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r2-r3.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-probes-r2-r3.log",
+      "sha256": "9096717360551037df7082570c9e79a52fafc7f9e9fe74a5f2f2f49c0aa4e021",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r2.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-probes-r2.log",
+      "sha256": "de78b744c581d8f04d83194b8c2476263da4b6a6da3be6918504bf89adef6843",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes-r3-new.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-probes-r3-new.log",
+      "sha256": "c95a1030ef3f67b4f746d72dcd22f2be2a035af7a2e9a10f44904117b9f9a076",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-probes.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-probes.log",
+      "sha256": "e00781249df57a795b83aefc622f96404f9b85e557c7b48a958a043348e11201",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-tests-r2.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-tests-r2.log",
+      "sha256": "059fa273e2c9bd7a7f7e88cefc4e1f823a44a358845b536f43fc2a30c7f0fcaf",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-tests-r3.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-tests-r3.log",
+      "sha256": "9b599a377369e1e4bd01d9bb4f049738760af1382e2f7350b8259b34da3d0125",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-09-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-09-tests.log",
+      "sha256": "ae5781de7bb865ea5be55f0d54a92903de6d907407795d16c527b6d4cb6242da",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-pin.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-10-pin.log",
+      "sha256": "6a6a629b9ba6cab1795828ee8bc7e175993919218ec136af03b9e2e2a17849e2",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probe.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-10-probe.mjs",
+      "sha256": "d6ef000d4cc5a12df914a0f59b7dc8c59a72daebab92015eeddbc47052afc8a3",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-probes.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-10-probes.log",
+      "sha256": "bbb5f91d7760049361fb422f64eb4e37a89d0bf9ee77eea92264544730bf5b32",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-10-tests.log",
+      "sha256": "eb255945c3e7602c0422ffbe6cf9c69702856cd9ee1ebcc28ff422763b52d4f0",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-10-words.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-10-words.log",
+      "sha256": "63069303003e7547d9f45f1ef3a0b2a7ab4f6a3752b1856ef2d549b6f8d3d743",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-cost.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-11-cost.log",
+      "sha256": "3e6b1da22e09fe64bf287c6188a2fa86e5502ad57a8a1b0e311f6d61ad9b1708",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-pin.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-11-pin.log",
+      "sha256": "2d58d71fd65544fd50c54759533da9ed302b0f2811208ec5b6a3e2bb52162b0c",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probe.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-11-probe.mjs",
+      "sha256": "31a6ebffc852246ce4e373d2a323813b60e2ff9780ece30b307de03cf2f4203b",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-probes.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-11-probes.log",
+      "sha256": "dff4b2d0723ae99cdfe4cc7e1a62210db0ebee609ccf6912cb082f3c45786b90",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-11-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-11-tests.log",
+      "sha256": "7e1e6f8a20d9c4c7d241bddd7572222e8773bd2c35baa66415a8a2cb18216dda",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-cleantree-probe-r2.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-12-cleantree-probe-r2.mjs",
+      "sha256": "bb26b4e47494cbcb8fcbefc5dba59af379e1185c49c8945b0b8c169da4f717cb",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-cleantree-r2.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-12-cleantree-r2.log",
+      "sha256": "d3b8c93f4fba9b78ba621a7723d8f9745fd938145ef3a3af886bbe107243406c",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-pin-r2.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-12-pin-r2.log",
+      "sha256": "423d69c177cfe4c1e8e2a1470ccfaffa5a844cacdd6c138ef337c6bb078e97e2",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-pin.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-12-pin.log",
+      "sha256": "88fccb5e1bdbdb09a50373439c4629d4ee6731138db59fd4b02d2cf9b718c006",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-probe.mjs",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-12-probe.mjs",
+      "sha256": "291b5a43cb510ef68b3ef472f240038376bd9d189bd4165d68666c98aac58745",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests-r2.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-12-tests-r2.log",
+      "sha256": "223a0068f0930a72f324571f8d48c60acbe44a4d48f551fbded59151c11fde0a",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-12-tests.log",
+      "sha256": "3147ff89680039fea62c8c373f2873c7b42bef230ac637e6204e9417f8d635a8",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/reviews/receipts/spec-12-words.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/reviews/receipts/spec-12-words.log",
+      "sha256": "1540c1585527569c814a64bc888be5fe615d72a05cee0df24c224fd93b47e7a6",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/.joycraft-spec-queue.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/.joycraft-spec-queue.json",
+      "sha256": "d08a7f13e2f4e59f2a569e3b253ab9411f9b037f419320bb99b53d35d9758dd6",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/01-check-listing.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/01-check-listing.md",
+      "sha256": "818c9c9fa38e02021366e461a08d067e0bb10064d20b42d2504de5fd62230d8b",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/02-tidy-report.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/02-tidy-report.md",
+      "sha256": "e522d03dd070d0e48ecc6c7a28f6bd2a9332d1c4e403f630ec2662513e1a9b9c",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/03-gone-symbol.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/03-gone-symbol.md",
+      "sha256": "28337e11d4baf2eb420667a0b1627940861321bc3dd2e706b3fde443106e4d85",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/04-tidy-verify.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/04-tidy-verify.md",
+      "sha256": "e20c3f51394b95fd543bffdaf5f4ec5887b4a4dd4d54af2e6d782f45ec2b302d",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/05-trust-sentence.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/05-trust-sentence.md",
+      "sha256": "3af6a3cb0a33c87ba2e8fc64056104ef9c0b1a27ca88ba898223bb4b87276661",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/06-archive-ignore.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/06-archive-ignore.md",
+      "sha256": "b698105d0c03a819844645815058d8de6f3402e3b0c3d443d2013eb8ba18073b",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/07-archive-links.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/07-archive-links.md",
+      "sha256": "f85dfe853302484cf60b0a68e8a1f485da73cf3b221870350bb96a991400f1ca",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/08-as-is-archive.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/08-as-is-archive.md",
+      "sha256": "0edf43d8cc9869fb299c9d9ae6779097758da40164c6289f635444e6927984df",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/09-age-out.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/09-age-out.md",
+      "sha256": "dec555c2db962e0c7184c85379e3df46f0f103b6020c4ab218bc24c97ee11a15",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/10-checks-seam.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/10-checks-seam.md",
+      "sha256": "8f30e17daa76e2de21a2fff981b1bc6060d1ee00f2700a5a40e5667591fb1ad2",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/11-start-advice.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/11-start-advice.md",
+      "sha256": "8867cc9c4246a923c6a8743202b65bf991a0dff078be799273b2cd21f52c4be3",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/12-generator-cuts.md",
+      "sha256": "0075fae99487990c0c60e6f4e49e46475d91e1fbe6ab0630c22dc513da75b9e4",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-1.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-1.report.json",
+      "sha256": "e54d4ad60fb1d808518fb11311daf43b8c5e0c790ce8a14e33b2bd95ac84c9d7",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-10.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-10.report.json",
+      "sha256": "adfee82693ac5afc4254f8ffdf929937465a2a85e36dc72849f1264ecca02c44",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-11.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-11.report.json",
+      "sha256": "1ce7942745fb5bd273b28fa922042b459c988bdda2a23b4d0e4f80bfc71c2e5a",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-12-r2.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-12-r2.report.json",
+      "sha256": "115cd3be706ca2952a21cd23893f5f382ad8fe62a78a3c7f53ab522ba59adc15",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-12.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-12.report.json",
+      "sha256": "346af2fb9e7591cfe62e15b715da0fde3f1c721770cc48b7801f5996fb88512f",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-2.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-2.report.json",
+      "sha256": "1f87f14c122a6a1c29322d0615bc2c63ac5366dcd6661a53040e17fbd1d1ae59",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-3.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-3.report.json",
+      "sha256": "6de22c6b7f7d2d19206b145637c8f5fe06b7b30d85f55d88347f30af4bf2b1d6",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-4-r2.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-4-r2.report.json",
+      "sha256": "a80e4248c6e7131379260b5d298a8a9193a5576873b7758ecf6455fda31d744b",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-4-r3.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-4-r3.report.json",
+      "sha256": "6d8a0d9fb061011aced70488ac3dc31e760dfa32e0583e0839fb18271c5d94b6",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-4.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-4.report.json",
+      "sha256": "54013cf9ca5b4a0ded318c4d3a957254d88ba8f878cc144dd2843821544caa9d",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-5.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-5.report.json",
+      "sha256": "df26a233cc984b74258ae1cdfcf754e4fcc967a13e14d3b84fb4fed112ae8f22",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-6.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-6.report.json",
+      "sha256": "48009a19a685b10257e8168d8bf6dccb30d4e33ab0aa6ddb2d45b19fc1ebd947",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-7.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-7.report.json",
+      "sha256": "7dd15e824402291e96b9bc93657346ad4c87f727defa6ebdb17c2e06c0ceb649",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-8.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-8.report.json",
+      "sha256": "f145b63afdaa3c4e68b75a1329b20e5f22dfae938d8408fab4901cc4179a9250",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-9-r2.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-9-r2.report.json",
+      "sha256": "1c29d023edf7971e8ed182ec87c38e622f64f2b847ac30fbe86a0e864743aae3",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-9-r3.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-9-r3.report.json",
+      "sha256": "429c70f637e186ead5a85c0e0387f04b86d625c77d0d4c8812982dfc631e3492",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/specs/review-9.report.json",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/feature/specs/review-9.report.json",
+      "sha256": "052f262e2461243b6d875e83d6d1929d67e0c74df89c5f37b6ce9dd135751f80",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-21-drift-tidy/brief.md",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/evidence/requirements/dca17367f8d847411d2b3522671a61c687a2f6f779ee2ec759b0a361e3ffdd90/docs/features/2026-11-21-drift-tidy/brief.md",
+      "sha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+      "operation": "restored-from-git",
+      "requirement": {
+        "path": "docs/features/2026-11-21-drift-tidy/brief.md",
+        "normalization": "none",
+        "acceptedSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "acceptedCommit": "0b49bf98179b3e84b7f26a4f74e6ad39ca806680",
+        "restoredSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+        "laterCommits": [
+          "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+          "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa"
+        ],
+        "amendments": [
+          {
+            "commit": "d98d4e29bca7aeecd73f1f0af9a77e17e4456471",
+            "fromSha256": "e34435b5aedb5921418081c92b8279532af5dd53d5837449dec4801e4f8082e9",
+            "toSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+            "decisions": [
+              "tidy-dirty-tree"
+            ],
+            "summary": "Asks the owner: tidy-dirty-tree."
+          },
+          {
+            "commit": "3e38d1b1f085d24af6fcb76d46cf1a78771eecaa",
+            "fromSha256": "64f133fff38c8ff55924dd59dfb839d2053f4a524f8501cfedae7135ae42251d",
+            "toSha256": "bb08c907838a7b7f78a4d6e596aaaf3b213ef92ea5a9f6d25f38fa5b323fe3c3",
+            "decisions": [
+              "tidy-dirty-tree"
+            ],
+            "summary": "Records the owner's answers: tidy-dirty-tree = custom."
+          }
+        ]
+      }
+    },
+    {
+      "originalPath": ".joycraft/local/packets/spec-6-payload-words.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/evidence/.joycraft/local/packets/spec-6-payload-words.log",
+      "sha256": "184b62e75f380bb90f675bf09a650bf9ddac444a8d0f7662fe5d15f19bb49e07",
+      "operation": "copied"
+    },
+    {
+      "originalPath": ".joycraft/local/packets/spec-6-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/evidence/.joycraft/local/packets/spec-6-tests.log",
+      "sha256": "a5e531270c5df211513dea27595aa9e436e12e87c4568fd92c935dd004365f0e",
+      "operation": "copied"
+    },
+    {
+      "originalPath": ".joycraft/local/packets/spec-7-probe.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/evidence/.joycraft/local/packets/spec-7-probe.log",
+      "sha256": "21ea8948ed00fdcc8b1db52cb667cfb749cc46ff94d096f208364d398bbb97b3",
+      "operation": "copied"
+    },
+    {
+      "originalPath": ".joycraft/local/packets/spec-7-tests.log",
+      "archivedPath": "docs/archive/2026-11-21-drift-tidy/evidence/.joycraft/local/packets/spec-7-tests.log",
+      "sha256": "9e75b587618bbc7a6cc7b2d90e331e7e601958ef06216ee1b7e4dcf7a673761a",
+      "operation": "copied"
+    }
+  ]
+}
