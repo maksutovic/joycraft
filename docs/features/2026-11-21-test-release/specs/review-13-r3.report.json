@@ -1,0 +1,437 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "26b6b5f3a5cc4669086e02d608178aa999f7b91b",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 13,
+    "specPath": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+    "criteria": [
+      {
+        "id": "spec-13-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-13-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-13-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-named-files",
+            "archive-edit-tests"
+          ]
+        },
+        "sha256": "4a8779d2d05d6d8fb76d5458e2206e2f05f97228992efaa940573589b3df4829",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "e51307ef46d6763ffe74a37c56f8b4232450044b349a2b24710cf4576aabde5a",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+        "kind": "requirement",
+        "sha256": "7efe3320503ea12748ace0693bc11673da7862c9c4d6f65bf9b2d9977da77c81",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "ec21965f523565c4ab6b073de04798b52952e50a07e01ddd63d7894e1b6d7f02",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+        "kind": "code",
+        "sha256": "017b4c42df4833e8a5a002512bd9ccb164f815c5e506b8f6cb52bb5fffd7d977",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-as-is.test.ts",
+        "kind": "check",
+        "sha256": "db7b3881d80bae2c34a7636336f3a361d09b81563259b51372775b5f4aaf5293",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-links.test.ts",
+        "kind": "check",
+        "sha256": "c746fc0245496f546058e82aecb67d7f7ea3773caaff34f9e21a73f0e6528dcc",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-named-files.test.ts",
+        "kind": "check",
+        "sha256": "0f85ded45e5d74849bc3fc318c074bf6e2c0b55b377576a023964d5e43ace6ca",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2,
+          5,
+          11,
+          13
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-named-files",
+            "archive-edit-tests"
+          ]
+        }
+      ]
+    },
+    "identity": "2b59f55346b037a6bf47726e60affa04c6644138d560843b678436428fecb08c"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a465133b4c1fadef3"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a918a75a2bc3680bd"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "spec-13-1-preview",
+      "subjectIdentity": "2b59f55346b037a6bf47726e60affa04c6644138d560843b678436428fecb08c",
+      "criteria": [
+        "spec-13-1"
+      ],
+      "representativeInput": "Spec fixture; round-1 probe fixtures (look-alike folders, migration, symlink)",
+      "expected": "namedFiles lists tracked non-Markdown files naming the folder with line and test flag, tests first; preview moves nothing",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-spec-tests.log",
+              "sha256": "98ba1c39019e0801f8f8437d0f520099a79ceb6e487f276cad28d3cd7772191c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "32/32 pass, exit 0; [AC:spec-13-1] passes."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-probe1-rerun.log",
+              "sha256": "45cd619a1a62ccd11dad3b936c541202d5d0a4f2d9e1c759f8a34d8d64affcb3"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs",
+              "sha256": "ac4c9b24fadb9c157a819aab08fde4110f884028c27534b7efcc65ee48e1b977"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-probe.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Round-1 probe rerun: tests listed first; migration listed reportOnly (lines 42-55); x-two, x.old and packages/app/docs/features/x not rewritten (line 24); symlink not listed."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-13-2-rewrite-interrupt",
+      "subjectIdentity": "2b59f55346b037a6bf47726e60affa04c6644138d560843b678436428fecb08c",
+      "criteria": [
+        "spec-13-2"
+      ],
+      "representativeInput": "Round-2 SIGKILL preload at 7 points, corrupt/forged records, two features interrupted; round 3: concurrent calls on one feature, folder-name reuse, 100 MB and 420 MB listed files",
+      "expected": "Moves only on green; an interrupted run is never reported archived; recovery undoes only what archive wrote while everything is as archive left it; no data loss",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-spec-tests.log",
+              "sha256": "98ba1c39019e0801f8f8437d0f520099a79ceb6e487f276cad28d3cd7772191c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-13-2] and the review-13 / review-13-r2 recovery tests pass."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-r2probe-stages.log",
+              "sha256": "63e99feeedba93c06953980970f987c76651dd451dc582c8f9fd568e9c460ccd"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "sha256": "dac4601f3d7e57efaa9c45068bffc1691fc95e0783c62cd9ca0fa112b50253ec"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "stages"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "SIGKILL at before-move, between-renames, before-rewrite, mid-rewrite, mid-test and after-green: the next call restores and holds (reason interrupted); after-clear (green finished) reports archived unchanged. Round-2 blocker f13r2-2 (staging window) is fixed (lines 56-109)."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-r2probe-records.log",
+              "sha256": "e70a655188f24d617dac3f87c14337bfc5b00827c9784da5fd7b60e75db83b78"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "sha256": "dac4601f3d7e57efaa9c45068bffc1691fc95e0783c62cd9ca0fa112b50253ec"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "records"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Corrupt, bad-sha and hand-edited records (destination=src, file path=src/keep.txt) are held interrupted-unverified and change nothing; src/keep.txt kept. Round-2 blocker f13r2-1 is fixed."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-r2probe-two.log",
+              "sha256": "8dfad4b618641063ae5d53a760afc74ebe1c258161bb61a6f71c5d9e4a13b532"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "sha256": "dac4601f3d7e57efaa9c45068bffc1691fc95e0783c62cd9ca0fa112b50253ec"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs",
+              "two"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Two interrupted features with a shared test: recovery order x,y holds x unverified and restores y; y,x restores both; sequential x killed then y green holds x unverified with the shared test kept. No loss."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-probe.log",
+              "sha256": "2fefa6d8a5465612d01297b217d5de0dddc3f1b4911821697e736ad938c496c7"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r3-probe.mjs",
+              "sha256": "9c7dbbe8110442981edc9604fd9c4837e6436d71c89702330704aacd35da1972"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r3-probe.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "FAIL",
+          "actual": "Concurrency (lines 1-81): an apply with a 3 s green test plus a plain preview 1 s later: the preview treats the live run's pending record as interrupted, moves the folder back and restores the tests (held, interrupted); the apply then returns status archived, exit 0, while docs/features/x is in place and nothing is archived. Same with a second --apply 600 ms later. Reuse (lines 120-220): held or restored safely, new work kept. Large (lines 221-290): 100 MB file recovered byte for byte; 420 MB refuses before any change with a string-length error."
+        }
+      ],
+      "limits": [
+        "The round-2 probe case user-edits (receipt review-13-r3-r2probe-user-edits.log, exit 1) crashes inside the probe because it expects the folder moved back; under the round-2 safety rule archive now holds interrupted-unverified and keeps the edits, which the review-13-r2 spec tests assert."
+      ]
+    },
+    {
+      "id": "spec-13-3-red-and-edit-race",
+      "subjectIdentity": "2b59f55346b037a6bf47726e60affa04c6644138d560843b678436428fecb08c",
+      "criteria": [
+        "spec-13-2",
+        "spec-13-3"
+      ],
+      "representativeInput": "Spec red fixture and refusals; round 3: a user save to a listed test at the moment archive moves the folder into staging (preload spec-13-r3-edit.preload.mjs), green and red",
+      "expected": "Red: files restored byte for byte, nothing moves, held; refusals exit 2 before any edit; a user edit is never lost",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-spec-tests.log",
+              "sha256": "98ba1c39019e0801f8f8437d0f520099a79ceb6e487f276cad28d3cd7772191c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-links.test.ts",
+              "tests/runtime-archive-as-is.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-13-3] passes: red held with folder in place and test unchanged; unlisted file and missing tests.focused refuse exit 2."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/review-13-r3-probe.log",
+              "sha256": "2fefa6d8a5465612d01297b217d5de0dddc3f1b4911821697e736ad938c496c7"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r3-probe.mjs",
+              "sha256": "9c7dbbe8110442981edc9604fd9c4837e6436d71c89702330704aacd35da1972"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r3-edit.preload.mjs",
+              "sha256": "8776c3bc7c6d5e25497e9017bcb1956acc477a325ec148d683e0257636182af8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r3-probe.mjs"
+            ],
+            "exitCode": 0
+          },
+          "result": "FAIL",
+          "actual": "Edit race (lines 83-119): the line the user appended to tests/x-a.test.mjs during staging is gone after a green archive (userEditKept false, status archived) and after a red hold (userEditKept false, reason \"the files were restored\")."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "limits": [
+    "Concurrency and edit-race timing were forced with a slow test and an fs preload; real windows are shorter but the same code paths run."
+  ],
+  "unresolved": [],
+  "createdAt": "2026-11-22T03:31:24.125Z",
+  "findings": [
+    {
+      "id": "f13r3-1-recovery-undoes-a-live-run",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-13-2",
+      "at": "payload/.joycraft/runtime/archive.mjs:831",
+      "summary": "Every archive call, even a plain preview, runs recoverPending first (line 831), and nothing tells a live run's pending record from an interrupted one. A second call while an --apply --rewrite is in its test run finds everything \"as archive left it\", moves the folder back, restores the tests and clears the record; the first run then finishes green, clearPending (line 911) removes nothing, and it returns status archived, exit 0, with nothing archived (receipt review-13-r3-probe.log lines 1-31 and 58-81). This breaks \"no interrupted run is ever reported archived\". In an earlier timing, a second --apply during the first one's staging overwrote the first run's record at the same path (writePending, line 584) and left its own staging folder with a wrong \"staged feature remains\" message. Suggested fix: write the record with an exclusive create (flag wx) and a pid/host field, refuse a second apply while it exists, and in recoverPending skip (hold \"archive running\") when that pid is alive; before returning archived, check that the destination still holds the feature and the record is still this run's."
+    },
+    {
+      "id": "f13r3-2-edit-during-staging-lost",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-13-2",
+      "at": "payload/.joycraft/runtime/archive.mjs:793",
+      "summary": "planRewrite reads each file's before bytes (line 558) before two whole-repo previews, staging and the move; rewriteAndTest then writes the precomputed after bytes (line 793) without checking that the file is still those before bytes. A user save to a listed test in that window is overwritten on green, and on red restoreRecord sees archive's after bytes and writes the stale before bytes, so the edit is lost both ways (receipt review-13-r3-probe.log lines 83-119). Suggested fix: immediately before each write, compare the current bytes with file.before; on a mismatch, undo the move (nothing was rewritten yet) and hold with the file named."
+    },
+    {
+      "id": "f13r3-3-large-file-message",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:583",
+      "summary": "A listed file over about 400 MB makes the pending record (base64 in JSON) exceed the string limit; archive stops before any change with \"Cannot create a string longer than 0x1fffffe8 characters\" (receipt review-13-r3-probe.log lines 261-290). Nothing is lost; the message could name the file and say to leave it out of --rewrite.",
+      "assumption": "A test or test list that large is very rare."
+    },
+    {
+      "id": "f13r3-4-green-kill-reverted",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:911",
+      "summary": "A kill after the green test but before clearPending (after-green) is restored and held on the next call, so a green run is undone and needs one more archive (receipt review-13-r3-r2probe-stages.log lines 272-325). Safe and in line with the rule; noted only.",
+      "assumption": "Undoing a green run that was not recorded is the safe reading of the rule."
+    }
+  ]
+}

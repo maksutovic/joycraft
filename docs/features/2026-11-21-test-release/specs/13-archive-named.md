@@ -34,3 +34,7 @@ Anything in the brief's Scope and limits. Joycraft names no test runner: text sa
 - Tests: `tests/runtime-archive-named-files.test.ts`, `tests/runtime-archive-links.test.ts`, `tests/runtime-archive-as-is.test.ts`. Tag each new test `[AC:spec-13-<n>]`; use git fixtures in a temp dir, as `tests/runtime-archive-merge-amendment.test.ts` does.
 - The agent judges which listed files are editable tests; the script never decides that an applied migration is safe to edit (text: spec 24).
 - Keep the post-move `relinkLive` result as it is; the new list is computed in `previewArchiveFeature`, so the as-is path gets it too (ruling section 7 item 2).
+
+## Decision needed
+
+Review round 3 of 3 (review-13-r3.report.json) FAILED on f13r3-1 (a second archive call undoes a live run) and f13r3-2 (a save during staging is overwritten). The review limit is reached. Brief decision `archive-rewrite-route` (open) holds this spec and spec 24.

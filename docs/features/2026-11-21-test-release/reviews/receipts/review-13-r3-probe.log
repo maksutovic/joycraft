@@ -1,0 +1,296 @@
+
+=== concurrent apply + preview
+{
+ "preview": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "stateAfterPreview": {
+  "source": true,
+  "archived": false,
+  "pending": [],
+  "archive": null
+ },
+ "apply": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "final": {
+  "source": true,
+  "archived": false,
+  "pending": [],
+  "archive": null
+ },
+ "testA": "const brief = readFileSync('docs/features/x/brief.md', 'utf8');",
+ "git": ""
+}
+
+=== two concurrent applies (50 ms)
+{
+ "a": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "b": {
+  "exit": 1,
+  "signal": null,
+  "stderr": "Archive stopped: Archive inputs changed after preview; rerun the session-end preflight"
+ },
+ "final": {
+  "source": false,
+  "archived": true,
+  "pending": [],
+  "archive": [
+   "x"
+  ]
+ },
+ "testA": "const brief = readFileSync('docs/archive/x/feature/brief.md', 'utf8');",
+ "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n?? docs/archive/"
+}
+
+=== two concurrent applies (600 ms)
+{
+ "a": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "b": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "final": {
+  "source": true,
+  "archived": false,
+  "pending": [],
+  "archive": null
+ },
+ "testA": "const brief = readFileSync('docs/features/x/brief.md', 'utf8');",
+ "git": ""
+}
+
+=== edit during staging, green
+{
+ "r": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "userEditKept": false,
+ "state": {
+  "source": false,
+  "archived": true,
+  "pending": [],
+  "archive": [
+   "x"
+  ]
+ }
+}
+
+=== edit during staging, red
+{
+ "r": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "The rewritten tests failed (/Users/compiler/.nvm/versions/node/v24.22.0/bin/node tests/x-a.test.mjs tests/x-b.test.mjs); the files were restored and nothing moved. Read .joycraft/local/receipts/archive-x-20261122T032858365Z.log, fix the tests or leave them out of --rewrite, and archive again.",
+  "stderr": ""
+ },
+ "userEditKept": false,
+ "state": {
+  "source": true,
+  "archived": false,
+  "pending": [],
+  "archive": null
+ }
+}
+
+=== reuse after between-renames kill
+{
+ "r": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted-unverified",
+  "differences": [
+   "the feature folder must be at exactly one of docs/features/x, docs/archive/.x.staging-28379-1795318138655/feature or docs/archive/x/feature; it is at docs/features/x and docs/archive/.x.staging-28379-1795318138655/feature"
+  ],
+  "stderr": ""
+ },
+ "newBrief": "# New brief for a new feature x\n",
+ "stage": [
+  [
+   ".x.staging-28379-1795318138655",
+   true
+  ]
+ ],
+ "state": {
+  "source": true,
+  "archived": false,
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   ".x.staging-28379-1795318138655"
+  ]
+ }
+}
+
+=== reuse after manual cleanup with the record left
+{
+ "r": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "brief": "# Brief\nnew work after reuse\n",
+ "state": {
+  "source": true,
+  "archived": false,
+  "pending": [],
+  "archive": null
+ }
+}
+
+=== reuse: archive again
+{
+ "again": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "state": {
+  "source": false,
+  "archived": true,
+  "pending": [],
+  "archive": [
+   "x"
+  ]
+ },
+ "test": "const brief = readFileSync('docs/archive/x/feature/brief.md', 'utf8');"
+}
+
+=== dated record x, user edit
+{
+ "r": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted-unverified",
+  "differences": [
+   "tests/x-a.test.mjs changed after archive rewrote it"
+  ],
+  "stderr": ""
+ },
+ "state": {
+  "source": false,
+  "archived": true,
+  "pending": [
+   "2026-11-01-x.json"
+  ],
+  "archive": [
+   "2026-11-01-x"
+  ]
+ }
+}
+
+=== dated record, full name
+{
+ "full": {
+  "status": "held",
+  "reason": "interrupted-unverified",
+  "exit": 2
+ }
+}
+
+=== large 100 MB
+{
+ "previewExit": 0,
+ "previewErr": "",
+ "listed": [
+  "tests/fixtures/big.json",
+  "tests/x-a.test.mjs",
+  "tests/x-b.test.mjs"
+ ],
+ "killed": {
+  "exit": null,
+  "signal": "SIGKILL",
+  "stderr": "probe: SIGKILL at mid-test"
+ },
+ "pendingSize": 139812341,
+ "recover": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "restoredExact": true,
+ "green": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "state": {
+  "source": false,
+  "archived": true,
+  "pending": [],
+  "archive": [
+   "x"
+  ]
+ },
+ "seconds": 4.439
+}
+
+=== large 420 MB
+{
+ "previewExit": 0,
+ "previewErr": "",
+ "listed": [
+  "tests/fixtures/big.json",
+  "tests/x-a.test.mjs",
+  "tests/x-b.test.mjs"
+ ],
+ "killed": {
+  "exit": 1,
+  "signal": null,
+  "stderr": "Archive stopped: Cannot create a string longer than 0x1fffffe8 characters"
+ },
+ "pendingSize": null,
+ "recover": {
+  "exit": 0,
+  "signal": null,
+  "status": "preview",
+  "stderr": ""
+ },
+ "restoredExact": true,
+ "green": {
+  "exit": 1,
+  "signal": null,
+  "stderr": "Archive stopped: Cannot create a string longer than 0x1fffffe8 characters"
+ },
+ "state": {
+  "source": true,
+  "archived": false,
+  "pending": [],
+  "archive": null
+ },
+ "seconds": 4.592
+}
+exit 0

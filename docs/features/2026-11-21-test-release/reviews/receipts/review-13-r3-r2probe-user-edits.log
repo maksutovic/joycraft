@@ -1,0 +1,15 @@
+node:fs:483
+    return binding.readFileUtf8(path, stringToFlags(options.flag));
+                   ^
+
+Error: ENOENT: no such file or directory, open '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/r13r2-5eMGVW/docs/features/x/brief.md'
+    at readFileSync (node:fs:483:20)
+    at file:///Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/docs/features/2026-11-21-test-release/reviews/receipts/spec-13-r2-probe.mjs:135:53 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/r13r2-5eMGVW/docs/features/x/brief.md'
+}
+
+Node.js v24.22.0
+exit 1

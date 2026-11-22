@@ -1,0 +1,188 @@
+
+=== other-feature preview
+[
+ {
+  "path": "tests/multi.test.mjs",
+  "line": 1,
+  "test": true
+ },
+ {
+  "path": "tests/two-tier.test.mjs",
+  "line": 2,
+  "test": true
+ }
+]
+
+=== other-feature apply
+{
+ "status": 0,
+ "s": "archived",
+ "err": ""
+}
+
+=== other-feature rewritten
+"const a = 'docs/archive/x/feature/brief.md';\nconst b = 'docs/features/x-two/brief.md';\nconst c = 'packages/app/docs/features/x/y';\nconst d = 'docs/features/x.old';\nprocess.exit(0);\n"
+
+=== edits-files result
+{
+ "status": 2,
+ "s": "held",
+ "err": ""
+}
+
+=== edits-files state
+{
+ "status": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M scripts/other.mjs\n M tests/two-tier.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json\n?? newfile.txt",
+ "ignored": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M scripts/other.mjs\n M tests/two-tier.test.mjs\n?? docs/archive/\n?? newfile.txt\n!! .joycraft/",
+ "sourceThere": false,
+ "archiveThere": true,
+ "archiveEntries": [
+  "x"
+ ]
+}
+
+=== migration preview
+[
+ {
+  "path": "tests/two-tier.test.mjs",
+  "line": 2,
+  "test": true
+ },
+ {
+  "path": "db/migrations/0001_init.sql",
+  "line": 1,
+  "test": false,
+  "reportOnly": true
+ }
+]
+
+=== migration apply
+{
+ "status": 2
+}
+
+=== crlf red
+{
+ "s": "held",
+ "same": true,
+ "st": {
+  "status": "",
+  "ignored": "!! .joycraft/",
+  "sourceThere": true,
+  "archiveThere": false,
+  "archiveEntries": null
+ }
+}
+
+=== crlf green
+{
+ "s": "archived",
+ "crlfKept": true,
+ "diff": "docs/features/x/brief.md                        | 1 -\n docs/features/x/specs/.joycraft-spec-queue.json | 1 -\n docs/features/x/specs/01-a.md                   | 5 -----\n docs/features/x/specs/legacy.json               | 1 -\n tests/two-tier.test.mjs                         | 2 +-\n 5 files changed, 1 insertion(+), 9 deletions(-)"
+}
+
+=== latin1 green
+{
+ "s": "archived",
+ "lastBytesBefore": [
+  32,
+  233,
+  10
+ ],
+ "lastBytesAfter": [
+  47,
+  47,
+  32,
+  233,
+  10
+ ]
+}
+
+=== symlink preview
+[
+ {
+  "path": "tests/two-tier.test.mjs",
+  "line": 2,
+  "test": true
+ }
+]
+
+=== symlink rewrite
+{
+ "status": 2,
+ "err": "Archive stopped: --rewrite tests/link.test.mjs is not a file the archive plan lists as naming docs/features/x; listed: tests/two-tier.test.mjs"
+}
+
+=== symlink red
+{
+ "s": "held",
+ "st": {
+  "status": "",
+  "ignored": "!! .joycraft/",
+  "sourceThere": true,
+  "archiveThere": false,
+  "archiveEntries": null
+ }
+}
+
+=== receipt no-local red
+{
+ "status": 2,
+ "s": "held",
+ "test": {
+  "receipt": ".joycraft/local/receipts/archive-x-20261122T032459342Z.log",
+  "command": "/Users/compiler/.nvm/versions/node/v24.22.0/bin/node tests/two-tier.test.mjs",
+  "exitCode": 1
+ },
+ "st": {
+  "status": "",
+  "ignored": "!! .joycraft/\n!! attest.json",
+  "sourceThere": true,
+  "archiveThere": false,
+  "archiveEntries": null
+ }
+}
+
+=== receipt tracked-local red
+{
+ "status": 2,
+ "s": "held",
+ "test": {
+  "receipt": ".joycraft/local/receipts/archive-x-20261122T032459682Z.log",
+  "command": "/Users/compiler/.nvm/versions/node/v24.22.0/bin/node tests/two-tier.test.mjs",
+  "exitCode": 2,
+  "error": "Evidence run stopped: Receipt must be git-ignored or inside a feature folder under docs/features/: .joycraft/local/receipts/archive-x-20261122T032459682Z.log"
+ },
+ "st": {
+  "status": "",
+  "ignored": "!! attest.json",
+  "sourceThere": true,
+  "archiveThere": false,
+  "archiveEntries": null
+ }
+}
+
+=== partial rewrite
+{
+ "s": "archived",
+ "cmd": "/Users/compiler/.nvm/versions/node/v24.22.0/bin/node tests/two-tier.test.mjs"
+}
+
+=== rewrite no apply
+2
+
+=== rewrite bad path
+2
+
+=== rewrite dir
+2
+
+=== state
+{
+ "status": "",
+ "ignored": "!! .joycraft/",
+ "sourceThere": true,
+ "archiveThere": false,
+ "archiveEntries": null
+}
+exit 0

@@ -1,0 +1,380 @@
+
+=== before-move: killed run
+{
+ "killed": {
+  "exit": null,
+  "signal": "SIGKILL",
+  "stderr": "probe: SIGKILL at before-move"
+ },
+ "after": {
+  "git": "?? docs/archive/.x.staging-30858-1795318180834/archive-recovery.json\n?? docs/archive/.x.staging-30858-1795318180834/archive-replay.json",
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   ".x.staging-30858-1795318180834"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== before-move: next call (preview)
+{
+ "next": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "after": {
+  "git": "",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== before-move: apply after recovery
+{
+ "again": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "test": "docs/archive/x/feature/brief.md",
+ "git": 12
+}
+
+=== between-renames: killed run
+{
+ "killed": {
+  "exit": null,
+  "signal": "SIGKILL",
+  "stderr": "probe: SIGKILL at between-renames"
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n?? docs/archive/.x.staging-31380-1795318183409/archive-recovery.json\n?? docs/archive/.x.staging-31380-1795318183409/archive-replay.json\n?? docs/archive/.x.staging-31380-1795318183409/feature/brief.md\n?? docs/archive/.x.staging-31380-1795318183409/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/.x.staging-31380-1795318183409/feature/specs/01-a.md\n?? docs/archive/.x.staging-31380-1795318183409/feature/specs/legacy.json",
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   ".x.staging-31380-1795318183409"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== between-renames: next call (preview)
+{
+ "next": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "after": {
+  "git": "",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== between-renames: apply after recovery
+{
+ "again": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "test": "docs/archive/x/feature/brief.md",
+ "git": 12
+}
+
+=== before-rewrite: killed run
+{
+ "killed": {
+  "exit": null,
+  "signal": "SIGKILL",
+  "stderr": "probe: SIGKILL at before-rewrite"
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   "x"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== before-rewrite: next call (preview)
+{
+ "next": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "after": {
+  "git": "",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== before-rewrite: apply after recovery
+{
+ "again": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "test": "docs/archive/x/feature/brief.md",
+ "git": 12
+}
+
+=== mid-rewrite: killed run
+{
+ "killed": {
+  "exit": null,
+  "signal": "SIGKILL",
+  "stderr": "probe: SIGKILL at mid-rewrite"
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/x-a.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   "x"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== mid-rewrite: next call (preview)
+{
+ "next": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "after": {
+  "git": "",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== mid-rewrite: apply after recovery
+{
+ "again": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "test": "docs/archive/x/feature/brief.md",
+ "git": 12
+}
+
+=== mid-test: killed run
+{
+ "killed": {
+  "exit": null,
+  "signal": "SIGKILL",
+  "stderr": "probe: SIGKILL at mid-test"
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   "x"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": false
+  }
+ }
+}
+
+=== mid-test: next call (preview)
+{
+ "next": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "after": {
+  "git": "",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== mid-test: apply after recovery
+{
+ "again": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "test": "docs/archive/x/feature/brief.md",
+ "git": 12
+}
+
+=== after-green: killed run
+{
+ "killed": {
+  "exit": null,
+  "signal": "SIGKILL",
+  "stderr": "probe: SIGKILL at after-green"
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+  "pending": [
+   "x.json"
+  ],
+  "archive": [
+   "x"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": false
+  }
+ }
+}
+
+=== after-green: next call (preview)
+{
+ "next": {
+  "exit": 2,
+  "signal": null,
+  "status": "held",
+  "reason": "interrupted",
+  "stderr": ""
+ },
+ "after": {
+  "git": "",
+  "pending": [],
+  "archive": null,
+  "filesOriginal": {
+   "tests/x-a.test.mjs": true,
+   "tests/x-b.test.mjs": true
+  }
+ }
+}
+
+=== after-green: apply after recovery
+{
+ "again": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "stderr": ""
+ },
+ "test": "docs/archive/x/feature/brief.md",
+ "git": 12
+}
+
+=== after-clear: killed run
+{
+ "killed": {
+  "exit": null,
+  "signal": "SIGKILL",
+  "stderr": "probe: SIGKILL at after-clear"
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+  "pending": [],
+  "archive": [
+   "x"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": false
+  }
+ }
+}
+
+=== after-clear: next call (preview)
+{
+ "next": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "unchanged": true,
+  "stderr": ""
+ },
+ "after": {
+  "git": "D docs/features/x/brief.md\n D docs/features/x/specs/.joycraft-spec-queue.json\n D docs/features/x/specs/01-a.md\n D docs/features/x/specs/legacy.json\n M tests/x-a.test.mjs\n M tests/x-b.test.mjs\n?? docs/archive/x/archive-recovery.json\n?? docs/archive/x/archive-replay.json\n?? docs/archive/x/feature/brief.md\n?? docs/archive/x/feature/specs/.joycraft-spec-queue.json\n?? docs/archive/x/feature/specs/01-a.md\n?? docs/archive/x/feature/specs/legacy.json",
+  "pending": [],
+  "archive": [
+   "x"
+  ],
+  "filesOriginal": {
+   "tests/x-a.test.mjs": false,
+   "tests/x-b.test.mjs": false
+  }
+ }
+}
+
+=== after-clear: apply after recovery
+{
+ "again": {
+  "exit": 0,
+  "signal": null,
+  "status": "archived",
+  "unchanged": true,
+  "stderr": ""
+ },
+ "test": "docs/archive/x/feature/brief.md",
+ "git": 12
+}
+exit 0
