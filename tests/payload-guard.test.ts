@@ -13,9 +13,49 @@ import { describe, expect, it } from 'vitest';
 const root = join(__dirname, '..');
 const payloadDir = process.env.JOYCRAFT_PAYLOAD_GUARD_ROOT ?? join(root, 'payload');
 
-// field-24 (1.5.4) shipped this many words. The shipped payload must not grow
-// past it; this one cap replaces the caps of every older field build.
+// field-24 (1.5.4) shipped this many words in all.
 const FIELD_24_WORDS = 29919;
+
+// Decision cap-raise = split-cap (docs/features/2026-11-21-test-release): the
+// guard counts two groups of payload text against two caps.
+//
+// Every-spec text is what an agent reads while it works a spec: the implement,
+// verify, decompose and testing skills, the implementer and reviewer agent
+// files, and the references those always read per spec. Other references they
+// link (worktrees, architecture, artifacts, delivery, recurring failures) are
+// read only "when" a condition holds, so they are on-demand. Every-spec text
+// stays flat: its cap is the field-24 total minus the on-demand words measured
+// at the commit before spec 1 (f157616: 29,864 words in all, 10,848 every-spec,
+// 19,016 on-demand), so 29,919 - 19,016 = 10,903.
+//
+// On-demand text is everything else: setup, update, cleanup, archive, the test
+// review, artifacts, settings, the session-end, cleanup, retro, context, entry
+// and ui-slice skills, and any new on-demand reference. It may grow by 2,000
+// words over its count before spec 1: 19,016 + 2,000 = 21,016.
+//
+// Spec 1 cut two duplicates (setup.md's Claude worktree paragraph, a copy of
+// worktrees.md; joycraft-testing's acceptance-test paragraph). After it:
+// 10,797 every-spec words (106 spare) and 18,922 on-demand words (2,094 spare).
+
+/** Every-spec text: each file with who reads it, and when. */
+export const EVERY_SPEC_FILES: Record<string, string> = {
+  '.agents/skills/joycraft-implement/SKILL.md': 'the coordinator, for every spec it runs',
+  '.agents/skills/joycraft-verify/SKILL.md': 'the reviewer, for every spec it reviews',
+  '.agents/skills/joycraft-decompose/SKILL.md': 'the decomposer, for every spec it writes',
+  '.agents/skills/joycraft-testing/SKILL.md': 'the implementer and reviewer, when they run any check',
+  '.claude/agents/joycraft-implementer.md': 'each implementer subagent, at start',
+  '.claude/agents/joycraft-reviewer.md': 'each reviewer subagent, at start',
+  '.joycraft/references/testing.md': 'implement, verify, testing and both agents link its running-tests tiers on every spec',
+  '.joycraft/references/workflow.md': 'decompose follows its commitment-and-queue section for every queue',
+  '.joycraft/references/dispatch.md': 'implement and the implementer run its dispatch preflight on every spec',
+  '.joycraft/references/completion.md': 'the reviewer reads it at start; verify and implement use it to submit and accept',
+  '.joycraft/references/gates.md': 'the gate check and Stop hook run on every spec once gates are on',
+};
+export const EVERY_SPEC_CAP = FIELD_24_WORDS - 19016;
+export const ON_DEMAND_CAP = 19016 + 2000;
+
+/** True when a payload text file is on-demand: every payload text file not in EVERY_SPEC_FILES. */
+export const isOnDemand = (path: string) => !(path in EVERY_SPEC_FILES);
 
 interface Bundle { label: string; files: Set<string>; read: (path: string) => string }
 
@@ -92,9 +132,25 @@ function unshippedText(bundle: Bundle): { file: string; line: number; term: stri
 }
 
 /** Words in the shipped skills, agent files and references, counted like `wc -w`. */
-const payloadWords = (bundle: Bundle, without: string[] = []) => payloadText(bundle)
-  .filter(({ path }) => !without.includes(path))
+const payloadWords = (bundle: Bundle, keep: (path: string) => boolean = () => true) => payloadText(bundle)
+  .filter(({ path }) => keep(path))
   .reduce((sum, { text }) => sum + text.split(/\s+/).filter(Boolean).length, 0);
+
+/** Every-spec and on-demand word counts, and the caps each one breaks. */
+function splitCap(bundle: Bundle) {
+  const everySpec = payloadWords(bundle, (path) => !isOnDemand(path));
+  const onDemand = payloadWords(bundle, isOnDemand);
+  const over: string[] = [];
+  if (everySpec > EVERY_SPEC_CAP) over.push(`every-spec ${everySpec} > ${EVERY_SPEC_CAP}`);
+  if (onDemand > ON_DEMAND_CAP) over.push(`on-demand ${onDemand} > ${ON_DEMAND_CAP}`);
+  return { everySpec, onDemand, over };
+}
+
+/** The shipped bundle with `words` extra words appended to one file. */
+function grown(path: string, words: number): Bundle {
+  const bundle = treeBundle();
+  return { ...bundle, read: (file) => bundle.read(file) + (file === path ? `\n${'word '.repeat(words)}\n` : '') };
+}
 
 describe('shipped payload text', () => {
   it('[AC:vendored-field-19] ships the gate check and the gates reference', () => {
@@ -266,16 +322,38 @@ describe('shipped payload text', () => {
     }
   });
 
-  it('[AC:payload-words-not-up] ships no more words than field-24', () => {
-    const words = payloadWords(treeBundle());
-    expect(words, `${words} words; field-24 had ${FIELD_24_WORDS}`).toBeLessThanOrEqual(FIELD_24_WORDS);
+  it('[AC:spec-1-1] lists every-spec files that exist, and the two groups cover exactly the payload text', () => {
+    const bundle = treeBundle();
+    for (const path of Object.keys(EVERY_SPEC_FILES)) expect(bundle.files.has(path), path).toBe(true);
+    const text = [...bundle.files].filter(isPayloadText);
+    const everySpec = text.filter((path) => !isOnDemand(path));
+    const onDemand = text.filter(isOnDemand);
+    expect([...everySpec, ...onDemand].sort()).toEqual(text.sort());
+    expect(everySpec.sort()).toEqual(Object.keys(EVERY_SPEC_FILES).sort());
+    for (const path of ['setup.md', 'update.md', 'testing-review.md', 'archive.md', 'cleanup.md', 'retro.md', 'settings.md', 'doc-cleanup-LICENSE.md']) {
+      expect(onDemand, path).toContain(`.joycraft/references/${path}`);
+    }
   });
 
-  // Spec: docs/features/2026-11-21-drift-tidy/specs/12-generator-cuts.md (29,853 words before it).
-  it('[AC:spec-12-5] ships fewer than 29,917 words after the drift-tidy cuts', () => {
-    const words = payloadWords(treeBundle());
-    console.log(`payload words: ${words}`);
-    expect(words, `${words} words`).toBeLessThan(29917);
+  it('[AC:spec-1-2] every-spec and on-demand words stay under their own caps', () => {
+    const { everySpec, onDemand, over } = splitCap(treeBundle());
+    console.log(`every-spec words: ${everySpec} (cap ${EVERY_SPEC_CAP}, ${EVERY_SPEC_CAP - everySpec} spare)`);
+    console.log(`on-demand words: ${onDemand} (cap ${ON_DEMAND_CAP}, ${ON_DEMAND_CAP - onDemand} spare)`);
+    expect(over).toEqual([]);
+  });
+
+  it('[AC:spec-1-3] 200 more words in the implement skill break the every-spec cap; 600 more in the test review do not', () => {
+    expect(splitCap(grown('.agents/skills/joycraft-implement/SKILL.md', 200)).over).toEqual([expect.stringMatching(/^every-spec /)]);
+    expect(splitCap(grown('.joycraft/references/testing-review.md', 600)).over).toEqual([]);
+  });
+
+  it('[AC:spec-1-4] the duplicate worktree and acceptance-test paragraphs are cut, and worktrees.md keeps its copy', () => {
+    const bundle = treeBundle();
+    expect(bundle.read('.joycraft/references/setup.md')).not.toMatch(/WorktreeCreate/);
+    expect(bundle.read('.joycraft/references/setup.md')).toMatch(/resource-lease convention/);
+    expect(bundle.read('.joycraft/references/worktrees.md')).toMatch(/A `WorktreeCreate` hook replaces creation/);
+    expect(bundle.read('.agents/skills/joycraft-testing/SKILL.md')).not.toMatch(/sized like neighboring tests/);
+    expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(10848);
   });
 
   it('every relative link and named reference or runtime path is shipped', () => {

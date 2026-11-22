@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-2dae743baf22",
-  "commit": "2dae743baf2222069ca37049f51c8d7bbae0c371fa99d72ce01b072d9d7e325d",
+  "tag": "payload-70e31ea98df6",
+  "commit": "70e31ea98df6b4d57ed33b9183556db93b190ec11cce73736b949c2f25fbbd4c",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "be787d18356dac3f292b69d13e8b547ff5bb1a99039c0fe2d9a2cd12e0abe5f7",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -12,7 +12,7 @@
     ".agents/skills/joycraft-retro/SKILL.md": "156f36cb047604c734bf273bd02822d964b6af86619ed6c2a30fa6d79eb9a986",
     ".agents/skills/joycraft-retro/agents/openai.yaml": "f0eb4732261635f41e08f0bbe9a931d62fd8ac645149d3406e6fc7e16a81750b",
     ".agents/skills/joycraft-session-end/SKILL.md": "e5239edb3748a71120de190f0a9a599a0bfc43b50f6c74f9069966ed82fdf8ac",
-    ".agents/skills/joycraft-testing/SKILL.md": "44bc1842090744004cbb934a7600d62a7ba1a732f9737ed80838b2d4fd7df1b8",
+    ".agents/skills/joycraft-testing/SKILL.md": "607c67503363a63d32ef0877fe51b481ff0815a102cf6fe5df533da37bdfb45c",
     ".agents/skills/joycraft-ui-slice/SKILL.md": "baf394edc4a31e582cb936c525d8ad28bea42a713ec3114f5921fa7e2bff833f",
     ".agents/skills/joycraft-ui-slice/scripts/serve.mjs": "c16858800b6fbe6f7a3a21b21e785ad70c9a89a3fe970bc08701fefeac5042fa",
     ".agents/skills/joycraft-verify/SKILL.md": "75ed10c6d65c88072e56001214bea811310e41c72c03e50e73d3a8b13a8068d4",
@@ -37,7 +37,7 @@
     ".joycraft/references/recurring-failures.md": "7080f6c55492bc19c2897f4f0b128a830a71cdb516678c79ff6e97ffa1dc6b86",
     ".joycraft/references/retro.md": "5f24b942f1faf308308caf5d0c543320fedbb69c59c2c240ef979cab50bae211",
     ".joycraft/references/settings.md": "aef03aafa0a22de115b7022d6916b63e55ddfc5cb59323df26417dd693a7269e",
-    ".joycraft/references/setup.md": "07dc7a62e749ebb2ea2c1cb838be05ec49ea686723a2f6c3fc8e3948aad9d4e2",
+    ".joycraft/references/setup.md": "40532ff9053ef9a0c49f14af3af4fc727429510efd5aac9f5fea4438fa57bfd2",
     ".joycraft/references/testing-review.md": "7191f81556bc0cb4c6a02a051649bee46f5aaf5aa6fd14b39f3d5e80db24da30",
     ".joycraft/references/testing.md": "4dd34cff03e060255ca703ab7ebe55c1887078e2d151d9f2a278f349039e9345",
     ".joycraft/references/update.md": "1b2c9587ebcf2525202ef7725013a58d14ec083ef305cef3f88808d3e920b10a",

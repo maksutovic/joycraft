@@ -253,16 +253,6 @@ resource-lease convention and record the owner, resource, and release condition.
 If no lease convention or isolated alternative exists, treat the shared resource
 as unavailable until the project owner establishes one.
 
-Do not silently write host configuration. Verify that the active host created an
-isolated worktree from the intended base before worker start. In Claude Code,
-the default base is its default branch; use an observed `worktree.baseRef: head`
-policy or verify the captured current commit. A Claude `.worktreeinclude` copies
-only matched gitignored files for native isolated workers; a `WorktreeCreate`
-hook replaces creation and disables that automatic include. `CLAUDE_PROJECT_DIR`
-is the original project while the event working directory is the active
-worktree. On other hosts, use an observed native-isolation capability or an
-explicit manual Git-worktree workflow.
-
 ## Knowledge grows with the work
 
 Which home holds which kind of fact, and when to create one, is in
