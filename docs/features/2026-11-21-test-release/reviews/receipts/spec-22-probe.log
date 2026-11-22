@@ -1,0 +1,121 @@
+
+== 7908d6f
+implement words 1329 implementer words 313 every-spec {"n":12,"total":12142}
+.agents/skills/joycraft-implement/SKILL.md {
+  'one focused test per acceptance': true,
+  'several checks': false,
+  'existing test file': false,
+  'fails before': false,
+  'runs once': false,
+  receipt: true,
+  'one-off run state': false,
+  'spec gap': true
+}
+.claude/agents/joycraft-implementer.md {
+  'one focused test per acceptance': true,
+  'several checks': false,
+  'existing test file': false,
+  'fails before': false,
+  'runs once': false,
+  'receipt first': false,
+  'one-off run state': false,
+  'spec gap': true
+}
+.joycraft/templates/spec.md {
+  'real boundary': false,
+  'mocked boundary under "Not covered"': false
+}
+.joycraft/references/testing.md {
+  "or a special case for a test's input": false,
+  "a special case for a test's input": false,
+  'spec gap: test is wrong': true
+}
+.joycraft/references/testing-review.md {
+  'in a file or a list': false,
+  'leaves the gate count': false,
+  'conflicts with a later owner decision': false
+}
+
+== 08beda2
+implement words 1308 implementer words 324 every-spec {"n":12,"total":12139}
+.agents/skills/joycraft-implement/SKILL.md {
+  'one focused test per acceptance': false,
+  'several checks': true,
+  'existing test file': true,
+  'fails before': true,
+  'runs once': false,
+  receipt: true,
+  'one-off run state': false,
+  'spec gap': false
+}
+.claude/agents/joycraft-implementer.md {
+  'one focused test per acceptance': false,
+  'several checks': true,
+  'existing test file': true,
+  'fails before': true,
+  'runs once': true,
+  'receipt first': true,
+  'one-off run state': true,
+  'spec gap': true
+}
+.joycraft/templates/spec.md { 'real boundary': true, 'mocked boundary under "Not covered"': true }
+.joycraft/references/testing.md {
+  "or a special case for a test's input": true,
+  "a special case for a test's input": true,
+  'spec gap: test is wrong': true
+}
+.joycraft/references/testing-review.md {
+  'in a file or a list': true,
+  'leaves the gate count': true,
+  'conflicts with a later owner decision': true
+}
+
+== HEAD
+implement words 1308 implementer words 329 every-spec {"n":12,"total":12164}
+.agents/skills/joycraft-implement/SKILL.md {
+  'one focused test per acceptance': false,
+  'several checks': true,
+  'existing test file': true,
+  'fails before': true,
+  'runs once': false,
+  receipt: true,
+  'one-off run state': false,
+  'spec gap': false
+}
+.claude/agents/joycraft-implementer.md {
+  'one focused test per acceptance': false,
+  'several checks': true,
+  'existing test file': true,
+  'fails before': true,
+  'runs once': true,
+  'receipt first': true,
+  'one-off run state': true,
+  'spec gap': true
+}
+.joycraft/templates/spec.md { 'real boundary': true, 'mocked boundary under "Not covered"': true }
+.joycraft/references/testing.md {
+  "or a special case for a test's input": true,
+  "a special case for a test's input": true,
+  'spec gap: test is wrong': true
+}
+.joycraft/references/testing-review.md {
+  'in a file or a list': true,
+  'leaves the gate count': true,
+  'conflicts with a later owner decision': true
+}
+
+host reach: joycraft-implementer.md ships only when hosts include claude; joycraft-implement skill ships to every host
+    if (source.startsWith('.joycraft/')) out.push({ path: source, source, bytes });
+    else if (source.startsWith('.agents/skills/')) {
+      if (shared) out.push({ path: source, source, bytes });
+      if (claude) {
+        const path = source.replace(/^\.agents\/skills\//, '.claude/skills/');
+        const text = source.endsWith('.md') ? Buffer.from(bytes.toString('utf8').replaceAll('.agents/skills/', '.claude/skills/')) : bytes;
+        out.push({ path, source, bytes: text });
+      }
+    } else if (source.startsWith('.claude/agents/')) {
+      if (claude) out.push({ path: source, source, bytes });
+    }
+  }
+
+one-per wording: none

@@ -1,0 +1,448 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "955fdb007495e8567934e0fbb82d0fe2990a80cd",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 22,
+    "specPath": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+    "criteria": [
+      {
+        "id": "spec-22-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-22-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-22-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-22-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-22-5",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "fewer-better-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "cap-raise"
+          ]
+        },
+        "sha256": "74e5a5d28ae6be91dd5144720a6b9be23786289b8a215e71ab3eb9f4ae8dd707",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "f5082370445b8fc96ef76303bbb091744889ee68dd3963134539afbd9c53a362",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+        "kind": "requirement",
+        "sha256": "ada955e06399a1ec3f1634311358c5587cc54d8c75dca816214cd3a1f704360a",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+        "kind": "code",
+        "sha256": "75ffa972308d3e2e4b5ea9415fd06896b3be0c5d651f1567849df068f53f74cd",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.claude/agents/joycraft-implementer.md",
+        "kind": "code",
+        "sha256": "e9177881f2c3740dba770591dd714876a752ce4eff930edd0faae740cd66d6bd",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing-review.md",
+        "kind": "code",
+        "sha256": "c2f24963fc38e36de4e180c5488a25725e7de3657c72a81f62b867f6e7e3a3c9",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing.md",
+        "kind": "code",
+        "sha256": "89bac4aaa1d409d42fa5b28f1d8de99f660c123d4428933d7b071cf7884c4f1a",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/templates/spec.md",
+        "kind": "code",
+        "sha256": "73993d369bae154587a9e0c324d589ce17d250acba435dbacbd4a03f1362dbe7",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "5b08375159053d9c6eea4b4a32fac6858701bf1010528d87367936bee101ea3e",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-fewer-tests.test.ts",
+        "kind": "check",
+        "sha256": "f5f411f3c006ee3a9a5cb1d69213f33af8277b8fc90b277d812973250a7dabd7",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          5,
+          11,
+          17,
+          22
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "fewer-better-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "cap-raise"
+          ]
+        }
+      ]
+    },
+    "identity": "3dfb01831130fe357cb47f93aefccd3d0769b4f1294d8d6761cae82d43b80f10"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "ae6c0efd705c2efb3"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a0b50721842269302"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "spec-22-1-implement-text",
+      "subjectIdentity": "3dfb01831130fe357cb47f93aefccd3d0769b4f1294d8d6761cae82d43b80f10",
+      "criteria": [
+        "spec-22-1"
+      ],
+      "representativeInput": "joycraft-implement/SKILL.md:57 and joycraft-implementer.md:25-28 at 08beda2 and HEAD",
+      "expected": "Both files drop \"one focused test per acceptance\" and carry: one test may cover several checks; extend the module's existing test file before adding one; a new acceptance test runs once and fails before the code exists, and its receipt comes first. The duplicate sentence in the skill is cut.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "FAIL",
+          "actual": "The implementer agent carries all of it (\"runs once and fails before the code exists, receipt first\"). The implement skill carries \"one may cover several checks; extend the existing test file first; a new acceptance test fails before the code exists\" but not \"runs once\" or that the red receipt comes first (probe: runs once=false at 08beda2 and HEAD). src/payload.ts:63-64 ships .claude/agents/ to Claude only, so on Codex, Pi, Oh My Pi, Copilot and OpenCode, and in serial Claude runs, nothing asks the implementer to keep the red receipt, and the brief's \"receipts show the order\" has no carrier. The tagged test [AC:spec-22-1] passes because it checks only the phrases its Check names. The old one-per-check sentence and its spec-gap clause are cut (testing.md:34-35 keeps the spec-gap rule). The test fails on the payload before the spec (fail-first probe).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.log",
+              "sha256": "d86dcf77d1ea182dab80f791cfcc74c3b31f75c91fc010fc839de6944412c4fa"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.mjs",
+              "sha256": "e93beb3813b757f7e902cfe0fb017152c30349b296c64e9d5f1d054e25729634"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "Fail-first probe: spec 22's test run against the 7908d6f payload fails 4 of 5 (spec-22-4 passes there, as a no-growth check should); at 08beda2 all 26 tests in the three files pass.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-failfirst.log",
+              "sha256": "9b2d7b07a62211941d0d6f4ff1afbba49016083f0e757421b8619f1eca1e4c09"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-failfirst.mjs",
+              "sha256": "4095dab2edb2aba1b55c81f5deac0401f27d018fd7cf741629d4166ef9fe94a5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-failfirst.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-22-2-template",
+      "subjectIdentity": "3dfb01831130fe357cb47f93aefccd3d0769b4f1294d8d6761cae82d43b80f10",
+      "criteria": [
+        "spec-22-2"
+      ],
+      "representativeInput": "payload/.joycraft/templates/spec.md ## acceptance",
+      "expected": "A user-flow Check: names the real boundary it crosses or lists the mocked boundary under \"Not covered\".",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "spec.md:14 adds: A user-flow `Check:` names the real boundary it crosses (a process, file, network or browser) or lists the mocked boundary under \"Not covered\". The template has a ## Not covered section (line 34). [AC:spec-22-2] passes and fails on the base payload.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.log",
+              "sha256": "d86dcf77d1ea182dab80f791cfcc74c3b31f75c91fc010fc839de6944412c4fa"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.mjs",
+              "sha256": "e93beb3813b757f7e902cfe0fb017152c30349b296c64e9d5f1d054e25729634"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-22-3-never-list",
+      "subjectIdentity": "3dfb01831130fe357cb47f93aefccd3d0769b4f1294d8d6761cae82d43b80f10",
+      "criteria": [
+        "spec-22-3"
+      ],
+      "representativeInput": "testing.md:33-36 and testing-review.md ## Test changes",
+      "expected": "testing.md never-list adds a special case for a test's input; testing-review counts a new skip in a file or a list and a test that leaves the gate as class-3 removals.",
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "testing.md:34 reads \"Never add a retry, a sleep, a skip or a special case for a test's input to get a pass.\" testing-review.md:58-60 reads \"A new skip, in a file or a list, and a test that leaves the gate count as removals (class 3).\" Both phrases found; both absent at base.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.log",
+              "sha256": "d86dcf77d1ea182dab80f791cfcc74c3b31f75c91fc010fc839de6944412c4fa"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.mjs",
+              "sha256": "e93beb3813b757f7e902cfe0fb017152c30349b296c64e9d5f1d054e25729634"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-22-4-no-growth",
+      "subjectIdentity": "3dfb01831130fe357cb47f93aefccd3d0769b4f1294d8d6761cae82d43b80f10",
+      "criteria": [
+        "spec-22-4"
+      ],
+      "representativeInput": "Word counts at 7908d6f, 08beda2 and HEAD; payload-guard run",
+      "expected": "payload-guard passes; implement skill wc -w and every-spec count not above their counts before the spec.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "vitest on text-fewer-tests, payload-guard and text-spec-tier: all pass (exit 0) at HEAD and at 08beda2. Implement skill 1329 -> 1308 words; implementer 313 -> 324; every-spec total 12142 -> 12139 at 08beda2 (12164 at HEAD after specs 18 and 19, under cap 12256). At 08beda2 payload-guard [AC:spec-1-3] still had its original 600-word assertion and passed (on-demand spare 625).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-tests.log",
+              "sha256": "fc75cd22924c2c848ae2e8831a0fbd57d8c64f6712e1531fe7fe6b1bbf2efdd0"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/text-fewer-tests.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-spec-tier.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe word counts per revision confirm the numbers above; the fail-first probe reruns the three test files at 08beda2 with exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-failfirst.log",
+              "sha256": "9b2d7b07a62211941d0d6f4ff1afbba49016083f0e757421b8619f1eca1e4c09"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-failfirst.mjs",
+              "sha256": "4095dab2edb2aba1b55c81f5deac0401f27d018fd7cf741629d4166ef9fe94a5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-failfirst.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-22-5-lost-rules",
+      "subjectIdentity": "3dfb01831130fe357cb47f93aefccd3d0769b4f1294d8d6761cae82d43b80f10",
+      "criteria": [
+        "spec-22-5"
+      ],
+      "representativeInput": "git grep over a committed copy of payload/",
+      "expected": "Both rules spec 1 cut are in the payload.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-22-5] passes: \"Do not commit tests of one-off run state\" is in joycraft-implementer.md:28 and \"conflicts with a later owner decision\" is in testing-review.md:59-60. The test fails on the base payload. Note: the first rule was in joycraft-testing (all hosts) before spec 1; it now ships to Claude only (follow-up f3).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-22-tests.log",
+              "sha256": "fc75cd22924c2c848ae2e8831a0fbd57d8c64f6712e1531fe7fe6b1bbf2efdd0"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/text-fewer-tests.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-spec-tier.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-skill-receipt-order",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-22-1",
+      "at": "payload/.agents/skills/joycraft-implement/SKILL.md:57",
+      "summary": "The acceptance asks both files to say that a new acceptance test \"runs once and fails before the code exists, and its receipt comes first\". The skill says only \"a new acceptance test fails before the code exists\". The skill is the only carrier on five of six hosts and in serial Claude runs (src/payload.ts:63-64 ships the implementer agent to Claude only), so the fail-first rule there has no receipt to prove it, against the brief (\"receipts show the order\"). Fix: add the run-once and red-receipt-first words to SKILL.md:57 (the skill is 21 words under its before-count, so it fits), and extend [AC:spec-22-1] to check them in both files."
+    },
+    {
+      "id": "f2-test-changes-undeclared",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/text-spec-tier.test.ts:37-39",
+      "summary": "08beda2 changes spec 14's expected value (implementer 324 -> 324 + 11) while spec 22 says \"## Test changes: none\". The change is required in effect by bullet 1 (new implementer text) and bullet 4 (the skill pays), the comment gives the reason, and the every-spec total is still held flat by [AC:spec-22-4] and the guard, so nothing is weakened. The section should have declared it as class 1 with the new value; a decompose gap.",
+      "assumption": "A rebaseline that keeps the per-file check exact for later growth is not a weakening."
+    },
+    {
+      "id": "f3-lost-rule-host-reach",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.claude/agents/joycraft-implementer.md:28",
+      "summary": "\"Do not commit tests of one-off run state\" was in joycraft-testing (all hosts) before spec 1; it is restored only in the Claude implementer agent. The criterion (rg finds it in the payload) passes. Consider carrying it in the implement skill or testing.md so other hosts get it.",
+      "assumption": "The spec asks only that the phrase exist in the payload."
+    },
+    {
+      "id": "f4-fewer-is-permissive",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-implement/SKILL.md:57",
+      "summary": "Against Max's note (tests felt like an obligation): the new text removes the one-test-per-check order and prefers the existing file, which is the main lever. \"One may cover several checks\" is permission, not a default, while spec.md still ends every bullet with a Check and submit/trace warn per criterion. A one-line default (\"add a test only when it can fail for a reason no existing test can; one test may carry several [AC:] tags\") would make fewer the default. No reviewer rule yet checks the red-before-green receipt order or a new test file where an existing one covered the module.",
+      "assumption": "Outside this spec's stated checks."
+    },
+    {
+      "id": "f5-spec-1-3-weakened",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/payload-guard.test.ts:350-352",
+      "summary": "Not spec 22's change: e6270e2 (spec 18, Test changes \"none\") replaced spec 1's fixed \"600 more words in testing-review.md pass\" with Math.min(600, onDemandSpare). On-demand spare is now 144 (spec-22-tests.log), so the assertion grows the file by 144 and, as the spare reaches 0, becomes a copy of [AC:spec-1-2]. The reason is real (later specs spent on-demand words) but it weakens what spec 1-3 proves and hides that only 144 of the +2000 on-demand budget is left. A stronger form keeps 600 and asserts that `over` has no every-spec entry, which still proves the split. Should be judged in spec 18's review as an undeclared changed assertion; tell the owner the on-demand budget is nearly spent. Spec 22 itself passed with the original assertion at 08beda2. The spec-18 and spec-19 rebaselines of BEFORE in text-fewer-tests.test.ts:31-33 and text-spec-tier.test.ts:37-39 each state their reason and keep the checks exact; they weaken nothing. 4c188d1 (rmSync maxRetries) is cleanup only.",
+      "assumption": "Outside this spec's diff; payload-guard is a check input here."
+    }
+  ],
+  "createdAt": "2026-11-22T03:18:21.172Z"
+}
