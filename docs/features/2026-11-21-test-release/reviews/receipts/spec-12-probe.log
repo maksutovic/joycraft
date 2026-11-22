@@ -1,0 +1,32 @@
+PASS spec fixture {"WORKERS":"3","CI":"0"} prints "3 1" :: exit=0 first="3 1"
+PASS spec fixture result env = ["WORKERS"] :: ["WORKERS"]
+PASS spec fixture receipt footer env = ["WORKERS"] :: ["WORKERS"]
+PASS map JOYCRAFT_EVIDENCE=0 and CI=false: child sees JE=1 CI=1 :: {"W":"2","CI":"1","JE":"1"}
+PASS override names are not listed as applied :: ["WORKERS"] / ["WORKERS"]
+PASS values with spaces/tabs pass exactly :: "two words  and\ttab"
+PASS values with newlines/quotes/$ pass exactly (no shell) :: "line1\nline2\n\"q\" $HOME `x`"
+PASS tricky map env list = ["A","B"] :: ["A","B"]
+PASS empty-string value is applied as empty :: {"CI":"1","JE":"1","A":""}
+PASS malformed (array) exit 2, names file, no receipt :: exit=2 receipt=false stderr=Evidence run stopped: .joycraft/local/evidence-env.json must be a JSON object of string names to string values
+PASS malformed (number value) exit 2, names file, no receipt :: exit=2 receipt=false stderr=Evidence run stopped: .joycraft/local/evidence-env.json must be a JSON object of string names to string values
+PASS malformed (invalid JSON) exit 2, names file, no receipt :: exit=2 receipt=false stderr=Evidence run stopped: .joycraft/local/evidence-env.json is not valid JSON: Expected property name or '}' in JSON at posi
+PASS malformed (null) exit 2, names file, no receipt :: exit=2 receipt=false stderr=Evidence run stopped: .joycraft/local/evidence-env.json must be a JSON object of string names to string values
+PASS malformed (string top-level) exit 2, names file, no receipt :: exit=2 receipt=false stderr=Evidence run stopped: .joycraft/local/evidence-env.json must be a JSON object of string names to string values
+PASS malformed (nested object value) exit 2, names file, no receipt :: exit=2 receipt=false stderr=Evidence run stopped: .joycraft/local/evidence-env.json must be a JSON object of string names to string values
+PASS malformed (null value) exit 2, names file, no receipt :: exit=2 receipt=false stderr=Evidence run stopped: .joycraft/local/evidence-env.json must be a JSON object of string names to string values
+PASS malformed (bool value) exit 2, names file, no receipt :: exit=2 receipt=false stderr=Evidence run stopped: .joycraft/local/evidence-env.json must be a JSON object of string names to string values
+PASS malformed (empty file) exit 2, names file, no receipt :: exit=2 receipt=false stderr=Evidence run stopped: .joycraft/local/evidence-env.json is not valid JSON: Unexpected end of JSON input
+PASS map path is a directory: exit 2 naming file :: exit=2 Evidence run stopped: .joycraft/local/evidence-env.json is not valid JSON: EISDIR: illegal operation on a directory, rea
+PASS committed map: exit 2 "must stay machine-local", no receipt :: exit=2 Evidence run stopped: .joycraft/local/evidence-env.json is tracked by Git; it must stay machine-local
+PASS staged (index only) map: exit 2 "must stay machine-local" :: exit=2
+PASS tracked AND malformed map still exit 2 :: exit=2 Evidence run stopped: .joycraft/local/evidence-env.json is tracked by Git; it must stay machine-local
+PASS untracked again after git rm --cached: runs and applies :: exit=0 
+PASS no map: exit 0, no env key in result or footer, CI=1 JE=1 :: {"CI":"1","JE":"1"}
+PASS empty .joycraft/local/ folder, no map: runs as before :: exit=0
+INFO empty map {}: exit=0 env=[] footerEnv=[]
+INFO NUL in value: exit=2 namesFile=false receipt=false stderr=Evidence run stopped: Could not start /Users/compiler/.nvm/versions/node/v24.22.0/bin/node: The property 'options.env['A']' must be a string without null bytes.
+INFO "=" in name: exit=0 env=["A=B"] stderr=
+INFO lowercase ci on darwin: exit=0 child.CI=1 child.ci=0 env=["ci"]
+INFO no Git repo: exit=2 W=undefined stderr=Evidence run stopped: Receipt must be git-ignored or inside a feature folder under docs/features/: receipts/a.log
+ALL PASS
+joycraft-evidence: {"wallMs":3424,"load":[67.48828125,62.56396484375],"cores":14,"loaded":true,"argv":["node","docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"],"exitCode":0,"timedOut":false,"revision":"f4e1df8af7fe99f93938cc0fffbe698228f5b530","dirty":true}

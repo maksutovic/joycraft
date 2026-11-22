@@ -33,3 +33,6 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - Principles 1, 2 and 9 restate one idea (focused, gate, full). Fold them into one and use the freed slots for the best-evidenced missing ones: flaky means defective (never retry into a pass; repeat a new test file before it counts) and never special-case test inputs or edit the check that judges the change. Coordinator call: this serves Max's "flaky tests rerun over and over" note directly.
 - Put the benefit line into the page itself, not only the template preamble.
 - Name the project page so it cannot be confused with `.joycraft/references/testing.md`.
+
+## Env map (spec 12) — fix
+- Validate names (non-empty, no `=`, no NUL in values) and name the map file in the error; compare CI/JOYCRAFT_EVIDENCE case-insensitively; refuse a map that is untracked but not ignored (`git check-ignore`).
