@@ -97,8 +97,8 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - Reviewer guidance: save probe scripts with a `.txt` suffix (e.g. `.mjs.txt`) so archiving a feature after the gate does not need another gate run; delivery.md names the record extensions.
 
 ## Spec 30 review (PASS, round 1)
-- f2: archive.mjs namesFolder misses `../docs/features/<dated>/`, `${root}/docs/features/<dated>/` and `features/<dated>/` spellings. Allow a match after `}/` or `../` (keep `packages/app/...` out). Fold into spec 29.
-- f6: movedMeanwhile message (archive.mjs ~557) blames "another archive --apply" even when the folder was deleted by hand. Reword. Fold into spec 29.
+- f2: archive.mjs namesFolder misses `../docs/features/<dated>/`, `${root}/docs/features/<dated>/` and `features/<dated>/` spellings. Allow a match after `}/` or `../` (keep `packages/app/...` out). Moved to spec 32.
+- f6: movedMeanwhile message (archive.mjs ~557) blames "another archive --apply" even when the folder was deleted by hand. Reword. Moved to spec 32.
 - f1/f5: spec Test changes should name the two kept-test edits; test file `let output = null` could be `: any`.
 
 ## Spec 24 review (PASS, round 1)
