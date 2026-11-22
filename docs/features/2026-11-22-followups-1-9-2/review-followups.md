@@ -13,3 +13,7 @@
 - f1: `delivery.md:49` "a clean `HEAD`" (was "a clean tree at `HEAD`") is slightly less exact; the point is a clean working tree.
 - f2: `delivery.md:56` dropped "so it stays a record" after the `probe.mjs.txt` instruction.
 - f3: commit 5022789 also carried spec 1's reviewer receipt (harmless).
+
+## Spec 4 (PASS r1)
+- f1: `archive.mjs` `markdownLines` (Markdown link rewrites) and the as-is note's owner-instruction quote still split on `\n` only.
+- f2: the 1.9.1 `[AC:spec-1-4]` test in `tests/runtime-archive-as-is.test.ts` was reworded to the new blank-instruction message (required by spec 4, not listed in its Test changes).

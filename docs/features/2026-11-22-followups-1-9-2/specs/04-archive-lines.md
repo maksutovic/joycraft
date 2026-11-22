@@ -1,6 +1,6 @@
 ---
 id: 4
-status: in-review
+status: done
 ---
 # Archive gives a blank owner instruction a plain message and reads every line ending
 

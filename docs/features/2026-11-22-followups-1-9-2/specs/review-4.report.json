@@ -1,0 +1,202 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "d8ae9bb83cb9caf0670a166bd6e3774aa3c0da58",
+    "queuePath": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+    "specId": 4,
+    "specPath": "docs/features/2026-11-22-followups-1-9-2/specs/04-archive-lines.md",
+    "criteria": [
+      {
+        "id": "spec-4-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/04-archive-lines.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/04-archive-lines.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "archive",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "f184fc1abe63fe0ab7feceb9e3d735b6bb6b2013dd80cba3cea103c4519ffc45",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "a6d9b60498a8574b447de59842958f587d6fc7e3e6b815a8ae8a1fadc51865fb",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/04-archive-lines.md",
+        "kind": "requirement",
+        "sha256": "8b140b8f3bf62e064df940e220b5e7cfb08b200dbfb5610be319f35429d73c8f",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "0ddc418758d6a06e66910f7efe4b0311241a3bda6c1c646b29a7f730e4e210a2",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-as-is.test.ts",
+        "kind": "check",
+        "sha256": "718c3921d8e3be50e01d01a52964f4ba9a9d170fe2e12b1da397b72044819107",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-named-files.test.ts",
+        "kind": "check",
+        "sha256": "04a33a50c9016303222217217314ae5dbb004d0b016500b2f35969d85ce6e981",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          4
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+          "anchors": [
+            "archive",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "82228a4de5daf9868b06aa2026ea1d07bdfc29e3c626ef351f253c688daf494c"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "aefa316572654beb1"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a7d61dc49f8b7f5dd"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "unresolved": [],
+  "createdAt": "2026-11-22T18:00:36.615Z",
+  "flows": [
+    {
+      "id": "flow-blank-owner-instruction",
+      "subjectIdentity": "82228a4de5daf9868b06aa2026ea1d07bdfc29e3c626ef351f253c688daf494c",
+      "criteria": [
+        "spec-4-1"
+      ],
+      "representativeInput": "archive --as-is --owner-instruction with values \"   \", \"\", \"\\t\\n\", a missing value at the end of argv, and --apply / --x",
+      "expected": "blank, empty or missing value: exit 1 with \"needs the owner's words as its value\" and no \"cannot start with --\"; a value starting with -- keeps that clause; nothing changes on disk",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-1] passed: blank, empty and tab-newline values give exactly \"Archive stopped: --owner-instruction needs the owner's words as its value\" (exit 1); --apply keeps the cannot-start-with-- clause; source folder kept, no archive folder, clean git status. The 1.9.1 [AC:spec-1-4] test was updated to the new value, as acceptance line 1 requires. Reviewer probes on the payload CLI: a missing trailing value gives the plain message, --x keeps the clause, a second blank --owner-instruction gives the duplicate message. 2 files passed, exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-4-reviewer-focused-20261122T175958601Z-9653-1.log",
+              "sha256": "22dd17405c66130dd411f46fe31136e1a9e7370a2073357a1720acae01def7b7"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-named-files.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; due at the review boundary per the brief."
+      ]
+    },
+    {
+      "id": "flow-line-endings",
+      "subjectIdentity": "82228a4de5daf9868b06aa2026ea1d07bdfc29e3c626ef351f253c688daf494c",
+      "criteria": [
+        "spec-4-2"
+      ],
+      "representativeInput": "fixture test file tests/e.test.ts with four lines, the third a // Spec: comment naming the feature folder, joined by CR, LF, CRLF, U+2028 or U+2029",
+      "expected": "namedFiles reports line 3 with the comment text for every ending, and archive --apply next says the folder is named only in comments",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-2] passed for all five endings: named entry {path tests/e.test.ts, line 3, test true} and next contains \"only in comments\", not \"still name\". Source check: a shared fileLines helper splitting on /\\r\\n|[\\n\\r\\u2028\\u2029]/ now feeds both namedFiles and the nextSteps comment detection (commentLines); CRLF is matched before lone CR so CRLF gives the same lines as LF. 2 files passed, exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-4-reviewer-focused-20261122T175958601Z-9653-1.log",
+              "sha256": "22dd17405c66130dd411f46fe31136e1a9e7370a2073357a1720acae01def7b7"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-as-is.test.ts",
+              "tests/runtime-archive-named-files.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; due at the review boundary per the brief."
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:726",
+      "summary": "markdownLines (Markdown files) and the as-is note blockquote (line 487) still split on \\n only. They are outside this spec (namedFiles skips .md files), but a CR-only Markdown file would read as one line there.",
+      "assumption": "The brief names only comment detection and namedFiles; other readers are left as they are."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-archive-as-is.test.ts:151",
+      "summary": "The 1.9.1 [AC:spec-1-4] test was reworded and its equal-message assertion replaced by not.toContain(cannot start with --). This is required by acceptance line 1 (declared class 1, new value stated), so it is not blocking; recorded so the change is visible."
+    }
+  ]
+}

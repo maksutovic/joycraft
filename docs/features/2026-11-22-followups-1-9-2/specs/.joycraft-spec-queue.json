@@ -221,7 +221,7 @@
       "id": 4,
       "file": "04-archive-lines.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -280,6 +280,10 @@
       },
       "submitted": {
         "at": "2026-11-22T17:58:38.472Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-4.report.json",
+        "sha256": "4b397e977a0e057426c6be2b051693f0aef2b6640217ebbbf2e7f38b6a09618b"
       }
     },
     {
