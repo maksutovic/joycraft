@@ -8,10 +8,13 @@ compatibility: Requires Node.js 22+ and the installed .joycraft runtime for the 
 
 Start with the clean-tree check: run `git status --porcelain`. When it prints
 anything, the tree holds the user's work: report what the steps below find, fix
-nothing, commit nothing of the user's and push nothing.
+nothing, commit nothing of the user's and push nothing. Run each step in its
+read-only form only: `status.mjs` without `--fix`, `cleanup.mjs tidy` to report,
+the prune preview without `--apply`, the archive preview without `--apply`.
 
-The steps run in this order: records, one tidy commit, worktree prune, archive
-last, then one push that opens the PR.
+The steps run in this order: records and their commit, one tidy commit,
+worktree prune, archive last with its commit, then one push that opens the PR.
+That one push can carry up to three commits.
 
 Read each touched queue and report the real state of every affected spec: `todo`, `in-review`, or `done`. `done` must have either an accepted PASS report receipt or a completion-helper owner-acceptance record bound to a current failed or unverified report; a commit, PASS command, or implementer assertion is not acceptance. Keep blocked or failed dependency branches explicit while identifying independent ready work that can continue next.
 
@@ -48,12 +51,17 @@ Write nothing temporal into an entry file or a guide: a date, a status or a hand
 
 When independent reports suggest a reusable failure lesson, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md).
 
+Commit the records in their own commit, `docs: session-end records`, before
+tidy: `tidy --verify` refuses every changed file that no fixable finding names,
+so a record cannot ride in the tidy commit. With no record written, skip it.
+
 ## One tidy commit
 
 Tidy without being asked. Run `node .joycraft/runtime/cleanup.mjs tidy` and fix
 only the lines its `fixable: true` findings name, never an entry file or rule
 text. When `cleanup.mjs tidy --verify` passes, make one commit with the message it
-prints; it carries the records and the tidy fixes. Then run `joycraft-cleanup`
+prints; it carries only the tidy fixes. With no fix, it prints no message:
+make no commit. Then run `joycraft-cleanup`
 in its session-end mode. Put the other findings on the session-end page; with
 none, say so in one line.
 
@@ -98,10 +106,12 @@ to satisfy old reports, or re-review done work only to move a folder. Report
 `archived with reconciliation`, never renewed acceptance. Unresolved product
 work and corrupt or missing evidence still block closure.
 
-After `--apply`, commit the move.
+After `--apply`, commit the move and any `--rewrite` edits in their own
+commit, `docs: archive <slug>`.
 
 ## One push
 
 Then make one push that carries these commits and opens the PR, or updates the
-open one. After merge, session end does nothing more: say that the next session
+open one. With no remote, make the same commits, skip the push and say the work
+is local. After merge, session end does nothing more: say that the next session
 start checks, read-only, that the change deployed and works.
