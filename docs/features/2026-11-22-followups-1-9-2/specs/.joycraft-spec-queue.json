@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-chained-gate-parts.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -62,6 +62,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T17:54:47.829Z"
       }
     },
     {
