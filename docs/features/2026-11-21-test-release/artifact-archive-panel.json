@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "test-release-archive-panel",
+  "title": "Archive vs tests: Fable panel ruling and 4 decisions",
+  "summary": "The panel recommends removing the rewrite machinery: archive lists, the session-end agent changes the path.",
+  "decisionIds": [
+    "archive-test-editor",
+    "archive-red-path",
+    "archive-in-place",
+    "archive-spec-13-close"
+  ]
+}
