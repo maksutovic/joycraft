@@ -262,6 +262,21 @@ function restorePatch(root, fault) {
   return [...fault.hashes].every(([file, before]) => sha256File(path.join(root, file)) === before);
 }
 
+export const envMapPath = '.joycraft/local/evidence-env.json';
+
+/** The machine-local environment map (string names to string values), or null when there is none. Refuses with exit 2. */
+function readEnvMap(root) {
+  const file = path.join(root, envMapPath);
+  if (!existsSync(file)) return null;
+  let tracked = false;
+  try { execFileSync('git', ['ls-files', '--error-unmatch', '--', envMapPath], { cwd: root, stdio: 'ignore' }); tracked = true; } catch { /* untracked or no Git */ }
+  refuse(!tracked, `${envMapPath} is tracked by Git; it must stay machine-local`);
+  let map;
+  try { map = JSON.parse(readFileSync(file, 'utf8')); } catch (error) { throw refusal(`${envMapPath} is not valid JSON: ${error.message}`); }
+  refuse(record(map) && Object.values(map).every(value => typeof value === 'string'), `${envMapPath} must be a JSON object of string names to string values`);
+  return map;
+}
+
 /**
  * Run the project's own command once, without a shell, with CI=1 and a time
  * limit. The child's stdout and stderr both go straight to one new receipt
@@ -275,13 +290,18 @@ function restorePatch(root, fault) {
  * `signal` when there was one. Time and load are facts, never a gate.
  * With `patch`, a saved fault is applied to the working tree only (never the
  * index) on a clean tree, then reversed after the run, and every touched file
- * is compared by SHA-256 with its hash from before: `patch.restored`. A timeout ends the child's process group (POSIX) or the child
- * (Windows) and gives exitCode null.
+ * is compared by SHA-256 with its hash from before: `patch.restored`.
+ * The machine-local map in .joycraft/local/evidence-env.json is passed to the
+ * child (CI and JOYCRAFT_EVIDENCE win); the applied names are listed in `env`.
+ * A timeout ends the child's process group (POSIX) or the child (Windows)
+ * and gives exitCode null.
  * Every refusal happens before the child starts and carries exitCode 2.
  */
 export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = defaultTimeoutMs, argv, patch }) {
   refuse(Array.isArray(argv) && argv.length > 0 && argv.every(value => typeof value === 'string') && argv[0] !== '', `A command is needed after --. ${usage}`);
   refuse(Number.isSafeInteger(timeoutMs) && timeoutMs > 0 && timeoutMs <= 2 ** 31 - 1, `--timeout-ms must be a whole number of milliseconds from 1 to ${2 ** 31 - 1}`);
+  const envMap = readEnvMap(root);
+  const applied = envMap && Object.keys(envMap).filter(name => name !== 'CI' && name !== 'JOYCRAFT_EVIDENCE');
   const fault = patch === undefined ? null : preparePatch(root, patch);
   const { relative, file } = await receiptFile(root, receipt);
   const commit = revision(root);
@@ -300,7 +320,7 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
   }
   let child;
   try {
-    child = spawn(argv[0], argv.slice(1), { cwd: root, env: { ...process.env, CI: '1', JOYCRAFT_EVIDENCE: '1' }, stdio: ['ignore', fd, fd], detached: posix, windowsHide: true });
+    child = spawn(argv[0], argv.slice(1), { cwd: root, env: { ...process.env, ...envMap, CI: '1', JOYCRAFT_EVIDENCE: '1' }, stdio: ['ignore', fd, fd], detached: posix, windowsHide: true });
     await new Promise((resolve, reject) => { child.once('spawn', resolve); child.once('error', reject); });
   } catch (error) {
     closeSync(fd);
@@ -330,7 +350,7 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
     : { wallMs, load: [loadStart, loadEnd], cores, loaded: loadStart > cores };
   const output = readEnd(file);
   const tail = exitCode === 0 ? undefined : output.replace(/\n$/, '').split('\n').slice(-tailLines).join('\n');
-  const footer = { ...facts, argv: [...argv], exitCode, timedOut, revision: commit.commit, dirty: commit.dirty, ...(patchFacts ? { patch: patchFacts } : {}) };
+  const footer = { ...facts, argv: [...argv], exitCode, timedOut, revision: commit.commit, dirty: commit.dirty, ...(applied ? { env: applied } : {}), ...(patchFacts ? { patch: patchFacts } : {}) };
   appendFileSync(file, `${output === '' || output.endsWith('\n') ? '' : '\n'}${footerTag}${JSON.stringify(footer)}\n`);
   const digest = createHash('sha256');
   for await (const chunk of createReadStream(file)) digest.update(chunk);
@@ -338,7 +358,7 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
     command: { argv: [...argv], exitCode },
     receipts: [{ path: relative, sha256: digest.digest('hex') }],
     timedOut, timeoutMs, ...(signal ? { signal } : {}), revision: commit, facts,
-    ...(tail === undefined ? {} : { tail }), ...(patchFacts ? { patch: patchFacts } : {}),
+    ...(tail === undefined ? {} : { tail }), ...(applied ? { env: applied } : {}), ...(patchFacts ? { patch: patchFacts } : {}),
   };
 }
 
