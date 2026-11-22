@@ -7,6 +7,34 @@ claim that a release has shipped.
 
 ---
 
+## 1.9.2 — Fixes from the 1.9.1 reviews
+
+Reviewers of 1.9.1 left a few small gaps open in the review gate, cleanup, archive
+and delivery. None blocked 1.9.1; this release fixes them.
+
+### Update notes
+
+- **More manifests under the docs root need the gate again.** `jsconfig*.json`,
+  `deno.json`, `deno.jsonc` and `pnpm-workspace.yaml` under the docs root, in
+  feature and archive folders too, now need a fresh gate run before push, like
+  `package.json`, `tsconfig*.json` and lockfiles since 1.9.1.
+
+### Fixed
+
+- **A report that ran one part of a chained gate is refused.** When the recorded
+  gate chains commands with `&&`, `||` or `;`, a spec review that ran only one of
+  them is refused like one that ran the whole gate.
+- **Cleanup skips a check as "Command not found" only for its own command.** The
+  shell's not-found line must name a word of the check's `run`; a not-found line
+  for a tool the check calls inside its own script no longer skips the check. `new-doc` skips a
+  backlog folder in any case (`Backlog/`).
+- **Archive reads every line ending.** When it looks for files that name the
+  feature folder, it splits lines on CRLF, LF, a lone CR, U+2028 and U+2029. A
+  blank `--owner-instruction` now gets a plain message that it needs the owner's
+  words; only a value starting with `--` is told it cannot start with `--`.
+- **`setup.md` gets back two phrases** a 1.9.1 trim dropped, and the payload guard
+  records why `testing-review.md` stays on-demand (decision `word-cap-split`).
+
 ## 1.9.1 — Fixes from the 1.9.0 reviews
 
 Reviewers of 1.9.0 left small gaps open: two in the gate matchers that a user can
@@ -17,8 +45,14 @@ does. None blocked 1.9.0; this release fixes them.
 
 - **Manifests under the docs root need the gate again.** `package.json`,
   `tsconfig*.json` and lockfiles under the docs root now need a fresh gate run
-  before push, in feature and archive folders too. Before, they counted as records,
-  so an older gate receipt still let the push through.
+  before push, in feature and archive folders too. Before, `package.json`,
+  `tsconfig*.json`, `package-lock.json` and `npm-shrinkwrap.json` counted as records
+  anywhere under the docs root, and `pnpm-lock.yaml` in feature and archive folders,
+  so an older gate receipt still let the push through. `yarn.lock`, `bun.lock`,
+  `bun.lockb` and `deno.lock` already needed the gate.
+- **Save a kept probe script as `.mjs.txt`.** A probe script kept as a receipt in a
+  feature folder is named like `probe.mjs.txt`, so it stays a record and needs no
+  new gate run.
 - **Cleanup and archive find the project root from a subfolder.** With no `--root`,
   `cleanup.mjs` and `archive.mjs` start from the nearest folder up that holds
   `.joycraft/`, so tidy run from `docs/guides` reads the project's `joycraft.yaml`
