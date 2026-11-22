@@ -94,6 +94,13 @@ export function focusedCommand({ root, spec, config }) {
     const missing = [!template && 'tests.focused is not recorded in joycraft.yaml', files.length === 0 && 'the spec has no present check input'].filter(Boolean);
     return { focused: null, note: `No focused command: ${missing.join(' and ')}.` };
   }
+  const argv = templateArgv(template, files);
+  return { focused: { command: argv.map(shellQuote).join(' '), argv } };
+}
+
+/** The argv of a `tests.focused` template for these files: shell words, with
+ * `{files}` expanded in place, or the files appended when it has no `{files}`. */
+export function templateArgv(template, files) {
   const words = templateWords(template);
   const expand = word => {
     const at = word.indexOf('{files}');
@@ -103,8 +110,7 @@ export function focusedCommand({ root, spec, config }) {
     expanded[expanded.length - 1] += word.slice(at + '{files}'.length);
     return expanded.flatMap((each, index) => (index === expanded.length - 1 ? expand(each) : [each]));
   };
-  const argv = words.some(word => word.includes('{files}')) ? words.flatMap(expand) : [...words, ...files];
-  return { focused: { command: argv.map(shellQuote).join(' '), argv } };
+  return words.some(word => word.includes('{files}')) ? words.flatMap(expand) : [...words, ...files];
 }
 
 let receiptCounter = 0;

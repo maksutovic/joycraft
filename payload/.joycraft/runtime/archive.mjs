@@ -1,5 +1,6 @@
-import { execFileSync, spawnSync } from 'node:child_process';
-import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
+import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, rmdirSync, writeFileSync } from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { boundQueueForSubject, briefDecisionRecords, canonical, featureFolderMatches, isObject, isSha256, localPath, nonempty, normalizedQueueForSubject, parseJson, readLocal, readQueue, relativePath, requireValue, scopedRequirementForSubject, sha256, specStatus, subjectIdentity, validateIndependentReview } from './identity.mjs';
@@ -7,6 +8,7 @@ import { validateEvidence } from './evidence.mjs';
 import { validateOwnerAcceptance, validateWaiver } from './completion.mjs';
 import { readConfig, workPaths } from './config.mjs';
 import { isTestPath } from './test-changes.mjs';
+import { templateArgv } from './dispatch-start.mjs';
 
 const featureName = value => {
   requireValue(typeof value === 'string' && /^[a-z0-9][a-z0-9-]*$/.test(value), 'Feature must be a lowercase slug');
@@ -498,7 +500,12 @@ function replayManifest(plan) {
   return { schemaVersion: 1, kind: 'joycraft-archive-replay', feature: plan.feature, archivedAt: new Date().toISOString(), phase: plan.phase, source: plan.source, evidence: plan.evidence, ...(plan.reconciliation ? { reconciliation: plan.reconciliation } : {}), ...(plan.asIs ? { asIs: { ...plan.asIs, sha256: sha256(Buffer.from(unverifiedNote(plan))) } } : {}), durableContext: plan.attestation.durableContext, hostSession: plan.attestation.host.sessionId, historical: plan.historical, files: map };
 }
 
-const namesFolder = source => new RegExp(`(?<![\\w-])${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`);
+// The feature folder as the project names it: its own features home, bare or after ./, never
+// inside a longer path (packages/app/docs/features/x), and ending at a path boundary, so
+// docs/features/x.old and docs/features/x-two are other folders.
+const namesFolder = source => new RegExp(`(?:(?<![\\w./-])|(?<=(?<![\\w./-])\\./))${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?=$|/|[^\\w.-]|\\.(?!\\w))`);
+// A migration may already be applied somewhere: archive lists it, never rewrites it.
+const isMigrationPath = file => /(^|\/)migrations\//.test(file);
 
 /**
  * Tracked non-Markdown files outside the features and archive folders that name
@@ -516,7 +523,7 @@ function namedFiles(root, source) {
     let text;
     try { if (!lstatSync(path.join(root, file)).isFile()) continue; text = readFileSync(path.join(root, file), 'utf8'); } catch { continue; }
     const line = text.split('\n').findIndex(each => names.test(each));
-    if (line >= 0) found.push({ path: file, line: line + 1, test: isTestPath(file) });
+    if (line >= 0) found.push({ path: file, line: line + 1, test: isTestPath(file), ...(isMigrationPath(file) ? { reportOnly: true } : {}) });
   }
   return found.sort((a, b) => Number(b.test) - Number(a.test) || a.path.localeCompare(b.path));
 }
@@ -529,48 +536,155 @@ function planRewrite(root, plan, rewrite) {
   let files;
   try { files = [...new Set(rewrite.map(relativePath))]; } catch (error) { throw refusal(error.message); }
   for (const file of files) if (!listed.has(file)) throw refusal(`--rewrite ${file} is not a file the archive plan lists as naming ${plan.source}; listed: ${[...listed.keys()].join(', ') || 'none'}`);
+  for (const file of files) if (listed.get(file).reportOnly) throw refusal(`--rewrite ${file} refused: a migration may already be applied, so archive lists it and never rewrites it; nothing was edited`);
   let focused;
   try { focused = readConfig(root).tests.focused; } catch (error) { throw refusal(error.message); }
   if (!focused) throw refusal('--rewrite needs tests.focused in joycraft.yaml, the command that runs the rewritten tests; nothing was edited');
   // The runner gets the rewritten tests; when none is a test, every rewritten file.
   const targets = files.filter(file => listed.get(file).test);
   const run = targets.length ? targets : files;
-  const words = focused.trim().split(/\s+/);
-  const argv = words.includes('{files}') ? words.flatMap(word => (word === '{files}' ? run : [word])) : [...words, ...run];
+  let argv;
+  try { argv = templateArgv(focused, run); } catch (error) { throw refusal(error.message); }
   return { files: files.map(file => ({ path: file, before: readFileSync(path.join(root, file)) })), argv };
 }
 
-/** After the move: rewrite the folder path in the listed files and run them through evidence.mjs. */
-function rewriteAndTest(root, plan, rewrite) {
+/** The machine-local folder, made git-ignored when archive creates it. */
+function ensureLocal(root) {
+  const local = path.join(realpathSync(root), '.joycraft/local');
+  if (!existsSync(local)) { mkdirSync(local, { recursive: true, mode: 0o700 }); writeFileSync(path.join(local, '.gitignore'), '*\n', { flag: 'wx', mode: 0o600 }); }
+  return local;
+}
+
+/**
+ * The pending record of an `--apply --rewrite`: written before the move and cleared only after
+ * a green run or a finished hold, so an interrupted run (even SIGKILL) leaves the original bytes
+ * and both paths behind. Any later archive call restores from it and reports held.
+ */
+const pendingFile = folder => `.joycraft/local/archive-pending/${folder}.json`;
+
+function writePending(root, record) {
+  ensureLocal(root);
+  const target = path.join(realpathSync(root), pendingFile(path.posix.basename(record.source)));
+  mkdirSync(path.dirname(target), { recursive: true, mode: 0o700 });
+  const temporary = `${target}.${process.pid}`;
+  writeFileSync(temporary, `${JSON.stringify(record)}\n`, { mode: 0o600 });
+  renameSync(temporary, target);
+}
+
+const clearPending = (root, source) => rmSync(path.join(realpathSync(root), pendingFile(path.posix.basename(source))), { force: true });
+
+/** Git's porcelain status lines, or null without Git. */
+function gitStatus(root) {
+  if (!gitRoot(root)) return null;
+  return gitIn(root, ['status', '--porcelain', '--untracked-files=all']).split('\n').filter(Boolean);
+}
+
+/** Paths whose status differs from `before`: what the red test itself changed. */
+function changedSince(root, before) {
+  const after = gitStatus(root);
+  if (!before || !after) return [];
+  const known = new Set(before);
+  return after.filter(line => !known.has(line)).map(line => line.slice(3));
+}
+
+/** The folders of the archive home that do not exist yet, outermost first. */
+function missingHome(root) {
+  const missing = [];
+  let current = '';
+  for (const part of workPaths(root).archive.split('/')) {
+    current = current ? `${current}/${part}` : part;
+    if (!existsSync(path.join(realpathSync(root), current))) missing.push(current);
+  }
+  return missing;
+}
+
+function removeCreatedHome(root, created = []) {
+  for (const folder of [...created].reverse()) {
+    const local = path.join(realpathSync(root), folder);
+    try { if (existsSync(local) && readdirSync(local).length === 0) rmdirSync(local); } catch { /* left for the user */ }
+  }
+}
+
+/** Put the listed files back byte for byte, the feature folder back at its source, and remove what archive created. */
+function restorePending(root, record) {
+  for (const file of record.files) {
+    const bytes = Buffer.from(file.bytes, 'base64');
+    requireValue(sha256(bytes) === file.sha256, `The pending archive record is damaged for ${file.path}; restore it from Git`);
+    writeFileSync(projectTarget(root, file.path), bytes);
+  }
+  const sourceLocal = projectTarget(root, record.source);
+  for (const holder of [record.destination, record.stage].filter(Boolean)) {
+    const local = projectTarget(root, holder), feature = path.join(local, 'feature');
+    if (!existsSync(sourceLocal) && existsSync(feature)) renameSync(feature, sourceLocal);
+    if (existsSync(sourceLocal) && existsSync(local)) rmSync(local, { recursive: true, force: true });
+  }
+  requireValue(existsSync(sourceLocal), `The feature folder could not be moved back to ${record.source}; it is not at ${record.destination} or ${record.stage}`);
+  removeCreatedHome(root, record.createdHome);
+  clearPending(root, record.source);
+}
+
+/** A pending record left by an interrupted rewrite: restore from it and hold. Null when none. */
+function recoverPending(root, folder) {
+  const file = path.join(realpathSync(root), pendingFile(folder));
+  if (!existsSync(file)) return null;
+  const record = parseJson(readFileSync(file), pendingFile(folder));
+  requireValue(isObject(record) && record.kind === 'joycraft-archive-pending' && Array.isArray(record.files), `The pending archive record is malformed: ${pendingFile(folder)}`);
+  restorePending(root, record);
+  return { status: 'held', reason: 'interrupted', source: record.source, destination: record.destination, rewritten: record.files.map(each => each.path), testChanged: changedSince(root, record.statusBefore),
+    message: `An earlier archive --apply --rewrite stopped before its tests finished. The listed files were restored byte for byte and the feature folder is back at ${record.source}; nothing is archived. Archive again.` };
+}
+
+/**
+ * After the move: rewrite the folder path in the listed files and run them through evidence.mjs.
+ * A SIGINT, SIGTERM or SIGHUP during the run stops the test, restores and moves back, then exits.
+ */
+async function rewriteAndTest(root, plan, rewrite, record) {
   const names = new RegExp(namesFolder(plan.source).source, 'g');
   const target = `${plan.destination}/feature`;
   for (const file of rewrite.files) writeFileSync(path.join(root, file.path), file.before.toString('utf8').replace(names, target));
-  const local = path.join(realpathSync(root), '.joycraft/local');
-  if (!existsSync(local)) { mkdirSync(local, { recursive: true, mode: 0o700 }); writeFileSync(path.join(local, '.gitignore'), '*\n', { flag: 'wx', mode: 0o600 }); }
+  ensureLocal(root);
   const receipt = `.joycraft/local/receipts/archive-${plan.feature}-${new Date().toISOString().replace(/[-:.]/g, '')}.log`;
   const evidence = path.join(path.dirname(fileURLToPath(import.meta.url)), 'evidence.mjs');
-  const result = spawnSync(process.execPath, [evidence, 'run', '--receipt', receipt, '--', ...rewrite.argv], { cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+  const child = spawn(process.execPath, [evidence, 'run', '--receipt', receipt, '--', ...rewrite.argv], { cwd: root, stdio: ['ignore', 'pipe', 'pipe'] });
+  let stdout = '', stderr = '';
+  child.stdout.on('data', chunk => { stdout += chunk; });
+  child.stderr.on('data', chunk => { stderr += chunk; });
+  const closed = new Promise((resolve, reject) => { child.once('error', reject); child.once('close', code => resolve(code)); });
+  const signals = ['SIGINT', 'SIGTERM', 'SIGHUP'];
+  let stopping = false;
+  const stop = signal => {
+    if (stopping) return;
+    stopping = true;
+    child.kill('SIGTERM');
+    const force = setTimeout(() => child.kill('SIGKILL'), 5000);
+    const finish = () => {
+      clearTimeout(force);
+      let note = 'the listed files were restored and the feature folder moved back';
+      try { restorePending(root, record); } catch (error) { note = `${error.message}; the pending record ${pendingFile(path.posix.basename(plan.source))} remains, so the next archive call restores from it`; }
+      process.stderr.write(`Archive interrupted by ${signal}: ${note}. Nothing is archived.\n`);
+      process.exit(128 + (os.constants.signals[signal] ?? 1));
+    };
+    closed.then(finish, finish);
+  };
+  for (const signal of signals) process.on(signal, stop);
+  let status;
+  try { status = await closed; } finally { if (!stopping) for (const signal of signals) process.off(signal, stop); }
+  if (stopping) await new Promise(() => {});
   let parsed = null;
-  try { parsed = JSON.parse(result.stdout); } catch { /* A refusal prints no result. */ }
-  return { receipt, command: rewrite.argv.join(' '), exitCode: parsed?.command?.exitCode ?? result.status, ...(parsed ? {} : { error: (result.stderr ?? '').trim() }) };
+  try { parsed = JSON.parse(stdout); } catch { /* A refusal prints no result. */ }
+  return { receipt, command: rewrite.argv.join(' '), exitCode: parsed?.command?.exitCode ?? status, ...(parsed ? {} : { error: stderr.trim() }) };
 }
 
-/** Put the rewritten files back byte for byte and the feature folder back at its source. */
-function holdArchive(root, plan, rewrite) {
-  for (const file of rewrite.files) writeFileSync(path.join(root, file.path), file.before);
-  const destinationLocal = projectTarget(root, plan.destination);
-  renameSync(path.join(destinationLocal, 'feature'), projectTarget(root, plan.source));
-  rmSync(destinationLocal, { recursive: true, force: true });
-}
-
-export function archiveFeature(options) {
+export async function archiveFeature(options) {
+  const root = options.root ?? process.cwd();
+  const recovered = recoverPending(root, resolveFolder(root, featureName(options.feature)));
+  if (recovered) return recovered;
   const plan = previewArchiveFeature(options);
   if (plan.existing) return { status: 'archived', unchanged: true, destination: plan.destination, manifest: plan.manifest, historical: plan.historical, ...(plan.unverified ? { unverified: plan.unverified } : {}) };
   const notNeeded = options.asIs === true && !plan.asIs ? { asIs: 'not-needed' } : {};
   const rewriteList = options.rewrite ?? [];
   if (rewriteList.length && options.apply !== true) throw refusal('--rewrite needs --apply');
   if (options.apply !== true) return { status: 'preview', plan, ...notNeeded };
-  const root = options.root ?? process.cwd();
   const rewrite = rewriteList.length ? planRewrite(root, plan, rewriteList) : null;
   // Revalidate every input immediately before changing paths, so a preview cannot race a writer.
   const fresh = previewArchiveFeature({ ...options, root, apply: false });
@@ -578,6 +692,10 @@ export function archiveFeature(options) {
   const stage = `${workPaths(root).archive}/.${path.posix.basename(plan.destination)}.staging-${process.pid}-${Date.now()}`;
   const stageLocal = projectTarget(root, stage), destinationLocal = projectTarget(root, plan.destination), sourceLocal = localDirectory(root, plan.source);
   requireValue(!existsSync(stageLocal) && !existsSync(destinationLocal), 'Archive collision detected before move');
+  const createdHome = missingHome(root);
+  const pending = rewrite && { schemaVersion: 1, kind: 'joycraft-archive-pending', feature: plan.feature, source: plan.source, destination: plan.destination, stage, createdHome, statusBefore: gitStatus(root),
+    files: rewrite.files.map(file => ({ path: file.path, sha256: sha256(file.before), bytes: file.before.toString('base64') })) };
+  if (pending) writePending(root, pending);
   mkdirSync(stageLocal, { recursive: true, mode: 0o700 });
   try {
     writeFileSync(path.join(stageLocal, 'archive-recovery.json'), `${JSON.stringify({ schemaVersion: 1, kind: 'joycraft-archive-recovery', feature: plan.feature, source: plan.source, destination: plan.destination, stage, phase: plan.phase, featureFiles: plan.featureFiles, copiedEvidence: plan.copiedEvidence, requirementHistory: plan.requirementHistory }, null, 2)}\n`, { flag: 'wx', mode: 0o600 });
@@ -607,6 +725,7 @@ export function archiveFeature(options) {
     try { if (existsSync(stagedFeature) && !existsSync(sourceLocal)) renameSync(stagedFeature, sourceLocal); } catch { restored = false; }
     restored = restored && existsSync(sourceLocal) && !existsSync(stagedFeature);
     if (restored && existsSync(stageLocal)) rmSync(stageLocal, { recursive: true, force: true });
+    if (restored) { removeCreatedHome(root, createdHome); if (pending) clearPending(root, plan.source); }
     const recovery = restored ? 'The live feature path was preserved.' : `The staged feature remains at ${stage}; restore it manually before retrying.`;
     throw new Error(`Archive stopped without accepting new completion: ${error.message}. ${recovery}`);
   }
@@ -614,13 +733,14 @@ export function archiveFeature(options) {
   // the move and the edits are undone and nothing is archived.
   let tested;
   if (rewrite) {
-    try { tested = rewriteAndTest(root, plan, rewrite); }
-    catch (error) { holdArchive(root, plan, rewrite); throw new Error(`Archive stopped before accepting the move: ${error.message}. The feature folder and the listed files were restored.`); }
+    try { tested = await rewriteAndTest(root, plan, rewrite, pending); }
+    catch (error) { restorePending(root, pending); throw new Error(`Archive stopped before accepting the move: ${error.message}. The feature folder and the listed files were restored.`); }
     if (tested.exitCode !== 0) {
-      holdArchive(root, plan, rewrite);
-      return { status: 'held', source: plan.source, destination: plan.destination, rewritten: rewrite.files.map(file => file.path), test: tested,
+      restorePending(root, pending);
+      return { status: 'held', source: plan.source, destination: plan.destination, rewritten: rewrite.files.map(file => file.path), test: tested, testChanged: changedSince(root, pending.statusBefore),
         reason: `The rewritten tests failed (${tested.command}); the files were restored and nothing moved. Read ${tested.receipt}, fix the tests or leave them out of --rewrite, and archive again.` };
     }
+    clearPending(root, plan.source);
   }
   let links;
   try { links = relinkLive(root, plan); } catch (error) { links = { error: error.message }; }
@@ -811,7 +931,7 @@ function argumentsFor(argv) {
   return flags;
 }
 
-export function main(argv = process.argv.slice(2)) {
+export async function main(argv = process.argv.slice(2)) {
   if (argv[0] === 'ignore') {
     requireValue(argv.length === 2 && ['--check', '--apply', '--decline'].includes(argv[1]), 'Usage: archive.mjs ignore --check | --apply | --decline');
     const result = archiveIgnore({ apply: argv[1] === '--apply', decline: argv[1] === '--decline' });
@@ -819,7 +939,7 @@ export function main(argv = process.argv.slice(2)) {
     return result;
   }
   const flags = argumentsFor(argv);
-  const result = archiveFeature({ feature: flags['--feature'], phase: flags['--phase'], attestation: flags['--attestation'], reconciliation: flags['--reconciliation'], asIs: flags['--as-is'] === true, ownerInstruction: flags['--owner-instruction'], apply: flags['--apply'] === true, rewrite: flags['--rewrite'] });
+  const result = await archiveFeature({ feature: flags['--feature'], phase: flags['--phase'], attestation: flags['--attestation'], reconciliation: flags['--reconciliation'], asIs: flags['--as-is'] === true, ownerInstruction: flags['--owner-instruction'], apply: flags['--apply'] === true, rewrite: flags['--rewrite'] });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (result.status === 'held') process.exitCode = 2;
   // The archive stands; exit 3 tells a caller that only the after-archive hook failed.
@@ -828,5 +948,5 @@ export function main(argv = process.argv.slice(2)) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  try { main(); } catch (error) { process.stderr.write(`Archive stopped: ${error.message}\n`); process.exitCode = error.exitCode ?? 1; }
+  main().catch(error => { process.stderr.write(`Archive stopped: ${error.message}\n`); process.exitCode = error.exitCode ?? 1; });
 }
