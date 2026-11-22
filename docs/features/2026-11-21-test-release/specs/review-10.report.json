@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "66d8224ce86f1c82109394a0a1e4ab83640fc843",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 10,
+    "specPath": "docs/features/2026-11-21-test-release/specs/10-load-line.md",
+    "criteria": [
+      {
+        "id": "spec-10-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/10-load-line.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-10-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/10-load-line.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "load-guidance",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "machine-slot"
+          ]
+        },
+        "sha256": "71e7109ef2c0b944c78f53df5f62c758aedcc77a1ee99a7117df34123079743c",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "3f2ddfa60cd8bc58ff3c43812c9a084a4342df633194c5f58bd97fe636732d31",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/10-load-line.md",
+        "kind": "requirement",
+        "sha256": "7ce65eaa645510dd5496f101eec7116d30e82bf8703e72fc971d65fa2be13fb4",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/status.mjs",
+        "kind": "code",
+        "sha256": "9c658523aad0eb1df3829f64697fab53062ecc467b696b81ea6864bf5b7046da",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-status-load.test.ts",
+        "kind": "check",
+        "sha256": "f6e0b74cad73b4c44786e6582e89f4bf737f6b123da2599c6da85b1887810bea",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          3,
+          10
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "load-guidance",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "machine-slot"
+          ]
+        }
+      ]
+    },
+    "identity": "3060e8e9a83e8bd4ab439c53377b898fee192a1cf74f22acb5dac291044e98a8"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a0bee06bbb7735d8f"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "acbdcad616fc48987"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-10-1-load-line",
+      "subjectIdentity": "3060e8e9a83e8bd4ab439c53377b898fee192a1cf74f22acb5dac291044e98a8",
+      "criteria": [
+        "spec-10-1"
+      ],
+      "representativeInput": "status.mjs --root <fixture> with feature-folder .log receipts and report-cited receipts (status.mjs:91-117 at c847ec4)",
+      "expected": "With 3 receipts, 2 loaded:true, the feature row carries load = \"2 of 3 test runs started above the core count (<cores> cores). Cap workers per run with the runner's own flag; see setup.\" One line; a receipt cited twice counts once.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-10-1] passes (2/2 tests, exit 0): 3 receipts (2 in the feature folder, 1 outside cited by two reports and also re-citing a folder receipt) give exactly the spec sentence with \"2 of 3\" and \"(14 cores)\".",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-tests.log",
+              "sha256": "68afdcc4201ee98ba855e6cb9f6bcf749e0cfec5348a3aab65d8ba73ba5ba79d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-status-load.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe via the CLI: 3 folder receipts, 2 loaded, cores 8 give the exact sentence \"2 of 3 ... (8 cores) ...\"; it contains no newline and names numbers. A receipt written by the real payload evidence runner is read (on this machine it was loaded: \"1 of 1 ... (14 cores)\"). A \"./\"-prefixed citation of a folder receipt counts once; missing, ../ and absolute citations are ignored without a crash; malformed footer JSON and a footer that is not the last line are not counted. Status writes no file (git status --porcelain --ignored unchanged).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.log",
+              "sha256": "29145923dccd50620787d11688f58f833e8078dec775c5edd652940d773646fc"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.mjs",
+              "sha256": "a737cf5019a43bb37dd9c3fcd28a460a3fb7d358191513e9856bc441069daa68"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-10-2-no-line",
+      "subjectIdentity": "3060e8e9a83e8bd4ab439c53377b898fee192a1cf74f22acb5dac291044e98a8",
+      "criteria": [
+        "spec-10-2"
+      ],
+      "representativeInput": "status.mjs --root <fixture> with only loaded:false/null receipts, and with footerless old receipts",
+      "expected": "No load field and no other change in the output.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-10-2] passes: loaded:false plus loaded:null receipts, and two footerless receipts, each give a feature row without a load property.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-tests.log",
+              "sha256": "68afdcc4201ee98ba855e6cb9f6bcf749e0cfec5348a3aab65d8ba73ba5ba79d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-status-load.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: the feature row with two footerless receipts and one loaded:false receipt is byte-identical (JSON) to the row with no receipts at all. With one footerless and one loaded receipt, the footerless one is not counted in m (\"1 of 1\").",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.log",
+              "sha256": "29145923dccd50620787d11688f58f833e8078dec775c5edd652940d773646fc"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.mjs",
+              "sha256": "a737cf5019a43bb37dd9c3fcd28a460a3fb7d358191513e9856bc441069daa68"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-zero-cores",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/status.mjs:114",
+      "summary": "When a loaded footer has no integer cores, the line prints \"(0 cores)\" (probe INFO line). evidence.mjs always writes cores, so only a hand-made or foreign footer hits it; consider omitting the parenthesis or skipping such footers.",
+      "assumption": "Footers come from evidence.mjs, which always records cores; the spec does not decide this case."
+    },
+    {
+      "id": "f2-max-cores",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/status.mjs:114",
+      "summary": "When loaded receipts come from machines with different core counts the line names the largest one. The spec names one <cores> value and does not decide mixed machines.",
+      "assumption": "One machine per feature queue is the usual case."
+    },
+    {
+      "id": "f3-m-is-footered-runs",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/status.mjs:111",
+      "summary": "m counts only receipts with a valid footer, not every .log; old footerless receipts and non-test logs are excluded. This matches the spec check (3 footered receipts) and is the reading closest to the brief (a number about runs whose load is known).",
+      "assumption": "A footerless receipt is not a known test run for load purposes."
+    }
+  ],
+  "limits": [
+    "Installed .joycraft/runtime/evidence.mjs is older than the payload copy, so this review's own receipts carry no joycraft-evidence footer; the payload status.mjs and evidence.mjs were reviewed and exercised.",
+    "Output of status.mjs is JSON; the \"line\" is the per-feature load string field. No human-text rendering exists to check.",
+    "Test changes: spec says none; the commit adds only a new test file (tests/runtime-status-load.test.ts) and changes no existing test file."
+  ],
+  "createdAt": "2026-11-22T02:28:08.109Z"
+}

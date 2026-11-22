@@ -1,6 +1,6 @@
 ---
 id: 10
-status: in-review
+status: done
 ---
 # The session-end status prints one load line only when runs were loaded
 

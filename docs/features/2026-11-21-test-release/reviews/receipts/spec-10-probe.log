@@ -1,0 +1,17 @@
+PASS spec check: exit 0
+PASS spec check: exact sentence :: "2 of 3 test runs started above the core count (8 cores). Cap workers per run with the runner's own flag; see setup."
+PASS spec check: one line, no newline
+PASS spec check: names numbers
+PASS real receipt: status exits 0
+PASS real receipt: load absent or "<n> of 1" :: "1 of 1 test runs started above the core count (14 cores). Cap workers per run with the runner's own flag; see setup."
+PASS no loaded: no load field
+PASS no loaded: rest of output identical to no receipts
+PASS mixed: footerless not in m :: "1 of 1 test runs started above the core count (8 cores). Cap workers per run with the runner's own flag; see setup."
+PASS bad cites: exit 0
+PASS bad cites: ./-prefixed duplicate counted once :: "1 of 1 test runs started above the core count (8 cores). Cap workers per run with the runner's own flag; see setup."
+PASS malformed footers: exit 0 and no load
+PASS read only: no new or changed files after status :: !! docs/features/demo/receipts/
+ -> !! docs/features/demo/receipts/
+
+INFO loaded footer without cores gives: "1 of 1 test runs started above the core count (0 cores). Cap workers per run with the runner's own flag; see setup."
+all checks passed
