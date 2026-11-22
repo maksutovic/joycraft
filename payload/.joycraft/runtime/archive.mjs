@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { boundQueueForSubject, briefDecisionRecords, canonical, featureFolderMatches, isObject, isSha256, localPath, nonempty, normalizedQueueForSubject, parseJson, readLocal, readQueue, relativePath, requireValue, scopedRequirementForSubject, sha256, specStatus, subjectIdentity, validateIndependentReview } from './identity.mjs';
 import { validateEvidence } from './evidence.mjs';
 import { validateOwnerAcceptance, validateWaiver } from './completion.mjs';
+import { docsRoot } from './cleanup.mjs';
 import { readConfig, workPaths } from './config.mjs';
 import { isTestPath } from './test-changes.mjs';
 
@@ -498,15 +499,17 @@ function replayManifest(plan) {
   return { schemaVersion: 1, kind: 'joycraft-archive-replay', feature: plan.feature, archivedAt: new Date().toISOString(), phase: plan.phase, source: plan.source, evidence: plan.evidence, ...(plan.reconciliation ? { reconciliation: plan.reconciliation } : {}), ...(plan.asIs ? { asIs: { ...plan.asIs, sha256: sha256(Buffer.from(unverifiedNote(plan))) } } : {}), durableContext: plan.attestation.durableContext, hostSession: plan.attestation.host.sessionId, historical: plan.historical, files: map };
 }
 
-// The feature folder as the project names it: its own features home, bare or after ./, never
-// inside a longer path (packages/app/docs/features/x), and ending at a path boundary, so
-// docs/features/x.old and docs/features/x-two are other folders.
+// The feature folder as the project names it: its own features home, bare, after ./, after one
+// or more ../ or after }/ (`${root}/docs/...`), never inside a longer path
+// (packages/app/docs/features/x), and ending at a path boundary, so docs/features/x.old and
+// docs/features/x-two are other folders.
 const escaped = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const pathStart = '(?:(?<![\\w./-])|(?<=(?<![\\w./-])\\./))';
+const pathStart = '(?:(?<![\\w./-])|(?<=(?<![\\w./-])(?:\\./|(?:\\.\\./)+))|(?<=\\}/))';
 const namesFolder = source => new RegExp(`${pathStart}${escaped(source)}(?=$|/|[^\\w.-]|\\.(?!\\w))`);
 // A dated folder name (YYYY-MM-DD-...) is unique enough to match alone: as a whole quoted token
-// ('docs', 'features', '<name>') or as the first part of a path ('<name>/brief.md').
-const namesDated = name => new RegExp(`(?<=["'\`])${escaped(name)}(?=["'\`])|${pathStart}${escaped(name)}(?=/)`);
+// ('docs', 'features', '<name>'), or at a path start as '<name>/brief.md' or, after the features
+// folder's last segment, as 'features/<name>/brief.md'.
+const namesDated = (name, home) => new RegExp(`(?<=["'\`])${escaped(name)}(?=["'\`])|${pathStart}(?:${escaped(home)}/)?${escaped(name)}(?=/)`);
 // A migration may already be applied somewhere: archive marks it so the agent leaves it as it is.
 const isMigrationPath = file => /(^|\/)migrations\//.test(file);
 
@@ -519,7 +522,7 @@ function namedFiles(root, source) {
   if (!gitRoot(root)) return [];
   const { features, archive } = workPaths(root);
   const folder = path.posix.basename(source);
-  const patterns = [namesFolder(source), ...(/^\d{4}-\d{2}-\d{2}-/.test(folder) ? [namesDated(folder)] : [])];
+  const patterns = [namesFolder(source), ...(/^\d{4}-\d{2}-\d{2}-/.test(folder) ? [namesDated(folder, path.posix.basename(features))] : [])];
   // git grep reads only the text files that hold the folder name, never every tracked file or a binary.
   let candidates;
   try { candidates = gitIn(root, ['grep', '-I', '-l', '-z', '-F', '-e', folder]).split('\0').filter(Boolean); }
@@ -552,10 +555,10 @@ export function archiveFeature(options) {
   const notNeeded = options.asIs === true && !plan.asIs ? { asIs: 'not-needed' } : {};
   if (options.apply !== true) return { status: 'preview', plan, ...notNeeded };
   const root = options.root ?? process.cwd();
-  // Another archive of this folder that moves it while this run checks makes these checks fail
-  // on a vanished path; that is a refusal (nothing was changed), not a crash.
+  // A folder that vanishes while this run checks makes these checks fail on a missing path; that
+  // is a refusal (nothing was changed), not a crash. The cause is not known here, so none is named.
   const movedMeanwhile = error => error?.exitCode === undefined && !existsSync(projectTarget(root, plan.source))
-    ? refusal(`Another archive --apply moved ${plan.source} while this run was checking it; this run changed nothing. Run the archive preview to see the result`)
+    ? refusal(`${plan.source} is gone; this run changed nothing. Run the archive preview to see the result`)
     : error;
   let stage, stageLocal, destinationLocal, sourceLocal;
   try {
@@ -592,10 +595,10 @@ export function archiveFeature(options) {
   } catch (error) {
     const stagedFeature = path.join(stageLocal, 'feature');
     if (!existsSync(stagedFeature) && !existsSync(sourceLocal)) {
-      // This run never moved the feature folder, yet it is gone: another archive run moved it.
+      // This run never moved the feature folder, yet it is gone (another run or a person moved it).
       // This run's stage folder holds only copies, so it is removed.
       rmSync(stageLocal, { recursive: true, force: true });
-      throw refusal(`${plan.source} was moved by another archive run while this run was staging; this run never moved it, removed its own stage folder and changed nothing else. Run the archive preview to see the result`);
+      throw refusal(`${plan.source} is gone; this run never moved it, removed its own stage folder and changed nothing. Run the archive preview to see the result`);
     }
     let restored = true;
     try { if (existsSync(stagedFeature) && !existsSync(sourceLocal)) renameSync(stagedFeature, sourceLocal); } catch { restored = false; }
@@ -608,14 +611,6 @@ export function archiveFeature(options) {
   try { links = relinkLive(root, plan); } catch (error) { links = { error: error.message }; }
   const afterArchive = runAfterArchive(root, plan);
   return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), ...notNeeded, ...nextSteps(plan), links, ...(afterArchive ? { afterArchive } : {}) };
-}
-
-/** The common parent folder of the context, features and archive homes ('.' when they share none). */
-function docsRoot(root) {
-  const parts = Object.values(workPaths(root)).map(folder => folder.split('/'));
-  const common = [];
-  for (let index = 0; parts.every(list => index < list.length - 1 && list[index] === parts[0][index]); index += 1) common.push(parts[0][index]);
-  return common.join('/') || '.';
 }
 
 const under = (file, folder) => folder === '.' || file === folder || file.startsWith(`${folder}/`);
@@ -682,7 +677,7 @@ const entryFile = file => ['AGENTS.md', 'CLAUDE.md'].includes(path.posix.basenam
  */
 function relinkLive(root, plan) {
   const { source, destination } = plan;
-  const docs = docsRoot(root), { features, archive } = workPaths(root);
+  const paths = workPaths(root), docs = docsRoot(paths), { features, archive } = paths;
   const evidence = new Set([...plan.copiedEvidence.map(file => file.path), ...plan.evidence.flatMap(decision => [decision.path, decision.report?.path].filter(Boolean))]);
   const names = new RegExp(`(?<![\\w-])${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`);
   const result = { rewritten: [], namedInMarkdown: [], namedInOtherFiles: [] };

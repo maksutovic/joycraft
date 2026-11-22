@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
-// Spec: docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md
+// Specs: docs/features/2026-11-21-test-release/specs/24-archive-tests-text.md and 32-archive-list-followups.md
 const root = join(__dirname, '..');
 const payload = join(root, 'payload');
 const raw = (path: string) => readFileSync(join(payload, path), 'utf8');
@@ -37,6 +37,16 @@ describe('archive tests text (spec 24)', () => {
     expect(text.split(' ').length).toBeLessThanOrEqual(115);
   });
 
+  it('[AC:spec-32-3] a second short archive.md paragraph after the spec 24 one covers the skip and no-gate steps', () => {
+    const text = paragraph(ARCHIVE, 'more than a path change');
+    expect(text).toMatch(/no gate recorded/i);
+    expect(text).toMatch(/asserts/);
+    expect(text.trim().split(' ').length).toBeLessThanOrEqual(45);
+    const blocks = raw(ARCHIVE).split(/\n\s*\n/);
+    const first = blocks.findIndex(each => each.includes('`namedFiles`'));
+    expect(blocks[first + 1]).toContain('more than a path change');
+  });
+
   it('[AC:spec-24-2] the session-end skill fixes the listed tests and commits them with the move', () => {
     const text = paragraph(SKILL, 'docs: archive <slug>');
     expect(text).toMatch(/After `--apply`, fix the tests the preview listed in `namedFiles` \(see the archive guidance\), then commit the move and those edits in their own commit, `docs: archive <slug>`\./);
@@ -46,7 +56,7 @@ describe('archive tests text (spec 24)', () => {
   it('[AC:spec-24-3] testing-review names the archive exception and the featurePaths fix', () => {
     const opening = paragraph(REVIEW, 'never edits or deletes a test');
     expect(opening).toMatch(/exception: at archive, session end may change a folder path in a listed test/);
-    const item = paragraph(REVIEW, '(`featurePaths`)').split('\n').join(' ');
+    const item = paragraph(REVIEW, '(`featurePaths`)');
     expect(item).toMatch(/\(`featurePaths`\) is a follow-up finding; the fix is to move the file the test reads out of the feature folder/);
   });
 

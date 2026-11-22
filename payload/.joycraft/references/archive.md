@@ -103,8 +103,7 @@ Apply restores each accepted raw version under
 `evidence/requirements/<proof-hash>/<original-path>` in the archive. Different
 accepted versions or scopes remain distinct. Replay entries use
 `operation: "restored-from-git"` and retain the proof in `requirement`; replay
-verifies the raw bytes and their accepted projection without live Git history. The current brief and its amendment ledger move with
-the feature, alongside the separately restored older brief versions.
+verifies the raw bytes and their accepted projection without live Git history.
 
 ## Archive reconciliation for a changed acceptance record
 
@@ -160,8 +159,7 @@ Under an owner-authorized resolution, use this separate archive-only override:
 records. For an ordinary `none` or `requirement-scope` requirement whose accepted
 version survives outside HEAD history (for example after a squash merge), an
 entry may also name `acceptedCommit` as a full Git commit ID. The blob at that
-exact commit must reproduce the original accepted hash; the helper never waives
-missing bytes. The current external requirement is copied into the archive too,
+exact commit must reproduce the original accepted hash. The current external requirement is copied into the archive too,
 so the recorded current hash remains verifiable. `laterCommits` lists the path
 commits in `acceptedCommit..HEAD`, not necessarily later in time. `acceptedSha256` is copied from the original report's input;
 `currentSha256` pins raw current bytes, including acceptance metadata. One queue
@@ -169,8 +167,7 @@ edit may need an entry for each report whose dependency projection changed. Dupl
 uncovered or stale entries fail closed. A ledger's presence alone never enables
 the override, and its shape does not authenticate a human. The ledger may be
 uncommitted: preview pins its raw hash, apply rechecks it, and the archive keeps
-it byte-for-byte. Commit the archive through normal
-delivery. A renamed own spec or changed report subject
+it byte-for-byte. A renamed own spec or changed report subject
 path still fails; this override reconciles contents, not acceptance identities.
 
 ```sh
@@ -209,6 +206,10 @@ refused. Commit the edits with the move, one feature per commit. When a test
 stays red, move the folder back, delete the archive record folder, restore the
 changed files with Git until `git status` prints nothing, and report the feature
 as not archived. A path built in pieces from a variable is not listed.
+
+When a listed test needs more than a path change (fixture to move, spent check,
+uneditable file), skip that feature, write one line. Edit a listed non-test file
+only when a listed test asserts it. No gate recorded: run the changed tests.
 
 The staging directory receives `archive-recovery.json` before any copy or move,
 and the marker remains in the final archive as immutable move provenance. If the

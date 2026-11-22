@@ -162,6 +162,25 @@ describe('archive lists only (spec 30)', () => {
   });
 });
 
+describe('archive list follow-ups (spec 32)', () => {
+  it('[AC:spec-32-1] namedFiles lists the }/, ../, ../../ and features/<slug>/ forms and none of the five look-alikes', () => {
+    const root = fixture({ folder: dated, extra: {
+      'tests/root.test.ts': `const p = \`\${root}/${datedSource}/x\`;\n`,
+      'tests/up.test.ts': `const p = '../${datedSource}/x';\n`,
+      'tests/up-two.test.ts': `const p = '../../${datedSource}';\n`,
+      'tests/home.test.ts': `const p = 'features/${dated}/brief.md';\n`,
+      'scripts/nested.mjs': `export const p = 'packages/app/${datedSource}/brief.md';\n`,
+      'scripts/old.mjs': `export const p = '${datedSource}.old';\n`,
+      'scripts/two.mjs': `export const p = '${datedSource}-two';\n`,
+      'scripts/before.mjs': `export const p = 'x${dated}/brief.md';\n`,
+      'scripts/after.mjs': `export const p = '${dated}x/brief.md';\n`,
+    } });
+    const paths = listed(root).map((file: { path: string }) => file.path);
+    for (const file of ['tests/root.test.ts', 'tests/up.test.ts', 'tests/up-two.test.ts', 'tests/home.test.ts']) expect(paths, file).toContain(file);
+    for (const file of ['scripts/nested.mjs', 'scripts/old.mjs', 'scripts/two.mjs', 'scripts/before.mjs', 'scripts/after.mjs']) expect(paths, file).not.toContain(file);
+  });
+});
+
 // A preload that runs a whole second plain --apply inside this one at one point: when this run
 // checks for the destination again ('check'), or right before it moves the folder ('stage').
 const preloadHome = realpathSync(mkdtempSync(join(tmpdir(), 'jc-archive-race-')));
@@ -184,13 +203,14 @@ if (at) {
 
 describe('archive owner check of spec 13', () => {
   for (const at of ['check', 'stage']) {
-    it(`[owner-check-n1] [AC:spec-30-5] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (${at})`, () => {
+    it(`[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (${at})`, () => {
       const root = fixture();
       const out = join(root, '.joycraft/local/other.json');
       const loser = run(root, ['--apply'], { env: { NODE_OPTIONS: `--import=${preload}`, JC_RACE_AT: at, JC_RACE_OUT: out } });
       expect(JSON.parse(readFileSync(out, 'utf8'))).toMatchObject({ status: 'archived' });
       expect(loser.status, loser.stderr).toBe(2);
-      expect(loser.stderr).toMatch(/[Aa]nother archive/);
+      expect(loser.stderr).toContain('changed nothing');
+      expect(loser.stderr).toContain('is gone');
       expect(loser.stderr).not.toMatch(/manually/);
       expect(readdirSync(join(root, 'docs/archive'))).toEqual(['x']);
       expect(existsSync(join(root, 'docs/archive/x/feature/brief.md'))).toBe(true);

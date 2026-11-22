@@ -116,4 +116,13 @@ describe('archive rewrites live links', () => {
     expect(result.links.rewritten).toEqual([{ path: 'work/notes/README.md', line: 1, from: '../features/x/brief.md', to: '../history/x/feature/brief.md' }]);
     expect(result.links.namedInMarkdown).toEqual(['AGENTS.md', 'pkg/CLAUDE.md']);
   });
+  it('[AC:spec-32-5] with paths.context: docs the docs root is docs: a root README.md link stays and is listed, docs/guide.md is rewritten', () => {
+    const readme = '# Readme\n\n[x](docs/features/x/brief.md)\n';
+    const root = fixture({ 'joycraft.yaml': 'paths:\n  context: docs\n', 'README.md': readme, 'docs/guide.md': '[x](features/x/brief.md)\n' });
+    const result = apply(root);
+    expect(readFileSync(join(root, 'README.md'), 'utf8')).toBe(readme);
+    expect(result.links.namedInMarkdown).toContain('README.md');
+    expect(readFileSync(join(root, 'docs/guide.md'), 'utf8')).toBe('[x](archive/x/feature/brief.md)\n');
+    expect(result.links.rewritten).toEqual([{ path: 'docs/guide.md', line: 1, from: 'features/x/brief.md', to: 'archive/x/feature/brief.md' }]);
+  });
 });
