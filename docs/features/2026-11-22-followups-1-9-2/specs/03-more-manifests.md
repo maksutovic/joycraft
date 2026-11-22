@@ -1,6 +1,6 @@
 ---
 id: 3
-status: in-review
+status: done
 ---
 # jsconfig, deno.json and pnpm-workspace.yaml need the gate again under the docs root
 

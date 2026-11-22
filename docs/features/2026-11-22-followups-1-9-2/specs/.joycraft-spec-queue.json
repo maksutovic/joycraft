@@ -144,7 +144,7 @@
       "id": 3,
       "file": "03-more-manifests.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -211,6 +211,10 @@
       },
       "submitted": {
         "at": "2026-11-22T17:57:27.603Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-3.report.json",
+        "sha256": "90c762bf5a76edf9eb08c54990108339d9fdf5aa6fb66c2d323abd480a07cee1"
       }
     },
     {

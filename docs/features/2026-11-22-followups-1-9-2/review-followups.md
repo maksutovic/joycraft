@@ -8,3 +8,8 @@
 ## Spec 2 (PASS r1)
 - f1: the any-case backlog folder is tested through `new-doc` only; age-out uses the same `backlogFile`.
 - f2: every word of `run` counts, helpers included (`sh`, `cat`), so `sh rules.sh` printing `x: sh: not found` is still skipped; rare.
+
+## Spec 3 (PASS r2; round 1 went stale when spec 5 touched a shared check file)
+- f1: `delivery.md:49` "a clean `HEAD`" (was "a clean tree at `HEAD`") is slightly less exact; the point is a clean working tree.
+- f2: `delivery.md:56` dropped "so it stays a record" after the `probe.mjs.txt` instruction.
+- f3: commit 5022789 also carried spec 1's reviewer receipt (harmless).
