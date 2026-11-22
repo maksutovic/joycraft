@@ -1040,7 +1040,7 @@
         2,
         11
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -1122,6 +1122,10 @@
       },
       "submitted": {
         "at": "2026-11-22T02:54:26.153Z"
+      },
+      "ownerAcceptance": {
+        "path": "docs/features/2026-11-21-test-release/owner-acceptance-13.json",
+        "sha256": "3745ecb6cd6bd93dff34a6f62c1c15eb9cd588027d60f8962b68633c3465ad6f"
       }
     },
     {

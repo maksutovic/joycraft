@@ -1,6 +1,6 @@
 ---
 id: 13
-status: in-review
+status: done
 ---
 # The archive plan lists files that name the feature folder and fixes listed tests before the move
 
@@ -37,4 +37,4 @@ Anything in the brief's Scope and limits. Joycraft names no test runner: text sa
 
 ## Decision needed
 
-Review round 3 of 3 (review-13-r3.report.json) FAILED on f13r3-1 (a second archive call undoes a live run) and f13r3-2 (a save during staging is overwritten). The review limit is reached. Brief decision `archive-rewrite-route` (open) holds this spec and spec 24.
+Review round 3 of 3 (review-13-r3.report.json) FAILED on f13r3-1 (a second archive call undoes a live run) and f13r3-2 (a save during staging is overwritten). The review limit is reached. Max answered `archive-rewrite-route` = fix-and-accept, then `archive-accept-mechanism` = split: owner-accepted at the round-3 subject (owner-acceptance-13.json); the fixes are reviewed as spec 30.
