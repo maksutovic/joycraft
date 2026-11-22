@@ -90,6 +90,29 @@ describe('queue-check gate matching in prose (spec 27)', () => {
     }
   });
 
+  it('[review-27-1] an argument holding a dot or colon is a different command; a spaced or unspaced dash after the gate names it [review-27-2]', async () => {
+    const { namesCommand } = await import('../payload/.joycraft/runtime/queue-check.mjs');
+    const args: Array<[string, string]> = [
+      ['pnpm test', 'Check: pnpm test x.test.ts'],
+      ['pnpm test', 'Check: pnpm test add.test.ts passes.'],
+      ['cargo test', 'Check: cargo test a::b'],
+      ['cargo test', 'Check: cargo test parser::tests passes.'],
+      ['pytest', 'Check: pytest tests.py passes.'],
+    ];
+    for (const [gate, text] of args) expect(namesCommand(text, gate), text).toBe(false);
+    const named: Array<[string, string]> = [
+      ['pnpm verify', 'Check: run pnpm verify before merging.'],
+      ['pnpm verify', 'Check: pnpm verify — then read the log.'],
+      ['pnpm verify', 'Check: pnpm verify—then read.'],
+      ['pnpm verify', 'Check: pnpm verify–then read.'],
+      ['pnpm verify', 'Check: run pnpm verify first.'],
+    ];
+    for (const [gate, text] of named) expect(namesCommand(text, gate), text).toBe(true);
+    const result = check(fixture({ tests: { gate: 'pnpm test' }, acceptance: '- It works. Check: pnpm test add.test.ts passes.' }));
+    expect(result.gates).toHaveLength(0);
+    expect(result.stderr).not.toContain('gate-in-spec');
+  });
+
   it('[AC:spec-27-2] the gate gap ends with the spec-command next step; a missing-check gap still asks the user', () => {
     const gate = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance: '- It works. Check: run pnpm verify before merging.' }));
     expect(gate.gates).toHaveLength(1);

@@ -137,6 +137,8 @@ describe('evidence.mjs run --patch polish (spec 27)', () => {
       node('-e', "require('fs').appendFileSync('check.mjs', '// more\\n')"),
       ['git', '-c', 'user.name=t', '-c', 'user.email=t@example.com', 'commit', '-q', '--allow-empty', '-m', 'x'],
       ['git', '-c', 'user.name=t', '-c', 'user.email=t@example.com', 'stash', '-q'],
+      // [review-27-5] a new branch at the same commit changes only the symbolic HEAD.
+      ['git', 'checkout', '-q', '-b', 'other'],
     ];
     for (const command of commands) {
       const root = project();

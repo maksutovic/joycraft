@@ -307,25 +307,27 @@ function preparePatch(root, patch) {
   return { path: patch, prefix, sha256: sha256File(path.join(root, patch)), hashes: new Map(project.map(file => [file, sha256File(path.join(root, file))])), tree: treeState(root) };
 }
 
-/** What a run could change besides the patched files: the status, HEAD and the stash. */
+/** What a run could change besides the patched files: the status, HEAD (its commit and branch) and the stash. */
 function treeState(root) {
   const read = args => { try { return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }); } catch { return null; } };
   return {
     status: (read(['status', '--porcelain', '--untracked-files=all', '-z']) ?? '').split('\0').filter(Boolean),
     head: read(['rev-parse', '--verify', '-q', 'HEAD'])?.trim() ?? null,
+    // The branch HEAD names (empty when detached): a checkout -b at the same commit changes only this.
+    branch: read(['symbolic-ref', '-q', 'HEAD'])?.trim() ?? '',
     stash: read(['rev-parse', '--verify', '-q', 'refs/stash'])?.trim() ?? null,
   };
 }
 
 /** Reverse an applied fault. Restored only when every touched file has its hash from before and
- * the status (the new receipt left out), HEAD and refs/stash are as they were. */
+ * the status (the new receipt left out), HEAD's commit and branch and refs/stash are as they were. */
 function restorePatch(root, fault, receipt) {
   try { execFileSync('git', ['apply', '-R', '--', fault.path], { cwd: root, stdio: 'ignore' }); } catch { /* the hashes decide */ }
   if (![...fault.hashes].every(([file, before]) => sha256File(path.join(root, file)) === before)) return false;
   const now = treeState(root);
   const own = receipt === undefined ? null : `${fault.prefix}${receipt}`;
   const status = now.status.filter(entry => entry !== `?? ${own}`);
-  return now.head === fault.tree.head && now.stash === fault.tree.stash && JSON.stringify(status) === JSON.stringify(fault.tree.status);
+  return now.head === fault.tree.head && now.branch === fault.tree.branch && now.stash === fault.tree.stash && JSON.stringify(status) === JSON.stringify(fault.tree.status);
 }
 
 export const envMapPath = '.joycraft/local/evidence-env.json';

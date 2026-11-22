@@ -62,6 +62,14 @@ describe('cleanup gate-rule polish (spec 27)', () => {
     expect(findings[0]).toMatchObject({ path: 'AGENTS.md', line: 3, command: 'pnpm verify' });
   });
 
+  it('[review-27-1] a rule line running the gate with a file or path argument gives no finding', () => {
+    const root = fixture('pnpm test');
+    put(join(root, 'AGENTS.md'), '# App\n\n- Run pnpm test add.test.ts before committing.\n- Run pnpm test before merging.\n');
+    const findings = gateRules(root);
+    expect(findings).toHaveLength(1);
+    expect(findings[0]).toMatchObject({ path: 'AGENTS.md', line: 4, command: 'pnpm test' });
+  });
+
   it('[AC:spec-27-4] gate-rule --record writes cleanup.gateRule and keeps other keys; --check reads it; bad values and symlinks change nothing', () => {
     const root = fixture('pnpm verify');
     const run = (...args: string[]) => spawnSync(process.execPath, [cleanup, 'gate-rule', ...args], { cwd: root, encoding: 'utf8' });

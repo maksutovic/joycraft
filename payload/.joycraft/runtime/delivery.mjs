@@ -138,20 +138,37 @@ function runsGate(argv, gate, root) {
   const expected = words(gate);
   return plain && argv.length === expected.length && argv.every((value, index) => value === expected[index]);
 }
-/** The paths changed from `revision` to `head` are all under the docs root (never `.`), so the
- * gate ran on the same code: session end's records, tidy and archive commits change only docs. */
+/** Every path changed from `revision` to `head` is a record session end writes, so the gate ran on
+ * the same code: a file under paths.features or paths.archive (feature folders, moved whole by an
+ * archive, with their receipts), or a Markdown or JSON file elsewhere under the docs root (never
+ * `.`). A symlink or submodule on either side, or any other file, needs the gate again. */
 async function docsOnlySince(root, revision, head) {
   if (typeof revision !== 'string' || !/^[0-9a-f]{40,64}$/.test(revision)) return false;
   if (!(await gitOk(root, ['cat-file', '-e', `${revision}^{commit}`]))) return false;
   if (!(await gitOk(root, ['merge-base', '--is-ancestor', revision, head]))) return false;
   const [{ readConfig }, { docsRoot }] = await Promise.all([import('./config.mjs'), import('./cleanup.mjs')]);
-  const docs = docsRoot(readConfig(root).paths);
-  if (!docs || docs === '.' || docs.startsWith('/') || docs.split('/').includes('..')) return false;
-  const changed = (await git(root, ['diff', '--name-only', '--no-renames', '-z', revision, head, '--'])).toString('utf8').split('\0').filter(Boolean);
-  return changed.every(path => path.startsWith(`${docs}/`));
+  const paths = readConfig(root).paths;
+  const docs = docsRoot(paths);
+  const unsafe = folder => !folder || folder === '.' || folder.startsWith('/') || folder.split('/').includes('..');
+  if (unsafe(docs)) return false;
+  const records = [paths.features, paths.archive].filter(folder => !unsafe(folder));
+  // --raw -z gives ":<old mode> <new mode> <old blob> <new blob> <status>\0<path>\0" per change.
+  const fields = (await git(root, ['diff', '--raw', '--no-renames', '-z', revision, head, '--'])).toString('utf8').split('\0');
+  const changes = [];
+  for (let index = 0; index + 1 < fields.length; index += 2) {
+    if (!fields[index].startsWith(':')) return false;
+    const [oldMode, newMode] = fields[index].slice(1).split(' ');
+    changes.push({ modes: [oldMode, newMode], path: fields[index + 1] });
+  }
+  return changes.every(({ modes, path }) => {
+    if (!modes.every(mode => mode === '000000' || mode === '100644' || mode === '100755')) return false;
+    if (!path.startsWith(`${docs}/`)) return false;
+    if (records.some(folder => path.startsWith(`${folder}/`))) return true;
+    return /\.(?:md|json)$/i.test(path);
+  });
 }
 /** Refuse a push unless the gate receipt, inside the project, shows the recorded gate, green, on a
- * clean tree at this HEAD, or at an ancestor of HEAD when every path changed since is under the docs root. */
+ * clean tree at this HEAD, or at an ancestor of HEAD when every path changed since is a docs record (see docsOnlySince). */
 async function checkGateReceipt(root, gate, receipt, head) {
   assertion(typeof receipt === 'string' && receipt, 'gate-receipt-required');
   const { readFooter } = await import('./evidence.mjs');

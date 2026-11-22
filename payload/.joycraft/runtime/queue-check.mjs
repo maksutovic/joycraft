@@ -221,10 +221,12 @@ const normalize = text => String(text).replace(/\s+/g, ' ').trim();
  * text reads as one) the command must end the span, after the span start, a
  * space, a quote or a bracket. In plain text it starts after the text start,
  * a space, a code span, a quote or a bracket, and ends at the text end, a code
- * span, punctuation that ends a word, a plain word of letters only ("run pnpm
- * verify before merging") or a dash (`—`, `–` or ` - `). More arguments make
- * it a different command: a next word with `/`, `.`, `-` or `=` (as in
- * `pnpm test tests/x.test.ts` or `pnpm test -- --run`) does not name `pnpm test`.
+ * span, punctuation followed by a space or the end, a plain word of letters
+ * only that whitespace, the end, a code span or such punctuation closes ("run
+ * pnpm verify before merging"), or a dash (`—` or `–`, spaced or not, or ` - `).
+ * More arguments make it a different command: a next word holding `/`, `.`,
+ * `:`, `-` or `=` (as in `pnpm test tests/x.test.ts`, `pnpm test x.test.ts`,
+ * `cargo test a::b` or `pnpm test -- --run`) does not name the gate.
  */
 export function namesCommand(text, command) {
   const wanted = normalize(command);
@@ -247,7 +249,10 @@ export function namesCommand(text, command) {
   const command_ = escape(wanted);
   const inCode = new RegExp(`(?:^|(?<=[\\s"'(\\[]))${command_}[.,;:!?)\\]"']*$`, 'u');
   if (code.some(span => inCode.test(normalize(span)))) return true;
-  const end = `$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001)|\\s\\p{L}+(?=$|\\s|\\u0001|[.,;:!?)\\]"'])|\\s?[—–](?=\\s|$)|\\s-(?=\\s|$)`;
+  // Punctuation ends a word only when whitespace, a code span or the text end follows it, so a
+  // `.`, `:` or `'` inside the next token (x.test.ts, a::b, test's) never counts as an ending.
+  const stop = `(?:\\s|$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001))`;
+  const end = `$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001)|\\s\\p{L}+(?=${stop})|\\s?[—–]|\\s-(?=\\s|$)`;
   const inPlain = new RegExp(`(?:^|(?<=[\\s\\u0001"'(\\[]))${command_}(?=${end})`, 'u');
   return inPlain.test(normalize(plain));
 }
