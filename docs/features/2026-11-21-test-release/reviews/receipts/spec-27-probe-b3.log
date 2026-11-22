@@ -1,0 +1,22 @@
+OK   ["bash","-lc","pnpm verify"] -> refused as gate
+OK   ["sh","-c","pnpm verify","sh"] -> refused as gate
+OK   ["zsh","-c","pnpm verify"] -> refused as gate
+OK   ["dash","-c","pnpm verify"] -> refused as gate
+OK   ["/usr/bin/env","bash","-c","pnpm verify"] -> refused as gate
+OK   ["env","CI=1","pnpm","verify"] -> refused as gate
+OK   ["pnpm","verify","tests/x"] -> passes
+OK   ["bash","-c","pnpm verify tests/x"] -> passes
+OK   ["env","CI=1","pnpm","verify","tests/x"] -> passes
+OK   ["/bin/bash","-c","  pnpm   verify "] -> refused as gate
+OK   ["env","-i","PATH=/bin","sh","-c","pnpm verify","sh","x"] -> refused as gate
+OK   ["env","A=1","env","B=2","pnpm","verify"] -> refused as gate
+NOTE ["env","-u","HOME","pnpm","verify"] -> passes
+NOTE ["bash","-e","-c","pnpm verify"] -> passes
+NOTE ["bash","--login","-c","pnpm verify"] -> passes
+NOTE ["timeout","600","pnpm","verify"] -> passes
+NOTE ["nice","pnpm","verify"] -> passes
+NOTE ["C:\\Windows\\System32\\cmd.exe","/c","pnpm verify"] -> passes
+NOTE ["bash.exe","-c","pnpm verify"] -> passes
+NOTE ["ksh","-c","pnpm verify"] -> passes
+NOTE ["bash","-c","exec pnpm verify"] -> passes
+joycraft-evidence: {"wallMs":29,"load":[2.42529296875,2.42529296875],"cores":14,"loaded":false,"argv":["node","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b3.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"],"exitCode":0,"timedOut":false,"revision":"3df6db768e2d6da3374b0291b0f6733f5635b133","dirty":true}

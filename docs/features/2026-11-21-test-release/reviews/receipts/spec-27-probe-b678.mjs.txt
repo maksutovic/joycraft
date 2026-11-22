@@ -1,0 +1,45 @@
+// Probe spec 27 bullets 6-8: fault-run restore edge cases outside the named checks.
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, realpathSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+const script = join(process.argv[2], 'payload/.joycraft/runtime/evidence.mjs');
+const git = (cwd, ...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@e.com', ...a], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+const good = 'export const add = (a, b) => a + b;\n', bad = 'export const add = (a, b) => a - b;\n';
+const check = "import { add } from './add.mjs';\nif (add(2, 2) !== 4) { console.log('add is wrong'); process.exit(1); }\n";
+function project(sub = '') {
+  const top = realpathSync(mkdtempSync(join(tmpdir(), 'p27e-'))); const root = join(top, sub); mkdirSync(join(root, 'faults'), { recursive: true });
+  git(top, 'init', '-q'); writeFileSync(join(root, '.gitignore'), 'faults/\n'); writeFileSync(join(root, 'add.mjs'), good); writeFileSync(join(root, 'check.mjs'), check);
+  mkdirSync(join(root, 'docs/features/x'), { recursive: true }); writeFileSync(join(root, 'docs/features/x/spec.md'), 's\n');
+  git(top, 'add', '.'); git(top, 'commit', '-q', '-m', 'i'); writeFileSync(join(root, 'add.mjs'), bad);
+  writeFileSync(join(root, 'faults/f.diff'), git(top, 'diff')); git(top, 'checkout', '--', '.');
+  return { top, root };
+}
+const run = (root, receipt, cmd) => spawnSync(process.execPath, [script, 'run', '--receipt', receipt, '--patch', 'faults/f.diff', '--', ...cmd], { cwd: root, encoding: 'utf8' });
+const report = (name, r, extra = '') => { let o = {}; try { o = JSON.parse(r.stdout); } catch {} console.log(`${name}: exit ${r.status} restored ${o.patch?.restored} ${extra}${r.status === 2 ? r.stderr.trim().slice(0, 200) : ''}`); };
+{ const { root, top } = project(); report('A tracked (not ignored) receipt folder, plain fault', run(root, 'docs/features/x/a.log', [process.execPath, 'check.mjs']), `status-after=${JSON.stringify(git(top, 'status', '--porcelain'))} `); }
+{ const { root, top } = project('app'); report('B subfolder project, not-ignored receipt, plain fault', run(root, 'docs/features/x/b.log', [process.execPath, 'check.mjs']), `status-after=${JSON.stringify(git(top, 'status', '--porcelain'))} `); }
+{ const { root } = project(); report('C command creates an untracked file', run(root, 'docs/features/x/c.log', [process.execPath, '-e', "require('fs').writeFileSync('new.txt','x')"])); }
+{ const { root } = project(); report('D command creates an ignored file (limit)', run(root, 'docs/features/x/d.log', [process.execPath, '-e', "require('fs').writeFileSync('faults/new.txt','x')"])); }
+{ const { root, top } = project(); report('E command switches to a new branch at the same commit', run(root, 'docs/features/x/e.log', ['git', 'checkout', '-q', '-b', 'other']), `branch-after=${git(top, 'branch', '--show-current').trim()} `); }
+{ const { root, top } = project(); report('F command stages nothing but runs git add of the receipt dir keep', run(root, 'docs/features/x/f.log', ['git', 'tag', 'x']), `(tag only) `); }
+// G: Ctrl-C reaches the whole process group while git apply sleeps.
+if (process.platform !== 'win32') {
+  const { root, top } = project(); const bin = join(root, 'faults/bin'); mkdirSync(bin);
+  const realGit = execFileSync('sh', ['-c', 'command -v git'], { encoding: 'utf8' }).trim(); const marker = join(root, 'faults/applying');
+  writeFileSync(join(bin, 'git'), `#!/bin/sh\nif [ "$1" = apply ] && [ "$2" = "--" ]; then touch '${marker}'; sleep 1; fi\nexec '${realGit}' "$@"\n`); chmodSync(join(bin, 'git'), 0o755);
+  const child = spawn(process.execPath, [script, 'run', '--receipt', 'docs/features/x/g.log', '--patch', 'faults/f.diff', '--', process.execPath, 'check.mjs'], { cwd: root, env: { ...process.env, PATH: `${bin}:${process.env.PATH}` }, stdio: ['ignore', 'pipe', 'pipe'], detached: true });
+  let err = ''; child.stderr.on('data', d => { err += d; });
+  const exit = new Promise(r => child.on('exit', (code, sig) => r(`${code}/${sig}`)));
+  for (let w = 0; !existsSync(marker) && w < 10000; w += 20) await new Promise(r => setTimeout(r, 20));
+  process.kill(-child.pid, 'SIGINT');
+  console.log(`G SIGINT to the group during git apply: exit ${await exit}; git diff --quiet ${spawnSync('git', ['diff', '--quiet'], { cwd: top }).status}; stderr ${JSON.stringify(err.trim().slice(0, 200))}`);
+}
+// H: SIGTERM while the child runs.
+{
+  const { root, top } = project();
+  const child = spawn(process.execPath, [script, 'run', '--receipt', 'docs/features/x/h.log', '--patch', 'faults/f.diff', '--', process.execPath, '-e', 'setTimeout(()=>{},5000)'], { cwd: root, stdio: 'ignore' });
+  const exit = new Promise(r => child.on('exit', (code, sig) => r(`${code}/${sig}`)));
+  await new Promise(r => setTimeout(r, 1000)); child.kill('SIGTERM');
+  console.log(`H SIGTERM during the child: exit ${await exit}; git diff --quiet ${spawnSync('git', ['diff', '--quiet'], { cwd: top }).status}`);
+}

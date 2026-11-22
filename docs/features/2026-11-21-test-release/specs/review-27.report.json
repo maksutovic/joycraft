@@ -1,0 +1,1450 @@
+{
+ "schemaVersion": 1,
+ "subject": {
+  "schemaVersion": 1,
+  "implementationRevision": "3df6db768e2d6da3374b0291b0f6733f5635b133",
+  "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+  "specId": 27,
+  "specPath": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+  "criteria": [
+   {
+    "id": "spec-27-1",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-2",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-3",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-4",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-5",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-6",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-7",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-8",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-9",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-10",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-11",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-12",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-13",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-14",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-15",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-16",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   },
+   {
+    "id": "spec-27-17",
+    "requirement": {
+     "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+     "anchor": "acceptance"
+    },
+    "requiredKinds": [
+     "runtime"
+    ]
+   }
+  ],
+  "inputs": [
+   {
+    "path": "docs/features/2026-11-21-test-release/brief.md",
+    "kind": "requirement",
+    "scope": {
+     "anchors": [
+      "context-and-authorization",
+      "scope-and-limits",
+      "spec-tier",
+      "wave-gate",
+      "owner-gate-lines",
+      "declared-test-changes",
+      "fault-proof",
+      "evidence-marker",
+      "load-guidance",
+      "worker-commands",
+      "session-end-pr"
+     ]
+    },
+    "sha256": "71552b345cc94cac0508f87a11755b5d4ff91766fe5d17e415c9a1d2cf370703",
+    "normalization": "requirement-scope"
+   },
+   {
+    "path": "docs/features/2026-11-21-test-release/review-followups.md",
+    "kind": "requirement",
+    "sha256": "01a4f9c3a5095f0c7613bc669670db9cb182b09a8004c592375bbb04f1e95d60",
+    "normalization": "none"
+   },
+   {
+    "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "kind": "requirement",
+    "sha256": "9f0493f832eeb853f3c912e7caffde66c843f9c00fc10d857a3f8f541b5235e4",
+    "normalization": "queue-scope"
+   },
+   {
+    "path": "docs/features/2026-11-21-test-release/specs/27-polish-runtime.md",
+    "kind": "requirement",
+    "sha256": "e26bd790edf2cd793cb1e2bce95bb3f16780384a41bf1e713601a7b30f44ed40",
+    "normalization": "spec-status"
+   },
+   {
+    "path": "payload/.joycraft/references/settings.md",
+    "kind": "code",
+    "sha256": "e097205740a0c7eb91922181426db7b4ed0933ddeae3b50b01ccbb8492cc3874",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/runtime/cleanup.mjs",
+    "kind": "code",
+    "sha256": "4efff5b19f58a0329ddb9106d54999f938ca0d7efa43b1e37aa1c563d0d66681",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/runtime/completion.mjs",
+    "kind": "code",
+    "sha256": "2f27bddfb7768f4c4278cab735af390460469986da96f60adfefce7655c44c2d",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/runtime/delivery.mjs",
+    "kind": "code",
+    "sha256": "d6c625b38a2232e3ba9890646953d9f1cf81366279dbe5b96186b0738aae0d1b",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/runtime/entry-check.mjs",
+    "kind": "code",
+    "sha256": "46ab7c137d690b39dd3d711d09f3f907df6543fb9e597d5ef5de4019fbdd74d9",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/runtime/evidence.mjs",
+    "kind": "code",
+    "sha256": "dea9d370a015093b5d6044b254b15e14781130624b9d276b670204295ddabb8b",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/runtime/queue-check.mjs",
+    "kind": "code",
+    "sha256": "b0332795ee71c1829c0c164627eeebf231803dc0da18c194dbc911ac1bcdd2f2",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/runtime/status.mjs",
+    "kind": "code",
+    "sha256": "7171cadde8b832879120ec7babcc45e674a3d500060774851146f0880b6844cc",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/runtime/test-changes.mjs",
+    "kind": "code",
+    "sha256": "dba78445fa51e272b328a65b29f002902c088f65cbe6572396fc93ed117aa155",
+    "normalization": "none"
+   },
+   {
+    "path": "payload/.joycraft/runtime/wiring.mjs",
+    "kind": "code",
+    "sha256": "f08a3df1b81b429ade2c05624ee764388de7d0a9b9b757d7e084cf4bf75434d0",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-cleanup-checks-seam.test.ts",
+    "kind": "check",
+    "sha256": "19cb926fc1800d36ef3e43912e6979ec03a5436d1b3eeb2ea55eae62573c542d",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-cleanup-gate-rule.test.ts",
+    "kind": "check",
+    "sha256": "5ebbf7f45ea2098ad7493ffec57b720f77611737f8f3a07a7a8722d83e1418c4",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-cleanup-tidy-verify.test.ts",
+    "kind": "check",
+    "sha256": "eca663a42b8b268452a83de172c8b70c935c7f853a807b0a5195126c65493117",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-evidence-env.test.ts",
+    "kind": "check",
+    "sha256": "d9d952135231a4b03e1721fecdd715d9cb272621fb081e5e8e08584d89b8099e",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-evidence-patch.test.ts",
+    "kind": "check",
+    "sha256": "3f244ff5617c3877d6c6d32206028847741f86939e61e11f832dca8ba3a08200",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-evidence-receipt.test.ts",
+    "kind": "check",
+    "sha256": "567325cefa9ecb46f8ba2401a29f04fd3a1a661a09379739e926e7ea6a20f805",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-queue-check-gate.test.ts",
+    "kind": "check",
+    "sha256": "013100b224a083f6089372ce39b445a1ec3e431272eddc058aeb123c67261a84",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-report-gate.test.ts",
+    "kind": "check",
+    "sha256": "dcf868d50031a5c69b59999cfbb9d789c9b00e7222c4f88f647456d2418cda03",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-start-advice.test.ts",
+    "kind": "check",
+    "sha256": "c75bc543ed46031ade54d70980c3d827d8f94abdeea911f3bcff68e738be4d3c",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-status-load.test.ts",
+    "kind": "check",
+    "sha256": "a14b5239726944941f67f14bb20493154f6df14fc586c2738dcf413c3bd3c4bc",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-test-changes.test.ts",
+    "kind": "check",
+    "sha256": "3769bb4c8f6b97f004adbac846f55cbe3cc1c8e047e3c93b2e91ceafe81a9fe0",
+    "normalization": "none"
+   },
+   {
+    "path": "tests/runtime-wave-gate.test.ts",
+    "kind": "check",
+    "sha256": "34d3eaba96ac1c28dc2429dbb2c899fad1d1138dbd155333f5fcba1aa7584cbc",
+    "normalization": "none"
+   }
+  ],
+  "binding": {
+   "version": 1,
+   "queue": {
+    "specIds": [
+     1,
+     2,
+     3,
+     5,
+     7,
+     9,
+     11,
+     12,
+     17,
+     27
+    ]
+   },
+   "governing": [
+    {
+     "path": "docs/features/2026-11-21-test-release/brief.md",
+     "anchors": [
+      "context-and-authorization",
+      "scope-and-limits",
+      "spec-tier",
+      "wave-gate",
+      "owner-gate-lines",
+      "declared-test-changes",
+      "fault-proof",
+      "evidence-marker",
+      "load-guidance",
+      "worker-commands",
+      "session-end-pr"
+     ]
+    }
+   ]
+  },
+  "identity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106"
+ },
+ "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+ "implementerActor": {
+  "host": "claude",
+  "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "agentId": "a32191b74a36f1839"
+ },
+ "reviewer": {
+  "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "actor": {
+   "host": "claude",
+   "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+   "agentId": "aa64393237c67db0b"
+  },
+  "independent": true,
+  "scopeReviewed": true
+ },
+ "verdict": "FAIL",
+ "flows": [
+  {
+   "id": "spec-27-1-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-1"
+   ],
+   "representativeInput": "namesCommand on prose, code spans, argument words and fenced lines",
+   "expected": "Plain-text gate followed by a letters-only word or a dash matches; a following argument word with /, ., - or = never matches.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-1] tests (tests/runtime-cleanup-gate-rule.test.ts:57, tests/runtime-queue-check-gate.test.ts:70) are among them. The named check set passes; the failure below is outside it.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    },
+    {
+     "kind": "runtime",
+     "method": "command",
+     "result": "FAIL",
+     "actual": "Named cases pass (run pnpm verify before merging; pnpm verify \u2014 then; fenced pnpm verify; code span pnpm test tests/x.test.ts; pnpm test -- --run). But \"pnpm test x.test.ts\" in prose returns true: the plain-word end alternative \\s\\p{L}+ matches the \"x\" before the dot, so an argument word holding \".\" counts as a plain word. Also \"pnpm verify\u2014then\" (em dash with no spaces) returns false.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1.log",
+       "sha256": "0fab3a3a3cd37554e4eddc31df2e1adf71500474ad86809dc5ef182502770f3d"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1.mjs.txt",
+       "sha256": "5cb6ed0f10985010e03d308f28f490566d62e647a9d9b93b1afaaff373144688"
+      }
+     ],
+     "command": {
+      "argv": [
+       "node",
+       "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b1.mjs",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+      ],
+      "exitCode": 0
+     }
+    },
+    {
+     "kind": "runtime",
+     "method": "command",
+     "result": "FAIL",
+     "actual": "namesCommand at base edb34b6 gives false and at HEAD gives true for \"Check: pnpm test add.test.ts passes.\", \"Check: pnpm test x.test.ts\", \"Check: cargo test parser::tests passes.\" and \"Check: pytest tests.py passes.\"; \"pnpm test tests/x.test.ts\" is false in both.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1-regress.log",
+       "sha256": "7cc9501c8b9b5012d8834ea8964862b7a4f0e2466ac561eb4bb53d7358a97ee7"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1-regress.mjs.txt",
+       "sha256": "fe9e059bc39ec1016b11fb9a3505f6836ed11cdf79df09bd3ef6932173b159da"
+      }
+     ],
+     "command": {
+      "argv": [
+       "node",
+       "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b1-regress.mjs",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research",
+       "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/base/qc.mjs"
+      ],
+      "exitCode": 0
+     }
+    },
+    {
+     "kind": "runtime",
+     "method": "command",
+     "result": "FAIL",
+     "actual": "queue-check.mjs CLI, gate `pnpm test`, bullet \"- It works. Check: pnpm test add.test.ts passes.\": base exit 0 with 0 gate-in-spec gaps, HEAD exit 2 with 1 gap. The same holds for gate `cargo test` with \"cargo test parser::tests\". \"pnpm test tests/add.test.ts\" gives 0 gaps at both.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1-e2e.log",
+       "sha256": "6d1ac573325a7934a58951c419880d78cf05f4f4c38f376e756c52574f97ab1a"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b1-e2e.mjs.txt",
+       "sha256": "6357859eeddde80220725f0a851a60b9f4d4e7fa81eb092f2f3293538a709fa8"
+      }
+     ],
+     "command": {
+      "argv": [
+       "node",
+       "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b1-e2e.mjs",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research",
+       "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/basetree"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": [
+    "The named check set in tests/runtime-queue-check-gate.test.ts passes; the failure is a regression outside that set that contradicts the bullet's own argument rule."
+   ]
+  },
+  {
+   "id": "spec-27-2-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-2"
+   ],
+   "representativeInput": "gate-in-spec and missing-check gap messages",
+   "expected": "Gate gap ends \"Use the spec's own test command instead.\" with no \"ask the user\"; other gaps keep the old next step.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-2] tests (tests/runtime-queue-check-gate.test.ts:93) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-3-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-3"
+   ],
+   "representativeInput": "refuseGateRuns argv wrappers and a broken joycraft.yaml",
+   "expected": "Six wrapper forms refused naming tests.gate; pnpm verify tests/x passes; tests: [ refuses with joycraft.yaml named.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-3] tests (tests/runtime-report-gate.test.ts:72) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    },
+    {
+     "kind": "runtime",
+     "method": "command",
+     "result": "PASS",
+     "actual": "All six named wrapper forms unwrap to the gate; pnpm verify tests/x, bash -c \"pnpm verify tests/x\" and env CI=1 pnpm verify tests/x pass. Forms outside the spec pass unrefused: env -u NAME, bash -e -c, bash --login -c, timeout/nice prefixes, cmd.exe /c, bash.exe, ksh, exec prefix.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b3.log",
+       "sha256": "d66b9e9434dff6413866a6da4768c0a959e579b82488df3f094c86dff45ea76b"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b3.mjs.txt",
+       "sha256": "8e56233707290fba79a77db5f8416e60818ecc7abc2b8aa0342b915edf54ba40"
+      }
+     ],
+     "command": {
+      "argv": [
+       "node",
+       "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b3.mjs",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-4-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-4"
+   ],
+   "representativeInput": "cleanup.mjs gate-rule --record / --check",
+   "expected": "Record keeps other keys, creates schemaVersion 1 file, refuses other values and symlinks with exit 1, bytes unchanged.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-4] tests (tests/runtime-cleanup-gate-rule.test.ts:65) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-5-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-5"
+   ],
+   "representativeInput": "readFooter / readEnd on a 70,000-character argv and a 300 KiB line",
+   "expected": "Long footer read; failing tail starts at a line start.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-5] tests (tests/runtime-evidence-receipt.test.ts:72) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-6-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-6"
+   ],
+   "representativeInput": "SIGTERM during git apply of --patch",
+   "expected": "Exit 143 and git diff --quiet exits 0.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-6] tests (tests/runtime-evidence-patch.test.ts:117) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    },
+    {
+     "kind": "runtime",
+     "method": "command",
+     "result": "PASS",
+     "actual": "SIGTERM during the child: exit 143, git diff --quiet 0. SIGINT sent to the whole process group while git apply sleeps (Ctrl-C): git apply dies, exit 2 \"The patch did not apply\", tree clean (git diff --quiet 0); exit is 2, not 130.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b678.log",
+       "sha256": "b06158e5f20c8043d81a3258667985ac15bb102427640a603806cf5b5ea9ac62"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b678.mjs.txt",
+       "sha256": "658f2c20b621d3fff191573ba1d722aa1f573c2e10f759e895b17ed0397104ec"
+      }
+     ],
+     "command": {
+      "argv": [
+       "node",
+       "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b678.mjs",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-7-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-7"
+   ],
+   "representativeInput": "restorePatch whole-tree comparison",
+   "expected": "A tracked-file append, git commit --allow-empty and git stash give restored false and exit 1; plain fault run restored true.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-7] tests (tests/runtime-evidence-patch.test.ts:135) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    },
+    {
+     "kind": "runtime",
+     "method": "command",
+     "result": "PASS",
+     "actual": "A non-ignored receipt under docs/features/x gives restored true (root and app/ subfolder; the own receipt is filtered with the prefix). A command that creates an untracked file gives restored false. Not detected (outside the spec): writing an ignored file, git checkout -b other at the same commit (branch left switched to other, restored true), git tag.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b678.log",
+       "sha256": "b06158e5f20c8043d81a3258667985ac15bb102427640a603806cf5b5ea9ac62"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b678.mjs.txt",
+       "sha256": "658f2c20b621d3fff191573ba1d722aa1f573c2e10f759e895b17ed0397104ec"
+      }
+     ],
+     "command": {
+      "argv": [
+       "node",
+       "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b678.mjs",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-8-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-8"
+   ],
+   "representativeInput": "preparePatch in a repository subfolder",
+   "expected": "app/ fault runs with restored true; lib/other.mjs patch exits 2, status empty.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-8] tests (tests/runtime-evidence-patch.test.ts:152) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    },
+    {
+     "kind": "runtime",
+     "method": "command",
+     "result": "PASS",
+     "actual": "Subfolder project app/ with a non-ignored receipt: fault fails the check, restored true; status afterwards shows only ?? app/docs/features/x/b.log.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b678.log",
+       "sha256": "b06158e5f20c8043d81a3258667985ac15bb102427640a603806cf5b5ea9ac62"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b678.mjs.txt",
+       "sha256": "658f2c20b621d3fff191573ba1d722aa1f573c2e10f759e895b17ed0397104ec"
+      }
+     ],
+     "command": {
+      "argv": [
+       "node",
+       "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b678.mjs",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-9-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-9"
+   ],
+   "representativeInput": "readEnvMap name/value checks and git-ignore rule",
+   "expected": "Empty name, = in a name, NUL exit 2 naming the map; ci filtered; unignored map exit 2.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-9] tests (tests/runtime-evidence-env.test.ts:61) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-10-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-10"
+   ],
+   "representativeInput": "status load line",
+   "expected": "Exact 14-core line; (8 and 16 cores); no parenthesis without cores.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-10] tests (tests/runtime-status-load.test.ts:64) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-11-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-11"
+   ],
+   "representativeInput": "test-changes base ancestry and rewritten declarations",
+   "expected": "Side-branch base exits 1 \"not an ancestor of HEAD\"; edited class-1 requiring text listed under rewritten.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-11] tests (tests/runtime-test-changes.test.ts:172, tests/runtime-test-changes.test.ts:184) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-12-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-12"
+   ],
+   "representativeInput": "test-changes renames, source sets and gitlinks",
+   "expected": "Rename pairing, JVM name rule inside source sets only, removed submodule skipped.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-12] tests (tests/runtime-test-changes.test.ts:112, tests/runtime-test-changes.test.ts:194, tests/runtime-test-changes.test.ts:205) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-13-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-13"
+   ],
+   "representativeInput": "delivery.mjs runsGate shell forms",
+   "expected": "Newline/CR, in-project shell and POSIX Windows path refused; double space, tab and /bin/sh push; usage names symlink.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-13] tests (tests/runtime-wave-gate.test.ts:172, tests/runtime-wave-gate.test.ts:183) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-14-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-14"
+   ],
+   "representativeInput": "delivery checkGateReceipt docs-only exemption",
+   "expected": "Ancestor receipt pushes only when every changed path is under a docs root other than .; else gate-receipt-stale.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-14] tests (tests/runtime-wave-gate.test.ts:204, tests/runtime-wave-gate.test.ts:235) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    },
+    {
+     "kind": "runtime",
+     "method": "command",
+     "result": "PASS",
+     "actual": "All 22 scenarios as expected. Refused (gate-receipt-stale): rename src/x.mjs -> docs/x.mjs and docs -> src (--no-renames shows the non-docs side), docs-evil/ sibling, docsx file, tests/a.test.ts, joycraft.yaml edit, gate.mjs mode change, a merge bringing code from a side branch, an evil merge whose parents are docs-only but whose merge commit edits src/x.mjs, a receipt on a side commit with main code since, a receipt on an unmerged side commit, docs root ., a 12-hex short revision. Replacing docs/ with a symlink to src is refused earlier (EISDIR from the tracked-file manifest). Pushed: docs-only commit, rename within docs, ./docs/... config paths (normalized), a receipt on a merged side commit when main changed only docs (tree diff is docs-only), a symlink under docs pointing at src/x.mjs, and docs/features/f/evil.test.ts (a test file under the docs root; the spec allows any path under the root).",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b14.log",
+       "sha256": "2c4c0b08fd1b93bb722771a879cb2757b99d9f856991e79e79812f6e16f0e9ab"
+      },
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-probe-b14.mjs.txt",
+       "sha256": "69dfd0079e36a46fdd2232b1c0092c38c455a63cc5ed247a20fc3b0b0f0eca26"
+      }
+     ],
+     "command": {
+      "argv": [
+       "node",
+       "/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b14.mjs",
+       "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-15-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-15"
+   ],
+   "representativeInput": "rawDiff without GIT_DIFF_OPTS",
+   "expected": "tidy --verify accepts the fixture fix with GIT_DIFF_OPTS=--unified=5.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-15] tests (tests/runtime-cleanup-tidy-verify.test.ts:259) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-16-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-16"
+   ],
+   "representativeInput": "checks seam path:line rule message form",
+   "expected": "markdownlint line read; absolute path made relative; localhost:3000 and 127.0.0.1:8080 give none; settings.md names line output format.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-16] tests (tests/runtime-cleanup-checks-seam.test.ts:98) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  },
+  {
+   "id": "spec-27-17-flow",
+   "subjectIdentity": "2c00667ff1b3b48c45a35fc333944c92414b4db6b6a7225454e495522ea6f106",
+   "criteria": [
+    "spec-27-17"
+   ],
+   "representativeInput": "wiring start advice",
+   "expected": "Broken entry-check import: same wired value and exit, no advice or stack; default branch says recent commits removed.",
+   "observations": [
+    {
+     "kind": "runtime",
+     "method": "test",
+     "result": "PASS",
+     "actual": "The spec's 12 test files pass (12 files, 105 tests, exit 0); the [AC:spec-27-17] tests (tests/runtime-start-advice.test.ts:68, tests/runtime-start-advice.test.ts:83) are among them.",
+     "receipts": [
+      {
+       "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-27-tests.log",
+       "sha256": "27d91b4f7d0393edde8e1f6038bfb6f2dcf2a1c2cebff15b6601184e58e1361c"
+      }
+     ],
+     "command": {
+      "argv": [
+       "pnpm",
+       "exec",
+       "vitest",
+       "run",
+       "tests/runtime-queue-check-gate.test.ts",
+       "tests/runtime-cleanup-gate-rule.test.ts",
+       "tests/runtime-report-gate.test.ts",
+       "tests/runtime-evidence-receipt.test.ts",
+       "tests/runtime-evidence-patch.test.ts",
+       "tests/runtime-evidence-env.test.ts",
+       "tests/runtime-status-load.test.ts",
+       "tests/runtime-test-changes.test.ts",
+       "tests/runtime-wave-gate.test.ts",
+       "tests/runtime-cleanup-tidy-verify.test.ts",
+       "tests/runtime-cleanup-checks-seam.test.ts",
+       "tests/runtime-start-advice.test.ts"
+      ],
+      "exitCode": 0
+     }
+    }
+   ],
+   "limits": []
+  }
+ ],
+ "unresolved": [
+  "Blocking finding f1: an argument word with a dot or colon after the gate (pnpm test add.test.ts) now gives a gate-in-spec gap; bullet 1 says it is a different command."
+ ],
+ "findings": [
+  {
+   "id": "f1-argument-with-dot-matches-gate",
+   "class": "blocking",
+   "origin": "new",
+   "criterion": "spec-27-1",
+   "at": "payload/.joycraft/runtime/queue-check.mjs:250",
+   "summary": "The new plain-word end alternative `\\s\\p{L}+(?=$|\\s|\\u0001|[.,;:!?)\\]\"'])` matches the letters of an argument word up to its first dot or colon, so an argument with \".\" (or \"::\") counts as a plain word. Bullet 1 says \"an argument (a word with /, ., - or =) still makes a different command\" and sets 0 matches on the argument forms. Repro (receipts spec-27-probe-b1-regress.log, spec-27-probe-b1-e2e.log): gate `pnpm test`, bullet \"Check: pnpm test add.test.ts passes.\" gives exit 0 / 0 gaps at base edb34b6 and exit 2 / 1 gate-in-spec gap at HEAD; the same regression for \"cargo test parser::tests\" and \"pytest tests.py\". cleanup.mjs gate-rule (cleanup.mjs:381) uses the same function, so an AGENTS.md line \"Run pnpm test add.test.ts before committing.\" becomes a gate-rule finding too. Fix: require the plain word to be followed by whitespace, the text end, a code-span marker, or sentence punctuation that is itself followed by whitespace or the end (as the existing punctuation alternative does), and add \"pnpm test x.test.ts\" and \"cargo test a::b\" to the test's argument cases."
+  },
+  {
+   "id": "f2-em-dash-without-spaces",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-27-1",
+   "assumption": "The spec's dash form is the spaced one shown in its check (\"pnpm verify \u2014 then\").",
+   "summary": "\"Check: pnpm verify\u2014then read.\" (em dash with no spaces) does not match: `\\s?[\u2014\u2013](?=\\s|$)` needs whitespace after the dash. A missed gate costs more than a false gap; consider allowing a letter after the dash."
+  },
+  {
+   "id": "f3-wave-gate-undeclared-assertion-change",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-27-13",
+   "at": "tests/runtime-wave-gate.test.ts:172-173",
+   "summary": "[review-7-r2-2] changed an existing assertion: C:\\Windows\\System32\\cmd.exe /c now pushes only on win32 (before: on every platform). The Test changes line for this file says only that bullets 13 and 14 \"add\" cases, so this change is undeclared. Under testing-review.md#test-changes it is not blocking: an acceptance line requires it (bullet 13: on POSIX a Windows-form shell path is refused), and the old POSIX expectation contradicts that line. The spec's Test changes line should name it."
+  },
+  {
+   "id": "f4-wrapper-forms-not-covered",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-27-3",
+   "at": "payload/.joycraft/runtime/completion.mjs:128-140",
+   "summary": "ranCommand does not unwrap env -u NAME, bash -e -c / bash --login -c (flags before -c), timeout/nice/time prefixes, cmd.exe /c, bash.exe or ksh, or a command line starting with exec; each passes check-report as a non-gate run (receipt spec-27-probe-b3.log). The spec names six forms only."
+  },
+  {
+   "id": "f5-restore-misses-branch-switch",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-27-7",
+   "at": "payload/.joycraft/runtime/evidence.mjs:311-330",
+   "assumption": "\"HEAD as it was\" means the commit HEAD names, as the implementation compares.",
+   "summary": "treeState compares the HEAD commit, not the symbolic ref: a fault command running git checkout -b other gives restored: true and leaves the repository on branch other. Writes to ignored files and new tags are not seen either (receipt spec-27-probe-b678.log). Consider comparing `git symbolic-ref -q HEAD` too."
+  },
+  {
+   "id": "f6-group-sigint-exit-code",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-27-6",
+   "at": "payload/.joycraft/runtime/evidence.mjs:393-402",
+   "summary": "A Ctrl-C (SIGINT to the whole process group) during git apply kills git apply too; the run then exits 2 \"The patch did not apply\" instead of 130, and the finally block removes the handlers before the queued signal runs. The tree is clean (git diff --quiet 0), so only the exit code and message are off."
+  },
+  {
+   "id": "f7-docs-root-holds-runnable-files",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-27-14",
+   "at": "payload/.joycraft/runtime/delivery.mjs:143-151",
+   "assumption": "Bullet 14 exempts any path under the docs root, as written.",
+   "summary": "The exemption is by path only. A test file under docs (docs/features/f/evil.test.ts) or a symlink under docs that code or the runner reads still pushes on an old receipt; a project whose runner collects **/*.test.ts would run a changed test unseen. Session end writes only Markdown and JSON records, so the exemption could be limited to those extensions (and non-symlink blobs) without losing the records case."
+  },
+  {
+   "id": "f8-plain-letter-argument",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-27-1",
+   "summary": "As the spec states, a letters-only argument reads as prose: \"Check: run pnpm test unit\" and \"The pnpm test script is slow, so run `node --test t.mjs`.\" each give a gate-in-spec gap, and a one-word gate such as `make` matches \"make sure\". This follows the spec's cost rule; noted for the owner."
+  },
+  {
+   "id": "f9-checks-seam-host-lines",
+   "class": "follow-up",
+   "origin": "new",
+   "criterion": "spec-27-16",
+   "at": "payload/.joycraft/runtime/cleanup.mjs:563",
+   "summary": "By source reading: a checker line that starts with a host such as \"example.com:443 connected\" matches spacedLine (the \"com\" extension has letters), so it becomes a finding. Not run; the spec's check set passes."
+  }
+ ],
+ "createdAt": "2026-11-22T04:11:11.000Z"
+}

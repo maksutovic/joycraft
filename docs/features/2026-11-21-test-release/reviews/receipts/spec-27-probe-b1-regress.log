@@ -1,0 +1,6 @@
+"pnpm test" "Check: pnpm test add.test.ts passes." base: false head: true
+"pnpm test" "Check: pnpm test x.test.ts" base: false head: true
+"cargo test" "Check: cargo test parser::tests passes." base: false head: true
+"pytest" "Check: pytest tests.py passes." base: false head: true
+"pnpm test" "Check: pnpm test tests/x.test.ts" base: false head: false
+joycraft-evidence: {"wallMs":35,"load":[2.39111328125,2.39111328125],"cores":14,"loaded":false,"argv":["node","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b1-regress.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/base/qc.mjs"],"exitCode":0,"timedOut":false,"revision":"3df6db768e2d6da3374b0291b0f6733f5635b133","dirty":true}

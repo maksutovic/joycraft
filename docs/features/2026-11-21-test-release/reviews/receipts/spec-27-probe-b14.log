@@ -1,0 +1,21 @@
+OK   docs-only commit: expected PUSHED, got PUSHED
+OK   rename code into docs (src/x.mjs -> docs/x.mjs): expected REFUSED, got REFUSED gate-receipt-stale
+OK   rename docs out to code (docs/features/f/a.md -> src/a.md): expected REFUSED, got REFUSED gate-receipt-stale
+OK   rename within docs: expected PUSHED, got PUSHED
+OK   docs-evil/ sibling: expected REFUSED, got REFUSED gate-receipt-stale
+OK   docsx file: expected REFUSED, got REFUSED gate-receipt-stale
+OK   test file change: expected REFUSED, got REFUSED gate-receipt-stale
+OK   joycraft.yaml change: expected REFUSED, got REFUSED gate-receipt-stale
+OK   mode change of gate.mjs: expected REFUSED, got REFUSED gate-receipt-stale
+OK   replace docs dir with symlink to src: expected REFUSED, got REFUSED EISDIR: illegal operation on a directory, read
+OK   symlink under docs pointing at code: expected PUSHED, got PUSHED
+OK   code merged in from a side branch after the receipt: expected REFUSED, got REFUSED gate-receipt-stale
+OK   evil merge: docs-only parents, merge commit itself edits code: expected REFUSED, got REFUSED gate-receipt-stale
+OK   receipt on side commit, main has code since: expected REFUSED, got REFUSED gate-receipt-stale
+OK   receipt on unmerged side commit: expected REFUSED, got REFUSED gate-receipt-stale
+OK   receipt on merged side commit, only docs on main since (tree = side + docs): expected PUSHED, got PUSHED
+OK   docs root . (features/archive/context top-level): expected REFUSED, got REFUSED gate-receipt-stale
+OK   paths ./docs/... normalised, docs-only: expected PUSHED, got PUSHED
+OK   test file placed under docs (spec allows): expected PUSHED, got PUSHED
+OK   short revision in receipt: expected REFUSED, got REFUSED gate-receipt-stale
+joycraft-evidence: {"wallMs":9867,"load":[2.21142578125,2.42529296875],"cores":14,"loaded":false,"argv":["node","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b14.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"],"exitCode":0,"timedOut":false,"revision":"3df6db768e2d6da3374b0291b0f6733f5635b133","dirty":true}

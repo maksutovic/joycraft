@@ -1,0 +1,7 @@
+base gate="pnpm test" "- It works. Check: pnpm test add.test.ts passes.": exit 0, gate-in-spec gaps 0
+head gate="pnpm test" "- It works. Check: pnpm test add.test.ts passes.": exit 2, gate-in-spec gaps 1
+base gate="cargo test" "- It parses. Check: cargo test parser::tests passes.": exit 0, gate-in-spec gaps 0
+head gate="cargo test" "- It parses. Check: cargo test parser::tests passes.": exit 2, gate-in-spec gaps 1
+base gate="pnpm test" "- It works. Check: pnpm test tests/add.test.ts passes.": exit 0, gate-in-spec gaps 0
+head gate="pnpm test" "- It works. Check: pnpm test tests/add.test.ts passes.": exit 0, gate-in-spec gaps 0
+joycraft-evidence: {"wallMs":256,"load":[2.39111328125,2.39111328125],"cores":14,"loaded":false,"argv":["node","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/b1-e2e.mjs","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/p27/basetree"],"exitCode":0,"timedOut":false,"revision":"3df6db768e2d6da3374b0291b0f6733f5635b133","dirty":true}

@@ -1,0 +1,60 @@
+// Probe spec 27 bullet 14: try to push non-docs changes through the docs-only receipt exemption.
+import { execFileSync, spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, realpathSync, writeFileSync, symlinkSync, rmSync, renameSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+const runtime = join(process.argv[2], 'payload/.joycraft/runtime');
+const git = (cwd, ...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@e.com', ...a], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const put = (f, b) => { mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, b); };
+function fixture(yaml = 'tests:\n  gate: node gate.mjs\n') {
+  const base = realpathSync(mkdtempSync(join(tmpdir(), 'p27-'))); const remote = join(base, 'r.git'); const root = join(base, 'w');
+  git(base, 'init', '-q', '--bare', remote); mkdirSync(root); git(root, 'init', '-q', '-b', 'main');
+  put(join(root, '.gitignore'), 'receipts/\n'); put(join(root, 'joycraft.yaml'), yaml); put(join(root, 'gate.mjs'), "console.log('ok')\n");
+  put(join(root, 'src/x.mjs'), 'export const x = 1;\n'); put(join(root, 'docs/features/f/a.md'), 'a\n');
+  git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'one'); const first = git(root, 'rev-parse', 'HEAD');
+  put(join(root, 'b.txt'), 'b\n'); git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'two');
+  git(root, 'remote', 'add', 'origin', remote);
+  return { root, first, head: git(root, 'rev-parse', 'HEAD') };
+}
+const receipt = (root, rev) => put(join(root, 'receipts/g.log'), `out\njoycraft-evidence: ${JSON.stringify({ argv: ['node', 'gate.mjs'], exitCode: 0, revision: rev, dirty: false, wallMs: 1, load: [1, 1], cores: 8, loaded: false, timedOut: false })}\n`);
+const push = (root, first) => { const r = spawnSync(process.execPath, [join(runtime, 'delivery.mjs'), 'push', '--root', root, '--base', first, '--remote', 'origin', '--branch', 'feature', '--gate-receipt', 'receipts/g.log'], { cwd: root, encoding: 'utf8' }); return r.status === 0 ? 'PUSHED' : `REFUSED ${r.stderr.trim()}`; };
+const commit = (root, m) => { git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', m); };
+const out = [];
+const scenario = (name, expect, fn, yaml) => { const f = fixture(yaml); receipt(f.root, f.head); fn(f); const got = push(f.root, f.first); out.push(`${got.startsWith(expect) ? 'OK  ' : 'BAD '} ${name}: expected ${expect}, got ${got}`); };
+scenario('docs-only commit', 'PUSHED', ({ root }) => { put(join(root, 'docs/features/f/n.md'), 'n\n'); commit(root, 'n'); });
+scenario('rename code into docs (src/x.mjs -> docs/x.mjs)', 'REFUSED', ({ root }) => { git(root, 'mv', 'src/x.mjs', 'docs/x.mjs'); commit(root, 'mv'); });
+scenario('rename docs out to code (docs/features/f/a.md -> src/a.md)', 'REFUSED', ({ root }) => { git(root, 'mv', 'docs/features/f/a.md', 'src/a.md'); commit(root, 'mv'); });
+scenario('rename within docs', 'PUSHED', ({ root }) => { git(root, 'mv', 'docs/features/f/a.md', 'docs/features/f/b.md'); commit(root, 'mv'); });
+scenario('docs-evil/ sibling', 'REFUSED', ({ root }) => { put(join(root, 'docs-evil/x.mjs'), 'x\n'); commit(root, 'e'); });
+scenario('docsx file', 'REFUSED', ({ root }) => { put(join(root, 'docsx'), 'x\n'); commit(root, 'e'); });
+scenario('test file change', 'REFUSED', ({ root }) => { put(join(root, 'tests/a.test.ts'), 'x\n'); commit(root, 't'); });
+scenario('joycraft.yaml change', 'REFUSED', ({ root }) => { put(join(root, 'joycraft.yaml'), 'tests:\n  gate: node gate.mjs\n# x\n'); commit(root, 'y'); });
+scenario('mode change of gate.mjs', 'REFUSED', ({ root }) => { execFileSync('chmod',['+x',join(root,'gate.mjs')]); commit(root, 'mode'); });
+scenario('replace docs dir with symlink to src', 'REFUSED', ({ root }) => { rmSync(join(root, 'docs'), { recursive: true }); symlinkSync('src', join(root, 'docs')); commit(root, 'link'); });
+scenario('symlink under docs pointing at code', 'PUSHED', ({ root }) => { symlinkSync('../../../src/x.mjs', join(root, 'docs/features/f/x.mjs')); commit(root, 'link'); });
+scenario('code merged in from a side branch after the receipt', 'REFUSED', ({ root }) => { git(root, 'checkout', '-q', '-b', 's'); put(join(root, 'src/x.mjs'), 'export const x = 2;\n'); commit(root, 's'); git(root, 'checkout', '-q', 'main'); put(join(root, 'docs/features/f/n.md'), 'n\n'); commit(root, 'n'); git(root, 'merge', '-q', '--no-ff', '-m', 'm', 's'); });
+scenario('evil merge: docs-only parents, merge commit itself edits code', 'REFUSED', ({ root }) => { git(root, 'checkout', '-q', '-b', 's'); put(join(root, 'docs/features/f/s.md'), 's\n'); commit(root, 's'); git(root, 'checkout', '-q', 'main'); git(root, 'merge', '-q', '--no-ff', '--no-commit', 's'); put(join(root, 'src/x.mjs'), 'export const x = 3;\n'); git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'evil merge'); });
+// Receipt from a side branch: the side commit changed code; it gets merged in, then a docs commit.
+{
+  const f = fixture(); const { root } = f;
+  git(root, 'checkout', '-q', '-b', 's'); put(join(root, 'src/x.mjs'), 'export const x = 9;\n'); commit(root, 's'); const side = git(root, 'rev-parse', 'HEAD');
+  git(root, 'checkout', '-q', 'main'); put(join(root, 'src/y.mjs'), 'y\n'); commit(root, 'main code'); git(root, 'merge', '-q', '--no-ff', '-m', 'm', 's');
+  receipt(root, side); const got = push(root, f.first); out.push(`${got.startsWith('REFUSED') ? 'OK  ' : 'BAD '} receipt on side commit, main has code since: expected REFUSED, got ${got}`);
+}
+{
+  const f = fixture(); const { root } = f;
+  git(root, 'checkout', '-q', '-b', 's'); put(join(root, 'src/x.mjs'), 'export const x = 9;\n'); commit(root, 's'); const side = git(root, 'rev-parse', 'HEAD');
+  git(root, 'checkout', '-q', 'main');
+  receipt(root, side); const got = push(root, f.first); out.push(`${got.startsWith('REFUSED') ? 'OK  ' : 'BAD '} receipt on unmerged side commit: expected REFUSED, got ${got}`);
+}
+{
+  const f = fixture(); const { root } = f;
+  git(root, 'checkout', '-q', '-b', 's'); put(join(root, 'src/x.mjs'), 'export const x = 9;\n'); commit(root, 's'); const side = git(root, 'rev-parse', 'HEAD');
+  git(root, 'checkout', '-q', 'main'); put(join(root, 'docs/features/f/n.md'), 'n\n'); commit(root, 'docs'); git(root, 'merge', '-q', '--no-ff', '-m', 'm', 's');
+  receipt(root, side); const got = push(root, f.first); out.push(`${got.startsWith('PUSHED') ? 'OK  ' : 'BAD '} receipt on merged side commit, only docs on main since (tree = side + docs): expected PUSHED, got ${got}`);
+}
+scenario('docs root . (features/archive/context top-level)', 'REFUSED', ({ root }) => { put(join(root, 'features/f/n.md'), 'n\n'); commit(root, 'n'); }, 'tests:\n  gate: node gate.mjs\npaths:\n  features: features\n  archive: archive\n  context: context\n');
+scenario('paths ./docs/... normalised, docs-only', 'PUSHED', ({ root }) => { put(join(root, 'docs/features/f/n.md'), 'n\n'); commit(root, 'n'); }, 'tests:\n  gate: node gate.mjs\npaths:\n  features: ./docs/features\n  archive: ./docs/archive\n  context: ./docs/context\n');
+scenario('test file placed under docs (spec allows)', 'PUSHED', ({ root }) => { put(join(root, 'docs/features/f/evil.test.ts'), 'x\n'); commit(root, 'n'); });
+scenario('short revision in receipt', 'REFUSED', ({ root, head }) => { receipt(root, head.slice(0,12)); put(join(root, 'docs/features/f/n.md'), 'n\n'); commit(root, 'n'); });
+console.log(out.join('\n'));

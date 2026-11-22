@@ -1,0 +1,17 @@
+// Probe spec 27 bullet 3: which argv forms completion.mjs ranCommand unwraps to the gate `pnpm verify`.
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+const src = readFileSync(`${process.argv[2]}/payload/.joycraft/runtime/completion.mjs`, 'utf8');
+const body = src.slice(src.indexOf('const normalizeCommand ='), src.indexOf('/** A spec review runs'));
+const ranCommand = new Function('path', `${body}; return ranCommand;`)(path);
+const gate = 'pnpm verify';
+for (const [argv, want] of [
+  [['bash', '-lc', 'pnpm verify'], true], [['sh', '-c', 'pnpm verify', 'sh'], true], [['zsh', '-c', 'pnpm verify'], true],
+  [['dash', '-c', 'pnpm verify'], true], [['/usr/bin/env', 'bash', '-c', 'pnpm verify'], true], [['env', 'CI=1', 'pnpm', 'verify'], true],
+  [['pnpm', 'verify', 'tests/x'], false], [['bash', '-c', 'pnpm verify tests/x'], false], [['env', 'CI=1', 'pnpm', 'verify', 'tests/x'], false],
+  [['/bin/bash', '-c', '  pnpm   verify '], true], [['env', '-i', 'PATH=/bin', 'sh', '-c', 'pnpm verify', 'sh', 'x'], true],
+  [['env', 'A=1', 'env', 'B=2', 'pnpm', 'verify'], true],
+  [['env', '-u', 'HOME', 'pnpm', 'verify'], null], [['bash', '-e', '-c', 'pnpm verify'], null], [['bash', '--login', '-c', 'pnpm verify'], null],
+  [['timeout', '600', 'pnpm', 'verify'], null], [['nice', 'pnpm', 'verify'], null], [['C:\\Windows\\System32\\cmd.exe', '/c', 'pnpm verify'], null],
+  [['bash.exe', '-c', 'pnpm verify'], null], [['ksh', '-c', 'pnpm verify'], null], [['bash', '-c', 'exec pnpm verify'], null],
+]) { const got = ranCommand(argv) === gate; console.log(`${want === null ? 'NOTE' : got === want ? 'OK  ' : 'BAD '} ${JSON.stringify(argv)} -> ${got ? 'refused as gate' : 'passes'}`); }
