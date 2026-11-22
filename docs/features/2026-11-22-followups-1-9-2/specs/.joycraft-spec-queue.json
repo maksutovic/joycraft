@@ -213,7 +213,7 @@
       "id": 4,
       "file": "04-archive-lines.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -269,6 +269,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T17:58:38.472Z"
       }
     },
     {
