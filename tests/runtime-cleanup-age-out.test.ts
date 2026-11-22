@@ -216,3 +216,39 @@ describe('age-out review 9 fixes', () => {
     expect(existsSync(join(top, 'app/docs/archive/working/research/old.md'))).toBe(true);
   });
 });
+
+// Spec: docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md
+describe('age-out 1.9.1 cleanup fixes', () => {
+  const repo = (files: Record<string, string>, config?: string) => {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-age-out-191-')));
+    dirs.push(root);
+    git(root, ['init', '-q', '-b', 'main']);
+    if (config) put(root, 'joycraft.yaml', config);
+    for (const [file, body] of Object.entries(files)) put(root, file, body);
+    git(root, ['add', '-A'], daysAgo(20)); git(root, ['commit', '-q', '-m', 'old'], daysAgo(20));
+    return root;
+  };
+
+  it('[AC:spec-3-2] a doc whose name holds a double quote or a tab gets its real age', () => {
+    const names = ['docs/research/say "hi".md', ...(process.platform === 'win32' ? [] : ['docs/research/tab\there.md'])];
+    const root = repo({ 'docs/context/a.md': '# a\n', ...Object.fromEntries(names.map(name => [name, '# x\n'])) });
+    const out = ageOut(root, ['--days', '14']);
+    expect(out.skipped).toEqual([]);
+    expect(out.docs.map((doc: { path: string; days: number }) => [doc.path, doc.days]).sort()).toEqual(names.map(name => [name, 20]).sort());
+  });
+
+  it('[AC:spec-3-3] a docs root in a case Git does not track names both cases; with no folder the message stays', () => {
+    const none = repo({ 'notes/a.md': '# a\n' }, 'paths:\n  features: Docs/features\n  archive: Docs/archive\n  context: Docs/context\n');
+    expect(ageOut(none, ['--days', '14']).skipped).toEqual([{ path: 'Docs', reason: 'Git tracks no file under Docs' }]);
+    const root = repo({ 'docs/context/a.md': '# a\n', 'docs/research/old.md': '# x\n' }, 'paths:\n  features: Docs/features\n  archive: Docs/archive\n  context: Docs/context\n');
+    // The mismatch shows only where the temp disk ignores case.
+    if (!existsSync(join(root, 'DOCS'))) return;
+    const out = ageOut(root, ['--days', '14']);
+    expect(out).toMatchObject({ count: 0, docs: [] });
+    expect(out.skipped).toHaveLength(1);
+    expect(out.skipped[0].path).toBe('Docs');
+    expect(out.skipped[0].reason).toMatch(/differs in case/);
+    expect(out.skipped[0].reason).toContain('Docs');
+    expect(out.skipped[0].reason).toContain('docs');
+  });
+});

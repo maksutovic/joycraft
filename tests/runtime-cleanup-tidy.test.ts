@@ -140,3 +140,33 @@ describe('tidy review fixes', () => {
     expect(out.base).not.toBe(head);
   });
 });
+
+// Spec: docs/features/2026-11-22-fixes-1-9-1/specs/03-cleanup-fixes.md
+describe('tidy 1.9.1 cleanup fixes', () => {
+  it('[AC:spec-3-1] new-doc skips a backlog* file under the docs root, in any case; other new docs still count', () => {
+    const root = repo();
+    git(root, ['checkout', '-q', '-b', 'feature']);
+    for (const file of ['docs/backlog.md', 'docs/Backlog-2026.md', 'docs/guides/x.md']) put(join(root, file), '# x\n');
+    git(root, ['add', '.']); git(root, ['commit', '-q', '-m', 'docs']);
+    const docs = tidy(root).json.findings.filter((item: { check: string }) => item.check === 'new-doc');
+    expect(docs.map((item: { path: string; files: string[] }) => [item.path, item.files])).toEqual([['docs/guides', ['docs/guides/x.md']]]);
+  });
+
+  it('[AC:spec-3-5] tidy run from a subfolder finds the project root: same findings, and its checks: run', () => {
+    const root = repo();
+    put(join(root, '.joycraft/runtime/.keep'), '');
+    put(join(root, 'joycraft.yaml'), 'checks:\n  - name: lint\n    run: sh lint.sh\n');
+    put(join(root, 'lint.sh'), 'echo "docs/guides/x.md:2: Use the active voice."\n');
+    git(root, ['add', '.']); git(root, ['commit', '-q', '-m', 'setup']);
+    git(root, ['checkout', '-q', '-b', 'feature']);
+    put(join(root, 'docs/guides/x.md'), '# x\n');
+    git(root, ['add', '.']); git(root, ['commit', '-q', '-m', 'docs']);
+    const fromRoot = tidy(root).json;
+    const fromSub = tidy(join(root, 'docs/guides')).json;
+    expect(fromRoot.findings).toEqual(expect.arrayContaining([
+      expect.objectContaining({ check: 'lint', path: 'docs/guides/x.md', line: 2 }),
+      expect.objectContaining({ check: 'new-doc', path: 'docs/guides' }),
+    ]));
+    expect(fromSub).toEqual(fromRoot);
+  });
+});
