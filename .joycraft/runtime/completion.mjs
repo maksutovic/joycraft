@@ -139,29 +139,42 @@ function ranCommand(argv) {
   }
 }
 
+/**
+ * One spelling for a runner alias, so a gate matches however it was launched:
+ * a leading `npx`, `pnpm exec` or `npm exec` is dropped, and so is the `run`
+ * word of a leading `pnpm run`, `npm run` or `yarn run`.
+ */
+function runnerCommand(text) {
+  const line = normalizeCommand(text);
+  const alias = /^(?:npx|(?:pnpm|npm) exec) (.+)$/.exec(line);
+  if (alias) return alias[1];
+  const run = /^(pnpm|npm|yarn) run (.+)$/.exec(line);
+  return run ? `${run[1]} ${run[2]}` : line;
+}
+
 /** A spec review runs the spec's own tests; the recorded gate and full commands
  * run at the review boundary or wave end. A report that ran one is refused (exit 2). */
 function refuseGateRuns(root, report) {
   let tests;
   // A joycraft.yaml that does not parse never passes: the gate it records is unknown.
   try { tests = readConfig(root).tests; } catch (error) { throw refused(new Error(`joycraft.yaml does not parse, so the recorded tests.gate is unknown; fix joycraft.yaml and check the report again (${error.message})`)); }
-  const gates = [['tests.gate', tests.gate], ['tests.full', tests.full]].filter(([, command]) => command).map(([key, command]) => [key, normalizeCommand(command)]);
+  const gates = [['tests.gate', tests.gate], ['tests.full', tests.full]].filter(([, command]) => command).map(([key, command]) => [key, normalizeCommand(command), runnerCommand(command)]);
   if (!gates.length) return;
   report.flows.forEach((flow, flowIndex) => (Array.isArray(flow?.observations) ? flow.observations : []).forEach((observation, index) => {
     const argv = observation?.command?.argv;
     if (!Array.isArray(argv) || !argv.every(item => typeof item === 'string')) return;
-    const ran = ranCommand(argv);
-    const match = gates.find(([, command]) => command === ran);
+    const ran = runnerCommand(ranCommand(argv));
+    const match = gates.find(([, , command]) => command === ran);
     if (match) throw refused(new Error(`Report flows[${flowIndex}].observations[${index}] ran the recorded ${match[0]} command \`${match[1]}\`; a spec review runs the spec's own focused tests, so rerun with those and correct the report`));
   }));
 }
 
-function validatePassingReport(root, report, state, reportPath) {
+function validatePassingReport(root, report, state, reportPath, { gateRuns = true } = {}) {
   validateReview({ root, report, state, reportPath });
   refuseHeldFindings(report, state.spec.id);
   requireValue(report.verdict === 'PASS', 'Report verdict must be PASS; FAIL or UNVERIFIED cannot complete a spec');
   requireValue(report.unresolved.length === 0, 'Report has unresolved review findings');
-  refuseGateRuns(root, report);
+  if (gateRuns) refuseGateRuns(root, report);
 }
 
 /**
@@ -169,13 +182,13 @@ function validatePassingReport(root, report, state, reportPath) {
  * surface. Dispatch adapters use this before returning a report to the same
  * reviewer for correction; only complete() is allowed to accept it.
  */
-export async function checkReport({ root = process.cwd(), queuePath, specId, reportPath }) {
+export async function checkReport({ root = process.cwd(), queuePath, specId, reportPath, gateRuns = true }) {
   queuePath = relativePath(queuePath);
   reportPath = relativePath(reportPath);
   const state = readQueue({ root, queuePath, specId });
   const reportBytes = readLocal(root, reportPath);
   const report = parseJson(reportBytes, reportPath);
-  validatePassingReport(root, report, state, reportPath);
+  validatePassingReport(root, report, state, reportPath, { gateRuns });
   // Missing or broken peer validation is an error, never a passing fallback.
   const { validateEvidence } = await import('./evidence.mjs');
   requireValue(typeof validateEvidence === 'function', 'Evidence validator is unavailable');
@@ -265,7 +278,9 @@ export async function complete({ root = process.cwd(), queuePath, specId, report
   assertNoJournal(root, queuePath);
   const state = readQueue({ root, queuePath, specId });
   requireValue(state.spec.status === 'in-review' || state.spec.status === 'done', 'Only an in-review spec can move to done');
-  const checked = await checkReport({ root, queuePath, specId, reportPath });
+  // A done spec's re-check skips the gate-run check: its report was accepted
+  // under the gate recorded then, and the accepted-report hash below still binds it.
+  const checked = await checkReport({ root, queuePath, specId, reportPath, gateRuns: state.spec.status !== 'done' });
   const { report, acceptedReport } = checked;
   if (state.spec.status === 'done') {
     requireValue(state.spec.ownerAcceptance === undefined && state.spec.waiver === undefined, 'Done spec has an owner acceptance or waiver; ordinary completion cannot relabel it as PASS');

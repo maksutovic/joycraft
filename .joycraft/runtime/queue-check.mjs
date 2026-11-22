@@ -117,6 +117,16 @@ function plainCheck(lines) {
  * line is returned as `unclosed`, because it hides the rest of the section.
  */
 export function acceptanceBullets(text) {
+  return sectionBullets(text, 'acceptance');
+}
+
+/**
+ * The bullets of the section with heading id `id`, read as
+ * `acceptanceBullets` reads the acceptance section, and `fencedLines`: the
+ * lines, with their line numbers, inside the fenced blocks of that section
+ * that are outside any bullet.
+ */
+export function sectionBullets(text, id) {
   const lines = String(text).replace(/^\uFEFF/, '').split(/\r?\n/);
   let start = 0;
   if (lines[0] === '---') {
@@ -137,6 +147,7 @@ export function acceptanceBullets(text) {
   let afterBlock = false;
   let indented = false;
   const bullets = [];
+  const fencedLines = [];
   const hide = line => current.lines.push({ line, hidden: true });
   // A fence or comment block can open on an item's own line.
   const openOnItem = (content, column) => {
@@ -150,6 +161,7 @@ export function acceptanceBullets(text) {
     const indent = indentOf(line);
     if (block && !(block.column !== null && !blank && indent < block.column)) {
       if (closes(block.marker, strip(line, block.column ?? 0))) { block = null; afterBlock = true; }
+      else if (block.column === null && block.marker !== '<!--' && section) fencedLines.push({ line: index + 1, text: line });
       if (current) hide(line);
       continue;
     }
@@ -173,7 +185,7 @@ export function acceptanceBullets(text) {
     const found = heading(line);
     if (found) {
       if (section && found.level <= section.level) break;
-      if (!section && found.id === 'acceptance') section = found;
+      if (!section && found.id === id) section = found;
       current = null;
       previousBlank = false;
       continue;
@@ -193,9 +205,10 @@ export function acceptanceBullets(text) {
     else current = null;
     previousBlank = false;
   }
-  if (!section) return { section: false, bullets: [] };
+  if (!section) return { section: false, bullets: [], fencedLines: [] };
   return {
     section: true,
+    fencedLines,
     unclosed: block && block.column === null ? block.line : null,
     bullets: bullets.map(bullet => {
       const joined = bullet.lines.map(item => item.line).join(' ').replace(/\s+/g, ' ').trim();
@@ -217,20 +230,27 @@ const normalize = text => String(text).replace(/\s+/g, ' ').trim();
 
 /**
  * Whether `text` names `command` as a whole command, whitespace-normalized.
+ * A chain ending closes the command in code and in plain text: `&&`, `||`,
+ * `|` or `2>&1` after a space and followed by whitespace ("pnpm verify &&
+ * pnpm lint", "pnpm verify 2>&1 | tee log", "pnpm verify || true"). A redirect
+ * with no pipe ("pnpm verify > log") and an unspaced `;` are not endings.
  * In a code span (CommonMark backtick runs; a fenced block joined into the
- * text reads as one) the command must end the span, after the span start, a
- * space, a quote or a bracket. In plain text it starts after the text start,
- * a space, a code span, a quote or a bracket, and ends at the text end, a code
- * span, punctuation followed by a space or the end, a prose word that
+ * text reads as one) the command must end the span or a chain ending must
+ * follow it, after the span start, a space, a quote or a bracket. In plain
+ * text it starts after the text start, a space, a code span, a quote or a
+ * bracket, and ends at a chain ending, the text end, a code span, punctuation followed by a space or the end, a prose word that
  * whitespace, the end, a code span or such punctuation closes ("run pnpm
  * verify before merging", "doesn't", "re-runs", "e.g.", "2 times"), a `(`
  * before a prose word, a spaced `&`, a spaced or closing dash or arrow (`—`,
  * `–`, ` - `, `→`), or an unspaced `—` or `–` followed by a prose word and a
  * space ("verify—then read"). A dash stuck to an argument ("test —run",
  * "test–run") keeps it an argument.
- * More arguments make it a different command: a next word holding `/`, `.`,
- * `:`, `-` or `=` (as in `pnpm test tests/x.test.ts`, `pnpm test x.test.ts`,
- * `cargo test a::b` or `pnpm test -- --run`) does not name the gate.
+ * More arguments make it a different command: a next word that
+ * starts with `-` is an argument (`--run`, `pnpm test -- --run`), as is a word
+ * holding `/`, `.`, `:` or `=` (`pnpm test tests/x.test.ts`,
+ * `pnpm test x.test.ts`, `cargo test a::b`); a word glued on by a hyphen
+ * (`pnpm verify-all`) is a different command. A word with an inner hyphen
+ * between letters (`re-runs`) is prose and ends the command.
  */
 export function namesCommand(text, command) {
   const wanted = normalize(command);
@@ -251,7 +271,8 @@ export function namesCommand(text, command) {
     at = close.index + run.length;
   }
   const command_ = escape(wanted);
-  const inCode = new RegExp(`(?:^|(?<=[\\s"'(\\[]))${command_}[.,;:!?)\\]"']*$`, 'u');
+  const chain = `\\s(?:&&|\\|\\||\\||2>&1)(?=\\s)`;
+  const inCode = new RegExp(`(?:^|(?<=[\\s"'(\\[]))${command_}(?:[.,;:!?)\\]"']*$|${chain})`, 'u');
   if (code.some(span => inCode.test(normalize(span)))) return true;
   // Punctuation ends a word only when whitespace, a code span or the text end follows it, so a
   // `.`, `:` or `'` inside the next token (x.test.ts, a::b, test's) never counts as an ending.
@@ -264,7 +285,7 @@ export function namesCommand(text, command) {
   // when a prose word and whitespace follow (verify—then read); a dash stuck to an argument
   // (test —run, test–run, test—tests/a.test.ts) keeps it an argument.
   const dash = `\\s?[—–→⇒](?=\\s|$)|[—–](?=${word}\\s)|\\s-(?=\\s|$)`;
-  const end = `$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001)|\\s(?:${prose})|${dash}`;
+  const end = `${chain}|$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001)|\\s(?:${prose})|${dash}`;
   const inPlain = new RegExp(`(?:^|(?<=[\\s\\u0001"'(\\[]))${command_}(?=${end})`, 'u');
   return inPlain.test(normalize(plain));
 }
@@ -375,7 +396,8 @@ export function checkQueue({ root = process.cwd(), queuePath }) {
     const file = path.posix.join(folder, spec.file);
     const at = `spec ${spec.id} (${file}`;
     if (existsSync(localPath(root, file, true))) {
-      const { section, bullets, unclosed } = acceptanceBullets(readLocal(root, file).toString('utf8'));
+      const specText = readLocal(root, file).toString('utf8');
+      const { section, bullets, unclosed } = acceptanceBullets(specText);
       if (!section || bullets.length === 0) gap('missing-check', spec.id, null, `${at}) has no acceptance bullet under an acceptance heading.`);
       if (unclosed) gap('missing-check', spec.id, unclosed, `${at}:${unclosed}): a code fence or HTML comment opened here is never closed, so it hides the rest of the acceptance section.`);
       for (const bullet of bullets) {
@@ -383,6 +405,17 @@ export function checkQueue({ root = process.cwd(), queuePath }) {
         else if (!bullet.plainCheck) gap('missing-check', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet "${label(bullet.text)}" has a \`Check:\` only in code or a comment.`);
         for (const command of gateCommands) {
           if (namesCommand(bullet.text, command) || bullet.fenced.some(line => normalize(line) === command)) gap('gate-in-spec', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet names the recorded gate or full command \`${command}\`; a spec checks with its own test files, and the gate runs at the review boundary or wave end.`);
+        }
+      }
+      // The scope section tells the implementer what to run, so a gate command there is the same gap.
+      const scope = sectionBullets(specText, 'implementation-and-verification-scope');
+      const scopeLines = [
+        ...scope.bullets.map(bullet => ({ line: bullet.line, names: command => namesCommand(bullet.text, command) || bullet.fenced.some(line => normalize(line) === command) })),
+        ...scope.fencedLines.map(fenced => ({ line: fenced.line, names: command => normalize(fenced.text) === command })),
+      ].sort((left, right) => left.line - right.line);
+      for (const scopeLine of scopeLines) {
+        for (const command of gateCommands) {
+          if (scopeLine.names(command)) gap('gate-in-spec', spec.id, scopeLine.line, `${at}:${scopeLine.line}): the implementation and verification scope line names the recorded gate or full command \`${command}\`; write "the recorded gate" instead, and check the spec with its own test files.`);
         }
       }
     }

@@ -138,11 +138,16 @@ function runsGate(argv, gate, root) {
   const expected = words(gate);
   return plain && argv.length === expected.length && argv.every((value, index) => value === expected[index]);
 }
+/** File names that are code under the docs root (see docsOnlySince). */
+const manifest = /^(?:package\.json|package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|deno\.lock|tsconfig.*\.json)$/i;
 /** Every path changed from `revision` to `head` is a record session end writes, so the gate ran on
  * the same code: a record file (.md, .json, .log, .txt, .diff, .patch, .yaml, .yml) under
  * paths.features or paths.archive (feature folders, moved whole by an archive, with their receipts),
  * or a Markdown or JSON file elsewhere under the docs root (never `.`). A symlink or submodule on
- * either side, or any other file (a source file in a feature folder too), needs the gate again. */
+ * either side, or any other file (a source file in a feature folder too), needs the gate again.
+ * A manifest is code, never a record, in feature and archive folders too: package.json, tsconfig*.json
+ * and every lockfile (package-lock.json, npm-shrinkwrap.json, pnpm-lock.yaml, yarn.lock, bun.lock,
+ * bun.lockb, deno.lock). */
 async function docsOnlySince(root, revision, head) {
   if (typeof revision !== 'string' || !/^[0-9a-f]{40,64}$/.test(revision)) return false;
   if (!(await gitOk(root, ['cat-file', '-e', `${revision}^{commit}`]))) return false;
@@ -164,6 +169,7 @@ async function docsOnlySince(root, revision, head) {
   return changes.every(({ modes, path }) => {
     if (!modes.every(mode => mode === '000000' || mode === '100644' || mode === '100755')) return false;
     if (!path.startsWith(`${docs}/`)) return false;
+    if (manifest.test(path.split('/').at(-1))) return false;
     if (records.some(folder => path.startsWith(`${folder}/`))) return /\.(?:md|json|log|txt|diff|patch|ya?ml)$/i.test(path);
     return /\.(?:md|json)$/i.test(path);
   });

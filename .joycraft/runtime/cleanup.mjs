@@ -181,6 +181,20 @@ function historyPage(file, text) {
 }
 
 const inside = (file, folder) => file === folder || file.startsWith(`${folder}/`);
+/** A backlog file, by its path under the docs root: a `backlog` folder on the way, or a name that starts with `backlog` in any case. */
+const backlogFile = relative => relative.split('/').slice(0, -1).includes('backlog') || path.posix.basename(relative).toLowerCase().startsWith('backlog');
+
+/**
+ * The project root: the nearest folder up from `start` (default: the working
+ * directory) that holds a `.joycraft/` folder, else `start` itself. Every
+ * command without --root starts here.
+ */
+export function projectRoot(start = process.cwd()) {
+  for (let current = path.resolve(start); ; current = path.dirname(current)) {
+    try { if (lstatSync(path.join(current, '.joycraft')).isDirectory()) return current; } catch { /* keep looking */ }
+    if (path.dirname(current) === current) return path.resolve(start);
+  }
+}
 
 // Every Git call: raw non-ASCII names and room for a large diff or log.
 const gitArgs = args => ['-c', 'core.quotepath=false', ...args];
@@ -530,7 +544,7 @@ function rangeFindings(root, config, range, read = file => readText(root, file))
   // new-doc: Markdown the range added under the docs root, outside the work folders and the backlog.
   const added = git(root, ['diff', '--name-only', '--diff-filter=A', '-z', range.base, range.head, '--', docs]).split('\0')
     .filter(file => file.endsWith('.md') && !inside(file, features) && !inside(file, archive)
-      && !(docs === '.' ? file : file.slice(docs.length + 1)).split('/').slice(0, -1).includes('backlog'));
+      && !backlogFile(docs === '.' ? file : file.slice(docs.length + 1)));
   const groups = new Map();
   for (const file of added) { const folder = path.posix.dirname(file); groups.set(folder, [...(groups.get(folder) ?? []), file]); }
   for (const [folder, files] of groups) {
@@ -575,9 +589,14 @@ export function checkFinding(text, root) {
   return { file: path.posix.normalize(file), line: Number(match[2]), message: match[3] };
 }
 
+// A shell's "command not found" line: `sh: 1: x: not found` (dash), `bash: x: command not found`
+// (also `bash: line 1: x: ...`, `/bin/sh: x: ...`), `zsh: command not found: x`.
+const notFound = /^[^\s:]+:(?: (?:line )?\d+:)? (?:[^:\n]+: (?:command )?not found|command not found: .+)\s*$/m;
+
 /**
  * The project's own checkers (joycraft.yaml checks:). Each line of stdout or
  * stderr that reads `path:line: message` is a finding. A command not found,
+ * also one that exits 0 after a shell's "not found" line and gives no finding,
  * or one that runs past its timeout (default 120 seconds), is skipped.
  */
 function customChecks(root, checks, skipped) {
@@ -599,6 +618,8 @@ function customChecks(root, checks, skipped) {
       found += 1;
       findings.push({ check: name, path: finding.file, line: finding.line, detail: finding.message, fix: `Fix it as ${name} says, then run tidy again.`, fixable: false });
     }
+    // A missing tool in a pipeline: the shell says so on stderr, but the last command's exit 0 wins.
+    if (result.status === 0 && found === 0 && notFound.test(result.stderr ?? '')) { skipped.push({ check: name, reason: `Command not found: ${run}` }); continue; }
     if (result.status !== 0 && found === 0) findings.push({ check: name, path: '.', detail: `${run} failed (exit ${result.status ?? result.signal}) with no path:line output.`, fix: `Run ${run} and read its output.`, fixable: false });
   }
   return findings;
@@ -833,7 +854,13 @@ export function ageOut({ root = process.cwd(), days, apply = false, now = Date.n
     const tab = line.indexOf('\t');
     return { mode: line.slice(0, 6), file: line.slice(tab + 1) };
   });
-  if (entries.length === 0) return none(`Git tracks no file under ${docs}`);
+  if (entries.length === 0) {
+    // On a case-insensitive disk a `Docs` root opens the tracked `docs/`, but Git matches names by case.
+    const tracked = existsSync(path.join(root, docs)) && git(root, ['ls-files', '-z', '--', `:(icase)${docs}`]).split('\0').find(Boolean);
+    const named = tracked ? tracked.split('/').slice(0, parts.length).join('/') : null;
+    if (named && named !== docs) return none(`The docs root ${docs} differs in case from ${named}, which Git tracks: write it as ${named} in joycraft.yaml paths`);
+    return none(`Git tracks no file under ${docs}`);
+  }
   const under = file => file.slice(docs.length + 1);
   const reached = mapReached(root, paths, docs);
   const installed = installedFiles(root);
@@ -842,16 +869,17 @@ export function ageOut({ root = process.cwd(), days, apply = false, now = Date.n
     return file.endsWith('.md') && !entryNames.includes(name) && name !== 'CLAUDE.local.md' && !projectFiles.test(name)
       && !under(file).split('/').some(part => part.startsWith('.')) && !installed.has(file)
       && ![features, archive, context].some(folder => inside(file, folder)) && !reached.has(file)
-      && !under(file).split('/').slice(0, -1).includes('backlog') && !name.toLowerCase().startsWith('backlog');
+      && !backlogFile(under(file));
   };
   const tracked = entries.filter(({ file }) => working(file));
   // Log and status name files from the top of the repository; ls-files names them from root.
   const prefix = git(root, ['rev-parse', '--show-prefix']);
   const fromRoot = file => (prefix && file.startsWith(prefix) ? file.slice(prefix.length) : file);
   const last = new Map();
-  for (const entry of git(root, ['log', '--format=%x00%ct', '--name-only', '--no-renames', '--diff-merges=first-parent', '--', docs]).split('\0').filter(Boolean)) {
-    const [time, ...files] = entry.split('\n').filter(Boolean);
-    for (const file of files.map(fromRoot)) if (!last.has(file)) last.set(file, Number(time) * 1000);
+  // -z: names arrive raw and NUL-ended, so a tab or a double quote in a name is not quoted.
+  for (const entry of git(root, ['log', '-z', '--format=%x01%ct', '--name-only', '--no-renames', '--diff-merges=first-parent', '--', docs]).split('\x01').filter(Boolean)) {
+    const [time, ...files] = entry.split('\0');
+    for (const file of files.map(name => name.replace(/^\n/, '')).filter(Boolean).map(fromRoot)) if (!last.has(file)) last.set(file, Number(time) * 1000);
   }
   // Uncommitted: staged or unstaged changes; -z keeps non-ASCII names raw.
   const dirty = new Set(git(root, ['status', '--porcelain', '-z', '--no-renames', '--untracked-files=no', '--', docs], { raw: true }).split('\0').filter(Boolean).map(line => fromRoot(line.slice(3))));
@@ -921,7 +949,8 @@ export async function main(argv = process.argv.slice(2)) {
   const args = [...argv];
   const take = flag => { const at = args.indexOf(flag); if (at === -1) return undefined; const value = args[at + 1]; requireValue(value && !value.startsWith('--'), usage); args.splice(at, 2); return value; };
   const has = flag => { const at = args.indexOf(flag); if (at !== -1) args.splice(at, 1); return at !== -1; };
-  const root = path.resolve(take('--root') ?? '.');
+  const flag = take('--root');
+  const root = flag === undefined ? projectRoot() : path.resolve(flag);
   if (has('--checks')) {
     requireValue(args.length === 0, usage);
     const { gateChecks } = await import('./entry-check.mjs');
