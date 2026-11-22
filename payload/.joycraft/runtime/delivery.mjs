@@ -139,9 +139,10 @@ function runsGate(argv, gate, root) {
   return plain && argv.length === expected.length && argv.every((value, index) => value === expected[index]);
 }
 /** Every path changed from `revision` to `head` is a record session end writes, so the gate ran on
- * the same code: a file under paths.features or paths.archive (feature folders, moved whole by an
- * archive, with their receipts), or a Markdown or JSON file elsewhere under the docs root (never
- * `.`). A symlink or submodule on either side, or any other file, needs the gate again. */
+ * the same code: a record file (.md, .json, .log, .txt, .diff, .patch, .yaml, .yml) under
+ * paths.features or paths.archive (feature folders, moved whole by an archive, with their receipts),
+ * or a Markdown or JSON file elsewhere under the docs root (never `.`). A symlink or submodule on
+ * either side, or any other file (a source file in a feature folder too), needs the gate again. */
 async function docsOnlySince(root, revision, head) {
   if (typeof revision !== 'string' || !/^[0-9a-f]{40,64}$/.test(revision)) return false;
   if (!(await gitOk(root, ['cat-file', '-e', `${revision}^{commit}`]))) return false;
@@ -163,7 +164,7 @@ async function docsOnlySince(root, revision, head) {
   return changes.every(({ modes, path }) => {
     if (!modes.every(mode => mode === '000000' || mode === '100644' || mode === '100755')) return false;
     if (!path.startsWith(`${docs}/`)) return false;
-    if (records.some(folder => path.startsWith(`${folder}/`))) return true;
+    if (records.some(folder => path.startsWith(`${folder}/`))) return /\.(?:md|json|log|txt|diff|patch|ya?ml)$/i.test(path);
     return /\.(?:md|json)$/i.test(path);
   });
 }

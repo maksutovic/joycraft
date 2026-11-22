@@ -221,9 +221,13 @@ const normalize = text => String(text).replace(/\s+/g, ' ').trim();
  * text reads as one) the command must end the span, after the span start, a
  * space, a quote or a bracket. In plain text it starts after the text start,
  * a space, a code span, a quote or a bracket, and ends at the text end, a code
- * span, punctuation followed by a space or the end, a plain word of letters
- * only that whitespace, the end, a code span or such punctuation closes ("run
- * pnpm verify before merging"), or a dash (`—` or `–`, spaced or not, or ` - `).
+ * span, punctuation followed by a space or the end, a prose word that
+ * whitespace, the end, a code span or such punctuation closes ("run pnpm
+ * verify before merging", "doesn't", "re-runs", "e.g.", "2 times"), a `(`
+ * before a prose word, a spaced `&`, a spaced or closing dash or arrow (`—`,
+ * `–`, ` - `, `→`), or an unspaced `—` or `–` followed by a prose word and a
+ * space ("verify—then read"). A dash stuck to an argument ("test —run",
+ * "test–run") keeps it an argument.
  * More arguments make it a different command: a next word holding `/`, `.`,
  * `:`, `-` or `=` (as in `pnpm test tests/x.test.ts`, `pnpm test x.test.ts`,
  * `cargo test a::b` or `pnpm test -- --run`) does not name the gate.
@@ -252,7 +256,15 @@ export function namesCommand(text, command) {
   // Punctuation ends a word only when whitespace, a code span or the text end follows it, so a
   // `.`, `:` or `'` inside the next token (x.test.ts, a::b, test's) never counts as an ending.
   const stop = `(?:\\s|$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001))`;
-  const end = `$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001)|\\s\\p{L}+(?=${stop})|\\s?[—–]|\\s-(?=\\s|$)`;
+  // A prose word: letters with inner apostrophes or hyphens (doesn't, won’t, re-runs), or an
+  // abbreviation of single letters and dots (e.g., i.e.).
+  const word = `\\p{L}+(?:['’-]\\p{L}+)*`;
+  const prose = `${word}(?=${stop})|\\p{L}\\.(?:\\p{L}\\.)+(?=\\s|$|\\u0001)|\\d+(?=${stop})|\\((?=${word}[\\s)])|&(?=\\s)`;
+  // A dash ends the command when whitespace or the end follows it, or, unspaced on both sides,
+  // when a prose word and whitespace follow (verify—then read); a dash stuck to an argument
+  // (test —run, test–run, test—tests/a.test.ts) keeps it an argument.
+  const dash = `\\s?[—–→⇒](?=\\s|$)|[—–](?=${word}\\s)|\\s-(?=\\s|$)`;
+  const end = `$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001)|\\s(?:${prose})|${dash}`;
   const inPlain = new RegExp(`(?:^|(?<=[\\s\\u0001"'(\\[]))${command_}(?=${end})`, 'u');
   return inPlain.test(normalize(plain));
 }
