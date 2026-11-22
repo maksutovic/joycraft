@@ -1,6 +1,6 @@
 ---
 id: 22
-status: in-review
+status: done
 ---
 # Joycraft asks for fewer, sharper tests
 

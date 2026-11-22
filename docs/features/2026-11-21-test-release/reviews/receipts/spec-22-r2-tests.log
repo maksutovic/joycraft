@@ -1,0 +1,21 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/text-lane-cap.test.ts (4 tests) 245ms
+ ✓ tests/text-fewer-tests.test.ts (5 tests) 264ms
+ ✓ tests/text-fault-proof.test.ts (10 tests) 394ms
+   ✓ fault proof text > [AC:spec-18-5] fault patches and receipts go in a git-ignored path: there --patch runs and restores; an untracked patch is refused  384ms
+stdout | tests/payload-guard.test.ts > shipped payload text > [AC:spec-1-2] every-spec and on-demand words stay under their own caps
+every-spec words: 12166 (cap 12256, 90 spare)
+on-demand words: 19667 (cap 21163, 1496 spare)
+
+ ✓ tests/payload-guard.test.ts (16 tests) 1458ms
+   ✓ shipped payload text > [AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on  392ms
+   ✓ shipped payload text > [AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name  379ms
+
+ Test Files  4 passed (4)
+      Tests  35 passed (35)
+   Start at  19:30:37
+   Duration  1.70s (transform 80ms, setup 0ms, collect 151ms, tests 2.36s, environment 0ms, prepare 169ms)
+
+exit 0
