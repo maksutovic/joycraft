@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "d9e2f382540c45ede9557966c775dd6599d15794",
+    "queuePath": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+    "specId": 6,
+    "specPath": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+    "criteria": [
+      {
+        "id": "spec-6-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-6-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "code",
+        "sha256": "041853d4aa3a595bdb0c5ce0e4b6342e17c7242c801b21dac9b1d0a31be35815",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "a8f9ffd9cdf4bb4de85743a1e305aad4a39f22a40ca2e632d8b04d7573d13589",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "0a7c0d49fa69c676f63d3be81ee8753a533d62689f9e7b14a109324138aad7ff",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+        "kind": "requirement",
+        "sha256": "9d7ab4e284d9f20ce57db92a4b13dd73524be2cc3395f643a6f8ed0b18f3370f",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "package.json",
+        "kind": "code",
+        "sha256": "2ed14118fef031d9beb478fefea8fff408ddc264d0f07a13eda641cda9aab223",
+        "normalization": "none"
+      },
+      {
+        "path": "src/joycraft-release.json",
+        "kind": "code",
+        "sha256": "45dde88216198a569d28afd37496255e67c0d6baa2880046c77da23a9527994c",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/public-docs.test.ts",
+        "kind": "check",
+        "sha256": "7321336f372d60316e8809f5529811b155ba87e29d7121e7f51ce549e5a951b5",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/release-preparation.test.ts",
+        "kind": "check",
+        "sha256": "32ae9ce8e74fbe4fdd872c1859b29a9e130f6c19b0a744132421085554204d9c",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "cf2ecbe3ebefb65d7526d205795ffecd4abc4e905d0e96f0cd00ce87dd4396f0"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a534a154cad5346d1"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a6b904bb8bc8b3ef5"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "unresolved": [
+    "f1: the 1.9.2 Update notes line says deno.jsonc and pnpm-workspace.yaml now need a fresh gate run under the docs root; in 1.9.1 deno.jsonc already did everywhere, and pnpm-workspace.yaml did outside feature and archive folders."
+  ],
+  "createdAt": "2026-11-22T18:04:00.664Z",
+  "flows": [
+    {
+      "id": "flow-release-fields",
+      "subjectIdentity": "cf2ecbe3ebefb65d7526d205795ffecd4abc4e905d0e96f0cd00ce87dd4396f0",
+      "criteria": [
+        "spec-6-1"
+      ],
+      "representativeInput": "package.json, src/joycraft-release.json, CHANGELOG.md heading at d9e2f38; tests/public-docs.test.ts diff in 6f87984",
+      "expected": "version, joycraft.release and releaseVersion are 1.9.2; summary one line <= 300 chars about 1.9.2; a ## 1.9.2 entry above 1.9.1; the test diff only adds [AC:spec-6-1] to the two release-fields titles",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Both [AC:spec-6-1] tests passed (2 files, 39 tests). Reviewer read the diff: version, joycraft.release and releaseVersion are 1.9.2; summary is 269 chars, one line, and describes specs 1-4 of 1.9.2; the public-docs.test.ts diff changes only the two it() titles, adding [AC:spec-6-1], no assertion change (class 1 per ## Test changes).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-focused-20261122T180302963Z-65192-1.log",
+              "sha256": "f744fd7b22958f19561bd3dc559b70b9a082472794f137e642f519e3dd954fa1"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; the brief runs the recorded gate once per spec, before review."
+      ]
+    },
+    {
+      "id": "flow-changelog",
+      "subjectIdentity": "cf2ecbe3ebefb65d7526d205795ffecd4abc4e905d0e96f0cd00ce87dd4396f0",
+      "criteria": [
+        "spec-6-2"
+      ],
+      "representativeInput": "CHANGELOG.md 1.9.2 and 1.9.1 entries vs diffs f74ab39, e9a4c65, 5022789, 5f7c04a, 6012f16 and delivery.mjs at v1.9.0 and v1.9.1",
+      "expected": "entry lists specs 1-5 accurately, Update notes for the new docs-root manifests, corrected 1.9.1 records line, .mjs.txt line; release-preparation.test.ts unchanged and passing",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "tests/release-preparation.test.ts passed (21 tests); git diff 6f87984~1 HEAD -- tests/release-preparation.test.ts is empty.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-focused-20261122T180302963Z-65192-1.log",
+              "sha256": "f744fd7b22958f19561bd3dc559b70b9a082472794f137e642f519e3dd954fa1"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "v1.9.0 delivery.mjs docsOnlySince (receipt lines ~166-167): in feature/archive folders .md .json .log .txt .diff .patch .yaml .yml are records; elsewhere under the docs root only .md and .json. So package.json, tsconfig*.json, package-lock.json, npm-shrinkwrap.json were records anywhere, pnpm-lock.yaml only in feature/archive folders, and yarn.lock, bun.lock, bun.lockb, deno.lock never. The corrected 1.9.1 line (CHANGELOG.md:48-52) says exactly this. The .mjs.txt line (CHANGELOG.md:53-55) matches 1.9.1 delivery.md. Fixed lines for specs 1, 2, 4, 5 match their diffs.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-delivery-1-9-0.log",
+              "sha256": "653664b9b0517568835ccf412d854f0624b4d013d5a74fdee1a889ce4bae58ec"
+            }
+          ],
+          "command": {
+            "argv": [
+              "git",
+              "show",
+              "v1.9.0:payload/.joycraft/runtime/delivery.mjs"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "FAIL",
+          "actual": "v1.9.1 delivery.mjs (receipt line 142 manifest regex, 172-174 record rule): outside feature/archive folders only /\\.(?:md|json)$/ is a record, and in them .md .json .log .txt .diff .patch .yaml .yml. deno.jsonc matches neither, so it already needed the gate everywhere in 1.9.1; pnpm-workspace.yaml already needed it outside feature/archive folders. CHANGELOG.md:17-20 says all four \"now need a fresh gate run\" under the docs root, headed \"More manifests ... need the gate again\": the same kind of overclaim this release corrects in the 1.9.1 entry.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-delivery-1-9-1.log",
+              "sha256": "ded222576aecd7af91ce56b03bd278e4d97831d70369264aa57eb95baa985037"
+            }
+          ],
+          "command": {
+            "argv": [
+              "git",
+              "show",
+              "v1.9.1:payload/.joycraft/runtime/delivery.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not run; the brief runs the recorded gate once per spec, before review."
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-6-2",
+      "at": "CHANGELOG.md:17",
+      "summary": "The 1.9.2 Update notes overclaim what changed. In 1.9.1, deno.jsonc already needed the gate anywhere under the docs root (.jsonc was never a record), and pnpm-workspace.yaml already needed it outside feature and archive folders (only .md/.json are records there). What really changed: jsconfig*.json and deno.json anywhere under the docs root, and pnpm-workspace.yaml inside feature and archive folders; deno.jsonc is only named, no behavior change. Suggested fix: say jsconfig*.json and deno.json now need the gate anywhere under the docs root, and pnpm-workspace.yaml in feature and archive folders too; deno.jsonc already did and is now named a manifest. Coordinator asked for no overclaims, and the brief release section exists to correct this exact kind of record error in 1.9.1."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-6-2",
+      "summary": "spec-6-2 is untraced: the spec says release-preparation.test.ts passes unchanged, so no [AC:spec-6-2] tag can be added without changing it. Evidence is the passing run plus the empty diff."
+    },
+    {
+      "id": "f3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "CHANGELOG.md:30",
+      "summary": "The cleanup line says new-doc skips a Backlog/ folder in any case; backlogFile (cleanup.mjs:185) is also used by the working-file check at cleanup.mjs:879. An under-claim, not wrong.",
+      "assumption": "An under-claim in release notes is acceptable."
+    }
+  ]
+}
