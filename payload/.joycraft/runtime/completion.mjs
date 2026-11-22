@@ -118,15 +118,33 @@ function refuseHeldFindings(report, specId) {
 }
 
 const normalizeCommand = text => String(text).replace(/\s+/g, ' ').trim();
-// The command an observation ran, as one line: `sh -c "<command>"` and `bash -c` count as <command>.
-const ranCommand = argv => (['sh', 'bash'].includes(path.posix.basename(argv[0] ?? '')) && argv[1] === '-c' && argv.length === 3
-  ? normalizeCommand(argv[2]) : normalizeCommand(argv.join(' ')));
+const shellNames = new Set(['sh', 'bash', 'zsh', 'dash']);
+/**
+ * The command an observation ran, as one line. Wrappers are unwrapped: a leading
+ * `env` with its NAME=value settings (`env CI=1 pnpm verify`, `/usr/bin/env bash -c ...`),
+ * and a shell given the command after a flag group that ends in `c` (`sh -c`, `bash -lc`,
+ * `zsh -c`, `dash -c`), also with more arguments after the command (`sh -c <command> sh`).
+ */
+function ranCommand(argv) {
+  let rest = [...argv];
+  for (;;) {
+    const program = path.posix.basename(String(rest[0] ?? '').replaceAll('\\', '/'));
+    if (program === 'env') {
+      rest = rest.slice(1);
+      while (rest.length && (/^[A-Za-z_][A-Za-z0-9_]*=/.test(rest[0]) || rest[0] === '-i' || rest[0] === '--')) rest = rest.slice(1);
+      continue;
+    }
+    if (shellNames.has(program) && /^-[a-z]*c$/.test(rest[1] ?? '') && rest.length >= 3) return normalizeCommand(rest[2]);
+    return normalizeCommand(rest.join(' '));
+  }
+}
 
 /** A spec review runs the spec's own tests; the recorded gate and full commands
  * run at the review boundary or wave end. A report that ran one is refused (exit 2). */
 function refuseGateRuns(root, report) {
   let tests;
-  try { tests = readConfig(root).tests; } catch { return; } // A broken joycraft.yaml is config.mjs's report.
+  // A joycraft.yaml that does not parse never passes: the gate it records is unknown.
+  try { tests = readConfig(root).tests; } catch (error) { throw refused(new Error(`joycraft.yaml does not parse, so the recorded tests.gate is unknown; fix joycraft.yaml and check the report again (${error.message})`)); }
   const gates = [['tests.gate', tests.gate], ['tests.full', tests.full]].filter(([, command]) => command).map(([key, command]) => [key, normalizeCommand(command)]);
   if (!gates.length) return;
   report.flows.forEach((flow, flowIndex) => (Array.isArray(flow?.observations) ? flow.observations : []).forEach((observation, index) => {
