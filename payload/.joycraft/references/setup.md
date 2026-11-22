@@ -81,7 +81,10 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
    - **The testing page**, when the project has none: write
      `<context>/testing.md` from [the testing page template](testing-page.md),
      filled in for the project's stack, with the map row "A test run is slow or
-     flaky". Explain its load order to the user in one line.
+     flaky". Explain its load order to the user in one line. When the runner
+     config cannot hold a worker cap, put the runner's worker variable in the
+     machine-local `.joycraft/local/evidence-env.json`, which `evidence.mjs`
+     applies to every run, never in a tracked file.
    - **`CLAUDE.md`**, only when `.joycraft/installation.json` lists the
      `claude` host: missing → create it as `@AGENTS.md` followed by an empty
      `## Claude Code` section; present without an `@AGENTS.md` line → add

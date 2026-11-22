@@ -76,9 +76,10 @@ the coordinator. Omit it only for an unclaimed queue.
 
 Run each `git` command and each Joycraft runtime call (`node
 .joycraft/runtime/…`, `pnpm joycraft:…`) as its own plain shell
-command: never chain them with `&&`, `;` or `|`, and never use `$(git …)`. To
-pass a root or revision, run `pwd` or `git rev-parse HEAD` alone first and paste
-the literal value. A worktree-isolated host refuses Git inside a compound command.
+command: never chain them with `&&`, `;` or `|`, or use `$(git …)`, a heredoc,
+`source` or `cd` out of the root; a worktree-isolated host refuses these. Paste
+the startup output's `commands`. For a root or revision, run `pwd` or
+`git rev-parse HEAD` alone and paste the value.
 
 `--native-agent` is present only when the host issued a child identity;
 `--native-host` is optional. Use actual host-issued values only. The start flow
