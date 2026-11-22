@@ -390,7 +390,7 @@
       "id": 5,
       "file": "05-docs-root-manifests.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -477,6 +477,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T07:01:06.056Z"
       }
     },
     {

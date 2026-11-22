@@ -1,6 +1,6 @@
 ---
 id: 5
-status: todo
+status: in-review
 ---
 # Manifests and lockfiles under the docs root need the gate again, and delivery.md lists the record extensions
 
