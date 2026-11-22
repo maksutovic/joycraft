@@ -3,11 +3,11 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, describe, expect, it } from 'vitest';
 
 const runtime = join(__dirname, '..', 'payload', '.joycraft', 'runtime', 'archive.mjs');
 const git = (cwd: string, ...args: string[]) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
-const put = (file: string, body: string) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
+const put = (file: string, body: string | Buffer) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
 const hash = (body: string) => createHash('sha256').update(Buffer.from(body)).digest('hex');
 const source = 'docs/features/x';
 
@@ -17,17 +17,23 @@ afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: tru
 // The test reads the brief and fails when it is missing or says "fail".
 const briefTest = (where: string) => `import { readFileSync } from 'node:fs';\n// two-tier\nconst brief = readFileSync('${where}/brief.md', 'utf8');\nif (brief.includes('fail')) process.exit(1);\n`;
 
+/** A done, legacy-accepted feature folder. */
+function addFeature(root: string, feature: string, brief = '# Brief\n') {
+  const folder = `docs/features/${feature}`, queuePath = `${folder}/specs/.joycraft-spec-queue.json`;
+  put(join(root, `${folder}/brief.md`), brief);
+  put(join(root, `${folder}/specs/01-a.md`), '---\nid: 1\nstatus: done\n---\n# A\n');
+  const decision = JSON.stringify({ schemaVersion: 1, kind: 'legacy', queuePath, statement: 'Accept it as it is.', statedAt: '2026-11-21T00:00:00Z', specs: [1], reason: 'Done before the gates.' });
+  put(join(root, `${folder}/specs/legacy.json`), decision);
+  put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature, specs: [{ id: 1, file: '01-a.md', status: 'done', mode: 'batch', depends_on: [], verification: { inputs: [] }, ownerAcceptance: { path: `${folder}/specs/legacy.json`, sha256: hash(decision), legacy: true } }] }));
+}
+
 /** A done feature `x` (legacy-accepted), a test and a script that name it, and an optional tests.focused. */
-function fixture({ focused, brief = '# Brief\n', testBody, extra = {} }: { focused?: string; brief?: string; testBody?: string; extra?: Record<string, string> } = {}) {
-  const queuePath = `${source}/specs/.joycraft-spec-queue.json`;
+function fixture({ focused, brief = '# Brief\n', testBody, extra = {}, more = [] }: { focused?: string; brief?: string; testBody?: string | Buffer; extra?: Record<string, string>; more?: string[] } = {}) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-archive-named-')));
   dirs.push(root);
   git(root, 'init', '-q', '-b', 'main');
-  put(join(root, `${source}/brief.md`), brief);
-  put(join(root, `${source}/specs/01-a.md`), '---\nid: 1\nstatus: done\n---\n# A\n');
-  const decision = JSON.stringify({ schemaVersion: 1, kind: 'legacy', queuePath, statement: 'Accept it as it is.', statedAt: '2026-11-21T00:00:00Z', specs: [1], reason: 'Done before the gates.' });
-  put(join(root, `${source}/specs/legacy.json`), decision);
-  put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature: 'x', specs: [{ id: 1, file: '01-a.md', status: 'done', mode: 'batch', depends_on: [], verification: { inputs: [] }, ownerAcceptance: { path: `${source}/specs/legacy.json`, sha256: hash(decision), legacy: true } }] }));
+  addFeature(root, 'x', brief);
+  for (const feature of more) addFeature(root, feature);
   put(join(root, 'docs/context/decision-log.md'), '# Decisions\n');
   put(join(root, '.gitignore'), '.joycraft/local/\n');
   put(join(root, '.joycraft/local/attest.json'), JSON.stringify({ schemaVersion: 1, phase: 'session-end', host: { sessionId: 's', quiescent: true, activeWorkers: [], dependentWork: [] }, durableContext: { carried: true, references: ['docs/context/decision-log.md'] } }));
@@ -40,10 +46,11 @@ function fixture({ focused, brief = '# Brief\n', testBody, extra = {} }: { focus
   return root;
 }
 
-const archive = (root: string, ...extra: string[]) => {
-  const result = spawnSync(process.execPath, [runtime, 'archive', '--feature', 'x', '--phase', 'session-end', '--attestation', '.joycraft/local/attest.json', ...extra], { cwd: root, encoding: 'utf8' });
-  return { status: result.status, stderr: result.stderr, output: result.stdout ? JSON.parse(result.stdout) : null };
+const archiveAs = (feature: string, root: string, extra: string[] = [], env: Record<string, string> = {}) => {
+  const result = spawnSync(process.execPath, [runtime, 'archive', '--feature', feature, '--phase', 'session-end', '--attestation', '.joycraft/local/attest.json', ...extra], { cwd: root, encoding: 'utf8', env: { ...process.env, ...env } });
+  return { status: result.status, signal: result.signal, stderr: result.stderr, output: result.stdout ? JSON.parse(result.stdout) : null };
 };
+const archive = (root: string, ...extra: string[]) => archiveAs('x', root, extra);
 
 describe('archive lists files that name the feature folder', () => {
   it('[AC:spec-13-1] the preview, strict and as-is, lists the test first and the script, and moves nothing', () => {
@@ -176,5 +183,163 @@ describe('archive review 13 fixes', () => {
     const result = archive(root, '--apply', '--rewrite', 'tests/two-tier.test.mjs');
     expect(result.output.status, result.stderr).toBe('archived');
     expect(result.output.test.exitCode).toBe(0);
+  });
+});
+
+// A preload that SIGKILLs archive at one point: between the two renames, or when it starts the test run.
+const preloadHome = realpathSync(mkdtempSync(join(tmpdir(), 'jc-archive-kill-')));
+afterAll(() => rmSync(preloadHome, { recursive: true, force: true }));
+const preload = join(preloadHome, 'kill.mjs');
+writeFileSync(preload, `import fs from 'node:fs';
+import cp from 'node:child_process';
+import { syncBuiltinESMExports } from 'node:module';
+const at = process.env.JC_KILL_AT;
+const die = () => process.kill(process.pid, 'SIGKILL');
+if (at) {
+  const rename = fs.renameSync, spawn = cp.spawn;
+  fs.renameSync = function (from, to) { if (at === 'between-renames' && String(from).includes('.staging-') && !String(to).includes('.staging-')) die(); return rename.apply(this, arguments); };
+  cp.spawn = function () { if (at === 'test') die(); return spawn.apply(this, arguments); };
+  syncBuiltinESMExports();
+}
+`);
+const focused = `${process.execPath} {files}`;
+const pendingRecord = (root: string, feature = 'x') => join(root, `.joycraft/local/archive-pending/${feature}.json`);
+const status = (root: string) => git(root, 'status', '--porcelain', '--untracked-files=all');
+const shared = '// docs/features/x and docs/features/y\nprocess.exit(0);\n';
+
+/** Run --apply --rewrite and SIGKILL it at `at`; the folder is moved and the files rewritten. */
+function interrupt(root: string, feature: string, rewrite: string[], at = 'test') {
+  const killed = archiveAs(feature, root, ['--apply', ...rewrite.flatMap(file => ['--rewrite', file])], { NODE_OPTIONS: `--import=${preload}`, JC_KILL_AT: at });
+  expect(killed.signal).toBe('SIGKILL');
+  expect(existsSync(pendingRecord(root, feature))).toBe(true);
+}
+
+/** A held result that changed nothing: what differs and the manual steps, never archived. */
+function expectUnverified(result: ReturnType<typeof archive>) {
+  expect(result.status, result.stderr).toBe(2);
+  expect(result.output).toMatchObject({ status: 'held', reason: 'interrupted-unverified' });
+  expect(result.output.differences.length).toBeGreaterThan(0);
+  expect(result.output.steps.join('\n')).toMatch(/Delete \.joycraft\/local\/archive-pending\/x\.json, then archive again/);
+  return result.output;
+}
+
+describe('archive review 13 round 2 fixes', () => {
+  it('[review-13-r2-1] a user note added in the archive folder holds and keeps everything', () => {
+    const root = fixture({ focused });
+    interrupt(root, 'x', ['tests/two-tier.test.mjs']);
+    writeFileSync(join(root, 'docs/archive/x/NOTES.md'), 'my notes\n');
+    const before = status(root), test = readFileSync(join(root, 'tests/two-tier.test.mjs'));
+    const held = expectUnverified(archive(root));
+    expect(held.differences).toContain('docs/archive/x/NOTES.md was not placed there by archive');
+    expect(readFileSync(join(root, 'docs/archive/x/NOTES.md'), 'utf8')).toBe('my notes\n');
+    expect(Buffer.compare(test, readFileSync(join(root, 'tests/two-tier.test.mjs')))).toBe(0);
+    expect(status(root)).toBe(before);
+    expect(existsSync(pendingRecord(root))).toBe(true);
+    // An apply holds the same way and archives nothing.
+    expect(archive(root, '--apply', '--rewrite', 'tests/two-tier.test.mjs').output.reason).toBe('interrupted-unverified');
+    expect(status(root)).toBe(before);
+  });
+
+  it('[review-13-r2-1] a test edited after the interruption keeps the edit and holds', () => {
+    const root = fixture({ focused });
+    interrupt(root, 'x', ['tests/two-tier.test.mjs']);
+    const edited = `${readFileSync(join(root, 'tests/two-tier.test.mjs'), 'utf8')}// my edit\n`;
+    writeFileSync(join(root, 'tests/two-tier.test.mjs'), edited);
+    const before = status(root);
+    expect(expectUnverified(archive(root)).differences).toContain('tests/two-tier.test.mjs changed after archive rewrote it');
+    expect(readFileSync(join(root, 'tests/two-tier.test.mjs'), 'utf8')).toBe(edited);
+    expect(existsSync(join(root, 'docs/archive/x/feature/brief.md'))).toBe(true);
+    expect(status(root)).toBe(before);
+  });
+
+  it('[review-13-r2-1] after git restore, an edit in the archived copy is kept and the call holds', () => {
+    const root = fixture({ focused });
+    interrupt(root, 'x', ['tests/two-tier.test.mjs']);
+    git(root, 'restore', '.');
+    writeFileSync(join(root, 'docs/archive/x/feature/brief.md'), '# Brief\nmy edit\n');
+    const before = status(root);
+    expect(expectUnverified(archive(root)).differences.join('\n')).toMatch(/exactly one of docs\/features\/x/);
+    expect(readFileSync(join(root, 'docs/archive/x/feature/brief.md'), 'utf8')).toBe('# Brief\nmy edit\n');
+    expect(existsSync(join(root, source, 'brief.md'))).toBe(true);
+    expect(status(root)).toBe(before);
+  });
+
+  it("[review-13-r2-1] a sibling feature's later green rewrite of a shared test is kept", () => {
+    const root = fixture({ focused, more: ['y'], extra: { 'tests/shared.test.mjs': shared } });
+    interrupt(root, 'x', ['tests/two-tier.test.mjs', 'tests/shared.test.mjs']);
+    const y = archiveAs('y', root, ['--apply', '--rewrite', 'tests/shared.test.mjs']);
+    expect(y.output.status, y.stderr).toBe('archived');
+    const afterY = readFileSync(join(root, 'tests/shared.test.mjs'), 'utf8');
+    expect(afterY).toBe('// docs/archive/x/feature and docs/archive/y/feature\nprocess.exit(0);\n');
+    const before = status(root);
+    expect(expectUnverified(archive(root)).differences).toContain('tests/shared.test.mjs changed after archive rewrote it');
+    expect(readFileSync(join(root, 'tests/shared.test.mjs'), 'utf8')).toBe(afterY);
+    expect(existsSync(join(root, 'docs/archive/y/feature/brief.md'))).toBe(true);
+    expect(status(root)).toBe(before);
+  });
+
+  it('[review-13-r2-1] two interrupted features sharing a test: the wrong order holds, the right order restores all', () => {
+    const root = fixture({ focused, more: ['y'], extra: { 'tests/shared.test.mjs': shared } });
+    interrupt(root, 'x', ['tests/two-tier.test.mjs', 'tests/shared.test.mjs']);
+    interrupt(root, 'y', ['tests/shared.test.mjs']);
+    const before = status(root);
+    expect(expectUnverified(archive(root)).differences).toContain('tests/shared.test.mjs changed after archive rewrote it');
+    expect(status(root)).toBe(before);
+    expect(archiveAs('y', root).output).toMatchObject({ status: 'held', reason: 'interrupted' });
+    expect(archive(root).output).toMatchObject({ status: 'held', reason: 'interrupted' });
+    expect(readFileSync(join(root, 'tests/shared.test.mjs'), 'utf8')).toBe(shared);
+    expect(status(root)).toBe('');
+    expect(existsSync(join(root, 'docs/archive'))).toBe(false);
+  });
+
+  it('[review-13-r2-1] a hand-edited record pointing at src is refused and touches nothing', () => {
+    for (const edit of [{ destination: 'src' }, { stage: 'src' }, { source: 'src' }, { createdHome: ['src'] }, { files: 'src/keep.txt' }]) {
+      const root = fixture({ focused, extra: { 'src/keep.txt': 'user source\n' } });
+      interrupt(root, 'x', ['tests/two-tier.test.mjs']);
+      const record = JSON.parse(readFileSync(pendingRecord(root), 'utf8'));
+      if ('files' in edit) record.files[0].path = edit.files; else Object.assign(record, edit);
+      writeFileSync(pendingRecord(root), JSON.stringify(record));
+      const before = status(root);
+      const held = expectUnverified(archive(root));
+      expect(held.differences.join('\n'), JSON.stringify(edit)).toMatch(/the pending record is refused/);
+      expect(readFileSync(join(root, 'src/keep.txt'), 'utf8')).toBe('user source\n');
+      expect(existsSync(join(root, 'docs/archive/x/feature/brief.md'))).toBe(true);
+      expect(status(root)).toBe(before);
+    }
+  });
+
+  it('[review-13-r2-2] a kill between the two renames is recovered from the staging folder', () => {
+    const root = fixture({ focused });
+    interrupt(root, 'x', ['tests/two-tier.test.mjs'], 'between-renames');
+    expect(existsSync(join(root, source))).toBe(false);
+    const recovered = archive(root);
+    expect(recovered.status, recovered.stderr).toBe(2);
+    expect(recovered.output).toMatchObject({ status: 'held', reason: 'interrupted' });
+    expect(existsSync(join(root, source, 'brief.md'))).toBe(true);
+    expect(existsSync(join(root, 'docs/archive'))).toBe(false);
+    expect(existsSync(pendingRecord(root))).toBe(false);
+    expect(status(root)).toBe('');
+    expect(archive(root, '--apply', '--rewrite', 'tests/two-tier.test.mjs').output.status).toBe('archived');
+  });
+
+  it('[review-13-r2-3] a truncated record holds with recovery steps and changes nothing', () => {
+    const root = fixture({ focused });
+    interrupt(root, 'x', ['tests/two-tier.test.mjs']);
+    writeFileSync(pendingRecord(root), '{"kind":"joycraft-archive-pending", trunc');
+    const before = status(root);
+    const held = expectUnverified(archive(root));
+    expect(held.differences[0]).toMatch(/is not a readable JSON record/);
+    expect(held.steps.join('\n')).toMatch(/git restore -- <file>/);
+    expect(held.steps.join('\n')).toMatch(/move the feature folder back to it from docs\/archive\/x\/feature/);
+    expect(status(root)).toBe(before);
+    expect(existsSync(pendingRecord(root))).toBe(true);
+  });
+
+  it('[review-13-r2-4] a green rewrite keeps bytes that are not UTF-8', () => {
+    const tail = Buffer.from([0x2f, 0x2f, 0x20, 0xe9, 0xff, 0xfe, 0x0a]);
+    const root = fixture({ focused, testBody: Buffer.concat([Buffer.from(briefTest(source)), tail]) });
+    const result = archive(root, '--apply', '--rewrite', 'tests/two-tier.test.mjs');
+    expect(result.output.status, result.stderr).toBe('archived');
+    expect(Buffer.compare(readFileSync(join(root, 'tests/two-tier.test.mjs')), Buffer.concat([Buffer.from(briefTest('docs/archive/x/feature')), tail]))).toBe(0);
   });
 });

@@ -1,0 +1,171 @@
+{
+  "base": "2fb1c3447d4b31028cbd9f4ec49c9d95863dfdcc",
+  "specId": 18,
+  "testFiles": [
+    "tests/payload-guard.test.ts",
+    "tests/runtime-archive-named-files.test.ts",
+    "tests/runtime-test-changes.test.ts",
+    "tests/text-fault-proof.test.ts",
+    "tests/text-fewer-tests.test.ts",
+    "tests/text-lane-cap.test.ts",
+    "tests/text-spec-tier.test.ts",
+    "tests/text-test-changes.test.ts",
+    "tests/text-worker-commands.test.ts"
+  ],
+  "declared": [],
+  "undeclared": [
+    "tests/payload-guard.test.ts",
+    "tests/runtime-archive-named-files.test.ts",
+    "tests/runtime-test-changes.test.ts",
+    "tests/text-fault-proof.test.ts",
+    "tests/text-fewer-tests.test.ts",
+    "tests/text-lane-cap.test.ts",
+    "tests/text-spec-tier.test.ts",
+    "tests/text-test-changes.test.ts",
+    "tests/text-worker-commands.test.ts"
+  ],
+  "addedAfterBase": [],
+  "featurePaths": [
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 19,
+      "text": "// Decision cap-raise = split-cap (docs/features/2026-11-21-test-release): the"
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 205,
+      "text": "const specs = join(project, 'docs/features/demo/specs');"
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 210,
+      "text": "inputs: [{ path: `docs/features/demo/specs/0${id}-a.md`, kind: 'requirement' }],"
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 211,
+      "text": "criteria: [{ id: 'a', requirement: { path: `docs/features/demo/specs/0${id}-a.md`, anchor: 'a' }, requiredKinds: ['runtime'] }] } })) }));"
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 215,
+      "text": "const queue = 'docs/features/demo/specs/.joycraft-spec-queue.json';"
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 216,
+      "text": "const decision = 'docs/features/demo/specs/legacy-acceptance.json';"
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 284,
+      "text": "// The field shape: docs/features/2026-11-17-demo with \"feature\": \"demo\"."
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 285,
+      "text": "const folder = 'docs/features/2026-11-17-demo';"
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 286,
+      "text": "renameSync(join(project, 'docs/features/demo'), join(project, folder));"
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 288,
+      "text": "writeFileSync(join(project, datedQueue), readFileSync(join(project, datedQueue), 'utf8').replaceAll('docs/features/demo/', `${folder}/`));"
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 316,
+      "text": "renameSync(join(project, 'docs/features/demo'), join(project, 'docs/features/2026-11-17-checkout'));"
+    },
+    {
+      "path": "tests/payload-guard.test.ts",
+      "line": 317,
+      "text": "const moved = 'docs/features/2026-11-17-checkout/specs/.joycraft-spec-queue.json';"
+    },
+    {
+      "path": "tests/runtime-archive-named-files.test.ts",
+      "line": 12,
+      "text": "const source = 'docs/features/x';"
+    },
+    {
+      "path": "tests/runtime-archive-named-files.test.ts",
+      "line": 89,
+      "text": "const slowRed = `import { writeFileSync } from 'node:fs';\\n// docs/features/x\\nwriteFileSync('.joycraft/local/test.pid', String(process.pid));\\nsetTimeout(() => process.exit(1), 4000);\\n`;"
+    },
+    {
+      "path": "tests/runtime-archive-named-files.test.ts",
+      "line": 143,
+      "text": "const body = `const a = './docs/features/x/brief.md';\\nconst b = 'packages/app/docs/features/x/y';\\nconst c = 'docs/features/x.old';\\nconst d = 'docs/features/x-two';\\nprocess.exit(0);\\n`;"
+    },
+    {
+      "path": "tests/runtime-archive-named-files.test.ts",
+      "line": 144,
+      "text": "const root = fixture({ focused: `${process.execPath} {files}`, extra: { 'tests/multi.test.mjs': body, 'scripts/nested.mjs': \"export const p = 'packages/app/docs/features/x/y';\\n\", 'scripts/old.mjs': \"export const p = 'docs/features/x.old';\\n\" } });"
+    },
+    {
+      "path": "tests/runtime-archive-named-files.test.ts",
+      "line": 151,
+      "text": "expect(readFileSync(join(root, 'tests/multi.test.mjs'), 'utf8')).toBe(body.replace('./docs/features/x/brief.md', './docs/archive/x/feature/brief.md'));"
+    },
+    {
+      "path": "tests/runtime-archive-named-files.test.ts",
+      "line": 155,
+      "text": "const red = `import { writeFileSync } from 'node:fs';\\n// docs/features/x\\nwriteFileSync('scripts/x.mjs', 'changed\\\\n');\\nwriteFileSync('newfile.txt', 'x');\\nprocess.exit(1);\\n`;"
+    },
+    {
+      "path": "tests/runtime-test-changes.test.ts",
+      "line": 11,
+      "text": "const folder = 'docs/features/2026-11-21-f';"
+    },
+    {
+      "path": "tests/runtime-test-changes.test.ts",
+      "line": 79,
+      "text": "put(join(root, 'tests/b.test.ts'), \"import { readFileSync } from 'node:fs';\\nconst brief = readFileSync('docs/features/x/brief.md', 'utf8');\\n\");"
+    },
+    {
+      "path": "tests/runtime-test-changes.test.ts",
+      "line": 80,
+      "text": "expect(changes(root, base).featurePaths).toEqual([{ path: 'tests/b.test.ts', line: 2, text: \"const brief = readFileSync('docs/features/x/brief.md', 'utf8');\" }]);"
+    },
+    {
+      "path": "tests/text-fault-proof.test.ts",
+      "line": 7,
+      "text": "// Spec: docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md"
+    },
+    {
+      "path": "tests/text-fewer-tests.test.ts",
+      "line": 7,
+      "text": "// Spec: docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md"
+    },
+    {
+      "path": "tests/text-lane-cap.test.ts",
+      "line": 7,
+      "text": "// Spec: docs/features/2026-11-21-test-release/specs/19-lane-cap-text.md"
+    },
+    {
+      "path": "tests/text-spec-tier.test.ts",
+      "line": 7,
+      "text": "// Spec: docs/features/2026-11-21-test-release/specs/14-tier-text.md"
+    },
+    {
+      "path": "tests/text-test-changes.test.ts",
+      "line": 7,
+      "text": "// Spec: docs/features/2026-11-21-test-release/specs/17-test-changes-text.md"
+    },
+    {
+      "path": "tests/text-test-changes.test.ts",
+      "line": 38,
+      "text": "const folder = 'docs/features/2026-11-21-f';"
+    },
+    {
+      "path": "tests/text-worker-commands.test.ts",
+      "line": 7,
+      "text": "// Spec: docs/features/2026-11-21-test-release/specs/23-worker-commands-text.md"
+    }
+  ],
+  "skipped": []
+}

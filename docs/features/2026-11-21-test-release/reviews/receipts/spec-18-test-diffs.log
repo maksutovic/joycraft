@@ -1,0 +1,65 @@
+diff --git a/tests/payload-guard.test.ts b/tests/payload-guard.test.ts
+index c239bbc..c404f36 100644
+--- a/tests/payload-guard.test.ts
++++ b/tests/payload-guard.test.ts
+@@ -343,11 +343,13 @@ describe('shipped payload text', () => {
+     expect(over).toEqual([]);
+   });
+ 
+-  it('[AC:spec-1-3] 200 more words in the implement skill break the every-spec cap; 600 more in the test review do not', () => {
++  it('[AC:spec-1-3] 200 more words in the implement skill break the every-spec cap; up to 600 more in the test review do not', () => {
+     // At least 200, and always one past the spare, so later cuts cannot make this pass without a regression.
+     const spare = EVERY_SPEC_CAP - splitCap(treeBundle()).everySpec;
+     expect(splitCap(grown('.agents/skills/joycraft-implement/SKILL.md', Math.max(200, spare + 1))).over).toEqual([expect.stringMatching(/^every-spec /)]);
+-    expect(splitCap(grown('.joycraft/references/testing-review.md', 600)).over).toEqual([]);
++    // On-demand words a later spec spends shrink the room the test review has; 600 or all that is left (spec 18, class 1).
++    const onDemandSpare = ON_DEMAND_CAP - splitCap(treeBundle()).onDemand;
++    expect(splitCap(grown('.joycraft/references/testing-review.md', Math.min(600, onDemandSpare))).over).toEqual([]);
+   });
+ 
+   it('[AC:spec-1-4] the duplicate worktree and acceptance-test paragraphs are cut, and worktrees.md keeps its copy', () => {
+diff --git a/tests/text-fewer-tests.test.ts b/tests/text-fewer-tests.test.ts
+index 4eb4f90..d2ed710 100644
+--- a/tests/text-fewer-tests.test.ts
++++ b/tests/text-fewer-tests.test.ts
+@@ -28,8 +28,8 @@ const section = (path: string, name: string) => {
+   return text.slice(start, end < 0 ? undefined : end).replace(/\s+/g, ' ');
+ };
+ 
+-// Counts at the commit before this spec (40d0029).
+-const BEFORE = { implement: 1329, everySpec: 12142 };
++// Counts at the commit before this spec (40d0029). Spec 18 (fault-proof) later added 18 every-spec words: a class-1 change.
++const BEFORE = { implement: 1329, everySpec: 12142 + 18 };
+ 
+ const dirs: string[] = [];
+ afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
+diff --git a/tests/text-spec-tier.test.ts b/tests/text-spec-tier.test.ts
+index 0b404c7..6624b7e 100644
+--- a/tests/text-spec-tier.test.ts
++++ b/tests/text-spec-tier.test.ts
+@@ -34,8 +34,9 @@ function fixture() {
+ const sentence = "Each `Check:` names the spec's own test file or filter, never the project gate or full suite.";
+ 
+ // Every-spec word counts of the three every-spec files this spec edits, at the commit before it (28ee6ed).
+-// Spec 22 (fewer-better-tests) later grew the implementer by 11 words, paid for by the implement skill (class-1 change).
+-const before = { decompose: 694, verify: 1370, implementer: 324 + 11 };
++// Later growth, each a class-1 change: spec 22 grew the implementer by 11 words, paid for by the implement skill;
++// spec 18 (fault-proof) added a test-only pointer to verify (5) and the implementer (5).
++const before = { decompose: 694, verify: 1370 + 5, implementer: 324 + 11 + 5 };
+ const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
+ 
+ describe('spec tier text', () => {
+diff --git a/tests/text-worker-commands.test.ts b/tests/text-worker-commands.test.ts
+index 12e322f..0ad6ceb 100644
+--- a/tests/text-worker-commands.test.ts
++++ b/tests/text-worker-commands.test.ts
+@@ -33,7 +33,8 @@ function fixture() {
+ }
+ 
+ // Every-spec word counts of the three every-spec files this spec edits, at the commit before it (58f2c69).
+-const before = { implementer: 314, reviewer: 334, dispatch: 1668 };
++// Spec 18 (fault-proof) later added a test-only pointer to the implementer (5) and the reviewer (5): a class-1 change.
++const before = { implementer: 314 + 5, reviewer: 334 + 5, dispatch: 1668 };
+ const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
+ 
+ describe('worker commands text', () => {
