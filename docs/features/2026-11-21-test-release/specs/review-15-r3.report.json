@@ -1,0 +1,403 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "b7a86857176ced1c81f55244bdfdd2ee1268b21b",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 15,
+    "specPath": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+    "criteria": [
+      {
+        "id": "spec-15-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-15-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-15-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-15-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-15-5",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "wave-gate",
+            "ci-once",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "wave-gate-default",
+            "session-end-push-order",
+            "cap-raise"
+          ]
+        },
+        "sha256": "49f2ba2a68a6a4a72027ec8ff5ce06facc419e5df331ead279b9fcbafffa5631",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "89f430ca39bfde3ca48ac9872c40c85ab5447701c7f156a4e8dc626e8a56b009",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+        "kind": "requirement",
+        "sha256": "2a67817d86357a189a8b20a8cc2f4b802f676a8fc3a408ca1bc7a41a2426ed37",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+        "kind": "code",
+        "sha256": "75ffa972308d3e2e4b5ea9415fd06896b3be0c5d651f1567849df068f53f74cd",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+        "kind": "code",
+        "sha256": "e22685657827f67bd217ef76a744ece9b4fa25a7a3738709e513e1cee8daac8b",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/delivery.md",
+        "kind": "code",
+        "sha256": "8014f2d305f25eb4df3a82ef80e14158c9f6cf3fc1487fca4fceb0b96208980d",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing.md",
+        "kind": "code",
+        "sha256": "89bac4aaa1d409d42fa5b28f1d8de99f660c123d4428933d7b071cf7884c4f1a",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "5b08375159053d9c6eea4b4a32fac6858701bf1010528d87367936bee101ea3e",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "d5c80c2c171efffb9732b661f7c1e98239b71e97172a1e02e6c417c1c81b4c61",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          7,
+          15
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "wave-gate",
+            "ci-once",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "wave-gate-default",
+            "session-end-push-order",
+            "cap-raise"
+          ]
+        }
+      ]
+    },
+    "identity": "ac2b8e0534c580e9f159cb1a25aef7160a8e3c345e4c68eb502d83dfcc5ed268"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a3c56f327aa6dc32d"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a269ce592c26e4ecb"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "createdAt": "2026-11-22T03:09:29.856Z",
+  "flows": [
+    {
+      "id": "spec-15-1-delivery-paragraph",
+      "subjectIdentity": "ac2b8e0534c580e9f159cb1a25aef7160a8e3c345e4c68eb502d83dfcc5ed268",
+      "criteria": [
+        "spec-15-1"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-implement/SKILL.md:114-123 and payload/.joycraft/references/delivery.md:34-60 at b7a8685",
+      "expected": "Workers focused only; coordinator runs the recorded gate alone through evidence.mjs at each gate-plan point; shell form for a shell-syntax gate; no push without a green receipt; on red gate-owner else bisect; second red holds the push.",
+      "limits": [],
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Current bytes: implement SKILL.md:114-123 unchanged since round 2 (same sha256) and still states focused-only workers, coordinator gate at gate-plan points via evidence.mjs, receipt at a git-ignored path or after committing pending files, delivery.mjs push --gate-receipt, gate-owner else bisect newest first, second red holds push. delivery.md:34-60 unchanged, keeps the <shell> -c form and dirty:true -> gate-receipt-stale rule. testing.md:25-27 (edited by spec 19) still says the coordinator runs the gate at each gate-plan point and workers and reviewers run focused tests only. Round 2 two-wave walk (spec-15-probe receipts) reused: changed-since-r2 receipt shows coordinator.mjs, evidence.mjs, delivery.mjs, implement SKILL.md and delivery.md unchanged from 08beda2 to b7a8685 (only verify SKILL.md, testing.md, payload-guard.test.ts among the inputs changed). [AC:spec-15-1] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-text-scan.log",
+              "sha256": "44bd5c23fbce242198805b8456d4795c8204bb3a3070f97cf4081243ca99909c"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-changed-since-r2.log",
+              "sha256": "a779fcde4b8ba5e438b1609c720ff7c9b0b548d612c201b15ffb2ffd3c0a302e"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-probe.log",
+              "sha256": "2656d3d4b971bef73b79009b44e581a11b3cfe27c833d70ff5601ded528ac99c"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-probe.mjs",
+              "sha256": "01e8d6bc4be55cd4b227dc2395aac6f5fc3869248e0ae4978b2212fc74b7cdb0"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-tests.log",
+              "sha256": "26d4ecacf982443ed0dcc398450441d4f6d9f1fee089fe84a8edb9a063c30cbe"
+            }
+          ],
+          "command": {
+            "argv": [
+              "grep",
+              "-nE",
+              "focused tests only|gate-plan|gate-owner|--gate-receipt|git-ignored path|shell> -c|dirty: true|bisect|second red|once, on the PR|read CI after each push|gate not run; due at wave end|gateRuns",
+              "payload/.agents/skills/joycraft-implement/SKILL.md",
+              "payload/.agents/skills/joycraft-verify/SKILL.md",
+              "payload/.joycraft/references/testing.md",
+              "payload/.joycraft/references/delivery.md"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "spec-15-2-ci-once",
+      "subjectIdentity": "ac2b8e0534c580e9f159cb1a25aef7160a8e3c345e4c68eb502d83dfcc5ed268",
+      "criteria": [
+        "spec-15-2"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-implement/SKILL.md:121-123, payload/.joycraft/references/delivery.md:58-60",
+      "expected": "No \"read CI after each push\"; \"once, on the PR\"; second red CI run stops.",
+      "limits": [],
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Scan finds \"read CI once, on the PR, after session end's push. After a second red CI run, stop and report.\" in implement:122-123 and delivery.md:58-59; zero matches for \"read CI after each push\" in the four files. [AC:spec-15-2] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-text-scan.log",
+              "sha256": "44bd5c23fbce242198805b8456d4795c8204bb3a3070f97cf4081243ca99909c"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-tests.log",
+              "sha256": "26d4ecacf982443ed0dcc398450441d4f6d9f1fee089fe84a8edb9a063c30cbe"
+            }
+          ],
+          "command": {
+            "argv": [
+              "grep",
+              "-nE",
+              "focused tests only|gate-plan|gate-owner|--gate-receipt|git-ignored path|shell> -c|dirty: true|bisect|second red|once, on the PR|read CI after each push|gate not run; due at wave end|gateRuns",
+              "payload/.agents/skills/joycraft-implement/SKILL.md",
+              "payload/.agents/skills/joycraft-verify/SKILL.md",
+              "payload/.joycraft/references/testing.md",
+              "payload/.joycraft/references/delivery.md"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "spec-15-3-verify-and-tier",
+      "subjectIdentity": "ac2b8e0534c580e9f159cb1a25aef7160a8e3c345e4c68eb502d83dfcc5ed268",
+      "criteria": [
+        "spec-15-3"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-verify/SKILL.md:49 (edited by spec 22/18), payload/.joycraft/references/testing.md:25-27 (edited by spec 19)",
+      "expected": "Verify skill says \"gate not run; due at wave end\"; testing.md project-gate tier names tests.gateRuns.",
+      "limits": [],
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "verify SKILL.md:49 still says \"in wave mode, state \\\"gate not run; due at wave end\\\"\" and \"never the project gate\"; the spec-18 edit touched only line 45 (fault-proof link). testing.md:25-26 still names `tests.gateRuns`; the spec-19 edits touched lines 15-16 and 38-48 only. [AC:spec-15-3] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-text-scan.log",
+              "sha256": "44bd5c23fbce242198805b8456d4795c8204bb3a3070f97cf4081243ca99909c"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-changed-since-r2.log",
+              "sha256": "a779fcde4b8ba5e438b1609c720ff7c9b0b548d612c201b15ffb2ffd3c0a302e"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-tests.log",
+              "sha256": "26d4ecacf982443ed0dcc398450441d4f6d9f1fee089fe84a8edb9a063c30cbe"
+            }
+          ],
+          "command": {
+            "argv": [
+              "grep",
+              "-nE",
+              "focused tests only|gate-plan|gate-owner|--gate-receipt|git-ignored path|shell> -c|dirty: true|bisect|second red|once, on the PR|read CI after each push|gate not run; due at wave end|gateRuns",
+              "payload/.agents/skills/joycraft-implement/SKILL.md",
+              "payload/.agents/skills/joycraft-verify/SKILL.md",
+              "payload/.joycraft/references/testing.md",
+              "payload/.joycraft/references/delivery.md"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "spec-15-4-word-budget",
+      "subjectIdentity": "ac2b8e0534c580e9f159cb1a25aef7160a8e3c345e4c68eb502d83dfcc5ed268",
+      "criteria": [
+        "spec-15-4"
+      ],
+      "representativeInput": "tests/payload-guard.test.ts (spec 18 edit to AC:spec-1-3), wc -w implement SKILL.md",
+      "expected": "payload-guard passes; implement skill wc -w not above pre-spec count.",
+      "limits": [],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "pnpm test tests/text-wave-gate.test.ts tests/payload-guard.test.ts: 2 files, 21 tests passed, exit 0 at b7a8685; every-spec 12164 (cap 12256), on-demand 19404 (cap 19663). Implement SKILL.md wc -w 1308, same as round 2 and not above the pre-spec count. The spec-18 change to AC:spec-1-3 bounds the 600-word grow by the remaining on-demand spare, with a reason comment; it keeps the every-spec assertion and does not weaken spec 15. [AC:spec-15-4] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-tests.log",
+              "sha256": "26d4ecacf982443ed0dcc398450441d4f6d9f1fee089fe84a8edb9a063c30cbe"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-wave-gate.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "spec-15-5-clean-tree-receipt",
+      "subjectIdentity": "ac2b8e0534c580e9f159cb1a25aef7160a8e3c345e4c68eb502d83dfcc5ed268",
+      "criteria": [
+        "spec-15-5"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-implement/SKILL.md:116, payload/.joycraft/references/delivery.md:47-50",
+      "expected": "Text says where the gate receipt goes; dirty receipt is rejected.",
+      "limits": [],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Text unchanged (implement:116 \"receipt at a git-ignored path or after committing pending files\"; delivery.md:47-50). Runtime behavior reused from round 2 probe (dirty:true -> gate-receipt-stale; ignored or committed -> push ok) because delivery.mjs and evidence.mjs are unchanged since 08beda2 per changed-since-r2 receipt. [AC:spec-15-5] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-probe.log",
+              "sha256": "2656d3d4b971bef73b79009b44e581a11b3cfe27c833d70ff5601ded528ac99c"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-probe.mjs",
+              "sha256": "01e8d6bc4be55cd4b227dc2395aac6f5fc3869248e0ae4978b2212fc74b7cdb0"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-changed-since-r2.log",
+              "sha256": "a779fcde4b8ba5e438b1609c720ff7c9b0b548d612c201b15ffb2ffd3c0a302e"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-r3-tests.log",
+              "sha256": "26d4ecacf982443ed0dcc398450441d4f6d9f1fee089fe84a8edb9a063c30cbe"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-15-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "r3-f1-round-count",
+      "class": "follow-up",
+      "origin": "new",
+      "at": ".joycraft/local/packets/review-15-r3.json (startup output reviewRound: 2)",
+      "summary": "Reviewer startup printed reviewRound 2, while the coordinator counts this as round 3 (rounds 1 and 2 both wrote review-15.report.json). Assumption: the runtime count is the binding one; no effect on this verdict."
+    }
+  ]
+}

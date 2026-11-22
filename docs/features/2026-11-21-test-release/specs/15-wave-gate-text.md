@@ -1,6 +1,6 @@
 ---
 id: 15
-status: in-review
+status: done
 ---
 # The coordinator runs the gate at gate points, and CI is read once on the PR
 
