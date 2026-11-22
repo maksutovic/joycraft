@@ -28,3 +28,13 @@ cleanup:
 #   - name: markdownlint
 #     run: npx markdownlint-cli2 "docs/**/*.md"
 #     timeout: 300
+
+# tests: your test commands, from narrowest to widest. focused runs one spec's
+# test files: {files} is replaced with them (or they are appended). gate is the
+# project gate; full is everything, CI included. gateRuns says when the gate
+# runs: once per integrated wave (wave) or once per spec (spec, the default).
+# tests:
+#   focused: pnpm test {files}
+#   gate: pnpm test && pnpm typecheck
+#   full: pnpm test:all
+#   gateRuns: spec

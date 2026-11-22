@@ -4,6 +4,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseYaml, readConfig } from './config.mjs';
 import { requireValue } from './identity.mjs';
+import { namesCommand } from './queue-check.mjs';
 import { projectStatus } from './status.mjs';
 import { managedState } from './wiring.mjs';
 import { listWorktrees } from './worktrees.mjs';
@@ -246,6 +247,7 @@ export const checkList = [
   ['entry-size', 'report', 'An entry file over cleanup.entryWords words (default 1000)'],
   ['temporal', 'report', 'A date (YYYY-MM-DD) or a link to a dated file in an entry file, outside code spans'],
   ['script-name', 'report', 'A package script that an entry file names and no package.json defines'],
+  ['gate-rule', 'report', 'An entry-file line outside a table that names the recorded tests.gate or tests.full command'],
   ['codex-bytes', 'report', 'AGENTS.md files from the root to one folder over 32,768 bytes, the Codex limit'],
   ['managed-block', 'mechanical', "Joycraft's AGENTS.md block differs from entry-check.mjs block"],
   ['import', 'report', 'An @path line in an entry file (not @AGENTS.md in CLAUDE.md), or AGENTS.override.md'],
@@ -369,6 +371,16 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
     else for (const item of named) {
       if (!scripts.has(item.script)) findings.push({ check: 'script-name', path: item.file, line: item.line, detail: `Names the package script ${item.script} (\`${item.span}\`), which no package.json defines.`, fix: 'Name a script that exists, or remove the command.' });
     }
+  }
+  // gate-rule: a rule line that names the recorded gate or full command makes
+  // every agent run it after every change. The Commands table row is where it belongs.
+  const gates = [...new Set([config.tests.gate, config.tests.full].filter(Boolean))];
+  if (gates.length) for (const file of entries) {
+    blankFences(parsed.get(file).text).split('\n').forEach((line, index) => {
+      if (line.trim().startsWith('|')) return;
+      const command = gates.find(gate => namesCommand(line, gate));
+      if (command) findings.push({ check: 'gate-rule', path: file, line: index + 1, command, detail: `Names the project gate \`${command}\` in a rule, so every agent runs it after each change.`, fix: 'Keep the command in the Commands table and say when it runs: once per spec at review or once per wave, not after every change.' });
+    });
   }
   // codex-bytes: Codex joins AGENTS.md from the root down to the working folder and stops at its byte limit.
   const sizes = new Map(filesNamed(root, ['AGENTS.md']).map(file => [path.posix.dirname(file), statSync(path.join(root, file)).size]));
