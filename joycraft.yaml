@@ -1,0 +1,9 @@
+# Joycraft settings for this repository. See .joycraft/references/settings.md.
+
+# tests: narrowest to widest. The full suite is the Test workflow on the PR
+# (tarball gates, OS matrix, upgrade from the published release), so no local
+# full command is recorded. The gate takes about 40 s, so it runs once per spec.
+tests:
+  focused: pnpm test {files}
+  gate: pnpm test && pnpm typecheck
+  gateRuns: spec
