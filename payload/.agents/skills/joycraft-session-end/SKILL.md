@@ -6,6 +6,13 @@ compatibility: Requires Node.js 22+ and the installed .joycraft runtime for the 
 
 # Joycraft Session End
 
+Start with the clean-tree check: run `git status --porcelain`. When it prints
+anything, the tree holds the user's work: report what the steps below find, fix
+nothing, commit nothing of the user's and push nothing.
+
+The steps run in this order: records, one tidy commit, worktree prune, archive
+last, then one push that opens the PR.
+
 Read each touched queue and report the real state of every affected spec: `todo`, `in-review`, or `done`. `done` must have either an accepted PASS report receipt or a completion-helper owner-acceptance record bound to a current failed or unverified report; a commit, PASS command, or implementer assertion is not acceptance. Keep blocked or failed dependency branches explicit while identifying independent ready work that can continue next.
 
 If the session stops or restarts a concurrent run, report its coordinator
@@ -20,41 +27,46 @@ If a completion operation failed or was interrupted, do not declare success or h
 
 Leave the paths and next actions another session needs to resume the ready queue without redoing settled context or decisions.
 
-Before ending, run `node .joycraft/runtime/status.mjs --fix` (repairs lagging
-frontmatter of accepted specs, lists features ready to archive) and
+## Records
+
+Run `node .joycraft/runtime/status.mjs --fix` (repairs lagging frontmatter of
+accepted specs, lists features ready to archive) and
 `node .joycraft/runtime/gate.mjs check`. Do the step each gate message names,
 such as a completing command. Tell the user each message you could not clear.
 Ask the user each status `questions` entry (findings rule: `$joycraft-verify`).
 Write each answer where it lasts: a decision in the decision log; a requested
 change in a new spec or the held spec. Never archive a feature whose question
 the user asked to wait.
-Then preview `node .joycraft/runtime/worktrees.mjs prune` and apply it with
+
+When an `UNVERIFIED` review identifies only an environment condition, record
+that condition and arrange a fresh review after it is corrected. Do not create
+an unchanged-code fix round.
+
+Route each reusable fact the session established (a decision, a trap, a reference, a production fact) to its one home, as [knowledge guidance](../../../.joycraft/references/knowledge.md) says. Leave feature intent in the brief.
+
+Write nothing temporal into an entry file or a guide: a date, a status or a hand-off goes to its record, as the [cleanup reference](../../../.joycraft/references/cleanup.md#what-to-find-on-each-page) says.
+
+When independent reports suggest a reusable failure lesson, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md).
+
+## One tidy commit
+
+Tidy without being asked. Run `node .joycraft/runtime/cleanup.mjs tidy` and fix
+only the lines its `fixable: true` findings name, never an entry file or rule
+text. When `cleanup.mjs tidy --verify` passes, make one commit with the message it
+prints; it carries the records and the tidy fixes. Then run `joycraft-cleanup`
+in its session-end mode. Put the other findings on the session-end page; with
+none, say so in one line.
+
+## Worktree prune
+
+Preview `node .joycraft/runtime/worktrees.mjs prune` and apply it with
 `--apply`: it removes only clean, integrated trees of done specs and keeps the
 rest with their reason. Report kept trees and their size from `list`.
 When this session coordinated a queue and no work on it remains, release the
 lease with `node .joycraft/runtime/coordinator.mjs release --queue <queue> --session <your-session-id>`. See [worker isolation](../../../.joycraft/references/worktrees.md)
 when the session used parallel mutable workers.
 
-When an `UNVERIFIED` review identifies only an environment condition, record
-that condition and arrange a fresh review after it is corrected. Do not create
-an unchanged-code fix round.
-
-Before any archival, route each reusable fact the session established (a decision, a trap, a reference, a production fact) to its one home, as [knowledge guidance](../../../.joycraft/references/knowledge.md) says. Leave feature intent in the brief.
-
-Write nothing temporal into an entry file or a guide: a date, a status or a hand-off goes to its record, as the [cleanup reference](../../../.joycraft/references/cleanup.md#what-to-find-on-each-page) says.
-
-Then tidy without being asked, on a clean tree only: when `git status
---porcelain` prints anything, report the tidy findings, fix nothing and commit
-nothing of the user's. Run
-`node .joycraft/runtime/cleanup.mjs tidy` and fix only the lines its
-`fixable: true` findings name, never an entry file or rule text. When
-`cleanup.mjs tidy --verify` passes, make one commit with the message it
-prints. Then run `joycraft-cleanup` in its session-end mode. Put the other
-findings on the session-end page; with none, say so in one line.
-
-When independent reports suggest a reusable failure lesson, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md).
-
-## Session-end archival
+## Archive last
 
 Archive only after the host has ended active work for a feature. It is never a
 completion action: do not invoke it from `complete`, `verify`, a hook, or while
@@ -85,3 +97,11 @@ for authorization you have. Do not rewrite acceptance hashes, roll back a queue
 to satisfy old reports, or re-review done work only to move a folder. Report
 `archived with reconciliation`, never renewed acceptance. Unresolved product
 work and corrupt or missing evidence still block closure.
+
+After `--apply`, commit the move.
+
+## One push
+
+Then make one push that carries these commits and opens the PR, or updates the
+open one. After merge, session end does nothing more: say that the next session
+start checks, read-only, that the change deployed and works.
