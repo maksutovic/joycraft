@@ -1,6 +1,6 @@
 ---
 id: 11
-status: in-review
+status: done
 ---
 # Session start warns in up to 3 lines when mapped docs went stale
 

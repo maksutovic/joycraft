@@ -731,7 +731,7 @@
         4,
         5
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "verification": {
         "inputs": [
@@ -795,6 +795,10 @@
       },
       "submitted": {
         "at": "2026-11-22T00:03:34.771Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-11.report.json",
+        "sha256": "1ce7942745fb5bd273b28fa922042b459c988bdda2a23b4d0e4f80bfc71c2e5a"
       }
     },
     {
