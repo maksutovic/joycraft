@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -35,7 +35,7 @@ function check(root: string) {
 }
 
 describe('queue-check gate-in-spec', () => {
-  it('[AC:spec-4-1] an acceptance bullet naming the recorded gate gives one gate-in-spec gap and exit 2', () => {
+  it('[gate-base-1] an acceptance bullet naming the recorded gate gives one gate-in-spec gap and exit 2', () => {
     for (const acceptance of ['- The suite passes. Check: run `pnpm verify`.', '- The suite passes. Check: run pnpm verify.']) {
       const result = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance }));
       expect(result.status).toBe(2);
@@ -46,7 +46,7 @@ describe('queue-check gate-in-spec', () => {
     }
   });
 
-  it('[AC:spec-4-2] a command with more arguments is not the gate; the full command matches the same way', () => {
+  it('[gate-base-2] a command with more arguments is not the gate; the full command matches the same way', () => {
     const focused = check(fixture({ tests: { gate: 'pnpm test && pnpm typecheck' }, acceptance: '- It works. Check: `pnpm test tests/x.test.ts` passes.' }));
     expect(focused.gates).toHaveLength(0);
     expect(focused.status).toBe(0);
@@ -56,8 +56,8 @@ describe('queue-check gate-in-spec', () => {
     expect(full.status).toBe(2);
   });
 
-  it('[AC:spec-4-3] the gate outside acceptance, a project with no gate, and a done spec give no gap', () => {
-    const inScope = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance: '- It works. Check: `pnpm test tests/x.test.ts`.', scope: '- Gate: `pnpm verify`.' }));
+  it('[gate-base-3] the gate outside acceptance and scope, a project with no gate, and a done spec give no gap', () => {
+    const inScope = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance: '- It works. Check: `pnpm test tests/x.test.ts`.\n\n## Notes\n\n- Gate: `pnpm verify`.' }));
     const noGate = check(fixture({ acceptance: '- It works. Check: `pnpm verify`.' }));
     const done = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance: '- It works. Check: `pnpm verify`.', status: 'done' }));
     for (const result of [inScope, noGate, done]) { expect(result.gates).toHaveLength(0); expect(result.stderr).not.toContain('gate-in-spec'); }
@@ -142,5 +142,52 @@ describe('queue-check gate matching in prose (spec 31)', () => {
       ['cargo test', 'Check: cargo test parser::tests passes.'], ['pytest', 'Check: pytest tests.py passes.'],
     ];
     for (const [gate, text] of args) expect(namesCommand(text, gate), text).toBe(false);
+  });
+});
+
+describe('queue-check gate-in-spec chains, scope and comment (1.9.1 spec 4)', () => {
+  it('[AC:spec-4-1] &&, ||, | and 2>&1 followed by whitespace end the command; a glued hyphen, a path or --run do not', async () => {
+    const { namesCommand } = await import('../payload/.joycraft/runtime/queue-check.mjs');
+    const named = ['pnpm verify && pnpm lint pass.', 'pnpm verify | tee gate.log', 'pnpm verify 2>&1 | tee log', 'pnpm verify || true'];
+    for (const text of named) expect(namesCommand(text, 'pnpm verify'), text).toBe(true);
+    const notNamed = ['pnpm verify-all', 'pnpm verify tests/a.test.ts', 'pnpm verify --run'];
+    for (const text of notNamed) expect(namesCommand(text, 'pnpm verify'), text).toBe(false);
+    const chained = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance: '- It works. Check: pnpm verify && pnpm lint pass.' }));
+    expect(chained.gates).toHaveLength(1);
+    expect(chained.status).toBe(2);
+  });
+
+  it('[AC:spec-4-2] a scope bullet naming the recorded gate gets one gate-in-spec gap at its line; "the recorded gate" gets none; a done spec is skipped', async () => {
+    const { checkQueue } = await import('../payload/.joycraft/runtime/queue-check.mjs');
+    const acceptance = '- It works. Check: `pnpm test tests/x.test.ts`.';
+    const named = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance, scope: '- Files: `src/a.ts`.\n- Run `pnpm verify` once, before review.' }));
+    expect(named.status).toBe(2);
+    expect(named.gates).toHaveLength(1);
+    // 01-a.md: frontmatter 1-4, title 5, acceptance 7-9, scope heading 11, bullets 13-14.
+    expect(named.gates[0]).toContain('01-a.md:14');
+    expect(named.gates[0]).toContain('`pnpm verify`');
+    expect(named.gates[0]).toContain('write "the recorded gate" instead');
+    const kinds = checkQueue({ root: fixture({ tests: { gate: 'pnpm verify' }, acceptance, scope: '- Files: `src/a.ts`.\n- Run `pnpm verify` once, before review.' }), queuePath }).gaps
+      .map((item: { kind: string; item: unknown }) => [item.kind, item.item]);
+    expect(kinds).toEqual([['gate-in-spec', 14]]);
+    const fenced = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance, scope: '- Files: `src/a.ts`.\n\n```\npnpm verify\n```' }));
+    expect(fenced.gates).toHaveLength(1);
+    expect(fenced.gates[0]).toContain('01-a.md:16');
+    const clean = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance, scope: '- Files: `src/a.ts`.\n- Run the recorded gate once, before review.' }));
+    expect(clean.gates).toHaveLength(0);
+    expect(clean.stderr).not.toContain('gate-in-spec');
+    expect(clean.status).toBe(0);
+    const done = check(fixture({ tests: { gate: 'pnpm verify' }, acceptance, scope: '- Run `pnpm verify` once, before review.', status: 'done' }));
+    expect(done.gates).toHaveLength(0);
+  });
+
+  it('[AC:spec-4-3] the namesCommand comment says a word starting with - is an argument, re-runs is prose, and lists the chain endings', () => {
+    const source = readFileSync(runtime, 'utf8');
+    const at = source.indexOf('export function namesCommand');
+    const comment = source.slice(source.lastIndexOf('/**', at), at).replace(/\n \* ?/g, ' ').replace(/\s+/g, ' ');
+    expect(comment).toContain('starts with `-`');
+    expect(comment).toContain('re-runs');
+    for (const ending of ['`&&`', '`||`', '`|`', '`2>&1`']) expect(comment).toContain(ending);
+    expect(comment).not.toContain('`:`, `-` or `=`');
   });
 });
