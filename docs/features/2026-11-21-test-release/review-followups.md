@@ -90,3 +90,8 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 ## After spec 28 — for spec 29
 - Pin the 12 EVERY_SPEC_FILES paths in the guard so moving a file to on-demand fails a test (spec 28 review f3).
 - text-sota-page: assert the cap keys on JOYCRAFT_EVIDENCE never CI and "never a fixed delay" (f4); decision 8 says "new and changed" test files (f5).
+
+## After spec 31 — for spec 29
+- Chained gates are missed: "pnpm verify && pnpm lint", "pnpm verify | tee log" (queue-check.mjs:262); let `&&`, `||`, `|`, `2>&1` end the command.
+- Update the doc comment at queue-check.mjs:231 (hyphen rule changed).
+- Reviewer guidance: save probe scripts with a `.txt` suffix (e.g. `.mjs.txt`) so archiving a feature after the gate does not need another gate run; delivery.md names the record extensions.

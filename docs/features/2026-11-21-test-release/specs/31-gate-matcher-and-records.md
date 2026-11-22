@@ -1,6 +1,6 @@
 ---
 id: 31
-status: in-review
+status: done
 ---
 # Gate matching misses no prose gate, and feature-folder records exclude source files
 
