@@ -21,3 +21,7 @@
 ## Spec 6 (PASS r1)
 - setup.md:245-250 lost "and its conventions" (keep an existing worktrees doc style); restore if words allow.
 - setup.md:298 dropped "materially" from the ask-a-question rule; slightly wider.
+
+## Spec 7 (PASS r1)
+- testing-review.md is read on nearly every spec (verify skill, reviewer/implementer agents, decompose) but counted on-demand; moving it would exceed the every-spec cap (owner call on the split).
+- gates.md is every-spec but no per-spec file names it (runtime-only justification).

@@ -619,7 +619,7 @@
       "id": 7,
       "file": "07-pin-every-spec-list.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -670,6 +670,10 @@
       },
       "submitted": {
         "at": "2026-11-22T07:07:18.811Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-7.report.json",
+        "sha256": "9ab30e9d51e224c9ee8c6c8260b97b04049e1f8d5d244b3664a5f5d1adcb6cb3"
       }
     },
     {
