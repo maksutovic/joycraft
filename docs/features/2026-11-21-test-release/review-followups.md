@@ -49,3 +49,4 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 ## Startup commands (spec 5) — fix
 - `expand()` recurses forever on a path containing the literal `{files}`; recurse only into the template text (dispatch-start.mjs:104).
 - An unclosed quote in `tests.focused` should give a note, not exit 1.
+- The startup evidence step appends `focused.command`; a focused command with shell syntax (`&&`) then runs under the caller's shell, not under evidence. Use the shell form for it, as delivery requires for the gate (dispatch-start.mjs:123).
