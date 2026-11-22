@@ -1,11 +1,12 @@
 import { execFileSync, spawnSync } from 'node:child_process';
 import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { boundQueueForSubject, briefDecisionRecords, canonical, featureFolderMatches, isObject, isSha256, localPath, nonempty, normalizedQueueForSubject, parseJson, readLocal, readQueue, relativePath, requireValue, scopedRequirementForSubject, sha256, specStatus, subjectIdentity, validateIndependentReview } from './identity.mjs';
 import { validateEvidence } from './evidence.mjs';
 import { validateOwnerAcceptance, validateWaiver } from './completion.mjs';
 import { readConfig, workPaths } from './config.mjs';
+import { isTestPath } from './test-changes.mjs';
 
 const featureName = value => {
   requireValue(typeof value === 'string' && /^[a-z0-9][a-z0-9-]*$/.test(value), 'Feature must be a lowercase slug');
@@ -436,7 +437,7 @@ export function previewArchiveFeature({ root = process.cwd(), feature, phase, at
   };
   collect(source);
   const requirementHistory = [...new Map(evidence.flatMap(decision => decision.requirementHistory ?? []).map(record => [canonical(record), record])).values()];
-  return { schemaVersion: 1, feature, phase, source, destination, queuePath, attestation: parsedAttestation, evidence, requirementHistory, ...(asIs ? { asIs: { path: `${destination}/unverified.md`, ownerInstruction, unverified } } : {}), ...(reconciliation ? { reconciliation: { path: reconciliation.path, sha256: reconciliation.sha256, record: reconciliation.record } } : {}), featureFiles: files.sort((a, b) => a.path.localeCompare(b.path)), copiedEvidence: [...copies.values()].sort((a, b) => a.path.localeCompare(b.path)), historical: { codeInputHashesAreHistorical: true, currentAcceptanceRenewed: false, ...(reconciliation ? { acceptanceRecordsReconciled: true } : {}), ...(asIs ? { archivedAsIs: true } : {}) } };
+  return { schemaVersion: 1, feature, phase, source, destination, queuePath, namedFiles: namedFiles(root, source), attestation: parsedAttestation, evidence, requirementHistory, ...(asIs ? { asIs: { path: `${destination}/unverified.md`, ownerInstruction, unverified } } : {}), ...(reconciliation ? { reconciliation: { path: reconciliation.path, sha256: reconciliation.sha256, record: reconciliation.record } } : {}), featureFiles: files.sort((a, b) => a.path.localeCompare(b.path)), copiedEvidence: [...copies.values()].sort((a, b) => a.path.localeCompare(b.path)), historical: { codeInputHashesAreHistorical: true, currentAcceptanceRenewed: false, ...(reconciliation ? { acceptanceRecordsReconciled: true } : {}), ...(asIs ? { archivedAsIs: true } : {}) } };
 }
 
 /** Receipts and reports that a spec's acceptance records name but that are missing or changed. Reads only. */
@@ -497,12 +498,80 @@ function replayManifest(plan) {
   return { schemaVersion: 1, kind: 'joycraft-archive-replay', feature: plan.feature, archivedAt: new Date().toISOString(), phase: plan.phase, source: plan.source, evidence: plan.evidence, ...(plan.reconciliation ? { reconciliation: plan.reconciliation } : {}), ...(plan.asIs ? { asIs: { ...plan.asIs, sha256: sha256(Buffer.from(unverifiedNote(plan))) } } : {}), durableContext: plan.attestation.durableContext, hostSession: plan.attestation.host.sessionId, historical: plan.historical, files: map };
 }
 
+const namesFolder = source => new RegExp(`(?<![\\w-])${source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w-])`);
+
+/**
+ * Tracked non-Markdown files outside the features and archive folders that name
+ * the feature folder, each with its first naming line and whether it is a test,
+ * tests first. Archive lists them before the move; `--rewrite` fixes the listed
+ * tests the agent judges editable (never an applied migration).
+ */
+function namedFiles(root, source) {
+  if (!gitRoot(root)) return [];
+  const { features, archive } = workPaths(root);
+  const names = namesFolder(source);
+  const found = [];
+  for (const file of gitIn(root, ['ls-files', '-z']).split('\0').filter(Boolean)) {
+    if (file.endsWith('.md') || under(file, features) || under(file, archive)) continue;
+    let text;
+    try { if (!lstatSync(path.join(root, file)).isFile()) continue; text = readFileSync(path.join(root, file), 'utf8'); } catch { continue; }
+    const line = text.split('\n').findIndex(each => names.test(each));
+    if (line >= 0) found.push({ path: file, line: line + 1, test: isTestPath(file) });
+  }
+  return found.sort((a, b) => Number(b.test) - Number(a.test) || a.path.localeCompare(b.path));
+}
+
+const refusal = message => Object.assign(new Error(message), { exitCode: 2 });
+
+/** Check a --rewrite list before any edit: each a listed file, and tests.focused recorded. Refuses with exit 2. */
+function planRewrite(root, plan, rewrite) {
+  const listed = new Map(plan.namedFiles.map(file => [file.path, file]));
+  let files;
+  try { files = [...new Set(rewrite.map(relativePath))]; } catch (error) { throw refusal(error.message); }
+  for (const file of files) if (!listed.has(file)) throw refusal(`--rewrite ${file} is not a file the archive plan lists as naming ${plan.source}; listed: ${[...listed.keys()].join(', ') || 'none'}`);
+  let focused;
+  try { focused = readConfig(root).tests.focused; } catch (error) { throw refusal(error.message); }
+  if (!focused) throw refusal('--rewrite needs tests.focused in joycraft.yaml, the command that runs the rewritten tests; nothing was edited');
+  // The runner gets the rewritten tests; when none is a test, every rewritten file.
+  const targets = files.filter(file => listed.get(file).test);
+  const run = targets.length ? targets : files;
+  const words = focused.trim().split(/\s+/);
+  const argv = words.includes('{files}') ? words.flatMap(word => (word === '{files}' ? run : [word])) : [...words, ...run];
+  return { files: files.map(file => ({ path: file, before: readFileSync(path.join(root, file)) })), argv };
+}
+
+/** After the move: rewrite the folder path in the listed files and run them through evidence.mjs. */
+function rewriteAndTest(root, plan, rewrite) {
+  const names = new RegExp(namesFolder(plan.source).source, 'g');
+  const target = `${plan.destination}/feature`;
+  for (const file of rewrite.files) writeFileSync(path.join(root, file.path), file.before.toString('utf8').replace(names, target));
+  const local = path.join(realpathSync(root), '.joycraft/local');
+  if (!existsSync(local)) { mkdirSync(local, { recursive: true, mode: 0o700 }); writeFileSync(path.join(local, '.gitignore'), '*\n', { flag: 'wx', mode: 0o600 }); }
+  const receipt = `.joycraft/local/receipts/archive-${plan.feature}-${new Date().toISOString().replace(/[-:.]/g, '')}.log`;
+  const evidence = path.join(path.dirname(fileURLToPath(import.meta.url)), 'evidence.mjs');
+  const result = spawnSync(process.execPath, [evidence, 'run', '--receipt', receipt, '--', ...rewrite.argv], { cwd: root, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+  let parsed = null;
+  try { parsed = JSON.parse(result.stdout); } catch { /* A refusal prints no result. */ }
+  return { receipt, command: rewrite.argv.join(' '), exitCode: parsed?.command?.exitCode ?? result.status, ...(parsed ? {} : { error: (result.stderr ?? '').trim() }) };
+}
+
+/** Put the rewritten files back byte for byte and the feature folder back at its source. */
+function holdArchive(root, plan, rewrite) {
+  for (const file of rewrite.files) writeFileSync(path.join(root, file.path), file.before);
+  const destinationLocal = projectTarget(root, plan.destination);
+  renameSync(path.join(destinationLocal, 'feature'), projectTarget(root, plan.source));
+  rmSync(destinationLocal, { recursive: true, force: true });
+}
+
 export function archiveFeature(options) {
   const plan = previewArchiveFeature(options);
   if (plan.existing) return { status: 'archived', unchanged: true, destination: plan.destination, manifest: plan.manifest, historical: plan.historical, ...(plan.unverified ? { unverified: plan.unverified } : {}) };
   const notNeeded = options.asIs === true && !plan.asIs ? { asIs: 'not-needed' } : {};
+  const rewriteList = options.rewrite ?? [];
+  if (rewriteList.length && options.apply !== true) throw refusal('--rewrite needs --apply');
   if (options.apply !== true) return { status: 'preview', plan, ...notNeeded };
   const root = options.root ?? process.cwd();
+  const rewrite = rewriteList.length ? planRewrite(root, plan, rewriteList) : null;
   // Revalidate every input immediately before changing paths, so a preview cannot race a writer.
   const fresh = previewArchiveFeature({ ...options, root, apply: false });
   requireValue(canonical({ ...plan, attestation: undefined }) === canonical({ ...fresh, attestation: undefined }), 'Archive inputs changed after preview; rerun the session-end preflight');
@@ -541,10 +610,22 @@ export function archiveFeature(options) {
     const recovery = restored ? 'The live feature path was preserved.' : `The staged feature remains at ${stage}; restore it manually before retrying.`;
     throw new Error(`Archive stopped without accepting new completion: ${error.message}. ${recovery}`);
   }
+  // The rewritten tests read the archive path, so they run once the folder is there; on red
+  // the move and the edits are undone and nothing is archived.
+  let tested;
+  if (rewrite) {
+    try { tested = rewriteAndTest(root, plan, rewrite); }
+    catch (error) { holdArchive(root, plan, rewrite); throw new Error(`Archive stopped before accepting the move: ${error.message}. The feature folder and the listed files were restored.`); }
+    if (tested.exitCode !== 0) {
+      holdArchive(root, plan, rewrite);
+      return { status: 'held', source: plan.source, destination: plan.destination, rewritten: rewrite.files.map(file => file.path), test: tested,
+        reason: `The rewritten tests failed (${tested.command}); the files were restored and nothing moved. Read ${tested.receipt}, fix the tests or leave them out of --rewrite, and archive again.` };
+    }
+  }
   let links;
   try { links = relinkLive(root, plan); } catch (error) { links = { error: error.message }; }
   const afterArchive = runAfterArchive(root, plan);
-  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), ...notNeeded, links, ...(afterArchive ? { afterArchive } : {}) };
+  return { status: 'archived', destination: plan.destination, manifest: `${plan.destination}/archive-replay.json`, historical: plan.historical, ...(plan.asIs ? { unverified: plan.asIs.path } : {}), ...notNeeded, ...(rewrite ? { rewritten: rewrite.files.map(file => file.path), test: tested } : {}), links, ...(afterArchive ? { afterArchive } : {}) };
 }
 
 /** The common parent folder of the context, features and archive homes ('.' when they share none). */
@@ -716,10 +797,11 @@ export function archiveIgnore({ root = process.cwd(), apply = false, decline = f
 
 function argumentsFor(argv) {
   const [command, ...args] = argv;
-  requireValue(command === 'archive', 'Usage: archive.mjs ignore --check | --apply | --decline, or archive.mjs archive --feature <feature or folder name> --phase session-end --attestation <path> [--reconciliation <path>] [--as-is --owner-instruction <text>] [--apply]');
-  const flags = {};
+  requireValue(command === 'archive', 'Usage: archive.mjs ignore --check | --apply | --decline, or archive.mjs archive --feature <feature or folder name> --phase session-end --attestation <path> [--reconciliation <path>] [--as-is --owner-instruction <text>] [--apply [--rewrite <path>]...]');
+  const flags = { '--rewrite': [] };
   for (let index = 0; index < args.length; index += 1) {
     if (['--apply', '--as-is'].includes(args[index])) { requireValue(flags[args[index]] === undefined, `Duplicate ${args[index]}`); flags[args[index]] = true; continue; }
+    if (args[index] === '--rewrite') { requireValue(nonempty(args[index + 1]) && !args[index + 1].startsWith('--'), '--rewrite needs a listed file path'); flags['--rewrite'].push(args[index + 1]); index += 1; continue; }
     requireValue(['--feature', '--phase', '--attestation', '--reconciliation', '--owner-instruction'].includes(args[index]) && nonempty(args[index + 1]) && flags[args[index]] === undefined, `Invalid or duplicate argument: ${args[index]}`);
     requireValue(args[index] !== '--owner-instruction' || !args[index + 1].startsWith('--'), '--owner-instruction needs the owner\'s words as its value; the text cannot start with --');
     flags[args[index]] = args[index + 1]; index += 1;
@@ -737,13 +819,14 @@ export function main(argv = process.argv.slice(2)) {
     return result;
   }
   const flags = argumentsFor(argv);
-  const result = archiveFeature({ feature: flags['--feature'], phase: flags['--phase'], attestation: flags['--attestation'], reconciliation: flags['--reconciliation'], asIs: flags['--as-is'] === true, ownerInstruction: flags['--owner-instruction'], apply: flags['--apply'] === true });
+  const result = archiveFeature({ feature: flags['--feature'], phase: flags['--phase'], attestation: flags['--attestation'], reconciliation: flags['--reconciliation'], asIs: flags['--as-is'] === true, ownerInstruction: flags['--owner-instruction'], apply: flags['--apply'] === true, rewrite: flags['--rewrite'] });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+  if (result.status === 'held') process.exitCode = 2;
   // The archive stands; exit 3 tells a caller that only the after-archive hook failed.
   if (result.afterArchive && !result.afterArchive.ok) process.exitCode = 3;
   return result;
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  try { main(); } catch (error) { process.stderr.write(`Archive stopped: ${error.message}\n`); process.exitCode = 1; }
+  try { main(); } catch (error) { process.stderr.write(`Archive stopped: ${error.message}\n`); process.exitCode = error.exitCode ?? 1; }
 }
