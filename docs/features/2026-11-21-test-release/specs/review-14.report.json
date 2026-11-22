@@ -1,0 +1,436 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "c0f939188e2c5f888d483aa40029730253b90570",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 14,
+    "specPath": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+    "criteria": [
+      {
+        "id": "spec-14-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-14-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-14-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-14-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "structural"
+        ]
+      },
+      {
+        "id": "spec-14-5",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "spec-tier",
+            "wave-gate",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "wave-gate-default",
+            "cap-raise"
+          ]
+        },
+        "sha256": "a7c502f70de22f2afe57b720944385932dbbaee46b3d7e3edb47678bd50d740b",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "27bc5beb4ad295b4203106a154305eaa37b0ec89c608f6b412c740fd58bde1e7",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/14-tier-text.md",
+        "kind": "requirement",
+        "sha256": "a1d33dc279926e356b68baebd7828afb53cdc96b6596a1b8d4a49b1c89c59e80",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-decompose/SKILL.md",
+        "kind": "code",
+        "sha256": "2a072a620fc613076654aab8921d49b8fd755dbd57a177754b660d07f0df0195",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+        "kind": "code",
+        "sha256": "47fd9fc1c76f08d0ef96809d88e0eceaeb76d7beb149f3c9aafc7a1e957ce2ea",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.claude/agents/joycraft-implementer.md",
+        "kind": "code",
+        "sha256": "efb31e8ac34b5fc68ceedd9d334f0eed618bbd11546315ff7848fca14809c77b",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/settings.md",
+        "kind": "code",
+        "sha256": "be0ee9ded37691db42ad01e4b51118c23a6d4bc3bc5e298c0c00e7454e7d154a",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "f58795616b06fa5b7f4314cd0e4546478a1b559cf540a3cca18a663743759644",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/testing-review.md",
+        "kind": "code",
+        "sha256": "b61e08d9477b8ae38fdb42e3eb5a3517422eb632348a00653c36f640789037b2",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/templates/spec.md",
+        "kind": "code",
+        "sha256": "08a1e6e7796008fcc1fde580ea033a25d8de706521945d5e7dddb672cd2c81ad",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "e9f3623b14b2fea3eaa8b597355b57f8e85c5ef1ab918c049a5caf156758d9c5",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-spec-tier.test.ts",
+        "kind": "check",
+        "sha256": "439eb485feecf0e2589c8e1974e2ea82e3096684c85567f089b574d3ecbdbc5f",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          4,
+          5,
+          6,
+          14
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "spec-tier",
+            "wave-gate",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "wave-gate-default",
+            "cap-raise"
+          ]
+        }
+      ]
+    },
+    "identity": "8a0bb679163271e34cf66a6f4c3552eba6e2fc21627272881796e0a3ea373fab"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a7d8f94bc269e5b4a"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "af95e395214112cc3"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "createdAt": "2026-11-22T02:50:40.748Z",
+  "flows": [
+    {
+      "id": "spec-14-1-check-names-own-tests",
+      "subjectIdentity": "8a0bb679163271e34cf66a6f4c3552eba6e2fc21627272881796e0a3ea373fab",
+      "criteria": [
+        "spec-14-1"
+      ],
+      "representativeInput": "payload/.joycraft/templates/spec.md:12-14 and payload/.agents/skills/joycraft-decompose/SKILL.md:28-30 (verification-inputs sentence)",
+      "expected": "Both ask each Check: to name the spec's own test file or filter, never the gate or full suite; the template has no \"the command or test\" wording.",
+      "limits": [],
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "templates/spec.md:14 and decompose SKILL.md:29-30 both carry \"Each `Check:` names the spec's own test file or filter, never the project gate or full suite.\"; the decompose sentence sits in the verification-inputs passage. \"the command or test\" is gone from the template (diff 58f2c69). The template's \"Implementation and verification scope\" section names no gate. queue-check gate-in-spec (spec 4) backs the rule at runtime for acceptance bullets. [AC:spec-14-1] passes in spec-14-tests.log.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.log",
+              "sha256": "52bbb77775e1454db86783930aedb53544a6b6b83ebac0a8d902ccc844c63823"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.mjs",
+              "sha256": "5f75c72b054624dd227ff41ca8eec6691c5214e263ae23ea3f7f57aabed3a493"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-tests.log",
+              "sha256": "f4f7c2e51d194601f2d614120e567f5e484e2cae965e3230652ae498ba3fe78a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "spec-14-2-verify-and-implementer",
+      "subjectIdentity": "8a0bb679163271e34cf66a6f4c3552eba6e2fc21627272881796e0a3ea373fab",
+      "criteria": [
+        "spec-14-2"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-verify/SKILL.md:51-53, payload/.claude/agents/joycraft-implementer.md:28-33, payload/.claude/agents/joycraft-reviewer.md:26",
+      "expected": "verify takes runtime evidence from commands.focused, not the gate, so line 51 no longer contradicts the next paragraph; implementer has no \"project gate one time\".",
+      "limits": [],
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "verify SKILL.md:51 now reads \"Take runtime evidence once from the spec's own tests (the packet's `commands.focused`), never the project gate\"; the old separate \"Run the spec's own tests once, not the project gate\" paragraph merged into it, so the reviewLoop evidence sentence now covers only other evidence. implementer.md:33 \"Run only the spec's focused tests, never the project gate.\" (old \"run the project gate one time ... For a review fix, run only the focused tests\" removed). reviewer.md:26 already said \"Do not run the project gate again; run the spec's own tests once\". Payload dispatch-start.mjs:218-221 emits commands.focused in startup output. [AC:spec-14-2] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.log",
+              "sha256": "52bbb77775e1454db86783930aedb53544a6b6b83ebac0a8d902ccc844c63823"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.mjs",
+              "sha256": "5f75c72b054624dd227ff41ca8eec6691c5214e263ae23ea3f7f57aabed3a493"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-tests.log",
+              "sha256": "f4f7c2e51d194601f2d614120e567f5e484e2cae965e3230652ae498ba3fe78a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "spec-14-3-testing-review-selection",
+      "subjectIdentity": "8a0bb679163271e34cf66a6f4c3552eba6e2fc21627272881796e0a3ea373fab",
+      "criteria": [
+        "spec-14-3"
+      ],
+      "representativeInput": "payload/.joycraft/references/testing-review.md:29-33",
+      "expected": "Recommends test selection from declared test files; \"Do not recommend test selection\" gone.",
+      "limits": [],
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "testing-review.md:30-31 \"Recommend test selection from each spec's declared test files: a spec runs its own tests, and the gate runs once per spec or wave.\"; result cache stays conditional on a slow suite. Old sentence absent. [AC:spec-14-3] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.log",
+              "sha256": "52bbb77775e1454db86783930aedb53544a6b6b83ebac0a8d902ccc844c63823"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.mjs",
+              "sha256": "5f75c72b054624dd227ff41ca8eec6691c5214e263ae23ea3f7f57aabed3a493"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-tests.log",
+              "sha256": "f4f7c2e51d194601f2d614120e567f5e484e2cae965e3230652ae498ba3fe78a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "spec-14-4-setup-tests-section",
+      "subjectIdentity": "8a0bb679163271e34cf66a6f4c3552eba6e2fc21627272881796e0a3ea373fab",
+      "criteria": [
+        "spec-14-4"
+      ],
+      "representativeInput": "payload/.joycraft/references/setup.md:77-80, payload/.joycraft/references/settings.md:20, payload/.joycraft/runtime/config.mjs readTests on a git fixture",
+      "expected": "setup writes tests.focused ({files}), tests.gate, tests.full beside the Commands table, times the gate once, gateRuns wave over about 60 s else spec; settings documents tests:.",
+      "limits": [],
+      "observations": [
+        {
+          "kind": "structural",
+          "method": "command",
+          "result": "PASS",
+          "actual": "setup.md:77-80 \"Test commands: beside the `AGENTS.md` Commands table, write `tests.focused` (with `{files}`), `tests.gate` and `tests.full` to `joycraft.yaml`. Time the gate once: over about 60 s, record `gateRuns: wave`, else `gateRuns: spec`.\" settings.md:20 maps plain requests to `tests:` with all four keys. The spec-14-4 test also runs config.mjs on a temp git fixture and reads the section back; coordinator.mjs gate-plan consumes gateRuns. [AC:spec-14-4] passes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.log",
+              "sha256": "52bbb77775e1454db86783930aedb53544a6b6b83ebac0a8d902ccc844c63823"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.mjs",
+              "sha256": "5f75c72b054624dd227ff41ca8eec6691c5214e263ae23ea3f7f57aabed3a493"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-tests.log",
+              "sha256": "f4f7c2e51d194601f2d614120e567f5e484e2cae965e3230652ae498ba3fe78a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "spec-14-5-word-budget",
+      "subjectIdentity": "8a0bb679163271e34cf66a6f4c3552eba6e2fc21627272881796e0a3ea373fab",
+      "criteria": [
+        "spec-14-5"
+      ],
+      "representativeInput": "tests/payload-guard.test.ts printed counts at HEAD c0f9391; guard-style word totals of the 12 EVERY_SPEC_FILES at 28ee6ed (before), 58f2c69 (this spec) and dcd5476 (spec 23)",
+      "expected": "payload-guard passes; every-spec words grow by at most 5 in this spec; on-demand inside budget.",
+      "limits": [],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "vitest run tests/text-spec-tier.test.ts tests/payload-guard.test.ts: 2 files, 21 tests passed, exit 0. Guard prints \"every-spec words: 12158 (cap 12256, 98 spare)\" and \"on-demand words: 18593 (cap 19663, 1070 spare)\" at HEAD. Probe: every-spec 12150 at 28ee6ed, 12154 at 58f2c69 (+4: verify +4, decompose +10, implementer -10), 12158 at dcd5476 (spec 23's +4). Growth for spec 14 is 4, within the allowance of 5; the guard comment's 12,150 baseline matches 28ee6ed.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-tests.log",
+              "sha256": "f4f7c2e51d194601f2d614120e567f5e484e2cae965e3230652ae498ba3fe78a"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.log",
+              "sha256": "52bbb77775e1454db86783930aedb53544a6b6b83ebac0a8d902ccc844c63823"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-14-probe.mjs",
+              "sha256": "5f75c72b054624dd227ff41ca8eec6691c5214e263ae23ea3f7f57aabed3a493"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node_modules/.bin/vitest",
+              "run",
+              "tests/text-spec-tier.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-testing-md-gate-tier",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "at": "payload/.joycraft/references/testing.md:26",
+      "summary": "The every-spec running-tests tier still says \"Project gate: run it one time on the final commit of a spec\" without saying who runs it. implementer.md:28 sends the implementer to that tier and line 33 then says never run the gate, so an implementer reading both meets a contradiction; joycraft-implement SKILL.md:59 (inline implementer path, e.g. hosts without an implementer agent file) sends the implementer to the same tier. Not per step, so Max's note is met, but spec 15 (which owns testing.md, criterion 3 only requires gateRuns there) should make the tier say the coordinator runs the gate at gate-plan points and workers run focused tests only."
+    },
+    {
+      "id": "f2-commands-in-startup-output",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-verify/SKILL.md:51",
+      "summary": "\"the packet's `commands.focused`\" follows the spec's wording, but dispatch-start.mjs:221 returns `commands` in the startup output beside `packet`, not inside the packet file under .joycraft/local/packets/. implementer.md:18 says \"startup output's `commands`\". A reviewer that opens only the packet file will not find it; \"startup output's\" would be exact at no word cost."
+    },
+    {
+      "id": "f3-scope-section-gate",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "at": "payload/.joycraft/runtime/queue-check.mjs:334",
+      "summary": "gate-in-spec checks only acceptance bullets. A spec's \"Implementation and verification scope\" can still name the gate (this feature's own specs say \"gate `pnpm test && pnpm typecheck`\" there, e.g. 14-tier-text.md:29), and the template does not forbid it. With gateRuns: spec this is once per spec, not per step, so it is not a contradiction; consider extending the decompose sentence or the check to that section."
+    },
+    {
+      "id": "f4-entry-rule",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "at": "AGENTS.md:15",
+      "summary": "This project's own Rules line \"Run `pnpm test && pnpm typecheck` before committing\" still tells every agent to run the gate per commit. It is an owner rule, handled by spec 16's attended gate-rule decision, not by spec 14; listed so the feature-level review confirms Max decides it."
+    },
+    {
+      "id": "f5-test-pins-sentences",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/text-spec-tier.test.ts:41",
+      "summary": "The spec-14 tests pin whole sentences (exact template/decompose sentence, implementer sentence, setup sentence), so any rewording breaks them. Acceptable for text specs, but shorter key-phrase assertions would be less brittle."
+    }
+  ]
+}

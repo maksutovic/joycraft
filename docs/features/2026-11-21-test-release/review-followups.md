@@ -54,3 +54,8 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 ## Gate receipt (spec 7) — fix
 - Plain gate in shell form: refuse shell syntax (newline, `;`) in the line too, or split only on spaces/tabs (delivery.mjs:125).
 - Refuse a shell path inside the project, and Windows-form paths on POSIX (delivery.mjs:113). State the symlinked-shell case beside the forged-footer limit.
+
+## Tier text (spec 14) — fix
+- joycraft-verify:51 "the packet's `commands.focused`" → "the startup output's `commands.focused`".
+- gate-in-spec checks only acceptance bullets; the scope section can still name the gate (queue-check.mjs:334).
+- Joycraft's own AGENTS.md "Run `pnpm test && pnpm typecheck` before committing" runs the gate on every commit: Max's call through the spec 16 gate-rule offer.

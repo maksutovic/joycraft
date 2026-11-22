@@ -1,6 +1,6 @@
 ---
 id: 14
-status: in-review
+status: done
 ---
 # Specs name their own tests, and setup records the three commands
 
