@@ -341,9 +341,9 @@ Do not commit, publish, or ask me for API keys.
 - After a feature is archived, session end no longer lists its follow-up questions.
   The reviews stay in the archive.
 - A criterion can still pass on a test that only the implementing agent wrote.
-  A test is shown to fail for broken behavior only when a saved fault is run
-  against it (`evidence.mjs run --patch`): every test-only spec does this, and the
-  reviewer reruns one.
+  A test is shown to fail for broken behavior only when a saved fault (a small
+  patch that breaks the code) is run against it: every test-only spec does this,
+  and the reviewer reruns one.
 
 ### The gates: no spec is done without an accepted review
 
