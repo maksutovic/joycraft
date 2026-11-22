@@ -23,6 +23,11 @@ says "the runner's own flag".
 - **The project testing page is now `<context>/test-practices.md`.** Setup and the
   test review write it from a shipped template, titled "Test practices", so it
   cannot be confused with `.joycraft/references/testing.md`.
+- **The docs root must be one visible folder.** `joycraft.yaml` now refuses (exit 1)
+  a docs root that is the project root or a hidden folder: `paths.features`,
+  `paths.archive` and `paths.context` must share one visible parent folder, such as
+  `docs/`. If yours do not, move the three folders under one folder and update
+  `paths` in `joycraft.yaml`.
 - **The managed block has one new line.** `update` reports the `managed-block`
   finding and replaces the block.
 
@@ -60,32 +65,36 @@ says "the runner's own flag".
 - **Specs name their own tests.** `queue-check.mjs` reports `gate-in-spec` when a
   spec's acceptance names the recorded gate or full command. Task startup prints
   the focused command built from the spec's check inputs, and the worker's commands
-  ready to paste. `check-report` refuses a review report that ran the gate.
+  ready to paste. A focused command with shell syntax runs as `sh -c`. `check-report` refuses a review report that ran the gate.
 - **The coordinator runs the gate.** `coordinator.mjs gate-plan` prints the gate
   points; `gate-owner` names the spec whose inputs hold a failing file, or
   `bisect`. With `tests.gate` recorded, `delivery.mjs push` needs
-  `--gate-receipt` with a green, clean gate run on the HEAD being pushed.
+  `--gate-receipt`: a green gate run on a clean tree at the HEAD being pushed, or at
+  an older commit when only record files changed since. Receipts must be
+  git-ignored or inside a feature folder.
 - **Run facts.** Every `evidence.mjs run` receipt ends with one footer line: wall
   time, 1-minute load at start and end, cores, `loaded` (load above the core
-  count), and the failing tail of the output on a red run. Session-end status
+  count). On a red run the result JSON also carries the failing tail of the
+  output. Session-end status
   prints one `load` line only when runs started loaded.
 - **Saved faults.** `evidence.mjs run --patch <fault>.diff` refuses a dirty tree,
-  applies the fault, runs, reverses it and checks the restore by hash
-  (`patch.restored`). A test-only spec proves each changed test file this way, and
+  applies the fault, runs, reverses it and checks the restore (`patch.restored`):
+  the touched files by hash, and the status, HEAD and stash unchanged. A test-only spec proves each changed test file this way, and
   the reviewer reruns one saved fault plus one of its own.
 - **Declared test changes.** Specs carry a `## Test changes` section (path, class,
   requiring line; default "none"). `test-changes.mjs` and reviewer startup list the
   declared and undeclared changed test files; the reviewer blocks only an
   undeclared change that no line requires.
 - **A machine-local environment map.** `evidence.mjs` applies
-  `.joycraft/local/evidence-env.json` and refuses it when Git tracks it.
+  `.joycraft/local/evidence-env.json` and refuses it unless Git ignores it.
 - **Archive lists what names the folder.** The archive preview's `namedFiles`
   lists tracked non-Markdown files that name the feature folder, tests first.
   Session end changes the path in those tests after the move, runs the gate and
   commits the edits with the move; on red it moves the folder back.
 - **Cleanup flags owner rule lines that name the gate** ("run `pnpm verify` after
   every change"), outside the Commands table, and offers a before-and-after rewrite
-  as one decision. `update` shows the finding once.
+  as one decision. `cleanup.mjs gate-rule --record rewritten|kept` keeps your
+  answer and `--check` reads it, so `update` shows the finding once.
 
 ### Changed
 
@@ -111,8 +120,8 @@ says "the runner's own flag".
   change as a test-only spec.
 - **Agent files name the forbidden shell forms** (heredoc, `source`, `cd` out) and
   point to the printed commands.
-- **Joycraft writes less.** The cleanup check table and the "or a handoff" output
-  are gone; the knowledge table labels the four Diataxis kinds. The payload guard
+- **Joycraft writes less.** The cleanup check table is gone, and the knowledge
+  table labels each kind of fact as domain, explanation, how-to or reference. The payload guard
   counts every-spec and on-demand words separately.
 
 ### Fixed
@@ -125,7 +134,8 @@ says "the runner's own flag".
 
 ### Maintainers
 
-- A push to main that changes no product path publishes nothing.
+- A push to main that changes no product path publishes nothing. This landed on
+  main after 1.8.1 and first ships in this release.
 - Release proof receipts for this release are in the test-release feature folder.
 
 ## 1.8.1 — Archive accepts a merge that keeps the brief
