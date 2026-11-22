@@ -1,6 +1,6 @@
 ---
 id: 1
-status: todo
+status: in-review
 ---
 # Archive rewrites every Markdown case, lists an in-review spec's missing receipts, words two messages plainly, and quiets the `next` message for comment-only tests
 
