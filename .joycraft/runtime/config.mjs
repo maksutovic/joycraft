@@ -11,6 +11,8 @@ export const defaults = Object.freeze({
   paths: Object.freeze({ features: 'docs/features', archive: 'docs/archive', context: 'docs/context' }),
   hooks: Object.freeze({}),
   cleanup: Object.freeze({ impact: Object.freeze([]), entryWords: 1000 }),
+  checks: Object.freeze([]),
+  tests: Object.freeze({ gateRuns: 'spec' }),
 });
 
 function scalar(text, line) {
@@ -117,7 +119,26 @@ export function parseYaml(text) {
   return result;
 }
 
-const known = { paths: ['features', 'archive', 'context'], hooks: ['afterArchive'], cleanup: ['impact', 'entryWords'] };
+const known = { paths: ['features', 'archive', 'context'], hooks: ['afterArchive'], cleanup: ['impact', 'entryWords'], checks: null,
+  tests: ['focused', 'gate', 'full', 'gateRuns'] };
+const testCommands = ['focused', 'gate', 'full'];
+
+// tests: the project's test tiers. focused may hold {files}; gateRuns is a recorded
+// choice (per wave or per spec), never a duration.
+function readTests(parsed) {
+  const tests = { gateRuns: defaults.tests.gateRuns };
+  for (const key of testCommands) {
+    const value = parsed?.[key];
+    if (value == null && !Object.hasOwn(parsed ?? {}, key)) continue;
+    requireValue(typeof value === 'string' && value.trim(), `${configFile}: tests.${key} must be a command, not empty`);
+    tests[key] = value.trim();
+  }
+  if (parsed?.gateRuns != null || Object.hasOwn(parsed ?? {}, 'gateRuns')) {
+    requireValue(parsed.gateRuns === 'wave' || parsed.gateRuns === 'spec', `${configFile}: tests.gateRuns must be wave or spec, not ${JSON.stringify(parsed.gateRuns)}`);
+    tests.gateRuns = parsed.gateRuns;
+  }
+  return tests;
+}
 
 /** Read joycraft.yaml (or return defaults) and validate every known field. */
 export function readConfig(root = process.cwd()) {
@@ -127,6 +148,7 @@ export function readConfig(root = process.cwd()) {
   requireValue(isObject(parsed), `${configFile} must be a map of settings`);
   for (const [section, value] of Object.entries(parsed)) {
     requireValue(Object.hasOwn(known, section), `${configFile}: unknown section ${section}; known sections are ${Object.keys(known).join(', ')}`);
+    if (section === 'checks') continue;
     requireValue(value === null || isObject(value), `${configFile}: ${section} must be a map`);
     for (const key of Object.keys(value ?? {})) requireValue(known[section].includes(key), `${configFile}: unknown setting ${section}.${key}`);
   }
@@ -141,6 +163,14 @@ export function readConfig(root = process.cwd()) {
   for (const [ak, a] of Object.entries(paths)) for (const [bk, b] of Object.entries(paths)) {
     requireValue(a === b || !b.startsWith(`${a}/`) || (ak === 'context' && bk !== 'context'), `${configFile}: ${b} cannot sit inside ${a}`);
   }
+  // The docs root (the folders' common parent, as cleanup.mjs docsRoot reads it) holds every
+  // records-only change, so it can be neither the project root nor a hidden folder.
+  const parts = folders.map(folder => folder.split('/'));
+  const common = [];
+  for (let index = 0; parts.every(list => index < list.length && list[index] === parts[0][index]); index += 1) common.push(parts[0][index]);
+  requireValue(common.length > 0 && !common.some(part => part.startsWith('.')),
+    `${configFile}: the docs root (the common parent of paths.features ${paths.features}, paths.archive ${paths.archive} and paths.context ${paths.context}) is ${common.length ? `${common.join('/')}, a hidden folder` : 'the project root'}; put all three under one visible folder such as docs/`);
+
   const hooks = {};
   if (parsed.hooks?.afterArchive != null) {
     requireValue(typeof parsed.hooks.afterArchive === 'string' && parsed.hooks.afterArchive.trim(), `${configFile}: hooks.afterArchive must be a command`);
@@ -155,7 +185,18 @@ export function readConfig(root = process.cwd()) {
   }
   const entryWords = parsed.cleanup?.entryWords ?? defaults.cleanup.entryWords;
   requireValue(Number.isInteger(entryWords) && entryWords > 0, `${configFile}: cleanup.entryWords must be a positive whole number of words`);
-  return { source: configFile, paths, hooks, cleanup: { impact: impact.map(entry => ({ source: entry.source, docs: entry.docs.map(relativePath) })), entryWords } };
+  // checks: the project's own doc or code checkers; tidy runs each one.
+  const checks = parsed.checks ?? [];
+  requireValue(Array.isArray(checks), `${configFile}: checks must be a list of name and run`);
+  for (const [index, entry] of checks.entries()) {
+    const label = `${configFile}: checks item ${index + 1}`;
+    requireValue(isObject(entry) && typeof entry.name === 'string' && entry.name.trim(), `${label} needs name`);
+    requireValue(typeof entry.run === 'string' && entry.run.trim(), `${label} (${entry.name}) needs run, the command to run`);
+    for (const key of Object.keys(entry)) requireValue(['name', 'run', 'timeout'].includes(key), `${label}: unknown setting ${key}`);
+    requireValue(entry.timeout == null || (typeof entry.timeout === 'number' && entry.timeout > 0 && Number.isFinite(entry.timeout)), `${label} (${entry.name}): timeout must be a positive number of seconds`);
+  }
+  return { source: configFile, paths, hooks, cleanup: { impact: impact.map(entry => ({ source: entry.source, docs: entry.docs.map(relativePath) })), entryWords },
+    checks: checks.map(({ name, run, timeout }) => ({ name, run, ...(timeout == null ? {} : { timeout }) })), tests: readTests(parsed.tests) };
 }
 
 /** Project-relative work folders for a project. */

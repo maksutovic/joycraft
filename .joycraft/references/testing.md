@@ -12,8 +12,8 @@ running it successfully does not turn its claim into runtime proof.
 | Module exports a specified contract | Inspect the export or compile a real consumer | Structural evidence; source presence cannot prove execution |
 | Narrow layout remains usable | Inspect the actual narrow render; operate relevant controls and inspect results | Screenshot capture alone is not inspection; appearance cannot establish durable persistence |
 
-Do not edit production code merely to manufacture red evidence; an isolated
-temporary copy can show sensitivity. No universal coverage target or
+Do not edit production code merely to manufacture red evidence; a fault runs
+in place only through `evidence.mjs run --patch`. No universal coverage target or
 end-to-end requirement follows from these examples.
 
 ### Running tests
@@ -23,19 +23,19 @@ Commands are in `AGENTS.md`. Run tests in three tiers:
 - **While you work:** run only the tests for the code you changed: one file,
   package or name filter. If `AGENTS.md` names no focused command, find the
   filter in the runner's help or the CI file, and report the command.
-- **Project gate:** run it one time on the final commit of a spec. A review
-  fix runs focused tests only. A commit that changes only Joycraft records
-  needs no test run.
+- **Project gate:** the coordinator runs it at each `gate-plan` point (per
+  spec or per wave, `tests.gateRuns`); workers and reviewers run focused tests
+  only. A commit that changes only Joycraft records needs no test run.
 - **Full suite:** run it one time on the final integrated revision: in CI
   when the project has CI, else locally before the push.
 
 A pass on a rerun is FLAKY, not PASS. Record a follow-up with both receipts
 and continue, unless the test covers this spec's criterion. Never add a
-retry, a sleep or a skip to get a pass. If an existing test or a criterion
+retry, a sleep, a skip or a special case for a test's input to get a pass. If an existing test or a criterion
 looks wrong, report `spec gap: test is wrong` with the reason; never edit,
 skip or delete it to pass.
 
-Run each command once, in single-run mode with `CI=1` and a 300000 ms
+Run each command once, in single-run mode with `CI=1`, `JOYCRAFT_EVIDENCE=1` and a 300000 ms
 timeout, through
 `node .joycraft/runtime/evidence.mjs run --receipt <path>.log -- <command...>`
 (`--timeout-ms <n>` changes the limit). It uses no shell, saves raw output
@@ -43,11 +43,12 @@ to a new git-ignored or feature-folder receipt, and prints the
 `revision` it ran on. Never start watch mode. Copy the printed `command`,
 `revision` and `receipts` into the observation. It exits 1 when the command
 fails, is killed or times out, and still writes the receipt; exit 2 means it
-refused to run. Set the host tool timeout to at least this limit. A timeout
-during parallel runs is not yet a hang: rerun once, alone. If it times out
-again, report it with the receipt. Never wait in a foreground loop: start a
+refused to run. Set the host tool timeout to at least this limit. When N workers
+share the machine, give each test run at most cores ÷ N workers with the
+runner's own flag. After a timeout, run the same command once more with that
+cap; a second timeout is reported with both receipts. Never wait in a foreground loop: start a
 long command in the background and act on its completion notice. Never give
-a verdict while your own command is still running.
+a verdict while your command is still running.
 
 ## Commands and receipt records
 
@@ -123,6 +124,6 @@ Tag each acceptance test with its queue criterion ID, `[AC:<criterion-id>]`, in 
 test name or a comment, in any language. `trace.mjs --queue <queue> --spec <id>`
 lists each criterion with its tagged tests from the spec's `check` inputs (add
 `--tests <glob>` for undeclared files) and exits 2 while a criterion is untraced.
-Reviewer startup includes the same trace. A tag shows that a test claims the
-criterion; it does not show that the test is right. Write the test from the spec
+Reviewer startup includes the same trace. A tag shows a test claims the
+criterion, not that it is right. Write the test from the spec
 text before reading the implementation.

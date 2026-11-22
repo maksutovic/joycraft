@@ -4,9 +4,10 @@
  * isolate other writers.
  */
 import { createHash } from 'node:crypto';
+import { realpathSync } from 'node:fs';
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { hostname } from 'node:os';
-import { dirname, isAbsolute, join, resolve } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve, sep, win32 } from 'node:path';
 import { spawn } from 'node:child_process';
 import { TextDecoder } from 'node:util';
 
@@ -106,6 +107,82 @@ async function invoke(argv, root) {
     child.on('error', reject); child.on('close', exitCode => resolveRun({ exitCode, stdout: stdout(), stderr: stderr() }));
   });
 }
+/** Shells that run their last argument as a command line after -c, /c or -Command. */
+const shells = new Set(['sh', 'bash', 'zsh', 'dash', 'cmd', 'powershell', 'pwsh']);
+/** A shell program is a bare name (found on PATH) or an absolute path outside the project; a relative
+ * path such as ./sh, or an absolute path inside the project, may be a project script. On POSIX a
+ * Windows path (C:\\...) is not a program the receipt could have run. */
+function isShell(program, root) {
+  if (!shells.has(program.split(/[\\/]/).at(-1).toLowerCase().replace(/\.exe$/, ''))) return false;
+  if (!/[\\/]/.test(program)) return true;
+  const windowsForm = win32.isAbsolute(program) && !isAbsolute(program);
+  if (windowsForm) return process.platform === 'win32';
+  if (!isAbsolute(program)) return false;
+  const roots = [root]; try { roots.push(realpathSync(root)); } catch {}
+  return roots.every(base => { const inside = relative(base, program); return inside === '..' || inside.startsWith(`..${sep}`) || isAbsolute(inside); });
+}
+/** Any character a shell would treat specially. evidence.mjs runs argv without a shell, so a gate
+ * holding one of these only runs as the gate through a shell given the whole gate as one argument. */
+const shellSyntax = /[&|;<>`$\n\r'"*?~(){}[\]\\!#%=^]/;
+/** The footer's argv is the recorded gate: a shell given the whole gate as its last `-c` argument,
+ * or, only for a gate of plain words, exactly those words. */
+function runsGate(argv, gate, root) {
+  if (!Array.isArray(argv) || !argv.every(value => typeof value === 'string')) return false;
+  const words = text => text.trim().split(/[ \t]+/);
+  const plain = !shellSyntax.test(gate.trim());
+  // A plain gate splits on spaces and tabs alone: a newline or carriage return in the shell line
+  // starts another command. Spaces inside quotes matter to a shell, so a gate with shell syntax
+  // must match exactly (trimmed).
+  const sameLine = line => plain ? !/[^\S \t]/.test(line) && words(line).join(' ') === words(gate).join(' ') : line.trim() === gate.trim();
+  if (argv.length === 3 && isShell(argv[0], root) && ['-c', '/c', '-Command'].includes(argv[1]) && sameLine(argv[2])) return true;
+  const expected = words(gate);
+  return plain && argv.length === expected.length && argv.every((value, index) => value === expected[index]);
+}
+/** Every path changed from `revision` to `head` is a record session end writes, so the gate ran on
+ * the same code: a record file (.md, .json, .log, .txt, .diff, .patch, .yaml, .yml) under
+ * paths.features or paths.archive (feature folders, moved whole by an archive, with their receipts),
+ * or a Markdown or JSON file elsewhere under the docs root (never `.`). A symlink or submodule on
+ * either side, or any other file (a source file in a feature folder too), needs the gate again. */
+async function docsOnlySince(root, revision, head) {
+  if (typeof revision !== 'string' || !/^[0-9a-f]{40,64}$/.test(revision)) return false;
+  if (!(await gitOk(root, ['cat-file', '-e', `${revision}^{commit}`]))) return false;
+  if (!(await gitOk(root, ['merge-base', '--is-ancestor', revision, head]))) return false;
+  const [{ readConfig }, { docsRoot }] = await Promise.all([import('./config.mjs'), import('./cleanup.mjs')]);
+  const paths = readConfig(root).paths;
+  const docs = docsRoot(paths);
+  const unsafe = folder => !folder || folder === '.' || folder.startsWith('/') || folder.split('/').includes('..');
+  if (unsafe(docs)) return false;
+  const records = [paths.features, paths.archive].filter(folder => !unsafe(folder));
+  // --raw -z gives ":<old mode> <new mode> <old blob> <new blob> <status>\0<path>\0" per change.
+  const fields = (await git(root, ['diff', '--raw', '--no-renames', '-z', revision, head, '--'])).toString('utf8').split('\0');
+  const changes = [];
+  for (let index = 0; index + 1 < fields.length; index += 2) {
+    if (!fields[index].startsWith(':')) return false;
+    const [oldMode, newMode] = fields[index].slice(1).split(' ');
+    changes.push({ modes: [oldMode, newMode], path: fields[index + 1] });
+  }
+  return changes.every(({ modes, path }) => {
+    if (!modes.every(mode => mode === '000000' || mode === '100644' || mode === '100755')) return false;
+    if (!path.startsWith(`${docs}/`)) return false;
+    if (records.some(folder => path.startsWith(`${folder}/`))) return /\.(?:md|json|log|txt|diff|patch|ya?ml)$/i.test(path);
+    return /\.(?:md|json)$/i.test(path);
+  });
+}
+/** Refuse a push unless the gate receipt, inside the project, shows the recorded gate, green, on a
+ * clean tree at this HEAD, or at an ancestor of HEAD when every path changed since is a docs record (see docsOnlySince). */
+async function checkGateReceipt(root, gate, receipt, head) {
+  assertion(typeof receipt === 'string' && receipt, 'gate-receipt-required');
+  const { readFooter } = await import('./evidence.mjs');
+  let file; try { file = realpathSync(resolve(root, receipt)); } catch { throw new Error('gate-receipt-required'); }
+  const inside = relative(realpathSync(root), file);
+  assertion(inside !== '' && inside !== '..' && !inside.startsWith(`..${sep}`) && !isAbsolute(inside), 'gate-receipt-outside-project');
+  let bytes; try { bytes = await readFile(file); } catch { throw new Error('gate-receipt-required'); }
+  const footer = readFooter(file);
+  assertion(footer && runsGate(footer.argv, gate, root), 'gate-receipt-not-gate');
+  assertion(footer.exitCode === 0, 'gate-receipt-red');
+  assertion(footer.dirty === false && (footer.revision === head || await docsOnlySince(root, footer.revision, head)), 'gate-receipt-stale');
+  return { path: receipt, sha256: digest(bytes), revision: footer.revision };
+}
 const lockHeld = () => new Error('delivery-lock-exists-manual-diagnosis-required');
 async function takeLock(lock) {
   await mkdir(lock, { recursive: false, mode: 0o700 });
@@ -140,29 +217,37 @@ async function acquireLock(root, remote, branch) {
 }
 function validTarget(remote, branch) { return typeof remote === 'string' && remote && !remote.startsWith('-') && typeof branch === 'string' && branch && !branch.startsWith('-') && !/[\s~^:?*\\[\x00]/.test(branch); }
 
-export async function deliver({ root = process.cwd(), base, remote, branch, verifier } = {}) {
+/** Push HEAD after the checks. With a recorded tests.gate, a green gate receipt on HEAD
+ * (gateReceipt) replaces the verifier; without one, the verifier runs as before. */
+export async function deliver({ root = process.cwd(), base, remote, branch, verifier, gateReceipt } = {}) {
   root = resolve(root); assertion(validTarget(remote, branch), 'explicit-remote-and-branch-required');
+  const { testSettings } = await import('./coordinator.mjs');
+  const { gate } = testSettings(root);
   const lock = await acquireLock(root, remote, branch);
   try {
     const before = await stableState(root); const checked = await checkDelivery({ root, base });
     assertion(checked.head === before.head, 'head-changed-before-verifier');
-    const verifierReceipt = await invoke(verifier, root); assertion(verifierReceipt.exitCode === 0, `verifier-exit-${verifierReceipt.exitCode}`);
+    let proof;
+    if (gate) proof = { gateReceipt: await checkGateReceipt(root, gate, gateReceipt, before.head) };
+    else { const verifierReceipt = await invoke(verifier, root); assertion(verifierReceipt.exitCode === 0, `verifier-exit-${verifierReceipt.exitCode}`); proof = { verifier: verifierReceipt }; }
     const after = await stableState(root); assertion(JSON.stringify(before) === JSON.stringify(after), 'source-changed-during-verifier');
     await mergeState(root);
     const pushed = await run(root, ['push', remote, `${before.head}:refs/heads/${branch}`]);
     assertion(pushed.code === 0, 'push-failed');
-    return { ok: true, ...checked, pushedSha: before.head, remote, branch, verifier: verifierReceipt };
+    return { ok: true, ...checked, pushedSha: before.head, remote, branch, ...proof };
   } finally { await rm(lock, { recursive: true, force: false }); }
 }
 
-function usage() { throw new Error('Usage: delivery.mjs check --root <repo> --base <revision> | delivery.mjs push --root <repo> --base <revision> --remote <name> --branch <branch> -- <verifier> [args...]'); }
+function usage() { throw new Error('Usage: delivery.mjs check --root <repo> --base <revision> | delivery.mjs push --root <repo> --base <revision> --remote <name> --branch <branch> (--gate-receipt <receipt.log> | -- <verifier> [args...])\n' +
+  'With tests.gate recorded, --gate-receipt must name a receipt inside the project whose evidence.mjs footer ran the gate, exit 0, on a clean tree at HEAD, or at an ancestor of HEAD when every path changed since is under the docs root (the common parent of paths.features, paths.archive and paths.context; a docs root of the project root gives no exemption). The gate counts as run in the form sh/bash/zsh/dash -c, cmd /c or powershell/pwsh -Command "<gate>", with the whole gate as one argument and no other flags (such as -lc), where the shell is a bare name found on PATH or an absolute path outside the project (not ./sh, and on POSIX not a Windows path such as C:\\...). A gate of plain words may also run as those exact words; a gate with any shell syntax (&&, ||, ;, |, <, >, &, $, quotes, globs and the like) must use the shell form, because evidence.mjs runs no shell. ' +
+  'This check stops mistakes such as a red, stale or wrong receipt; it does not stop a hand-forged receipt, because the footer is not signed, and it does not stop a shell path that is a symlink to another program, because the path is checked by name.'); }
 async function cli(argv) {
   const separator = argv.indexOf('--'); const own = separator < 0 ? argv : argv.slice(0, separator); const verifier = separator < 0 ? [] : argv.slice(separator + 1);
   const command = own.shift(); const flags = {};
-  for (let index = 0; index < own.length; index += 2) { const key = own[index]; const value = own[index + 1]; if (!['--root', '--base', '--remote', '--branch'].includes(key) || flags[key] !== undefined || value === undefined) usage(); flags[key] = value; }
+  for (let index = 0; index < own.length; index += 2) { const key = own[index]; const value = own[index + 1]; if (!['--root', '--base', '--remote', '--branch', '--gate-receipt'].includes(key) || flags[key] !== undefined || value === undefined) usage(); flags[key] = value; }
   if (!flags['--root'] || !flags['--base']) usage();
   if (command === 'check' && separator < 0) return checkDelivery({ root: flags['--root'], base: flags['--base'] });
-  if (command === 'push' && flags['--remote'] && flags['--branch'] && verifier.length) return deliver({ root: flags['--root'], base: flags['--base'], remote: flags['--remote'], branch: flags['--branch'], verifier });
+  if (command === 'push' && flags['--remote'] && flags['--branch']) return deliver({ root: flags['--root'], base: flags['--base'], remote: flags['--remote'], branch: flags['--branch'], verifier, gateReceipt: flags['--gate-receipt'] });
   usage();
 }
 if (import.meta.url === new URL(process.argv[1], 'file:').href) cli(process.argv.slice(2)).then(result => process.stdout.write(`${JSON.stringify(result)}\n`)).catch(error => { process.stderr.write(`${error.message}\n`); process.exitCode = 1; });

@@ -1,7 +1,7 @@
 import { existsSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { workPaths } from './config.mjs';
+import { readConfig } from './config.mjs';
 import { briefDecisionRecords, featureFolderMatches, isObject, localPath, parseJson, readLocal, relativePath, validateQueue } from './identity.mjs';
 
 // Before the first dispatch, find the queue gaps a program can decide, so each
@@ -12,6 +12,8 @@ import { briefDecisionRecords, featureFolderMatches, isObject, localPath, parseJ
 // is not done: an archived queue cites paths that have since moved.
 
 const nextStep = 'Add it to the brief as an open decision and ask the user now.';
+// A gate in a spec is the decomposer's to fix, not a question for the user.
+const gateNextStep = "Use the spec's own test command instead.";
 
 function legacySchema(queue) {
   if (!isObject(queue)) return false;
@@ -197,9 +199,74 @@ export function acceptanceBullets(text) {
     unclosed: block && block.column === null ? block.line : null,
     bullets: bullets.map(bullet => {
       const joined = bullet.lines.map(item => item.line).join(' ').replace(/\s+/g, ' ').trim();
-      return { line: bullet.line, text: joined, hasCheck: /\bCheck:/.test(joined), plainCheck: plainCheck(bullet.lines) };
+      // The lines inside a fence in the bullet, without the fence lines.
+      const fenced = [];
+      let fence = null;
+      for (const item of bullet.lines) {
+        const marker = item.hidden ? /^\s*(`{3,}|~{3,})/.exec(item.line)?.[1] : null;
+        if (fence) { if (marker && marker[0] === fence[0] && marker.length >= fence.length && /^\s*[`~]+\s*$/.test(item.line)) fence = null; else if (item.hidden) fenced.push(item.line); else fence = null; }
+        else if (marker) fence = marker;
+      }
+      return { line: bullet.line, text: joined, fenced, hasCheck: /\bCheck:/.test(joined), plainCheck: plainCheck(bullet.lines) };
     }),
   };
+}
+
+const escape = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const normalize = text => String(text).replace(/\s+/g, ' ').trim();
+
+/**
+ * Whether `text` names `command` as a whole command, whitespace-normalized.
+ * In a code span (CommonMark backtick runs; a fenced block joined into the
+ * text reads as one) the command must end the span, after the span start, a
+ * space, a quote or a bracket. In plain text it starts after the text start,
+ * a space, a code span, a quote or a bracket, and ends at the text end, a code
+ * span, punctuation followed by a space or the end, a prose word that
+ * whitespace, the end, a code span or such punctuation closes ("run pnpm
+ * verify before merging", "doesn't", "re-runs", "e.g.", "2 times"), a `(`
+ * before a prose word, a spaced `&`, a spaced or closing dash or arrow (`—`,
+ * `–`, ` - `, `→`), or an unspaced `—` or `–` followed by a prose word and a
+ * space ("verify—then read"). A dash stuck to an argument ("test —run",
+ * "test–run") keeps it an argument.
+ * More arguments make it a different command: a next word holding `/`, `.`,
+ * `:`, `-` or `=` (as in `pnpm test tests/x.test.ts`, `pnpm test x.test.ts`,
+ * `cargo test a::b` or `pnpm test -- --run`) does not name the gate.
+ */
+export function namesCommand(text, command) {
+  const wanted = normalize(command);
+  if (!wanted) return false;
+  const source = String(text);
+  const code = [];
+  let plain = '';
+  let at = 0;
+  while (at < source.length) {
+    if (source[at] !== '`') { plain += source[at]; at += 1; continue; }
+    const run = /^`+/.exec(source.slice(at))[0];
+    const closer = new RegExp(`(?<!\`)${run}(?!\`)`, 'g');
+    closer.lastIndex = at + run.length;
+    const close = closer.exec(source);
+    if (!close) { plain += run; at += run.length; continue; }
+    code.push(source.slice(at + run.length, close.index));
+    plain += '\u0001';
+    at = close.index + run.length;
+  }
+  const command_ = escape(wanted);
+  const inCode = new RegExp(`(?:^|(?<=[\\s"'(\\[]))${command_}[.,;:!?)\\]"']*$`, 'u');
+  if (code.some(span => inCode.test(normalize(span)))) return true;
+  // Punctuation ends a word only when whitespace, a code span or the text end follows it, so a
+  // `.`, `:` or `'` inside the next token (x.test.ts, a::b, test's) never counts as an ending.
+  const stop = `(?:\\s|$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001))`;
+  // A prose word: letters with inner apostrophes or hyphens (doesn't, won’t, re-runs), or an
+  // abbreviation of single letters and dots (e.g., i.e.).
+  const word = `\\p{L}+(?:['’-]\\p{L}+)*`;
+  const prose = `${word}(?=${stop})|\\p{L}\\.(?:\\p{L}\\.)+(?=\\s|$|\\u0001)|\\d+(?=${stop})|\\((?=${word}[\\s)])|&(?=\\s)`;
+  // A dash ends the command when whitespace or the end follows it, or, unspaced on both sides,
+  // when a prose word and whitespace follow (verify—then read); a dash stuck to an argument
+  // (test —run, test–run, test—tests/a.test.ts) keeps it an argument.
+  const dash = `\\s?[—–→⇒](?=\\s|$)|[—–](?=${word}\\s)|\\s-(?=\\s|$)`;
+  const end = `$|\\u0001|[.,;:!?)\\]"']+(?:\\s|$|\\u0001)|\\s(?:${prose})|${dash}`;
+  const inPlain = new RegExp(`(?:^|(?<=[\\s\\u0001"'(\\[]))${command_}(?=${end})`, 'u');
+  return inPlain.test(normalize(plain));
 }
 
 function label(text) {
@@ -255,7 +322,7 @@ export function checkQueue({ root = process.cwd(), queuePath }) {
       message: `Joycraft queue check: skipped ${queuePath}; ${queue.schemaVersion == null ? 'it has no schemaVersion' : `its schemaVersion ${JSON.stringify(queue.schemaVersion)} predates 1`}.` };
   }
   const gaps = [];
-  const gap = (kind, specId, item, text) => gaps.push({ kind, specId, item, message: `Joycraft queue check: ${queuePath} ${text} ${nextStep}` });
+  const gap = (kind, specId, item, text) => gaps.push({ kind, specId, item, message: `Joycraft queue check: ${queuePath} ${text} ${kind === 'gate-in-spec' ? gateNextStep : nextStep}` });
 
   // Unknown and circular dependencies are gaps, not a broken queue: report them
   // and validate the rest of the queue without them.
@@ -280,8 +347,11 @@ export function checkQueue({ root = process.cwd(), queuePath }) {
   const featureFolder = path.posix.dirname(folder);
   // Session-end archive finds a feature by its folder name, so a working queue
   // whose folder is named for something else can never be archived.
-  let featuresHome = null;
-  try { featuresHome = workPaths(root).features; } catch { /* A broken joycraft.yaml is reported by config.mjs. */ }
+  let config = null;
+  try { config = readConfig(root); } catch { /* A broken joycraft.yaml is reported by config.mjs. */ }
+  const featuresHome = config?.paths.features ?? null;
+  // The recorded gate and full commands belong to the wave or the owner, not to one spec.
+  const gateCommands = [...new Set([config?.tests.gate, config?.tests.full].filter(Boolean).map(normalize))];
   if (queuePath === `${featuresHome}/${path.posix.basename(featureFolder)}/specs/.joycraft-spec-queue.json` && !featureFolderMatches(path.posix.basename(featureFolder), queue.feature)) {
     gap('feature-folder', null, featureFolder, `has feature "${queue.feature}", but its folder is ${featureFolder}; session-end archive finds a feature only in a folder named ${queue.feature} or YYYY-MM-DD-${queue.feature}.`);
   }
@@ -311,6 +381,9 @@ export function checkQueue({ root = process.cwd(), queuePath }) {
       for (const bullet of bullets) {
         if (!bullet.hasCheck) gap('missing-check', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet "${label(bullet.text)}" has no \`Check:\`.`);
         else if (!bullet.plainCheck) gap('missing-check', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet "${label(bullet.text)}" has a \`Check:\` only in code or a comment.`);
+        for (const command of gateCommands) {
+          if (namesCommand(bullet.text, command) || bullet.fenced.some(line => normalize(line) === command)) gap('gate-in-spec', spec.id, bullet.line, `${at}:${bullet.line}): the acceptance bullet names the recorded gate or full command \`${command}\`; a spec checks with its own test files, and the gate runs at the review boundary or wave end.`);
+        }
       }
     }
     // The brief headings and decisions this spec cites: criterion anchors on

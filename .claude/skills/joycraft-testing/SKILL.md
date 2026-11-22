@@ -31,11 +31,6 @@ screenshot, DOM check or browser launch alone is not visual inspection. Preserve
 tool access boundaries: if a check is blocked or unavailable, record UNVERIFIED
 and the reason; do not route around a denial.
 
-Write one focused test per acceptance `Check:`, derived from the spec rather
-than from the code, sized like neighboring tests. Do not commit tests of one-off
-run state. If a criterion or test looks wrong, or conflicts with a later owner
-decision, report a spec gap; never edit it to pass.
-
 Run tests in the tiers of
 [running tests](../../../.joycraft/references/testing.md#running-tests).
 

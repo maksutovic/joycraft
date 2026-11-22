@@ -52,6 +52,8 @@ On the page, put these in `context` (and `why`), `question`, each option's
 `description`, `example` and `tradeoff`, and `recommended: true` on one option
 with the reason in `recommendation`. A small choice can be shorter, but still
 give the context the user needs to answer it.
+An option that adds a time limit or a result cache is offered only
+after a measurement: its `example` gives the measured time, load or repeat count.
 
 **Words.** Write questions in
 [ASD-STE100 Simplified Technical English](https://www.asd-ste100.org/): one
