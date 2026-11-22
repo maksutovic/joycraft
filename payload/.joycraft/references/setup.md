@@ -88,7 +88,8 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
      which teammates and CI also set. Explain why in the same step: an
      overloaded machine makes slow and flaky runs that agents then rerun, and
      the reruns cost more time than the cap. The order is: run less (each
-     spec runs its own tests), then cap workers per run (cores ÷ agents), then
+     spec runs its own tests), then cap workers per run (cores ÷ agents, computed from the core count at
+     run time, never this machine's number), then
      a project-owned slot for broad runs, which Joycraft does not ship. When the runner
      config cannot hold a worker cap, put the runner's worker variable in the
      machine-local `.joycraft/local/evidence-env.json`, which `evidence.mjs`
@@ -314,6 +315,7 @@ check; also check that command claims match their cited source. Setup does not
 change credentials, install dependencies, or replace the user's workflow.
 When `.joycraft/installation.json` lists the `claude` host, offer the [gates](gates.md) once, in one line; turn them on only on the user's yes.
 When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`, ask once whether search should skip the archive; rerun it with `--apply` on a yes, `--decline` on a no.
+When `node .joycraft/runtime/entry-check.mjs` reports `gate-rule` and `node .joycraft/runtime/cleanup.mjs gate-rule --check` prints `unset`, show the findings once with the before-and-after rewrite ([cleanup](cleanup.md)) as one question. Rewrite on a yes, and record the answer with `cleanup.mjs gate-rule --record rewritten` or `--record kept`.
 When the project already uses a doc or code checker (vale, knip), offer once to add it to `checks:` ([settings](settings.md)).
 
 ## Upgrade and agent onboarding

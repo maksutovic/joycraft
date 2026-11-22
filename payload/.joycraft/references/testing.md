@@ -45,9 +45,10 @@ to a new git-ignored or feature-folder receipt, and prints the
 fails, is killed or times out, and still writes the receipt; exit 2 means it
 refused to run. Set the host tool timeout to at least this limit. When N workers
 share the machine, give each test run at most cores ÷ N workers with the
-runner's own flag; a second timeout is reported with both receipts. Never wait in a foreground loop: start a
+runner's own flag. After a timeout, run the same command once more with that
+cap; a second timeout is reported with both receipts. Never wait in a foreground loop: start a
 long command in the background and act on its completion notice. Never give
-a verdict while your own command is still running.
+a verdict while your command is still running.
 
 ## Commands and receipt records
 

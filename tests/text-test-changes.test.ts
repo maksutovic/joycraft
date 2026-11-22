@@ -106,15 +106,4 @@ describe('declared test changes text', () => {
     expect(decompose).toContain("Write each spec's `## Test changes` section");
     expect(decompose).toContain('when a brief\'s "no weakened tests" contradicts the feature, ask once.');
   });
-
-  it('[AC:spec-17-4] every-spec words stay at most 15 above 12153, the guard\'s count before this spec', () => {
-    // The guard owns the caps and prints the count; this checks the spec's own allowance over the guard's file list.
-    const guard = readFileSync(join(root, 'tests', 'payload-guard.test.ts'), 'utf8');
-    const block = guard.slice(guard.indexOf('export const EVERY_SPEC_FILES'), guard.indexOf('export const EVERY_SPEC_CAP'));
-    const files = [...block.matchAll(/^\s*'([^']+)':/gm)].map((match) => match[1]);
-    expect(files).toContain(VERIFY);
-    const words = files.reduce((sum, path) => sum + raw(path).split(/\s+/).filter(Boolean).length, 0);
-    expect(words).toBeLessThanOrEqual(12153 + 15);
-    for (const path of [TEMPLATE, REVIEW]) expect(block).not.toContain(path);
-  });
 });

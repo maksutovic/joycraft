@@ -9,6 +9,7 @@ const root = join(__dirname, '..');
 const read = (...parts: string[]) => readFileSync(join(root, 'payload', ...parts), 'utf8').replace(/\s+/g, ' ');
 const skill = read('.agents', 'skills', 'joycraft-cleanup', 'SKILL.md');
 const update = read('.joycraft', 'references', 'update.md');
+const setup = read('.joycraft', 'references', 'setup.md');
 const cleanupPage = read('.joycraft', 'references', 'cleanup.md');
 const entryCheck = join(root, 'payload', '.joycraft', 'runtime', 'entry-check.mjs');
 
@@ -37,11 +38,13 @@ describe('owner gate lines', () => {
     expect(skill).toMatch(/Change no rule and no other line, a `gate-rule` line included/);
   });
 
-  it('[AC:spec-16-2] update shows the entry-check gate-rule finding once and records the answer; cleanup.md names the check', () => {
+  it('[AC:spec-16-2] [AC:spec-28-3] setup and update show the entry-check gate-rule finding once and records the answer; cleanup.md names the check', () => {
     const findings = JSON.parse(spawnSync(process.execPath, [entryCheck, '--root', fixture()], { encoding: 'utf8' }).stdout).findings;
     expect(findings.filter((item: { check: string }) => item.check === 'gate-rule')).toHaveLength(1);
-    expect(update).toMatch(/When it reports `gate-rule` and `\.joycraft\/preferences\.json` has no `cleanup\.gateRule`, show the findings once/);
-    expect(update).toMatch(/Record the answer as `cleanup\.gateRule`: `rewritten` or `kept`, keeping the other keys, so no later update asks again/);
+    expect(update).toContain('When `entry-check.mjs` reports `gate-rule` and `cleanup.mjs gate-rule --check` prints `unset`, show the findings once');
+    expect(update).not.toContain('keeping the other keys');
+    expect(setup).toContain('When `node .joycraft/runtime/entry-check.mjs` reports `gate-rule` and `node .joycraft/runtime/cleanup.mjs gate-rule --check` prints `unset`, show the findings once');
+    for (const text of [setup, update]) expect(text).toContain('gate-rule --record');
     expect(cleanupPage).toMatch(/`gate-rule` names an entry-file rule line/);
   });
 

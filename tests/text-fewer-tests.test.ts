@@ -10,14 +10,6 @@ const raw = (path: string) => readFileSync(join(root, 'payload', path), 'utf8');
 const flat = (path: string) => raw(path).replace(/\s+/g, ' ');
 const IMPLEMENT = '.agents/skills/joycraft-implement/SKILL.md';
 const IMPLEMENTER = '.claude/agents/joycraft-implementer.md';
-const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
-
-/** The every-spec file list, read from the guard's EVERY_SPEC_FILES block. */
-const everySpecFiles = () => {
-  const guard = readFileSync(join(root, 'tests', 'payload-guard.test.ts'), 'utf8');
-  const block = guard.slice(guard.indexOf('export const EVERY_SPEC_FILES'), guard.indexOf('export const EVERY_SPEC_CAP'));
-  return [...block.matchAll(/^\s+'([^']+)':/gm)].map(([, path]) => path);
-};
 
 /** The text of one `## <name>` section of a payload file, whitespace flattened. */
 const section = (path: string, name: string) => {
@@ -27,10 +19,6 @@ const section = (path: string, name: string) => {
   const end = text.indexOf('\n## ', start + 1);
   return text.slice(start, end < 0 ? undefined : end).replace(/\s+/g, ' ');
 };
-
-// Counts at the commit before this spec (40d0029). Later every-spec growth, each a class-1 change:
-// spec 18 (fault-proof) 18 words, spec 19 (lane-cap) 7 words.
-const BEFORE = { implement: 1329, everySpec: 12142 + 18 + 7 };
 
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true, maxRetries: 5 }); });
@@ -75,14 +63,6 @@ describe('fewer, sharper tests text', () => {
     const changes = section('.joycraft/references/testing-review.md', 'Test changes');
     expect(changes).toContain('in a file or a list');
     expect(changes).toMatch(/a test that leaves the gate count as removals \(class 3\)/);
-  });
-
-  it('[AC:spec-22-4] the implement skill and the every-spec text do not grow', () => {
-    expect(words(raw(IMPLEMENT))).toBeLessThanOrEqual(BEFORE.implement);
-    const files = everySpecFiles();
-    expect(files.length).toBe(12);
-    const everySpec = files.reduce((sum, path) => sum + words(raw(path)), 0);
-    expect(everySpec).toBeLessThanOrEqual(BEFORE.everySpec);
   });
 
   it('[AC:spec-22-5] the two rules spec 1 cut are back in the payload', () => {

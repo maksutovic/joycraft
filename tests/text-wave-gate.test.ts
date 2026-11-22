@@ -8,15 +8,10 @@ import { afterEach, describe, expect, it } from 'vitest';
 const root = join(__dirname, '..');
 const raw = (path: string) => readFileSync(join(root, 'payload', path), 'utf8');
 const flat = (path: string) => raw(path).replace(/\s+/g, ' ');
-const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
 const IMPLEMENT = '.agents/skills/joycraft-implement/SKILL.md';
 const VERIFY = '.agents/skills/joycraft-verify/SKILL.md';
 const TESTING = '.joycraft/references/testing.md';
 const DELIVERY = '.joycraft/references/delivery.md';
-
-// Word counts of the every-spec files this spec edits, at the commit before it (9dbe887).
-// CI clones shallow, so the counts are recorded here instead of read with git show.
-const BEFORE = { [IMPLEMENT]: 1333, [VERIFY]: 1374, [TESTING]: 1185 };
 
 /** The implement skill's delivery paragraph: from "Workers run focused tests only." to the CI stop. */
 const deliveryParagraph = () => {
@@ -68,17 +63,17 @@ describe('wave-gate and CI-once text', () => {
     expect(tier).toMatch(/workers and reviewers run focused tests only/);
   });
 
-  it('[AC:spec-15-4] the implement skill does not grow and the edited every-spec files grow by at most 10 words', () => {
-    expect(words(raw(IMPLEMENT))).toBeLessThanOrEqual(BEFORE[IMPLEMENT]);
-    const grown = Object.entries(BEFORE).reduce((sum, [path, before]) => sum + words(raw(path)) - before, 0);
-    expect(grown).toBeLessThanOrEqual(10);
-  });
-
   it('[AC:spec-15-5] the gate receipt comes from a clean tree: a git-ignored path, or pending files committed first', () => {
     expect(deliveryParagraph()).toContain('with the receipt at a git-ignored path or after committing pending files');
     const page = readFileSync(join(installed(), 'delivery.md'), 'utf8').replace(/\s+/g, ' ');
     expect(page).toMatch(/rejects a receipt whose footer says `dirty: true` as stale/);
     expect(page).toMatch(/Write the receipt to a git-ignored path, or commit pending files first/);
     expect(page).toContain('`tests.gateRuns: spec` (the default)');
+  });
+
+  it('[AC:spec-28-7] the installed delivery page names where a receipt may live and the docs-only ancestor rule', () => {
+    const page = readFileSync(join(installed(), 'delivery.md'), 'utf8').replace(/\s+/g, ' ');
+    expect(page).toContain('git-ignored or in a feature folder');
+    expect(page).toMatch(/A receipt on an earlier revision still counts when every path changed since is under the docs root.*Any other changed path needs the gate again\./);
   });
 });

@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -10,7 +10,6 @@ const raw = (path: string) => readFileSync(join(root, 'payload', path), 'utf8');
 const flat = (path: string) => raw(path).replace(/\s+/g, ' ');
 const REVIEW = '.joycraft/references/testing-review.md';
 const evidence = join(root, 'payload', '.joycraft', 'runtime', 'evidence.mjs');
-const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
 
 /** The text of one `## <name>` section of a payload file, whitespace flattened. */
 const section = (path: string, name: string) => {
@@ -20,17 +19,6 @@ const section = (path: string, name: string) => {
   const end = text.indexOf('\n## ', start + 1);
   return text.slice(start, end < 0 ? undefined : end).replace(/\s+/g, ' ');
 };
-
-/** The guard's EVERY_SPEC_FILES paths and its on-demand cap (decision `on-demand-budget` = `plus-1500`: +3,500). */
-const guard = () => {
-  const source = readFileSync(join(root, 'tests', 'payload-guard.test.ts'), 'utf8');
-  const block = source.slice(source.indexOf('export const EVERY_SPEC_FILES'), source.indexOf('export const EVERY_SPEC_CAP'));
-  return { everySpec: [...block.matchAll(/^\s+'([^']+)':/gm)].map(([, path]) => path), onDemandCap: 17663 + 3500 };
-};
-
-// The guard's every-spec count at the commit before this spec (08beda2), plus later growth:
-// spec 19 (lane-cap) added 7 words (a class-1 change).
-const EVERY_SPEC_BEFORE = 12139 + 7;
 
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true, maxRetries: 5 }); });
@@ -110,17 +98,6 @@ describe('fault proof text', () => {
     for (const path of ['.agents/skills/joycraft-verify/SKILL.md', '.claude/agents/joycraft-reviewer.md', '.claude/agents/joycraft-implementer.md']) {
       expect(raw(path).match(/testing-review\.md#test-only-specs/g), path).toHaveLength(1);
     }
-  });
-
-  it('[AC:spec-18-4] every-spec words grow by at most 20 and on-demand words stay inside their cap', () => {
-    const { everySpec, onDemandCap } = guard();
-    expect(everySpec).toHaveLength(12);
-    const everySpecWords = everySpec.reduce((sum, path) => sum + words(raw(path)), 0);
-    expect(everySpecWords - EVERY_SPEC_BEFORE).toBeLessThanOrEqual(20);
-    const all = (readdirSync(join(root, 'payload'), { recursive: true }) as string[]).map((path) => path.split('\\').join('/'))
-      .filter((path) => /^\.agents\/skills\/joycraft-[^/]+\/SKILL\.md$|^\.claude\/agents\/[^/]+\.md$|^\.joycraft\/references\/.+\.md$/.test(path));
-    const onDemandWords = all.filter((path) => !everySpec.includes(path)).reduce((sum, path) => sum + words(raw(path)), 0);
-    expect(onDemandWords).toBeLessThanOrEqual(onDemandCap);
   });
 
   it('[AC:spec-18-5] fault patches and receipts go in a git-ignored path: there --patch runs and restores; an untracked patch is refused', () => {

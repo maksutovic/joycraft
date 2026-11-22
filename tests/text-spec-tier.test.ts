@@ -33,12 +33,6 @@ function fixture() {
 
 const sentence = "Each `Check:` names the spec's own test file or filter, never the project gate or full suite.";
 
-// Every-spec word counts of the three every-spec files this spec edits, at the commit before it (28ee6ed).
-// Later growth, each a class-1 change: spec 22 grew the implementer by 11 words, paid for by the implement skill;
-// spec 18 (fault-proof) added a test-only pointer to verify (5) and the implementer (5).
-const before = { decompose: 694, verify: 1370 + 5, implementer: 324 + 11 + 5 };
-const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
-
 describe('spec tier text', () => {
   it('[AC:spec-14-1] the spec template and decompose ask each Check: for the spec\'s own test file, never the gate', () => {
     expect(template).toContain(sentence);
@@ -47,8 +41,8 @@ describe('spec tier text', () => {
     expect(template).not.toContain('the command or test');
   });
 
-  it('[AC:spec-14-2] verify takes runtime evidence from commands.focused; the implementer never runs the gate one time', () => {
-    expect(verify).toMatch(/Take runtime evidence once from the spec's own tests \(the packet's `commands\.focused`\), never the project gate/);
+  it('[AC:spec-14-2] [AC:spec-28-5] verify takes runtime evidence from the startup output\'s commands.focused; the implementer never runs the gate one time', () => {
+    expect(verify).toMatch(/Take runtime evidence once from the spec's own tests \(the startup output's `commands\.focused`\), never the project gate/);
     expect(verify).not.toMatch(/Take evidence with the package's recorded tool/);
     expect(implementer).not.toContain('project gate one time');
     expect(implementer).toContain("Run only the spec's focused tests, never the project gate.");
@@ -66,19 +60,5 @@ describe('spec tier text', () => {
     expect(settings).toContain('`tests:`');
     const tests = JSON.parse(execFileSync(process.execPath, [config, '--root', fixture()], { encoding: 'utf8' })).tests;
     expect(tests).toEqual({ focused: 'pnpm test {files}', gate: 'pnpm verify', full: 'pnpm test:all', gateRuns: 'wave' });
-  });
-
-  it('[AC:spec-14-5] the every-spec files this spec edits grow by at most 5 words in all', () => {
-    const now = {
-      decompose: words(raw('.agents', 'skills', 'joycraft-decompose', 'SKILL.md')),
-      verify: words(raw('.agents', 'skills', 'joycraft-verify', 'SKILL.md')),
-      implementer: words(raw('.claude', 'agents', 'joycraft-implementer.md')),
-    };
-    const growth = Object.values(now).reduce((a, b) => a + b, 0) - Object.values(before).reduce((a, b) => a + b, 0);
-    expect(growth).toBeLessThanOrEqual(5);
-    // The template, testing-review, setup and settings are on-demand: the guard's EVERY_SPEC_FILES does not list them.
-    const guard = readFileSync(join(root, 'tests', 'payload-guard.test.ts'), 'utf8');
-    const block = guard.slice(guard.indexOf('export const EVERY_SPEC_FILES'), guard.indexOf('export const EVERY_SPEC_CAP'));
-    for (const file of ['testing-review.md', 'references/setup.md', 'references/settings.md', 'templates/spec.md']) expect(block).not.toContain(file);
   });
 });

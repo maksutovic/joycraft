@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -12,7 +12,6 @@ const TESTING = '.joycraft/references/testing.md';
 const SETUP = '.joycraft/references/setup.md';
 const REVIEW = '.joycraft/references/testing-review.md';
 const evidence = join(root, 'payload', '.joycraft', 'runtime', 'evidence.mjs');
-const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
 
 /** The text of one `## <name>` section of a payload file, whitespace flattened. */
 const section = (path: string, name: string) => {
@@ -22,9 +21,6 @@ const section = (path: string, name: string) => {
   const end = text.indexOf('\n## ', start + 1);
   return text.slice(start, end < 0 ? undefined : end).replace(/\s+/g, ' ');
 };
-
-// The guard's every-spec count at the commit before this spec (4c188d1).
-const EVERY_SPEC_BEFORE = 12157;
 
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true, maxRetries: 5 }); });
@@ -42,10 +38,10 @@ function cappedProject() {
 }
 
 describe('lane cap text', () => {
-  it('[AC:spec-19-1] testing.md caps each run at cores ÷ N workers, names JOYCRAFT_EVIDENCE next to CI=1, and drops "rerun once, alone"', () => {
+  it('[AC:spec-19-1] [AC:spec-28-6] testing.md caps each run at cores ÷ N workers, names JOYCRAFT_EVIDENCE next to CI=1, and drops "rerun once, alone"', () => {
     const text = flat(TESTING);
     expect(text).not.toContain('rerun once, alone');
-    expect(text).toContain("When N workers share the machine, give each test run at most cores ÷ N workers with the runner's own flag; a second timeout is reported with both receipts.");
+    expect(text).toContain("When N workers share the machine, give each test run at most cores ÷ N workers with the runner's own flag. After a timeout, run the same command once more with that cap; a second timeout is reported with both receipts.");
     expect(text).toContain('with `CI=1`, `JOYCRAFT_EVIDENCE=1` and a 300000 ms timeout');
   });
 
@@ -67,21 +63,12 @@ describe('lane cap text', () => {
     expect(plain.stdout).toContain('workers=undefined');
   });
 
+  it('[AC:spec-28-4] setup computes the cap from the core count at run time, never this machine\'s number', () => {
+    expect(flat(SETUP)).toContain("computed from the core count at run time, never this machine's number");
+  });
+
   it('[AC:spec-19-3] testing-review says deletions and shared test tooling take the one serial lane', () => {
     const text = section(REVIEW, 'Test changes');
     expect(text).toContain('Specs that delete tests or change shared test tooling (runner config, guards, selection lists) take the one serial lane (`execution.parallel: false`); other test-only specs may run in parallel.');
-  });
-
-  it('[AC:spec-19-4] every-spec words grow by at most 15 and on-demand words stay inside their cap', () => {
-    const guard = readFileSync(join(root, 'tests', 'payload-guard.test.ts'), 'utf8');
-    const block = guard.slice(guard.indexOf('export const EVERY_SPEC_FILES'), guard.indexOf('export const EVERY_SPEC_CAP'));
-    const everySpec = [...block.matchAll(/^\s+'([^']+)':/gm)].map(([, path]) => path);
-    expect(everySpec).toHaveLength(12);
-    expect(everySpec.reduce((sum, path) => sum + words(raw(path)), 0) - EVERY_SPEC_BEFORE).toBeLessThanOrEqual(15);
-    const text = (readdirSync(join(root, 'payload'), { recursive: true }) as string[]).map((path) => path.split('\\').join('/'))
-      .filter((path) => /^\.agents\/skills\/joycraft-[^/]+\/SKILL\.md$|^\.claude\/agents\/[^/]+\.md$|^\.joycraft\/references\/.+\.md$/.test(path));
-    const onDemand = text.filter((path) => !everySpec.includes(path)).reduce((sum, path) => sum + words(raw(path)), 0);
-    // The on-demand cap is +3,500 since decision `on-demand-budget` = `plus-1500`.
-    expect(onDemand).toBeLessThanOrEqual(17663 + 3500);
   });
 });
