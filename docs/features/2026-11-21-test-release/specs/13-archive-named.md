@@ -18,6 +18,8 @@ Decision `archive-edit-tests` = `yes`: "Archive rewrites the path in each listed
 
 none
 
+Coordinator note (lane A spec gap): the rewritten path exists only after the move, so the order is: move, rewrite the listed tests to the archive path, run them through `evidence.mjs`; on red, restore every file byte for byte and move the folder back, so nothing moved. This meets `archive-edit-tests` = `yes` ("moves only on green") in net effect.
+
 ## Not covered
 
 Anything in the brief's Scope and limits. Joycraft names no test runner: text says "the runner's own flag". Specs other than this one.

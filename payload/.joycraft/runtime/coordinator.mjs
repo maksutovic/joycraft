@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, realpathSync, rmSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { configFile, parseYaml, readConfig } from './config.mjs';
+import { readConfig } from './config.mjs';
 import { isObject, nonempty, parseJson, readLocal, relativePath, requireValue, validateQueue } from './identity.mjs';
 
 // One session coordinates a queue at a time. The lease is a coordination record
@@ -170,14 +170,7 @@ export function show({ root = process.cwd(), queuePath, staleMinutes = staleMinu
 /** joycraft.yaml's `tests:` section: `{ focused?, gate?, full?, gateRuns }`.
  * Bridge until config.mjs reads `tests:` (spec 2): when readConfig has no `tests`, read the section here. */
 export function testSettings(root = process.cwd()) {
-  const file = path.join(root, configFile);
-  const raw = existsSync(file) ? parseYaml(readFileSync(file, 'utf8'))?.tests : undefined;
-  let config;
-  try { config = readConfig(root); } catch (error) { if (!/unknown section tests/.test(error.message)) throw error; }
-  if (isObject(config?.tests)) return config.tests;
-  const tests = { gateRuns: raw?.gateRuns === 'wave' ? 'wave' : 'spec' };
-  for (const key of ['focused', 'gate', 'full']) if (nonempty(raw?.[key])) tests[key] = raw[key].trim();
-  return tests;
+  return readConfig(root).tests;
 }
 
 /** The waves of unfinished specs (dependency levels; done specs are satisfied) and the gate points:
