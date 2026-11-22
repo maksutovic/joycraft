@@ -1,6 +1,6 @@
 ---
 id: 4
-status: in-review
+status: done
 ---
 # tidy --verify checks the fix and prints one commit message
 

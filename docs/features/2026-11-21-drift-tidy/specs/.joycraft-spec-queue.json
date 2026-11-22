@@ -232,7 +232,7 @@
       "depends_on": [
         3
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "verification": {
         "inputs": [
@@ -288,6 +288,10 @@
       },
       "submitted": {
         "at": "2026-11-21T23:38:03.608Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-drift-tidy/specs/review-4-r3.report.json",
+        "sha256": "6d8a0d9fb061011aced70488ac3dc31e760dfa32e0583e0839fb18271c5d94b6"
       }
     },
     {
@@ -568,7 +572,7 @@
       "depends_on": [
         4
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "verification": {
         "inputs": [
@@ -625,6 +629,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T00:03:34.631Z"
       }
     },
     {
@@ -633,7 +640,7 @@
       "depends_on": [
         4
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "verification": {
         "inputs": [
@@ -708,6 +715,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T00:03:34.703Z"
       }
     },
     {
@@ -717,7 +727,7 @@
         4,
         5
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "verification": {
         "inputs": [
@@ -778,6 +788,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T00:03:34.771Z"
       }
     },
     {
