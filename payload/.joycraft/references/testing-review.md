@@ -6,16 +6,37 @@ Unattended cleanup never asks, and never edits or deletes a test.
 
 ## Measure first
 
-Run the full suite one time with the runner's duration output. List the
-slowest files and their share of the time. Read the CI workflows and count
-how many times one push and one merge run the full suite.
+Run the full suite one time, with the runner's duration output, through
+`node .joycraft/runtime/evidence.mjs run --receipt <path>.log -- <full suite command>`.
+Report its run facts: `wallMs`, `load`, `cores` and `loaded`. A slow time on a
+`loaded` machine is not yet a slow test: note the load, and compare two times
+only at a like load. List the slowest files and their share of the time. Read
+the CI workflows and count how many times one push and one merge run the full
+suite.
 
 ## Find
 
+Rank the findings by what every run pays first: global setup, or a file that
+every focused run or gate loads. Then rank by the slowest file.
+
+- Global setup that every run pays: logging, a monitoring SDK left on,
+  coverage mode, production-strength crypto, heavy imports.
+- Setup per test that can run once per file or per run: migrations, git
+  repositories, large fixtures. Build it once and copy it per test.
+- A real wait: a sleep, a real timer, a retry back-off, a timer inside child
+  code. Inject the clock or the delay.
+- A control keyed on `CI` (a worker cap, a slot, a lower priority):
+  `evidence.mjs` sets `CI=1` on every agent run, so the control turns off for
+  agents. Key it on `JOYCRAFT_EVIDENCE` or on the CI provider's own variable.
+- A test that starts a nested test runner or runs the suite in a child
+  process: cap the child at one worker, or move the test to its own tooling
+  suite that runs only when tooling changes.
 - A test whose subject does not ship: it imports or reads a path that no
   shipped entry point reaches, or a finished one-time operation.
 - A change detector: it asserts exact prose that no code reads. A key or a
   marker that code parses stays.
+- A test with no real oracle: it compares a value with itself, its expected
+  value comes from the subject, or a mock supplies the behavior it asserts.
 - A slow file and its cause: a process, the network, a sleep, a large read.
 - A flaky test, an automatic retry, or a skip with no owner.
 - The same suite in two workflows, or on push and on pull request.
@@ -29,14 +50,22 @@ one fix. Before a deletion, move real regression coverage to a live test.
 Recommend the tiers of [running tests](testing.md#running-tests) as
 `AGENTS.md` commands. Recommend test selection from each spec's declared test
 files: a spec runs its own tests, and the gate runs once per spec or wave.
-Recommend a result cache only when the full suite is slow: selection by imports
-misses tests that read files or start processes.
+For a slow real dependency, keep one end-to-end case on it and run the
+variations in-process through a seam, against the same assertions. Offer a
+time limit or a result cache only after a measurement: count how often a run
+repeats an already tested tree first. Selection by imports misses tests that
+read files or start processes. Leave counts that only shrink (fixed waits,
+nested runners, skip lists), never time budgets.
 
 ## Apply
 
-Change only what the person approves. Each test deletion is its own commit,
-with no code change. Run the full suite before and after, and report both
-times.
+The review itself edits no test. Write each change the person approves as a
+[test-only spec](#test-only-specs) for a queue, in decompose's format, with its
+`## Test changes` class: one file or one subsystem in each spec. A seam or a
+fix that the tests need goes first, in its own spec. A deletion names the claim
+the test protected, the test that now owns it or `claim retired: <owner
+decision>`, and the owner's yes. Report the full-suite time and run facts
+before and after the queue, measured the same way.
 
 At the end, when the project has no testing page, write `<context>/testing.md`
 from [the testing page template](testing-page.md), filled in with what the
