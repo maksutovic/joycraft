@@ -1,0 +1,38 @@
+{
+  "command": {
+    "argv": [
+      "pnpm",
+      "test",
+      "tests/runtime-config-tests.test.ts"
+    ],
+    "exitCode": 1
+  },
+  "receipts": [
+    {
+      "path": ".joycraft/local/faults/patch-run.log",
+      "sha256": "f9127bb99cf204ff8b14688ea337007f4884551c728b7ead632ab9694a71d24f"
+    }
+  ],
+  "timedOut": false,
+  "timeoutMs": 300000,
+  "revision": {
+    "commit": "6163e655888d72d9cf10c5c764092506f3881770",
+    "dirty": false
+  },
+  "facts": {
+    "wallMs": 1842,
+    "load": [
+      3.20166015625,
+      3.20166015625
+    ],
+    "cores": 14,
+    "loaded": false
+  },
+  "tail": "\n\n\u001b[1m\u001b[46m RUN \u001b[49m\u001b[22m \u001b[36mv3.2.4 \u001b[39m\u001b[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/proof-wt\u001b[39m\n\n \u001b[31m❯\u001b[39m tests/runtime-config-tests.test.ts \u001b[2m(\u001b[22m\u001b[2m5 tests\u001b[22m\u001b[2m | \u001b[22m\u001b[31m1 failed\u001b[39m\u001b[2m)\u001b[22m\u001b[33m 451\u001b[2mms\u001b[22m\u001b[39m\n   \u001b[32m✓\u001b[39m joycraft.yaml tests section\u001b[2m > \u001b[22m[AC:spec-2-1] reads focused, gate and gateRuns from the tests section\u001b[32m 52\u001b[2mms\u001b[22m\u001b[39m\n   \u001b[32m✓\u001b[39m joycraft.yaml tests section\u001b[2m > \u001b[22m[AC:spec-2-2] a project with no joycraft.yaml reads the default tests settings\u001b[32m 53\u001b[2mms\u001b[22m\u001b[39m\n\u001b[31m   \u001b[31m×\u001b[31m joycraft.yaml tests section\u001b[2m > \u001b[22m[AC:spec-2-3] an unknown key, an empty command or a bad gateRuns names its tests setting and stops\u001b[39m\u001b[32m 154\u001b[2mms\u001b[22m\u001b[39m\n\u001b[31m     → expected +0 to be 1 // Object.is equality\u001b[39m\n   \u001b[32m✓\u001b[39m joycraft.yaml tests section\u001b[2m > \u001b[22m[AC:spec-2-4] the template parses to the defaults and documents the four keys, commented out\u001b[32m 42\u001b[2mms\u001b[22m\u001b[39m\n   \u001b[32m✓\u001b[39m joycraft.yaml tests section\u001b[2m > \u001b[22m[AC:spec-29-5] a docs root that is the project root or a hidden folder exits 1 naming the docs root and the three paths\u001b[32m 149\u001b[2mms\u001b[22m\u001b[39m\n\n\u001b[31m⎯⎯⎯⎯⎯⎯⎯\u001b[39m\u001b[1m\u001b[41m Failed Tests 1 \u001b[49m\u001b[22m\u001b[31m⎯⎯⎯⎯⎯⎯⎯\u001b[39m\n\n\u001b[41m\u001b[1m FAIL \u001b[22m\u001b[49m tests/runtime-config-tests.test.ts\u001b[2m > \u001b[22mjoycraft.yaml tests section\u001b[2m > \u001b[22m[AC:spec-2-3] an unknown key, an empty command or a bad gateRuns names its tests setting and stops\n\u001b[31m\u001b[1mAssertionError\u001b[22m: expected +0 to be 1 // Object.is equality\u001b[39m\n\n\u001b[32m- Expected\u001b[39m\n\u001b[31m+ Received\u001b[39m\n\n\u001b[32m- 1\u001b[39m\n\u001b[31m+ 0\u001b[39m\n\n\u001b[36m \u001b[2m❯\u001b[22m tests/runtime-config-tests.test.ts:\u001b[2m42:29\u001b[22m\u001b[39m\n    \u001b[90m 40| \u001b[39m    for (const [yaml, key] of [['tests:\\n  slow: pnpm slow\\n', 'tests.…\n    \u001b[90m 41| \u001b[39m      \u001b[35mconst\u001b[39m result \u001b[33m=\u001b[39m \u001b[34mrun\u001b[39m(\u001b[34mfixture\u001b[39m(yaml))\u001b[33m;\u001b[39m\n    \u001b[90m 42| \u001b[39m      \u001b[34mexpect\u001b[39m(result\u001b[33m.\u001b[39mstatus)\u001b[33m.\u001b[39m\u001b[34mtoBe\u001b[39m(\u001b[34m1\u001b[39m)\u001b[33m;\u001b[39m\n    \u001b[90m   | \u001b[39m                            \u001b[31m^\u001b[39m\n    \u001b[90m 43| \u001b[39m      \u001b[34mexpect\u001b[39m(result\u001b[33m.\u001b[39mstderr)\u001b[33m.\u001b[39m\u001b[34mtoContain\u001b[39m(key)\u001b[33m;\u001b[39m\n    \u001b[90m 44| \u001b[39m    }\n\n\u001b[31m\u001b[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\u001b[22m\u001b[39m\n\n\n\u001b[2m Test Files \u001b[22m \u001b[1m\u001b[31m1 failed\u001b[39m\u001b[22m\u001b[90m (1)\u001b[39m\n\u001b[2m      Tests \u001b[22m \u001b[1m\u001b[31m1 failed\u001b[39m\u001b[22m\u001b[2m | \u001b[22m\u001b[1m\u001b[32m4 passed\u001b[39m\u001b[22m\u001b[90m (5)\u001b[39m\n\u001b[2m   Start at \u001b[22m 21:39:11\n\u001b[2m   Duration \u001b[22m 657ms\u001b[2m (transform 28ms, setup 0ms, collect 15ms, tests 451ms, environment 0ms, prepare 42ms)\u001b[22m\n\n ELIFECYCLE  Test failed. See above for more details.",
+  "patch": {
+    "path": ".joycraft/local/faults/gateRuns-check.diff",
+    "sha256": "7b04fe7d4482aeeefcee412bc8d2a58ed1f800a4eea5b0d07f2c52692b662bec",
+    "patched": true,
+    "restored": true
+  }
+}

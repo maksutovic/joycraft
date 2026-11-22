@@ -1,0 +1,15 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-config-tests.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-config-tests.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 455[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 21:38:45
+[2m   Duration [22m 686ms[2m (transform 38ms, setup 0ms, collect 23ms, tests 455ms, environment 0ms, prepare 42ms)[22m
+
+joycraft-evidence: {"wallMs":1382,"load":[2.8408203125,2.8408203125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-config-tests.test.ts"],"exitCode":0,"timedOut":false,"revision":"6163e655888d72d9cf10c5c764092506f3881770","dirty":false}

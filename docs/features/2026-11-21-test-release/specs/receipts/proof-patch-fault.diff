@@ -1,0 +1,13 @@
+diff --git a/payload/.joycraft/runtime/config.mjs b/payload/.joycraft/runtime/config.mjs
+index 35baadd..b557ed2 100644
+--- a/payload/.joycraft/runtime/config.mjs
++++ b/payload/.joycraft/runtime/config.mjs
+@@ -134,7 +134,7 @@ function readTests(parsed) {
+     tests[key] = value.trim();
+   }
+   if (parsed?.gateRuns != null || Object.hasOwn(parsed ?? {}, 'gateRuns')) {
+-    requireValue(parsed.gateRuns === 'wave' || parsed.gateRuns === 'spec', `${configFile}: tests.gateRuns must be wave or spec, not ${JSON.stringify(parsed.gateRuns)}`);
++    requireValue(true, `${configFile}: tests.gateRuns must be wave or spec, not ${JSON.stringify(parsed.gateRuns)}`);
+     tests.gateRuns = parsed.gateRuns;
+   }
+   return tests;
