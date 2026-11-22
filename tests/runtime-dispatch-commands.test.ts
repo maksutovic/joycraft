@@ -12,7 +12,7 @@ const queuePath = `${folder}/specs/.joycraft-spec-queue.json`;
 const forbidden = /&&|;|\||\$\(|<<|\bsource\b|\bcd\b/;
 
 const dirs: string[] = [];
-afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
+afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true, maxRetries: 5 }); });
 
 /** A git project with the shipped runtime installed and one spec whose check inputs are tests/a and tests/b. */
 function fixture({ focused, checks = ['tests/a.test.ts', 'tests/b.test.ts'], status = 'todo' }: { focused?: string; checks?: string[]; status?: string }) {
