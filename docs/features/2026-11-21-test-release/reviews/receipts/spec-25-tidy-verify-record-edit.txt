@@ -1,0 +1,19 @@
+$ git status --porcelain
+ M docs/context/decision-log.md
+$ git remote -v (none)
+$ node .joycraft/runtime/cleanup.mjs tidy --verify
+{
+  "status": "refused",
+  "base": "3a65c0dc76bb82886a261c124ba13610663bab7a",
+  "head": "da62228b4d7471ce9e80b479c68d1de8257c410b",
+  "cleared": 0,
+  "remaining": [],
+  "refused": [
+    {
+      "path": "docs/context/decision-log.md",
+      "reason": "No fixable tidy finding names this file."
+    }
+  ],
+  "message": null
+}
+exit 2
