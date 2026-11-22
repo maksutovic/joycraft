@@ -74,6 +74,10 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
      reformats theirs.
      Every row targets a file that exists after the write.
    - **Homes**, only with content, routed by [knowledge.md](knowledge.md).
+   - **The testing page**, when the project has none: write
+     `<context>/testing.md` from [the testing page template](testing-page.md),
+     filled in for the project's stack, with the map row "A test run is slow or
+     flaky". Explain its load order to the user in one line.
    - **`CLAUDE.md`**, only when `.joycraft/installation.json` lists the
      `claude` host: missing → create it as `@AGENTS.md` followed by an empty
      `## Claude Code` section; present without an `@AGENTS.md` line → add

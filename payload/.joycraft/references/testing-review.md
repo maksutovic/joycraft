@@ -36,3 +36,7 @@ files or start processes.
 Change only what the person approves. Each test deletion is its own commit,
 with no code change. Run the full suite before and after, and report both
 times.
+
+At the end, when the project has no testing page, write `<context>/testing.md`
+from [the testing page template](testing-page.md), filled in with what the
+review found, and add the map row "A test run is slow or flaky".

@@ -331,7 +331,7 @@ describe('shipped payload text', () => {
     const onDemand = text.filter(isOnDemand);
     expect([...everySpec, ...onDemand].sort()).toEqual(text.sort());
     expect(everySpec.sort()).toEqual(Object.keys(EVERY_SPEC_FILES).sort());
-    for (const path of ['setup.md', 'update.md', 'testing-review.md', 'archive.md', 'cleanup.md', 'retro.md', 'settings.md', 'doc-cleanup-LICENSE.md']) {
+    for (const path of ['setup.md', 'update.md', 'testing-review.md', 'testing-page.md', 'archive.md', 'cleanup.md', 'retro.md', 'settings.md', 'doc-cleanup-LICENSE.md']) {
       expect(onDemand, path).toContain(`.joycraft/references/${path}`);
     }
   });
