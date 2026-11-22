@@ -1,6 +1,6 @@
 ---
 id: 12
-status: in-review
+status: done
 ---
 # Skills call tidy and Joycraft writes less
 

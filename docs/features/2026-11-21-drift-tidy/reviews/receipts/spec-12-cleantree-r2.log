@@ -1,0 +1,5 @@
+1 clean tree: porcelain="" verify.status=clean refused=[]
+2 only an ignored file: porcelain="" verify.status=clean refused=[]
+3 untracked user file: porcelain="?? notes.txt\n" verify.status=refused refused=["notes.txt: An untracked file: tidy adds no file."]
+4 session-end record row written before tidy: porcelain=" M docs/context/decision-log.md\n" verify.status=refused refused=["docs/context/decision-log.md: No fixable tidy finding names this file."]
+5 assume-unchanged edit hidden from porcelain: porcelain="" verify.status=clean refused=[]
