@@ -10,8 +10,8 @@ that constrain it; a material open decision cannot be assumed resolved.
 ## acceptance
 
 Describe observable behavior, representative state and failure behavior. End
-each bullet with `Check:` naming a concrete input or state, the expected result,
-and the command or test that shows it. Reference the source requirement instead
+each bullet with `Check:` naming a concrete input or state and the expected
+result. Each `Check:` names the spec's own test file or filter, never the project gate or full suite. Reference the source requirement instead
 of copying open decisions here; quote settled rulings with their ID.
 
 For a rule over open-ended input (names, documents, classifications), add an

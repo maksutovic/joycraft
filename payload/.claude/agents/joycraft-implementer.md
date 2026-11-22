@@ -30,7 +30,6 @@ work. Never weaken an existing test or change the spec's acceptance. If a
 criterion or test looks wrong, report a spec gap.
 
 For a user-facing change, render and inspect it as `joycraft-testing` describes.
-Before you finish a spec, run the project gate one time. For a review fix, run
-only the focused tests. Then `node .joycraft/runtime/completion.mjs submit`, commit by
+Run only the spec's focused tests, never the project gate. Then `node .joycraft/runtime/completion.mjs submit`, commit by
 file name, and report each command, its exit status and the commit. Keep the final message short: what changed,
 checks and results, open gaps.

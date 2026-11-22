@@ -25,8 +25,9 @@ goes back to the brief as a tooling-change question, asked once in the
 interview and recorded; it does not enter the queue. A check that only a deployed
 environment can show is not a criterion; list it under the spec's "Deferred until
 deploy" section instead. Include the brief, spec and exact
-relevant code, test/configuration and fixture paths as verification inputs. Plan
-paths explicitly and update them when implementation reveals more relevant files.
+relevant code, test/configuration and fixture paths as verification inputs,
+updated as implementation reveals more. Each `Check:` names the spec's own test
+file or filter, never the project gate or full suite.
 Declare a deletion only as an explicit
 non-requirement input with `state: 'absent'`; a rename needs the old absent input
 and the new present one. Change scope is opt-in:

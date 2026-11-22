@@ -27,9 +27,10 @@ how many times one push and one merge run the full suite.
 For each finding, give the claim that the test protects, the evidence and
 one fix. Before a deletion, move real regression coverage to a live test.
 Recommend the tiers of [running tests](testing.md#running-tests) as
-`AGENTS.md` commands. Do not recommend test selection or a result cache
-unless the full suite is slow: selection by imports misses tests that read
-files or start processes.
+`AGENTS.md` commands. Recommend test selection from each spec's declared test
+files: a spec runs its own tests, and the gate runs once per spec or wave.
+Recommend a result cache only when the full suite is slow: selection by imports
+misses tests that read files or start processes.
 
 ## Apply
 

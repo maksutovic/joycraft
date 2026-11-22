@@ -17,6 +17,7 @@ and keep their comments and order. Map plain requests to settings:
 | "This page describes `src/auction`" / "flag the auction page when that code changes" | `cleanup.impact` |
 | "Let AGENTS.md be up to 1500 words" | `cleanup.entryWords` |
 | "Run drift, vale or docaudit at session end" | `checks:` (`name`, `run`; tidy reads `path:line: message` lines) |
+| "Our focused test is `pnpm test <file>`" / "run the gate once per wave" | `tests:` (`focused` with `{files}`, `gate`, `full`; `gateRuns`: `wave` or `spec`) |
 
 1. Read `joycraft.yaml`. If it does not exist, start from
    `.joycraft/templates/joycraft.yaml` and keep only the settings the user changes.

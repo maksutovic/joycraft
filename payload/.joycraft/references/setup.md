@@ -74,6 +74,10 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
      reformats theirs.
      Every row targets a file that exists after the write.
    - **Homes**, only with content, routed by [knowledge.md](knowledge.md).
+   - **Test commands**: beside the `AGENTS.md` Commands table, write
+     `tests.focused` (with `{files}`), `tests.gate` and `tests.full` to
+     `joycraft.yaml`. Time the gate once: over about 60 s, record
+     `gateRuns: wave`, else `gateRuns: spec`.
    - **The testing page**, when the project has none: write
      `<context>/testing.md` from [the testing page template](testing-page.md),
      filled in for the project's stack, with the map row "A test run is slow or
