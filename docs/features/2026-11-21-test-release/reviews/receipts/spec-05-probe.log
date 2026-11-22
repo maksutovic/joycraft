@@ -1,0 +1,63 @@
+
+=== fixture plain: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-4TFLSo/proj" checks=["tests/a.mjs","tests/b.mjs"]
+startup reviewer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  reviewer.evidence: forbidden=false exit=0
+    printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-reviewer-focused-20261122T023125Z.log -- node tests/a.mjs tests/b.mjs
+    output: { |   "command": { |     "argv": [
+  reviewer.checkReport: forbidden=false exit=1
+    printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-4TFLSo/proj --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+    output: Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-4TFLSo/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  reviewer.finalizeReview: forbidden=false exit=1
+    printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+    output: Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-4TFLSo/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  implementer.evidence: forbidden=false exit=0
+    printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T023125Z.log -- node tests/a.mjs tests/b.mjs
+    output: { |   "command": { |     "argv": [
+  implementer.submit: forbidden=false exit=0
+    printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+    output: { |   "status": "in-review", |   "unchanged": true,
+
+=== fixture space-in-root: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-ky8Y8h/my proj" checks=["tests/a.mjs","tests/b.mjs"]
+startup reviewer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  reviewer.evidence: forbidden=false exit=0
+    printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-reviewer-focused-20261122T023125Z.log -- node tests/a.mjs tests/b.mjs
+    output: { |   "command": { |     "argv": [
+  reviewer.checkReport: forbidden=false exit=1
+    printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-ky8Y8h/my proj --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+    output: Dispatch stopped: Invalid or duplicate argument: docs/features/2026-11-21-f/specs/review-1.report.json
+  reviewer.finalizeReview: forbidden=false exit=1
+    printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+    output: Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-ky8Y8h/my proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a.mjs tests/b.mjs","argv":["node","tests/a.mjs","tests/b.mjs"]}
+  implementer.evidence: forbidden=false exit=0
+    printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T023125Z.log -- node tests/a.mjs tests/b.mjs
+    output: { |   "command": { |     "argv": [
+  implementer.submit: forbidden=false exit=0
+    printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+    output: { |   "status": "in-review", |   "unchanged": true,
+
+=== fixture space-in-check: root="/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-RnlB2m/proj" checks=["tests/a b.mjs"]
+startup reviewer: exit 0
+  focused: {"command":"node tests/a b.mjs","argv":["node","tests/a b.mjs"]}
+  reviewer.evidence: forbidden=false exit=1
+    printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-reviewer-focused-20261122T023126Z.log -- node tests/a b.mjs
+    output: { |   "command": { |     "argv": [
+  reviewer.checkReport: forbidden=false exit=1
+    printed: node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-RnlB2m/proj --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+    output: Dispatch stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-RnlB2m/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+  reviewer.finalizeReview: forbidden=false exit=1
+    printed: node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1 --report docs/features/2026-11-21-f/specs/review-1.report.json
+    output: Completion stopped: ENOENT: no such file or directory, lstat '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-spec5-RnlB2m/proj/docs/features/2026-11-21-f/specs/review-1.report.json'
+startup implementer: exit 0
+  focused: {"command":"node tests/a b.mjs","argv":["node","tests/a b.mjs"]}
+  implementer.evidence: forbidden=false exit=1
+    printed: node .joycraft/runtime/evidence.mjs run --receipt docs/features/2026-11-21-f/receipts/spec-1-implementer-focused-20261122T023126Z.log -- node tests/a b.mjs
+    output: { |   "command": { |     "argv": [
+  implementer.submit: forbidden=false exit=0
+    printed: node .joycraft/runtime/completion.mjs submit --queue docs/features/2026-11-21-f/specs/.joycraft-spec-queue.json --spec 1
+    output: { |   "status": "in-review", |   "unchanged": true,
