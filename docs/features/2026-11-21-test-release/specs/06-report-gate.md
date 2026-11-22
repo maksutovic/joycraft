@@ -1,6 +1,6 @@
 ---
 id: 6
-status: in-review
+status: done
 ---
 # check-report rejects a review report that ran the gate
 
