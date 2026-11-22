@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "packetPath": ".joycraft/local/packets/tr-reviewer-11-probe-bad.json",
+  "hooks": {
+    "enabled": false,
+    "eligible": false,
+    "reason": "hooks-not-installed"
+  },
+  "coordinator": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "host": "claude"
+  },
+  "reviewRound": 1,
+  "reviewLimit": 3,
+  "trace": {
+    "criteria": [
+      {
+        "id": "spec-11-1",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 57
+          }
+        ]
+      },
+      {
+        "id": "spec-11-2",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 66
+          }
+        ]
+      },
+      {
+        "id": "spec-11-3",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 77
+          }
+        ]
+      },
+      {
+        "id": "spec-11-4",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 83
+          }
+        ]
+      }
+    ],
+    "untraced": [],
+    "unknownTags": [],
+    "missingFiles": []
+  },
+  "testChanges": {
+    "error": "Base deadbeefdeadbeefdeadbeefdeadbeefdeadbeef is not a commit in this repository"
+  },
+  "commands": {
+    "focused": null,
+    "note": "No focused command: tests.focused is not recorded in joycraft.yaml.",
+    "checkReport": "node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research --queue docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json --spec 11 --report docs/features/2026-11-21-test-release/specs/review-11.report.json",
+    "finalizeReview": "node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json --spec 11 --report docs/features/2026-11-21-test-release/specs/review-11.report.json"
+  },
+  "ready": true
+}

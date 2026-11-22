@@ -1,0 +1,24 @@
+== 1. isTestPath
+node {"src/a.test.ts":true,"src/a.spec.js":true,"__tests__/a.js":true,"test/a.js":true,"tests/a.mjs":true,"e2e/login.e2e.ts":false,"cypress/e2e/a.cy.ts":false}
+python {"tests/test_a.py":true,"pkg/test_a.py":true,"pkg/a_test.py":true,"app/tests.py":false,"conftest.py":false}
+go {"pkg/a_test.go":true,"testdata/x.json":false}
+rust {"tests/integration.rs":true,"src/lib.rs":false,"benches/b.rs":false}
+java {"src/test/java/com/x/FooTest.java":true,"app/src/androidTest/java/FooTest.kt":false,"src/jvmTest/kotlin/FooTest.kt":false,"lib/FooTest.java":false}
+ruby {"spec/models/user_spec.rb":true,"test/models/user_test.rb":true,"app/user_spec.rb":false}
+swift_csharp {"Tests/AppTests/AppTests.swift":false,"App.Tests/FooTests.cs":false}
+falsePositive {"src/latest_value.ts":false,"src/contest/x.ts":false,"docs/spec/overview.md":true,"src/test_helpers_shared.ts":true}
+== 2. rename, deletion, untracked, staged
+git status --short: "D checks/verify.ts\n D tests/gone.test.ts\nR  tests/old.test.ts -> tests/new.test.ts\nM  tests/staged.test.ts\n?? tests/untracked.test.ts"
+result: {"testFiles":["tests/gone.test.ts","tests/new.test.ts","tests/staged.test.ts","tests/untracked.test.ts"],"undeclared":["tests/gone.test.ts","tests/new.test.ts","tests/staged.test.ts","tests/untracked.test.ts"]}
+git diff --name-status base: "R100\ttests/old.test.ts\ttests/renamed.test.ts"
+committed rename result: ["tests/renamed.test.ts"]
+== 3. changed submodule path
+git diff --name-only base2: "vendor/tests-lib"
+submodule result: THROWS: EISDIR: illegal operation on a directory, read
+== 4. base handling (CLI)
+no --base: {"status":1,"stderr":"Test changes stopped: Usage: test-changes.mjs --queue <queue> --spec <id> --base <sha> [--root <project>]","stdoutStart":""}
+--base HEAD: {"status":1,"stderr":"Test changes stopped: test-changes needs --base <sha>, the captured revision before dispatch","stdoutStart":""}
+--base unknown sha: {"status":1,"stderr":"Test changes stopped: Base deadbeefdeadbeefdeadbeefdeadbeefdeadbeef is not a commit in this repository","stdoutStart":""}
+--base short real sha: {"status":0,"stderr":"","stdoutStart":"{\n  \"base\": \"a890d87\",\n  \"specId\": 1,\n  \"testFiles\": [],\n  \""}
+== 5. unsafe backticked path in a Test changes bullet
+result: THROWS: Parent traversal is not allowed: ../outside.test.ts

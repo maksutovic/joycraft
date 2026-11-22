@@ -1,0 +1,16 @@
+
+> joycraft@1.8.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-test-changes.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/runtime-test-changes.test.ts (4 tests) 1195ms
+   ✓ test-changes > [AC:spec-11-2] splits the changed test files by the spec's Test changes section  342ms
+   ✓ test-changes > [AC:spec-11-4] reviewer startup adds testChanges with --changes-base, and nothing without it  483ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  18:43:45
+   Duration  1.43s (transform 46ms, setup 0ms, collect 76ms, tests 1.20s, environment 0ms, prepare 34ms)
+

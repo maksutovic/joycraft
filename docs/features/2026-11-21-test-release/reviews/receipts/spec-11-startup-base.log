@@ -1,0 +1,2481 @@
+{
+  "schemaVersion": 1,
+  "packetPath": ".joycraft/local/packets/tr-reviewer-11-probe-base.json",
+  "hooks": {
+    "enabled": false,
+    "eligible": false,
+    "reason": "hooks-not-installed"
+  },
+  "coordinator": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "host": "claude"
+  },
+  "reviewRound": 1,
+  "reviewLimit": 3,
+  "trace": {
+    "criteria": [
+      {
+        "id": "spec-11-1",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 57
+          }
+        ]
+      },
+      {
+        "id": "spec-11-2",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 66
+          }
+        ]
+      },
+      {
+        "id": "spec-11-3",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 77
+          }
+        ]
+      },
+      {
+        "id": "spec-11-4",
+        "tests": [
+          {
+            "file": "tests/runtime-test-changes.test.ts",
+            "line": 83
+          }
+        ]
+      }
+    ],
+    "untraced": [],
+    "unknownTags": [],
+    "missingFiles": []
+  },
+  "testChanges": {
+    "base": "50e8d143f62b6273a690ad67a9b3bc7b2e991a2c",
+    "specId": 11,
+    "testFiles": [
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-probe.mjs",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-tests.txt",
+      "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+      "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+      "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+      "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+      "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+      "docs/features/2026-11-21-test-release/specs/06-report-gate.md",
+      "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+      "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+      "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+      "docs/features/2026-11-21-test-release/specs/10-load-line.md",
+      "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+      "docs/features/2026-11-21-test-release/specs/12-env-map.md",
+      "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+      "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+      "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+      "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+      "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+      "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+      "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+      "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+      "payload/.agents/skills/joycraft-verify/SKILL.md",
+      "payload/.claude/agents/joycraft-implementer.md",
+      "payload/.joycraft/runtime/test-changes.mjs",
+      "tests/payload-guard.test.ts",
+      "tests/runtime-archive-named-files.test.ts",
+      "tests/runtime-dispatch-commands.test.ts",
+      "tests/runtime-evidence-env.test.ts",
+      "tests/runtime-evidence-facts.test.ts",
+      "tests/runtime-evidence-patch.test.ts",
+      "tests/runtime-status-load.test.ts",
+      "tests/runtime-test-changes.test.ts",
+      "tests/runtime-wave-gate.test.ts",
+      "tests/text-owner-gate-lines.test.ts",
+      "tests/text-session-end-pr.test.ts",
+      "tests/text-sota-page.test.ts"
+    ],
+    "declared": [],
+    "undeclared": [
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-01-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-05-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-06-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-07-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-08-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-10-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-probe.mjs",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-12-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-16-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-20-tests.log",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt",
+      "docs/features/2026-11-21-test-release/reviews/receipts/spec-25-tests.txt",
+      "docs/features/2026-11-21-test-release/specs/01-split-cap.md",
+      "docs/features/2026-11-21-test-release/specs/02-tests-config.md",
+      "docs/features/2026-11-21-test-release/specs/03-run-facts.md",
+      "docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md",
+      "docs/features/2026-11-21-test-release/specs/05-packet-commands.md",
+      "docs/features/2026-11-21-test-release/specs/06-report-gate.md",
+      "docs/features/2026-11-21-test-release/specs/07-gate-receipt.md",
+      "docs/features/2026-11-21-test-release/specs/08-gate-rule.md",
+      "docs/features/2026-11-21-test-release/specs/09-fault-patch.md",
+      "docs/features/2026-11-21-test-release/specs/10-load-line.md",
+      "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+      "docs/features/2026-11-21-test-release/specs/12-env-map.md",
+      "docs/features/2026-11-21-test-release/specs/13-archive-named.md",
+      "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+      "docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md",
+      "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+      "docs/features/2026-11-21-test-release/specs/20-sota-page.md",
+      "docs/features/2026-11-21-test-release/specs/22-fewer-better-tests.md",
+      "docs/features/2026-11-21-test-release/specs/25-session-end-pr.md",
+      "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+      "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+      "payload/.agents/skills/joycraft-verify/SKILL.md",
+      "payload/.claude/agents/joycraft-implementer.md",
+      "payload/.joycraft/runtime/test-changes.mjs",
+      "tests/payload-guard.test.ts",
+      "tests/runtime-archive-named-files.test.ts",
+      "tests/runtime-dispatch-commands.test.ts",
+      "tests/runtime-evidence-env.test.ts",
+      "tests/runtime-evidence-facts.test.ts",
+      "tests/runtime-evidence-patch.test.ts",
+      "tests/runtime-status-load.test.ts",
+      "tests/runtime-test-changes.test.ts",
+      "tests/runtime-wave-gate.test.ts",
+      "tests/text-owner-gate-lines.test.ts",
+      "tests/text-session-end-pr.test.ts",
+      "tests/text-sota-page.test.ts"
+    ],
+    "featurePaths": [
+      {
+        "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-probe.mjs",
+        "line": 2,
+        "text": "// Usage: node docs/features/2026-11-21-test-release/reviews/receipts/spec-11-probe.mjs <project-root>"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-probe.mjs",
+        "line": 20,
+        "text": "const folder = 'docs/features/2026-11-21-f';"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+        "line": 15,
+        "text": "- It lists `featurePaths`: each changed test file line that names a path under the configured features folder. Check: a changed test reading `docs/features/x/brief.md` is listed with its line number."
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 53,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 71,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 77,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 110,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 160,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 164,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 168,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 175,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 201,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 221,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 225,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 232,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 258,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 278,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 282,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 289,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 315,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 335,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 339,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1-r2.report.json",
+        "line": 346,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 53,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 71,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 77,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/01-split-cap.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 110,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 160,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 164,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 171,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 199,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 203,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 235,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 267,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 287,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 291,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 298,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-01-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-1.report.json",
+        "line": 324,
+        "text": "\"at\": \"docs/features/2026-11-21-test-release/brief.md:129\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/10-load-line.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/10-load-line.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/10-load-line.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 49,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 55,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/10-load-line.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 83,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 131,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-10-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 151,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 155,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 162,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 187,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-10-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 207,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 211,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-10.report.json",
+        "line": 218,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-10-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/12-env-map.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/12-env-map.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/12-env-map.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 50,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 56,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/12-env-map.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 85,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 134,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-12-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 154,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 158,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 165,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 190,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-12-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 210,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 214,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-12.report.json",
+        "line": 221,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-12-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 59,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 65,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 113,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 162,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 166,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 170,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 177,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 202,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 206,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 210,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 217,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 244,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 248,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-16.report.json",
+        "line": 252,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-16-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/02-tests-config.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/02-tests-config.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/02-tests-config.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/02-tests-config.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/02-tests-config.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 53,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 70,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 76,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/02-tests-config.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 109,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 158,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 178,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 182,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 189,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 214,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 234,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 238,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 245,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 270,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 290,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 294,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 301,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 326,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 346,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 350,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "line": 357,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-02-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/20-sota-page.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/20-sota-page.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/20-sota-page.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/20-sota-page.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 62,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 68,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/20-sota-page.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 115,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 166,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 170,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 174,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 181,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 206,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 210,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 214,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 221,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 246,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 267,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 271,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "line": 278,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-20-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 53,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 70,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 76,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 116,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 164,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-source-scan.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 176,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 180,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.sh.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 199,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 233,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-source-scan.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 245,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 249,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.sh.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 268,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 302,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-source-scan.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 314,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 318,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-walk.sh.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 337,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 371,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-r2-tests.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25-r2.report.json",
+        "line": 375,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-every-spec-list.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 53,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 70,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 76,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/25-session-end-pr.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 116,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 164,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-source-scan.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 176,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-tests.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 210,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-source-scan.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 222,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-tests.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 256,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-source-scan.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 268,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-tests.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 302,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-tests.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-25.report.json",
+        "line": 306,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-25-every-spec-list.txt\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/03-run-facts.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/03-run-facts.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/03-run-facts.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/03-run-facts.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/03-run-facts.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 53,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/03-run-facts.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 63,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 76,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 82,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/03-run-facts.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 121,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 166,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 188,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 192,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 199,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 224,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 246,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 250,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 257,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 284,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 306,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 310,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 317,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 342,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 364,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 368,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 375,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 402,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 424,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 428,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-3.report.json",
+        "line": 435,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-03-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 56,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 62,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/04-gate-in-spec.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 90,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 135,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 155,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 159,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 166,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs\""
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 190,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 210,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 214,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 221,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs\""
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 245,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 265,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 269,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-4.report.json",
+        "line": 276,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-04-probe.mjs\""
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/05-packet-commands.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/05-packet-commands.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/05-packet-commands.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/05-packet-commands.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 57,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 63,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/05-packet-commands.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 91,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 135,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 155,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 159,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 166,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 191,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 211,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 215,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 222,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 247,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5-r2.report.json",
+        "line": 296,
+        "text": "\"at\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-r2-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/05-packet-commands.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/05-packet-commands.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/05-packet-commands.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/05-packet-commands.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 57,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 63,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/05-packet-commands.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 91,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 135,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 155,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 159,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 166,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 191,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 211,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 215,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 222,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 228,
+        "text": "\"actual\": \"Plain root: every command is plain and runs as printed (evidence exit 0, submit exit 0, check-report and finalize-review parse and stop only on the absent report). Root with a space: the printed checkReport embeds the absolute --worker-root unquoted and fails as printed: \\\"Dispatch stopped: Invalid or duplicate argument: docs/features/2026-11-21-f/specs/review-1.report.json\\\" (exit 1). Check input with a space: the printed evidence command \\\"... -- node tests/a b.mjs\\\" splits the path and the run exits 1, and commands.focused.command is not a runnable string. No entry matched the forbidden pattern in any fixture.\""
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-5.report.json",
+        "line": 247,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-05-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/06-report-gate.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/06-report-gate.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/06-report-gate.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 46,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 52,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/06-report-gate.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 80,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 125,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 147,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 151,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 158,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 185,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 207,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 211,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 218,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 231,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-check.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 243,
+        "text": "\"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 247,
+        "text": "\"docs/features/2026-11-21-test-release/specs/review-2.report.json\""
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 259,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-reports.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 263,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-reports.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-6.report.json",
+        "line": 270,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-06-older-reports.mjs\""
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 53,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 69,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 75,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 116,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 164,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 185,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe-rerun.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 189,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 196,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 209,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 213,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 220,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 233,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 237,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 244,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 271,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 292,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe-rerun.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 296,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 303,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 328,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 349,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe-rerun.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 353,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 360,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 385,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 406,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-r2-probe-rerun.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 410,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7-r2.report.json",
+        "line": 417,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 53,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 69,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 75,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/07-gate-receipt.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 116,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 164,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 185,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 189,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 196,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 209,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 213,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 220,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 233,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 237,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 244,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 271,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 292,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 296,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 303,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 328,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 349,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 353,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 360,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 385,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 406,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 410,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-7.report.json",
+        "line": 417,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-07-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/08-gate-rule.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/08-gate-rule.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/08-gate-rule.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/08-gate-rule.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 56,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 62,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/08-gate-rule.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 96,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 141,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 162,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 166,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 173,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 198,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 219,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 223,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 230,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 255,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 276,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 280,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-8.report.json",
+        "line": 287,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-08-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 6,
+        "text": "\"queuePath\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 8,
+        "text": "\"specPath\": \"docs/features/2026-11-21-test-release/specs/09-fault-patch.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 13,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/09-fault-patch.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 23,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/09-fault-patch.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 33,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/09-fault-patch.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 43,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/09-fault-patch.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 53,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 69,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 75,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/specs/09-fault-patch.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 103,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/brief.md\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 151,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 171,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 175,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 182,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 195,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 199,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 206,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 233,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 253,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 257,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 264,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 277,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 281,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 288,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 313,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 333,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 337,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 344,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 357,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 361,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 368,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.mjs\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 395,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-tests.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 415,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.log\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 419,
+        "text": "\"path\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 426,
+        "text": "\"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh\","
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 444,
+        "text": "\"assumption\": \"Decision fault-run-location accepts that a killed runner can leave the fault and the next run refuses the dirty tree (confirmed: exit 2). No acceptance bullet names signals, so this is not a FAIL. Receipt: docs/features/2026-11-21-test-release/reviews/receipts/spec-09-signal-window.log.\""
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "line": 465,
+        "text": "\"at\": \"docs/features/2026-11-21-test-release/reviews/receipts/spec-09-probe.log\","
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 19,
+        "text": "// Decision cap-raise = split-cap (docs/features/2026-11-21-test-release): the"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 205,
+        "text": "const specs = join(project, 'docs/features/demo/specs');"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 210,
+        "text": "inputs: [{ path: `docs/features/demo/specs/0${id}-a.md`, kind: 'requirement' }],"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 211,
+        "text": "criteria: [{ id: 'a', requirement: { path: `docs/features/demo/specs/0${id}-a.md`, anchor: 'a' }, requiredKinds: ['runtime'] }] } })) }));"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 215,
+        "text": "const queue = 'docs/features/demo/specs/.joycraft-spec-queue.json';"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 216,
+        "text": "const decision = 'docs/features/demo/specs/legacy-acceptance.json';"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 284,
+        "text": "// The field shape: docs/features/2026-11-17-demo with \"feature\": \"demo\"."
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 285,
+        "text": "const folder = 'docs/features/2026-11-17-demo';"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 286,
+        "text": "renameSync(join(project, 'docs/features/demo'), join(project, folder));"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 288,
+        "text": "writeFileSync(join(project, datedQueue), readFileSync(join(project, datedQueue), 'utf8').replaceAll('docs/features/demo/', `${folder}/`));"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 316,
+        "text": "renameSync(join(project, 'docs/features/demo'), join(project, 'docs/features/2026-11-17-checkout'));"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "line": 317,
+        "text": "const moved = 'docs/features/2026-11-17-checkout/specs/.joycraft-spec-queue.json';"
+      },
+      {
+        "path": "tests/runtime-archive-named-files.test.ts",
+        "line": 12,
+        "text": "const source = 'docs/features/x';"
+      },
+      {
+        "path": "tests/runtime-dispatch-commands.test.ts",
+        "line": 10,
+        "text": "const folder = 'docs/features/2026-11-21-f';"
+      },
+      {
+        "path": "tests/runtime-evidence-facts.test.ts",
+        "line": 17,
+        "text": "mkdirSync(join(root, 'docs/features/x'), { recursive: true });"
+      },
+      {
+        "path": "tests/runtime-evidence-facts.test.ts",
+        "line": 18,
+        "text": "writeFileSync(join(root, 'docs/features/x/spec.md'), 'spec\\n');"
+      },
+      {
+        "path": "tests/runtime-status-load.test.ts",
+        "line": 10,
+        "text": "const folder = 'docs/features/demo';"
+      },
+      {
+        "path": "tests/runtime-test-changes.test.ts",
+        "line": 11,
+        "text": "const folder = 'docs/features/2026-11-21-f';"
+      },
+      {
+        "path": "tests/runtime-test-changes.test.ts",
+        "line": 79,
+        "text": "put(join(root, 'tests/b.test.ts'), \"import { readFileSync } from 'node:fs';\\nconst brief = readFileSync('docs/features/x/brief.md', 'utf8');\\n\");"
+      },
+      {
+        "path": "tests/runtime-test-changes.test.ts",
+        "line": 80,
+        "text": "expect(changes(root, base).featurePaths).toEqual([{ path: 'tests/b.test.ts', line: 2, text: \"const brief = readFileSync('docs/features/x/brief.md', 'utf8');\" }]);"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "line": 181,
+        "text": "const queuePath = 'docs/features/demo/specs/.joycraft-spec-queue.json';"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "line": 188,
+        "text": "inputs: [{ path: `docs/features/demo/specs/0${id}-s.md`, kind: 'requirement' }, { path: `src/${id}.ts`, kind: 'code' }, { path: check, kind: 'check' }],"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "line": 189,
+        "text": "criteria: [{ id: 'a', requirement: { path: `docs/features/demo/specs/0${id}-s.md`, anchor: 'a' }, requiredKinds: ['runtime'] }] } });"
+      },
+      {
+        "path": "tests/runtime-wave-gate.test.ts",
+        "line": 190,
+        "text": "for (const id of [1, 2, 3]) put(join(root, `docs/features/demo/specs/0${id}-s.md`), `---\\nid: ${id}\\nstatus: todo\\n---\\n# S\\n`);"
+      },
+      {
+        "path": "tests/text-owner-gate-lines.test.ts",
+        "line": 7,
+        "text": "// Spec: docs/features/2026-11-21-test-release/specs/16-owner-lines-text.md"
+      },
+      {
+        "path": "tests/text-session-end-pr.test.ts",
+        "line": 7,
+        "text": "// Spec: docs/features/2026-11-21-test-release/specs/25-session-end-pr.md"
+      },
+      {
+        "path": "tests/text-session-end-pr.test.ts",
+        "line": 43,
+        "text": "// Review 25: docs/features/2026-11-21-test-release/specs/review-25.report.json"
+      },
+      {
+        "path": "tests/text-sota-page.test.ts",
+        "line": 5,
+        "text": "// Spec: docs/features/2026-11-21-test-release/specs/20-sota-page.md"
+      }
+    ]
+  },
+  "commands": {
+    "focused": null,
+    "note": "No focused command: tests.focused is not recorded in joycraft.yaml.",
+    "checkReport": "node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research --queue docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json --spec 11 --report docs/features/2026-11-21-test-release/specs/review-11.report.json",
+    "finalizeReview": "node .joycraft/runtime/completion.mjs finalize-review --queue docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json --spec 11 --report docs/features/2026-11-21-test-release/specs/review-11.report.json"
+  },
+  "ready": true
+}

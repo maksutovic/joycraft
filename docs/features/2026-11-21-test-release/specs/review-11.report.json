@@ -1,0 +1,464 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "0b8b2aecf7747e3706e40a723389b962683ff4e2",
+    "queuePath": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+    "specId": 11,
+    "specPath": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+    "criteria": [
+      {
+        "id": "spec-11-1",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-11-2",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-11-3",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-11-4",
+        "requirement": {
+          "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-21-test-release/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "declared-test-changes",
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-named-files",
+            "archive-edit-tests"
+          ]
+        },
+        "sha256": "f83b31bf1c39adc6722b5f25c3b074bd41d6fc372bd8f65d2f79dc0df6a8cdca",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "0e2c6d887d0e95a2cae885f71edd138487bab501d684a8ef663cd39dc0c1c2c6",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-21-test-release/specs/11-test-changes.md",
+        "kind": "requirement",
+        "sha256": "5c27e89ca2fc431163c14c0498fc695ce79ad354e274abe9143634e7455b384b",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+        "kind": "code",
+        "sha256": "a3e02acb18a14e441736f06600d155e4ff6df00e4c62fbc58c8a9a573592db69",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/test-changes.mjs",
+        "kind": "code",
+        "sha256": "076e11a1cebda8da2b4ef95a7fdee095caa1f18c383857b302fcbd9b0fbab9b3",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-test-changes.test.ts",
+        "kind": "check",
+        "sha256": "84e1c04f1b841e65402f998a3548ed2b7ec64e72cdf6d91b05ec8083bac624b8",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2,
+          5,
+          11
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-21-test-release/brief.md",
+          "anchors": [
+            "declared-test-changes",
+            "archive-tests",
+            "context-and-authorization",
+            "scope-and-limits"
+          ],
+          "decisionIds": [
+            "archive-named-files",
+            "archive-edit-tests"
+          ]
+        }
+      ]
+    },
+    "identity": "2319840e42cec60bae4611eb30ad1ec92084324327c1aa0ccd3254e89fb191e4"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a465133b4c1fadef3"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "ab6ec0a79c4f42e54"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-11-1-convention",
+      "subjectIdentity": "2319840e42cec60bae4611eb30ad1ec92084324327c1aa0ccd3254e89fb191e4",
+      "criteria": [
+        "spec-11-1"
+      ],
+      "representativeInput": "Git fixture changing tests/a.test.ts, src/b_test.go and src/c.ts; isTestPath samples across Node, Python, Go, Rust, Java/Kotlin, Ruby, Swift, C#; working-tree rename, deletion, staged and untracked test files",
+      "expected": "testFiles lists the two test files only; isTestPath is exported and matches the spec's conventions",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-tests.log",
+              "sha256": "af5c8ed5823ebb1953bac73faaab1527ae26970ee1c233f0a60ec3aa01aeb5e4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-test-changes.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-11-1] passes (4/4, exit 0): testFiles = [src/b_test.go, tests/a.test.ts]; isTestPath exported."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-probe.log",
+              "sha256": "da38fd02f480b52a363ed8adda59f2c0b098ac87570034537812cde4397cb0cd"
+            },
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-probe.mjs",
+              "sha256": "b19416d8cd3bab625b8c110afe25f6bd197dc9ac81e1bde88e4327f411e059ac"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "isTestPath matches every convention the spec names (test/tests/spec/__tests__ segments, .test., .spec., _test., test_): Node, Python test_*.py/*_test.py, Go _test.go, Rust tests/, Maven src/test/java, Ruby spec/ and test/ all true. Untracked and staged test files are listed; a deleted conventional test is listed. Gaps outside the spec's list are follow-ups (f11-1, f11-2)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-11-2-declared",
+      "subjectIdentity": "2319840e42cec60bae4611eb30ad1ec92084324327c1aa0ccd3254e89fb191e4",
+      "criteria": [
+        "spec-11-2"
+      ],
+      "representativeInput": "Fixture spec declaring `tests/a.test.ts` class 1 with tests/a and tests/b changed; a spec whose Test changes is none",
+      "expected": "declared [{path: tests/a.test.ts, class: 1}], undeclared [tests/b.test.ts]; none gives declared []",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-tests.log",
+              "sha256": "af5c8ed5823ebb1953bac73faaab1527ae26970ee1c233f0a60ec3aa01aeb5e4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-test-changes.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-11-2] passes: declared and undeclared exactly as the spec states; \"none\" gives declared [] and the change undeclared."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-11-3-feature-paths",
+      "subjectIdentity": "2319840e42cec60bae4611eb30ad1ec92084324327c1aa0ccd3254e89fb191e4",
+      "criteria": [
+        "spec-11-3"
+      ],
+      "representativeInput": "Changed tests/b.test.ts whose line 2 reads docs/features/x/brief.md",
+      "expected": "featurePaths lists the file with line 2",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-tests.log",
+              "sha256": "af5c8ed5823ebb1953bac73faaab1527ae26970ee1c233f0a60ec3aa01aeb5e4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-test-changes.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-11-3] passes: [{path: tests/b.test.ts, line: 2, text: ...}]."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-11-4-startup",
+      "subjectIdentity": "2319840e42cec60bae4611eb30ad1ec92084324327c1aa0ccd3254e89fb191e4",
+      "criteria": [
+        "spec-11-4"
+      ],
+      "representativeInput": "Installed dispatch fixture with and without --changes-base; this repository's own spec 11 with its true base 50e8d14 and with an unknown sha",
+      "expected": "With the flag the output has testChanges.undeclared; without it there is no testChanges",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-tests.log",
+              "sha256": "af5c8ed5823ebb1953bac73faaab1527ae26970ee1c233f0a60ec3aa01aeb5e4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-test-changes.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "[AC:spec-11-4] passes: with --changes-base testChanges.undeclared = [tests/b.test.ts]; without it no testChanges key."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-startup-base.log",
+              "sha256": "d7f8fcbfbc4b568c97a3df4012e33abbf3763f99e82850b0930b8c3ca29afa6f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "payload/.joycraft/runtime/dispatch-start.mjs",
+              "--worker-root",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research",
+              "--expected-manifest",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/.joycraft/installation.json",
+              "--queue",
+              "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+              "--spec",
+              "11",
+              "--role",
+              "reviewer",
+              "--implementer-session",
+              "f985f26a-3b51-467f-acb2-07287fb5764c",
+              "--implementer-host",
+              "claude",
+              "--implementer-agent",
+              "a465133b4c1fadef3",
+              "--capabilities",
+              "filesystem:read,filesystem:write-report,agent:separate-context",
+              "--out",
+              ".joycraft/local/packets/tr-reviewer-11-probe-base.json",
+              "--native-session",
+              "f985f26a-3b51-467f-acb2-07287fb5764c",
+              "--native-agent",
+              "ab6ec0a79c4f42e54",
+              "--native-host",
+              "claude",
+              "--coordinator-session",
+              "f985f26a-3b51-467f-acb2-07287fb5764c",
+              "--changes-base",
+              "50e8d143f62b6273a690ad67a9b3bc7b2e991a2c"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Real-repo reviewer startup with the spec base: ready true, testChanges present with 70 testFiles, all undeclared, 453 featurePaths. About 55 of the 70 are not tests (receipt logs, review reports, spec markdown, skill text, test-changes.mjs itself) matched by the [AC: substring rule; see f11-3."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-21-test-release/reviews/receipts/spec-11-startup-bad-base.log",
+              "sha256": "3d4f4b8f1220176e58bbaaafa614bca367a1141682098b6138e8c171543510ea"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "payload/.joycraft/runtime/dispatch-start.mjs",
+              "--worker-root",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research",
+              "--expected-manifest",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research/.joycraft/installation.json",
+              "--queue",
+              "docs/features/2026-11-21-test-release/specs/.joycraft-spec-queue.json",
+              "--spec",
+              "11",
+              "--role",
+              "reviewer",
+              "--implementer-session",
+              "f985f26a-3b51-467f-acb2-07287fb5764c",
+              "--implementer-host",
+              "claude",
+              "--implementer-agent",
+              "a465133b4c1fadef3",
+              "--capabilities",
+              "filesystem:read,filesystem:write-report,agent:separate-context",
+              "--out",
+              ".joycraft/local/packets/tr-reviewer-11-probe-bad.json",
+              "--native-session",
+              "f985f26a-3b51-467f-acb2-07287fb5764c",
+              "--native-agent",
+              "ab6ec0a79c4f42e54",
+              "--native-host",
+              "claude",
+              "--coordinator-session",
+              "f985f26a-3b51-467f-acb2-07287fb5764c",
+              "--changes-base",
+              "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+            ],
+            "exitCode": 0
+          },
+          "result": "PASS",
+          "actual": "Unknown sha: startup still exits 0 with ready true; testChanges = {error: \"Base deadbeef... is not a commit in this repository\"}. The standalone CLI exits 1 for no --base, a ref name (HEAD) and an unknown sha; a short real sha works."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f11-1-rename-delete-identity",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/test-changes.mjs:56",
+      "summary": "Deleted and renamed tests lose identity. git diff --name-only uses rename detection, so a renamed test lists only its new path (tests/old.test.ts -> tests/renamed.test.ts gives only tests/renamed.test.ts); a declaration under the old path never matches and the deletion is invisible. A deleted file that is a test only by its [AC: tag (checks/verify.ts) is dropped, because read() returns \"\" for a missing file. Brief class 3 is exactly deleted tests. Fix: pass --no-renames, and for deleted paths read the base bytes (git show <base>:<path>) when testing for [AC:. Receipt spec-11-probe.log section 2.",
+      "assumption": "The spec's checks cover added/modified files only; the coordinator may treat this as blocking since spec 17 will judge deletions from this list."
+    },
+    {
+      "id": "f11-2-convention-gaps",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/test-changes.mjs:14",
+      "summary": "isTestPath implements exactly the spec's list, which misses common layouts: segments are case-sensitive (Swift Tests/), Android src/androidTest and Kotlin src/jvmTest, C# App.Tests/FooTests.cs, Java FooTest.java outside src/test, Ruby app/x_spec.rb outside spec/, Python tests.py and conftest.py, JS e2e/*.e2e.ts and *.cy.ts. False positives: docs/spec/overview.md and src/test_helpers_shared.ts. Files with an [AC: tag or a check input are still caught. Suggest case-insensitive segments, segments ending in Test/Tests, and names matching (Test|Tests|_spec)\\. before the extension.",
+      "assumption": "The spec names the convention list; matching it literally passes spec-11-1."
+    },
+    {
+      "id": "f11-3-ac-substring-noise",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/test-changes.mjs:58",
+      "summary": "Any changed file whose text contains \"[AC:\" counts as a test. On this repository with spec 11's own base, startup lists 70 undeclared \"test files\", about 55 of them not tests: review receipt .log files, review-*.report.json, spec markdown, payload/.agents/skills/joycraft-verify/SKILL.md, and test-changes.mjs itself; featurePaths then has 453 lines, mostly from spec and report text. Spec 17 will judge undeclared entries, so this noise recreates the false-flag problem the feature fixes. Suggest applying the tag rule only to files outside the features folder and with a code extension, using trace.mjs's tag regex, or only to check inputs. Receipt spec-11-startup-base.log.",
+      "assumption": "The spec literally says \"holds an [AC: tag\", which these files do; the defect is in the definition, so it does not fail spec-11-1."
+    },
+    {
+      "id": "f11-4-directory-path-throws",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/test-changes.mjs:57",
+      "summary": "A changed submodule (a directory path in git diff) makes read() throw EISDIR, so the whole result is lost; in startup it becomes testChanges.error. Guard read() with a file check. Receipt spec-11-probe.log section 3.",
+      "assumption": "Submodule bumps are rare in Joycraft projects."
+    },
+    {
+      "id": "f11-5-unsafe-declared-path-throws",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/test-changes.mjs:44",
+      "summary": "A Test changes bullet with a backticked path relativePath refuses (e.g. `../outside.test.ts`) throws and loses the whole result instead of skipping that bullet. Receipt spec-11-probe.log section 5.",
+      "assumption": "Decompose writes project-relative paths."
+    },
+    {
+      "id": "f11-6-bad-base-still-ready",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/dispatch-start.mjs:160",
+      "summary": "A wrong --changes-base gives ready: true with testChanges: {error}. Startup is not stopped, so a reviewer who reads only undeclared sees nothing. The spec does not decide this; the error is visible in the output. A ref name (HEAD, origin/main) is refused by the sha regex, consistent with \"startup never guesses a base\".",
+      "assumption": "Reporting the error and continuing is the reading closest to \"startup is unchanged\" without the list."
+    },
+    {
+      "id": "f11-7-undeclared-existing-test-edit",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-dispatch-commands.test.ts:15",
+      "summary": "Commit 82fce24 also edits an existing test outside the spec's file list while ## Test changes says none: afterEach rmSync gains maxRetries: 5. No assertion, skip or expected value changed; it does not weaken the test. Noted for the declared-test-changes rule only.",
+      "assumption": "A cleanup-retry tweak is not a weakened test."
+    }
+  ],
+  "limits": [
+    "The installed .joycraft/runtime in this checkout predates the change (no test-changes.mjs); the payload copy was exercised directly and through the spec test's fixture install.",
+    "Spec 11 base 50e8d14 is old on this shared branch, so the real-repo list includes other specs' later changes; that is by design (base to working tree), not a defect.",
+    "Other agents have uncommitted payload edits in this checkout; none touch this spec's inputs (test-changes.mjs, dispatch-start.mjs, tests/runtime-test-changes.test.ts have no working-tree diff).",
+    "Startup probes wrote extra packets tr-reviewer-11-probe-base.json and tr-reviewer-11-probe-bad.json under .joycraft/local/packets/; the review packet is tr-reviewer-11-spec-11.json.",
+    "Trace: every criterion has a tagged test (spec-11-1..4 at tests/runtime-test-changes.test.ts:57,66,77,83); no untraced criteria."
+  ],
+  "createdAt": "2026-11-22T02:46:21.469Z"
+}
