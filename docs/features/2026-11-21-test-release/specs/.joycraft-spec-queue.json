@@ -2494,7 +2494,8 @@
         28,
         29,
         30,
-        31
+        31,
+        32
       ],
       "status": "todo",
       "mode": "checkpoint",
@@ -3563,6 +3564,99 @@
       "acceptedReport": {
         "path": "docs/features/2026-11-21-test-release/specs/review-31.report.json",
         "sha256": "f4621329ab1c25e82e57d5c812b247f137664b18604e72b4f9040ec6f5ba9163"
+      }
+    },
+    {
+      "id": 32,
+      "file": "32-archive-list-followups.md",
+      "depends_on": [
+        29,
+        30,
+        24
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-21-test-release/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "archive-tests"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/archive.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-archive-named-files.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-archive-tests.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-32-1",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-32-2",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-32-3",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-32-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/32-archive-list-followups.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
       }
     }
   ]
