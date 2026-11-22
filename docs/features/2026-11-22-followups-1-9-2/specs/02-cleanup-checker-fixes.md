@@ -1,6 +1,6 @@
 ---
 id: 2
-status: in-review
+status: done
 ---
 # Cleanup reads a not-found line only for its own command, and a backlog folder in any case
 

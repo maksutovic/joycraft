@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "8c09eb57b8a56ad7795e2d9385c2072e21f9ef36",
+    "queuePath": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+    "specId": 2,
+    "specPath": "docs/features/2026-11-22-followups-1-9-2/specs/02-cleanup-checker-fixes.md",
+    "criteria": [
+      {
+        "id": "spec-2-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/02-cleanup-checker-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-followups-1-9-2/specs/02-cleanup-checker-fixes.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "cleanup",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "a3e7cfc2c4944930df7e1a9695461ddf205a64333e38dcd069fc9d0a8f668f00",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "f2da2be69f9dc0b03c1c6a1367eb9d1dc49eba16c5e11b17129a5735a3b960ba",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/02-cleanup-checker-fixes.md",
+        "kind": "requirement",
+        "sha256": "8fb9e44a7759478afb082c858bcbae5bb3ecf0ac153bd8a8de03e2449adf1334",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "9016d7dd0ddbc3638d34a2e70768c985b7ce17812086b11383aec2c0fa640cd4",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-checks-seam.test.ts",
+        "kind": "check",
+        "sha256": "3cdb296ad74754ed4f1e6add75ae0541db40657241bd67ce75510b2905cb6658",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-tidy.test.ts",
+        "kind": "check",
+        "sha256": "4d8b2a58840b1aeb18ba9efc157f597143f4f6c74a6a57133b39bb8c0fcc9cf6",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+          "anchors": [
+            "cleanup",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "84076aa2e1e1fb0236ddd298a6da97f38836ca8396ee874f23201d3507a8a9c1"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "aefa316572654beb1"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a61a4a13b9af193c3"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "createdAt": "2026-11-22T17:57:47.000Z",
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-2-1-own-not-found",
+      "subjectIdentity": "84076aa2e1e1fb0236ddd298a6da97f38836ca8396ee874f23201d3507a8a9c1",
+      "criteria": [
+        "spec-2-1"
+      ],
+      "representativeInput": "[AC:spec-2-1] tests/runtime-cleanup-checks-seam.test.ts:130 and the probe's ownNotFound cases",
+      "expected": "A check that exits 0 with no finding is skipped as Command not found only when a not-found line on stderr names a word of run (by basename); missing-tool-xyz | cat is still skipped; a working checker printing rule no-foo: not found gives no skipped entry and no finding.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-2-reviewer-focused-20261122T175631481Z-41292-1.log",
+              "sha256": "a00e2e9d5576748ef030a5881942362dea00576eb7093a82c1fd1df307881809"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-checks-seam.test.ts",
+              "tests/runtime-cleanup-tidy.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "22 of 22 tests in 2 files pass, including [AC:spec-2-1] (piped skipped with reason 'Command not found: missing-tool-xyz | cat'; rules.sh printing 'rule no-foo: not found', 'lint: rule no-foo: not found' and 'sh: 1: other-tool: not found' gives no skipped and no finding; zsh line naming nf.sh skips 'sh nf.sh') and the earlier [AC:spec-3-4] and [AC:spec-10-3] not-found tests."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-2-reviewer-probe-output.log",
+              "sha256": "0c0dcd19a783709ba7c24c0b3f1557d306badeb2803ba49a50d8ca97d34e2744"
+            },
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-2-reviewer-probe.mjs.txt",
+              "sha256": "98704d266daa891586ba66ba53b0a0ceb521d95928af275d420203bd88955d3a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probe-fu2/spec-2-reviewer-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Probe lifts notFound, baseWord and ownNotFound verbatim from payload cleanup.mjs: dash, bash, bash line N, /bin/sh, zsh forms, a path-qualified run word, a CR-terminated line and a not-found line among other stderr lines are own; 'rule no-foo: not found', 'lint: rule no-foo: not found', another tool's line and 'eslint: config: not found' are not; repeated calls give the same result (no global-regex lastIndex leak, matchAll copies the regex)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-2-2-backlog-any-case",
+      "subjectIdentity": "84076aa2e1e1fb0236ddd298a6da97f38836ca8396ee874f23201d3507a8a9c1",
+      "criteria": [
+        "spec-2-2"
+      ],
+      "representativeInput": "[AC:spec-2-2] tests/runtime-cleanup-tidy.test.ts:176 and the probe's backlogFile cases",
+      "expected": "new-doc and age-out treat a backlog folder in any letter case as a backlog folder; docs/Backlog/x.md gives no new-doc finding; docs/guides/x.md still does.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-2-reviewer-focused-20261122T175631481Z-41292-1.log",
+              "sha256": "a00e2e9d5576748ef030a5881942362dea00576eb7093a82c1fd1df307881809"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-checks-seam.test.ts",
+              "tests/runtime-cleanup-tidy.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-2-2] passes: docs/Backlog/x.md, docs/BACKLOG/y.md and docs/notes/backlog/z.md give no new-doc finding; the only new-doc finding is docs/guides with docs/guides/x.md. The earlier [AC:spec-2-2] age-out test at line 79 still passes."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-2-reviewer-probe-output.log",
+              "sha256": "0c0dcd19a783709ba7c24c0b3f1557d306badeb2803ba49a50d8ca97d34e2744"
+            },
+            {
+              "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-2-reviewer-probe.mjs.txt",
+              "sha256": "98704d266daa891586ba66ba53b0a0ceb521d95928af275d420203bd88955d3a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probe-fu2/spec-2-reviewer-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "backlogFile lifted from source: Backlog/x.md, a/BACKLOG/b/c.md, notes/backlog/z.md and x/Backlog-ideas.md are backlog; guides/x.md and backlogs/x.md are not. Age-out (cleanup.mjs:879) and new-doc (cleanup.mjs:547) call the same backlogFile, so the change covers both."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "limits": [
+    "Gate not run (reviewer runs only the spec's own tests, per the brief); due at the coordinator's gate."
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-age-out-case-untested",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-cleanup-tidy.test.ts:176",
+      "summary": "The new test covers the any-case backlog folder only for new-doc. Age-out reads the same backlogFile (cleanup.mjs:879), so the behavior holds structurally and in the probe, but no test drives age-out with a Backlog/ folder.",
+      "assumption": "One shared function is enough coverage for this patch."
+    },
+    {
+      "id": "f2-tool-word-collision",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/cleanup.mjs:599",
+      "summary": "Any word of run counts, including shell helpers such as sh or cat. A working checker run as 'sh rules.sh' that prints a line like 'x: sh: not found' would still be skipped as not found. Rare, and the spec says any word of run.",
+      "assumption": "The spec's 'a word of run' rule is intended as written."
+    },
+    {
+      "id": "f3-test-changes",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-cleanup-checks-seam.test.ts:128",
+      "summary": "Checked: both test files only add one new describe block each (class 1, as the Test changes section declares); no existing assertion was removed or weakened. Trace also lists older [AC:spec-2-1]/[AC:spec-2-2] tags from an earlier feature in runtime-cleanup-tidy.test.ts (lines 33-79); this is the trace-id clash the brief accepts."
+    }
+  ]
+}

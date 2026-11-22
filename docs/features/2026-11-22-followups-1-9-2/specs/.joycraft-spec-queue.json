@@ -75,7 +75,7 @@
       "id": 2,
       "file": "02-cleanup-checker-fixes.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -134,6 +134,10 @@
       },
       "submitted": {
         "at": "2026-11-22T17:55:46.655Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-2.report.json",
+        "sha256": "5ccf4255b43e11e9759244e268c6ca2d3a167e9c680772aece123424054a984b"
       }
     },
     {
