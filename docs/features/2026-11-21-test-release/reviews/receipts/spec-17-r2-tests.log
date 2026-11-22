@@ -1,0 +1,26 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/text-test-changes.test.ts (5 tests) 399ms
+   ✓ declared test changes text > [AC:spec-17-1] the spec template has ## Test changes with "none" and the three classes, and test-changes.mjs parses its example bullet  396ms
+stdout | tests/payload-guard.test.ts > shipped payload text > [AC:spec-1-2] every-spec and on-demand words stay under their own caps
+every-spec words: 12164 (cap 12256, 92 spare)
+on-demand words: 19519 (cap 19663, 144 spare)
+
+ ✓ tests/payload-guard.test.ts (16 tests) 1421ms
+   ✓ shipped payload text > [AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on  384ms
+   ✓ shipped payload text > [AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name  367ms
+ ✓ tests/runtime-test-changes.test.ts (11 tests) 3505ms
+   ✓ test-changes > [AC:spec-11-2] splits the changed test files by the spec's Test changes section  382ms
+   ✓ test-changes > [AC:spec-11-4] reviewer startup adds testChanges with --changes-base, and nothing without it  493ms
+   ✓ test-changes > [AC:spec-11-1] lists a renamed test under both paths and a deleted tag-only test from its base  342ms
+   ✓ test-changes > [AC:spec-11-2] skips a submodule path and a refused declared path without losing the result  560ms
+   ✓ test-changes > [review-17-2] reads declarations from the spec at the base; one added later is listed apart and never declared  401ms
+   ✓ test-changes > [AC:spec-11-4] reviewer startup with an unknown --changes-base says so plainly and stays ready  492ms
+
+ Test Files  3 passed (3)
+      Tests  32 passed (32)
+   Start at  19:11:55
+   Duration  3.74s (transform 71ms, setup 0ms, collect 99ms, tests 5.32s, environment 0ms, prepare 118ms)
+
+exit 0

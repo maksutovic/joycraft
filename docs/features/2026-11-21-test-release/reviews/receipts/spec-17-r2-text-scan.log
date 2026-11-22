@@ -1,0 +1,107 @@
+$ grep -n testing-review.md#test-changes (verify, reviewer, decompose)
+payload/.agents/skills/joycraft-decompose/SKILL.md:31:`## Test changes` section ([test changes](../../../.joycraft/references/testing-review.md#test-changes));
+payload/.agents/skills/joycraft-verify/SKILL.md:45:Read the diff of each changed test file and judge it by [test changes](../../../.joycraft/references/testing-review.md#test-changes), test-only specs by [fault proof](../../../.joycraft/references/testing-review.md#test-only-specs).
+payload/.claude/agents/joycraft-reviewer.md:29:`.joycraft/references/testing-review.md#test-changes`; a test-only spec by
+exit 0
+$ grep -c old sentence
+payload/.claude/agents/joycraft-reviewer.md:0
+payload/.agents/skills/joycraft-verify/SKILL.md:0
+$ grep -n template Test changes
+21:## Test changes
+22-
+23-One bullet per test file the spec changes: path, class and the requiring line.
+24-Classes: 1 spec-mandated (the acceptance line states the new value); 2 same
+25-claim, changed test (a fault proof per file); 3 deleted, skipped or out of the
+26-gate (a ledger row and an owner yes per batch).
+27-
+28-```
+29-- `tests/a.test.ts` class 1: acceptance bullet 2 states the new value.
+30-```
+31-
+32-none
+33-
+$ git diff --stat 40d0029 6ad3689 -- spec 17 inputs
+ payload/.agents/skills/joycraft-verify/SKILL.md |  2 +-
+ payload/.claude/agents/joycraft-reviewer.md     |  3 +-
+ payload/.joycraft/references/testing-review.md  | 51 +++++++++++++++++++++++--
+ payload/.joycraft/runtime/test-changes.mjs      | 23 +++++++----
+ payload/.joycraft/templates/spec.md             |  2 +-
+ tests/runtime-test-changes.test.ts              | 27 ++++++++++++-
+ tests/text-test-changes.test.ts                 | 13 +++++++
+ 7 files changed, 106 insertions(+), 15 deletions(-)
+$ git log --oneline 40d0029..6ad3689 -- those
+5d4ec5c fix: read test-change declarations from the spec at the base and narrow what a declaration covers
+b7a8685 feat: cap test workers per parallel run, keep shared test tooling in one lane and explain load at setup
+e6270e2 feat: test-only specs prove each changed test file with saved faults
+08beda2 feat: implementers write fewer, sharper tests that fail first
+$ git diff 40d0029 6ad3689 -- payload/.joycraft/references/testing-review.md
+diff --git a/payload/.joycraft/references/testing-review.md b/payload/.joycraft/references/testing-review.md
+index 7378135..dda5ef9 100644
+--- a/payload/.joycraft/references/testing-review.md
++++ b/payload/.joycraft/references/testing-review.md
+@@ -48,13 +48,56 @@ Read for every spec that changes a test file. Decompose writes the spec's
+ `## Test changes` section from the template's three classes. When a brief's
+ "no weakened tests" contradicts the feature, ask the owner once.
+ 
++Specs that delete tests or change shared test tooling (runner config, guards,
++selection lists) take the one serial lane (`execution.parallel: false`); other
++test-only specs may run in parallel.
++
+ Reviewer rules:
+-- Read `testChanges` from startup: `declared` (with class) and `undeclared`
+-  changed test files. Judge each diff by its declaration, not as weakened.
+-- Block only an undeclared change that no line requires.
++- Read `testChanges` from startup: `declared` (with class), `undeclared` and
++  `addedAfterBase` changed test files. A missing `testChanges` is never
++  "none": run `node .joycraft/runtime/test-changes.mjs --queue <queue> --spec
++  <id> --base <captured base>` or ask the coordinator. Judge each diff by its
++  declaration, not as weakened.
++- A declaration covers only the change its requiring line names and its class
++  proves; anything else in the diff of that file is undeclared. A class-1 line
++  that does not state the new value, or a bullet with no requiring line,
++  declares nothing.
++- A declaration added after the base (`addedAfterBase`) counts only with a
++  requiring acceptance line that existed at the base.
++- Block only an undeclared change that no line requires. A deletion, even when
++  required, needs the class-3 ledger row and owner yes.
+ - A class-1 change passes when its acceptance line states the new value; class
+   2 needs its fault proof, class 3 its ledger row and owner yes.
+-- A declaration of either path of a rename covers both.
++- A declaration of either path of a rename covers both. Pair the two paths
++  with `git diff -M <base>`; a rename that drops assertions is class 3.
++- A new skip, in a file or a list, and a test that leaves the gate count as
++  removals (class 3). A test may be removed when it
++  conflicts with a later owner decision; it is class 3 too.
+ - A red or flaky test outside the spec's set is a follow-up, never a hold.
+ - A changed test that reads a path under the features folder (`featurePaths`)
+   is a follow-up finding.
++
++## Test-only specs
++
++A test-only spec changes tests, fixtures and test lists only: `git diff
++--name-only` against its base lists no other file. A seam or a fix that the
++tests need goes first, in its own spec that leaves the tests untouched.
++
++For each test file it changes (class 2), the implementer:
++1. Saves each fault as a patch file before it edits the test file. Patches and
++   their receipts go in a git-ignored path such as `.joycraft/local/faults/`,
++   or are committed first: `evidence.mjs run --patch` refuses a dirty tree,
++   untracked files included.
++2. Runs the old file on each fault:
++   `node .joycraft/runtime/evidence.mjs run --patch <fault>.diff --receipt <path>.log -- <focused command>`.
++   A fault counts only when the old file fails on it. A timeout or a build
++   error is not a fail.
++3. After the edit, runs the new file, or a named kept test, on each fault the
++   same way. Each run must fail.
++
++The reviewer reruns one saved fault and one of its own, in a tree it may
++change and restore. A reviewer that shares the coordinator's tree runs no
++fault: it reads the saved receipts and states that as a limit. Block only when
++the old file catches a fault that the new file misses; any other survivor is a
++finding. The verdict states the proof's limit in one line: "the chosen faults
++are still caught; this does not show the test is as strong as before."
+$ git diff 5d4ec5c^ 5d4ec5c -- tests/
+ tests/runtime-test-changes.test.ts | 27 ++++++++++++++++++++++++++-
+ tests/text-test-changes.test.ts    | 13 +++++++++++++
+ 2 files changed, 39 insertions(+), 1 deletion(-)
+1

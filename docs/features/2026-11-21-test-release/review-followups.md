@@ -74,3 +74,7 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - Session end's records, tidy and archive commits come after the last green gate, so delivery refuses the push as stale. testing.md already says records-only commits need no test run: delivery should accept a receipt whose revision is an ancestor of HEAD when every path changed since is under the docs root (paths.features/archive/context common parent); any other path (an archive `--rewrite` of a test) needs the gate again.
 - Two places open the PR: implement ("open one PR when no spec can start") and session end ("one push that opens the PR"). Implement should leave PR opening to session end.
 - Without `tests.gate`, delivery needs `-- <verifier>`; implement text should say so. delivery.md should say receipts must be git-ignored or in a feature folder.
+
+## Declarations (spec 17) — fix
+- test-changes.mjs: require the base to be an ancestor of HEAD (`git merge-base --is-ancestor`).
+- Flag a base declaration whose requiring text was rewritten after the base.
