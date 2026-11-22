@@ -131,6 +131,51 @@ describe('gate receipt review-7 fixes', () => {
     }
     expect(remoteRef(remote)).toBe('');
   }, 30000);
+
+  const andGate = 'tests:\n  gate: "node gate.mjs && node gate2.mjs"\n';
+  const gate2 = (root: string, code: number) => { put(join(root, 'gate2.mjs'), `process.exit(${code});\n`); git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'gate2'); return git(root, 'rev-parse', 'HEAD'); };
+
+  it('[review-7-r2-1] a gate with shell syntax needs the shell form: split words are refused, a red sh -c run is refused', () => {
+    const { root, remote, first } = deliveryFixture(andGate);
+    gate2(root, 1);
+    // Without a shell, && and gate2.mjs are only arguments to node gate.mjs, so this run is green.
+    expect(evidence(root, 'receipts/words.log', ['node', 'gate.mjs', '&&', 'node', 'gate2.mjs']).status).toBe(0);
+    const words = push(root, first, ['--gate-receipt', 'receipts/words.log']);
+    expect(words.status).toBe(1);
+    expect(words.stderr.trim()).toBe('gate-receipt-not-gate');
+    expect(remoteRef(remote)).toBe('');
+    expect(evidence(root, 'receipts/sh.log', ['sh', '-c', 'node gate.mjs && node gate2.mjs']).status).toBe(1);
+    const red = push(root, first, ['--gate-receipt', 'receipts/sh.log']);
+    expect(red.status).toBe(1);
+    expect(red.stderr.trim()).toBe('gate-receipt-red');
+    expect(remoteRef(remote)).toBe('');
+  }, 30000);
+
+  it('[review-7-r2-1] the same gate pushes through sh -c when every command is green', () => {
+    const { root, remote, first } = deliveryFixture(andGate);
+    const head = gate2(root, 0);
+    expect(evidence(root, 'receipts/sh.log', ['sh', '-c', 'node gate.mjs && node gate2.mjs']).status).toBe(0);
+    const result = push(root, first, ['--gate-receipt', 'receipts/sh.log']);
+    expect(result.status, result.stderr).toBe(0);
+    expect(remoteRef(remote)).toBe(head);
+  }, 30000);
+
+  it('[review-7-r2-2] a shell form whose program is a relative path is refused; a bare name or absolute path is accepted', () => {
+    const { root, remote, first, head } = deliveryFixture();
+    for (const shell of ['./sh', 'tools/bash', 'tools\\bash.exe']) {
+      footer(root, 'rel.log', { argv: [shell, '-c', 'node gate.mjs'], exitCode: 0, revision: head, dirty: false });
+      const result = push(root, first, ['--gate-receipt', 'receipts/rel.log']);
+      expect(result.status, shell).toBe(1);
+      expect(result.stderr.trim()).toBe('gate-receipt-not-gate');
+      expect(remoteRef(remote)).toBe('');
+    }
+    for (const shell of ['bash', '/bin/sh', 'C:\\Windows\\System32\\cmd.exe']) {
+      footer(root, 'ok.log', { argv: [shell, shell.endsWith('cmd.exe') ? '/c' : '-c', 'node gate.mjs'], exitCode: 0, revision: head, dirty: false });
+      const result = push(root, first, ['--gate-receipt', 'receipts/ok.log']);
+      expect(result.status, `${shell}: ${result.stderr}`).toBe(0);
+    }
+    expect(remoteRef(remote)).toBe(head);
+  }, 30000);
 });
 
 const queuePath = 'docs/features/demo/specs/.joycraft-spec-queue.json';

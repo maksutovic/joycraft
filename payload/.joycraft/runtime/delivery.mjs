@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { realpathSync } from 'node:fs';
 import { mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { hostname } from 'node:os';
-import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { dirname, isAbsolute, join, relative, resolve, sep, win32 } from 'node:path';
 import { spawn } from 'node:child_process';
 import { TextDecoder } from 'node:util';
 
@@ -109,13 +109,23 @@ async function invoke(argv, root) {
 }
 /** Shells that run their last argument as a command line after -c, /c or -Command. */
 const shells = new Set(['sh', 'bash', 'zsh', 'dash', 'cmd', 'powershell', 'pwsh']);
-const isShell = program => shells.has(program.split(/[\\/]/).at(-1).toLowerCase().replace(/\.exe$/, ''));
-/** The footer's argv is the recorded gate: the same words, or a shell given the gate as its last `-c` argument. */
+/** A shell program is a bare name (found on PATH) or an absolute path; a relative path such as ./sh may be a project script. */
+const isShell = program => (!/[\\/]/.test(program) || isAbsolute(program) || win32.isAbsolute(program))
+  && shells.has(program.split(/[\\/]/).at(-1).toLowerCase().replace(/\.exe$/, ''));
+/** Any character a shell would treat specially. evidence.mjs runs argv without a shell, so a gate
+ * holding one of these only runs as the gate through a shell given the whole gate as one argument. */
+const shellSyntax = /[&|;<>`$\n\r'"*?~(){}[\]\\!#%=^]/;
+/** The footer's argv is the recorded gate: a shell given the whole gate as its last `-c` argument,
+ * or, only for a gate of plain words, exactly those words. */
 function runsGate(argv, gate) {
   if (!Array.isArray(argv) || !argv.every(value => typeof value === 'string')) return false;
-  const words = text => text.trim().split(/\s+/).join(' ');
-  return words(argv.join(' ')) === words(gate)
-    || (argv.length === 3 && isShell(argv[0]) && ['-c', '/c', '-Command'].includes(argv[1]) && words(argv[2]) === words(gate));
+  const words = text => text.trim().split(/\s+/);
+  const plain = !shellSyntax.test(gate.trim());
+  // Spaces inside quotes matter to a shell, so a gate with shell syntax must match exactly (trimmed).
+  const sameLine = line => plain ? words(line).join(' ') === words(gate).join(' ') : line.trim() === gate.trim();
+  if (argv.length === 3 && isShell(argv[0]) && ['-c', '/c', '-Command'].includes(argv[1]) && sameLine(argv[2])) return true;
+  const expected = words(gate);
+  return plain && argv.length === expected.length && argv.every((value, index) => value === expected[index]);
 }
 /** Refuse a push unless the gate receipt, inside the project, shows the recorded gate, green, on a clean tree at this HEAD. */
 async function checkGateReceipt(root, gate, receipt, head) {
@@ -187,7 +197,7 @@ export async function deliver({ root = process.cwd(), base, remote, branch, veri
 }
 
 function usage() { throw new Error('Usage: delivery.mjs check --root <repo> --base <revision> | delivery.mjs push --root <repo> --base <revision> --remote <name> --branch <branch> (--gate-receipt <receipt.log> | -- <verifier> [args...])\n' +
-  'With tests.gate recorded, --gate-receipt must name a receipt inside the project whose evidence.mjs footer ran the gate as its exact words, or as sh/bash/zsh/dash -c, cmd /c or powershell/pwsh -Command "<gate>" (no other flags, such as -lc), exit 0, on a clean tree at HEAD. ' +
+  'With tests.gate recorded, --gate-receipt must name a receipt inside the project whose evidence.mjs footer ran the gate, exit 0, on a clean tree at HEAD. The gate counts as run in the form sh/bash/zsh/dash -c, cmd /c or powershell/pwsh -Command "<gate>", with the whole gate as one argument and no other flags (such as -lc), where the shell is a bare name found on PATH or an absolute path (not ./sh). A gate of plain words may also run as those exact words; a gate with any shell syntax (&&, ||, ;, |, <, >, &, $, quotes, globs and the like) must use the shell form, because evidence.mjs runs no shell. ' +
   'This check stops mistakes such as a red, stale or wrong receipt; it does not stop a hand-forged receipt, because the footer is not signed.'); }
 async function cli(argv) {
   const separator = argv.indexOf('--'); const own = separator < 0 ? argv : argv.slice(0, separator); const verifier = separator < 0 ? [] : argv.slice(separator + 1);
