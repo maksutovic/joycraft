@@ -17,3 +17,7 @@
 - jsconfig.json, deno.json, pnpm-workspace.yaml still count as records (decision names only package.json, tsconfig*, lockfiles).
 - delivery.md:54 clause placement could read as feature/archive-only; code applies it under the whole docs root.
 - On-demand headroom 601 vs the 600-word probe (payload-guard.test.ts:348).
+
+## Spec 6 (PASS r1)
+- setup.md:245-250 lost "and its conventions" (keep an existing worktrees doc style); restore if words allow.
+- setup.md:298 dropped "materially" from the ask-a-question rule; slightly wider.

@@ -1,6 +1,6 @@
 ---
 id: 6
-status: in-review
+status: done
 ---
 # Four reference texts say what the code does: check kinds, knip's wrapper, the pinned fault list, and new or changed test files
 

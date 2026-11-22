@@ -490,7 +490,7 @@
       "id": 6,
       "file": "06-reference-text.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -609,6 +609,10 @@
       },
       "submitted": {
         "at": "2026-11-22T07:05:30.938Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-6.report.json",
+        "sha256": "427950da5d346b1c67bc15a7bdfc54d9530805b3bd7358f2afbe6bfd442a6616"
       }
     },
     {
