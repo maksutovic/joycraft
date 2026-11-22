@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-fba2f68891fe",
-  "commit": "fba2f68891fed136a6b62d9f388794bbedfd2614d3857c44d878b736e36af121",
+  "tag": "payload-c90ecf13a57a",
+  "commit": "c90ecf13a57a8bda3f81709e59086f63a1591af7bca26636946cab258557e5e5",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -36,7 +36,7 @@
     ".joycraft/references/knowledge.md": "4cadd5679179e66422820058c29314241aac906657ef9f9e44f4adcf2fd92172",
     ".joycraft/references/recurring-failures.md": "7080f6c55492bc19c2897f4f0b128a830a71cdb516678c79ff6e97ffa1dc6b86",
     ".joycraft/references/retro.md": "5f24b942f1faf308308caf5d0c543320fedbb69c59c2c240ef979cab50bae211",
-    ".joycraft/references/settings.md": "be0ee9ded37691db42ad01e4b51118c23a6d4bc3bc5e298c0c00e7454e7d154a",
+    ".joycraft/references/settings.md": "e097205740a0c7eb91922181426db7b4ed0933ddeae3b50b01ccbb8492cc3874",
     ".joycraft/references/setup.md": "52de47eb5e82181bcb32ca5f5628dc5479b172d5dfab19f0fcb3c0d74ed4c7b7",
     ".joycraft/references/testing-page.md": "2dba23881e4040efbbd5efd16e1d1cc15519fd0e02f8229b107f4d5cc2d47db1",
     ".joycraft/references/testing-review.md": "fb0846bf30ecb65e81752556744765554eec78234d04eb5e201943fd0bbfc14f",
@@ -52,7 +52,7 @@
     ".joycraft/runtime/artifacts/preferences.mjs": "b9c6bcbd796c31096085d96dcfb9ac63c62f5d7c13670aa7fec6f1f7189bbe8c",
     ".joycraft/runtime/artifacts/render.mjs": "79d5a5628542ec87740096ef697fc1efa8649c5546ae72b449f43bc5c810035d",
     ".joycraft/runtime/artifacts/server.mjs": "b7e5efab7ef8afc060b56278e6bc7f21bff325ddd4f64a6dde8e1051647851ff",
-    ".joycraft/runtime/cleanup.mjs": "8f33a970a8e6e69ca75f1866dfaca54bf5fcc629c3e938eca4798dd47bba6d24",
+    ".joycraft/runtime/cleanup.mjs": "4efff5b19f58a0329ddb9106d54999f938ca0d7efa43b1e37aa1c563d0d66681",
     ".joycraft/runtime/completion.mjs": "2f27bddfb7768f4c4278cab735af390460469986da96f60adfefce7655c44c2d",
     ".joycraft/runtime/config.mjs": "d4200b6ae396ba9a0a6b990320b7b67e04cf5453a36414d13d23b5e203eeb3d6",
     ".joycraft/runtime/context/cli.mjs": "40adc206c8c3b7f4f5bedffb097d9ae1b0718f0586a055796e4987e9c3088eee",

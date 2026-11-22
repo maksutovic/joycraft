@@ -16,7 +16,7 @@ and keep their comments and order. Map plain requests to settings:
 | "After each feature is archived, sync our wiki" / "run `<command>`" | `hooks.afterArchive` |
 | "This page describes `src/auction`" / "flag the auction page when that code changes" | `cleanup.impact` |
 | "Let AGENTS.md be up to 1500 words" | `cleanup.entryWords` |
-| "Run drift, vale or docaudit at session end" | `checks:` (`name`, `run`; tidy reads `path:line: message` lines) |
+| "Run drift, vale or docaudit at session end" | `checks:` (`name`, `run`; tidy reads `path:line: message` and `path:line rule message` lines; pick the checker's line output format) |
 | "Our focused test is `pnpm test <file>`" / "run the gate once per wave" | `tests:` (`focused` with `{files}`, `gate`, `full`; `gateRuns`: `wave` or `spec`) |
 
 1. Read `joycraft.yaml`. If it does not exist, start from
