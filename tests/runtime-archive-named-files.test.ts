@@ -220,4 +220,35 @@ describe('archive owner check of spec 13', () => {
       expect(later.output).toMatchObject({ status: 'archived', unchanged: true });
     });
   }
+
+  it('[AC:spec-1-5] next names only tests that name the folder outside a comment, at that line; namedFiles matches the preview', () => {
+    const spec = `// Spec: ${source}/specs/01-a.md\n`;
+    const check = (extra: Record<string, string>) => {
+      const root = fixture({ extra });
+      // The fixture's own two-tier test names the folder in code; drop it so only `extra` counts.
+      rmSync(join(root, 'tests/two-tier.test.mjs')); git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'only extra');
+      const preview = listed(root);
+      const result = archive(root, '--apply');
+      expect(result.status, result.stderr).toBe(0);
+      return { preview, next: result.output.next as string, root };
+    };
+    // (a) two tests that name the folder only in `// Spec:` lines.
+    const a = check({ 'tests/a.test.ts': spec, 'tests/b.test.ts': `${spec}import x from 'y';\n` });
+    expect(a.next).toContain('need no change');
+    expect(a.next).not.toContain('Change the folder path');
+    expect(a.preview.filter((file: { test: boolean }) => file.test).map((file: { path: string }) => file.path)).toEqual(['tests/a.test.ts', 'tests/b.test.ts']);
+    // (b) one comment-only test plus one whose path sits in a string.
+    const b = check({ 'tests/a.test.ts': spec, 'tests/c.test.ts': `import x from 'y';\nconst at = '${source}/brief.md';\n` });
+    expect(b.next).toMatch(/^1 test still names `docs\/features\/x`: `tests\/c\.test\.ts:2`\./);
+    expect(b.next).not.toContain('tests/a.test.ts');
+    // (c) a `// Spec:` line 1 and a string path at line 9.
+    const c = check({ 'tests/d.test.ts': `${spec}${'// more\n'.repeat(7)}const at = '${source}/brief.md';\n` });
+    expect(c.next).toContain('`tests/d.test.ts:9`');
+    expect(c.next).not.toContain('tests/d.test.ts:1`');
+    for (const { preview } of [a, b, c]) {
+      const named = preview.find((file: { path: string }) => file.path.startsWith('tests/'));
+      expect(named.line).toBe(1);
+      expect(named.text).toBe(spec.trim());
+    }
+  });
 });

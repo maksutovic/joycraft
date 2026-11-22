@@ -64,4 +64,12 @@ describe('archive tests text (spec 24)', () => {
     const named = files(payload).filter(file => readFileSync(file, 'utf8').includes('--rewrite'));
     expect(named).toEqual([]);
   });
+
+  it('[AC:spec-1-2] the archive.md rewrite sentence says the live Markdown is under the docs root', () => {
+    const text = raw(ARCHIVE).replace(/\s+/g, ' ');
+    const start = text.indexOf('Apply rewrites links');
+    expect(start).toBeGreaterThanOrEqual(0);
+    const sentence = text.slice(start, text.indexOf('.', start));
+    expect(sentence).toContain('under the docs root');
+  });
 });

@@ -192,9 +192,9 @@ then atomically moves `docs/features/<slug>` to
 `docs/archive/<slug>/feature`. Code, tests, and shared receipts outside the
 feature stay live. Reports and receipts outside the feature are copied under
 the archive record's `evidence/` directory. `archive-replay.json` maps each
-original path to its moved, copied or restored byte-identical record. Historical
-links in the moved files keep their text; treat them as history. Apply rewrites
-links into the folder only in live Markdown outside the features and archive
+original path to its moved, copied or restored byte-identical record. Links in
+moved files stay as history; leave them. Apply rewrites links into the folder
+only in live Markdown under the docs root, outside the features and archive
 folders, never in entry files, reports or receipts; `links` lists the rewrites
 and, unedited, other files that link or name the folder.
 

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-ad9f73c260f0",
-  "commit": "ad9f73c260f0ce60b381337f6fa557fd180fe91ffe64a426ae3ff3df69d02335",
+  "tag": "payload-1b89decad3b5",
+  "commit": "1b89decad3b53ed31fe97d21249d657a762d1d9c605b18d14ac85d2bfcf8342f",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -24,7 +24,7 @@
     ".joycraft/assets/artifacts/transports.js": "e0514521ec0a2e2761e1ac5c6fbc8e6797329d7629941d1f014fc6d9ee5c2b40",
     ".joycraft/contracts/types.d.ts": "cdb96d320b216cd1a110d08580967958b14d2fcca98cc4b3c5aa29f03caa550c",
     ".joycraft/references/architecture.md": "4e225ba23ed72d3d7b1af9bfceeb708583eede79978c294724b917ad94674be9",
-    ".joycraft/references/archive.md": "f68f4962cdec487829edbd281555245f5f2d020979f8b3efea5aa2c3fe737899",
+    ".joycraft/references/archive.md": "4ff6a1e172ec003569c24e208d81b0121a88416f4879921e4b9f51ab8f76e05f",
     ".joycraft/references/artifacts.md": "b3d69dabce8b4df37da861b0e23bff83bd198d893f061741af1098cf8b64d19d",
     ".joycraft/references/cleanup.md": "5c4e99118f913e62024e86a23256b2c34a888bc40313234df9b2532a3d220f77",
     ".joycraft/references/completion.md": "698e67984a959744f40bb0b221c953665d4558c046f4faea55dc6c7162e4cb0d",
@@ -44,7 +44,7 @@
     ".joycraft/references/update.md": "afddd3d7aebf09553d52878793e787e5ee0c7e771a9a3f640457ae1f19cd0809",
     ".joycraft/references/workflow.md": "5b330debc6759b8f7975b159632f51074802067291fe4f4bebfb344f5b60cc52",
     ".joycraft/references/worktrees.md": "34f23b6f631ec5c90272861445d081a0a4f66c8f007a2286f1846a3909f68a98",
-    ".joycraft/runtime/archive.mjs": "f42c9758898ad1bb3768685dfa40c7cb831f3d2f7131db7f3fd0bbac312367e0",
+    ".joycraft/runtime/archive.mjs": "54721985aa1e841c8b6443fd00a05a68a7240ab383f60c82000f9e6a6ea3a5bc",
     ".joycraft/runtime/artifacts/cli.mjs": "4e605cf7b2a194acb8f11a8ff2a045acc99526ace70aa1693de11b6ed3838afd",
     ".joycraft/runtime/artifacts/decisions.mjs": "8d701cea7ab3189ed02bcd43845c291a59c028c52c7861679989e319edf4afca",
     ".joycraft/runtime/artifacts/document.mjs": "501d7e80862e5424a9acad957c018cd75b990e389f5fa8e749de7426f45a0824",

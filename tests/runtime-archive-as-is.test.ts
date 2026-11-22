@@ -127,4 +127,34 @@ describe('archive as is', () => {
     expect(result.stderr).toContain('cannot start with --');
     expect(existsSync(join(root, source))).toBe(true);
   });
+
+  it('[AC:spec-1-3] an in-review spec lists the missing receipts of its latest report file in the specs folder', () => {
+    const gone = JSON.stringify({ schemaVersion: 1, verdict: 'FAIL', flows: [{ observations: [{ receipts: [{ path: 'docs/reviews/x/gone.txt', sha256: hash('gone') }] }] }] });
+    const kept = JSON.stringify({ schemaVersion: 1, verdict: 'FAIL', flows: [{ observations: [{ receipts: [{ path: 'docs/context/decision-log.md', sha256: hash('# Decisions\n') }] }] }] });
+    const note = (files: Record<string, string>) => {
+      const { root } = fixture();
+      for (const [name, body] of Object.entries(files)) put(join(root, `${source}/specs/${name}`), body);
+      const result = archive(root, '--as-is', '--owner-instruction', instruction, '--apply');
+      expect([result.status, result.stderr]).toEqual([0, '']);
+      return readFileSync(join(root, 'docs/archive/x/unverified.md'), 'utf8');
+    };
+    expect(note({ 'review-2.report.json': gone })).toContain('  - Missing or changed: `docs/reviews/x/gone.txt`');
+    const latest = note({ 'review-2.report.json': gone, 'review-2-r2.report.json': kept });
+    expect(latest).toContain('- Spec 2 (`02-b.md`): status in-review');
+    expect(latest).not.toContain('gone.txt');
+    expect(latest).not.toContain('Missing or changed');
+    // With no report file, nothing more is listed.
+    expect(note({})).not.toContain('Missing or changed');
+  });
+
+  it('[AC:spec-1-4] a whitespace-only --owner-instruction gets the same message as one that starts with --', () => {
+    const { root } = fixture();
+    const result = archive(root, '--as-is', '--owner-instruction', '   ', '--apply');
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain("needs the owner's words");
+    expect(result.stderr).not.toContain('Invalid or duplicate');
+    expect(result.stderr).toBe(archive(root, '--as-is', '--owner-instruction', '--apply').stderr);
+    expect(existsSync(join(root, source))).toBe(true);
+    expect(git(root, 'status', '--porcelain')).toBe('');
+  });
 });

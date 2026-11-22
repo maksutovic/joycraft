@@ -114,4 +114,19 @@ describe('archive.mjs ignore', () => {
     expect(existsSync(join(nested, 'docs', '.ignore'))).toBe(false);
     expect(ignore(join(nested, 'docs'), '--check').status).toBe('present');
   });
+
+  it('[AC:spec-1-6] ignore --check from a subfolder prints the root status; archive.mjs keeps no projectRoot of its own', () => {
+    const root = fixture();
+    mkdirSync(join(root, '.joycraft'), { recursive: true });
+    mkdirSync(join(root, 'src', 'deep'), { recursive: true });
+    put(join(root, '.ignore'), 'docs/archive/\n');
+    const fromRoot = spawnSync(process.execPath, [runtime, 'ignore', '--check'], { cwd: root, encoding: 'utf8' });
+    const fromSub = spawnSync(process.execPath, [runtime, 'ignore', '--check'], { cwd: join(root, 'src', 'deep'), encoding: 'utf8' });
+    expect([fromSub.status, fromSub.stderr]).toEqual([0, '']);
+    expect(fromSub.stdout).toBe(fromRoot.stdout);
+    expect(JSON.parse(fromSub.stdout).status).toBe('present');
+    const source = readFileSync(runtime, 'utf8');
+    expect(source).not.toMatch(/function projectRoot/);
+    expect(source).toMatch(/import \{[^}]*\bprojectRoot\b[^}]*\} from '\.\/cleanup\.mjs'/);
+  });
 });
