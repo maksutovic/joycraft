@@ -13,8 +13,8 @@ Read the project's entry file (`AGENTS.md`), then each page whose context-map ro
 For a change across state, data or producer/consumer boundaries, inspect the
 actual counterpart code and relevant owning decisions/context when available.
 Add discovered material sources
-and relevant existing decision/context paths to exact verification inputs before
-review, reporting unresolved coverage. See
+and relevant decision/context paths to exact verification inputs before
+review; report unresolved coverage. See
 [focused discovery](../../../.joycraft/references/architecture.md)
 when the boundary is unclear; a local repair needs no architecture review.
 
@@ -47,14 +47,13 @@ For a spec marked `execution.parallel: true`, use a separate linked worktree for
 each concurrent mutator, including its build/cache state. Create it with
 `node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <your-session-id>`
 when the host has no native worktree isolation; never invent another folder. Its first action is
-the documented project bootstrap, before edits, stateful runtime work, or packet
-preparation. Dispatch from its actual root. Read [worker isolation](../../../.joycraft/references/worktrees.md)
+the documented project bootstrap. Dispatch from its actual root. Read [worker isolation](../../../.joycraft/references/worktrees.md)
 when parallel work, integration, cleanup, or resource capacity is in play. If
 isolation cannot be obtained, replan the affected wave and set the current
 queue entry's `execution.parallel` to `false` before dispatch, recording why;
 then run it serially. Otherwise leave it unstarted.
 
-Implement the spec; run checks and any relevant rendered inspection as you go, in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Tests come from the spec, tagged `[AC:<criterion-id>]`; one may cover several checks; extend the existing test file first; a new acceptance test fails before the code exists. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
+Implement the spec; run checks and any relevant rendered inspection as you go, in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Tests come from the spec, tagged `[AC:<criterion-id>]`. Add a test only when it can fail for a reason no existing test can; one test may carry several `[AC:]` tags and cover several checks; extend the existing test file first. A new acceptance test runs once and fails before the code exists; its receipt comes first. Do not commit tests of one-off run state. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
 
 Honor the queue's commit mode. In `batch`, commit and review the independent ready
 wave at its boundary before advancing its dependents; do not wait for an entire
@@ -80,15 +79,15 @@ not unrelated authorized work.
 When a recorded tool breaks during a run, repair and record it as
 `$joycraft-verify` says, leave that spec `in-review`, and continue with the
 specs that do not depend on it. At the first hold, tell the user the spec, the
-tool, the cause and the repair tried. The session-end summary lists every held
-spec again.
+tool, the cause and the repair tried. Session end lists every held
+spec.
 
 A tool break stops the whole queue only when the project will not build or
 install, the worktree or repository is broken, or the next step would touch data
 or systems outside the project (a shared database, a deploy). Every other tool
 break is repair, then hold.
 
-Only the guarded completion path can move an `in-review` spec to `done`. Use its manual snapshot/complete commands only at an explicit non-native boundary; read [completion guidance](../../../.joycraft/references/completion.md) before doing so.
+Only the guarded completion path can move an `in-review` spec to `done`. Use its manual snapshot/complete commands only at an explicit non-native boundary, after reading [completion guidance](../../../.joycraft/references/completion.md).
 
 When a current independent review is `FAIL` or `UNVERIFIED`, first fix
 straightforward failures within the existing authorization and obtain a fresh
@@ -99,9 +98,9 @@ yourself: note it under `## Decision needed` in the spec, leave it `in-review`,
 and continue independent ready work. Treat a held `decision-needed` finding
 (`$joycraft-verify`) the same, without the note: `status.mjs` lists it. An owner can explicitly accept the
 current findings and their stated limits through `accept-owner`; that is a
-bounded exception, not a PASS or verified result. Do not ask merely because a
-review failed. Ask only when an explicit override is needed to proceed and a
-trusted human acceptance of this spec and these current findings is missing.
+bounded exception, not a PASS or verified result. Ask only when proceeding
+needs an explicit override and no trusted human acceptance of this spec and its
+current findings exists.
 Make one short summary and focused choice, then persist the owner's actual
 instruction and nonempty limits in the decision record. A general
 "continue" or "go," another agent's direction, or authorization to add this
@@ -128,5 +127,5 @@ held spec, run `$joycraft-session-end` without waiting for the user.
 Report blockers and the next action first, then measured progress. Tell the user
 when a run stops or planned work is omitted, with the reason and retained state;
 explain any needed external setting and its effect. Give concise stage updates
-during long work instead of only announcing passes. Never describe unavailable,
+during long work. Never describe unavailable,
 failed, or uninspected evidence as passing.

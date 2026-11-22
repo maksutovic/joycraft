@@ -123,6 +123,6 @@ Tag each acceptance test with its queue criterion ID, `[AC:<criterion-id>]`, in 
 test name or a comment, in any language. `trace.mjs --queue <queue> --spec <id>`
 lists each criterion with its tagged tests from the spec's `check` inputs (add
 `--tests <glob>` for undeclared files) and exits 2 while a criterion is untraced.
-Reviewer startup includes the same trace. A tag shows that a test claims the
-criterion; it does not show that the test is right. Write the test from the spec
+Reviewer startup includes the same trace. A tag shows a test claims the
+criterion, not that it is right. Write the test from the spec
 text before reading the implementation.
