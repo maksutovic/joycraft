@@ -19,6 +19,8 @@ Brief `fault-proof`, ruling rows 3 to 5. Decision `fault-run-location` = `in-pla
 
 none
 
+- Fault patch files and the receipts of a fault run live in a git-ignored path (for example `.joycraft/local/`) or are committed first, because `evidence.mjs run --patch` refuses a dirty tree, untracked files included (lane B spec gap). Check: `testing-review.md` says where fault patches and their receipts go.
+
 ## Not covered
 
 Anything in the brief's Scope and limits. Joycraft names no test runner: text says "the runner's own flag". Specs other than this one.

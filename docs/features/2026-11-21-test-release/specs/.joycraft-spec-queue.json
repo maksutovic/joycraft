@@ -184,7 +184,7 @@
       "id": 3,
       "file": "03-run-facts.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -275,6 +275,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:21:05.861Z"
       }
     },
     {
@@ -1264,6 +1267,16 @@
             "requiredKinds": [
               "runtime"
             ]
+          },
+          {
+            "id": "spec-15-5",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/15-wave-gate-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
           }
         ]
       }
@@ -1560,6 +1573,16 @@
           },
           {
             "id": "spec-18-4",
+            "requirement": {
+              "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-18-5",
             "requirement": {
               "path": "docs/features/2026-11-21-test-release/specs/18-fault-proof-text.md",
               "anchor": "acceptance"

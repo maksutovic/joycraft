@@ -19,6 +19,8 @@ Brief `wave-gate` (with `wave-gate-default` = `per-wave-if-slow`) and brief `ci-
 
 none
 
+- A gate receipt counts only from a clean tree: the coordinator writes it to a git-ignored path or commits pending files first, because `delivery.mjs` rejects a `dirty: true` receipt as stale (lane B spec gap). Check: the wave-gate text says where the gate receipt goes.
+
 ## Not covered
 
 Anything in the brief's Scope and limits. Joycraft names no test runner: text says "the runner's own flag". Specs other than this one.
