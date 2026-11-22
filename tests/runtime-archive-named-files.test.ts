@@ -1,6 +1,6 @@
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterAll, afterEach, describe, expect, it } from 'vitest';
@@ -432,4 +432,51 @@ describe('archive review 13 round 3 fixes', () => {
     expect(status(root)).toBe('');
     expect(existsSync(pendingRecord(root))).toBe(false);
   });
+});
+
+/** Run archive in the background and parse its result. */
+function archiveAsync(root: string, extra: string[]) {
+  const child = spawn(process.execPath, [runtime, 'archive', '--feature', 'x', '--phase', 'session-end', '--attestation', '.joycraft/local/attest.json', ...extra], { cwd: root, stdio: ['ignore', 'pipe', 'pipe'] });
+  let stdout = '', stderr = '';
+  child.stdout.on('data', chunk => { stdout += chunk; });
+  child.stderr.on('data', chunk => { stderr += chunk; });
+  return new Promise<{ status: number | null; stderr: string; output: any }>(resolve => child.once('close', code => {
+    let output = null;
+    try { output = JSON.parse(stdout); } catch { /* a refusal prints no result */ }
+    resolve({ status: code, stderr, output });
+  }));
+}
+const slowShortGreen = `import { readFileSync } from 'node:fs';\nreadFileSync('docs/features/x/brief.md', 'utf8');\nsetTimeout(() => process.exit(0), 300);\n`;
+
+describe('archive owner check of spec 13', () => {
+  it('[owner-check-n1] a plain --apply and an --apply --rewrite of one feature exclude each other: one archives, nothing stray is left', async () => {
+    for (const delay of [0, 20, 40, 60, 80]) {
+      const root = fixture({ focused, testBody: slowShortGreen });
+      const plain = archiveAsync(root, ['--apply']);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      const rewrite = archiveAsync(root, ['--apply', '--rewrite', 'tests/two-tier.test.mjs']);
+      const results = await Promise.all([plain, rewrite]);
+      const archived = results.filter(result => result.status === 0 && result.output?.status === 'archived' && !result.output.unchanged);
+      expect(archived, `delay ${delay}: ${JSON.stringify(results)}`).toHaveLength(1);
+      const other = results.find(result => !archived.includes(result))!;
+      // The loser refuses (exit 2, nothing changed), holds in-progress, or, when it starts after the winner finished, finds the archive unchanged.
+      const lost = (other.status === 2 && (other.output === null ? /Another archive|another archive run/.test(other.stderr) : other.output.reason === 'in-progress'))
+        || (other.status === 0 && other.output?.unchanged === true);
+      expect(lost, `delay ${delay}: ${JSON.stringify(other)}`).toBe(true);
+      expect(other.stderr).not.toMatch(/staged feature remains|ENOENT/);
+      // No stray record or stage; the folder is archived exactly once.
+      expect(existsSync(pendingRecord(root)), `delay ${delay}`).toBe(false);
+      expect(readdirSync(join(root, 'docs/archive')), `delay ${delay}`).toEqual(['x']);
+      expect(existsSync(join(root, 'docs/archive/x/feature/brief.md'))).toBe(true);
+      expect(existsSync(join(root, 'docs/archive/x/archive-replay.json'))).toBe(true);
+      expect(existsSync(join(root, source))).toBe(false);
+      // The test names the archive path only when the rewrite run won.
+      const rewrote = archived[0] === results[1];
+      expect(readFileSync(join(root, 'tests/two-tier.test.mjs'), 'utf8').includes('docs/archive/x/feature')).toBe(rewrote);
+      // A later preview is normal: the archive stands, nothing is held.
+      const later = archive(root);
+      expect(later.status, later.stderr).toBe(0);
+      expect(later.output).toMatchObject({ status: 'archived', unchanged: true });
+    }
+  }, 60000);
 });
