@@ -1,0 +1,92 @@
+// Probe for 1.9.1 spec 2: alias normalizer over-matching and the done-path skip.
+import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+const repo = process.argv[2] ?? process.cwd();
+const runtime = join(repo, 'payload', '.joycraft', 'runtime');
+const git = (cwd, ...a) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...a], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+const put = (f, b) => { mkdirSync(dirname(f), { recursive: true }); writeFileSync(f, b); };
+const hash = b => createHash('sha256').update(b).digest('hex');
+const folder = 'docs/features/2026-11-21-f', queuePath = `${folder}/specs/.joycraft-spec-queue.json`, reportPath = `${folder}/specs/review-1.report.json`;
+function fixture({ gate, argv }) {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-probe2-')));
+  git(root, 'init', '-q', '-b', 'main');
+  if (gate) put(join(root, 'joycraft.yaml'), `tests:\n  gate: ${JSON.stringify(gate)}\n`);
+  put(join(root, '.gitignore'), '.joycraft/local/\n');
+  put(join(root, folder, 'brief.md'), '# Brief\n\n## Goal\n\nText.\n');
+  const spec = `${folder}/specs/01-a.md`;
+  put(join(root, spec), '---\nid: 1\nstatus: in-review\n---\n# A\n\n## acceptance\n\n- It works. Check: the test passes.\n');
+  put(join(root, 'tests/a.test.ts'), 'test\n');
+  put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature: 'f', specs: [{ id: 1, file: '01-a.md', depends_on: [], status: 'in-review', mode: 'checkpoint',
+    verification: { inputs: [{ path: `${folder}/brief.md`, kind: 'requirement' }, { path: spec, kind: 'requirement' }, { path: 'tests/a.test.ts', kind: 'check' }],
+      criteria: [{ id: 'spec-1-1', requirement: { path: spec, anchor: 'acceptance' }, requiredKinds: ['runtime'] }] } }] }, null, 2));
+  git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'init');
+  execFileSync(process.execPath, [join(runtime, 'completion.mjs'), 'snapshot', '--queue', queuePath, '--spec', '1', '--out', '.joycraft/local/subject.json'], { cwd: root, stdio: 'ignore' });
+  const subject = JSON.parse(readFileSync(join(root, '.joycraft/local/subject.json'), 'utf8'));
+  put(join(root, '.joycraft/local/receipt.log'), 'ok\n');
+  writeReport(root, subject, argv);
+  return { root, subject };
+}
+function writeReport(root, subject, argv, actual = 'it passed') {
+  const report = { schemaVersion: 1, subject, implementerSessionId: 'impl-1', reviewer: { sessionId: 'review-1', independent: true, scopeReviewed: true },
+    verdict: 'PASS', unresolved: [], createdAt: '2026-11-22T00:00:00.000Z',
+    flows: [{ id: 'flow-1', subjectIdentity: subject.identity, representativeInput: 'the fixture', expected: 'the test passes', limits: ['fixture only'], criteria: ['spec-1-1'],
+      observations: [{ kind: 'runtime', method: 'test', result: 'PASS', actual, receipts: [{ path: '.joycraft/local/receipt.log', sha256: hash('ok\n') }], command: { argv, exitCode: 0 } }] }] };
+  put(join(root, reportPath), JSON.stringify(report, null, 2));
+}
+const check = root => spawnSync(process.execPath, [join(runtime, 'dispatch-preflight.mjs'), 'check-report', '--worker-root', root, '--queue', queuePath, '--spec', '1', '--report', reportPath], { cwd: root, encoding: 'utf8' });
+const finalize = root => spawnSync(process.execPath, [join(runtime, 'completion.mjs'), 'finalize-review', '--queue', queuePath, '--spec', '1', '--report', reportPath], { cwd: root, encoding: 'utf8' });
+const line = r => (r.stderr || r.stdout).trim().split('\n')[0].slice(0, 160);
+let bad = 0;
+const cases = [
+  // [gate, argv, expect: 'refuse' | 'pass']
+  ['pnpm build', ['pnpm', 'run', 'build'], 'refuse'],
+  ['pnpm run build', ['pnpm', 'build'], 'refuse'],
+  ['npm test', ['npm', 'run', 'test'], 'refuse'],
+  ['yarn verify', ['yarn', 'run', 'verify'], 'refuse'],
+  ['npx vitest run', ['vitest', 'run'], 'refuse'],
+  ['vitest run', ['npm', 'exec', 'vitest', 'run'], 'refuse'],
+  ['vitest run', ['sh', '-c', 'npx vitest run'], 'refuse'],
+  ['vitest run', ['npx', 'vitest', 'run', 'tests/a.test.ts'], 'pass'],
+  ['vitest run', ['pnpm', 'exec', 'vitest', 'run', 'tests/a.test.ts'], 'pass'],
+  ['pnpm test', ['pnpm', 'run', 'test', 'tests/a.test.ts'], 'pass'],
+  ['pnpm test', ['pnpm', 'test', 'tests/a.test.ts'], 'pass'],
+  ['pnpm test && pnpm typecheck', ['pnpm', 'test', 'tests/a.test.ts'], 'pass'],
+  ['pnpm test && pnpm typecheck', ['pnpm', 'run', 'test'], 'pass'],
+  ['pnpm build', ['npm', 'run', 'build'], 'pass'],
+  ['pnpm run', ['pnpm', 'run'], 'refuse'],
+  ['vitest run', ['pnpm', 'run', 'vitest', 'run'], 'pass'],
+  ['run', ['npx', 'run'], 'refuse'],
+  ['vitest', ['npx', 'vitest', 'run'], 'pass'],
+];
+for (const [gate, argv, want] of cases) {
+  const r = check(fixture({ gate, argv }).root);
+  const got = r.status === 0 ? 'pass' : r.status === 2 && /tests\.gate/.test(r.stderr) ? 'refuse' : `exit ${r.status}`;
+  if (got !== want) bad++;
+  console.log(`${got === want ? 'ok  ' : 'MISS'} gate=${JSON.stringify(gate)} ran=${JSON.stringify(argv)} want=${want} got=${got}${got === 'pass' ? '' : ' :: ' + line(r)}`);
+}
+// Done path: accept a gate-running report before tests.gate exists, then record the gate.
+{
+  const { root, subject } = fixture({ argv: ['pnpm', 'verify'] });
+  const first = finalize(root); console.log('done-path accept first:', first.status, first.stdout.trim().slice(0, 80));
+  put(join(root, 'joycraft.yaml'), 'tests:\n  gate: "pnpm verify"\n');
+  git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'record the gate');
+  const same = finalize(root); console.log('done-path same report:', same.status, same.stdout.trim().slice(0, 80));
+  if (same.status !== 0) bad++;
+  // A different (never accepted) report that ran the gate on the done spec must not pass.
+  writeReport(root, subject, ['pnpm', 'run', 'verify'], 'a different report');
+  const other = finalize(root); console.log('done-path different gate report:', other.status, '::', line(other));
+  if (other.status === 0) bad++;
+  // A different report with a focused command must also not pass (accepted-report hash binds).
+  writeReport(root, subject, ['pnpm', 'test', 'tests/a.test.ts'], 'another report');
+  const other2 = finalize(root); console.log('done-path different focused report:', other2.status, '::', line(other2));
+  if (other2.status === 0) bad++;
+  // check-report (dispatch helper) on the done spec still runs the gate check.
+  writeReport(root, subject, ['pnpm', 'verify']);
+  const cr = check(root); console.log('check-report on done spec with gate report:', cr.status, '::', line(cr));
+  if (cr.status === 0) bad++;
+}
+console.log(bad ? `PROBE FOUND ${bad} unexpected result(s)` : 'PROBE: all cases as expected');
+process.exit(bad ? 1 : 0);

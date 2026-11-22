@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "646a904b17694775b1c545b1bc1a79b1b1fb10a4",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+    "specId": 2,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-1/specs/02-report-gate-aliases.md",
+    "criteria": [
+      {
+        "id": "spec-2-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/02-report-gate-aliases.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/02-report-gate-aliases.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "completion",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "ecf5c7daedb81e0944de3a1dbfae1915fb3fdbeaaeaabcf74cfccc0fba24fed0",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "bbaaba3a94881fc608c0bb0baa28c2e63ddf395db93f86f46dc88334223eca8c",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/02-report-gate-aliases.md",
+        "kind": "requirement",
+        "sha256": "20dfe7111262531a7c70434751fe0b720b9f538147fdea6552a8e799b20f97c9",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/completion.mjs",
+        "kind": "code",
+        "sha256": "a0ef278c2d757e024d253d971da24efd3abb6ec69000e26d59ee77f1459c0217",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-report-gate.test.ts",
+        "kind": "check",
+        "sha256": "bf51fdc817830864f535e6799841ff1230b253575fca5b18a0b8c0361b209284",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+          "anchors": [
+            "completion",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "19dc6cfa4472c87a65d95e4605b88595c540b28445fc0b939f9b1f8404914f17"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a7be83f39f6f05c68"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "a1921a23be10f4215"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-2-1-runner-aliases",
+      "subjectIdentity": "19dc6cfa4472c87a65d95e4605b88595c540b28445fc0b939f9b1f8404914f17",
+      "criteria": [
+        "spec-2-1"
+      ],
+      "representativeInput": "runnerCommand at payload/.joycraft/runtime/completion.mjs:147-153, used on both sides of the compare in refuseGateRuns (:161, :166)",
+      "expected": "npx / pnpm exec / npm exec dropped and the run of pnpm/npm/yarn run dropped on both the ran command and tests.gate/tests.full; the four spec cases refused naming tests.gate; a focused run passes.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-2-reviewer-focused-20261122T065018546Z-58067-1.log",
+              "sha256": "e1e4d3667c524cff610b5372836dabf58f1645ea43ff71a858504d5566f4ba8d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-report-gate.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-2-1] (test line 99) passes: gate vitest run vs npx vitest run and pnpm exec vitest run, gate pnpm verify vs pnpm run verify, gate pnpm run verify vs pnpm verify all exit 2 naming tests.gate; npx vitest run tests/a.test.ts exits 0. 5 of 5 tests in the file pass."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-2-reviewer-probe.log",
+              "sha256": "445e1ca57e8e94fcc492339228f9e7a97bc329cef8b5e639ce1f7e00c3da74f9"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-2-reviewer-probe.mjs.txt",
+              "sha256": "db9f6683e9cba8d52c07d76fe375076b44f367dc2655cb16b1d9b3964d4f9a43"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probes/spec-2-probe.mjs"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Reviewer probe via the real check-report CLI: gate pnpm build vs pnpm run build is refused (a real gate match: pnpm run build and pnpm build run the same script), and the reverse; npm test vs npm run test, yarn verify vs yarn run verify, npx vitest run vs vitest run, npm exec, and sh -c \"npx vitest run\" are all refused. No focused run is refused: npx/pnpm exec vitest run tests/a.test.ts, pnpm run test tests/a.test.ts, pnpm test tests/a.test.ts, pnpm run test against the chained gate pnpm test && pnpm typecheck, npm run build against pnpm build, and pnpm run vitest run against vitest run all pass (cross-runner and extra-argument forms stay unmatched, so the normalizer only under-matches, never over-matches)."
+        }
+      ],
+      "limits": [
+        "Aliases outside the spec (bunx, yarn dlx, pnpm dlx, npx flags such as --yes) stay unmatched, as the spec says."
+      ]
+    },
+    {
+      "id": "spec-2-2-done-recheck",
+      "subjectIdentity": "19dc6cfa4472c87a65d95e4605b88595c540b28445fc0b939f9b1f8404914f17",
+      "criteria": [
+        "spec-2-2"
+      ],
+      "representativeInput": "complete() at payload/.joycraft/runtime/completion.mjs:283-289: gateRuns false only when the spec is already done; the accepted-report hash compare at :287 still runs",
+      "expected": "A done spec re-checked with its same accepted report returns unchanged: true after tests.gate is recorded; an in-review spec with a gate-running report is refused; an unaccepted report cannot pass the done path.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-2-reviewer-focused-20261122T065018546Z-58067-1.log",
+              "sha256": "e1e4d3667c524cff610b5372836dabf58f1645ea43ff71a858504d5566f4ba8d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-report-gate.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-2-2] (test line 115) passes: report that ran pnpm verify accepted with no tests.gate (unchanged: false), tests.gate pnpm verify recorded and committed, re-run exits 0 with unchanged: true; a fresh in-review spec with the same report exits 2 with \"ran the recorded tests.gate command\"."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-2-reviewer-probe.log",
+              "sha256": "445e1ca57e8e94fcc492339228f9e7a97bc329cef8b5e639ce1f7e00c3da74f9"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-2-reviewer-probe.mjs.txt",
+              "sha256": "db9f6683e9cba8d52c07d76fe375076b44f367dc2655cb16b1d9b3964d4f9a43"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probes/spec-2-probe.mjs"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Reviewer probe: on the done spec, a different report that ran pnpm run verify exits 1 (\"Done spec already has a different accepted report\"), and so does a different report with only a focused command; the dispatch check-report CLI on the done spec with a gate-running report still exits 2 (it keeps the default gateRuns true). So the skip cannot let an unaccepted report through: only the byte-identical accepted report reaches the unchanged return."
+        }
+      ],
+      "limits": [
+        "Owner-acceptance and waiver done specs were not probed; complete() refuses them at :286 before the return, unchanged by this spec."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-chained-gate-part",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/completion.mjs:161-167",
+      "summary": "A report that ran one part of a chained gate (pnpm run test, or pnpm test, against tests.gate pnpm test && pnpm typecheck, this repo's own gate) passes check-report: the compare is whole-line. That is the unfiltered test suite, not a focused run.",
+      "assumption": "Not in this spec (aliases and the done path only); chained-gate splitting is queue-check work in spec 4. Recorded for the owner, not a FAIL."
+    }
+  ],
+  "limits": [
+    "Gate not run by the reviewer (spec review runs only tests/runtime-report-gate.test.ts).",
+    "The installed .joycraft/runtime/completion.mjs copy is not part of this spec; payload/ is the source."
+  ],
+  "createdAt": "2026-11-22T06:52:03.165Z"
+}

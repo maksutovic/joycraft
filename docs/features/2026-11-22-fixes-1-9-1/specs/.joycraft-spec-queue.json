@@ -147,7 +147,7 @@
       "id": 2,
       "file": "02-report-gate-aliases.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -202,6 +202,10 @@
       },
       "submitted": {
         "at": "2026-11-22T06:49:26.509Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-2.report.json",
+        "sha256": "aceec7eed855d35a7acabdc5b2a875bb90965c0df1b068e7301f3c41fa13be0b"
       }
     },
     {

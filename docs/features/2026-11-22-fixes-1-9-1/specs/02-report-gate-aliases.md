@@ -1,6 +1,6 @@
 ---
 id: 2
-status: in-review
+status: done
 ---
 # The report gate check reads runner aliases, and a done spec's re-check does not refuse its old report
 
