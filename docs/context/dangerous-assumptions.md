@@ -20,4 +20,5 @@ last_updated_by: Maximilian Maksutovic
 | Test fixtures are stubs | Fixtures should mirror real-world manifest files (real package.json structures) | False confidence — tests pass but detection fails on real projects |
 | CLAUDE.md and AGENTS.md carry equivalent instructions | They drift. Keep `CLAUDE.md` as `@AGENTS.md` plus Claude-only lines; `AGENTS.md` is the single source | Codex, Pi and the other hosts run without the real rules |
 | A successful `npm publish` means `npm view joycraft@<version>` sees it seconds later | npm returns before the registry lists the version. The registry recorded 1.5.0 and 1.5.2 7 min 11 s after `+ joycraft@<version>` (packument `time` field); a cache-bypassing read sees nothing sooner | A short verification deadline fails a good release and holds back the GitHub release; `scripts/verify-publication.mjs` waits 20 minutes |
-
+| A test that names a feature folder only cites it | Some tests read files in the feature folder, so archiving the folder breaks them; the archive preview's `namedFiles` lists them | A session-end archive turns the suite red after the move |
+| `pnpm typecheck` checks the test files | `tsconfig.json` covers only `src/`; vitest does not type-check | Type errors in `tests/` pass the gate unseen |
