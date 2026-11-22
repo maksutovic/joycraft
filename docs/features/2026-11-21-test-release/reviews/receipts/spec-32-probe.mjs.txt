@@ -1,0 +1,85 @@
+// Spec 32 probe: which spellings namedFiles lists, the refusal wording, docsRoot import side effects.
+import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import { mkdirSync, mkdtempSync, readdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+
+const project = process.argv[2];
+const runtime = join(project, 'payload/.joycraft/runtime/archive.mjs');
+const git = (cwd, ...args) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd, encoding: 'utf8' }).trim();
+const put = (file, body) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
+const hash = body => createHash('sha256').update(Buffer.from(body)).digest('hex');
+const dated = '2026-01-02-x';
+
+function fixture(folder, extra, yaml) {
+  const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-p32-')));
+  git(root, 'init', '-q', '-b', 'main');
+  const home = yaml ? 'docs/features' : 'docs/features';
+  const dir = `${home}/${folder}`, queuePath = `${dir}/specs/.joycraft-spec-queue.json`;
+  put(join(root, `${dir}/brief.md`), '# Brief\n');
+  put(join(root, `${dir}/specs/01-a.md`), '---\nid: 1\nstatus: done\n---\n# A\n');
+  const decision = JSON.stringify({ schemaVersion: 1, kind: 'legacy', queuePath, statement: 'Accept it as it is.', statedAt: '2026-11-21T00:00:00Z', specs: [1], reason: 'Done before the gates.' });
+  put(join(root, `${dir}/specs/legacy.json`), decision);
+  put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature: 'x', specs: [{ id: 1, file: '01-a.md', status: 'done', mode: 'batch', depends_on: [], verification: { inputs: [] }, ownerAcceptance: { path: `${dir}/specs/legacy.json`, sha256: hash(decision), legacy: true } }] }));
+  put(join(root, 'docs/context/decision-log.md'), '# Decisions\n');
+  put(join(root, '.gitignore'), '.joycraft/local/\n');
+  put(join(root, '.joycraft/local/attest.json'), JSON.stringify({ schemaVersion: 1, phase: 'session-end', host: { sessionId: 's', quiescent: true, activeWorkers: [], dependentWork: [] }, durableContext: { carried: true, references: ['docs/context/decision-log.md'] } }));
+  if (yaml) put(join(root, 'joycraft.yaml'), yaml);
+  for (const [file, body] of Object.entries(extra)) put(join(root, file), body);
+  git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'init');
+  return root;
+}
+const run = (root, extra = [], env = {}) => spawnSync(process.execPath, [runtime, 'archive', '--feature', 'x', '--phase', 'session-end', '--attestation', '.joycraft/local/attest.json', ...extra], { cwd: root, encoding: 'utf8', env: { ...process.env, ...env } });
+
+// 1. Spellings for a dated folder.
+const src = `docs/features/${dated}`;
+const cases = {
+  // expected listed
+  'L-root-template': `\`\${root}/${src}/x\``,
+  'L-up-one': `'../${src}/x'`,
+  'L-up-two': `'../../${src}'`,
+  'L-up-three': `'../../../${src}/a'`,
+  'L-home': `'features/${dated}/brief.md'`,
+  'L-up-home': `'../features/${dated}/brief.md'`,
+  'L-dot-home': `'./features/${dated}/brief.md'`,
+  'L-brace-home': `\`\${d}/features/${dated}/b\``,
+  'L-bare-full': `'${src}'`,
+  'L-dot-full': `'./${src}/a'`,
+  // expected not listed
+  'N-nested': `'packages/app/${src}/brief.md'`,
+  'N-old': `'${src}.old'`,
+  'N-two': `'${src}-two'`,
+  'N-before': `'x${dated}/brief.md'`,
+  'N-after': `'${dated}x/brief.md'`,
+  'N-word-dotdot': `'x../${src}/a'`,
+  'N-dots3': `'.../${src}/a'`,
+  'N-mid-dotdot': `'packages/app/../${src}/x'`,
+  'N-nested-home': `'packages/app/docs/features/${dated}/brief.md'`,
+  'N-xfeatures': `'xfeatures/${dated}/brief.md'`,
+  'N-other-home': `'xspecs/features/${dated}x/b'`,
+  // probe of the }/ branch inside a word (no shape restriction on what precedes })
+  'Q-word-brace': `'a}/${src}/x'`,
+  'Q-brace-nested': `\`\${pkg}/app}/${src}/x\``,
+};
+const extra = Object.fromEntries(Object.entries(cases).map(([k, v]) => [`scripts/${k}.mjs`, `export const p = ${v};\n`]));
+const root = fixture(dated, extra);
+const preview = run(root);
+const listed = new Set(JSON.parse(preview.stdout).plan.namedFiles.map(f => f.path));
+console.log('preview exit', preview.status, preview.stderr);
+for (const k of Object.keys(cases)) console.log(`${k.padEnd(16)} listed=${listed.has(`scripts/${k}.mjs`)}  ${cases[k]}`);
+rmSync(root, { recursive: true, force: true });
+
+// 2. Undated folder: the home prefix form must not apply.
+const root2 = fixture('x', { 'scripts/home.mjs': "export const p = 'features/x/brief.md';\n", 'scripts/up.mjs': "export const p = '../docs/features/x/b';\n" });
+const l2 = new Set(JSON.parse(run(root2).stdout).plan.namedFiles.map(f => f.path));
+console.log('undated features/x/ listed', l2.has('scripts/home.mjs'), '| undated ../docs/features/x listed', l2.has('scripts/up.mjs'));
+rmSync(root2, { recursive: true, force: true });
+
+// 3. docsRoot import: no output, no file written, no exit when imported from an empty dir.
+const empty = realpathSync(mkdtempSync(join(tmpdir(), 'jc-p32-empty-')));
+const imp = spawnSync(process.execPath, ['--input-type=module', '-e', `const m = await import(${JSON.stringify(join(project, 'payload/.joycraft/runtime/cleanup.mjs'))}); console.log('docsRoot', typeof m.docsRoot, m.docsRoot({ features: 'docs/features', archive: 'docs/archive', context: 'docs' }), m.docsRoot({ features: 'docs/features', archive: 'docs/archive', context: 'docs/context' }));`], { cwd: empty, encoding: 'utf8' });
+console.log('import cleanup.mjs exit', imp.status, 'stdout', JSON.stringify(imp.stdout), 'stderr', JSON.stringify(imp.stderr), 'files after', JSON.stringify(readdirSync(empty)));
+const imp2 = spawnSync(process.execPath, ['--input-type=module', '-e', `await import(${JSON.stringify(runtime)}); console.log('ok');`], { cwd: empty, encoding: 'utf8' });
+console.log('import archive.mjs exit', imp2.status, 'stdout', JSON.stringify(imp2.stdout), 'stderr', JSON.stringify(imp2.stderr), 'files after', JSON.stringify(readdirSync(empty)));
+rmSync(empty, { recursive: true, force: true });

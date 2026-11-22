@@ -113,3 +113,7 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - f3: docs root '.' branches in cleanup.mjs (:533, :822) and delivery.mjs unsafe('.') are now unreachable guards.
 - f4: shell-form detection misses lone `&`, `FOO=1` prefix, `$HOME`, `#`, and `$(`/backtick inside double quotes; a quoted `{files}` in a shell template double-quotes. Rare; left.
 - f5: implement skill dropped "when available" in one sentence.
+
+## Spec 32 review (PASS, round 1)
+- f1: archive.mjs:507 `}/` branch of pathStart does not guard the char before `}`; wider list is acceptable (ruling 4.2).
+- f2: three repeated sentences cut from archive.md to keep [AC:spec-1-3]'s 600-word headroom; session-end skill covers the archive commit.
