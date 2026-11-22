@@ -1,0 +1,28 @@
+== pnpm build
+    "autoSafeEligible": false
+  }
+}
+== init
+Joycraft is installed, but this project's entry files are not wired up yet:
+  - The project has no AGENTS.md, so agents get no Joycraft lines and no context map.
+  - Claude Code is installed, but there is no CLAUDE.md, so Claude Code does not read AGENTS.md.
+Joycraft does not edit AGENTS.md or CLAUDE.md itself. Give your agent this sentence:
+  "Set up Joycraft's context map"
+== installed files (sha256)
+16704b494c999def6cf19f2b12e11cbd157e04671d5d8f7cbc9e9043c1373ffb installed .joycraft/references/testing-page.md
+16704b494c999def6cf19f2b12e11cbd157e04671d5d8f7cbc9e9043c1373ffb payload   .joycraft/references/testing-page.md
+dba78445fa51e272b328a65b29f002902c088f65cbe6572396fc93ed117aa155 installed .joycraft/runtime/test-changes.mjs
+dba78445fa51e272b328a65b29f002902c088f65cbe6572396fc93ed117aa155 payload   .joycraft/runtime/test-changes.mjs
+98cc706f0c0b905fd77c6260f4150ab52e3c25a8a864930d7fb06c52ee98685d installed .joycraft/templates/joycraft.yaml
+98cc706f0c0b905fd77c6260f4150ab52e3c25a8a864930d7fb06c52ee98685d payload   .joycraft/templates/joycraft.yaml
+== template tests section
+32:# tests: your test commands, from narrowest to widest. focused runs one spec's
+33-# test files: {files} is replaced with them (or they are appended). gate is the
+34-# project gate; full is everything, CI included. gateRuns says when the gate
+35-# runs: once per integrated wave (wave) or once per spec (spec, the default).
+36:# tests:
+37-#   focused: pnpm test {files}
+38-#   gate: pnpm test && pnpm typecheck
+39-#   full: pnpm test:all
+40-#   gateRuns: spec
+joycraft-evidence: {"wallMs":654,"load":[4.0810546875,4.0810546875],"cores":14,"loaded":false,"argv":["bash","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r26-init.sh","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r26-init"],"exitCode":0,"timedOut":false,"revision":"eba45421fe27e42b9bfa857d79e6fd52e8f29ee5","dirty":true}

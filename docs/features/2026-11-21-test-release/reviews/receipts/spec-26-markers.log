@@ -1,0 +1,2 @@
+CI=1 JOYCRAFT_EVIDENCE=1
+joycraft-evidence: {"wallMs":28,"load":[5.41748046875,5.41748046875],"cores":14,"loaded":false,"argv":["node","-e","console.log('CI=' + process.env.CI + ' JOYCRAFT_EVIDENCE=' + process.env.JOYCRAFT_EVIDENCE)"],"exitCode":0,"timedOut":false,"revision":"eba45421fe27e42b9bfa857d79e6fd52e8f29ee5","dirty":true}

@@ -1,0 +1,53 @@
+== rehash implementer receipts
+7729a8f810755f99314fcdd5129ecb4895f66f58af5ec57fd7cb5f7794bd8b26  docs/features/2026-11-21-test-release/specs/receipts/proof-ci.log
+ccf9e8f2ad9603cb68ea0ac18ff4b3ac0dd07e123fc67ac98504d6402bca1be8  docs/features/2026-11-21-test-release/specs/receipts/proof-ci.md
+062cf69be26b423aeb8b29cd26f9728c22cbb1a33771ea0618bcbd56884c4e12  docs/features/2026-11-21-test-release/specs/receipts/proof-init.md
+9888e7c8111aa9d849d57784a6f7a00b5c6a9c32368a718329feafb80d9a0a8d  docs/features/2026-11-21-test-release/specs/receipts/proof-markers.log
+7b04fe7d4482aeeefcee412bc8d2a58ed1f800a4eea5b0d07f2c52692b662bec  docs/features/2026-11-21-test-release/specs/receipts/proof-patch-fault.diff
+371003e9a741014b50d260cd2230e4f9b18b6a1059e5897a4a8c90dde21b03a1  docs/features/2026-11-21-test-release/specs/receipts/proof-patch-result.json
+f9127bb99cf204ff8b14688ea337007f4884551c728b7ead632ab9694a71d24f  docs/features/2026-11-21-test-release/specs/receipts/proof-patch.log
+0754a59755a7e3faa25fc69be3337a48af3e7c00208f4a2d343ff9b3376e2aa9  docs/features/2026-11-21-test-release/specs/receipts/proof-patch.md
+== footers
+proof-ci.log: joycraft-evidence: {"wallMs":1382,"load":[2.8408203125,2.8408203125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-config-tests.test.ts"],"exitCode":0,"timedOut":false,"revision":"6163e655888d72d9cf10c5c764092506f3881770","dirty":false}
+proof-markers.log: joycraft-evidence: {"wallMs":29,"load":[2.7734375,2.7734375],"cores":14,"loaded":false,"argv":["node","-e","console.log(\"CI=\" + process.env.CI + \" JOYCRAFT_EVIDENCE=\" + process.env.JOYCRAFT_EVIDENCE)"],"exitCode":0,"timedOut":false,"revision":"6163e655888d72d9cf10c5c764092506f3881770","dirty":true}
+proof-patch.log: joycraft-evidence: {"wallMs":1842,"load":[3.20166015625,3.20166015625],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-config-tests.test.ts"],"exitCode":1,"timedOut":false,"revision":"6163e655888d72d9cf10c5c764092506f3881770","dirty":false,"patch":{"path":".joycraft/local/faults/gateRuns-check.diff","sha256":"7b04fe7d4482aeeefcee412bc8d2a58ed1f800a4eea5b0d07f2c52692b662bec","patched":true,"restored":true}}
+CI=1 JOYCRAFT_EVIDENCE=1
+== result json
+{"exitCode":1,"patch":{"path":".joycraft/local/faults/gateRuns-check.diff","sha256":"7b04fe7d4482aeeefcee412bc8d2a58ed1f800a4eea5b0d07f2c52692b662bec","patched":true,"restored":true},"receipt":"f9127bb99cf204ff8b14688ea337007f4884551c728b7ead632ab9694a71d24f"}
+== config.mjs blob at fault base and HEAD
+35baadd8d5d357d6913699ad3a375f7b6b42430b
+35baadd8d5d357d6913699ad3a375f7b6b42430b
+== release fields
+1.9.0 1.9.0 1.9.0 false false
+Tidy cleans the doc drift a session caused in one checked commit, and each spec runs only its own tests while the gate runs at gate points, with run facts and saved-fault proofs. Test commands now also get JOYCRAFT_EVIDENCE=1.
+10:## 1.9.0 — Drift tidy, and tests that cost less time
+22:- **A second marker.** `CI=1` stays set, and test commands now also get `JOYCRAFT_EVIDENCE=1`; a local limit that reads `CI` should check it too.
+== CHANGELOG mentions of --rewrite / docs root / test-practices
+14:- **The project testing page is now `<context>/test-practices.md`.** Setup and the
+58:  `--gate-receipt` with a green, clean gate run on the HEAD being pushed.
+59:- **Run facts.** Every `evidence.mjs run` receipt ends with one footer line: wall
+72:  `.joycraft/local/evidence-env.json` and refuses it when Git tracks it.
+84:  Markdown under the docs root point to the archive. Other mentions are listed, not
+105:- **Joycraft writes less.** The cleanup check table and the "or a handoff" output
+106:  are gone; the knowledge table labels the four Diataxis kinds. The payload guard
+== code: docs-root refusal
+== code: footer fields vs result tail
+438:    const tail = exitCode === 0 ? undefined : output.replace(/\n$/, '').split('\n').slice(-tailLines).join('\n');
+447:      ...(tail === undefined ? {} : { tail }), ...(applied ? { env: applied } : {}), ...(patchFacts ? { patch: patchFacts } : {}),
+== code: older receipt, records-only paths
+167:    if (records.some(folder => path.startsWith(`${folder}/`))) return /\.(?:md|json|log|txt|diff|patch|ya?ml)$/i.test(path);
+== code: env map must be ignored
+344:  refuse(!inGit || gitIgnored(root, envMapPath), `${envMapPath} must be git-ignored, so it stays machine-local; add .joycraft/local/ to .gitignore`);
+== code: restore checks
+318:    stash: read(['rev-parse', '--verify', '-q', 'refs/stash'])?.trim() ?? null,
+323: * the status (the new receipt left out), HEAD's commit and branch and refs/stash are as they were. */
+== code: knowledge kinds
+      1 36:domain
+      1 37:explanation
+      1 38:explanation
+      1 39:how-to
+      1 40:reference
+      1 41:reference
+== code: handoff still in cleanup output
+1
+joycraft-evidence: {"wallMs":107,"load":[3.53564453125,3.53564453125],"cores":14,"loaded":false,"argv":["bash","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-eioqHu/f985f26a-3b51-467f-acb2-07287fb5764c/scratchpad/r26-probe.sh"],"exitCode":0,"timedOut":false,"revision":"eba45421fe27e42b9bfa857d79e6fd52e8f29ee5","dirty":true}

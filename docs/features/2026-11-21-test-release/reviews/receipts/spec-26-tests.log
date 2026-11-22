@@ -1,0 +1,35 @@
+
+> joycraft@1.9.0 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/release-preparation.test.ts tests/payload-guard.test.ts tests/runtime-config-tests.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-config-tests.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 445[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12177 (cap 12256, 79 spare)
+on-demand words: 20558 (cap 21163, 605 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1404[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 374[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 379[2mms[22m[39m
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-fmYj1v/remote.git
+ * [new branch]      main -> main
+Cloning into '/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-fmYj1v/work'...
+done.
+Switched to a new branch 'release/joycraft'
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-fmYj1v/remote.git
+ * [new branch]      release/joycraft -> release/joycraft
+Switched to branch 'main'
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-fmYj1v/remote.git
+   cad0c3f..f7ff20e  main -> main
+ [32m✓[39m tests/release-preparation.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 2154[2mms[22m[39m
+   [33m[2m✓[22m[39m release preparation[2m > [22mcoalesces docs pushes after a prepared baseline while retaining later product changes [33m 526[2mms[22m[39m
+   [33m[2m✓[22m[39m release preparation[2m > [22mrefreshes an existing release branch with ordinary Git operations and edits one PR [33m 818[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m42 passed[39m[22m[90m (42)[39m
+[2m   Start at [22m 21:46:00
+[2m   Duration [22m 2.35s[2m (transform 62ms, setup 0ms, collect 97ms, tests 4.00s, environment 0ms, prepare 96ms)[22m
+
+joycraft-evidence: {"wallMs":2906,"load":[4.39453125,4.39453125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/release-preparation.test.ts","tests/payload-guard.test.ts","tests/runtime-config-tests.test.ts"],"exitCode":0,"timedOut":false,"revision":"eba45421fe27e42b9bfa857d79e6fd52e8f29ee5","dirty":true}
