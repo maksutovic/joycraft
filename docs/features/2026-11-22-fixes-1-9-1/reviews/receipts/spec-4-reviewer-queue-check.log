@@ -1,0 +1,1 @@
+joycraft-evidence: {"wallMs":51,"load":[5.4580078125,5.4580078125],"cores":14,"loaded":false,"argv":["node","payload/.joycraft/runtime/queue-check.mjs","--queue","docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json"],"exitCode":0,"timedOut":false,"revision":"3c8a10d77c67dbb36026d7e74a3e93e2151e58c8","dirty":true}

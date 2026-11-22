@@ -315,7 +315,7 @@
       "id": 4,
       "file": "04-gate-matcher.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -380,6 +380,10 @@
       },
       "submitted": {
         "at": "2026-11-22T06:57:02.479Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/review-4.report.json",
+        "sha256": "c40c9d8f64f1453d9e3a3d76c4225b3293bae15af413d8733ca8df3f287a7c85"
       }
     },
     {

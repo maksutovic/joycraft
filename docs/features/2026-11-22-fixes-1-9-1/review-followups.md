@@ -7,3 +7,8 @@
 ## Spec 3 (PASS r1)
 - f1: cleanup.mjs:594 notFound matches any `<word>: <text>: not found` stderr line, so an existing checker that exits 0 with e.g. "rule no-foo: not found" is reported as a missing command. Fix: require the not-found name to be a word of `run`, or accept only shell forms.
 - f2: cleanup.mjs:185 backlogFile folder half is case-exact (`Backlog/` not skipped); same as age-out before.
+
+## Spec 4 (PASS r1)
+- Test edits beyond Test changes (retag [AC:spec-4-*] to [gate-base-*]; Notes-section case) are required by the spec; should have been declared.
+- Prose that literally names the gate before a chain (negated sentence, table row) matches; same class as before.
+- Fenced scope block outside a bullet matches only an exact gate line.

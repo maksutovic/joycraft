@@ -1,0 +1,39 @@
+// Spec 4 reviewer probe. Run: node <copy>.mjs <project-root>
+import { join } from 'node:path';
+const proj = process.argv[2];
+const mod = await import(join(proj, 'payload/.joycraft/runtime/queue-check.mjs'));
+const { namesCommand, sectionBullets } = mod;
+const cases = [
+  // Prose sentences with a chain token after the command. Each names the command
+  // literally; the question is whether this is a false positive.
+  ['prose-or-ask-code', 'If it fails, run `pnpm verify` || ask the owner.'],
+  ['prose-or-ask-plain', 'If it fails, run pnpm verify || ask the owner.'],
+  ['code-span-chain-inside', 'Run `pnpm verify || true` to see it.'],
+  ['prose-pipe-table-cell', '| pnpm verify | the gate |'],
+  ['prose-and-sentence', 'We considered pnpm verify && friends but chose not to.'],
+  ['mention-not-gate', 'Do not run pnpm verify && pnpm lint here; the gate runs at review.'],
+  // Arguments before a chain: should stay unmatched.
+  ['arg-then-chain', 'pnpm verify tests/a.test.ts && pnpm lint'],
+  ['flag-then-chain', 'pnpm verify --run | tee log'],
+  ['hyphen-glued-chain', 'pnpm verify-all && x'],
+  // Not chain endings per spec.
+  ['redirect-no-pipe', 'pnpm verify > log'],
+  ['unspaced-semicolon', 'pnpm verify;pnpm lint'],
+  ['unspaced-and', 'pnpm verify&&pnpm lint'],
+  ['chain-at-end', 'pnpm verify &&'],
+  ['chain-no-space-after', 'pnpm verify &&x'],
+  ['triple-pipe', 'pnpm verify ||| x'],
+  ['stderr-only', 'pnpm verify 2>&1'],
+  ['code-chain-2>&1-end', '`pnpm verify 2>&1`'],
+  ['code-chain-mid', '`pnpm verify && pnpm lint`'],
+  ['code-preceded-by-cmd', '`foo && pnpm verify`'],
+  ['plain-preceded-by-chain', 'pnpm lint && pnpm verify'],
+];
+for (const [name, text] of cases) console.log(name.padEnd(24), JSON.stringify(namesCommand(text, 'pnpm verify')), JSON.stringify(text));
+// Full-command gate with its own && (e.g. a gate "pnpm test && pnpm typecheck").
+const full = 'pnpm test && pnpm typecheck';
+for (const text of ['pnpm test && pnpm typecheck', 'pnpm test && pnpm typecheck && pnpm lint', 'pnpm test tests/x.test.ts && pnpm typecheck', 'pnpm test && pnpm typecheck-all'])
+  console.log('full'.padEnd(24), JSON.stringify(namesCommand(text, full)), JSON.stringify(text));
+// Scope section reader: indented fence inside a bullet, top-level fence, comment block.
+const spec = ['---', 'id: 1', 'status: todo', '---', '# A', '', '## Implementation and verification scope', '', '- Run:', '  ```', '  pnpm verify', '  ```', '', '```', 'pnpm verify', '```', '', '<!--', 'pnpm verify', '-->', '', 'Plain paragraph pnpm verify.', '', '### Sub', '', '- pnpm verify in a subsection', '', '## Next', '', '- pnpm verify outside'].join('\n');
+console.log(JSON.stringify(sectionBullets(spec, 'implementation-and-verification-scope'), null, 0));
