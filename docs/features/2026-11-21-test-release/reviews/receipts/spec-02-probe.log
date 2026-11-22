@@ -1,0 +1,22 @@
+PASS ac1 spec fixture (block form) :: exit 0 tests {"focused":"pnpm test {files}","gate":"pnpm verify","gateRuns":"wave"}
+PASS ac1 unquoted {files}, && and trailing comment :: exit 0 tests {"focused":"pnpm test {files}","full":"pnpm test:all","gate":"pnpm test && pnpm typecheck","gateRuns":"spec"}
+PASS ac1 flow-map form is refused with its line (parser has no flow maps) :: exit 1 stderr Config stopped: joycraft.yaml line 1: unsupported YAML syntax: { focused: "pnpm test {files}", gate: "pnpm verify", gateRuns: wave }
+PASS ac2 no joycraft.yaml :: exit 0 tests {"gateRuns":"spec"}
+PASS ac2 joycraft.yaml without tests: :: exit 0 tests {"gateRuns":"spec"}
+PASS ac2 empty tests: section :: exit 0 tests {"gateRuns":"spec"}
+PASS ac2 other sections unchanged (paths default) :: {"features":"docs/features","archive":"docs/archive","context":"docs/context"}
+PASS ac3 unknown key :: exit 1 stderr Config stopped: joycraft.yaml: unknown setting tests.slow
+PASS ac3 empty quoted command :: exit 1 stderr Config stopped: joycraft.yaml: tests.gate must be a command, not empty
+PASS ac3 blank command :: exit 1 stderr Config stopped: joycraft.yaml: tests.focused must be a command, not empty
+PASS ac3 null command (key with no value) :: exit 1 stderr Config stopped: joycraft.yaml: tests.full must be a command, not empty
+PASS ac3 number command :: exit 1 stderr Config stopped: joycraft.yaml: tests.gate must be a command, not empty
+PASS ac3 bad gateRuns :: exit 1 stderr Config stopped: joycraft.yaml: tests.gateRuns must be wave or spec, not "daily"
+PASS ac3 gateRuns as a duration :: exit 1 stderr Config stopped: joycraft.yaml: tests.gateRuns must be wave or spec, not 60
+PASS ac3 empty gateRuns :: exit 1 stderr Config stopped: joycraft.yaml: tests.gateRuns must be wave or spec, not null
+PASS ac3 tests as a list is refused :: exit 1 stderr Config stopped: joycraft.yaml: tests must be a map
+PASS ac4 template parses with tests undefined
+PASS ac4 template reads as the defaults :: exit 0
+PASS ac4 # tests: and the four keys commented
+PASS ac4 no machine number in the section :: null
+PASS ac4 uncommenting the template block gives a valid config :: exit 0 tests {"focused":"pnpm test {files}","full":"pnpm test:all","gate":"pnpm test && pnpm typecheck","gateRuns":"spec"} stderr 
+ALL PASS

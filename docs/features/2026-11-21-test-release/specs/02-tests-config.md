@@ -1,6 +1,6 @@
 ---
 id: 2
-status: in-review
+status: done
 ---
 # joycraft.yaml records the focused, gate and full test commands
 

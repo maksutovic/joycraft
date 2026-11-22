@@ -168,7 +168,7 @@ export function show({ root = process.cwd(), queuePath, staleMinutes = staleMinu
 }
 
 /** joycraft.yaml's `tests:` section: `{ focused?, gate?, full?, gateRuns }`.
- * Bridge until config.mjs reads `tests:` (spec 2): when readConfig has no `tests`, read the section here. */
+ * Read through readConfig (spec 2). */
 export function testSettings(root = process.cwd()) {
   return readConfig(root).tests;
 }

@@ -101,7 +101,7 @@
       "id": 2,
       "file": "02-tests-config.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -185,6 +185,10 @@
       },
       "submitted": {
         "at": "2026-11-22T02:26:23.240Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-2.report.json",
+        "sha256": "fdafcef5580b9fe8c99970af3cfc9089d7984a7ef248d724e5ed4275e76ff034"
       }
     },
     {
@@ -297,7 +301,7 @@
       "depends_on": [
         2
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -360,6 +364,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:29:06.693Z"
       }
     },
     {
@@ -368,7 +375,7 @@
       "depends_on": [
         2
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -432,6 +439,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:29:06.742Z"
       }
     },
     {
@@ -440,7 +450,7 @@
       "depends_on": [
         2
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -493,6 +503,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:29:06.796Z"
       }
     },
     {
@@ -502,7 +515,7 @@
         2,
         3
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -586,6 +599,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:29:06.847Z"
       }
     },
     {
@@ -594,7 +610,7 @@
       "depends_on": [
         2
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -661,6 +677,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T02:29:06.899Z"
       }
     },
     {
