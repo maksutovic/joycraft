@@ -53,12 +53,23 @@ selection lists) take the one serial lane (`execution.parallel: false`); other
 test-only specs may run in parallel.
 
 Reviewer rules:
-- Read `testChanges` from startup: `declared` (with class) and `undeclared`
-  changed test files. Judge each diff by its declaration, not as weakened.
-- Block only an undeclared change that no line requires.
+- Read `testChanges` from startup: `declared` (with class), `undeclared` and
+  `addedAfterBase` changed test files. A missing `testChanges` is never
+  "none": run `node .joycraft/runtime/test-changes.mjs --queue <queue> --spec
+  <id> --base <captured base>` or ask the coordinator. Judge each diff by its
+  declaration, not as weakened.
+- A declaration covers only the change its requiring line names and its class
+  proves; anything else in the diff of that file is undeclared. A class-1 line
+  that does not state the new value, or a bullet with no requiring line,
+  declares nothing.
+- A declaration added after the base (`addedAfterBase`) counts only with a
+  requiring acceptance line that existed at the base.
+- Block only an undeclared change that no line requires. A deletion, even when
+  required, needs the class-3 ledger row and owner yes.
 - A class-1 change passes when its acceptance line states the new value; class
   2 needs its fault proof, class 3 its ledger row and owner yes.
-- A declaration of either path of a rename covers both.
+- A declaration of either path of a rename covers both. Pair the two paths
+  with `git diff -M <base>`; a rename that drops assertions is class 3.
 - A new skip, in a file or a list, and a test that leaves the gate count as
   removals (class 3). A test may be removed when it
   conflicts with a later owner decision; it is class 3 too.

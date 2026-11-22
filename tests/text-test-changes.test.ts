@@ -86,6 +86,19 @@ describe('declared test changes text', () => {
     ]) expect(text).toContain(rule);
   });
 
+  it('[review-17-1] a declaration covers only its named change; a missing list, a rename and a required deletion have their rules', () => {
+    const text = section(REVIEW, 'Test changes');
+    for (const rule of [
+      'A declaration covers only the change its requiring line names and its class proves; anything else in the diff of that file is undeclared.',
+      'A class-1 line that does not state the new value, or a bullet with no requiring line, declares nothing.',
+      'A deletion, even when required, needs the class-3 ledger row and owner yes.',
+      'A declaration added after the base (`addedAfterBase`) counts only with a requiring acceptance line that existed at the base.',
+      'A missing `testChanges` is never "none": run `node .joycraft/runtime/test-changes.mjs',
+      '--base <captured base>` or ask the coordinator.',
+      'Pair the two paths with `git diff -M <base>`; a rename that drops assertions is class 3.',
+    ]) expect(text).toContain(rule);
+  });
+
   it('[AC:spec-17-3] verify, reviewer and decompose point to testing-review.md#test-changes; the old blocking sentence is gone', () => {
     for (const path of [VERIFY, REVIEWER]) expect(flat(path)).not.toContain(OLD);
     for (const path of [VERIFY, REVIEWER, DECOMPOSE]) expect(raw(path)).toContain('testing-review.md#test-changes');

@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, realpathSync, rmSync, unlinkSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -128,6 +128,31 @@ describe('test-changes', () => {
     const result = changes(project.root, base);
     expect(result).toMatchObject({ testFiles: ['tests/a.test.ts'], declared: [{ path: 'tests/a.test.ts', class: 2 }], undeclared: [] });
     expect(result.skipped.map((item: { path: string }) => item.path).sort()).toEqual(['../outside.test.ts', 'vendor/tests-lib']);
+  });
+
+  it('[review-17-2] reads declarations from the spec at the base; one added later is listed apart and never declared', () => {
+    // Probe B7: the base declares none; the implementer adds a class-2 bullet and drops an assertion.
+    const { root, base } = fixture();
+    const spec = join(root, folder, 'specs/01-a.md');
+    put(spec, readFileSync(spec, 'utf8').replace('## Test changes\n\nnone', '## Test changes\n\n- `tests/a.test.ts` class 2: bullet 1; fault proof to follow.'));
+    put(join(root, 'tests/a.test.ts'), 'after\n');
+    git(root, 'commit', '-qam', 'impl');
+    expect(changes(root, base)).toMatchObject({ declared: [], undeclared: ['tests/a.test.ts'], addedAfterBase: [{ path: 'tests/a.test.ts', class: 2 }] });
+    // A base declaration still counts, and a bullet with no requiring line declares nothing.
+    const kept = fixture({ testChanges: '- `tests/a.test.ts` class 1: bullet 1 states the new value.\n- `tests/b.test.ts` class 1' });
+    for (const file of ['tests/a.test.ts', 'tests/b.test.ts']) put(join(kept.root, file), 'after\n');
+    expect(changes(kept.root, kept.base)).toMatchObject({ declared: [{ path: 'tests/a.test.ts', class: 1 }], undeclared: ['tests/b.test.ts'], addedAfterBase: [] });
+  });
+
+  it('[review-17-2] a spec that did not exist at the base declares nothing; all its bullets are added after the base', () => {
+    const { root } = fixture();
+    const spec = join(root, folder, 'specs/01-a.md');
+    const body = readFileSync(spec, 'utf8');
+    git(root, 'rm', '-q', `${folder}/specs/01-a.md`); git(root, 'commit', '-q', '-m', 'no spec');
+    const base = git(root, 'rev-parse', 'HEAD');
+    put(spec, body.replace('## Test changes\n\nnone', '## Test changes\n\n- `tests/a.test.ts` class 1: bullet 1 states the new value.'));
+    put(join(root, 'tests/a.test.ts'), 'after\n');
+    expect(changes(root, base)).toMatchObject({ declared: [], undeclared: ['tests/a.test.ts'], addedAfterBase: [{ path: 'tests/a.test.ts', class: 1 }] });
   });
 
   it('[AC:spec-11-4] reviewer startup with an unknown --changes-base says so plainly and stays ready', () => {

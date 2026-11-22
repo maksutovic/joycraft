@@ -7,11 +7,11 @@ import { readQueue, relativePath, requireValue } from './identity.mjs';
 import { tag } from './trace.mjs';
 
 // The test files a spec changed since its base, split by the spec's own
-// `## Test changes` section into declared (with class) and undeclared. Joycraft
-// names no test runner, so a test file is found by convention: a check input of
-// the spec, a code file outside the work folders that holds an AC tag (the
-// pattern trace.mjs reads), or a common test name. It reports; the reviewer
-// decides what blocks.
+// `## Test changes` section at the base into declared (with class) and
+// undeclared. Joycraft names no test runner, so a test file is found by
+// convention: a check input of the spec, a code file outside the work folders
+// that holds an AC tag (the pattern trace.mjs reads), or a common test name. It
+// reports; the reviewer decides what blocks.
 
 // Prose and data files are never tests by name or tag: a spec, a review log or
 // a report quotes test names and tags without being a test.
@@ -65,7 +65,8 @@ export function declaredTestChanges(text, skipped = []) {
     if (!item) continue;
     const file = /`([^`\s]+)`/.exec(item[1]);
     const cls = /\bclass\s*([123])\b/i.exec(item[1]);
-    if (!file || !cls) continue;
+    // A bullet with no requiring line after its class declares nothing.
+    if (!file || !cls || !/\w/.test(item[1].slice(cls.index + cls[0].length))) continue;
     try { declared.push({ path: relativePath(file[1]), class: Number(cls[1]) }); }
     catch (error) { skipped.push({ path: file[1], reason: `declared path refused: ${error.message}` }); }
   }
@@ -113,14 +114,22 @@ export function testChanges({ root = process.cwd(), queuePath, specId, base }) {
     if (under(file, folders.features) || under(file, folders.archive)) return false;
     return isTestPath(file) || (taggable(file) && tagged.test(text));
   });
-  const declaredList = declaredTestChanges(readFileSync(path.join(root, specPath), 'utf8'), skipped);
+  // Declarations come from the spec at the base, as decompose wrote it: one the
+  // implementer adds later is listed apart and never counts as declared. A spec
+  // that did not exist at the base declares nothing; all its bullets are later.
+  let baseSpec = null;
+  try { baseSpec = git(root, ['show', `${base}:./${specPath}`]); } catch { /* new since the base */ }
+  const current = declaredTestChanges(readFileSync(path.join(root, specPath), 'utf8'), skipped);
+  const declaredList = baseSpec === null ? [] : declaredTestChanges(baseSpec, []);
   const byPath = new Map(declaredList.map(item => [item.path, item]));
+  const later = current.filter(item => !declaredList.some(old => old.path === item.path && old.class === item.class));
   const present = file => { try { return lstatSync(path.join(root, file)).isFile(); } catch { return false; } };
   const featurePaths = tests.filter(present).flatMap(file => read(file).split(/\r?\n/).flatMap((text, index) => (text.includes(`${folders.features}/`) ? [{ path: file, line: index + 1, text: text.trim() }] : [])));
   return {
     base, specId: spec.id, testFiles: tests,
     declared: tests.filter(file => byPath.has(file)).map(file => byPath.get(file)),
     undeclared: tests.filter(file => !byPath.has(file)),
+    addedAfterBase: later.filter(item => tests.includes(item.path)),
     featurePaths,
     skipped,
   };
