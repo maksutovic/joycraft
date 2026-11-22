@@ -81,6 +81,7 @@ describe('lane cap text', () => {
     const text = (readdirSync(join(root, 'payload'), { recursive: true }) as string[]).map((path) => path.split('\\').join('/'))
       .filter((path) => /^\.agents\/skills\/joycraft-[^/]+\/SKILL\.md$|^\.claude\/agents\/[^/]+\.md$|^\.joycraft\/references\/.+\.md$/.test(path));
     const onDemand = text.filter((path) => !everySpec.includes(path)).reduce((sum, path) => sum + words(raw(path)), 0);
-    expect(onDemand).toBeLessThanOrEqual(17663 + 2000);
+    // The on-demand cap is +3,500 since decision `on-demand-budget` = `plus-1500`.
+    expect(onDemand).toBeLessThanOrEqual(17663 + 3500);
   });
 });

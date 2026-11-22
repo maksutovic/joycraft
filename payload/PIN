@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-badf0e3b2bce",
-  "commit": "badf0e3b2bce1a5cb5279150cfed4977077c4bd71bf12586fb26044e012d21c3",
+  "tag": "payload-f717f85ae637",
+  "commit": "f717f85ae6377a5d163f05eca2d4a7b183294731d9230ab39642750060d106ca",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -39,7 +39,7 @@
     ".joycraft/references/settings.md": "be0ee9ded37691db42ad01e4b51118c23a6d4bc3bc5e298c0c00e7454e7d154a",
     ".joycraft/references/setup.md": "52de47eb5e82181bcb32ca5f5628dc5479b172d5dfab19f0fcb3c0d74ed4c7b7",
     ".joycraft/references/testing-page.md": "2dba23881e4040efbbd5efd16e1d1cc15519fd0e02f8229b107f4d5cc2d47db1",
-    ".joycraft/references/testing-review.md": "c2f24963fc38e36de4e180c5488a25725e7de3657c72a81f62b867f6e7e3a3c9",
+    ".joycraft/references/testing-review.md": "79be541ec598876189dfadf03e86cc116fe873d280e0d82c925a1bbe37f84ce3",
     ".joycraft/references/testing.md": "b4518e35115739d013d9864b502cf28f71a3a67860e73e652d1bf4982a05bf71",
     ".joycraft/references/update.md": "2aa9881b66f5514875ff46c846d3446f8010b5f4efbdd32ffee09d0b76d24aa9",
     ".joycraft/references/workflow.md": "5b330debc6759b8f7975b159632f51074802067291fe4f4bebfb344f5b60cc52",

@@ -21,11 +21,11 @@ const section = (path: string, name: string) => {
   return text.slice(start, end < 0 ? undefined : end).replace(/\s+/g, ' ');
 };
 
-/** The guard's EVERY_SPEC_FILES paths and its on-demand cap, read from its source. */
+/** The guard's EVERY_SPEC_FILES paths and its on-demand cap (decision `on-demand-budget` = `plus-1500`: +3,500). */
 const guard = () => {
   const source = readFileSync(join(root, 'tests', 'payload-guard.test.ts'), 'utf8');
   const block = source.slice(source.indexOf('export const EVERY_SPEC_FILES'), source.indexOf('export const EVERY_SPEC_CAP'));
-  return { everySpec: [...block.matchAll(/^\s+'([^']+)':/gm)].map(([, path]) => path), onDemandCap: 17663 + 2000 };
+  return { everySpec: [...block.matchAll(/^\s+'([^']+)':/gm)].map(([, path]) => path), onDemandCap: 17663 + 3500 };
 };
 
 // The guard's every-spec count at the commit before this spec (08beda2), plus later growth:
@@ -72,6 +72,35 @@ describe('fault proof text', () => {
     expect(text).toContain('Block only when the old file catches a fault that the new file misses; any other survivor is a finding');
     expect(text).toContain('"the chosen faults are still caught; this does not show the test is as strong as before."');
     expect(text).toContain("A reviewer that shares the coordinator's tree runs no fault: it reads the saved receipts and states that as a limit");
+  });
+
+  it('[review-18-1] faults are chosen with intent: one per removed or changed assertion; the reviewer aims its own at a removed one', () => {
+    const text = section(REVIEW, 'Test-only specs');
+    expect(text).toContain('one fault per assertion or behavior the diff removes or changes');
+    expect(text).toContain('kill-set preservation');
+    expect(text).toContain('It aims its own fault at an assertion or behavior the diff removed');
+  });
+
+  it('[review-18-2] each patch sha256 is recorded before the test edit; the reviewer checks old-run revision and patch sha256', () => {
+    const text = section(REVIEW, 'Test-only specs');
+    expect(text).toContain("Before the test edit, it records each patch's sha256 in the spec or in a committed list");
+    expect(text).toContain('old-run receipt carries the base revision and the same patch sha256 as the new runs');
+  });
+
+  it('[review-18-3] the reviewer keeps its own patches and receipts git-ignored; only final report receipts go in the feature folder', () => {
+    const text = section(REVIEW, 'Test-only specs');
+    expect(text).toContain('Its own patches and receipts go in a git-ignored path');
+    expect(text).toContain('only the final report receipts go in the feature folder, after its last fault run');
+  });
+
+  it('[review-18-4] a reviewer in a separate tree gets the patches through a commit of the patch files or its packet', () => {
+    expect(section(REVIEW, 'Test-only specs')).toContain('A reviewer in a separate tree gets the patches through a commit of the patch files (not the receipts) or through its packet');
+  });
+
+  it('[review-18-5] the test edit is committed before faults rerun on it; the reviewer checks out the base for the old file', () => {
+    const text = section(REVIEW, 'Test-only specs');
+    expect(text).toContain('Commits the test edit before it reruns the faults on it');
+    expect(text).toContain('checks out the base to run the old file on it');
   });
 
   it('[AC:spec-18-3] testing.md drops the isolated temporary copy; verify and both agents point to the test-only section', () => {
