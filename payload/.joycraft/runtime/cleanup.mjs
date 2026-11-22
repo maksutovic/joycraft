@@ -737,25 +737,42 @@ export function tidyVerify({ root = process.cwd(), base, now = Date.now() } = {}
 // Project files by name, at any depth and with any extension: never working docs.
 const projectFiles = /^(?:readme|changelog|contributing|license|licence|security|code_of_conduct)(?:\.|$)/i;
 
-/** Pages that the map reaches: the entry files at any depth, the context pages, and every page they link, name or @-import. */
-function mapReached(root, { features, archive, context }) {
+/**
+ * Pages that the map reaches: the entry files at any depth, the context pages,
+ * and every page they link, name or @-import. A backticked name may carry
+ * `#anchor` or `:line`, and may be read from the project, the page's folder or
+ * the docs root.
+ */
+function mapReached(root, { features, archive, context }, docs) {
   const sources = [...new Set([...filesNamed(root, entryNames), ...markdownFiles(root, context, [features, archive])])];
   const reached = new Set(sources);
   for (const file of sources) {
     const text = readText(root, file);
     if (text == null) continue;
-    const { links, mentions, nearby, imports } = references(file, text);
+    const { links, mentions, nearby, imports, spans } = references(file, text);
     for (const ref of [...links, ...mentions, ...nearby, ...imports]) reached.add(ref.target);
+    for (const { span } of spans) {
+      const name = span.trim().replace(/#.*$/, '').replace(/(?::\d+){1,2}$/, '');
+      if (!name.endsWith('.md') || /\s/.test(name) || /^[a-z][a-z0-9+.-]*:/i.test(name)) continue;
+      for (const base of ['.', path.posix.dirname(file), docs]) reached.add(path.posix.normalize(path.posix.join(base, name)));
+    }
   }
   return reached;
+}
+
+/** Paths that `.joycraft/installation.json` lists: files Joycraft installed. */
+function installedFiles(root) {
+  try { return new Set(JSON.parse(readFileSync(path.join(root, '.joycraft/installation.json'), 'utf8')).files.map(file => file.path)); } catch { return new Set(); }
 }
 
 /**
  * age-out: working docs with no commit for `days` days. A working doc is
  * Markdown under the docs root that no map reaches: not an entry file, a
  * README-like project file, a page in context, features or archive, a backlog
- * folder or backlog* file, or a page linked, named or @-imported from an entry
- * file or a context page. `apply` moves each with git mv to
+ * folder or backlog* file, CLAUDE.local.md, a path with a dot segment, a file
+ * that .joycraft/installation.json lists, or a page linked, named or @-imported
+ * from an entry file or a context page. A docs root of `.` gives one `skipped`
+ * entry and lists nothing. A merge counts as a change to its first parent. `apply` moves each with git mv to
  * <archive>/working/<its path under the docs root> and commits nothing. A doc
  * with uncommitted changes, missing from the working tree, or whose target
  * exists is listed in `skipped` and not moved.
@@ -765,17 +782,21 @@ export function ageOut({ root = process.cwd(), days, apply = false, now = Date.n
   const paths = readConfig(root).paths;
   const { features, archive, context } = paths;
   const docs = docsRoot(paths);
-  const under = file => (docs === '.' ? file : file.slice(docs.length + 1));
-  const reached = mapReached(root, paths);
+  // A docs root of `.` would make every Markdown file in the project a working doc.
+  if (docs === '.') return { days, count: 0, docs: [], skipped: [{ path: '.', reason: 'age-out needs a docs folder; the docs root is the project root' }], applied: false };
+  const under = file => file.slice(docs.length + 1);
+  const reached = mapReached(root, paths, docs);
+  const installed = installedFiles(root);
   const working = file => {
     const name = path.posix.basename(file);
-    return file.endsWith('.md') && !entryNames.includes(name) && !projectFiles.test(name)
+    return file.endsWith('.md') && !entryNames.includes(name) && name !== 'CLAUDE.local.md' && !projectFiles.test(name)
+      && !file.split('/').some(part => part.startsWith('.')) && !installed.has(file)
       && ![features, archive, context].some(folder => inside(file, folder)) && !reached.has(file)
       && !under(file).split('/').slice(0, -1).includes('backlog') && !name.toLowerCase().startsWith('backlog');
   };
   const tracked = git(root, ['ls-files', '-z', '--', docs]).split('\0').filter(file => file && working(file));
   const last = new Map();
-  for (const entry of git(root, ['log', '--format=%x00%ct', '--name-only', '--no-renames', '--', docs]).split('\0').filter(Boolean)) {
+  for (const entry of git(root, ['log', '--format=%x00%ct', '--name-only', '--no-renames', '--diff-merges=first-parent', '--', docs]).split('\0').filter(Boolean)) {
     const [time, ...files] = entry.split('\n').filter(Boolean);
     for (const file of files) if (!last.has(file)) last.set(file, Number(time) * 1000);
   }

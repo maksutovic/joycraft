@@ -79,15 +79,14 @@ describe('age-out review fixes', () => {
     const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-age-out-map-')));
     dirs.push(root);
     git(root, ['init', '-q', '-b', 'main']);
-    put(root, 'joycraft.yaml', 'paths:\n  features: features\n  archive: archive\n  context: context\n');
-    put(root, 'AGENTS.md', '# A\n\n| `guides/releasing.md` | Releasing |\n[setup](guides/setup.md)\n');
-    put(root, 'CLAUDE.md', '@AGENTS.md\n@guides/imported.md\n');
-    put(root, 'context/arch.md', '# Arch\n\nSee [deep](../guides/deep.md).\n');
+    put(root, 'AGENTS.md', '# A\n\n| `docs/guides/releasing.md` | Releasing |\n[setup](docs/guides/setup.md)\n');
+    put(root, 'CLAUDE.md', '@AGENTS.md\n@docs/guides/imported.md\n');
+    put(root, 'docs/context/arch.md', '# Arch\n\nSee [deep](../guides/deep.md).\n');
     for (const file of ['guides/releasing.md', 'guides/setup.md', 'guides/imported.md', 'guides/deep.md', 'pkg/AGENTS.md', 'pkg/CLAUDE.md', 'README.md', 'pkg/readme.md',
-      'CHANGELOG.md', 'CONTRIBUTING.md', 'LICENSE.md', 'SECURITY.md', 'CODE_OF_CONDUCT.md', 'notes/backlog-ideas.md', 'notes/backlog/item.md', 'notes/old.md']) put(root, file, '# x\n');
+      'CHANGELOG.md', 'CONTRIBUTING.md', 'LICENSE.md', 'SECURITY.md', 'CODE_OF_CONDUCT.md', 'notes/backlog-ideas.md', 'notes/backlog/item.md', 'notes/old.md']) put(root, `docs/${file}`, '# x\n');
     git(root, ['add', '.'], daysAgo(30)); git(root, ['commit', '-q', '-m', 'old'], daysAgo(30));
     const out = ageOut(root, ['--days', '14']);
-    expect(out.docs.map((doc: { path: string }) => doc.path)).toEqual(['notes/old.md']);
+    expect(out.docs.map((doc: { path: string }) => doc.path)).toEqual(['docs/notes/old.md']);
   });
 
   it('[review-a-2] a dirty or missing doc is skipped, every other doc moves, and non-ASCII names work', () => {
@@ -111,5 +110,57 @@ describe('age-out review fixes', () => {
     const reference = readFileSync(join(payload, '.joycraft', 'references', 'cleanup.md'), 'utf8');
     expect(reference.indexOf('cleanup.mjs age-out --days 14')).toBeGreaterThan(-1);
     expect(reference.indexOf('cleanup.mjs age-out --days 14')).toBeLessThan(reference.indexOf('6. **Check.**'));
+  });
+});
+
+describe('age-out review 9 fixes', () => {
+  const repo = (files: Record<string, string>, config?: string) => {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-age-out-r9-')));
+    dirs.push(root);
+    git(root, ['init', '-q', '-b', 'main']);
+    if (config) put(root, 'joycraft.yaml', config);
+    for (const [file, body] of Object.entries(files)) put(root, file, body);
+    git(root, ['add', '-A'], daysAgo(30)); git(root, ['commit', '-q', '-m', 'old'], daysAgo(30));
+    return root;
+  };
+  const listed = (out: { docs: { path: string }[] }) => out.docs.map(doc => doc.path).sort();
+
+  it('[review-9-1] a docs root of `.` lists and moves nothing and gives one skipped entry', () => {
+    const root = repo({ 'context/a.md': '# a\n', 'notes/old.md': '# x\n', '.claude/skills/s/SKILL.md': '# s\n', '.joycraft/references/cleanup.md': '# r\n', 'src/lib/design.md': '# d\n' },
+      'paths:\n  features: features\n  archive: archive\n  context: context\n');
+    const out = ageOut(root, ['--days', '14', '--apply']);
+    expect(out).toMatchObject({ count: 0, docs: [], applied: false, skipped: [{ path: '.', reason: 'age-out needs a docs folder; the docs root is the project root' }] });
+    expect(git(root, ['status', '--porcelain'])).toBe('');
+    expect(existsSync(join(root, '.claude/skills/s/SKILL.md'))).toBe(true);
+  });
+
+  it('[review-9-1] dot segments and installed files are never working docs', () => {
+    const root = repo({
+      'docs/context/a.md': '# a\n', 'docs/.joycraft/notes.md': '# n\n', 'docs/research/.drafts/d.md': '# d\n', 'docs/tools/installed.md': '# i\n', 'docs/research/x.md': '# x\n',
+      '.joycraft/installation.json': JSON.stringify({ files: [{ path: 'docs/tools/installed.md', sha256: 'x' }] }),
+    });
+    expect(listed(ageOut(root, ['--days', '14']))).toEqual(['docs/research/x.md']);
+  });
+
+  it('[review-9-2] a backticked name with #anchor, :line or a docs-root-relative path is map-reached', () => {
+    const root = repo({
+      'docs/context/guide.md': '# G\n\nSee `docs/research/anchor.md#part`, `docs/research/line.md:12` and `research/rel.md`.\n',
+      'docs/research/anchor.md': '', 'docs/research/line.md': '', 'docs/research/rel.md': '', 'docs/research/plain.md': '',
+    });
+    expect(listed(ageOut(root, ['--days', '14']))).toEqual(['docs/research/plain.md']);
+  });
+
+  it('[review-9-3] a doc changed in a merge counts as changed', () => {
+    const root = repo({ 'docs/context/a.md': '', 'docs/research/m.md': 'base\n' });
+    git(root, ['checkout', '-q', '-b', 'side']); put(root, 'docs/research/m.md', 'side\n'); git(root, ['commit', '-q', '-am', 'side'], daysAgo(25));
+    git(root, ['checkout', '-q', 'main']); put(root, 'docs/research/m.md', 'main\n'); git(root, ['commit', '-q', '-am', 'main'], daysAgo(25));
+    try { git(root, ['merge', '-q', 'side']); } catch { /* the conflict is expected */ }
+    put(root, 'docs/research/m.md', 'resolved\n'); git(root, ['add', '.']); git(root, ['commit', '-q', '-m', 'merge']);
+    expect(listed(ageOut(root, ['--days', '14']))).toEqual([]);
+  });
+
+  it('[review-9-4] CLAUDE.local.md is never a working doc', () => {
+    const root = repo({ 'docs/context/a.md': '', 'docs/research/CLAUDE.local.md': '# local\n', 'docs/research/x.md': '' });
+    expect(listed(ageOut(root, ['--days', '14']))).toEqual(['docs/research/x.md']);
   });
 });

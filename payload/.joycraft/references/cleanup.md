@@ -162,7 +162,7 @@ that talks to the owner, runs the steps.
    agent commits. Then, in this attended pass only, never at session end, run
    `cleanup.mjs age-out --days 14`. If it lists docs, ask once: "N working docs
    have had no commit for 14 days. Archive them?" On a yes, run it again with
-   `--apply`.
+   `--apply`. If it prints a `skipped` entry instead, say why and go on.
 6. **Check.** Give each finding a final status: fixed, left for the owner,
    or not done and why. Then an agent that wrote no edit checks the changed
    guides against the code (with no subagents: read them again yourself);
