@@ -136,7 +136,7 @@
       "id": 3,
       "file": "03-more-manifests.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -200,6 +200,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T17:57:27.603Z"
       }
     },
     {
