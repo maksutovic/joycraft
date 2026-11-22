@@ -212,7 +212,7 @@
       "id": 3,
       "file": "03-cleanup-fixes.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -302,6 +302,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-22T06:53:11.852Z"
       }
     },
     {
