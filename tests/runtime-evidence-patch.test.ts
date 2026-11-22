@@ -1,6 +1,6 @@
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -111,4 +111,74 @@ describe('evidence.mjs run --patch', () => {
     expect(value.exitCode).toBeNull();
     expect(value.patch).toMatchObject({ path: 'receipts/fault.diff', sha256: sha(join(root, 'receipts/fault.diff')) });
   });
+});
+
+describe('evidence.mjs run --patch polish (spec 27)', () => {
+  it.skipIf(process.platform === 'win32')('[AC:spec-27-6] a SIGTERM while git apply runs ends with 143 and the tree restored', async () => {
+    const root = project();
+    const bin = join(root, 'receipts', 'bin');
+    mkdirSync(bin, { recursive: true });
+    const realGit = execFileSync('sh', ['-c', 'command -v git'], { encoding: 'utf8' }).trim();
+    const marker = join(root, 'receipts', 'applying');
+    writeFileSync(join(bin, 'git'), `#!/bin/sh\nif [ "$1" = apply ] && [ "$2" = "--" ]; then touch '${marker}'; sleep 1; fi\nexec '${realGit}' "$@"\n`);
+    chmodSync(join(bin, 'git'), 0o755);
+    const child = spawn(process.execPath, [script, 'run', '--receipt', 'receipts/sig.log', '--patch', 'receipts/fault.diff', '--', process.execPath, 'check.mjs'],
+      { cwd: root, env: { ...process.env, PATH: `${bin}:${process.env.PATH}` }, stdio: 'ignore' });
+    const exit = new Promise<number | null>(resolve => child.on('exit', code => resolve(code)));
+    for (let waited = 0; !existsSync(marker) && waited < 10000; waited += 20) await new Promise(resolve => setTimeout(resolve, 20));
+    expect(existsSync(marker)).toBe(true);
+    child.kill('SIGTERM');
+    expect(await exit).toBe(143);
+    expect(spawnSync('git', ['diff', '--quiet'], { cwd: root }).status).toBe(0);
+  }, 30000);
+
+  it('[AC:spec-27-7] a change to another tracked file, a commit or a stash gives restored: false; the plain fault run stays true', () => {
+    const commands = [
+      node('-e', "require('fs').appendFileSync('check.mjs', '// more\\n')"),
+      ['git', '-c', 'user.name=t', '-c', 'user.email=t@example.com', 'commit', '-q', '--allow-empty', '-m', 'x'],
+      ['git', '-c', 'user.name=t', '-c', 'user.email=t@example.com', 'stash', '-q'],
+    ];
+    for (const command of commands) {
+      const root = project();
+      const result = run(root, 'receipts/r.log', 'receipts/fault.diff', command);
+      expect(result.status, command.join(' ')).toBe(1);
+      expect(JSON.parse(result.stdout).patch.restored, command.join(' ')).toBe(false);
+    }
+    const root = project();
+    const plain = run(root, 'receipts/fault.log', 'receipts/fault.diff', node('check.mjs'));
+    expect(JSON.parse(plain.stdout).patch.restored).toBe(true);
+  }, 30000);
+
+  it('[AC:spec-27-8] a project in a repository subfolder runs its fault; a patch outside the subfolder is refused', () => {
+    const top = realpathSync(mkdtempSync(join(tmpdir(), 'jc-evidence-sub-')));
+    dirs.push(top);
+    const app = join(top, 'app');
+    mkdirSync(join(app, 'receipts'), { recursive: true });
+    mkdirSync(join(top, 'lib'));
+    git(top, 'init', '-q');
+    writeFileSync(join(app, '.gitignore'), 'receipts/\n');
+    writeFileSync(join(app, 'add.mjs'), good);
+    writeFileSync(join(app, 'check.mjs'), check);
+    writeFileSync(join(top, 'lib/other.mjs'), good);
+    git(top, 'add', '.');
+    git(top, 'commit', '-q', '-m', 'init');
+    writeFileSync(join(app, 'add.mjs'), bad);
+    writeFileSync(join(app, 'receipts/fault.diff'), git(top, 'diff', '--', 'app/add.mjs'));
+    git(top, 'checkout', '--', 'app/add.mjs');
+    writeFileSync(join(top, 'lib/other.mjs'), bad);
+    writeFileSync(join(app, 'receipts/other.diff'), git(top, 'diff', '--', 'lib/other.mjs'));
+    git(top, 'checkout', '--', 'lib/other.mjs');
+
+    const result = run(app, 'receipts/fault.log', 'receipts/fault.diff', node('check.mjs'));
+    expect(result.status).toBe(1);
+    const out = JSON.parse(result.stdout);
+    expect(out.command.exitCode).toBe(1);
+    expect(out.patch.restored).toBe(true);
+    expect(readFileSync(join(app, 'receipts/fault.log'), 'utf8')).toContain('add is wrong');
+
+    const outside = run(app, 'receipts/other.log', 'receipts/other.diff', node('check.mjs'));
+    expect(outside.status).toBe(2);
+    expect(outside.stderr).toContain('lib/other.mjs');
+    expect(git(top, 'status', '--porcelain')).toBe('');
+  }, 30000);
 });

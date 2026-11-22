@@ -2,6 +2,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 
 const script = join(__dirname, '..', 'payload', '.joycraft', 'runtime', 'evidence.mjs');
@@ -61,5 +62,24 @@ describe('evidence.mjs run receipts', () => {
     const { revision } = JSON.parse(result.stdout);
     expect(revision.commit).toBeNull();
     expect(typeof revision.dirty).toBe('boolean');
+  });
+});
+
+describe('evidence.mjs receipt tail and long footer (spec 27)', () => {
+  const readFooter = (file: string) => JSON.parse(spawnSync(process.execPath, ['--input-type=module', '-e',
+    `import { readFooter } from ${JSON.stringify(pathToFileURL(script).href)}; process.stdout.write(JSON.stringify(readFooter(${JSON.stringify(file)})));`], { encoding: 'utf8' }).stdout);
+
+  it('[AC:spec-27-5] readFooter returns a footer longer than 64 KiB; the failing tail starts at a line start', () => {
+    const root = project(true);
+    const long = 'x'.repeat(70000);
+    const result = spawnSync(process.execPath, [script, 'run', '--receipt', 'docs/features/x/receipts/long.log', '--', process.execPath, '-e', '0', long], { cwd: root, encoding: 'utf8' });
+    expect(result.status, result.stderr).toBe(0);
+    expect(readFooter(join(root, 'docs/features/x/receipts/long.log')).argv).toEqual([process.execPath, '-e', '0', long]);
+
+    // A 300 KiB line of two-byte characters, so a window inside it could also split a character.
+    const code = "process.stdout.write('\u00e9'.repeat(150 * 1024) + '\\na\\nb\\n'); process.exit(1)";
+    const failing = spawnSync(process.execPath, [script, 'run', '--receipt', 'docs/features/x/receipts/tail.log', '--', process.execPath, '-e', code], { cwd: root, encoding: 'utf8' });
+    expect(failing.status).toBe(1);
+    expect(JSON.parse(failing.stdout).tail).toBe('a\nb');
   });
 });
