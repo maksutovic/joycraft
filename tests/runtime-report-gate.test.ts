@@ -94,3 +94,37 @@ describe('report gate wrappers and a broken joycraft.yaml (spec 27)', () => {
     }
   });
 });
+
+describe('report gate runner aliases and a done spec re-check (1.9.1 spec 2)', () => {
+  it('[AC:spec-2-1] npx, pnpm exec and the run of pnpm run name the same gate; a focused npx run passes', () => {
+    const refusedCases: [string, string[]][] = [
+      ['vitest run', ['npx', 'vitest', 'run']],
+      ['vitest run', ['pnpm', 'exec', 'vitest', 'run']],
+      ['pnpm verify', ['pnpm', 'run', 'verify']],
+      ['pnpm run verify', ['pnpm', 'verify']],
+    ];
+    for (const [gate, argv] of refusedCases) {
+      const result = checkReport(fixture({ gate, argv }));
+      expect(result.status, `${gate} / ${JSON.stringify(argv)}: ${result.stderr}`).toBe(2);
+      expect(result.stderr).toContain('tests.gate');
+    }
+    const focused = checkReport(fixture({ gate: 'vitest run', argv: ['npx', 'vitest', 'run', 'tests/a.test.ts'] }));
+    expect(focused.status, focused.stderr).toBe(0);
+  });
+
+  it('[AC:spec-2-2] a done spec re-checked with its accepted report is unchanged after tests.gate is recorded; an in-review one is refused', () => {
+    const root = fixture({ argv: ['pnpm', 'verify'] });
+    const first = finalize(root);
+    expect(first.status, first.stderr).toBe(0);
+    expect(JSON.parse(first.stdout)).toMatchObject({ status: 'done', unchanged: false });
+    put(join(root, 'joycraft.yaml'), 'tests:\n  gate: "pnpm verify"\n');
+    git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'record the gate');
+    const again = finalize(root);
+    expect(again.status, again.stderr).toBe(0);
+    expect(JSON.parse(again.stdout)).toMatchObject({ status: 'done', unchanged: true });
+
+    const inReview = finalize(fixture({ gate: 'pnpm verify', argv: ['pnpm', 'verify'] }));
+    expect(inReview.status, inReview.stderr).toBe(2);
+    expect(inReview.stderr).toContain('ran the recorded tests.gate command');
+  });
+});
