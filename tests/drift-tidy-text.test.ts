@@ -55,4 +55,12 @@ describe('skills call tidy and Joycraft writes less', () => {
     expect(sentences[0]).toContain('path:line: message');
     expect(sentences[0]).toMatch(/knip through a wrapper that prints `path:line: message`/);
   });
+
+  // Spec: docs/features/2026-11-22-followups-1-9-2/specs/05-text-restore.md
+  it('[AC:spec-5-1] setup.md keeps an existing worktrees home\'s conventions and asks only for knowledge that materially changes the next action', () => {
+    const setup = read('.joycraft/references/setup.md').replace(/\s+/g, ' ');
+    const worktrees = setup.slice(setup.indexOf('## Project-owned worktrees'), setup.indexOf('## Knowledge grows with the work'));
+    expect(worktrees).toContain('mapped worktree/bootstrap home and its conventions');
+    expect(setup).toContain('ask only for missing human knowledge that materially changes the next action');
+  });
 });
