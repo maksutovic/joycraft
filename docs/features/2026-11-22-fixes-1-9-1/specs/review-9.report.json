@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "8e6abf8baa6b8ccdd213ec65df59c2efd77b13fd",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+    "specId": 9,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+    "criteria": [
+      {
+        "id": "spec-9-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-9-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-9-3",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "archive"
+          ]
+        },
+        "sha256": "1466bd19c7bc6440b7d654b27c845f36a610cccd44ad5a3240aa2c32746766d2",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "537f90d4b58fba2a3fd6adb73080b29e66235dd169742d60c5c03094889806c8",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-1/specs/09-comment-detection.md",
+        "kind": "requirement",
+        "sha256": "dc7d889ce5c68523cf5919401aee3d3db234308d9032a7f324b27ff5b491e5aa",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "15385ed3768e8ad35491c36c784655d124efc3256b2ede0898eddeb83b34351a",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-ignore.test.ts",
+        "kind": "check",
+        "sha256": "74211fab922f64ade776f266f09830acc835774b2fd8477a995371eabb328c65",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-named-files.test.ts",
+        "kind": "check",
+        "sha256": "8e7b3755d019885d0ed0a56b4b79f4f9055d1375e7a06692b36aa6ff6ba948fd",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          3,
+          9
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-1/brief.md",
+          "anchors": [
+            "archive"
+          ]
+        }
+      ]
+    },
+    "identity": "5e2fef601156e4bbe2591d6a43a9e69d626a57411fbe1b278d08ef6a975fe4f2"
+  },
+  "implementerSessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "agentId": "a1bb9ee0c2dcf6183"
+  },
+  "reviewer": {
+    "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+    "actor": {
+      "host": "claude",
+      "sessionId": "f985f26a-3b51-467f-acb2-07287fb5764c",
+      "agentId": "aa7da9842ed531026"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "createdAt": "2026-11-22T07:23:37.766Z",
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-9-1-sure-comments",
+      "subjectIdentity": "5e2fef601156e4bbe2591d6a43a9e69d626a57411fbe1b278d08ef6a975fe4f2",
+      "criteria": [
+        "spec-9-1"
+      ],
+      "representativeInput": "[AC:spec-9-1] tests/runtime-archive-named-files.test.ts:265 and probe sections A and H",
+      "expected": "After a real --apply, /* x */ then code, a .ts #field line and a bare * line in a template literal make next name that test and line; a .py # test, a .ts // Spec test and a .ts * line inside an open /** */ block are comment-only.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-9-reviewer-focused-20261122T072149658Z-80559-1.log",
+              "sha256": "ba4411ce9e471408fc3eb209fd3ae4e0dd197242628b8f01bfe2f86ce42851ff"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-ignore.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "21 of 21 tests in 2 files pass, including [AC:spec-9-1]: p1/p2/p3 each give \"1 test still names\" with the exact file:line; test_q1.py, q2.test.ts, q3.test.ts singly and together give the comment-only message."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-9-reviewer-probe-output.log",
+              "sha256": "9ff32692acdcb1a8a992324bd0c8cd9614eb1b163ebcaad75dc0695a98b01d28"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-9-reviewer-probe.mjs.txt",
+              "sha256": "caa6606134012a50edfd97b0e580ca42974b1239488896d7ac8791e1182904d8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probe9/spec-9-reviewer-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Spec 1 reviewer probe section A re-run with the new wording: the three former false comment-only cases (/* */ then code, #dir private field, * bullet in a template literal) are now called code at the right line; the other A cases stay ok; the block body line without a leading * stays code (safe direction). Hunt section H: */ then code on a later line, code after */ on the closing line, * after the block closed, <!-- --> then code (same and later line), # lines in .ts/.js/.mjs, CRLF files (// then code, /** block then code, */ code on the closing line, .py # then string), /*/ opener, in-block \"* a */ code\" are all called code. Remaining comment-only calls on code that reads the folder: a // line and a /*-opened fake block inside a template literal, a # line inside a Python triple-quoted string, a CR-only file, and a // line with U+2028 (see findings)."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-9-2-run-the-gate",
+      "subjectIdentity": "5e2fef601156e4bbe2591d6a43a9e69d626a57411fbe1b278d08ef6a975fe4f2",
+      "criteria": [
+        "spec-9-2"
+      ],
+      "representativeInput": "[AC:spec-9-2] tests/runtime-archive-named-files.test.ts:292",
+      "expected": "All-comment-only next says no path change looks needed and to run the gate, without \"Leave their paths as they are\".",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-9-reviewer-focused-20261122T072149658Z-80559-1.log",
+              "sha256": "ba4411ce9e471408fc3eb209fd3ae4e0dd197242628b8f01bfe2f86ce42851ff"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-ignore.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-9-2] passes. archive.mjs:612 now reads \"...only in comments, so no path change looks needed. Still run the gate: a red test means one reads the folder...\"; the old sentence is gone. The [AC:spec-1-5] assertion changed from \"need no change\" to \"no path change looks needed\", a class-1 change the Test changes section allows."
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-9-reviewer-probe-output.log",
+              "sha256": "9ff32692acdcb1a8a992324bd0c8cd9614eb1b163ebcaad75dc0695a98b01d28"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-9-reviewer-probe.mjs.txt",
+              "sha256": "caa6606134012a50edfd97b0e580ca42974b1239488896d7ac8791e1182904d8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/probe9/spec-9-reviewer-probe.mjs",
+              "/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"
+            ],
+            "exitCode": 0
+          },
+          "actual": "Every comment-only call in the probe prints the run-the-gate text; the mixed case (one comment-only, one code test) still names only the code test and keeps its \"The other listed tests ... need no change\" tail."
+        }
+      ],
+      "limits": []
+    },
+    {
+      "id": "spec-9-3-subfolder-archive",
+      "subjectIdentity": "5e2fef601156e4bbe2591d6a43a9e69d626a57411fbe1b278d08ef6a975fe4f2",
+      "criteria": [
+        "spec-9-3"
+      ],
+      "representativeInput": "[AC:spec-9-3] tests/runtime-archive-ignore.test.ts:134",
+      "expected": "Preview from src/deep equals the root preview; --apply from src/deep moves the folder at the root and creates nothing under src/deep.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-1/reviews/receipts/spec-9-reviewer-focused-20261122T072149658Z-80559-1.log",
+              "sha256": "ba4411ce9e471408fc3eb209fd3ae4e0dd197242628b8f01bfe2f86ce42851ff"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-named-files.test.ts",
+              "tests/runtime-archive-ignore.test.ts"
+            ],
+            "exitCode": 0
+          },
+          "actual": "[AC:spec-9-3] passes: both previews exit 0 with empty stderr and equal JSON; apply from src/deep returns archived, docs/features/x is gone, docs/archive/x exists, and find in src/deep lists only keep.txt."
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "limits": [
+    "Gate not run (reviewer runs only the spec's own tests, per the brief); due at the coordinator's gate."
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1-template-literal-comment-lines",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:586",
+      "summary": "Dangerous direction, reproducible (probe H9, H10): a line that starts with // inside a template literal, or a * line after a /* line inside a template literal, is called a comment although it is string content a test can read. This follows the spec's rules (a) and (c) as written, and the new message now says to run the gate, which catches a real read. Lexing strings is out of this spec's scope.",
+      "assumption": "Rules (a) and (c) are the owner-approved definition; the run-the-gate sentence is the intended safety net."
+    },
+    {
+      "id": "f2-python-triple-quoted-hash",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:593",
+      "summary": "Dangerous direction, reproducible (probe H20): a # line inside a Python triple-quoted string is called a comment; rule (d) allows it by extension alone. Same safety net as f1."
+    },
+    {
+      "id": "f3-cr-only-and-u2028",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:607",
+      "summary": "Dangerous direction, rare (probe H15, H24): lines split on \\n only (pre-existing, unchanged), so a CR-only file, or a // line followed by U+2028 and code, reads as one comment line. CRLF works (probe H11-H14). Splitting on /\\r\\n|\\r|\\n|\\u2028|\\u2029/ would close it; namedFiles (archive.mjs:554) splits the same way."
+    },
+    {
+      "id": "f4-safe-direction-noise",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:580",
+      "summary": "Safe direction only: a block body line without a leading *, a block reopened after a closed one on the same line, and a block opened after code on a line are called code (probe A p2, H16, H19). Matches the spec's \"any doubt counts as code\"."
+    },
+    {
+      "id": "f5-namedfiles-unchanged",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:541",
+      "summary": "Checked: the spec 9 commit 592ba98 changes only lines 565-612 (isCommentLine replaced by commentLines, nextSteps); namedFiles (541-561) and folderPatterns are untouched, and the [AC:spec-1-5] namedFiles-matches-preview assertion is unchanged."
+    }
+  ]
+}

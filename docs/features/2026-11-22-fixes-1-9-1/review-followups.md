@@ -31,3 +31,8 @@
 - f3: blank owner instruction message ends "cannot start with --".
 - f4: no test for `archive` subcommand from a subfolder (probe passed). Spec 9.
 - f6: trace ids clash with older features (payload-guard [AC:spec-1-*]).
+
+## Spec 9 (PASS r1)
+- f1: `//` or `*` lines inside a template literal count as comments (rules a, c as written); "run the gate" catches a real read.
+- f2: `#` inside a Python triple-quoted string counts as a comment (rule d is by extension).
+- f3: lines split on \n only; CR-only or U+2028 files read as one line (rare).

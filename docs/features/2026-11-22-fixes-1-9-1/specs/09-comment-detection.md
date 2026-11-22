@@ -1,6 +1,6 @@
 ---
 id: 9
-status: in-review
+status: done
 ---
 # Archive's `next` message calls a line a comment only when it surely is one, and says to run the gate
 

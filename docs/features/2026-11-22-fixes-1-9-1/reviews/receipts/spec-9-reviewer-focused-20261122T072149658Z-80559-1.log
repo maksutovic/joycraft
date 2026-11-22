@@ -1,0 +1,25 @@
+
+> joycraft@1.9.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+> vitest tests/runtime-archive-named-files.test.ts tests/runtime-archive-ignore.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-archive-ignore.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 1781[2mms[22m[39m
+   [33m[2m✓[22m[39m archive.mjs ignore[2m > [22m[review-b-7] a line with leading spaces is not the archive line; CRLF stays CRLF; equivalent spellings count as present [33m 339[2mms[22m[39m
+   [33m[2m✓[22m[39m archive.mjs ignore[2m > [22m[AC:spec-29-4] a symlinked .ignore is refused; docs/archive/* counts as present; a run from a subfolder uses the root .ignore [33m 396[2mms[22m[39m
+   [33m[2m✓[22m[39m archive.mjs ignore[2m > [22m[AC:spec-9-3] archive from a subfolder previews and applies against the project root [33m 410[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-named-files.test.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 5447[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-2] namedFiles lists the full path, split segments and the dated name, not look-alikes; marks only a non-test migration [33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-4] --rewrite is an unknown argument, and neither a preview nor an --apply writes under .joycraft/local [33m 333[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (check) [33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (stage) [33m 357[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[AC:spec-1-5] next names only tests that name the folder outside a comment, at that line; namedFiles matches the preview [33m 932[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[AC:spec-9-1] only sure comments are comment-only; a closed /* */ before code, a .ts #field and a bare * line are code [33m 1756[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m21 passed[39m[22m[90m (21)[39m
+[2m   Start at [22m 23:21:53
+[2m   Duration [22m 5.67s[2m (transform 44ms, setup 0ms, collect 57ms, tests 7.23s, environment 0ms, prepare 91ms)[22m
+
+joycraft-evidence: {"wallMs":6300,"load":[14.63818359375,13.7060546875],"cores":14,"loaded":true,"argv":["pnpm","test","tests/runtime-archive-named-files.test.ts","tests/runtime-archive-ignore.test.ts"],"exitCode":0,"timedOut":false,"revision":"8e6abf8baa6b8ccdd213ec65df59c2efd77b13fd","dirty":false}
