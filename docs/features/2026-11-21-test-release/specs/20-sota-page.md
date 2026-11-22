@@ -1,6 +1,6 @@
 ---
 id: 20
-status: in-review
+status: done
 ---
 # Setup writes a project-owned testing page from a shipped on-demand template
 

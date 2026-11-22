@@ -1,0 +1,8 @@
+index before: 4f7a71f50ee357ad
+dirty: exit=2 add.mjs=1
+stale patch: exit=2 status='' receiptExists=no
+fault: exit=1 {"exitCode":1,"patch":{"path":"receipts/fault.diff","sha256":"a58667ac9cb1bc5b2c66dcffe37f96ced077ecfefb2441dcd4b65fd484340919","patched":true,"restored":true}} status=''
+timeout: exit=1 status=''
+timeout footer: joycraft-evidence: {"wallMs":536,"load":[10.4873046875,10.4873046875],"cores":14,"loaded":false,"argv":["node","-e","setTimeout(()=>{},60000)"],"exitCode":null,"timedOut":true,"revision":"fa7a33a7ac4b8087022622371982935f601f056c","dirty":false,"patch":{"path":"receipts/fault.diff","sha256":"a58667ac9cb1bc5b2c66dcffe37f96ced077ecfefb2441dcd4b65fd484340919","patched":true,"restored":true}}
+index after: 4f7a71f50ee357ad
+joycraft-evidence: {"wallMs":1132,"load":[10.4873046875,10.4873046875],"cores":14,"loaded":false,"argv":["sh","docs/features/2026-11-21-test-release/reviews/receipts/spec-09-footer.sh","/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research"],"exitCode":0,"timedOut":false,"revision":"5c5d0e2f096f360c8d4903ea74011a9c3aecc81f","dirty":true}

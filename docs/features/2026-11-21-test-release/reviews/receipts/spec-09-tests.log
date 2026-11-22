@@ -1,0 +1,13 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research[39m
+
+ [32m✓[39m tests/runtime-evidence-patch.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2399[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-3] restores the tree after a passing run and after a timeout [33m 910[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-4] a timeout keeps timedOut and exitCode null, and the footer records the patch [33m 742[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 18:27:13
+[2m   Duration [22m 2.56s[2m (transform 16ms, setup 0ms, collect 15ms, tests 2.40s, environment 0ms, prepare 39ms)[22m
+
+joycraft-evidence: {"wallMs":2800,"load":[22.88818359375,21.45556640625],"cores":14,"loaded":true,"argv":["node_modules/.bin/vitest","run","tests/runtime-evidence-patch.test.ts"],"exitCode":0,"timedOut":false,"revision":"66d8224ce86f1c82109394a0a1e4ab83640fc843","dirty":true}

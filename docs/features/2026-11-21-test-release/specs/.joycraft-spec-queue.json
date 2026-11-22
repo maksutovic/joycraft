@@ -700,7 +700,7 @@
       "depends_on": [
         3
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": true
@@ -779,6 +779,10 @@
       },
       "submitted": {
         "at": "2026-11-22T02:25:10.096Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-9.report.json",
+        "sha256": "2e2d191ec81ebac97de357858e576e35cb6d33a323b8839492d0b00b6ae4f7dd"
       }
     },
     {
@@ -1757,7 +1761,7 @@
         1,
         3
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -1841,6 +1845,10 @@
       },
       "submitted": {
         "at": "2026-11-22T02:31:01.100Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-21-test-release/specs/review-20.report.json",
+        "sha256": "d08ebf8716c3e36b358ec86febdaf9f37ab88413b29f9bb1e9db73459c58f1f8"
       }
     },
     {

@@ -23,3 +23,13 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 - age-out: names with tab/quote get the wrong skip reason; Docs/docs case mismatch message.
 - Config should refuse a hidden or root-level docs root (Max, 2026-11-21). **fix**
 - archive ignore: symlinked .ignore, `docs/archive/*` equivalence, run from a subfolder. **fix**
+
+## Fault runs (spec 9) — fix
+- Install the SIGINT/SIGTERM/SIGHUP handlers before `git apply`, not after the spawn (evidence.mjs:316-334); a signal in that gap leaves the fault in place (1 of 63 early-SIGTERM runs).
+- After the restore, also compare `git status --porcelain` and HEAD with their values from before the run, so a command that edits another file, commits or stashes cannot end with `restored: true` (evidence.mjs:260).
+- Project root in a repository subfolder: resolve patch paths against `--show-prefix` and refuse paths outside it (evidence.mjs:253).
+
+## SOTA testing page (spec 20) — fix
+- Principles 1, 2 and 9 restate one idea (focused, gate, full). Fold them into one and use the freed slots for the best-evidenced missing ones: flaky means defective (never retry into a pass; repeat a new test file before it counts) and never special-case test inputs or edit the check that judges the change. Coordinator call: this serves Max's "flaky tests rerun over and over" note directly.
+- Put the benefit line into the page itself, not only the template preamble.
+- Name the project page so it cannot be confused with `.joycraft/references/testing.md`.

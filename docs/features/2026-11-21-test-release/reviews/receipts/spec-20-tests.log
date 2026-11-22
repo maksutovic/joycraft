@@ -1,0 +1,17 @@
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-drift-research
+
+ ✓ tests/text-sota-page.test.ts (3 tests) 2ms
+stdout | tests/payload-guard.test.ts > shipped payload text > [AC:spec-1-2] every-spec and on-demand words stay under their own caps
+every-spec words: 12150 (cap 12256, 106 spare)
+on-demand words: 18231 (cap 19663, 1432 spare)
+
+ ✓ tests/payload-guard.test.ts (16 tests) 1273ms
+   ✓ shipped payload text > [AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on  362ms
+   ✓ shipped payload text > [AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name  321ms
+
+ Test Files  2 passed (2)
+      Tests  19 passed (19)
+   Start at  18:32:49
+   Duration  1.44s (transform 25ms, setup 0ms, collect 32ms, tests 1.27s, environment 0ms, prepare 60ms)
+
