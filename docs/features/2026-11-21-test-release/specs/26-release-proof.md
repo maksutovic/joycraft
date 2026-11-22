@@ -1,6 +1,6 @@
 ---
 id: 26
-status: in-review
+status: done
 ---
 # Release proof: the new paths run end to end here, and 1.9.0 carries its release fields
 
