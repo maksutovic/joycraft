@@ -78,3 +78,8 @@ Collected from independent reviews; none blocked its spec. A final polish spec t
 ## Declarations (spec 17) — fix
 - test-changes.mjs: require the base to be an ancestor of HEAD (`git merge-base --is-ancestor`).
 - Flag a base declaration whose requiring text was rewritten after the base.
+
+## Load guidance (spec 19) — fix
+- setup.md Machine load: the cap is "computed from the core count at run time, never this machine's number" (brief rule).
+- status.mjs load line: add a few words on why (overload makes slow, flaky runs that agents rerun) per Max's note.
+- testing.md:48: say where the second run comes from now that "rerun once, alone" is gone.

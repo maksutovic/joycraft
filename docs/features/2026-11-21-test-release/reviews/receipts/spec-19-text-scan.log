@@ -1,0 +1,20 @@
+payload/.joycraft/references/testing.md:38:Run each command once, in single-run mode with `CI=1`, `JOYCRAFT_EVIDENCE=1` and a 300000 ms
+payload/.joycraft/references/testing.md:47:share the machine, give each test run at most cores ÷ N workers with the
+payload/.joycraft/references/testing.md:48:runner's own flag; a second timeout is reported with both receipts. Never wait in a foreground loop: start a
+payload/.joycraft/references/setup.md:87:     `JOYCRAFT_EVIDENCE` (set on every Joycraft test run), never on `CI`,
+payload/.joycraft/references/setup.md:89:     overloaded machine makes slow and flaky runs that agents then rerun, and
+payload/.joycraft/references/setup.md:90:     the reruns cost more time than the cap. The order is: run less (each
+payload/.joycraft/references/setup.md:91:     spec runs its own tests), then cap workers per run (cores ÷ agents), then
+payload/.joycraft/references/setup.md:92:     a project-owned slot for broad runs, which Joycraft does not ship. When the runner
+payload/.joycraft/references/setup.md:94:     machine-local `.joycraft/local/evidence-env.json`, which `evidence.mjs`
+payload/.joycraft/references/setup.md:95:     applies to every run, never in a tracked file.
+payload/.joycraft/references/testing-review.md:51:Specs that delete tests or change shared test tooling (runner config, guards,
+payload/.joycraft/references/testing-review.md:90:   untracked files included.
+payload/.joycraft/references/testing-page.md:30:   cores ÷ agents workers, set with the runner's own flag in `<config file>`.
+payload/.joycraft/references/testing-page.md:31:   The cap keys on `JOYCRAFT_EVIDENCE`, never on `CI`, so CI keeps full width.
+payload/.joycraft/references/testing-page.md:47:Run less first: the focused test, then the gate. Then cap workers per run
+payload/.joycraft/references/testing-page.md:56:  on `JOYCRAFT_EVIDENCE`. Write the formula, not this machine's number.
+payload/.joycraft/references/testing-page.md:60:- The load order stays in this order: run less, cap workers, then a slot.
+payload/.joycraft/runtime/status.mjs:109:/** One line when any receipt's footer says its run started above the core count; null otherwise. */
+payload/.joycraft/runtime/status.mjs:114:  const cores = Math.max(...loaded.map(footer => (Number.isInteger(footer.cores) ? footer.cores : 0)));
+payload/.joycraft/runtime/status.mjs:115:  return `${loaded.length} of ${footers.length} test runs started above the core count (${cores} cores). Cap workers per run with the runner's own flag; see setup.`;
