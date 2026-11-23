@@ -57,17 +57,13 @@ or check it yourself. The child bootstraps and starts from its actual worker
 root before mutation; never start against a guessed path:
 
 ```sh
-node .joycraft/runtime/dispatch-start.mjs \
-  --worker-root <absolute-worker-root> --expected-manifest <absolute-pinned-manifest> \
-  --queue <queue-path> --spec <id> --role implementer \
-  --implementer-session <actual-session-id> \
-  --capabilities filesystem:read,filesystem:write-report,agent:separate-context \
-  --out .joycraft/local/packets/<packet.json> \
-  --native-session <actual-host-session-id> \
-  --native-agent <actual-host-child-agent-id> \
-  --native-host <host> \
-  --coordinator-session <coordinator-session-id>
+node .joycraft/runtime/dispatch-start.mjs --queue <queue-path> --spec <id> \
+  --role implementer --coordinator-session <coordinator-session-id>
 ```
+
+Other flags have defaults, which `--help` lists. A flag you pass wins. The
+capabilities default is a claim, not an observation: pass `--capabilities` when
+the host shows less. One refusal lists every missing flag.
 
 `--coordinator-session` is required while the queue has a coordinator lease
 (`coordinator.mjs claim`) and must equal the holder; startup output then names
@@ -119,10 +115,10 @@ independent context nor current evidence. Reports carry both actor records or
 neither; see `completion.md` for the legacy fallback.
 
 The setup/export flow writes `.joycraft/installation.json` with the
-actual exported file paths and SHA-256 values. Give the helper an explicit
-absolute `workerRoot` and an explicit pinned expected manifest path; it compares
-role/shared files against both. A worker's own manifest cannot attest that an
-old, internally consistent installation is the intended export.
+actual exported file paths and SHA-256 values. Startup compares role/shared
+files against the worker's copy and the expected manifest (by default, the main
+checkout's copy). A worker's own manifest cannot attest that an old, internally
+consistent installation is the intended export.
 Include the reviewer skill, every reference it needs, and every runtime module
 it needs in `delivery.roles`. A matching path is insufficient when the bytes
 are from an older install.

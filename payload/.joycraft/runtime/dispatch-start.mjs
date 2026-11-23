@@ -10,7 +10,7 @@ import { prepareDispatch } from './dispatch-preflight.mjs';
 import { testChanges } from './test-changes.mjs';
 import { traceSpec } from './trace.mjs';
 import { readLedger } from './worktrees.mjs';
-import { canonical, isObject, localPath, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, validateNativeActor } from './identity.mjs';
+import { canonical, isObject, localPath, parseJson, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, validateNativeActor } from './identity.mjs';
 
 export const reviewLimit = 3;
 
@@ -308,17 +308,57 @@ function gitIgnored(root, relative) {
 }
 
 export const usage = `Usage: node .joycraft/runtime/dispatch-start.mjs \\
-  --worker-root <absolute-worker-root> --expected-manifest <absolute-pinned-manifest> \\
   --queue <queue-path> --spec <id> --role implementer|reviewer \\
-  --implementer-session <implementer-session-id> \\
-  --capabilities filesystem:read,filesystem:write-report[,agent:separate-context] \\
-  --out .joycraft/local/packets/<packet.json> \\
-  --native-session <your-host-session-id> [--native-agent <your-host-agent-id>] [--native-host <host>] \\
-  [--coordinator-session <coordinator-session-id>] [--implementer-host <host> --implementer-agent <id>] \\
+  [--coordinator-session <coordinator-session-id>] \\
+  [--worker-root <absolute-worker-root>] [--expected-manifest <absolute-pinned-manifest>] \\
+  [--native-session <your-host-session-id>] [--native-agent <your-host-agent-id>] [--native-host <host>] \\
+  [--implementer-session <implementer-session-id>] [--implementer-host <host> --implementer-agent <id>] \\
+  [--capabilities filesystem:read,filesystem:write-report[,agent:separate-context]] \\
+  [--out .joycraft/local/packets/<packet.json>] \\
   [--coordinator <root> --parallel true|false --access mutating|read-only] [--base-revision <sha>] \\
   [--brief <path>] [--changes-base <sha>]
-A reviewer adds agent:separate-context. Use host-issued identities only; .joycraft/references/dispatch.md explains each flag.
+Pass --coordinator-session on a claimed queue. A flag you pass wins over its default:
+  --worker-root: this folder.
+  --expected-manifest: .joycraft/installation.json in the main checkout.
+  --native-session: the coordinator lease's session (a child of that session).
+  --implementer-session: the native session for an implementer, the lease session for a reviewer.
+  --out: a fresh packet under .joycraft/local/packets/.
+  --capabilities: filesystem:read,filesystem:write-report, and a reviewer adds agent:separate-context.
+    That default is a claim, not an observation: pass --capabilities when the host shows less.
+Use host-issued identities only. .joycraft/references/dispatch.md explains each flag.
 `;
+
+const requiredFlags = ['--worker-root', '--expected-manifest', '--queue', '--spec', '--role', '--implementer-session', '--out', '--capabilities', '--native-session'];
+
+/** The coordinator lease of the queue at queuePath in root, or null when the
+ * queue cannot be read or has no lease. */
+function queueLease(root, queuePath) {
+  try { return readLease(root, parseJson(readLocal(root, relativePath(queuePath)), queuePath).feature); }
+  catch { return null; }
+}
+
+/** Startup flags with each absent default filled: the worker root from cwd,
+ * the expected manifest from the main checkout's .joycraft/installation.json,
+ * the native and implementer sessions from the coordinator lease, a fresh
+ * packet path and the role's capabilities. `--coordinator-session` has no
+ * default. Returns the filled flags and every required flag still missing. */
+export function startupDefaults(given, cwd = process.cwd()) {
+  const flags = { ...given };
+  flags['--worker-root'] ??= realpathSync(cwd);
+  const root = flags['--worker-root'];
+  flags['--expected-manifest'] ??= path.join(mainTree(root), '.joycraft', 'installation.json');
+  const lease = flags['--queue'] ? queueLease(root, flags['--queue']) : null;
+  if (lease) flags['--native-session'] ??= lease.sessionId;
+  if (flags['--role'] === 'implementer') flags['--implementer-session'] ??= flags['--native-session'];
+  else if (lease) flags['--implementer-session'] ??= lease.sessionId;
+  if (flags['--spec'] && flags['--role']) {
+    flags['--out'] ??= `.joycraft/local/packets/spec-${flags['--spec']}-${flags['--role']}-${new Date().toISOString().replace(/[-:.]/g, '')}-${process.pid}.json`;
+  }
+  if (flags['--role'] === 'implementer' || flags['--role'] === 'reviewer') {
+    flags['--capabilities'] ??= ['filesystem:read', 'filesystem:write-report', ...(flags['--role'] === 'reviewer' ? ['agent:separate-context'] : [])].join(',');
+  }
+  return { flags, missing: requiredFlags.filter(key => !flags[key]) };
+}
 
 export async function main(argv = process.argv.slice(2)) {
   if (argv.length === 1 && ['--help', '-h'].includes(argv[0])) { process.stdout.write(usage); return null; }
@@ -332,9 +372,9 @@ export async function main(argv = process.argv.slice(2)) {
       `Invalid startup argument: ${key}; use named flags with literal values`);
     flags[key] = value;
   }
-  for (const key of ['--worker-root', '--expected-manifest', '--queue', '--spec', '--role', '--implementer-session', '--out', '--capabilities', '--native-session']) {
-    requireValue(flags[key], `Task startup requires ${key}; native identities must come from the active host`);
-  }
+  const { flags: filled, missing } = startupDefaults(flags);
+  requireValue(missing.length === 0, `Task startup requires ${missing.join(', ')}; native identities must come from the active host (--help lists each flag and its default)`);
+  Object.assign(flags, filled);
   requireValue(/^(?:0|[1-9]\d*)$/.test(flags['--spec']), 'Spec ID must be a nonnegative integer');
   requireValue(flags['--parallel'] === undefined || ['true', 'false'].includes(flags['--parallel']), '--parallel must be true or false');
   requireValue(!flags['--implementer-agent'] || flags['--implementer-host'], 'A native implementer agent ID needs its host');

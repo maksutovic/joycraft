@@ -20,11 +20,11 @@ dependency is `done`; a merge or `in-review` status is insufficient. Preserve th
 explicitly owner-accepted dependency. Choose independent ready work while an
 affected branch waits for review, environment repair or a recorded owner hold.
 
-For normal native execution, the host launches the selected worker first. The
-child bootstraps from its actual root, then runs `dispatch-start.mjs --role
-implementer` with its actual native identity before any tasked edit or mutation.
-The coordinator runs that start itself only when it is the implementer actor.
-Use the returned packet only when `ready` is true.
+The host launches the worker first. Before any edit, the worker runs
+`node .joycraft/runtime/dispatch-start.mjs --queue <queue> --spec <id> --role
+implementer --coordinator-session <id>` from its root (`--help` lists the
+defaults). The coordinator runs it only when it implements the spec itself.
+Use the packet only when `ready` is true.
 
 If existing independent reports reveal a possible recurring failure, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md) before carrying it forward.
 

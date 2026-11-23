@@ -2,6 +2,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 import { applyInstall, planInstall } from '../src/install-v1.js';
 
@@ -258,5 +259,79 @@ describe('packet readFirst (sl1-05)', () => {
       expect(packet.readFirst.filter((file: string) => file.endsWith('.mjs'))).toEqual([]);
       expect(packet.roles[0].files).toContain('.joycraft/runtime/completion.mjs');
     }
+  });
+});
+
+// Spec: .joycraft/local/loop/iter2/chair.md, sl2-06 part a (startup flag defaults).
+describe('startup flag defaults (sl2-06a)', () => {
+  const runStart = (root: string, args: string[]) => {
+    const result = spawnSync(process.execPath, [join(root, '.joycraft/runtime/dispatch-start.mjs'), ...args], { cwd: root, encoding: 'utf8' });
+    return { status: result.status, stderr: result.stderr, output: result.status === 0 && result.stdout ? JSON.parse(result.stdout) : null };
+  };
+  const claimQueue = (root: string, session: string) => {
+    const result = spawnSync(process.execPath, [join(root, '.joycraft/runtime/coordinator.mjs'), 'claim', '--queue', queuePath, '--session', session, '--host', 'claude'], { cwd: root, encoding: 'utf8' });
+    expect(result.status, result.stderr).toBe(0);
+  };
+  const packetOf = (root: string, output: { packetPath: string }) => JSON.parse(readFileSync(join(root, output.packetPath), 'utf8'));
+
+  it('[AC:sl2-06a-defaults] on a claimed queue, queue, spec, role and coordinator session are enough for both roles', async () => {
+    const project = fixture({ focused: 'pnpm test {files}' });
+    claimQueue(project.root, 'lead-1');
+    const implementer = runStart(project.root, ['--queue', queuePath, '--spec', '1', '--role', 'implementer', '--coordinator-session', 'lead-1']);
+    expect(implementer.status, implementer.stderr).toBe(0);
+    expect(implementer.output.ready).toBe(true);
+    expect(implementer.output.packetPath).toMatch(/^\.joycraft\/local\/packets\/spec-1-implementer-\S+\.json$/);
+    const implementerPacket = packetOf(project.root, implementer.output);
+    expect(implementerPacket.implementerSessionId).toBe('lead-1');
+    expect(implementerPacket.workerRoot).toBe(project.root);
+    const { startupDefaults } = await import(pathToFileURL(join(project.root, '.joycraft/runtime/dispatch-start.mjs')).href);
+    const filled = startupDefaults({ '--queue': queuePath, '--spec': '1', '--role': 'implementer' }, project.root).flags;
+    expect(filled['--expected-manifest']).toBe(join(project.root, '.joycraft/installation.json'));
+    expect(filled['--capabilities']).toBe('filesystem:read,filesystem:write-report');
+
+    const reviewing = fixture({ focused: 'pnpm test {files}', status: 'in-review' });
+    claimQueue(reviewing.root, 'lead-2');
+    const reviewer = runStart(reviewing.root, ['--queue', queuePath, '--spec', '1', '--role', 'reviewer', '--coordinator-session', 'lead-2']);
+    expect(reviewer.status, reviewer.stderr).toBe(0);
+    // Reviewer startup checks agent:separate-context, so success shows the reviewer default carries it.
+    expect(packetOf(reviewing.root, reviewer.output).implementerSessionId).toBe('lead-2');
+  });
+
+  it('[AC:sl2-06a-one-refusal] one refusal lists every missing flag', () => {
+    const { root } = fixture({});
+    const bare = runStart(root, []);
+    expect(bare.status).toBe(1);
+    expect(bare.stderr).toBe('Task startup stopped: Task startup requires --queue, --spec, --role, --implementer-session, --out, --capabilities, --native-session; native identities must come from the active host (--help lists each flag and its default)\n');
+    // An unclaimed queue has no lease, so the sessions have no default.
+    const unclaimed = runStart(root, ['--queue', queuePath, '--spec', '1', '--role', 'implementer']);
+    expect(unclaimed.status).toBe(1);
+    expect(unclaimed.stderr).toContain('Task startup requires --implementer-session, --native-session;');
+  });
+
+  it('[AC:sl2-06a-explicit-wins] explicit flags win, and --coordinator-session stays explicit', () => {
+    const project = fixture({ focused: 'pnpm test {files}' });
+    claimQueue(project.root, 'lead-1');
+    const explicit = runStart(project.root, ['--queue', queuePath, '--spec', '1', '--role', 'implementer', '--coordinator-session', 'lead-1',
+      '--native-session', 'own-1', '--out', '.joycraft/local/packets/mine.json', '--capabilities', 'filesystem:read,filesystem:write-report,agent:separate-context',
+      '--expected-manifest', project.manifest]);
+    expect(explicit.status, explicit.stderr).toBe(0);
+    expect(explicit.output.packetPath).toBe('.joycraft/local/packets/mine.json');
+    const packet = packetOf(project.root, explicit.output);
+    expect(packet.implementerSessionId).toBe('own-1');
+    // A pinned manifest that lacks the role files refuses, so an explicit --expected-manifest is the one read.
+    writeFileSync(project.manifest, JSON.stringify({ schemaVersion: 1, files: [{ path: 'x', sha256: 'a'.repeat(64) }] }));
+    const pinned = runStart(project.root, ['--queue', queuePath, '--spec', '1', '--role', 'implementer', '--coordinator-session', 'lead-1', '--expected-manifest', project.manifest]);
+    expect(pinned.status).toBe(1);
+    expect(pinned.stderr).toContain('Pinned expected installation does not include');
+    const noCoordinator = runStart(project.root, ['--queue', queuePath, '--spec', '1', '--role', 'implementer']);
+    expect(noCoordinator.status).toBe(1);
+    expect(noCoordinator.stderr).toContain('pass --coordinator-session lead-1');
+  });
+
+  it('[AC:sl2-06a-help] --help names each default and says the capabilities default is a claim', () => {
+    const { root } = fixture({});
+    const help = spawnSync(process.execPath, [join(root, '.joycraft/runtime/dispatch-start.mjs'), '--help'], { cwd: root, encoding: 'utf8' });
+    expect(help.status).toBe(0);
+    for (const line of ['--worker-root: this folder.', '--expected-manifest: .joycraft/installation.json in the main checkout.', "--native-session: the coordinator lease's session", 'That default is a claim, not an observation']) expect(help.stdout).toContain(line);
   });
 });
