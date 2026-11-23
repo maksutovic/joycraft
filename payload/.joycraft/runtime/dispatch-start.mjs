@@ -160,7 +160,7 @@ let receiptCounter = 0;
 // $(, heredoc, source or cd) and a path with a space survives the paste.
 // Reviewer receipts go to <feature>/reviews/receipts/ beside the review
 // evidence; implementer receipts go to <feature>/receipts/.
-function workerCommands({ root, queuePath, spec, role, reportPath, featureFolder, focused }) {
+function workerCommands({ root, queuePath, spec, role, reportPath, featureFolder, focused, agentAtFinish = false }) {
   const stamp = `${new Date().toISOString().replace(/[-:.]/g, '')}-${process.pid}-${receiptCounter += 1}`;
   const receiptFolder = role === 'reviewer' ? path.posix.join(featureFolder, 'reviews', 'receipts') : path.posix.join(featureFolder, 'receipts');
   const receipt = path.posix.join(receiptFolder, `spec-${spec.id}-${role}-focused-${stamp}.log`);
@@ -169,8 +169,10 @@ function workerCommands({ root, queuePath, spec, role, reportPath, featureFolder
   if (focused) steps.evidence = `${line(['node', '.joycraft/runtime/evidence.mjs', 'run', '--receipt', receipt, '--'])} ${focused.command}`;
   if (role === 'implementer') steps.submit = line(['node', '.joycraft/runtime/completion.mjs', 'submit', '--queue', queuePath, '--spec', spec.id]);
   else {
-    steps.checkReport = line(['node', '.joycraft/runtime/dispatch-preflight.mjs', 'check-report', '--worker-root', root, '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
-    steps.finalizeReview = line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
+    steps.checkReport = line(['node', '.joycraft/runtime/dispatch-preflight.mjs', 'check-report', '--worker-root', root, '--queue', queuePath, '--spec', spec.id, '--report', reportPath, ...(agentAtFinish ? ['--agent-at-finish', 'true'] : [])]);
+    // A same-session child cannot see its own agent ID, so the coordinator finalizes with the ID from the launch result.
+    if (agentAtFinish) steps.finish = `Do not run finalize-review. Return the report path: the coordinator runs ${line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath])} --reviewer-agent <agent ID from the launch result>.`;
+    else steps.finalizeReview = line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
   }
   return steps;
 }
@@ -267,7 +269,8 @@ export async function startDispatch(options, nativeEvent) {
   const { focused, note } = focusedCommand({ root, spec, config });
   const commands = { focused, ...(note ? { note } : {}),
     ...workerCommands({ root, queuePath, spec, role: options.role, reportPath: packet.outputContract.reportPath,
-      featureFolder: path.posix.dirname(path.posix.dirname(queuePath)), focused }) };
+      featureFolder: path.posix.dirname(path.posix.dirname(queuePath)), focused,
+      agentAtFinish: nativeEvent.agent_id === undefined && nativeEvent.session_id === options.implementerSessionId }) };
   return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(warnings.length ? { warnings } : {}), ...(trace ? { trace } : {}), ...(changes ? { testChanges: changes } : {}), commands,
     ready: !hookConfig.enabled || hooks.eligible === true };
 }

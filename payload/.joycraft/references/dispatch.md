@@ -75,10 +75,12 @@ command: never chain them with `&&`, `;` or `|`, or use `$(git …)`, a heredoc,
 the startup output's `commands`. For a root or revision, run `pwd` or
 `git rev-parse HEAD` alone and paste the value.
 
-`--native-agent` is present only when the host issued a child identity;
+Pass `--native-agent` only with a host-issued child ID the child can see.
 `--native-host` is optional. Use actual host-issued values only. A Claude Code
-child cannot see its own agent ID: the coordinator sends it the ID from the
-launch result before its startup. The start flow
+child cannot see its own agent ID. A reviewer child starts without it, writes
+`reviewer.actor` without `agentId` and returns the report path. The coordinator
+runs `finalize-review --reviewer-agent <id from the launch result>`, which writes
+the ID into the report before it checks and hashes it. The start flow
 consumes the existing `--coordinator`, `--parallel`, `--access`,
 `--base-revision`, `--implementer-host`, and `--implementer-agent` options.
 Startup never writes `verification.changeScope`; a spec opts in by recording
@@ -101,13 +103,11 @@ session end. The session-end summary lists every held spec again.
 A valid startup returns `hooks: { enabled: false, reason: "hooks-not-installed" }`
 and `ready: true`. It is not a cryptographic attestation.
 
-When the host reports a native agent/invocation ID, also pass
-`--implementer-host <host> --implementer-agent <actual-agent-id>`. For a root
-session, `--implementer-host <host>` may be used without a child agent ID.
-Record the returned reviewer actor after launch; never invent it before dispatch.
-Claude's plain Agent worker can share the parent session while having its own
-native agent ID. It can review in the same checkout when a separate context is
-observed and the reviewed inputs stay fixed. A worktree alone proves neither
+When the host reports a native agent ID, also pass `--implementer-host <host>
+--implementer-agent <actual-agent-id>`. A root session can pass
+`--implementer-host <host>` alone. A Claude Code reviewer child can review in
+the same checkout when a separate context is observed and the reviewed inputs
+stay fixed. A worktree alone proves neither
 independent context nor current evidence. Reports carry both actor records or
 neither; see `completion.md` for the legacy fallback.
 

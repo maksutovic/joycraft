@@ -52,9 +52,12 @@ export function sameNativeActor(left, right) {
 /**
  * Validate the role-attested independent-review identity shared by completion
  * and session-end archival. This is intentionally an integrity check, not a
- * cryptographic authentication service.
+ * cryptographic authentication service. With agentAtFinish, a reviewer that
+ * shares the implementer's session and has no agentId yet passes: the
+ * coordinator binds its ID at finish (finalize-review --reviewer-agent), and
+ * finalize-review runs the full check. Only that child-ID check is skipped.
  */
-export function validateIndependentReview(report) {
+export function validateIndependentReview(report, { agentAtFinish = false } = {}) {
   requireValue(nonempty(report?.implementerSessionId) && isObject(report?.reviewer) && nonempty(report.reviewer.sessionId), 'Report needs implementer and reviewer session IDs');
   const hasImplementerActor = report.implementerActor !== undefined;
   const hasReviewerActor = report.reviewer.actor !== undefined;
@@ -64,10 +67,15 @@ export function validateIndependentReview(report) {
     const reviewerActor = validateNativeActor(report.reviewer.actor, 'Reviewer actor');
     requireValue(implementerActor.sessionId === report.implementerSessionId, 'Implementer actor sessionId must match implementerSessionId');
     requireValue(reviewerActor.sessionId === report.reviewer.sessionId, 'Reviewer actor sessionId must match reviewer.sessionId');
-    requireValue(!sameNativeActor(implementerActor, reviewerActor), 'An independent reviewer must have a distinct native actor');
-    if (implementerActor.host.toLowerCase() === reviewerActor.host.toLowerCase() && implementerActor.sessionId === reviewerActor.sessionId) {
-      requireValue(reviewerActor.agentId !== undefined, 'A reviewer sharing the implementer root session needs its host-issued child identity');
-      requireValue(implementerActor.agentId !== reviewerActor.agentId, 'A reviewer sharing the implementer root session needs a distinct child identity');
+    const sameSession = implementerActor.host.toLowerCase() === reviewerActor.host.toLowerCase() && implementerActor.sessionId === reviewerActor.sessionId;
+    // A same-session child with no agentId yet waits for its ID at finish; the rest of the report is still checked.
+    if (!(agentAtFinish && sameSession && reviewerActor.agentId === undefined)) {
+      const hint = sameSession && reviewerActor.agentId === undefined ? '; pass the agent ID from the launch result as finalize-review --reviewer-agent <id>' : '';
+      requireValue(!sameNativeActor(implementerActor, reviewerActor), `An independent reviewer must have a distinct native actor${hint}`);
+      if (sameSession) {
+        requireValue(reviewerActor.agentId !== undefined, `A reviewer sharing the implementer root session needs its host-issued child identity${hint}`);
+        requireValue(implementerActor.agentId !== reviewerActor.agentId, 'A reviewer sharing the implementer root session needs a distinct child identity');
+      }
     }
   } else {
     requireValue(report.reviewer.sessionId !== report.implementerSessionId, 'An independent reviewer with a distinct session ID is required');

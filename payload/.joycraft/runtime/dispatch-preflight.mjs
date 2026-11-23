@@ -505,14 +505,15 @@ export function nativeDispatch(request, native = {}) {
   };
 }
 
-/** Validate a returned report without accepting it or changing queue/spec status. */
-export async function checkDispatchedReport({ workerRoot, queuePath, specId, reportPath }) {
-  return checkReport({ root: workerDirectory(workerRoot), queuePath, specId, reportPath });
+/** Validate a returned report without accepting it or changing queue/spec status.
+ * With agentAtFinish, a same-session reviewer's missing agent ID waits for finalize-review --reviewer-agent. */
+export async function checkDispatchedReport({ workerRoot, queuePath, specId, reportPath, agentAtFinish = false }) {
+  return checkReport({ root: workerDirectory(workerRoot), queuePath, specId, reportPath, agentAtFinish });
 }
 
 function argumentsFor(argv) {
   const [command, ...args] = argv;
-  requireValue(['preflight', 'prepare', 'check-report'].includes(command), 'Usage: dispatch-preflight.mjs preflight --request <request.json> | prepare --worker-root <root> --expected-manifest <manifest> --queue <path> --spec <id> --role implementer|reviewer --implementer-session <id> --out <packet.json> [--coordinator <root> --parallel true|false --access mutating|read-only --base-revision <full-commit-sha>] [--implementer-host <host> --implementer-agent <host-issued-id>] [--brief <path>] | check-report --worker-root <root> --queue <path> --spec <id> --report <report-path>');
+  requireValue(['preflight', 'prepare', 'check-report'].includes(command), 'Usage: dispatch-preflight.mjs preflight --request <request.json> | prepare --worker-root <root> --expected-manifest <manifest> --queue <path> --spec <id> --role implementer|reviewer --implementer-session <id> --out <packet.json> [--coordinator <root> --parallel true|false --access mutating|read-only --base-revision <full-commit-sha>] [--implementer-host <host> --implementer-agent <host-issued-id>] [--brief <path>] | check-report --worker-root <root> --queue <path> --spec <id> --report <report-path> [--agent-at-finish true]');
   const flags = {};
   for (let i = 0; i < args.length; i += 2) {
     requireValue(nonempty(args[i]) && nonempty(args[i + 1]) && flags[args[i]] === undefined, `Invalid or duplicate argument: ${args[i]}`);
@@ -542,9 +543,10 @@ export async function main(argv = process.argv.slice(2)) {
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     return result;
   }
-  requireValue(Object.keys(flags).length === 4 && flags['--worker-root'] && flags['--queue'] && flags['--spec'] && flags['--report'], 'check-report requires --worker-root, --queue, --spec, and --report');
+  requireValue(Object.keys(flags).every(flag => ['--worker-root', '--queue', '--spec', '--report', '--agent-at-finish'].includes(flag)) && flags['--worker-root'] && flags['--queue'] && flags['--spec'] && flags['--report'], 'check-report requires --worker-root, --queue, --spec, and --report, with optional --agent-at-finish true');
+  requireValue(flags['--agent-at-finish'] === undefined || flags['--agent-at-finish'] === 'true', '--agent-at-finish takes only true');
   requireValue(/^(?:0|[1-9]\d*)$/.test(flags['--spec']), 'Spec ID must be a nonnegative integer');
-  const result = await checkDispatchedReport({ workerRoot: flags['--worker-root'], queuePath: flags['--queue'], specId: Number(flags['--spec']), reportPath: flags['--report'] });
+  const result = await checkDispatchedReport({ workerRoot: flags['--worker-root'], queuePath: flags['--queue'], specId: Number(flags['--spec']), reportPath: flags['--report'], agentAtFinish: flags['--agent-at-finish'] === 'true' });
   process.stdout.write(`${JSON.stringify({ ok: true, acceptedReport: result.acceptedReport }, null, 2)}\n`);
   return result;
 }

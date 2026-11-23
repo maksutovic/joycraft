@@ -1,4 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -333,5 +334,105 @@ describe('startup flag defaults (sl2-06a)', () => {
     const help = spawnSync(process.execPath, [join(root, '.joycraft/runtime/dispatch-start.mjs'), '--help'], { cwd: root, encoding: 'utf8' });
     expect(help.status).toBe(0);
     for (const line of ['--worker-root: this folder.', '--expected-manifest: .joycraft/installation.json in the main checkout.', "--native-session: the coordinator lease's session", 'That default is a claim, not an observation']) expect(help.stdout).toContain(line);
+  });
+});
+
+// Spec: .joycraft/local/loop/iter2/chair.md, sl2-06 part c (reviewer ID bound at finish).
+describe('reviewer agent ID bound at finish (sl2-06c)', () => {
+  const reportPath = `${folder}/specs/review-1.report.json`;
+  const sha = (bytes: Buffer | string) => createHash('sha256').update(bytes).digest('hex');
+  const node = (root: string, script: string, args: string[]) => spawnSync(process.execPath, [join(root, '.joycraft/runtime', script), ...args], { cwd: root, encoding: 'utf8' });
+  const checkReport = (root: string, ...extra: string[]) => node(root, 'dispatch-preflight.mjs', ['check-report', '--worker-root', root, '--queue', queuePath, '--spec', '1', '--report', reportPath, ...extra]);
+  const finalize = (root: string, ...extra: string[]) => node(root, 'completion.mjs', ['finalize-review', '--queue', queuePath, '--spec', '1', '--report', reportPath, ...extra]);
+
+  /** An in-review spec with a PASS report from a child of the implementer's session that wrote no agentId. */
+  function reviewed({ implementerAgent, reviewerAgent }: { implementerAgent?: string; reviewerAgent?: string } = {}) {
+    const { root } = fixture({ status: 'in-review' });
+    const out = node(root, 'completion.mjs', ['snapshot', '--queue', queuePath, '--spec', '1', '--out', '.joycraft/local/subject.json']);
+    expect(out.status, out.stderr).toBe(0);
+    const subject = JSON.parse(readFileSync(join(root, '.joycraft/local/subject.json'), 'utf8'));
+    put(join(root, '.joycraft/local/receipt.log'), 'ok\n');
+    const report = { schemaVersion: 1, subject, implementerSessionId: 'lead-1', implementerActor: { host: 'claude', sessionId: 'lead-1', ...(implementerAgent ? { agentId: implementerAgent } : {}) },
+      reviewer: { sessionId: 'lead-1', actor: { host: 'claude', sessionId: 'lead-1', ...(reviewerAgent ? { agentId: reviewerAgent } : {}) }, independent: true, scopeReviewed: true },
+      verdict: 'PASS', unresolved: [], createdAt: new Date().toISOString(),
+      flows: [{ id: 'flow-1', subjectIdentity: subject.identity, representativeInput: 'the fixture', expected: 'the tests pass', limits: ['fixture only'], criteria: ['spec-1-1'],
+        observations: [{ kind: 'runtime', method: 'test', result: 'PASS', actual: 'they passed', receipts: [{ path: '.joycraft/local/receipt.log', sha256: sha('ok\n') }], command: { argv: ['pnpm', 'test', 'tests/a.test.ts'], exitCode: 0 } }] }] };
+    put(join(root, reportPath), JSON.stringify(report, null, 2));
+    return root;
+  }
+  const status = (root: string) => JSON.parse(readFileSync(join(root, queuePath), 'utf8')).specs[0].status;
+
+  it('[AC:sl2-06c-check] check-report skips only the child-ID check in agent-at-finish mode', () => {
+    const root = reviewed();
+    const strict = checkReport(root);
+    expect(strict.status).toBe(1);
+    expect(strict.stderr).toContain('finalize-review --reviewer-agent <id>');
+    const deferred = checkReport(root, '--agent-at-finish', 'true');
+    expect(deferred.status, deferred.stderr).toBe(0);
+    // Every other check still runs: a reviewer that is not independent is refused in the same mode.
+    const report = JSON.parse(readFileSync(join(root, reportPath), 'utf8'));
+    put(join(root, reportPath), JSON.stringify({ ...report, reviewer: { ...report.reviewer, independent: false } }, null, 2));
+    const notIndependent = checkReport(root, '--agent-at-finish', 'true');
+    expect(notIndependent.status).toBe(1);
+    expect(notIndependent.stderr).toContain('An independent reviewer is required');
+    expect(checkReport(root, '--agent-at-finish', 'yes').stderr).toContain('--agent-at-finish takes only true');
+  });
+
+  it('[AC:sl2-06c-finish] finalize-review writes the launch-result ID into the report, then checks and hashes it', () => {
+    const root = reviewed();
+    const without = finalize(root);
+    expect(without.status).toBe(1);
+    expect(without.stderr).toContain('An independent reviewer must have a distinct native actor; pass the agent ID from the launch result as finalize-review --reviewer-agent <id>');
+    expect(status(root)).toBe('in-review');
+    const bound = finalize(root, '--reviewer-agent', 'agent-7');
+    expect(bound.status, bound.stderr).toBe(0);
+    const result = JSON.parse(bound.stdout);
+    expect(result).toMatchObject({ status: 'done', unchanged: false });
+    const bytes = readFileSync(join(root, reportPath));
+    expect(JSON.parse(bytes.toString('utf8')).reviewer.actor).toEqual({ host: 'claude', sessionId: 'lead-1', agentId: 'agent-7' });
+    expect(result.acceptedReport.sha256).toBe(sha(bytes));
+    // The same call again is idempotent, and the report is not written again.
+    const again = finalize(root, '--reviewer-agent', 'agent-7');
+    expect(again.status, again.stderr).toBe(0);
+    expect(JSON.parse(again.stdout).unchanged).toBe(true);
+    expect(readFileSync(join(root, reportPath)).equals(bytes)).toBe(true);
+  });
+
+  it('[AC:sl2-06c-distinct] the distinct-actor check stays: the implementer\'s own ID or a different recorded ID is refused', () => {
+    const same = reviewed({ implementerAgent: 'agent-1' });
+    const refused = finalize(same, '--reviewer-agent', 'agent-1');
+    expect(refused.status).toBe(1);
+    expect(refused.stderr).toContain('distinct');
+    expect(status(same)).toBe('in-review');
+    const recorded = reviewed({ reviewerAgent: 'agent-9' });
+    const before = readFileSync(join(recorded, reportPath));
+    const differs = finalize(recorded, '--reviewer-agent', 'agent-7');
+    expect(differs.status).toBe(1);
+    expect(differs.stderr).toContain('differs from --reviewer-agent');
+    expect(readFileSync(join(recorded, reportPath)).equals(before)).toBe(true);
+    // A legacy report without reviewer.actor cannot take an ID.
+    const legacy = reviewed();
+    const report = JSON.parse(readFileSync(join(legacy, reportPath), 'utf8'));
+    delete report.implementerActor; delete report.reviewer.actor;
+    put(join(legacy, reportPath), JSON.stringify(report, null, 2));
+    expect(finalize(legacy, '--reviewer-agent', 'agent-7').stderr).toContain('--reviewer-agent needs a report with reviewer.actor');
+  });
+
+  it('[AC:sl2-06c-commands] a same-session reviewer with no agent ID gets check-report in agent-at-finish mode and no finalize step', () => {
+    const project = fixture({ focused: 'pnpm test {files}', status: 'in-review' });
+    const claim = node(project.root, 'coordinator.mjs', ['claim', '--queue', queuePath, '--session', 'lead-1', '--host', 'claude']);
+    expect(claim.status, claim.stderr).toBe(0);
+    const child = node(project.root, 'dispatch-start.mjs', ['--queue', queuePath, '--spec', '1', '--role', 'reviewer', '--coordinator-session', 'lead-1']);
+    expect(child.status, child.stderr).toBe(0);
+    const commands = JSON.parse(child.stdout).commands;
+    expect(commands.checkReport).toBe(`node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root ${project.root} --queue ${queuePath} --spec 1 --report ${reportPath} --agent-at-finish true`);
+    expect(commands.finalizeReview).toBeUndefined();
+    expect(commands.finish).toBe(`Do not run finalize-review. Return the report path: the coordinator runs node .joycraft/runtime/completion.mjs finalize-review --queue ${queuePath} --spec 1 --report ${reportPath} --reviewer-agent <agent ID from the launch result>.`);
+    const withAgent = node(project.root, 'dispatch-start.mjs', ['--queue', queuePath, '--spec', '1', '--role', 'reviewer', '--coordinator-session', 'lead-1', '--native-agent', 'agent-7']);
+    expect(withAgent.status, withAgent.stderr).toBe(0);
+    const own = JSON.parse(withAgent.stdout).commands;
+    expect(own.checkReport).not.toContain('--agent-at-finish');
+    expect(own.finalizeReview).toBe(`node .joycraft/runtime/completion.mjs finalize-review --queue ${queuePath} --spec 1 --report ${reportPath}`);
+    expect(own.finish).toBeUndefined();
   });
 });
