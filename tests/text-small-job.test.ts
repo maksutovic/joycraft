@@ -35,7 +35,7 @@ describe('small-job rules in the managed block', () => {
 
   it.each([
     // Small job: the line, the first commit, the brief, the guesses.
-    'it fits one session (several goals can), every open choice (an API format too) can be an `Assumed:` line, and has no auth, payment, deploy or data-migration change.',
+    'it fits one session (several goals can), every open choice has a safe default (`Assumed:` line, never ask), and has no auth, payment, deploy or data-migration change.',
     'When Git has no commit yet, first commit what is there as `chore: set up Joycraft`.',
     'Write `docs/features/<slug>/brief.md` (the features folder in `joycraft.yaml` when set)',
     "the user's request word for word, then a \"Done when\" list with one group for each goal.",
@@ -63,7 +63,7 @@ describe('small-job rules in the managed block', () => {
     'Final message, at most 120 words: how to run the result, each guess that changes the answer, then the line that the command printed.',
     // Feature: the full loop, and when a small job escalates.
     'Feature: all other work, or when the user asks for the full loop: use the `joycraft-entry` skill.',
-    'A small job becomes a feature when it needs an owner answer, meets one of those changes, or fails the same check twice: keep the brief and add specs.',
+    'A small job becomes a feature when a choice has no safe default, meets one of those changes, or fails the same check twice: keep the brief and add specs.',
   ])('[AC:sl2-03] [AC:sl3-01-work-line] pins: %s', phrase => {
     expect(workLines.join('\n')).toContain(phrase);
   });
@@ -93,7 +93,7 @@ describe('small-job routing in the skills, setup and templates', () => {
     const entry = text('.agents/skills/joycraft-entry/SKILL.md');
     expect(entry).toMatch(/^description: Set up Joycraft or start a feature\./m);
     const body = entry.split(/^---$/m)[2].trim();
-    expect(body.split('\n\n')[0].replace(/\s+/g, ' ')).toBe('A small job by the `Work` line in `AGENTS.md` does not use this skill and reads nothing here.');
+    expect(body.split('\n\n')[0].replace(/\s+/g, ' ')).toBe('A small job by the `Work` line in `AGENTS.md` does not use this skill and reads nothing here. Start your reply with `Path: feature`.');
     // [AC:sl3-01-entry-text] the close runs the tests, and the skill stays within 1,287 words.
     expect(entry.replace(/\s+/g, ' ')).toContain('A small job has no code review: its look and the tests that its close runs are its checks.');
     expect(entry.split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(1287);

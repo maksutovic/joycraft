@@ -5,7 +5,7 @@ compatibility: Setup helpers require Node.js 22+ and the installed .joycraft run
 ---
 
 A small job by the `Work` line in `AGENTS.md` does not use this skill and reads
-nothing here.
+nothing here. Start your reply with `Path: feature`.
 
 Run `node .joycraft/runtime/update-check.mjs check` first, once per session. If it
 prints nothing, say nothing. If it prints one line, end your next reply with it.
