@@ -41,8 +41,9 @@ function readQueueFile(root, queuePath) {
 
 /** Create a worker tree for one spec from a captured base revision and record its owner. */
 export function createWorktree({ root = process.cwd(), queuePath, specId, session, base = 'HEAD' }) {
+  const main = gitRoot(root);
   const here = realpathSync(git(root, ['rev-parse', '--show-toplevel']).trim());
-  root = gitRoot(root);
+  root = main;
   queuePath = relativePath(queuePath);
   requireValue(typeof session === 'string' && session.trim(), 'Creating a worker tree needs the coordinator --session');
   const queue = readQueueFile(root, queuePath);
