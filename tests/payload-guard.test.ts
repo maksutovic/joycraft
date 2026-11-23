@@ -22,7 +22,7 @@ const FIELD_24_WORDS = 29919;
 // Every-spec text is what an agent reads while it works a spec: the implement,
 // verify, decompose and testing skills, the implementer and reviewer agent
 // files, and the references those always read per spec, including worktrees.md,
-// which every dispatch packet lists in readFirst (dispatch-preflight.mjs). Other
+// which the implement and verify skills link for worker isolation. Other
 // references they link (architecture, artifacts, delivery, recurring failures)
 // are read only "when" a condition holds, so they are on-demand. Every-spec text
 // stays flat: its cap is the field-24 total minus the on-demand words measured
@@ -55,7 +55,7 @@ export const EVERY_SPEC_FILES: Record<string, string> = {
   '.joycraft/references/dispatch.md': 'implement and the implementer run its dispatch preflight on every spec',
   '.joycraft/references/completion.md': 'the reviewer reads it at start; verify and implement use it to submit and accept',
   '.joycraft/references/gates.md': 'the gate check and Stop hook run on every spec once gates are on',
-  '.joycraft/references/worktrees.md': 'every implementer and reviewer packet lists it in readFirst (dispatch-preflight.mjs)',
+  '.joycraft/references/worktrees.md': 'the implement and verify skills link it for worker isolation; a packet\'s readFirst is AGENTS.md and the role skill only',
 };
 export const EVERY_SPEC_CAP = FIELD_24_WORDS - 17663;
 // Decision `on-demand-budget` = `plus-1500` (Max, 2026-11-21): on-demand text may
@@ -388,7 +388,8 @@ describe('shipped payload text', () => {
     expect(bundle.read('.agents/skills/joycraft-testing/SKILL.md')).not.toMatch(/sized like neighboring tests/);
     // sl1-01 added the 17-word small-job scope line to the implement skill. The cut still holds against the
     // count before spec 1 plus that line; EVERY_SPEC_CAP stays the limit for new every-spec text.
-    expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(12201 + 17);
+    // sl1-05 added the 17-word sentence in the decompose skill that names the four input kinds.
+    expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(12201 + 17 + 17);
   });
 
   it('every relative link and named reference or runtime path is shipped', () => {

@@ -22,6 +22,17 @@ function queuePaths(root) {
     .map(entry => `${featuresHome}/${entry.name}/${queueName}`).sort();
 }
 
+/** Briefs under the features folder with no queue: small jobs not yet closed. Report only; they never change the exit code. */
+function openBriefs(root) {
+  const featuresHome = workPaths(root).features;
+  const home = path.join(root, featuresHome);
+  if (!existsSync(home)) return [];
+  return readdirSync(home, { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && existsSync(path.join(home, entry.name, 'brief.md')) && !existsSync(path.join(home, entry.name, queueName)))
+    .map(entry => ({ folder: `${featuresHome}/${entry.name}`, brief: `${featuresHome}/${entry.name}/brief.md` }))
+    .sort((left, right) => left.folder.localeCompare(right.folder));
+}
+
 // A legacy acceptance has no review behind it, so its decision file must still hold the owner's words.
 function legacyIntact(root, queuePath, spec) {
   try {
@@ -116,9 +127,9 @@ function loadLine(root, receipts) {
   return `${loaded.length} of ${footers.length} test runs started above the core count${counts.length ? ` (${list} cores)` : ''}. An overloaded machine makes slow, flaky runs that agents rerun. Cap workers per run with the runner's own flag; see setup.`;
 }
 
-/** Report every queue's specs (in paths.features), drift between queue and frontmatter, features ready to archive,
+/** Report every queue's specs (in paths.features, or only `queue` when given), drift between queue and frontmatter, features ready to archive,
  * a feature's `load` line when its test runs started loaded, and the questions for the user: follow-ups of accepted reports and decision-needed findings of current reports. */
-export function projectStatus({ root = process.cwd(), fix = false } = {}) {
+export function projectStatus({ root = process.cwd(), fix = false, queue: only = null } = {}) {
   const features = [];
   const drift = [];
   const fixed = [];
@@ -127,7 +138,8 @@ export function projectStatus({ root = process.cwd(), fix = false } = {}) {
   const questions = [];
   const unreadReports = [];
   const legacyDecisions = [];
-  for (const queuePath of queuePaths(root)) {
+  const named = only === null ? null : path.posix.normalize((path.isAbsolute(only) ? path.relative(root, only) : only).split(path.sep).join('/'));
+  for (const queuePath of named === null ? queuePaths(root) : [named]) {
     const folder = path.posix.dirname(path.posix.dirname(queuePath));
     let queue;
     try { queue = parseJson(readLocal(root, queuePath), queuePath); validateQueue(queue, { select: () => false }); }
@@ -162,17 +174,17 @@ export function projectStatus({ root = process.cwd(), fix = false } = {}) {
     features.push({ feature: queue.feature, queuePath, pendingJournal, specs, ...(load ? { load } : {}) });
     if (queue.specs.every(spec => spec.status === 'done')) readyToArchive.push({ feature: queue.feature, folder, openDecisions: openDecisions(root, folder) });
   }
-  return { features, drift, fixed, readyToArchive, worktrees: worktreeCounts(root), problems, questions, unreadReports, legacyDecisions };
+  return { features, drift, fixed, readyToArchive, worktrees: worktreeCounts(root), problems, questions, unreadReports, legacyDecisions, openBriefs: openBriefs(root) };
 }
 
 export async function main(argv = process.argv.slice(2)) {
   const flags = {};
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--fix') { flags['--fix'] = true; continue; }
-    if (argv[index] === '--root') { flags['--root'] = argv[index + 1]; index += 1; continue; }
-    throw new Error('Usage: status.mjs [--root <project>] [--fix]');
+    if (['--root', '--queue'].includes(argv[index]) && argv[index + 1] !== undefined && !argv[index + 1].startsWith('--')) { flags[argv[index]] = argv[index + 1]; index += 1; continue; }
+    throw new Error('Usage: status.mjs [--root <project>] [--queue <queue-path>] [--fix]');
   }
-  const result = projectStatus({ root: path.resolve(flags['--root'] ?? '.'), fix: flags['--fix'] === true });
+  const result = projectStatus({ root: path.resolve(flags['--root'] ?? '.'), fix: flags['--fix'] === true, queue: flags['--queue'] ?? null });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (result.drift.length || result.problems.length || result.legacyDecisions.length) process.exitCode = 2;
   return result;

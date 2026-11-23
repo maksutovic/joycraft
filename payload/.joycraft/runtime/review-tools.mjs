@@ -809,7 +809,7 @@ export function recordReviewLoop(root, plan, { skipped = [], choose = [], comman
     const cell = ({ tool, pick, skipped: off }) => {
       if (tool) return `${tool.label}: ${off ? 'not reviewed (user skipped)' : statusText(tool)}`;
       const same = detected.find(item => item.id === pick.id && item.status === 'present');
-      return `${pick.label}: ${off ? 'not reviewed (user skipped)' : same ? statusText(same) : 'chosen by the user'}${pick.shared ? `, shared harness for ${pick.shared}` : ''}${pick.source ? ` (${pick.source})` : ''}`;
+      return `${pick.label}: ${off ? 'not reviewed (user skipped)' : same ? statusText(same) : 'recorded choice'}${pick.shared ? `, shared harness for ${pick.shared}` : ''}${pick.source ? ` (${pick.source})` : ''}`;
     };
     const used = items.filter(item => !item.skipped);
     const shows = [...new Set(used.flatMap(item => (item.tool ?? item.pick).canShow ?? []))];
@@ -860,7 +860,14 @@ export function reviewLoopSection(root) {
   return { ...(section ? { path: 'AGENTS.md', section } : {}), ...(local ? { local: { path: localFile, record: local } } : {}) };
 }
 
+const usage = 'Usage: review-tools.mjs plan|install|record --root <project> [--packages apps/web,apps/api] [--host-tools browser,simulator] [--tools playwright --yes]'
+  + ' [record: --choose <package>=<tool> --command <package>=<command> --can-show <package>=picture,run --skip <tool>|<package>:<tool>|<package> --host <name> | --none "<reason>"]';
+
 export async function main(argv = process.argv.slice(2)) {
+  if (argv.some(word => word === '--help' || word === '-h')) {
+    process.stdout.write(`${usage}\n`);
+    return { help: true };
+  }
   const [command, ...rest] = argv;
   const flags = {};
   const repeated = new Set(['--choose', '--command', '--can-show', '--skip']);
@@ -898,8 +905,7 @@ export async function main(argv = process.argv.slice(2)) {
     process.stdout.write(`${JSON.stringify(result)}\n`);
     return result;
   }
-  throw new Error('Usage: review-tools.mjs plan|install|record --root <project> [--packages apps/web,apps/api] [--host-tools browser,simulator] [--tools playwright --yes]'
-    + ' [record: --choose <package>=<tool> --command <package>=<command> --can-show <package>=picture,run --skip <tool>|<package>:<tool>|<package> --host <name> | --none "<reason>"]');
+  throw new Error(usage);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

@@ -469,7 +469,8 @@ export function prepareDispatch({ workerRoot, coordinatorRoot, parallel, access,
   const packet = {
     schemaVersion: 1, ...prepared, role, implementerSessionId, ...(implementerActor === undefined ? {} : { implementerActor }), subject,
     // The project's entry file comes first: its rules bind a worker, and its map names the pages for the spec.
-    readFirst: [...(existsSync(path.join(root, 'AGENTS.md')) ? ['AGENTS.md'] : []), ...prepared.roles[0].files],
+    // Then the role skill only. Its links name the references to read and when; runtime scripts are run, not read.
+    readFirst: [...(existsSync(path.join(root, 'AGENTS.md')) ? ['AGENTS.md'] : []), prepared.roles[0].files[0]],
     outputContract: { reportPath: reportDestination, schemaVersion: 1, completeWith: 'node .joycraft/runtime/completion.mjs finalize-review --queue <queue-path> --spec <id> --report <report-path>' },
     nativePrompt: role === 'reviewer' ? 'Read the listed files first. Review current raw sources and report observed evidence only. Do not infer an expected verdict or reasoning. Return the schema-v1 report at the declared report path.' : 'Read the listed files first. Implement only the current raw task sources. Do not certify acceptance; preserve planned missing inputs as work to create, then prepare an independent review after committing.',
   };

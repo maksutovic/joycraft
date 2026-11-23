@@ -237,3 +237,26 @@ describe('no Git: early plain refusal (sl1-03)', () => {
     expect(result.stderr).not.toContain('git-ignored');
   });
 });
+
+// Spec: .joycraft/local/loop/iter1/chair.md, sl1-05 (readFirst is AGENTS.md plus the role skill).
+describe('packet readFirst (sl1-05)', () => {
+  const packetOf = (root: string, output: { packetPath: string }) => JSON.parse(readFileSync(join(root, output.packetPath), 'utf8'));
+
+  it('[AC:sl1-05-readfirst] each packet lists AGENTS.md and the role skill only, with no runtime .mjs', () => {
+    const project = fixture({ focused: 'pnpm test {files}' });
+    writeFileSync(join(project.root, 'AGENTS.md'), '# Demo\n');
+    const implementer = start(project, 'implementer');
+    expect(implementer.status, implementer.stderr).toBe(0);
+    const implementerPacket = packetOf(project.root, implementer.output);
+    expect(implementerPacket.readFirst).toEqual(['AGENTS.md', '.claude/skills/joycraft-implement/SKILL.md']);
+    const reviewing = fixture({ focused: 'pnpm test {files}', status: 'in-review' });
+    const reviewer = start(reviewing, 'reviewer');
+    expect(reviewer.status, reviewer.stderr).toBe(0);
+    const reviewerPacket = packetOf(reviewing.root, reviewer.output);
+    expect(reviewerPacket.readFirst).toEqual(['.claude/skills/joycraft-verify/SKILL.md']);
+    for (const packet of [implementerPacket, reviewerPacket]) {
+      expect(packet.readFirst.filter((file: string) => file.endsWith('.mjs'))).toEqual([]);
+      expect(packet.roles[0].files).toContain('.joycraft/runtime/completion.mjs');
+    }
+  });
+});

@@ -137,7 +137,15 @@ describe('a queue-less brief in the runtime', () => {
     put(join(root, 'docs/archive/y/brief.md'), '# Add a title\n\nAdd a title.\n\n## Goals\n\n- Done when: the page shows a title. test: `tests/title.test.ts`\n- Look: OK\n');
     git(root, 'add', '.');
     git(root, 'commit', '-q', '-m', 'small jobs');
-    expect(reports(root)).toEqual(before);
+    // sl1-05: status lists the open brief in its report-only openBriefs; nothing else changes.
+    const after = reports(root);
+    const { openBriefs: opened, ...statusAfter } = JSON.parse(after[1].stdout);
+    const { openBriefs: none, ...statusBefore } = JSON.parse(before[1].stdout);
+    expect(opened).toEqual([{ folder: 'docs/features/x', brief: 'docs/features/x/brief.md' }]);
+    expect(none).toEqual([]);
+    expect(statusAfter).toEqual(statusBefore);
+    expect([after[0], after[2], after[3]]).toEqual([before[0], before[2], before[3]]);
+    expect(after.map(report => report.status)).toEqual(before.map(report => report.status));
     expect(before.map(report => report.status)).toEqual([0, 0, 0, 0]);
   });
 });

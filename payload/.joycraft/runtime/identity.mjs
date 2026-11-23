@@ -150,11 +150,32 @@ function validateScope(scope, label) {
   };
 }
 
+const kindWords = {
+  implementation: 'code', source: 'code', src: 'code', file: 'code', module: 'code', component: 'code',
+  spec: 'requirement', brief: 'requirement', doc: 'requirement', docs: 'requirement', queue: 'requirement', requirements: 'requirement',
+  test: 'check', tests: 'check', testing: 'check', checks: 'check', verification: 'check', config: 'check', configuration: 'check',
+  fixtures: 'fixture', data: 'fixture', sample: 'fixture', example: 'fixture',
+};
+
+/** Suggest a valid kind for a bad verification input: from its word first, then from its path. */
+function suggestKind(input) {
+  const word = typeof input?.kind === 'string' ? input.kind.trim().toLowerCase() : '';
+  if (kindWords[word]) return kindWords[word];
+  const file = typeof input?.path === 'string' ? input.path.toLowerCase() : '';
+  if (/(^|\/)docs\/|\.md$/.test(file)) return 'requirement';
+  if (/(^|\/)(tests?|__tests__|spec)\/|\.(test|spec)\.[a-z]+$/.test(file)) return 'check';
+  if (/(^|\/)(fixtures?|testdata)\//.test(file)) return 'fixture';
+  return 'code';
+}
+
 /** `select` limits criteria checks to the specs being worked on, so a sibling
  * spec's unfinished criteria never block dispatch or review of another spec. */
 export function validateQueue(queue, { select } = {}) {
   requireValue(isObject(queue) && queue.schemaVersion === 1, 'Unsupported or missing queue schemaVersion');
   requireValue(nonempty(queue.feature) && Array.isArray(queue.specs) && queue.specs.length > 0, 'Queue needs a feature and specs');
+  const badKinds = queue.specs.flatMap(spec => (isObject(spec) && isObject(spec.verification) && Array.isArray(spec.verification.inputs) ? spec.verification.inputs : [])
+    .flatMap((input, index) => (isObject(input) && kinds.includes(input.kind) ? [] : [`spec ${spec.id} input ${index}${isObject(input) && typeof input.path === 'string' ? ` (${input.path})` : ''}: kind ${JSON.stringify(input?.kind)} is not valid; use "${suggestKind(input)}"`])));
+  requireValue(badKinds.length === 0, `Invalid verification input kinds. ${badKinds.join('. ')}. A kind is one of code, requirement, check, fixture.`);
   const ids = new Set();
   const files = new Set();
   for (const spec of queue.specs) {
@@ -173,7 +194,6 @@ export function validateQueue(queue, { select } = {}) {
     if (!select || select(spec)) validateCriteria(spec.verification.criteria);
     const inputs = new Set();
     for (const [inputIndex, input] of spec.verification.inputs.entries()) {
-      requireValue(isObject(input) && kinds.includes(input.kind), `Invalid verification input at index ${inputIndex} for spec ${spec.id}: kind must be one of code, requirement, check, fixture; got ${JSON.stringify(input?.kind)}`);
       const inputPath = relativePath(input.path);
       requireValue(!inputs.has(inputPath), `Duplicate verification input: ${inputPath}`);
       inputs.add(inputPath);

@@ -77,3 +77,39 @@ describe('status.mjs load line wording (spec 27)', () => {
     expect(bare).not.toContain('(');
   });
 });
+
+// Spec: .joycraft/local/loop/iter1/chair.md, sl1-05 (status accepts --queue and lists open briefs).
+describe('status.mjs --queue and openBriefs (sl1-05)', () => {
+  const run = (...args: string[]) => spawnSync(process.execPath, [script, ...args], { encoding: 'utf8' });
+
+  it('[AC:sl1-05-status] openBriefs lists a queue-less brief, and the exit code is unchanged', () => {
+    const root = project();
+    const before = run('--root', root);
+    expect(before.status, before.stderr).toBe(0);
+    expect(JSON.parse(before.stdout).openBriefs).toEqual([]);
+    put(join(root, 'docs/features/small/brief.md'), '# Add a button\n\n- Done when: the page shows one button.\n');
+    put(join(root, 'docs/features/empty/notes.md'), 'no brief here\n');
+    const after = run('--root', root);
+    expect(after.status, after.stderr).toBe(before.status);
+    const report = JSON.parse(after.stdout);
+    expect(report.openBriefs).toEqual([{ folder: 'docs/features/small', brief: 'docs/features/small/brief.md' }]);
+    expect(report.features.map((feature: { feature: string }) => feature.feature)).toEqual(['demo']);
+  });
+
+  it('[AC:sl1-05-status] --queue reports only that queue, relative or absolute', () => {
+    const root = project();
+    put(join(root, 'docs/features/other/specs/01-b.md'), '---\nid: 1\nstatus: todo\n---\n# B\n');
+    put(join(root, 'docs/features/other/specs/.joycraft-spec-queue.json'), JSON.stringify({ schemaVersion: 1, feature: 'other', specs: [{ id: 1, file: '01-b.md', depends_on: [], status: 'todo', mode: 'batch', verification: {
+      inputs: [{ path: 'docs/features/other/specs/01-b.md', kind: 'requirement' }],
+      criteria: [{ id: 'b', requirement: { path: 'docs/features/other/specs/01-b.md', anchor: 'b' }, requiredKinds: ['runtime'] }] } }] }));
+    expect(JSON.parse(run('--root', root).stdout).features).toHaveLength(2);
+    for (const queue of [queuePath, join(root, queuePath)]) {
+      const result = run('--root', root, '--queue', queue);
+      expect(result.status, result.stderr).toBe(0);
+      expect(JSON.parse(result.stdout).features.map((feature: { queuePath: string }) => feature.queuePath)).toEqual([queuePath]);
+    }
+    const missing = run('--root', root, '--queue');
+    expect(missing.status).toBe(1);
+    expect(missing.stderr).toContain('--queue <queue-path>');
+  });
+});
