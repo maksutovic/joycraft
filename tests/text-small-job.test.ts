@@ -202,4 +202,68 @@ describe('the offline look check (scripts/trial/look-eval.mjs)', () => {
     expect(tierPasses(good)).toBe(true);
     expect(tierPasses([...good, ...runs('P8', 'ok', 'ok', 'block')])).toBe(false);
   });
+
+  it('[AC:sl2-02] labels the Q screens and the flooded render, and blocks P1 and P9', async () => {
+    const { LABELS, SCREENS, JUDGED } = await import('../scripts/trial/look-eval.mjs');
+    expect(LABELS).toMatchObject({ P1: 'block', P9: 'block', Q1: 'block', Q3: 'block', 'Q2-flooded': 'block', Q2: 'ok' });
+    expect(SCREENS['Q2-flooded']).toBe('loop/arms/jc-i1-r3/.tmp/shots/forecast-flooded.png');
+    expect(SCREENS.Q1).toBe('v2/judge/Q1/screen.png');
+    expect(Object.keys(LABELS).sort()).toEqual(Object.keys(SCREENS).sort());
+    expect(JUDGED).toHaveLength(12);
+  });
+
+  it('[AC:sl2-02] wording (b) swaps one sentence and keeps the rest of the agent text', async () => {
+    const { readAgent, withWording, WORDING } = await import('../scripts/trial/look-eval.mjs');
+    const body = readAgent().body;
+    const flat = (value: string) => value.replace(/\s+/g, ' ');
+    const b = withWording(body, 'b');
+    const a = withWording(body, 'a');
+    expect(flat(b)).toContain(WORDING.b);
+    expect(flat(b)).not.toContain(WORDING.a);
+    expect(flat(a)).toContain(WORDING.a);
+    expect(flat(withWording(b, 'a'))).toBe(flat(a));
+    expect(flat(b).replace(WORDING.b, '')).toBe(flat(a).replace(WORDING.a, ''));
+  });
+
+  it('[AC:sl2-02] a crop cuts a long screen into overlapping parts about one screen tall', async () => {
+    const { partOffsets, screenVerdict } = await import('../scripts/trial/look-eval.mjs');
+    const parts = partOffsets(1100, 2600);
+    expect(parts.map(part => part.y)).toEqual([0, 440, 880, 1320, 1720]);
+    expect(parts.every(part => part.height === 880)).toBe(true);
+    expect(parts.at(-1)!.y + parts.at(-1)!.height).toBe(2600);
+    expect(partOffsets(1100, 700)).toEqual([{ y: 0, height: 700 }]);
+    expect(screenVerdict(['ok', 'block', 'ok'])).toBe('block');
+    expect(screenVerdict(['ok', 'ok'])).toBe('ok');
+    expect(screenVerdict(['ok', 'unclear'])).toBe('unclear');
+  });
+
+  it('[AC:sl2-02] the ship rules: (b) only when it passes and (a) does not; crop only when it wins and never loses', async () => {
+    const { decide, LABELS } = await import('../scripts/trial/look-eval.mjs');
+    const labelled = Object.keys(LABELS).filter(screen => LABELS[screen] !== 'info');
+    const right = (wrong: Record<string, number> = {}) => labelled.flatMap(screen => [1, 2, 3].map(run => ({
+      screen, run, verdict: run <= (wrong[screen] ?? 0) ? (LABELS[screen] === 'ok' ? 'block' : 'ok') : LABELS[screen],
+    })));
+    const bWins = decide({ 'full-a': right({ Q1: 2 }), 'full-b': right(), 'crop-a': right({ Q3: 2 }), 'crop-b': right() });
+    expect(bWins).toMatchObject({ wording: 'b', render: 'full', shipped: 'full-b', okKept: true });
+    const cropWins = decide({ 'full-a': right({ Q1: 2 }), 'full-b': right({ Q3: 1 }), 'crop-a': right({ Q1: 2 }), 'crop-b': right() });
+    expect(cropWins).toMatchObject({ wording: 'b', render: 'crop', shipped: 'crop-b' });
+    const bothPass = decide({ 'full-a': right(), 'full-b': right(), 'crop-a': right(), 'crop-b': right({ P3: 1 }) });
+    expect(bothPass).toMatchObject({ wording: 'a', render: 'full', shipped: 'full-a', okKept: true });
+  });
+
+  it('[AC:sl2-02] the second question is scored against the judge notes, as a record', async () => {
+    const { scoreSecond, NOTES, SECOND } = await import('../scripts/trial/look-eval.mjs');
+    expect(SECOND).toBe('Then list any fact shown with two values, and one thing the user asked for that is missing. At most 3 lines.');
+    const total = Object.values(NOTES).flat().length;
+    const score = scoreSecond([
+      { screen: 'P6', reply: 'OK\n- Monday tide is 6.6 ft in the table and 6.8 ft in the card.' },
+      { screen: 'P6', reply: 'OK' },
+      { screen: 'P6', reply: 'OK\n- 6.8 ft peak, 6.6 ft in the table. Only two days ahead.' },
+      { screen: 'Q2', reply: 'OK' },
+    ]);
+    expect(score.total).toBe(total);
+    expect(score.notes.find(note => note.screen === 'P6' && note.kind === 'two values')).toMatchObject({ matched: 2, runs: 3, found: true });
+    expect(score.notes.find(note => note.screen === 'Q2')).toMatchObject({ found: false });
+    expect(score.found).toBe(1);
+  });
 });
