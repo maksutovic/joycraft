@@ -16,7 +16,7 @@ Parent: [brief](../brief.md), sections `one-home` and `one-update`.
 ## Test changes
 
 - `tests/text-worker-commands.test.ts` class 1: acceptance bullets 1 to 3 add text checks.
-- `tests/payload-guard.test.ts` class 1: acceptance bullet 1 removes the `WorktreeCreate` hook note from `worktrees.md`, so `[AC:spec-1-4]` now expects `worktrees.md` not to name `WorktreeCreate` (it expected the note before).
+- `tests/payload-guard.test.ts` class 1: acceptance bullet 1 removes the `WorktreeCreate` hook note from `worktrees.md`, so `[AC:spec-1-4]` now expects `worktrees.md` not to name `WorktreeCreate` (it expected the note before), and the words test title gains the `[AC:spec-2-4]` tag, with no assertion change.
 
 ## Not covered
 

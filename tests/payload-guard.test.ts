@@ -357,7 +357,7 @@ describe('shipped payload text', () => {
     }
   });
 
-  it('[AC:spec-1-2] [AC:spec-7-2] every-spec and on-demand words stay under their own caps', () => {
+  it('[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps', () => {
     const { everySpec, onDemand, over } = splitCap(treeBundle());
     console.log(`every-spec words: ${everySpec} (cap ${EVERY_SPEC_CAP}, ${EVERY_SPEC_CAP - everySpec} spare)`);
     console.log(`on-demand words: ${onDemand} (cap ${ON_DEMAND_CAP}, ${ON_DEMAND_CAP - onDemand} spare)`);
