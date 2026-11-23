@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -11,8 +11,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.9.3",
-    "summary": "Parallel and review dispatch fixes: a parallel implementer starts without hand-added workspace flags, each worker gets one Joycraft tree and never host isolation too, a reviewer starts on the first try (--help, agent ID), and two refusals say what to fix.",
+    "release": "1.9.4",
+    "summary": "Field follow-ups for queue runs: reopen a done spec whose accepted code or test changed, a warning when a later spec edits one, a new report path for each review, a warning for agent types with host worktree isolation, and clearer integration and update rules.",
     "autoSafeEligible": false
   },
   "scripts": {

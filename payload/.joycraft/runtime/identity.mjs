@@ -191,6 +191,10 @@ export function validateQueue(queue, { select } = {}) {
       requireValue(isObject(spec.acceptedReport) && isSha256(spec.acceptedReport.sha256), `Invalid accepted report for spec ${spec.id}`);
       relativePath(spec.acceptedReport.path);
     }
+    if (spec.reopened !== undefined) {
+      requireValue(Array.isArray(spec.reopened) && spec.reopened.every(entry => isObject(entry) && nonempty(entry.at) && Number.isFinite(Date.parse(entry.at)) && nonempty(entry.reason)
+        && isObject(entry.report) && isSha256(entry.report.sha256) && nonempty(entry.report.path) && Array.isArray(entry.changed)), `Invalid reopen record for spec ${spec.id}`);
+    }
     if (spec.ownerAcceptance !== undefined) {
       requireValue(spec.acceptedReport === undefined, `Spec ${spec.id} cannot have both a PASS acceptance and an owner acceptance`);
       requireValue(isObject(spec.ownerAcceptance) && isSha256(spec.ownerAcceptance.sha256) && [undefined, true].includes(spec.ownerAcceptance.legacy), `Invalid owner acceptance for spec ${spec.id}`);
@@ -253,6 +257,7 @@ function queueSpecRequirements(spec) {
   delete requirements.status;
   delete requirements.submitted;
   delete requirements.acceptedReport;
+  delete requirements.reopened;
   delete requirements.ownerAcceptance;
   delete requirements.waiver;
   return requirements;

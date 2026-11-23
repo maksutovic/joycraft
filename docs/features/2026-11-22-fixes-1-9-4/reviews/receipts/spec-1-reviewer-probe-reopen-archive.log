@@ -1,0 +1,20 @@
+finalize docs/features/r/specs/review-1.report.json 0 
+reopen 0 
+reopen again (in-review) 2 Completion stopped: Spec 1 is in-review; reopen moves only a done spec back to in-review
+finalize old report after reopen 1 Completion stopped: Stale report: current code, requirements, checks, fixtures or verification scope differ from the reviewed subject
+finalize docs/features/r/specs/review-1-r2.report.json 0 
+archive preview 0 
+archive apply 0  {
+  "status": "archived",
+  "destination": "docs/archive/r",
+  "manifest": "docs/archive/r/archive-replay.json",
+  "historical": {
+    "codeInputHashesAreHistorical": true,
+    "currentAcceptanceRenewed": false
+  },
+  "links": {
+    "rewritten": [],
+    "namedInMarkdown": [],
+    "namedInOtherFiles"
+/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-probe-yytTv0
+joycraft-evidence: {"wallMs":970,"load":[5.810546875,5.74560546875],"cores":14,"loaded":false,"argv":["node","/private/tmp/claude-501/-Users-compiler-Developer-Joycraft/22d52220-8e66-42e0-9536-fdac3049c74b/scratchpad/probe-archive.mjs","reopen"],"exitCode":0,"timedOut":false,"revision":"ad2ff5dc892b14c5244fe497cbfb55e8e573359b","dirty":true,"env":["VITEST_MAX_FORKS","VITEST_MIN_FORKS"]}

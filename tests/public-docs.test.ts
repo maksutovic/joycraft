@@ -76,14 +76,14 @@ describe('1.0 guides', () => {
 
 describe('1.0 release notes', () => {
   // [AC:release-fields] version, joycraft.release and the summary move together.
-  it('[AC:release-fields] [AC:spec-8-1] [AC:spec-6-1] [AC:spec-3-1] the published summary belongs to this version and is one short line', () => {
+  it('[AC:release-fields] [AC:spec-8-1] [AC:spec-6-1] [AC:spec-3-1] [AC:spec-4-1] the published summary belongs to this version and is one short line', () => {
     const pkg = JSON.parse(read('package.json'));
     expect(pkg.joycraft.release).toBe(pkg.version);
     expect(pkg.joycraft.summary.length).toBeLessThanOrEqual(300);
     expect(pkg.joycraft.summary).not.toMatch(/\n/);
   });
 
-  it('[AC:release-fields] [AC:spec-8-1] [AC:spec-6-1] [AC:spec-3-1] the release descriptor, changelog entry and payload tag agree', () => {
+  it('[AC:release-fields] [AC:spec-8-1] [AC:spec-6-1] [AC:spec-3-1] [AC:spec-4-1] the release descriptor, changelog entry and payload tag agree', () => {
     const pkg = JSON.parse(read('package.json'));
     expect(JSON.parse(read('src/joycraft-release.json')).releaseVersion).toBe(pkg.version);
     const changelog = read('CHANGELOG.md');

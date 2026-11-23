@@ -34,8 +34,11 @@ export function reviewRoundKey(subject) {
  * looks for them. */
 function earlierReviews({ roots, queuePath, spec }) {
   const rounds = new Map();
+  // A reopened spec starts a fresh count: reviews from before its last reopen are history.
+  const reopenedAt = Date.parse(spec.reopened?.at(-1)?.at ?? '');
   for (const root of roots) {
     for (const { path: file, report } of visibleReports({ root, queuePath, specId: spec.id })) {
+      if (Number.isFinite(reopenedAt) && !(Date.parse(report.createdAt) > reopenedAt)) continue;
       const accepted = spec.acceptedReport;
       if (report.verdict === 'PASS' && accepted?.path === file && sha256(readLocal(root, file)) === accepted.sha256) continue;
       const shown = root === roots[0] ? file : path.join(root, file);

@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "cbda2ce4e234a0a21cc6284807a661eafee14c9a",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+    "specId": 1,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-4/specs/01-reopen.md",
+    "criteria": [
+      {
+        "id": "spec-1-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/01-reopen.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/01-reopen.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-3",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/01-reopen.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-4",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/01-reopen.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "reopen",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "e2f63131efb3efe2705ed9a6ebcc6e80559dd21725dd9b4c32326aac583aa20e",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "8811ab55a38b1bc911f202f4cb11592e3993068ebf08f8c132b2b8dc37ad1cf7",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/01-reopen.md",
+        "kind": "requirement",
+        "sha256": "4b32e5d1d6ae5cdccec41d1b1a95a92768cfbc3aea9b74a0f7c4f4e2709f3e6e",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/completion.mjs",
+        "kind": "code",
+        "sha256": "5e3aedd9d3220a7c39d27c252520a722d09140f1641571ffed220a1860efeb88",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-preflight.mjs",
+        "kind": "code",
+        "sha256": "f0a91243bfe8df4b50d259db87436fa040740d4bb8cc8c8641bbc0d4297dff5e",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+        "kind": "code",
+        "sha256": "80a1b9db7aa6e0757cb555d7dc0e13eca0cfe36de84a1c5efe693caf962cb5fe",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/identity.mjs",
+        "kind": "code",
+        "sha256": "2bd63907a7ebb49639e982dcd58062df90d78d2873c3a2d130f9814b35cda686",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-reopen.test.ts",
+        "kind": "check",
+        "sha256": "f27efb17b53442ab21fc25877921e28945e5f9eea8b33080869cf3f96d1b10a4",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+          "anchors": [
+            "reopen",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "ebb1a383856b9c9a353177cb7f6e29e9675f31547635962c3a3ea1287b8f923b"
+  },
+  "implementerSessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b"
+  },
+  "reviewer": {
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+    "actor": {
+      "host": "claude",
+      "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+      "agentId": "a935d4b55b7840965"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "reopen-then-reaccept",
+      "subjectIdentity": "ebb1a383856b9c9a353177cb7f6e29e9675f31547635962c3a3ea1287b8f923b",
+      "representativeInput": "done spec 1 accepted on review-1.report.json, then tests/a.test.ts edited and committed; reopen --reason, then a fresh PASS via finalize-review",
+      "expected": "status in-review in queue and frontmatter, acceptedReport removed, reopened[0] holds { at, reason, report, changed }; new PASS accepted and reopened kept",
+      "limits": [
+        "temp-dir git fixtures driven through the payload runtime CLI; not a live queue"
+      ],
+      "criteria": [
+        "spec-1-1"
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-1] passed (exit 0). Read completion.mjs reopen(): one writeCompletion call (journaled, queue + frontmatter) with remove: [acceptedReport] and reopened appended. Probe receipt: the old report fails finalize-review as stale after reopen, the r2 PASS is accepted, and archive --apply of the reopened feature succeeds and keeps both review-1.report.json and review-1-r2.report.json.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-focused-20261123T062303580Z-93781-1.log",
+              "sha256": "0d56b5c84233599d2f907de9f39847215f602d0df5dc3e4195c1beed41901764"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-reopen.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "reopen exit 0; second reopen while in-review exit 2; finalize-review with the old report exit 1 (stale); r2 PASS finalize exit 0; archive preview and apply exit 0 with both reports archived",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-probe-reopen-archive.log",
+              "sha256": "eb78fb140434d38bf3a640d976161eb3aa22699cd340015b2e600b7672106bf5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "scratchpad/probe-archive.mjs",
+              "reopen"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "reopen-refusals",
+      "subjectIdentity": "ebb1a383856b9c9a353177cb7f6e29e9675f31547635962c3a3ea1287b8f923b",
+      "representativeInput": "reopen on an in-review spec, on a done spec with no changed input, and without --reason",
+      "expected": "each refused and the queue unchanged",
+      "limits": [
+        "temp-dir git fixtures driven through the payload runtime CLI; not a live queue"
+      ],
+      "criteria": [
+        "spec-1-2"
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-2] passed (exit 0): in-review refused exit 2, unchanged inputs refused exit 2, missing --reason refused exit 1 by argument parsing; queue status stays done. Code also refuses an owner-accepted or waived spec (no acceptedReport), matching the brief scope limit.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-focused-20261123T062303580Z-93781-1.log",
+              "sha256": "0d56b5c84233599d2f907de9f39847215f602d0df5dc3e4195c1beed41901764"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-reopen.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "submit-warning",
+      "subjectIdentity": "ebb1a383856b9c9a353177cb7f6e29e9675f31547635962c3a3ea1287b8f923b",
+      "representativeInput": "submit spec 2 while done spec 1 has a changed check input; and with nothing changed",
+      "expected": "acceptedInputsChanged lists { specId, paths, next } with a warning line; empty list and no line when clean",
+      "limits": [
+        "temp-dir git fixtures driven through the payload runtime CLI; not a live queue"
+      ],
+      "criteria": [
+        "spec-1-3"
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-3] passed (exit 0): JSON list equals the expected entry with the reopen command and stderr has the warning; the clean fixture prints an empty list and no warning.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-focused-20261123T062303580Z-93781-1.log",
+              "sha256": "0d56b5c84233599d2f907de9f39847215f602d0df5dc3e4195c1beed41901764"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-reopen.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "fresh-rounds-and-report-path",
+      "subjectIdentity": "ebb1a383856b9c9a353177cb7f6e29e9675f31547635962c3a3ea1287b8f923b",
+      "representativeInput": "reopened spec with two earlier FAIL reports and the old PASS; reviewer startup",
+      "expected": "reviewRound 1 and checkReport names review-1-r2.report.json while review-1.report.json stays",
+      "limits": [
+        "temp-dir git fixtures driven through the payload runtime CLI; not a live queue"
+      ],
+      "criteria": [
+        "spec-1-4"
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-4] passed (exit 0). Read dispatch-start.mjs earlierReviews (skips reports not created after the last reopen) and dispatch-preflight.mjs (reviewer destination steps to the first free -r<n>).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-focused-20261123T062303580Z-93781-1.log",
+              "sha256": "0d56b5c84233599d2f907de9f39847215f602d0df5dc3e4195c1beed41901764"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-reopen.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/dispatch-start.mjs:41",
+      "summary": "The fresh round count after a reopen trusts the report's own createdAt: a report written after the reopen but stamped earlier is not counted, so the review limit relies on honest timestamps. Reopen itself needs a done PASS acceptance and a real byte change (a second reopen while in-review is refused, see probe receipt), so rounds cannot be reset without an accepted PASS in between.",
+      "assumption": "Reviewer-written timestamps are trusted elsewhere too; no blocking weakness."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/dispatch-preflight.mjs:449",
+      "summary": "The free report path is checked only in the worker root. In parallel mode an earlier report that exists only in the coordinator tree would not move the new path to -r<n>; earlierReviews looks in both roots.",
+      "assumption": "Serial and coordinator-tree reviews are the common case; spec does not decide the parallel case."
+    },
+    {
+      "id": "f3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/completion.mjs:369",
+      "summary": "changedAcceptedInputs returns [] when the accepted report file is missing or unreadable, so submit gives no warning and reopen refuses with \"no input changed\" for that spec, instead of saying the report is missing."
+    },
+    {
+      "id": "f4",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-1-1",
+      "summary": "A done dependent of a reopened spec stays done while its dependency is back in review; the spec does not say whether dependents should be flagged.",
+      "assumption": "Out of this spec; the submit warning covers changed bytes, not dependency status."
+    }
+  ],
+  "createdAt": "2026-11-23T06:24:54.493Z"
+}
