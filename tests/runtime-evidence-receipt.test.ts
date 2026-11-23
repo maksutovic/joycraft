@@ -83,3 +83,15 @@ describe('evidence.mjs receipt tail and long footer (spec 27)', () => {
     expect(JSON.parse(failing.stdout).tail).toBe('a\nb');
   });
 });
+
+// Spec: docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md
+describe('report receipt refusal (1.9.3)', () => {
+  it('[AC:spec-4-2] an observation without receipts is refused with the field to add and its shape', async () => {
+    const { validateEvidence } = await import(pathToFileURL(script).href);
+    const criteria = [{ id: 'c-1', requirement: { path: 'docs/features/x/spec.md', anchor: 'acceptance' }, requiredKinds: ['runtime'] }];
+    const report = { schemaVersion: 1, subject: { identity: 'a'.repeat(64) }, flows: [{ id: 'f', criteria: ['c-1'],
+      observations: [{ kind: 'runtime', method: 'test', result: 'PASS', actual: '3 passed', command: 'pnpm test x' }] }] };
+    const { errors } = validateEvidence(report, criteria);
+    expect(errors.join('\n')).toContain('flows[0].observations[0] needs supporting receipt references: add "receipts": [{ "path": "<project-relative receipt path>", "sha256": "<its SHA-256>" }] for the receipt that evidence.mjs run --receipt wrote for this check');
+  });
+});

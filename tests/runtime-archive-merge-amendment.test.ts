@@ -70,4 +70,19 @@ describe('archive brief amendments across a merge commit', () => {
     writeRecord(root, [{ commit: amendment, from: v1, to: v2 }, { commit: merge, from: '', to: v3 }]);
     expect(check).toThrow(`Brief amendment ${merge} does not match its commit's brief bytes`);
   });
+
+  // Spec: docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md
+  it('[AC:spec-5-1] a missing amendment record names each later commit with its hashes and the reference that shows the record', async () => {
+    const { root, amendment } = fixture();
+    git(root, 'checkout', '-q', 'feature');
+    const { historicalRequirement } = await import(runtime);
+    const check = () => historicalRequirement(root, source, { path: brief, kind: 'requirement', sha256: hash(v1) }, (bytes: Buffer) => bytes);
+    const entry = `${amendment} (fromSha256 ${hash(v1)}, toSha256 ${hash(v2)})`;
+    expect(check).toThrow(`no ${source}/brief-amendments.json records its amendments; add one entry for each later brief commit, with the answered owner decision that authorized it, as .joycraft/references/archive.md shows for brief-amendments.json: ${entry})`);
+    put(join(root, source, 'brief-amendments.json'), JSON.stringify({ schemaVersion: 1, kind: 'joycraft-brief-amendments', brief, amendments: [] }));
+    expect(check).toThrow(`commit ${amendment} has no single amendment record; add one entry with the answered owner decision that authorized it, as .joycraft/references/archive.md shows for brief-amendments.json: ${entry})`);
+    // The named hashes are the ones the record must carry.
+    writeRecord(root, [{ commit: amendment, from: v1, to: v2 }]);
+    expect(check().amendments.map((item: { commit: string }) => item.commit)).toEqual([amendment]);
+  });
 });
