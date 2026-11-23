@@ -1,6 +1,6 @@
 ---
 id: 2
-status: in-review
+status: done
 ---
 # Warn when a project agent type sets host worktree isolation
 

@@ -99,7 +99,7 @@
       "id": 2,
       "file": "02-isolation-warning.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -144,6 +144,10 @@
       },
       "submitted": {
         "at": "2026-11-23T06:21:28.829Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-2.report.json",
+        "sha256": "62f887848b99832be43451f9c7ba74338eaa10027fedd4afc25537bb58597350"
       }
     },
     {
