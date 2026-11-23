@@ -42,17 +42,18 @@ const key = process.env.JOYCRAFT_BENCH_SUBJECT + '.' + process.env.JOYCRAFT_BENC
 const canned = JSON.parse(readFileSync(process.env.STUB_CANNED, 'utf8'));
 appendFileSync(process.env.STUB_LOG, JSON.stringify({ key, cwd: process.cwd(), readme: existsSync('README.md'), args: process.argv.slice(2) }) + '\\n');
 if (key === process.env.STUB_FAIL) process.exit(1);
-process.stdout.write(JSON.stringify({ type: 'result', result: canned[key] ?? '', total_cost_usd: 0.1 }));
+const reply = () => process.stdout.write(JSON.stringify({ type: 'result', result: canned[key] ?? '', total_cost_usd: Number(process.env.STUB_COST || 0.1) }));
+setTimeout(reply, Number(process.env.STUB_SLEEP_MS || 0));
 `);
   chmodSync(file, 0o755);
   writeFileSync(join(dir, 'canned.json'), JSON.stringify(CANNED));
   return file;
 }
 
-function bench(args: string[], { from = subjects, fail = '' } = {}) {
+function bench(args: string[], { from = subjects, fail = '', cost = '0.1', sleepMs = '0' } = {}) {
   const dir = tempDir();
   const out = join(dir, 'out');
-  const env = { ...process.env, JOYCRAFT_BENCH_CLAUDE: stub(dir), STUB_CANNED: join(dir, 'canned.json'), STUB_LOG: join(dir, 'calls.log'), STUB_FAIL: fail };
+  const env = { ...process.env, JOYCRAFT_BENCH_CLAUDE: stub(dir), STUB_CANNED: join(dir, 'canned.json'), STUB_LOG: join(dir, 'calls.log'), STUB_FAIL: fail, STUB_COST: cost, STUB_SLEEP_MS: sleepMs };
   const run = spawnSync(process.execPath, [script, '--subjects', from, '--out', out, '--no-checkout', '--jobs', '2', ...args], { cwd: root, encoding: 'utf8', env });
   const calls = existsSync(env.STUB_LOG) ? readFileSync(env.STUB_LOG, 'utf8').trim().split('\n').map(line => JSON.parse(line)) : [];
   return { run, out, calls, dir };
@@ -149,6 +150,39 @@ describe('reviewer benchmark (sl3-07)', () => {
     expect(reviewFails.calls.map(call => call.key)).toEqual(['vacuous-demo-vacuous.review']);
     expect(reviewFails.run.stdout).toContain('| vacuous-demo-vacuous | not run (review failed) |');
     expect(reviewFails.run.status).toBe(3);
+  });
+
+  it('[AC:sl3-07-bench-bar] the cap reserves each call\'s budget when it starts, so calls in flight cannot overrun it', () => {
+    // Cap 3.2 and a $3 review budget: the second review must wait for the first. Once the first has cost 0.5,
+    // a second review no longer fits, so it never starts. Counting only finished calls would start both at once.
+    const { run, calls } = bench(['--only', 'r6,vacuous', '--budget-usd', '3.2'], { cost: '0.5', sleepMs: '300' });
+    expect(calls.filter(call => call.key.endsWith('.review'))).toHaveLength(1);
+    expect(run.stdout).toContain('not run (cap)');
+    expect(run.status).toBe(3);
+    // With room for both, both run.
+    const roomy = bench(['--only', 'r6,vacuous', '--budget-usd', '10'], { cost: '0.5' });
+    expect(roomy.calls.filter(call => call.key.endsWith('.review'))).toHaveLength(2);
+  });
+
+  it('[AC:sl3-07-bench-score] a failed scorer call makes the subject incomplete, not missed', () => {
+    const { run, out } = bench(['--only', 'vacuous'], { fail: 'vacuous-demo-vacuous.score' });
+    const record = JSON.parse(readFileSync(join(out, 'results.json'), 'utf8')).records[0];
+    expect(record).toMatchObject({ incomplete: true, why: 'score failed' });
+    expect(record.caught).toBeUndefined();
+    expect(run.stdout).toContain('| vacuous-demo-vacuous | not run (score failed) |');
+    expect(run.status).toBe(3);
+  });
+
+  it('[AC:sl3-07-bench-current] --record refuses to overwrite the record from an incomplete run', () => {
+    const before = existsSync(recordFile) ? readFileSync(recordFile, 'utf8') : null;
+    try {
+      const { run } = bench(['--only', 'vacuous', '--record']);
+      expect(run.stdout).toContain('not recorded: the run is incomplete');
+      expect(existsSync(recordFile) ? readFileSync(recordFile, 'utf8') : null).toBe(before);
+      expect(run.status).toBe(3);
+    } finally {
+      if (before !== null) writeFileSync(recordFile, before);
+    }
   });
 
   // The Commands row is part of [AC:sl3-07-bench-current]; it holds before any run is recorded.

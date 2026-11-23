@@ -29,7 +29,7 @@ import { fileURLToPath } from 'node:url';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
-export const USAGE = 'usage: node scripts/trial/reviewer-bench.mjs --subjects <dir> [--effort medium] [--only replay,r6,controls,vacuous] [--jobs 4] [--budget-usd 35] [--out <dir>] [--record] [--help]';
+export const USAGE = 'usage: node scripts/trial/reviewer-bench.mjs --subjects <dir> [--effort medium] [--model <id>] [--only replay,r6,controls,vacuous] [--jobs 4] [--budget-usd 35] [--out <dir>] [--record] [--help]';
 export const HELP = `${USAGE}
 
 Reruns past review subjects against the reviewer text in this tree and prints
@@ -37,11 +37,13 @@ PASS (exit 0), FAIL (exit 1) or incomplete (exit 3). Usage errors exit 2.
 
   --subjects <dir>   the subjects folder (required; it is outside the repository)
   --effort <level>   reviewer effort (default medium)
+  --model <id>       reviewer model (default claude-opus-5-5); scoring stays on the default
   --only <groups>    run only these groups; a partial run is incomplete
   --jobs <n>         reviews at a time (default 4)
-  --budget-usd <n>   stop new runs when spent plus one run's budget passes this (default 35)
+  --budget-usd <n>   cap: each call reserves its budget when it starts; a call waits while spent plus
+                     reserved plus its budget passes this, and the run stops when spent alone does (default 35)
   --out <dir>        where runs, prompts and results.json go (default .joycraft/local/reviewer-bench/<stamp>/)
-  --record           write scripts/trial/reviewer-bench.json from this run
+  --record           write scripts/trial/reviewer-bench.json from this run (refused for an incomplete run)
   --from <file>      print the verdict of a saved results.json (with --record: record it)
   --no-checkout      tests only: skip the replay checkout and install`;
 
@@ -68,7 +70,7 @@ class UsageError extends Error {}
 
 /** Parsed options. Throws UsageError on a bad or missing value. */
 export function parseArgs(argv) {
-  const options = { effort: 'medium', only: [...GROUPS], jobs: 4, budgetUsd: 35, record: false, help: false, noCheckout: false };
+  const options = { model: MODEL, effort: 'medium', only: [...GROUPS], jobs: 4, budgetUsd: 35, record: false, help: false, noCheckout: false };
   const value = (index, flag) => {
     const next = argv[index + 1];
     if (next === undefined || next.startsWith('--')) throw new UsageError(`${flag} needs a value`);
@@ -81,6 +83,7 @@ export function parseArgs(argv) {
     else if (flag === '--no-checkout') options.noCheckout = true;
     else if (flag === '--subjects') options.subjects = path.resolve(value(index++, flag));
     else if (flag === '--out') options.out = path.resolve(value(index++, flag));
+    else if (flag === '--model') options.model = value(index++, flag);
     else if (flag === '--from') options.from = path.resolve(value(index++, flag));
     else if (flag === '--effort') {
       options.effort = value(index++, flag);
@@ -296,15 +299,37 @@ async function prepare(context, subject, label) {
   return { dir, ok };
 }
 
-/** One `claude -p` call, or null when the cap guard stops it. */
-async function callClaude(context, { role, subject, cwd, prompt, budget, effort, extra = [] }) {
-  if (context.stopped || context.spent + budget > context.budgetUsd) {
-    context.stopped = true;
-    return null;
+/**
+ * Reserve one call's budget before it starts. A call that cannot fit even with nothing in flight stops the run;
+ * one that fits only after in-flight calls finish waits for them. Returns false when the run is stopped.
+ */
+export async function reserve(context, budget) {
+  for (;;) {
+    if (context.stopped || context.spent + budget > context.budgetUsd) {
+      context.stopped = true;
+      return false;
+    }
+    if (context.spent + context.reserved + budget <= context.budgetUsd) {
+      context.reserved += budget;
+      return true;
+    }
+    await new Promise(resolve => context.waiters.push(resolve));
   }
+}
+
+/** Release a finished call's reservation, count what it cost, and wake the waiting calls. */
+export function release(context, budget, cost) {
+  context.reserved -= budget;
+  context.spent += cost;
+  for (const wake of context.waiters.splice(0)) wake();
+}
+
+/** One `claude -p` call, or null when the cap guard stops it. */
+async function callClaude(context, { role, subject, cwd, prompt, budget, effort, model = MODEL, extra = [] }) {
+  if (!await reserve(context, budget)) return null;
   const name = `${subject.id}.${role}`;
   writeFileSync(path.join(context.out, 'prompts', `${name}.md`), prompt);
-  const args = ['-p', prompt, '--model', MODEL, '--effort', effort, '--setting-sources', 'project,local', '--output-format', 'json', '--max-budget-usd', String(budget), ...extra];
+  const args = ['-p', prompt, '--model', model, '--effort', effort, '--setting-sources', 'project,local', '--output-format', 'json', '--max-budget-usd', String(budget), ...extra];
   const env = { ...process.env, JOYCRAFT_BENCH_ROLE: role, JOYCRAFT_BENCH_SUBJECT: subject.id };
   const result = await run(context.claude, args, { cwd, env, timeout: CALL_TIMEOUT_MS });
   writeFileSync(path.join(context.out, 'runs', `${name}.json`), result.stdout);
@@ -312,7 +337,7 @@ async function callClaude(context, { role, subject, cwd, prompt, budget, effort,
   let reply = {};
   try { reply = JSON.parse(result.stdout); } catch { /* no JSON envelope */ }
   const cost = Number(reply.total_cost_usd) || 0;
-  context.spent += cost;
+  release(context, budget, cost);
   return { exit: result.code, seconds: result.seconds, cost, text: typeof reply.result === 'string' ? reply.result : '' };
 }
 
@@ -355,7 +380,7 @@ async function runSubject(context, subject) {
     : renderCopyPrompt({ request: subject.request, workDir: work.dir, base: subject.base, todayDir: context.todayDir });
   const addDirs = [context.todayDir, ...(subject.inputsDir ? [subject.inputsDir] : [])].flatMap(dir => ['--add-dir', dir]);
   const review = await callClaude(context, {
-    role: 'review', subject, cwd: work.dir, prompt, budget: BUDGETS.review, effort: context.effort,
+    role: 'review', subject, cwd: work.dir, prompt, budget: BUDGETS.review, effort: context.effort, model: context.model,
     extra: ['--append-system-prompt', context.system, '--dangerously-skip-permissions', ...addDirs],
   });
   rmSync(work.dir, { recursive: true, force: true });
@@ -391,7 +416,9 @@ async function runSubject(context, subject) {
   const score = await callClaude(context, { role: 'score', subject, cwd: context.scoresDir, prompt: scorePrompt, budget: BUDGETS.score, effort: 'low', extra: ['--tools', ''] });
   if (!score) return { ...record, incomplete: true, why: 'cap' };
   record.cost += score.cost;
-  const scores = Array.isArray(extractJson(score.text)?.findings) ? extractJson(score.text).findings : [];
+  const scores = extractJson(score.text)?.findings;
+  // A scorer that failed or gave no findings has not judged the review: the subject is not scored, not missed.
+  if (score.exit !== 0 || !Array.isArray(scores)) return { ...record, incomplete: true, why: 'score failed' };
   const scoreOf = id => scores.find(item => item?.id === id)?.score ?? 'missed';
   // `partly` counts as missed.
   record.defects = subject.reference.map(item => ({ id: item.id, score: scoreOf(item.id), caught: scoreOf(item.id) === 'caught' }));
@@ -494,6 +521,7 @@ async function pool(items, jobs, task) {
 
 function writeRecord(result) {
   const { summary } = result;
+  if (result.verdict === 'incomplete' || summary.incomplete) return 'not recorded: the run is incomplete, so scripts/trial/reviewer-bench.json keeps its last complete run';
   const record = {
     textSha256: result.textSha256, effort: result.effort, date: result.date,
     replay: summary.replay, r6: summary.r6, controlsFalse: summary.controlsFalse, vacuousFound: summary.vacuousFound,
@@ -512,12 +540,12 @@ async function bench(options) {
   copyToday(todayDir);
   const common = await run('git', ['rev-parse', '--git-common-dir'], { cwd: repo });
   const context = {
-    out, todayDir, scoresDir: path.join(out, 'scores'), effort: options.effort, budgetUsd: options.budgetUsd, noCheckout: options.noCheckout,
+    out, todayDir, scoresDir: path.join(out, 'scores'), effort: options.effort, model: options.model, budgetUsd: options.budgetUsd, noCheckout: options.noCheckout,
     claude: process.env.JOYCRAFT_BENCH_CLAUDE || 'claude',
     system: agentBody(readFileSync(path.join(repo, REVIEWER_FILES[0][1]), 'utf8')),
     scoreTemplate: options.only.some(group => group !== 'controls') ? readFileSync(need(options.subjects, 'replay/score-prompt.md'), 'utf8') : '',
     objects: path.resolve(repo, common.stdout.trim(), 'objects'),
-    spent: 0, stopped: false,
+    spent: 0, reserved: 0, waiters: [], stopped: false,
   };
   const records = await pool(subjects, options.jobs, subject => runSubject(context, subject));
   rmSync(path.join(out, 'work'), { recursive: true, force: true });
