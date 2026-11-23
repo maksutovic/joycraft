@@ -1,0 +1,32 @@
+
+> joycraft@1.9.2 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3
+> vitest tests/runtime-dispatch-parallel.test.ts tests/runtime-dispatch-commands.test.ts tests/runtime-worktrees-prune.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3[39m
+
+ [32m✓[39m tests/runtime-worktrees-prune.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1317[2mms[22m[39m
+   [33m[2m✓[22m[39m worktrees prune and cited receipts[2m > [22m[AC:prune-keeps-cited-receipt] keeps a tree holding an ignored receipt the accepted report cites [33m 523[2mms[22m[39m
+   [33m[2m✓[22m[39m worktrees prune and cited receipts[2m > [22m[AC:prune-without-cited-receipt] prunes a tree with no such file as before [33m 440[2mms[22m[39m
+   [33m[2m✓[22m[39m worktrees prune and cited receipts[2m > [22m[AC:prune-receipt-copied] prunes once the cited receipt also exists in the main checkout [33m 354[2mms[22m[39m
+ [32m✓[39m tests/runtime-dispatch-parallel.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 3637[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-1-1] both parallel specs start in their worktrees.mjs trees with no workspace flags, from a main or a linked coordinator [33m 2456[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-1-2] a tree with no worktrees.mjs record takes its coordinator from the lease; explicit flags still win [33m 659[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-1-3] with neither a record nor a lease, startup refuses and prints the exact startup with the workspace flags added [33m 521[2mms[22m[39m
+ [32m✓[39m tests/runtime-dispatch-commands.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 9606[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-1] implementer and reviewer startup print the focused command built from the check inputs [33m 1004[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-2] each step is one plain command with literal paths [33m 726[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-3] without tests.focused or without check inputs, focused is null with a note and startup succeeds [33m 505[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-1] printed commands run as printed through /bin/sh with a space in the worker root or a check path [33m 1875[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-2] {files} inside a word is replaced in place and quoted template arguments stay whole [33m 776[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-3] two startups in the same second print different receipt paths [33m 328[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-4] reviewer receipts go to reviews/receipts and implementer receipts to receipts [33m 649[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-2] an unclosed quote in tests.focused gives focused null with a note, and startup exits 0 [33m 514[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-3] a focused command with shell syntax runs as sh -c under evidence [33m 2973[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m16 passed[39m[22m[90m (16)[39m
+[2m   Start at [22m 21:10:38
+[2m   Duration [22m 9.89s[2m (transform 84ms, setup 0ms, collect 121ms, tests 14.56s, environment 0ms, prepare 173ms)[22m
+
+joycraft-evidence: {"wallMs":10533,"load":[7.04443359375,6.716796875],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-dispatch-parallel.test.ts","tests/runtime-dispatch-commands.test.ts","tests/runtime-worktrees-prune.test.ts"],"exitCode":0,"timedOut":false,"revision":"4320fda55c8cc578dfcb210702f19f094288307c","dirty":true}

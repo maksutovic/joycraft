@@ -98,7 +98,7 @@ export function assertReviewerNotWaived(sourceView, roles, workspace) {
 function attestWorkspace(workspace, workerRoot, roles, queueParallel) {
   const defaultAccess = roles.every(role => role.name === 'reviewer') ? 'read-only' : 'mutating';
   if (workspace === undefined) {
-    requireValue(!(queueParallel && defaultAccess === 'mutating'), 'Parallel queue execution needs an attested workspace');
+    requireValue(!(queueParallel && defaultAccess === 'mutating'), 'Parallel queue execution needs an attested workspace: pass --coordinator <coordinator-root> --parallel true --access mutating, or start through dispatch-start.mjs, which reads them from the worktrees.mjs record or the coordinator lease');
     return { workerRoot, coordinatorRoot: workerRoot, kind: 'serial', parallel: false, access: defaultAccess };
   }
   requireValue(isObject(workspace), 'Dispatch workspace must be an object');

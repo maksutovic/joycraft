@@ -41,6 +41,7 @@ function readQueueFile(root, queuePath) {
 
 /** Create a worker tree for one spec from a captured base revision and record its owner. */
 export function createWorktree({ root = process.cwd(), queuePath, specId, session, base = 'HEAD' }) {
+  const here = realpathSync(git(root, ['rev-parse', '--show-toplevel']).trim());
   root = gitRoot(root);
   queuePath = relativePath(queuePath);
   requireValue(typeof session === 'string' && session.trim(), 'Creating a worker tree needs the coordinator --session');
@@ -59,10 +60,13 @@ export function createWorktree({ root = process.cwd(), queuePath, specId, sessio
     requireValue(!existsSync(path.join(root, treePath)), `Worker tree path already exists: ${treePath}`);
     mkdirSync(path.join(root, treeHome), { recursive: true });
     git(root, ['worktree', 'add', '-b', branch, treePath, baseRevision]);
-    const entry = { path: treePath, branch, feature: queue.feature, queuePath, specId, baseRevision, coordinatorSession: session, createdAt: new Date().toISOString() };
+    // The coordinator's own tree, so the worker's dispatch-start finds its parallel workspace here.
+    const entry = { path: treePath, branch, feature: queue.feature, queuePath, specId, baseRevision, coordinatorSession: session,
+      coordinatorRoot: path.relative(root, here) || '.', createdAt: new Date().toISOString() };
     ledger.trees.push(entry);
     writeLedger(root, ledger);
-    return { ...entry, next: 'Run the project bootstrap in this tree before any edit.' };
+    return { ...entry, workerRoot: path.join(root, treePath),
+      next: 'Run the project bootstrap in this tree before any edit. Launch the worker without host worktree isolation and give it workerRoot; its dispatch-start reads the parallel workspace from this record.' };
   });
 }
 

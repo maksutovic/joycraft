@@ -1,0 +1,85 @@
+
+> joycraft@1.9.2 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3
+> vitest tests/runtime-dispatch-parallel.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3[39m
+
+ [31m❯[39m tests/runtime-dispatch-parallel.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 1176[2mms[22m[39m
+[31m   [31m×[31m parallel worker startup[2m > [22m[AC:spec-1-1] both parallel specs start in their worktrees.mjs trees with no workspace flags, from a main or a linked coordinator[39m[33m 458[2mms[22m[39m
+[31m     → expected undefined to be '.' // Object.is equality[39m
+[31m   [31m×[31m parallel worker startup[2m > [22m[AC:spec-1-2] a tree with no worktrees.mjs record takes its coordinator from the lease; explicit flags still win[39m[33m 416[2mms[22m[39m
+[31m     → Task startup stopped: Parallel queue execution needs an attested workspace
+: expected 1 to be +0 // Object.is equality[39m
+[31m   [31m×[31m parallel worker startup[2m > [22m[AC:spec-1-3] with neither a record nor a lease, startup refuses and prints the exact startup with the workspace flags added[39m[33m 301[2mms[22m[39m
+[31m     → expected 'Task startup stopped: Parallel queue …' to contain 'Spec 2 runs in parallel'[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-dispatch-parallel.test.ts[2m > [22mparallel worker startup[2m > [22m[AC:spec-1-1] both parallel specs start in their worktrees.mjs trees with no workspace flags, from a main or a linked coordinator
+[31m[1mAssertionError[22m: expected undefined to be '.' // Object.is equality[39m
+
+[32m- Expected:[39m 
+"."
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/runtime-dispatch-parallel.test.ts:[2m70:38[22m[39m
+    [90m 68| [39m        [34mexpect[39m(created[33m.[39mstatus[33m,[39m created[33m.[39mstderr)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m 69| [39m        [35mconst[39m tree [33m=[39m [33mJSON[39m[33m.[39m[34mparse[39m(created[33m.[39mstdout)[33m;[39m
+    [90m 70| [39m        expect(tree.coordinatorRoot).toBe(linked ? `../${coordinator.s…
+    [90m   | [39m                                     [31m^[39m
+    [90m 71| [39m        expect(tree.workerRoot).toBe(join(root, `.joycraft/local/workt…
+    [90m 72| [39m        [34mexpect[39m(tree[33m.[39mnext)[33m.[39m[34mtoContain[39m([32m'without host worktree isolation'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-dispatch-parallel.test.ts[2m > [22mparallel worker startup[2m > [22m[AC:spec-1-2] a tree with no worktrees.mjs record takes its coordinator from the lease; explicit flags still win
+[31m[1mAssertionError[22m: Task startup stopped: Parallel queue execution needs an attested workspace
+: expected 1 to be +0 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+[36m [2m❯[22m tests/runtime-dispatch-parallel.test.ts:[2m93:48[22m[39m
+    [90m 91| [39m    expect(node(root, 'coordinator.mjs', 'claim', '--queue', queuePath…
+    [90m 92| [39m    const fromLease = start(real, manifest, 1, ['--coordinator-session…
+    [90m 93| [39m    [34mexpect[39m(fromLease[33m.[39mstatus[33m,[39m fromLease[33m.[39mstderr)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m   | [39m                                               [31m^[39m
+    [90m 94| [39m    expect(workspace(fromLease.packet)).toContain(`"coordinatorRoot":$…
+    [90m 95| [39m    // An explicit workspace is used as given: here it names the worke…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-dispatch-parallel.test.ts[2m > [22mparallel worker startup[2m > [22m[AC:spec-1-3] with neither a record nor a lease, startup refuses and prints the exact startup with the workspace flags added
+[31m[1mAssertionError[22m: expected 'Task startup stopped: Parallel queue …' to contain 'Spec 2 runs in parallel'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [7mSpec 2 run[27ms [7mi[27mn [7mparallel[27m[39m
+[31m+ [7mTask startup stopped: Parallel queue execution need[27ms [7ma[27mn [7mattested workspace[27m[39m
+[31m+[39m
+
+[36m [2m❯[22m tests/runtime-dispatch-parallel.test.ts:[2m109:28[22m[39m
+    [90m107| [39m    [35mconst[39m refused [33m=[39m [34mstart[39m(real[33m,[39m manifest[33m,[39m [34m2[39m)[33m;[39m
+    [90m108| [39m    [34mexpect[39m(refused[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m109| [39m    [34mexpect[39m(refused[33m.[39mstderr)[33m.[39m[34mtoContain[39m([32m'Spec 2 runs in parallel'[39m)[33m;[39m
+    [90m   | [39m                           [31m^[39m
+    [90m110| [39m    [35mconst[39m command [33m=[39m refused[33m.[39mstderr[33m.[39m[34mtrim[39m()[33m.[39m[34msplit[39m([32m'\n'[39m)[33m.[39m[34mpop[39m()[33m![39m[33m;[39m
+    [90m111| [39m    expect(command).toMatch(/^node \.joycraft\/runtime\/dispatch-start…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m   Start at [22m 21:10:31
+[2m   Duration [22m 1.42s[2m (transform 30ms, setup 0ms, collect 39ms, tests 1.18s, environment 0ms, prepare 46ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":2136,"load":[6.7919921875,7.048828125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-dispatch-parallel.test.ts"],"exitCode":1,"timedOut":false,"revision":"4320fda55c8cc578dfcb210702f19f094288307c","dirty":true}

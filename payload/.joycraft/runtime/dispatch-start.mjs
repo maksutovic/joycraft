@@ -4,10 +4,11 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { assertReviewAllowed, visibleReports } from './completion.mjs';
 import { readConfig } from './config.mjs';
-import { readLease } from './coordinator.mjs';
+import { mainTree, readLease } from './coordinator.mjs';
 import { prepareDispatch } from './dispatch-preflight.mjs';
 import { testChanges } from './test-changes.mjs';
 import { traceSpec } from './trace.mjs';
+import { readLedger } from './worktrees.mjs';
 import { canonical, isObject, localPath, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, validateNativeActor } from './identity.mjs';
 
 export const reviewLimit = 3;
@@ -233,7 +234,7 @@ export async function startDispatch(options, nativeEvent) {
   }
   // Change scope is opt-in per spec: startup never writes it, and a reviewer
   // without one reviews against the verification inputs alone.
-  const packet = prepareDispatch({ ...options, outPath: output });
+  const packet = prepareDispatch({ ...options, ...parallelWorkspace({ root, spec, options, lease }), outPath: output });
   const review = rounds === undefined ? {}
     : { reviewRound: rounds.size + (rounds.has(reviewRoundKey(packet.subject)) ? 0 : 1), reviewLimit };
   const runtime = await hookRuntime();
@@ -265,6 +266,30 @@ export async function startDispatch(options, nativeEvent) {
       featureFolder: path.posix.dirname(path.posix.dirname(queuePath)), focused }) };
   return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(warnings.length ? { warnings } : {}), ...(trace ? { trace } : {}), ...(changes ? { testChanges: changes } : {}), commands,
     ready: !hookConfig.enabled || hooks.eligible === true };
+}
+
+export const workspaceFlags = coordinatorRoot => ['--coordinator', coordinatorRoot, '--parallel', 'true', '--access', 'mutating'];
+
+/** An error for a parallel implementer startup without its workspace: main
+ * prints the same startup again with the flags added. */
+export class MissingWorkspaceError extends Error {
+  constructor(message) { super(message); this.missingWorkspace = true; }
+}
+
+/** The workspace of a parallel implementer startup that passed no workspace
+ * flags: the coordinator root comes from this tree's worktrees.mjs record, else
+ * from the queue's coordinator lease. Explicit flags are used as given. */
+export function parallelWorkspace({ root, spec, options, lease }) {
+  if (options.role !== 'implementer' || spec.execution?.parallel !== true
+    || [options.coordinatorRoot, options.parallel, options.access].some(value => value !== undefined)) return {};
+  const main = mainTree(root);
+  let recorded;
+  try { recorded = readLedger(main).trees.find(tree => path.resolve(main, tree.path) === root)?.coordinatorRoot; } catch { /* An unreadable ledger falls back to the lease. */ }
+  const relative = recorded ?? lease?.root;
+  if (typeof relative !== 'string') {
+    throw new MissingWorkspaceError(`Spec ${spec.id} runs in parallel, so startup needs the coordinator's workspace, and neither a worktrees.mjs record for this tree nor a coordinator lease names it. Create worker trees with worktrees.mjs create, or claim the queue with coordinator.mjs claim, or add ${workspaceFlags('<coordinator-root>').join(' ')}`);
+  }
+  return { coordinatorRoot: path.resolve(main, relative), parallel: true, access: 'mutating' };
 }
 
 function gitIgnored(root, relative) {
@@ -310,5 +335,11 @@ export async function main(argv = process.argv.slice(2)) {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
-  main().catch(error => { process.stderr.write(`Task startup stopped: ${error.message}\n`); process.exitCode = error instanceof ReviewLimitError ? 2 : 1; });
+  main().catch(error => {
+    // A missing parallel workspace prints the exact startup to run instead.
+    const rerun = error.missingWorkspace
+      ? `\nRun this startup with the flags added, from the worker root, with the coordinator's root in place of <coordinator-root>:\n${['node', '.joycraft/runtime/dispatch-start.mjs', ...process.argv.slice(2), ...workspaceFlags('<coordinator-root>')].map(shellQuote).join(' ')}`
+      : '';
+    process.stderr.write(`Task startup stopped: ${error.message}${rerun}\n`); process.exitCode = error instanceof ReviewLimitError ? 2 : 1;
+  });
 }

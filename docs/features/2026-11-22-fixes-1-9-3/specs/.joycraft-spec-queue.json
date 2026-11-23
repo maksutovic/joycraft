@@ -1,0 +1,257 @@
+{
+  "schemaVersion": 1,
+  "feature": "fixes-1-9-3",
+  "specs": [
+    {
+      "id": 1,
+      "file": "01-parallel-workspace.md",
+      "depends_on": [],
+      "status": "in-review",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "workspace",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/specs/01-parallel-workspace.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/worktrees.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-preflight.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-dispatch-parallel.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-1-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/01-parallel-workspace.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/01-parallel-workspace.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-3",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/01-parallel-workspace.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T05:15:57.306Z"
+      }
+    },
+    {
+      "id": 2,
+      "file": "02-one-worker-home.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "one-home",
+                "one-update",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/worktrees.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/dispatch.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-implementer.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/setup.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-worker-commands.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-2-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-3",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-4",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "file": "03-release-1-9-3.md",
+      "depends_on": [
+        1,
+        2
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "release",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/specs/03-release-1-9-3.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "package.json",
+            "kind": "code"
+          },
+          {
+            "path": "src/joycraft-release.json",
+            "kind": "code"
+          },
+          {
+            "path": "CHANGELOG.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/public-docs.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/release-preparation.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-3-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/03-release-1-9-3.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/03-release-1-9-3.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
