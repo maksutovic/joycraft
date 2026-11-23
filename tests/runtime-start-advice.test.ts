@@ -150,7 +150,7 @@ describe('no-git start advice (sl1-03)', () => {
     expect(setup).toContain('On a bare project, run `git init`, say so, and say that deleting the `.git` folder undoes it.');
     expect(setup).toContain('On a project with files, ask once, yes or no');
     expect(setup).toContain('On no, write `- No Git:` and the user\'s words under `## Rules` in `AGENTS.md`');
-    expect(setup).toContain('When the folder is bare or has an ignore file, make the first commit.');
+    expect(setup).toContain('When the folder is bare or has an ignore file, commit what is there as `chore: set up Joycraft`.');
     expect(setup).toContain('When `detect` prints `"git": false`, run `git init` first');
   });
 });
