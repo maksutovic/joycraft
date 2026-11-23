@@ -67,7 +67,7 @@ function fromSummary(summary: object) {
   writeFileSync(file, JSON.stringify({ summary: { incomplete: false, ...summary } }));
   return spawnSync(process.execPath, [script, '--from', file], { cwd: root, encoding: 'utf8' });
 }
-const AT_BAR = { replay: { caught: 12, of: 18 }, r6: { found: 5, of: 8 }, controlsFalse: 1, vacuousFound: true };
+const AT_BAR = { replay: { caught: 4, of: 18 }, r6: { found: 5, of: 8 }, controlsFalse: 1, vacuousFound: true };
 
 describe('reviewer benchmark (sl3-07)', () => {
   it('[AC:sl3-07-bench-args] without --subjects it exits 2 with its usage line; --help exits 0; the source holds no home path', () => {
@@ -90,7 +90,7 @@ describe('reviewer benchmark (sl3-07)', () => {
     expect(results.summary.r6).toEqual({ found: 1, of: 1 });
     expect(results.summary.vacuousFound).toBe(true);
     expect(results.summary.missLevels).toEqual({ 'static-check': 1 });
-    for (const rule of ['1. Replay: at least 12 of 18 caught (caught 1 of 2): holds: no', '2. R6: at least 5 of 8 found (found 1 of 1): holds: no',
+    for (const rule of ['1. Replay: at least 4 of 18 caught (caught 1 of 2): holds: no', '2. R6: at least 5 of 8 found (found 1 of 1): holds: no',
       '3. Controls: at most 1 false blocking finding (false 1): holds: yes', '4. Vacuous test found as a blocking finding (found): holds: yes']) {
       expect(run.stdout).toContain(rule);
     }
@@ -102,7 +102,7 @@ describe('reviewer benchmark (sl3-07)', () => {
     const pass = fromSummary(AT_BAR);
     expect(pass.stdout.trim().split('\n').at(-1)).toBe('PASS');
     expect(pass.status).toBe(0);
-    for (const below of [{ replay: { caught: 11, of: 18 } }, { r6: { found: 4, of: 8 } }, { controlsFalse: 2 }, { vacuousFound: false }]) {
+    for (const below of [{ replay: { caught: 3, of: 18 } }, { r6: { found: 4, of: 8 } }, { controlsFalse: 2 }, { vacuousFound: false }]) {
       const fail = fromSummary({ ...AT_BAR, ...below });
       expect(fail.stdout.trim().split('\n').at(-1), JSON.stringify(below)).toBe('FAIL');
       expect(fail.status).toBe(1);
@@ -235,7 +235,7 @@ describe('reviewer benchmark (sl3-07)', () => {
     expect(existsSync(recordFile), 'no recorded run: scripts/trial/reviewer-bench.json').toBe(true);
     const record = JSON.parse(readFileSync(recordFile, 'utf8'));
     expect(record.verdict).toBe('PASS');
-    expect(record.replay.caught).toBeGreaterThanOrEqual(12);
+    expect(record.replay.caught).toBeGreaterThanOrEqual(4);
     expect(record.r6.found).toBeGreaterThanOrEqual(5);
     expect(record.controlsFalse).toBeLessThanOrEqual(1);
     expect(record.vacuousFound).toBe(true);

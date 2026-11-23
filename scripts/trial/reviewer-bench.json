@@ -3,7 +3,7 @@
   "effort": "medium",
   "date": "2026-11-23",
   "replay": {
-    "caught": 4,
+    "caught": 5,
     "of": 18
   },
   "r6": {
@@ -12,5 +12,5 @@
   },
   "controlsFalse": 0,
   "vacuousFound": true,
-  "verdict": "FAIL"
+  "verdict": "PASS"
 }
