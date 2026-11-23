@@ -8,6 +8,7 @@ Run these commands from the consumer project root. Paths are project-relative.
 
 ```sh
 node .joycraft/runtime/completion.mjs submit --queue <queue-path> --spec <id>
+node .joycraft/runtime/completion.mjs reopen --queue <queue-path> --spec <id> --reason <text>
 node .joycraft/runtime/completion.mjs scope --queue <queue-path> --spec <id>
 node .joycraft/runtime/completion.mjs snapshot --queue <queue-path> --spec <id> --out <subject.json>
 node .joycraft/runtime/completion.mjs finalize-review --queue <queue-path> --spec <id> --report <report.json>
@@ -17,7 +18,7 @@ node .joycraft/runtime/completion.mjs accept-waiver --queue <queue-path> --spec 
 node .joycraft/runtime/completion.mjs recover --queue <queue-path>
 ```
 
-`submit` moves a `todo` spec to `in-review` in the queue and frontmatter with one journaled write, recording `submitted: { at }`. It warns about each criterion with no `[AC:<id>]` test, leaves an `in-review` spec unchanged, and exits 2 on a conflict, a `done` spec or an unfinished dependency.
+`submit` moves a `todo` spec to `in-review` in the queue and frontmatter with one journaled write, recording `submitted: { at }`. It warns about each criterion with no `[AC:<id>]` test, leaves an `in-review` spec unchanged, and exits 2 on a conflict, a `done` spec or an unfinished dependency. It warns about each other `done` spec whose accepted input changed. `reopen` moves such a spec back to `in-review`, keeps the old report in `reopened`, and restarts its review round count.
 
 `scope` checks a queue's declared change scope without writing a subject. `snapshot` does the same check first, then exclusively creates a new `--out` subject file without changing a status. It binds the implementation revision, queue/spec identity, criteria, and SHA-256 values for exact relevant inputs. The shared record shapes are defined in [.joycraft/contracts/types.d.ts](../contracts/types.d.ts). New subjects carry `binding.version: 1`: their queue projection contains the reviewed spec and its transitive dependencies, with completion metadata (`status`, `submitted`, `acceptedReport`, `ownerAcceptance`, `waiver`) removed from those records. An unrelated queue record can change without staling that subject; a selected spec's other metadata and dependency edges remain bound. A spec binding preserves raw bytes except for its top-level `status:` value.
 

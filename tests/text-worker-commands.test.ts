@@ -57,7 +57,8 @@ describe('one worker home (1.9.3)', () => {
 
   it('[AC:spec-2-1] parallel workers get a worktrees.mjs tree on every host and never the host isolation as well', () => {
     expect(implement).toContain('own tree and build/cache state, on every host:');
-    expect(implement).toContain('Launch its worker without host worktree isolation (Claude Code: no Agent `isolation`), naming the printed `workerRoot`.');
+    // [AC:spec-3-1] 1.9.4 adds the agent-type frontmatter to this sentence.
+    expect(implement).toContain('Launch its worker without host worktree isolation (Claude Code: no Agent `isolation`, an agent type without `isolation` frontmatter), naming the printed `workerRoot`.');
     expect(implement).not.toContain('when the host has no native worktree isolation');
     expect(worktrees).toContain('`worktrees.mjs` is the one home for worker trees on every host:');
     expect(worktrees).toContain('Never use both:');
@@ -82,5 +83,25 @@ describe('reviewer start text (1.9.3)', () => {
     expect(agents.reviewer).toContain('with the command in `.joycraft/references/dispatch.md#start-a-native-dispatch` (`--help` prints it).');
     expect(agents.reviewer).toContain("When the task names a worker root that is not your shell's folder, run each command as `cd <worker-root> && <one command>`.");
     expect(dispatch).toContain('A Claude Code child cannot see its own agent ID: the coordinator sends it the ID from the launch result before its startup.');
+  });
+});
+
+// Spec: docs/features/2026-11-22-fixes-1-9-4/specs/03-field-text.md
+describe('field follow-up text (1.9.4)', () => {
+  const implement = read('.agents', 'skills', 'joycraft-implement', 'SKILL.md');
+  const completionRef = read('.joycraft', 'references', 'completion.md');
+  const update = read('.joycraft', 'references', 'update.md');
+
+  it('[AC:spec-3-1] the implement skill names the agent-type frontmatter, the focused rerun after an integration edit, and reopen', () => {
+    expect(implement).toContain('an agent type without `isolation` frontmatter');
+    expect(implement).toContain('In `checkpoint`, commit each finished spec, integrate it, rerun its focused tests after any integration edit, and review the integrated bytes before continuing.');
+    expect(implement).toContain("When `submit` warns that a done spec's accepted input changed, run the printed `completion.mjs reopen` for that spec and review it again.");
+  });
+
+  it('[AC:spec-3-2] completion, dispatch and update references describe reopen, the report path and when to update', () => {
+    expect(completionRef).toContain('node .joycraft/runtime/completion.mjs reopen --queue <queue-path> --spec <id> --reason <text>');
+    expect(completionRef).toContain("`reopen` moves such a spec back to `in-review`, keeps the old report in `reopened`, and restarts its review round count.");
+    expect(dispatch).toContain('Each reviewer startup gets a new report path, which wins over any project naming rule.');
+    expect(update).toContain('Update only between specs, while no implementer or reviewer runs; finish or park the work in progress first.');
   });
 });

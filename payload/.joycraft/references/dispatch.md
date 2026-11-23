@@ -93,7 +93,7 @@ it before the first implementer mutation, and startup preserves it. The separate
 workspace `--base-revision` option keeps its documented topology check.
 Implementer dispatch requires each dependency to be `done`; reviewer dispatch
 does not require the target itself to be done. Unknown roles are rejected.
-Reviewer startup prints `reviewRound` and `reviewLimit: 3`; a round is one distinct set of reviewed inputs, so a commit that changes none of the spec's verification inputs keeps the round, and a fourth round exits 2.
+Each reviewer startup gets a new report path, which wins over any project naming rule. Reviewer startup prints `reviewRound` and `reviewLimit: 3`; a round is one distinct set of reviewed inputs, so a commit that changes none of the spec's verification inputs keeps the round, and a fourth round exits 2.
 
 When a reviewer startup exits non-zero or returns `ready: false`, run it once
 more, alone, with a fresh packet path. If it fails again, stop that spec's
@@ -127,11 +127,9 @@ Include the reviewer skill, every reference it needs, and every runtime module
 it needs in `delivery.roles`. A matching path is insufficient when the bytes
 are from an older install.
 
-The low-level `preflightDispatch`/`nativeDispatch` API and `prepare` command
-remain legacy/manual binding tools. They are not the normal path for new
-startup. Calls that omit `expectedManifestPath` validate only the worker's own
-bundle and do not attest the intended release. Do not claim release delivery
-from a legacy self-attested call.
+The legacy `preflightDispatch`/`nativeDispatch` API and `prepare` command are
+manual tools, not normal startup; without `expectedManifestPath` they attest
+only the worker's own bundle, never the intended release.
 
 ## Call the portable dispatch API
 

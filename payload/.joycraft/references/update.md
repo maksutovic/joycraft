@@ -15,8 +15,8 @@ however short or off-topic:
 - `apply`: the user chose automatic updates. Follow "Update" below without asking.
   If the plan would back up an edited file, stop and ask instead.
 
-Finish or park the work in progress before you update. Do not update in the middle
-of a spec.
+Update only between specs, while no implementer or reviewer runs; finish or park
+the work in progress first.
 
 ## Update
 

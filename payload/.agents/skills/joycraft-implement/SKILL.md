@@ -11,16 +11,12 @@ Use this skill to carry out already-authorized specs in `docs/features/<slug>/sp
 Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec, the parent brief, the selected spec, and its declared verification inputs before changing code. Reuse current decisions and context; record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision. Do not require a new interview for settled work.
 
 For a change across state, data or producer/consumer boundaries, inspect the
-actual counterpart code and relevant owning decisions/context.
-Add discovered material sources
-and relevant decision/context paths to exact verification inputs before
-review; report unresolved coverage. See
-[focused discovery](../../../.joycraft/references/architecture.md)
-when the boundary is unclear; a local repair needs no architecture review.
+counterpart code and owning decisions, and add them to the exact verification
+inputs before review ([focused discovery](../../../.joycraft/references/architecture.md));
+a local repair needs none.
 
 Work the ready authorized queue autonomously. A `todo` spec is ready when every
-dependency is `done`; a merge or `in-review` status is insufficient. Dispatch
-preflight checks this against the actual queue. Preserve the limits of an
+dependency is `done`; a merge or `in-review` status is insufficient. Preserve the limits of an
 explicitly owner-accepted dependency. Choose independent ready work while an
 affected branch waits for review, environment repair or a recorded owner hold.
 
@@ -47,7 +43,7 @@ For a spec marked `execution.parallel: true`, give each concurrent mutator its
 own tree and build/cache state, on every host:
 `node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <your-session-id>`.
 Launch its worker without host worktree isolation (Claude Code: no Agent
-`isolation`), naming the printed `workerRoot`. It first runs the project bootstrap. Read [worker isolation](../../../.joycraft/references/worktrees.md)
+`isolation`, an agent type without `isolation` frontmatter), naming the printed `workerRoot`. It first runs the project bootstrap. Read [worker isolation](../../../.joycraft/references/worktrees.md)
 when parallel work, integration, cleanup, or resource capacity is in play. If
 isolation cannot be obtained, replan the affected wave and set the current
 queue entry's `execution.parallel` to `false` before dispatch, recording why;
@@ -58,7 +54,8 @@ Implement the spec; run checks and any relevant rendered inspection as you go, i
 Honor the queue's commit mode. In `batch`, commit and review the independent ready
 wave at its boundary before advancing its dependents; do not wait for an entire
 dependency chain to be implemented. In `checkpoint`, commit each finished spec,
-integrate it, and review the integrated bytes before continuing. In `isolated`,
+integrate it, rerun its focused tests after any integration edit, and review the
+integrated bytes before continuing. In `isolated`,
 also give each implementation spec an actual fresh agent context
 (`fork_turns: "none"` when spawning; in Claude Code the `joycraft-implementer`
 agent type when installed) with its raw requirements and project context. A worktree is operational isolation; it does not prove review independence.
@@ -70,8 +67,8 @@ observed host capabilities and raw current sources, including coupled
 sources discovered during implementation; never a desired verdict or reasoning.
 It needs actual host session/agent identity and available current authority
 as described in [dispatch guidance](../../../.joycraft/references/dispatch.md).
-Write its packet or subject beneath a confirmed Git-ignored project-local
-directory, not among reviewed sources.
+When `submit` warns that a done spec's accepted input changed, run the printed
+`completion.mjs reopen` for that spec and review it again.
 If a separate review context/capability is unavailable, leave the spec
 `in-review`; do not invent an ID to continue. This holds the claimed review,
 not unrelated authorized work.

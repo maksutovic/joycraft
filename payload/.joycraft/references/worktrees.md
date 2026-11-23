@@ -31,13 +31,10 @@ fresh-context requirement; a worktree alone does not satisfy it.
 `read-only` describes source handling here; it does not create a filesystem
 sandbox.
 
-Before a large concurrent queue, print and retain a deterministic dispatch plan:
-the target branch and captured refs, queue and integration owner, dependency
-order, actual aggregate resource capacity across active runs, and any
-project-owned leases. Verify the active workflow's real isolation and host
-capabilities; do not assume agent frontmatter, a planned worktree, or a
-runtime lifecycle feature is applied. These are observations to recheck on the
-active host, not runtime enforcement.
+Before a large concurrent queue, keep a dispatch plan: target branch and
+captured refs, integration owner, dependency order, resource capacity and
+project leases. Recheck the host's real isolation; never assume it from agent
+frontmatter or a planned worktree.
 
 Only one active queue/integration owner may advance a target branch at a time.
 Other work may proceed only when its project-declared inputs, leases, and
