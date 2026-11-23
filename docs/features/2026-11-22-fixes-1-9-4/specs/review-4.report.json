@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "6d2587618ad25d9b5c79e3151e29a930b83fc7e0",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+    "specId": 4,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-4/specs/04-release-1-9-4.md",
+    "criteria": [
+      {
+        "id": "spec-4-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/04-release-1-9-4.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/04-release-1-9-4.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "code",
+        "sha256": "5944e6ab2a591c028cfc83bac267b1ac752639203bb32e0f9f5da0e88522f9c5",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "f5b2108b89977868b491e527627648fdd583ee6d4d7c3852f321062894c632f7",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "7435ed827577acd41289bb647efcf885d268fc3eac9866cee3a091d468b1a9ef",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/04-release-1-9-4.md",
+        "kind": "requirement",
+        "sha256": "2b8332c9522598bb6bff9b0102c9c342dcea938da9710213a5e76df273f039db",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "package.json",
+        "kind": "code",
+        "sha256": "78c8f64da7e3c02a6d02922dea655a421883efc0743787e22e4035ab3fd9c0c9",
+        "normalization": "none"
+      },
+      {
+        "path": "src/joycraft-release.json",
+        "kind": "code",
+        "sha256": "a3458e2ee161f75ad954e255d9f24ec0a39b2a0318cc85cee4f910bc99eda566",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/public-docs.test.ts",
+        "kind": "check",
+        "sha256": "15aedb051c9ae98ff6b4a947c0c5cfdd8d0d7008abc8171439a0fa2c452eed9f",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/release-preparation.test.ts",
+        "kind": "check",
+        "sha256": "32ae9ce8e74fbe4fdd872c1859b29a9e130f6c19b0a744132421085554204d9c",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "1a4da28b6e4c8afc643c1a04373fbf3ac9e71b01a2e799aed4f63f804a943b86"
+  },
+  "implementerSessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b"
+  },
+  "reviewer": {
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+    "actor": {
+      "host": "claude",
+      "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+      "agentId": "abca3888accc95074"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-4-1-release-fields",
+      "subjectIdentity": "1a4da28b6e4c8afc643c1a04373fbf3ac9e71b01a2e799aed4f63f804a943b86",
+      "criteria": [
+        "spec-4-1"
+      ],
+      "representativeInput": "package.json, src/joycraft-release.json at 6d25876",
+      "expected": "version and joycraft.release are 1.9.4; summary one line <= 300 chars about this release; releaseVersion 1.9.4; [AC:spec-4-1] added to the two [AC:release-fields] titles with no assertion change; tests pass.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Focused tests exit 0, 39/39 passed (2 files). package.json version 1.9.4, joycraft.release 1.9.4, summary 260 chars, no newline; src/joycraft-release.json releaseVersion 1.9.4. git diff c57f5ac..HEAD on tests/public-docs.test.ts changes only the two it() titles (adds [AC:spec-4-1]); no assertion change, class 1 as declared.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-4-reviewer-focused-20261123T062627286Z-38840-1.log",
+              "sha256": "a86c78e3c0fbe856b98566fca8b370147a3fef8972a1aaea9b10694b47aea0a7"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Release publish itself is CI on merge; not exercised here."
+      ]
+    },
+    {
+      "id": "spec-4-2-changelog",
+      "subjectIdentity": "1a4da28b6e4c8afc643c1a04373fbf3ac9e71b01a2e799aed4f63f804a943b86",
+      "criteria": [
+        "spec-4-2"
+      ],
+      "representativeInput": "CHANGELOG.md at 6d25876",
+      "expected": "## 1.9.4 — <title> entry above 1.9.3 lists specs 1-3 changes with an ### Update notes line on reopen and the new report paths; public-docs finds it; release-preparation.test.ts passes unchanged.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Focused run exit 0; release-preparation.test.ts 21/21 passed and git diff c57f5ac..HEAD shows it unchanged; public-docs descriptor/changelog test passes. CHANGELOG has \"## 1.9.4 — Field follow-ups for queue runs\" directly above 1.9.3, with Update notes on completion.mjs reopen and review-<id>-r2.report.json paths. Each claim checked against code: reopen refuses non-done and non-acceptedReport specs and needs a changed code/check/fixture input, keeps old report in reopened[] (completion.mjs:392-407); submit returns acceptedInputsChanged with the reopen command (completion.mjs:360,379-384); rounds skip reports before the last reopen (dispatch-start.mjs:37-41); reviewer report path steps to -r<n> when taken (dispatch-preflight.mjs:448-451); worktrees.mjs:42-49,83 warns on isolation: worktree and names an alternative agent type; implement SKILL.md:45-46,57,71 and update.md:18 carry the rules named. No overclaim found.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-4-reviewer-focused-20261123T062627286Z-38840-1.log",
+              "sha256": "a86c78e3c0fbe856b98566fca8b370147a3fef8972a1aaea9b10694b47aea0a7"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Trace lists no [AC:spec-4-2] test: the criterion requires release-preparation.test.ts unchanged, so it cannot carry a tag."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "spec-4-2-untraced",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-4-2",
+      "summary": "Criterion spec-4-2 has no [AC:spec-4-2] test in trace. The spec requires release-preparation.test.ts to pass unchanged, so a tag would break the criterion; judged by observation instead (file unchanged, 21/21 pass, CHANGELOG entry read against code).",
+      "assumption": "An untagged unchanged-file criterion is acceptable when judged by direct observation."
+    },
+    {
+      "id": "changelog-length",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "CHANGELOG.md:9",
+      "summary": "The spec asks for \"a few lines\"; the 1.9.4 entry is about 35 lines across intro, Update notes, Added and Fixed. It matches the 1.9.3 entry style and the releasing guide sections, so not a failing criterion.",
+      "assumption": "The house CHANGELOG format governs over a literal line count."
+    },
+    {
+      "id": "untracked-followups",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/review-followups.md",
+      "summary": "An untracked review-followups.md sits in the feature folder; it is not a spec-4 input and does not affect this review. Commit or remove it at session end."
+    }
+  ],
+  "createdAt": "2026-11-23T06:27:10.156Z"
+}
