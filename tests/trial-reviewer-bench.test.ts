@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { chmodSync, cpSync, existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -40,9 +40,11 @@ function stub(dir: string) {
 import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 const key = process.env.JOYCRAFT_BENCH_SUBJECT + '.' + process.env.JOYCRAFT_BENCH_ROLE;
 const canned = JSON.parse(readFileSync(process.env.STUB_CANNED, 'utf8'));
-appendFileSync(process.env.STUB_LOG, JSON.stringify({ key, cwd: process.cwd(), readme: existsSync('README.md'), args: process.argv.slice(2) }) + '\\n');
+appendFileSync(process.env.STUB_LOG, JSON.stringify({ key, cwd: process.cwd(), readme: existsSync('README.md'), pstack: existsSync('.claude/skills/poteto-mode/SKILL.md'), args: process.argv.slice(2) }) + '\\n');
 if (key === process.env.STUB_FAIL) process.exit(1);
-const reply = () => process.stdout.write(JSON.stringify({ type: 'result', result: canned[key] ?? '', total_cost_usd: Number(process.env.STUB_COST || 0.1) }));
+const result = { type: 'result', result: canned[key] ?? '', total_cost_usd: Number(process.env.STUB_COST || 0.1) };
+const events = JSON.parse(process.env.STUB_EVENTS || '[]');
+const reply = () => process.stdout.write(process.argv.includes('stream-json') ? [...events, result].map(event => JSON.stringify(event)).join('\\n') + '\\n' : JSON.stringify(result));
 setTimeout(reply, Number(process.env.STUB_SLEEP_MS || 0));
 `);
   chmodSync(file, 0o755);
@@ -50,10 +52,10 @@ setTimeout(reply, Number(process.env.STUB_SLEEP_MS || 0));
   return file;
 }
 
-function bench(args: string[], { from = subjects, fail = '', cost = '0.1', sleepMs = '0' } = {}) {
+function bench(args: string[], { from = subjects, fail = '', cost = '0.1', sleepMs = '0', events = [] as object[] } = {}) {
   const dir = tempDir();
   const out = join(dir, 'out');
-  const env = { ...process.env, JOYCRAFT_BENCH_CLAUDE: stub(dir), STUB_CANNED: join(dir, 'canned.json'), STUB_LOG: join(dir, 'calls.log'), STUB_FAIL: fail, STUB_COST: cost, STUB_SLEEP_MS: sleepMs };
+  const env = { ...process.env, JOYCRAFT_BENCH_CLAUDE: stub(dir), STUB_CANNED: join(dir, 'canned.json'), STUB_LOG: join(dir, 'calls.log'), STUB_FAIL: fail, STUB_COST: cost, STUB_SLEEP_MS: sleepMs, STUB_EVENTS: JSON.stringify(events) };
   const run = spawnSync(process.execPath, [script, '--subjects', from, '--out', out, '--no-checkout', '--jobs', '2', ...args], { cwd: root, encoding: 'utf8', env });
   const calls = existsSync(env.STUB_LOG) ? readFileSync(env.STUB_LOG, 'utf8').trim().split('\n').map(line => JSON.parse(line)) : [];
   return { run, out, calls, dir };
@@ -183,6 +185,41 @@ describe('reviewer benchmark (sl3-07)', () => {
     } finally {
       if (before !== null) writeFileSync(recordFile, before);
     }
+  });
+
+  it('--reviewer vanilla runs the built-in /code-review with no Joycraft text, and its important findings block', () => {
+    const tool = (name: string, input: object, id = 't1') => ({ type: 'assistant', message: { content: [{ type: 'tool_use', id, name, input }] } });
+    const events = [tool('ReportFindings', { findings: [{ file: 'src/share.test.ts', line: 9, summary: 'the test asserts nothing', severity: 'important' }, { file: 'a.md', summary: 'typo', severity: 'nit' }] })];
+    const { run, out, calls } = bench(['--only', 'vacuous', '--reviewer', 'vanilla'], { events });
+    const call = calls.find(item => item.key === 'vacuous-demo-vacuous.review');
+    expect(call.args).not.toContain('--append-system-prompt');
+    expect(call.args).toContain('stream-json');
+    expect(call.args[call.args.indexOf('-p') + 1].startsWith('/code-review\n')).toBe(true);
+    expect(call.args.join(' ')).not.toContain('today');
+    const record = JSON.parse(readFileSync(join(out, 'results.json'), 'utf8')).records[0];
+    expect(record).toMatchObject({ blocking: 1, caught: true, trace: { reportFindings: 2 } });
+    const scorePrompt = readFileSync(join(out, 'prompts', 'vacuous-demo-vacuous.score.md'), 'utf8');
+    expect(scorePrompt).toContain('- [blocking] src/share.test.ts:9: the test asserts nothing');
+    expect(run.stdout).toContain('Vacuous test found as a blocking finding (found)');
+  });
+
+  it('--reviewer pstack installs its .claude/ in the subject, starts with /poteto-mode, and logs the skill read and dropped runners', () => {
+    const pstack = join(tempDir(), '.claude');
+    mkdirSync(join(pstack, 'skills', 'poteto-mode'), { recursive: true });
+    writeFileSync(join(pstack, 'skills', 'poteto-mode', 'SKILL.md'), '# Poteto mode\n');
+    const events = [
+      { type: 'assistant', message: { content: [{ type: 'tool_use', id: 'r1', name: 'Read', input: { file_path: '/x/.claude/skills/poteto-mode/SKILL.md' } }] } },
+      { type: 'assistant', message: { content: [{ type: 'tool_use', id: 'a1', name: 'Agent', input: { subagent_type: 'general-purpose', model: 'gemini-4-neon-xhigh' } }, { type: 'tool_use', id: 'a2', name: 'Agent', input: { subagent_type: 'general-purpose', model: 'opus', effort: 'high' } }] } },
+      { type: 'user', message: { content: [{ type: 'tool_result', tool_use_id: 'a1', is_error: true, content: 'model not found' }] } },
+    ];
+    expect(bench(['--only', 'vacuous', '--reviewer', 'pstack']).run.status).toBe(2);
+    const { out, calls } = bench(['--only', 'vacuous', '--reviewer', 'pstack', '--pstack-from', pstack], { events });
+    const call = calls.find(item => item.key === 'vacuous-demo-vacuous.review');
+    expect(call.pstack).toBe(true);
+    expect(call.args[call.args.indexOf('-p') + 1].startsWith('/poteto-mode ')).toBe(true);
+    const record = JSON.parse(readFileSync(join(out, 'results.json'), 'utf8')).records[0];
+    expect(record.trace).toMatchObject({ skillRead: true, agents: [{ model: 'gemini-4-neon-xhigh' }, { model: 'opus', effort: 'high' }], dropped: [{ model: 'gemini-4-neon-xhigh' }] });
+    expect(record.caught).toBe(true);
   });
 
   // The Commands row is part of [AC:sl3-07-bench-current]; it holds before any run is recorded.

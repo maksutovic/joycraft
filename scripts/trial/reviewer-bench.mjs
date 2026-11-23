@@ -29,7 +29,7 @@ import { fileURLToPath } from 'node:url';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
-export const USAGE = 'usage: node scripts/trial/reviewer-bench.mjs --subjects <dir> [--effort medium] [--model <id>] [--only replay,r6,controls,vacuous] [--jobs 4] [--budget-usd 35] [--out <dir>] [--record] [--help]';
+export const USAGE = 'usage: node scripts/trial/reviewer-bench.mjs --subjects <dir> [--effort medium] [--model <id>] [--reviewer joycraft|vanilla|pstack] [--pstack-from <.claude dir>] [--only replay,r6,controls,vacuous] [--jobs 4] [--budget-usd 35] [--review-budget-usd 3] [--out <dir>] [--record] [--help]';
 export const HELP = `${USAGE}
 
 Reruns past review subjects against the reviewer text in this tree and prints
@@ -38,10 +38,15 @@ PASS (exit 0), FAIL (exit 1) or incomplete (exit 3). Usage errors exit 2.
   --subjects <dir>   the subjects folder (required; it is outside the repository)
   --effort <level>   reviewer effort (default medium)
   --model <id>       reviewer model (default claude-opus-5-5); scoring stays on the default
+  --reviewer <name>  who reviews (default joycraft). vanilla: Claude Code's built-in /code-review with the
+                     request and the diff range only. pstack: /poteto-mode swarm-verify, with pstack's
+                     .claude/ copied into each subject from --pstack-from. Subjects, scorer, repro and tagger
+                     stay the same; only joycraft runs can be recorded
   --only <groups>    run only these groups; a partial run is incomplete
   --jobs <n>         reviews at a time (default 4)
   --budget-usd <n>   cap: each call reserves its budget when it starts; a call waits while spent plus
                      reserved plus its budget passes this, and the run stops when spent alone does (default 35)
+  --review-budget-usd <n>  one review call's --max-budget-usd (default 3)
   --out <dir>        where runs, prompts and results.json go (default .joycraft/local/reviewer-bench/<stamp>/)
   --record           write scripts/trial/reviewer-bench.json from this run (refused for an incomplete run)
   --from <file>      print the verdict of a saved results.json (with --record: record it)
@@ -65,12 +70,13 @@ const MODEL = 'claude-opus-5-5';
 const EFFORTS = ['low', 'medium', 'high', 'xhigh', 'max'];
 const CALL_TIMEOUT_MS = 30 * 60 * 1000;
 const R6_CHANGE = "-- . ':!docs' ':!.joycraft' ':!.claude' ':!.agents'";
+export const REVIEWERS = ['joycraft', 'vanilla', 'pstack'];
 
 class UsageError extends Error {}
 
 /** Parsed options. Throws UsageError on a bad or missing value. */
 export function parseArgs(argv) {
-  const options = { model: MODEL, effort: 'medium', only: [...GROUPS], jobs: 4, budgetUsd: 35, record: false, help: false, noCheckout: false };
+  const options = { reviewer: 'joycraft', model: MODEL, effort: 'medium', only: [...GROUPS], jobs: 4, budgetUsd: 35, record: false, help: false, noCheckout: false };
   const value = (index, flag) => {
     const next = argv[index + 1];
     if (next === undefined || next.startsWith('--')) throw new UsageError(`${flag} needs a value`);
@@ -85,6 +91,11 @@ export function parseArgs(argv) {
     else if (flag === '--out') options.out = path.resolve(value(index++, flag));
     else if (flag === '--model') options.model = value(index++, flag);
     else if (flag === '--from') options.from = path.resolve(value(index++, flag));
+    else if (flag === '--pstack-from') options.pstackFrom = path.resolve(value(index++, flag));
+    else if (flag === '--reviewer') {
+      options.reviewer = value(index++, flag);
+      if (!REVIEWERS.includes(options.reviewer)) throw new UsageError(`--reviewer must be one of ${REVIEWERS.join(', ')}`);
+    }
     else if (flag === '--effort') {
       options.effort = value(index++, flag);
       if (!EFFORTS.includes(options.effort)) throw new UsageError(`--effort must be one of ${EFFORTS.join(', ')}`);
@@ -92,13 +103,15 @@ export function parseArgs(argv) {
       options.only = value(index++, flag).split(',').map(group => group.trim()).filter(Boolean);
       const bad = options.only.filter(group => !GROUPS.includes(group));
       if (bad.length || !options.only.length) throw new UsageError(`--only takes ${GROUPS.join(',')}`);
-    } else if (flag === '--jobs' || flag === '--budget-usd') {
+    } else if (flag === '--jobs' || flag === '--budget-usd' || flag === '--review-budget-usd') {
       const number = Number(value(index++, flag));
       if (!(number > 0) || (flag === '--jobs' && !Number.isInteger(number))) throw new UsageError(`${flag} needs a positive number`);
-      options[flag === '--jobs' ? 'jobs' : 'budgetUsd'] = number;
+      options[{ '--jobs': 'jobs', '--budget-usd': 'budgetUsd', '--review-budget-usd': 'reviewBudgetUsd' }[flag]] = number;
     } else throw new UsageError(`unknown argument: ${flag}`);
   }
   if (!options.help && !options.subjects && !options.from) throw new UsageError('--subjects is required');
+  if (options.reviewer === 'pstack' && !options.pstackFrom && !options.help) throw new UsageError('--reviewer pstack needs --pstack-from <the .claude folder to install>');
+  if (options.reviewer !== 'joycraft' && options.record) throw new UsageError('--record keeps the Joycraft reviewer\'s run only');
   return options;
 }
 
@@ -190,6 +203,95 @@ Your final message is one JSON object and nothing else (it stands in for the sch
 
 ${OUTPUT_SHAPE}
 `;
+}
+
+/** The request and the change, as the Joycraft reviewer's prompt names them, without its instructions. */
+export function neutralContext(subject, workDir, promptText = '') {
+  if (subject.kind === 'copy') {
+    const quoted = subject.request.trim().split('\n').map(line => `> ${line}`.trimEnd()).join('\n');
+    return { request: `The user's request:\n\n${quoted}\n\nThe brief and spec files for this request are under \`docs/\`; their acceptance bullets are the criteria.`, change: `\`git diff ${subject.base} HEAD ${R6_CHANGE}\`` };
+  }
+  const field = name => promptText.match(new RegExp(`^- ${name}: \`([^\`]+)\``, 'm'))?.[1];
+  const spec = field('spec');
+  const brief = field('brief');
+  const range = field('scope.diff') ?? `git diff HEAD~1 HEAD`;
+  const patch = subject.inputsDir ? `, saved at \`${path.join(subject.inputsDir, 'diff.patch')}\` (review reports and review notes left out)` : '';
+  return {
+    request: `The request: the spec \`${spec}\` (its acceptance bullets are the criteria)${brief ? `, part of the brief \`${brief}\`` : ''}.`,
+    change: `\`${range}\`${patch}`,
+  };
+}
+
+/** The vanilla prompt: Claude Code's built-in review, told only what the change is. */
+export function renderVanillaPrompt({ request, change }) {
+  return `/code-review\n\n${request}\n\nThe change under review: ${change}.\n`;
+}
+
+/** The pstack prompt: poteto-mode, then its own verify step (swarm-verify) against the request. */
+export function renderPstackPrompt({ request, change }) {
+  return `/poteto-mode Verify a finished change against its request, the way your Autopilot-full playbook's verify step says (step 4, swarm-verify, per the swarm skill), at HEAD of this checkout. pstack is installed at the project level: \`<pstack>\` is \`.claude/\`, the Claude Code adapter is \`.claude/docs/harness/claude-code.md\`, the model settings are \`.claude/rules/pstack-models.md\`, and skill names have no \`pstack:\` prefix.
+
+${request}
+
+The change: ${change}.
+
+This is verification only: do not commit, push, open a PR or edit tracked files. Put any probe or fixture in a new temporary directory outside this checkout.
+
+End your reply with your verdict and one JSON object on its own line, listing each problem you found and whether it blocks the change: {"findings":[{"class":"blocking|follow-up","at":"<file>:<line>","text":"<the failure and what a user sees>"}]}
+`;
+}
+
+/**
+ * What a stream-json transcript shows: the built-in review's ReportFindings, whether poteto-mode loaded and its
+ * SKILL.md was read, each subagent with its model and effort, and runners that failed to start (a model that does
+ * not resolve) or used a Joycraft agent or skill.
+ */
+export function traceOf(events) {
+  const trace = { reportFindings: [], skillLoaded: false, skillRead: false, agents: [], dropped: [], joycraftUsed: [] };
+  const agentById = new Map();
+  for (const event of events) {
+    if (event?.type === 'system' && event.subtype === 'init') trace.sessionId = event.session_id;
+    const content = Array.isArray(event?.message?.content) ? event.message.content : [];
+    if (event.type === 'user' && !event.parent_tool_use_id) {
+      const textOf = JSON.stringify(content);
+      if (/<command-name>\/?poteto-mode<\/command-name>|# Poteto mode/.test(textOf) || /# Poteto mode/.test(String(event.message?.content))) trace.skillLoaded = true;
+    }
+    for (const block of content) {
+      if (block?.type === 'tool_use') {
+        const input = block.input ?? {};
+        if (block.name === 'ReportFindings' && Array.isArray(input.findings)) trace.reportFindings.push(...input.findings);
+        if (/poteto-mode\/SKILL\.md/.test(`${block.name === 'Read' ? input.file_path : ''} ${block.name === 'Bash' ? input.command : ''}`)) trace.skillRead = true;
+        if (block.name === 'Skill' && /poteto-mode/.test(input.skill ?? input.command ?? '')) trace.skillLoaded = true;
+        if (block.name === 'Agent' || block.name === 'Task') {
+          const agent = { type: input.subagent_type ?? 'general-purpose', model: input.model ?? '(session)', effort: input.effort ?? '(default)', nested: Boolean(event.parent_tool_use_id) };
+          agentById.set(block.id, agent);
+          trace.agents.push(agent);
+        }
+        if (/joycraft/i.test(`${input.subagent_type ?? ''} ${input.skill ?? ''}`)) trace.joycraftUsed.push(`${block.name} ${input.subagent_type ?? input.skill}`);
+      }
+      if (block?.type === 'tool_result' && block.is_error && agentById.has(block.tool_use_id)) {
+        const agent = agentById.get(block.tool_use_id);
+        trace.dropped.push({ ...agent, error: JSON.stringify(block.content).slice(0, 200) });
+      }
+    }
+  }
+  return trace;
+}
+
+/** Whether the session transcript holds the expanded /poteto-mode (its SKILL.md body). stream-json does not echo it. */
+function skillInTranscript(cwd, sessionId) {
+  if (!sessionId || !process.env.HOME) return false;
+  const file = path.join(process.env.HOME, '.claude', 'projects', cwd.replace(/[^A-Za-z0-9]/g, '-'), `${sessionId}.jsonl`);
+  return existsSync(file) && readFileSync(file, 'utf8').includes('# Poteto mode');
+}
+
+/** The built-in review's text plus its ReportFindings, shown so the scorer sees what blocks (`important`). */
+export function vanillaReviewText(text, findings) {
+  if (!findings.length) return `${text}\n\n## Findings reported\n\nnone\n\n{"findings":[]}`;
+  const classOf = finding => finding.severity === 'important' ? 'blocking' : finding.severity === 'nit' ? 'nit' : 'pre-existing';
+  const lines = findings.map(finding => `- [${classOf(finding)}] ${finding.file}${finding.line ? `:${finding.line}` : ''}: ${finding.summary}${finding.failure_scenario ? ` Failure: ${finding.failure_scenario}` : ''}`);
+  const json = { findings: findings.map(finding => ({ class: classOf(finding), at: `${finding.file}${finding.line ? `:${finding.line}` : ''}`, text: finding.summary })) };
+  return `${text}\n\n## Findings reported (severity important = blocking)\n\n${lines.join('\n')}\n\n${JSON.stringify(json)}`;
 }
 
 /** Every subject of the chosen groups, with its prompt source and answer key. */
@@ -295,6 +397,15 @@ async function prepare(context, subject, label) {
       }
     }
   }
+  if (ok && label === 'review' && context.reviewer === 'pstack') {
+    try {
+      await cp(context.pstackFrom, path.join(dir, '.claude'), { recursive: true, force: true });
+      log.push(`copy ${context.pstackFrom} -> ${path.join(dir, '.claude')}\nok`);
+    } catch (error) {
+      log.push(`copy ${context.pstackFrom}\n${error}`);
+      ok = false;
+    }
+  }
   writeFileSync(path.join(context.out, 'runs', `${subject.id}.${label}.setup.log`), log.join('\n'));
   return { dir, ok };
 }
@@ -325,20 +436,27 @@ export function release(context, budget, cost) {
 }
 
 /** One `claude -p` call, or null when the cap guard stops it. */
-async function callClaude(context, { role, subject, cwd, prompt, budget, effort, model = MODEL, extra = [] }) {
+async function callClaude(context, { role, subject, cwd, prompt, budget, effort, model = MODEL, extra = [], stream = false }) {
   if (!await reserve(context, budget)) return null;
   const name = `${subject.id}.${role}`;
   writeFileSync(path.join(context.out, 'prompts', `${name}.md`), prompt);
-  const args = ['-p', prompt, '--model', model, '--effort', effort, '--setting-sources', 'project,local', '--output-format', 'json', '--max-budget-usd', String(budget), ...extra];
+  const args = ['-p', prompt, '--model', model, '--effort', effort, '--setting-sources', 'project,local', '--output-format', stream ? 'stream-json' : 'json', ...(stream ? ['--verbose'] : []), '--max-budget-usd', String(budget), ...extra];
   const env = { ...process.env, JOYCRAFT_BENCH_ROLE: role, JOYCRAFT_BENCH_SUBJECT: subject.id };
   const result = await run(context.claude, args, { cwd, env, timeout: CALL_TIMEOUT_MS });
-  writeFileSync(path.join(context.out, 'runs', `${name}.json`), result.stdout);
+  writeFileSync(path.join(context.out, 'runs', `${name}.${stream ? 'jsonl' : 'json'}`), result.stdout);
   if (result.stderr) writeFileSync(path.join(context.out, 'runs', `${name}.err`), result.stderr);
   let reply = {};
-  try { reply = JSON.parse(result.stdout); } catch { /* no JSON envelope */ }
+  const events = [];
+  try { reply = JSON.parse(result.stdout); } catch {
+    // stream-json: one event per line, the last `result` event is the envelope.
+    for (const line of result.stdout.split('\n')) {
+      try { events.push(JSON.parse(line)); } catch { /* not an event */ }
+    }
+    reply = events.findLast(event => event?.type === 'result') ?? {};
+  }
   const cost = Number(reply.total_cost_usd) || 0;
   release(context, budget, cost);
-  return { exit: result.code, seconds: result.seconds, cost, text: typeof reply.result === 'string' ? reply.result : '' };
+  return { exit: result.code, seconds: result.seconds, cost, text: typeof reply.result === 'string' ? reply.result : '', events, subtype: reply.subtype };
 }
 
 const referenceList = reference => reference.map(item => `- id ${item.id}, at ${item.at}: ${item.text}`).join('\n');
@@ -375,16 +493,26 @@ async function runSubject(context, subject) {
     rmSync(work.dir, { recursive: true, force: true });
     return { ...record, incomplete: true, why: 'setup' };
   }
-  const prompt = subject.kind === 'checkout'
-    ? rewriteToday(readFileSync(subject.promptFile, 'utf8'), context.todayDir)
+  const joycraft = context.reviewer === 'joycraft';
+  const promptText = subject.kind === 'checkout' ? readFileSync(subject.promptFile, 'utf8') : '';
+  const neutral = joycraft ? null : neutralContext(subject, work.dir, promptText);
+  const prompt = !joycraft ? (context.reviewer === 'vanilla' ? renderVanillaPrompt(neutral) : renderPstackPrompt(neutral))
+    : subject.kind === 'checkout' ? rewriteToday(promptText, context.todayDir)
     : renderCopyPrompt({ request: subject.request, workDir: work.dir, base: subject.base, todayDir: context.todayDir });
-  const addDirs = [context.todayDir, ...(subject.inputsDir ? [subject.inputsDir] : [])].flatMap(dir => ['--add-dir', dir]);
+  const addDirs = [...(joycraft ? [context.todayDir] : []), ...(subject.inputsDir ? [subject.inputsDir] : [])].flatMap(dir => ['--add-dir', dir]);
   const review = await callClaude(context, {
-    role: 'review', subject, cwd: work.dir, prompt, budget: BUDGETS.review, effort: context.effort, model: context.model,
-    extra: ['--append-system-prompt', context.system, '--dangerously-skip-permissions', ...addDirs],
+    role: 'review', subject, cwd: work.dir, prompt, budget: context.reviewBudget, effort: context.effort, model: context.model, stream: !joycraft,
+    extra: [...(joycraft ? ['--append-system-prompt', context.system] : []), '--dangerously-skip-permissions', ...addDirs],
   });
   rmSync(work.dir, { recursive: true, force: true });
   if (!review) return { ...record, incomplete: true, why: 'cap' };
+  if (!joycraft) {
+    const trace = traceOf(review.events);
+    if (context.reviewer === 'pstack') trace.skillLoaded ||= skillInTranscript(work.dir, trace.sessionId);
+    record.trace = { subtype: review.subtype, skillLoaded: trace.skillLoaded, skillRead: trace.skillRead, agents: trace.agents, dropped: trace.dropped, joycraftUsed: trace.joycraftUsed, reportFindings: trace.reportFindings.length };
+    if (context.reviewer === 'vanilla') review.text = vanillaReviewText(review.text, trace.reportFindings);
+    writeFileSync(path.join(context.out, 'runs', `${subject.id}.review.text.md`), review.text);
+  }
   const output = extractJson(review.text);
   const blocking = (Array.isArray(output?.findings) ? output.findings : []).filter(finding => finding?.class === 'blocking');
   Object.assign(record, { exit: review.exit, seconds: review.seconds, cost: review.cost, parsed: Boolean(output), blocking: blocking.length });
@@ -541,6 +669,7 @@ async function bench(options) {
   const common = await run('git', ['rev-parse', '--git-common-dir'], { cwd: repo });
   const context = {
     out, todayDir, scoresDir: path.join(out, 'scores'), effort: options.effort, model: options.model, budgetUsd: options.budgetUsd, noCheckout: options.noCheckout,
+    reviewer: options.reviewer, pstackFrom: options.pstackFrom, reviewBudget: options.reviewBudgetUsd ?? BUDGETS.review,
     claude: process.env.JOYCRAFT_BENCH_CLAUDE || 'claude',
     system: agentBody(readFileSync(path.join(repo, REVIEWER_FILES[0][1]), 'utf8')),
     scoreTemplate: options.only.some(group => group !== 'controls') ? readFileSync(need(options.subjects, 'replay/score-prompt.md'), 'utf8') : '',
@@ -551,7 +680,7 @@ async function bench(options) {
   rmSync(path.join(out, 'work'), { recursive: true, force: true });
   const summary = summarize(records, options.only, context.stopped);
   const { rules, verdict } = judge(summary);
-  const result = { date: new Date().toISOString().slice(0, 10), effort: options.effort, textSha256: textSha256(), summary, rules, verdict, records };
+  const result = { date: new Date().toISOString().slice(0, 10), reviewer: options.reviewer, model: options.model, effort: options.effort, reviewBudgetUsd: context.reviewBudget, textSha256: textSha256(), summary, rules, verdict, records };
   writeFileSync(path.join(out, 'results.json'), JSON.stringify(result, null, 2) + '\n');
   console.log(report(records, summary, { rules, verdict }));
   console.log(`results: ${path.relative(process.cwd(), path.join(out, 'results.json')) || path.join(out, 'results.json')}`);
