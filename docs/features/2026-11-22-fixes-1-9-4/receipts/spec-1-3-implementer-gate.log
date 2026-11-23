@@ -1,0 +1,317 @@
+
+> joycraft@1.9.3 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3
+> vitest
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3[39m
+
+ [32m✓[39m tests/runtime-cleanup-age-out.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 8824[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out[2m > [22m[AC:spec-9-2] --apply moves the doc under the archive with git mv and commits nothing [33m 309[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out review fixes[2m > [22m[review-a-1] about 3 MB of log names does not overflow the Git buffer [33m 5287[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out review 9 fixes[2m > [22m[review-9-3] a doc changed in a merge counts as changed [33m 367[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out review 9 fixes[2m > [22m[review-9-r2-2] a symlinked docs root, or a symlink on the way to it, gives one skipped entry [33m 352[2mms[22m[39m
+ [32m✓[39m tests/runtime-dispatch-commands.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 9746[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-1] implementer and reviewer startup print the focused command built from the check inputs [33m 860[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-2] each step is one plain command with literal paths [33m 726[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-3] without tests.focused or without check inputs, focused is null with a note and startup succeeds [33m 551[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-1] printed commands run as printed through /bin/sh with a space in the worker root or a check path [33m 1947[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-2] {files} inside a word is replaced in place and quoted template arguments stay whole [33m 870[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-3] two startups in the same second print different receipt paths [33m 363[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-4] reviewer receipts go to reviews/receipts and implementer receipts to receipts [33m 694[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-2] an unclosed quote in tests.focused gives focused null with a note, and startup exits 0 [33m 544[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-3] a focused command with shell syntax runs as sh -c under evidence [33m 2654[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-tidy-verify.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 14790[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify[2m > [22m[AC:spec-4-1] after the named line is fixed, the finding is gone and verify exits 0 [33m 482[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify[2m > [22m[AC:spec-4-2] an edit to AGENTS.md is refused, naming it, with no message [33m 489[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify[2m > [22m[AC:spec-4-2] an edit to an unlisted context page is refused, naming it [33m 482[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify[2m > [22m[AC:spec-4-2] an edit to an unnamed line of a named page is refused [33m 496[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify[2m > [22m[AC:spec-4-3] a pass prints the subject and the Joycraft-Tidy trailer; no edits prints nothing to commit [33m 803[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review fixes[2m > [22m[review-a-3] a hunk that replaces the named line and adds lines after it is refused [33m 469[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review fixes[2m > [22m[review-a-3] an untracked file is refused [33m 499[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review fixes[2m > [22m[review-a-3] a staged edit that the working tree hides is refused [33m 493[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review fixes[2m > [22m[review-a-3] an edit to the named line that still names the gone symbol is refused [33m 508[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: a page with a NUL byte [33m 493[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: .git/info/attributes *.md binary [33m 473[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: a textconv driver [33m 481[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: a committed .gitattributes *.md -diff [33m 488[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: a mode-only change of the named page [33m 466[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a named page rewritten past the hunk reader is refused: a mode change with the valid fix [33m 464[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-1] a pass never prints "tidy 0 doc lines" [33m 482[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-2] AGENTS.override.md is an entry file: its edit is refused [33m 467[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-3] an index that holds part of the change is refused; a fully staged fix passes [33m 809[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-4] a named line that still names the gone symbol is refused: a space inside the backticks [33m 463[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-4] a named line that still names the gone symbol is refused: no backticks [33m 460[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-4] a named line that still names the gone symbol is refused: inner spaces [33m 448[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-5] an entry file with --assume-unchanged is refused [33m 464[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4 fixes[2m > [22m[review-4-5] an entry file with --skip-worktree is refused [33m 442[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4-r2 fixes: the diff is read line by line[2m > [22m[review-4-r2-1] LS1: a U+2028 funcname context does not hide an edit to an unnamed line [33m 446[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4-r2 fixes: the diff is read line by line[2m > [22m[review-4-r2-2] LS2: a named line that still names the gone symbol after U+2028 is refused [33m 452[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4-r2 fixes: the diff is read line by line[2m > [22m[review-4-r2-3] CR2: on a CRLF page a named line that still names the gone symbol is refused [33m 430[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4-r2 fixes: the diff is read line by line[2m > [22m[review-4-r2-3] CR3: on a CRLF page a named line that still names the gone symbol is refused [33m 426[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify review-4-r2 fixes: the diff is read line by line[2m > [22m[review-4-r2-4] a valid fix on a CRLF page and on a page with U+2028 still passes [33m 866[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy --verify ignores the user diff environment (spec 27)[2m > [22m[AC:spec-27-15] with GIT_DIFF_OPTS=--unified=5 set, verify accepts the valid fix as without it [33m 455[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-named-files.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 7940[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-2] namedFiles lists the full path, split segments and the dated name, not look-alikes; marks only a non-test migration [33m 324[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-4] --rewrite is an unknown argument, and neither a preview nor an --apply writes under .joycraft/local [33m 341[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (check) [33m 355[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (stage) [33m 397[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[AC:spec-1-5] next names only tests that name the folder outside a comment, at that line; namedFiles matches the preview [33m 1075[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[AC:spec-9-1] only sure comments are comment-only; a closed /* */ before code, a .ts #field and a bare * line are code [33m 1972[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[AC:spec-9-2] when every listed test names the folder only in comments, next says to run the gate [33m 304[2mms[22m[39m
+   [33m[2m✓[22m[39m archive reads every line ending (1.9.2 spec 4)[2m > [22m[AC:spec-4-2] a CR-only test file gets real line numbers and its comment line counts as a comment; LF, CRLF, U+2028 and U+2029 agree [33m 1884[2mms[22m[39m
+ [32m✓[39m tests/runtime-evidence-patch.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 7664[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-1] refuses a dirty tree, a patch that does not apply, and a path outside the project, applying nothing [33m 370[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-2] applies the fault, runs, reverses it and reports restored: true [33m 452[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-3] restores the tree after a passing run and after a timeout [33m 1228[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-3] a failed restore reports restored: false and exits 1, never a pass [33m 352[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch[2m > [22m[AC:spec-9-4] a timeout keeps timedOut and exitCode null, and the footer records the patch [33m 899[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch polish (spec 27)[2m > [22m[AC:spec-27-6] a SIGTERM while git apply runs ends with 143 and the tree restored [33m 1721[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch polish (spec 27)[2m > [22m[AC:spec-27-7] a change to another tracked file, a commit or a stash gives restored: false; the plain fault run stays true [33m 2101[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run --patch polish (spec 27)[2m > [22m[AC:spec-27-8] a project in a repository subfolder runs its fault; a patch outside the subfolder is refused [33m 541[2mms[22m[39m
+ [32m✓[39m tests/runtime-report-gate.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 7034[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-1] a report whose observation ran the recorded gate is refused, also in a shell form [33m 466[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-2] a report that ran only focused commands passes, and a project with no gate is not checked [33m 406[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate wrappers and a broken joycraft.yaml (spec 27)[2m > [22m[AC:spec-27-3] each shell or env wrapper of the gate is refused; more arguments pass; a broken joycraft.yaml refuses [33m 1691[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate runner aliases and a done spec re-check (1.9.1 spec 2)[2m > [22m[AC:spec-2-1] npx, pnpm exec and the run of pnpm run name the same gate; a focused npx run passes [33m 1027[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate runner aliases and a done spec re-check (1.9.1 spec 2)[2m > [22m[AC:spec-2-2] a done spec re-checked with its accepted report is unchanged after tests.gate is recorded; an in-review one is refused [33m 582[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-1] one part of a chained gate is refused like the whole gate; focused runs and a one-part gate are unchanged [33m 2491[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-2] a done spec re-checked with a report that ran a gate part stays done; gateRuns still turns the check off [33m 371[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-tidy.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 6909[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] a feature branch uses the merge base with main [33m 640[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] a trunk-only repo uses the last 7 days, approximate [33m 839[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] a trunk-only repo uses at most 100 commits when the 7 days hold more [33m 452[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-1] after a squash merge the branch still measures from its fork point; --base overrides [33m 896[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy finds a stateless range[2m > [22m[AC:spec-2-2] a shallow clone and a plain folder each give one skipped entry and exit 0 [33m 314[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy reports[2m > [22m[AC:spec-2-3] new-doc groups added Markdown by folder, outside features and archive [33m 430[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy reports[2m > [22m[AC:spec-2-4] at most 10 findings, context pages first, then more [33m 421[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy review fixes[2m > [22m[review-a-1] removing a 2.4 MB lockfile and a 2.4 MB source file does not overflow the Git buffer [33m 607[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy review fixes[2m > [22m[review-a-7] a detached HEAD at the trunk tip reads the recent window, like the trunk [33m 534[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy 1.9.1 cleanup fixes[2m > [22m[AC:spec-3-1] new-doc skips a backlog* file under the docs root, in any case; other new docs still count [33m 452[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy 1.9.1 cleanup fixes[2m > [22m[AC:spec-3-5] tidy run from a subfolder finds the project root: same findings, and its checks: run [33m 870[2mms[22m[39m
+   [33m[2m✓[22m[39m tidy 1.9.2 backlog folder in any case[2m > [22m[AC:spec-2-2] new-doc skips a file in a backlog folder of any letter case; other new docs still count [33m 454[2mms[22m[39m
+ [32m✓[39m tests/release-consumer-process.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 7155[2mms[22m[39m
+   [33m[2m✓[22m[39m retained release consumer subprocesses[2m > [22mexecutes fresh init and a real previous-init to candidate-update sequence [33m 2311[2mms[22m[39m
+   [33m[2m✓[22m[39m retained release consumer subprocesses[2m > [22mrejects the candidate when its actual updater fails despite successful npm installation [33m 2152[2mms[22m[39m
+   [33m[2m✓[22m[39m retained release consumer subprocesses[2m > [22muses real full and compact npm caches primed before the fixture registry publishes a candidate [33m 2691[2mms[22m[39m
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "only-built-dependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "only-built-dependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+ [32m✓[39m tests/package-acceptance.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 6235[2mms[22m[39m
+   [33m[2m✓[22m[39m package compatibility contract[2m > [22mruns the real retained package CLI in isolated consumers and writes a complete report [33m 4289[2mms[22m[39m
+   [33m[2m✓[22m[39m package compatibility contract[2m > [22mreports every row failed when an installed packaged executable is a no-op [33m 954[2mms[22m[39m
+   [33m[2m✓[22m[39m package compatibility contract[2m > [22mretains structured CLI errors when the packaged process exits unsuccessfully [33m 988[2mms[22m[39m
+ [32m✓[39m tests/runtime-test-changes.test.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 5257[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-2] splits the changed test files by the spec's Test changes section [33m 432[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-4] reviewer startup adds testChanges with --changes-base, and nothing without it [33m 506[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-1] lists a renamed test under both paths and a deleted tag-only test from its base [33m 362[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-2] skips a submodule path and a refused declared path without losing the result [33m 664[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[review-17-2] reads declarations from the spec at the base; one added later is listed apart and never declared [33m 433[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes[2m > [22m[AC:spec-11-4] reviewer startup with an unknown --changes-base says so plainly and stays ready [33m 516[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes base, declarations and file rules (spec 27)[2m > [22m[AC:spec-27-12] a declaration of one path of a rename covers both paths [33m 342[2mms[22m[39m
+   [33m[2m✓[22m[39m test-changes base, declarations and file rules (spec 27)[2m > [22m[AC:spec-27-12] JVM-style names count only in a test source set; a removed submodule is skipped, not a test [33m 645[2mms[22m[39m
+ [32m✓[39m tests/publication-workflow.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 5890[2mms[22m[39m
+   [33m[2m✓[22m[39m production publication workflow[2m > [22mpublishes once and resumes with retained identity (first verification fails: false) [33m 5490[2mms[22m[39m
+   [33m[2m✓[22m[39m production publication workflow[2m > [22mpublishes once and resumes with retained identity (first verification fails: true) [33m 400[2mms[22m[39m
+ [32m✓[39m tests/v1-install.test.ts [2m([22m[2m35 tests[22m[2m)[22m[33m 5003[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 12: install and update from the payload[2m > [22mAC1: init installs for each stack type and doctor passes [33m 451[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-checks-seam.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 4116[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: in joycraft.yaml[2m > [22m[AC:spec-10-2] each path:line: message output line is a finding with the check name; other lines are ignored [33m 362[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: in joycraft.yaml[2m > [22m[AC:spec-10-3] a command not found is one skipped entry and tidy exits 0 [33m 377[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: review fixes[2m > [22m[review-a-5] stderr lines count, stack-trace lines do not [33m 403[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: review fixes[2m > [22m[review-a-5] a check past its timeout is skipped, even when it pipes [33m 1391[2mms[22m[39m
+   [33m[2m✓[22m[39m checks seam line forms (spec 27)[2m > [22m[AC:spec-27-16] reads the markdownlint-cli2 form and project-absolute paths; host:port lines are not findings [33m 412[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: 1.9.1 cleanup fixes[2m > [22m[AC:spec-3-4] a missing tool in a pipeline that exits 0 is skipped as not found; a check with a finding is unchanged [33m 424[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: 1.9.2 own not-found line only[2m > [22m[AC:spec-2-1] a not-found line skips a check only when it names a word of run; a working checker that prints one is not skipped [33m 472[2mms[22m[39m
+ [32m✓[39m tests/runtime-dispatch-parallel.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 4027[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-1-1] both parallel specs start in their worktrees.mjs trees with no workspace flags, from a main or a linked coordinator [33m 2243[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-1-2] a tree with no worktrees.mjs record takes its coordinator from the lease; explicit flags still win [33m 731[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-1-3] with neither a record nor a lease, startup refuses and prints the exact startup with the workspace flags added [33m 522[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-2-1] worktrees.mjs create warns when a project agent type sets isolation: worktree [33m 530[2mms[22m[39m
+ [32m✓[39m tests/runtime-wave-gate.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 36216[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-1] refuses a missing, non-gate, red or stale receipt with its own code and pushes nothing [33m 2176[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-2] a green gate receipt on HEAD pushes without a second verifier [33m 655[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery needs a green gate receipt[2m > [22m[AC:spec-7-2] a project with no tests.gate keeps the -- <verifier> push [33m 689[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-1] refuses a green receipt of a non-shell program given -c "<gate>" [33m 575[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-1] still accepts a real shell receipt of sh -c "<gate>" [33m 822[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-3] reads the footer with evidence.mjs readFooter: only the last line, only an object [33m 741[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-4] refuses a gate receipt outside the project root [33m 741[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-r2-1] a gate with shell syntax needs the shell form: split words are refused, a red sh -c run is refused [33m 1019[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-r2-1] the same gate pushes through sh -c when every command is green [33m 854[2mms[22m[39m
+   [33m[2m✓[22m[39m gate receipt review-7 fixes[2m > [22m[review-7-r2-2] a shell form whose program is a relative path is refused; a bare name or absolute path is accepted [33m 1893[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-27-13] a plain gate in shell form splits on spaces and tabs only; a shell path inside the project or (POSIX) in Windows form is refused [33m 2500[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-27-14] a receipt on an ancestor of HEAD pushes when only docs-root paths changed since; any other path or a non-ancestor stays stale [33m 1448[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[review-27-7] only Markdown and JSON under the docs root, or a non-symlink record file in a feature or archive folder, keeps an old receipt [33m 4416[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-31-3] a feature or archive folder keeps an old receipt only for record extensions; a source file there needs the gate [33m 8590[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-5-1] a manifest or lockfile under the docs root, feature folders too, needs the gate again; other JSON keeps the old receipt [33m 4279[2mms[22m[39m
+   [33m[2m✓[22m[39m spec 27 delivery polish[2m > [22m[AC:spec-3-1] jsconfig, deno.json, deno.jsonc and pnpm-workspace.yaml under the docs root need the gate again; other JSON keeps the old receipt [33m 4335[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-merge-amendment.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 2755[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:merge-keeps-parent-brief] a --no-ff merge into a main without the brief needs no amendment record [33m 739[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:merge-changes-brief] a merge whose brief differs from every parent still needs its own record [33m 1126[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:spec-5-1] a missing amendment record names each later commit with its hashes and the reference that shows the record [33m 889[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-as-is.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 2853[2mms[22m[39m
+   [33m[2m✓[22m[39m archive as is[2m > [22m[AC:spec-8-1] a feature with one in-review spec is refused by default and archived with --as-is --owner-instruction [33m 389[2mms[22m[39m
+   [33m[2m✓[22m[39m archive as is[2m > [22m[review-b-5] a repeat archive of an as-is archive names the unverified note [33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m archive as is[2m > [22m[AC:spec-1-3] an in-review spec lists the missing receipts of its latest report file in the specs folder [33m 754[2mms[22m[39m
+ [32m✓[39m tests/runtime-delivery-lock.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 2578[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery lock holder[2m > [22m[AC:lock-dead-holder-taken] takes a lock whose recorded PID is not running on this host and pushes [33m 660[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery lock holder[2m > [22m[AC:lock-dead-takeover-taken] takes over a takeover directory that a dead taker left behind [33m 680[2mms[22m[39m
+   [33m[2m✓[22m[39m delivery lock holder[2m > [22m[AC:lock-records-holder] a free lock records this PID and host and is released after the push [33m 648[2mms[22m[39m
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-Y3sEyU/remote.git
+ * [new branch]      main -> main
+Cloning into '/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-Y3sEyU/work'...
+done.
+Switched to a new branch 'release/joycraft'
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-Y3sEyU/remote.git
+ * [new branch]      release/joycraft -> release/joycraft
+Switched to branch 'main'
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-Y3sEyU/remote.git
+   bb36859..5bcdae4  main -> main
+ [32m✓[39m tests/runtime-archive-links.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 2237[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-gone-symbol.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2161[2mms[22m[39m
+   [33m[2m✓[22m[39m gone-symbol[2m > [22m[AC:spec-3-1] a name removed from code and still named in a context page is one finding at that line [33m 433[2mms[22m[39m
+   [33m[2m✓[22m[39m gone-symbol[2m > [22m[AC:spec-3-2] a name moved to another file in the range is not reported [33m 441[2mms[22m[39m
+   [33m[2m✓[22m[39m gone-symbol[2m > [22m[AC:spec-3-3] the same works for Python [33m 449[2mms[22m[39m
+   [33m[2m✓[22m[39m gone-symbol[2m > [22m[AC:spec-3-4] a hit in an entry file is fixable: false [33m 419[2mms[22m[39m
+   [33m[2m✓[22m[39m gone-symbol review fixes[2m > [22m[review-a-6] plain words and short capitals in backticks are not reported [33m 418[2mms[22m[39m
+ [32m✓[39m tests/release-preparation.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 2202[2mms[22m[39m
+   [33m[2m✓[22m[39m release preparation[2m > [22mcoalesces docs pushes after a prepared baseline while retaining later product changes [33m 502[2mms[22m[39m
+   [33m[2m✓[22m[39m release preparation[2m > [22mrefreshes an existing release branch with ordinary Git operations and edits one PR [33m 982[2mms[22m[39m
+ [32m✓[39m tests/runtime-start-advice.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2116[2mms[22m[39m
+   [33m[2m✓[22m[39m session start advice from the tidy range[2m > [22m[AC:spec-11-1] a gone-symbol finding gives at most 3 lines, the last naming cleanup.mjs tidy; a clean fixture gives none [33m 600[2mms[22m[39m
+   [33m[2m✓[22m[39m session start advice from the tidy range[2m > [22m[AC:spec-11-2] advice does not change the exit code and edits no file [33m 598[2mms[22m[39m
+   [33m[2m✓[22m[39m start advice polish (spec 27)[2m > [22m[AC:spec-27-17] an entry-check.mjs that throws on import gives the same wiring result with no tidy advice [33m 335[2mms[22m[39m
+   [33m[2m✓[22m[39m start advice polish (spec 27)[2m > [22m[AC:spec-27-17] on the default branch the advice says recent commits removed the symbol [33m 320[2mms[22m[39m
+ [32m✓[39m tests/runtime-evidence-env.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1946[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs machine-local environment map[2m > [22m[AC:spec-12-2] a malformed map or a tracked map refuses with exit 2 naming the file; no map runs as before [33m 770[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs environment map checks (spec 27)[2m > [22m[AC:spec-27-9] refuses bad names and NULs, never applies CI or JOYCRAFT_EVIDENCE in any case, and needs an ignored map [33m 949[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-ignore.test.ts [2m([22m[2m8 tests[22m[2m)[22m[33m 1946[2mms[22m[39m
+   [33m[2m✓[22m[39m archive.mjs ignore[2m > [22m[review-b-7] a line with leading spaces is not the archive line; CRLF stays CRLF; equivalent spellings count as present [33m 356[2mms[22m[39m
+   [33m[2m✓[22m[39m archive.mjs ignore[2m > [22m[AC:spec-29-4] a symlinked .ignore is refused; docs/archive/* counts as present; a run from a subfolder uses the root .ignore [33m 441[2mms[22m[39m
+   [33m[2m✓[22m[39m archive.mjs ignore[2m > [22m[AC:spec-9-3] archive from a subfolder previews and applies against the project root [33m 475[2mms[22m[39m
+ [32m✓[39m tests/runtime-reopen.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 2462[2mms[22m[39m
+   [33m[2m✓[22m[39m reopen a done spec (1.9.4)[2m > [22m[AC:spec-1-1] reopen moves a done spec with a changed accepted input back to in-review and keeps the old report on record [33m 631[2mms[22m[39m
+   [33m[2m✓[22m[39m reopen a done spec (1.9.4)[2m > [22m[AC:spec-1-2] reopen refuses a spec that is not done, one with no changed input, and one without --reason [33m 428[2mms[22m[39m
+   [33m[2m✓[22m[39m reopen a done spec (1.9.4)[2m > [22m[AC:spec-1-3] submitting another spec warns that a done spec's accepted input changed, with the reopen command [33m 712[2mms[22m[39m
+   [33m[2m✓[22m[39m reopen a done spec (1.9.4)[2m > [22m[AC:spec-1-4] after a reopen, reviewer startup counts rounds afresh and gives the next review its own report path [33m 690[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-gate-rule.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 1790[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup gate-rule[2m > [22m[AC:spec-8-2] the Commands table row gives no finding, and a project with no recorded gate is not checked [33m 489[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup gate-rule polish (spec 27)[2m > [22m[AC:spec-27-4] gate-rule --record writes cleanup.gateRule and keeps other keys; --check reads it; bad values and symlinks change nothing [33m 536[2mms[22m[39m
+ [32m✓[39m tests/legacy-guard.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 1584[2mms[22m[39m
+ [32m✓[39m tests/runtime-evidence-facts.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 1221[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs run facts[2m > [22m[AC:spec-3-5] one run writes one receipt and no other file; exit codes are as before [33m 349[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-checks.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 1632[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup lists its own checks[2m > [22m[AC:spec-1-3] missing-path filters ignored paths with one check-ignore process [33m 588[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup lists its own checks[2m > [22m[AC:spec-1-4] impact-drift asks to update the page or add a verified: line [33m 409[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup review fixes[2m > [22m[review-a-4] a path beyond a symlink or in a submodule does not hide the other ignored paths [33m 477[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12193 (cap 12256, 63 spare)
+on-demand words: 20557 (cap 21163, 606 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1475[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 400[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 382[2mms[22m[39m
+ [32m✓[39m tests/runtime-worktrees-prune.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1173[2mms[22m[39m
+   [33m[2m✓[22m[39m worktrees prune and cited receipts[2m > [22m[AC:prune-keeps-cited-receipt] keeps a tree holding an ignored receipt the accepted report cites [33m 405[2mms[22m[39m
+   [33m[2m✓[22m[39m worktrees prune and cited receipts[2m > [22m[AC:prune-without-cited-receipt] prunes a tree with no such file as before [33m 425[2mms[22m[39m
+   [33m[2m✓[22m[39m worktrees prune and cited receipts[2m > [22m[AC:prune-receipt-copied] prunes once the cited receipt also exists in the main checkout [33m 342[2mms[22m[39m
+ [32m✓[39m tests/runtime-queue-check-gate.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 1255[2mms[22m[39m
+   [33m[2m✓[22m[39m queue-check gate matching in prose (spec 27)[2m > [22m[AC:spec-27-1] plain text followed by a word or a dash, and a fenced line holding only the gate, name it; argument forms do not [33m 340[2mms[22m[39m
+ [32m✓[39m tests/runtime-trust-sentence.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 1361[2mms[22m[39m
+   [33m[2m✓[22m[39m trust sentence in the managed block[2m > [22m[AC:spec-5-2] an AGENTS.md with the previous four-line block gets a managed-block finding (changed) [33m 572[2mms[22m[39m
+   [33m[2m✓[22m[39m trust sentence in the managed block[2m > [22m[AC:spec-5-3] this repository's AGENTS.md carries the current block [33m 749[2mms[22m[39m
+ [32m✓[39m tests/install-v1.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 1012[2mms[22m[39m
+ [32m✓[39m tests/text-session-end-pr.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 1038[2mms[22m[39m
+   [33m[2m✓[22m[39m session end review-25 runtime[2m > [22m[review-25-1] a records commit, then the tidy fix: tidy --verify passes on the new HEAD [33m 1036[2mms[22m[39m
+ [32m✓[39m tests/runtime-status-load.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 960[2mms[22m[39m
+   [33m[2m✓[22m[39m status.mjs load line[2m > [22m[AC:spec-10-2] no loaded run, or receipts without a footer, give no load field [33m 350[2mms[22m[39m
+   [33m[2m✓[22m[39m status.mjs load line wording (spec 27)[2m > [22m[AC:spec-27-10] says why, names each distinct core count, and drops the count when no footer has one [33m 391[2mms[22m[39m
+ [32m✓[39m tests/runtime-evidence-receipt.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 869[2mms[22m[39m
+   [33m[2m✓[22m[39m evidence.mjs receipt tail and long footer (spec 27)[2m > [22m[AC:spec-27-5] readFooter returns a footer longer than 64 KiB; the failing tail starts at a line start [33m 323[2mms[22m[39m
+ [32m✓[39m tests/publish-gate.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 821[2mms[22m[39m
+ [32m✓[39m tests/text-test-changes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 430[2mms[22m[39m
+   [33m[2m✓[22m[39m declared test changes text[2m > [22m[AC:spec-17-1] the spec template has ## Test changes with "none" and the three classes, and test-changes.mjs parses its example bullet [33m 429[2mms[22m[39m
+ [32m✓[39m tests/text-fault-proof.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 492[2mms[22m[39m
+   [33m[2m✓[22m[39m fault proof text[2m > [22m[AC:spec-18-5] fault patches and receipts go in a git-ignored path: there --patch runs and restores; an untracked patch is refused [33m 489[2mms[22m[39m
+ [32m✓[39m tests/payload-entry-check.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 751[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped entry check[2m > [22m[AC:payload-entry-check] the exact block is clean; a block with one changed word is one advisory and --ci exits 0 [33m 382[2mms[22m[39m
+ [32m✓[39m tests/runtime-config-tests.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 478[2mms[22m[39m
+ [32m✓[39m tests/publication-readiness.test.ts [2m([22m[2m18 tests[22m[2m)[22m[33m 445[2mms[22m[39m
+   [33m[2m✓[22m[39m published package readiness[2m > [22mrevalidates delayed metadata through real npm against a local registry [33m 339[2mms[22m[39m
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "only-built-dependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+ [32m✓[39m tests/payload.test.ts [2m([22m[2m6 tests[22m[2m)[22m[33m 445[2mms[22m[39m
+   [33m[2m✓[22m[39m vendored payload[2m > [22mnpm pack includes the payload [33m 338[2mms[22m[39m
+ [32m✓[39m tests/text-wave-gate.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 467[2mms[22m[39m
+ [32m✓[39m tests/text-owner-gate-lines.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 294[2mms[22m[39m
+ [32m✓[39m tests/text-fewer-tests.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 250[2mms[22m[39m
+ [32m✓[39m tests/release-report.test.ts [2m([22m[2m12 tests[22m[2m)[22m[32m 282[2mms[22m[39m
+ [32m✓[39m tests/text-lane-cap.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 246[2mms[22m[39m
+ [32m✓[39m tests/text-spec-tier.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 131[2mms[22m[39m
+ [32m✓[39m tests/text-test-review.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 210[2mms[22m[39m
+[90mstdout[2m | tests/artifact-pages.test.ts[2m > [22m[2mclaude-artifact-pages[2m > [22m[2m[AC:pages-default] pages default to claude, and a recorded choice wins
+[22m[39m{
+  "pages": "claude",
+  "source": "default"
+}
+
+[90mstdout[2m | tests/artifact-pages.test.ts[2m > [22m[2mclaude-artifact-pages[2m > [22m[2m[AC:pages-default] pages default to claude, and a recorded choice wins
+[22m[39m{
+  "pages": "local",
+  "source": ".joycraft/preferences.json"
+}
+
+[90mstdout[2m | tests/artifact-pages.test.ts[2m > [22m[2mclaude-artifact-pages[2m > [22m[2m[AC:pages-default] pages default to claude, and a recorded choice wins
+[22m[39m{
+  "pages": "local",
+  "source": ".joycraft/preferences.json"
+}
+
+[90mstdout[2m | tests/artifact-pages.test.ts[2m > [22m[2mclaude-artifact-pages[2m > [22m[2m[AC:one-page] a Claude build shows the document above its questions on one page
+[22m[39m{
+  "path": "/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-pages-t4xjxN/page.html",
+  "mode": "claude",
+  "source": {
+    "path": "docs/brief.md",
+    "revision": "a7e7c4bb7bfe56c215b6f6a016adc67cf3b59258fd27436e64b22ee0f051b9b7",
+    "viewRevision": "36efa1ad07ccfb6b3e2d15cced35997475b687cc163b72530d59416f1c83bfb5"
+  },
+  "documents": [
+    "docs/findings.md"
+  ],
+  "instruction": "Use the available Claude host artifact tools to create or update an HTML artifact from these bytes. This command has not published or uploaded it."
+}
+
+ [32m✓[39m tests/artifact-pages.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m tests/text-worker-commands.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 256[2mms[22m[39m
+ [32m✓[39m tests/release-promotion-safety.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+ [32m✓[39m tests/ste-lint.test.ts [2m([22m[2m3 tests[22m[2m | [22m[33m1 skipped[39m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m tests/public-docs.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/release-promotion.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m tests/readme.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m tests/release-validation.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 18[2mms[22m[39m
+ [32m✓[39m tests/release-verification.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m tests/text-archive-tests.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m tests/automatic-release.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/drift-tidy-text.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/text-sota-page.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 3[2mms[22m[39m
+ [32m✓[39m tests/check-docs-sync.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 2[2mms[22m[39m
+ [32m✓[39m tests/release-readiness-safety.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 1[2mms[22m[39m
+ [2m[90m↓[39m[22m tests/upgrade-from-published.test.ts [2m([22m[2m5 tests[22m[2m | [22m[33m5 skipped[39m[2m)[22m
+
+[2m Test Files [22m [1m[32m66 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (67)[39m
+[2m      Tests [22m [1m[32m547 passed[39m[22m[2m | [22m[33m6 skipped[39m[90m (553)[39m
+[2m   Start at [22m 22:21:33
+[2m   Duration [22m 47.42s[2m (transform 410ms, setup 0ms, collect 858ms, tests 181.72s, environment 4ms, prepare 1.81s)[22m
+
+
+> joycraft@1.9.3 typecheck /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3
+> tsc --noEmit
+
+joycraft-evidence: {"wallMs":48723,"load":[4.09423828125,7.37451171875],"cores":14,"loaded":false,"argv":["sh","-c","pnpm test && pnpm typecheck"],"exitCode":0,"timedOut":false,"revision":"88acf77da75be9821c604e1518a340d09e6285c2","dirty":false,"env":["VITEST_MAX_FORKS","VITEST_MIN_FORKS"]}
