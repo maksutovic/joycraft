@@ -25,7 +25,7 @@ afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: tru
 
 describe('small-job rules in the managed block', () => {
   it('[AC:sl2-03] the Work line names both paths and its four parts', () => {
-    expect(workLines[0]).toBe('- Work: before you change code, say `Path: small job` or `Path: feature`.');
+    expect(workLines[0]).toBe('- Work: first, before any question, page or edit, say `Path: small job` or `Path: feature`.');
     expect(workLines.slice(1).map(line => line.slice(4, line.indexOf(':')))).toEqual(['Small job', 'Look, before you close', 'Close', 'Feature']);
   });
 
@@ -35,7 +35,7 @@ describe('small-job rules in the managed block', () => {
 
   it.each([
     // Small job: the line, the first commit, the brief, the guesses.
-    'it fits one session, needs no owner answer you cannot assume, and has no auth, payment, deploy or data-migration change.',
+    'it fits one session (several goals can), every open choice (an API format too) can be an `Assumed:` line, and has no auth, payment, deploy or data-migration change.',
     'When Git has no commit yet, first commit what is there as `chore: set up Joycraft`.',
     'Write `docs/features/<slug>/brief.md` (the features folder in `joycraft.yaml` when set)',
     "the user's request word for word, then a \"Done when\" list with one group for each goal.",
@@ -44,7 +44,6 @@ describe('small-job rules in the managed block', () => {
     'The first line gives the one answer that the screen or output shows, and that each repeated item in it shows, when its inputs disagree.',
     'Every other statement there is a reason for that answer. Each answer says which hours, days or items it covers, and the answers leave no gap.',
     'Test an outside source through the function that calls it, with the network call stubbed, for a good reply and a failed one.',
-    'Write each guess as an `Assumed:` line. Do not ask.',
     'Build no page for this brief.',
     'Build, and check each line.',
     // Look: fresh eyes on the first line's inputs, one question, two quotes block.

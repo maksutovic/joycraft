@@ -84,7 +84,7 @@ describe('shipped entry check', () => {
     expect(lines[3]).toMatch(/A Context Map row that matches your next step binds/);
     expect(lines[4]).toMatch(/trust the code and report it\. A rule holds even when the code breaks it\.$/);
     expect(lines[5]).toMatch(/^- Search the mapped pages first\. A doc that no map row reaches is working material, not current truth\.$/);
-    expect(lines[6]).toBe('- Work: before you change code, say `Path: small job` or `Path: feature`.');
+    expect(lines[6]).toBe('- Work: first, before any question, page or edit, say `Path: small job` or `Path: feature`.');
     expect(lines.slice(7, 11).map(line => /^  - (\w+(?: \w+)?)/.exec(line)?.[1])).toEqual(['Small job', 'Look', 'Close', 'Feature']);
     // [AC:sl3-01-block-current] the close runs the recorded tests.
     expect(lines[9]).toContain('which runs the `test:` files, archives the brief and commits.');

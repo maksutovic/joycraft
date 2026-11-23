@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-29a8380988bd",
-  "commit": "29a8380988bde964f58cba81cb41dcd9bf8a00b54010d5783d658c851a85c40a",
+  "tag": "payload-b31e2b46a33b",
+  "commit": "b31e2b46a33b669d6682dfb8bce8ef2afcacf4b4b22387d3d8b059930c65f5a8",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -79,7 +79,7 @@
     ".joycraft/runtime/test-changes.mjs": "dba78445fa51e272b328a65b29f002902c088f65cbe6572396fc93ed117aa155",
     ".joycraft/runtime/trace.mjs": "4ea96667566e01856e86f4fcdf36d211ff423ff01415edbc32c8f1cf77b0a224",
     ".joycraft/runtime/update-check.mjs": "a133133614fbda368d411166f7ab563ccbfe9cb325955c3125d84e544221051f",
-    ".joycraft/runtime/wiring.mjs": "885b1a142d32fcfe46defc55f852927ec25f2b405c037218d39f223723635fa6",
+    ".joycraft/runtime/wiring.mjs": "67db0b42fa1644cd895d6d88db183cbc17706a5d7b5ce536dc2a4d459a9307d7",
     ".joycraft/runtime/worktrees.mjs": "7b3b0e793745c0280d3c652b9f32335f4e6ad75c39e5582e27987af000d46409",
     ".joycraft/templates/README.md": "56a166d0729e8b6c3bcb098afb8145006259357087fd8b1f1f343d9a2b4d36e0",
     ".joycraft/templates/artifact.json": "fda5f7c32516d6ab094ee0e8506d84a1a0d6d4d0f49048b01aa392c619996f05",
