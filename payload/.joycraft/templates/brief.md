@@ -16,8 +16,8 @@ Keep assumptions explicit. Remove the example decision when no choice is needed.
 
 ## Goals
 
-- Describe each requested outcome with a stable heading below, and give each a
-  **Done when** line: example inputs or states with their expected results. For
+- Give each requested outcome a stable heading below and one group of **Done
+  when** lines for each goal: inputs or states with expected results. For
   a rule over open-ended input, also name the check set, which error costs more,
   and the pass threshold.
 - Make the first **Done when** line the one answer that the screen or output

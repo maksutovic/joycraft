@@ -29,22 +29,21 @@ describe('small-job rules in the managed block', () => {
     expect(workLines.slice(1).map(line => line.slice(4, line.indexOf(':')))).toEqual(['Small job', 'Look, before you close', 'Close', 'Feature']);
   });
 
-  it('[AC:sl2-03] the Work line is at most 480 words', () => {
+  it('[AC:sl2-03] [AC:sl3-01-work-cap] the Work line is at most 480 words', () => {
     expect(workLines.join(' ').split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(480);
   });
 
   it.each([
     // Small job: the line, the first commit, the brief, the guesses.
-    'it fits one session, needs no owner answer you cannot assume, and has no migration, auth, payment, deploy or public-API change.',
-    'A time limit from the user means this path.',
+    'it fits one session, needs no owner answer you cannot assume, and has no auth, payment, deploy or data-migration change.',
     'When Git has no commit yet, first commit what is there as `chore: set up Joycraft`.',
     'Write `docs/features/<slug>/brief.md` (the features folder in `joycraft.yaml` when set)',
-    "the user's request word for word, then a \"Done when\" list.",
+    "the user's request word for word, then a \"Done when\" list with one group for each goal.",
     'Each line is a state or input with its expected result and its check (`test: <file>` or `seen: <render>`).',
-    'Write one line for each thing the user asked for, in their words, with how it must feel, and one for a missing input.',
+    'Write one line for each thing the user asked for, in their words, and one for a missing input.',
     'The first line gives the one answer that the screen or output shows, and that each repeated item in it shows, when its inputs disagree.',
-    'Every other statement there is a reason for that answer.',
-    'Test a line about an outside source where the source enters, with the source stubbed.',
+    'Every other statement there is a reason for that answer. Each answer says which hours, days or items it covers, and the answers leave no gap.',
+    'Test an outside source through the function that calls it, with the network call stubbed, for a good reply and a failed one.',
     'Write each guess as an `Assumed:` line. Do not ask.',
     'Build no page for this brief.',
     'Build, and check each line.',
@@ -54,19 +53,19 @@ describe('small-job rules in the managed block', () => {
     'A switch that fakes data says so on the screen.',
     'Give it no brief and no code.',
     'Ask: "Quote any two statements on this screen that disagree about the main answer, or reply OK. At most 8 lines."',
-    'Two such quotes block the close: fix, then look again one time. Its other remarks are notes.',
+    'Two such quotes block the close: fix, then look again one time. With no separate agent',
     'With no separate agent, read the renders yourself and say the look was not independent.',
     // Close: marks, docs, traps, rules, close.mjs, final message.
     'Close: mark each line `test: <file>`, `seen: <render>` or `not checked: <why>`, and add a `Look:` line with the result.',
-    'Update what the change makes stale, in this file (purpose, commands, map rows) and in the mapped page, with how to run and look at the result.',
+    'Update what the change makes stale, in this file and in the mapped page, with how to run and look at the result.',
     'Add a trap (it cost you a retry) to `docs/context/traps.md`, with a map row.',
     'Put a standing instruction from the user under `## Rules` in their words.',
-    'Stage your work, then run `node .joycraft/runtime/close.mjs <slug> -m "<message>"`, which archives the brief and commits.',
+    'Stage your work, then run `node .joycraft/runtime/close.mjs <slug> -m "<message>"`, which runs the `test:` files, archives the brief and commits.',
     'Final message, at most 120 words: how to run the result, each guess that changes the answer, then the line that the command printed.',
     // Feature: the full loop, and when a small job escalates.
     'Feature: all other work, or when the user asks for the full loop: use the `joycraft-entry` skill.',
     'A small job becomes a feature when it needs an owner answer, meets one of those changes, or fails the same check twice: keep the brief and add specs.',
-  ])('[AC:sl2-03] pins: %s', phrase => {
+  ])('[AC:sl2-03] [AC:sl3-01-work-line] pins: %s', phrase => {
     expect(workLines.join('\n')).toContain(phrase);
   });
 
@@ -75,22 +74,30 @@ describe('small-job rules in the managed block', () => {
     'one mixed state',
     'Move the brief folder to `docs/archive/<slug>/`.',
     'N of N lines checked',
-  ])('[AC:sl2-03] drops the old phrase: %s', phrase => {
+    // sl3-01
+    'public-API',
+    'A time limit from the user means this path.',
+    'with how it must feel',
+    'Its other remarks are notes.',
+    '(purpose, commands, map rows)',
+  ])('[AC:sl2-03] [AC:sl3-01-work-line] drops the old phrase: %s', phrase => {
     expect(workLines.join('\n')).not.toContain(phrase);
   });
 
-  it('[AC:sl1-01] the Work line holds no semicolon (STE fix-to-zero class)', () => {
+  it('[AC:sl1-01] [AC:sl3-01-work-cap] the Work line holds no semicolon (STE fix-to-zero class)', () => {
     expect(workLines.join('\n')).not.toContain(';');
   });
 });
 
 describe('small-job routing in the skills, setup and templates', () => {
-  it('[AC:sl1-01] the entry skill is for setup and features, and a small job skips it', () => {
+  it('[AC:sl1-01] [AC:sl3-01-entry-text] the entry skill is for setup and features, and a small job skips it', () => {
     const entry = text('.agents/skills/joycraft-entry/SKILL.md');
     expect(entry).toMatch(/^description: Set up Joycraft or start a feature\./m);
     const body = entry.split(/^---$/m)[2].trim();
     expect(body.split('\n\n')[0].replace(/\s+/g, ' ')).toBe('A small job by the `Work` line in `AGENTS.md` does not use this skill and reads nothing here.');
-    expect(entry.replace(/\s+/g, ' ')).toContain('A small job has no code review. Its look is its review.');
+    // [AC:sl3-01-entry-text] the close runs the tests, and the skill stays within 1,287 words.
+    expect(entry.replace(/\s+/g, ' ')).toContain('A small job has no code review: its look and the tests that its close runs are its checks.');
+    expect(entry.split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(1287);
     expect(entry).not.toContain('small authorized tooling repair');
     expect(entry).not.toContain('existing direct path');
   });

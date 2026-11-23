@@ -16,7 +16,9 @@ for (const name of ['GIT_AUTHOR_NAME', 'GIT_AUTHOR_EMAIL', 'GIT_COMMITTER_NAME',
 const git = (cwd: string, ...args: string[]) => execFileSync('git', args, { cwd, env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const put = (file: string, body: string) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
 const runClose = (root: string, ...args: string[]) => spawnSync(process.execPath, [close, ...args, '--root', root], { cwd: root, env, encoding: 'utf8' });
-const linePattern = /^Path: small job\. (\d+) of (\d+) lines checked(?: \(not checked: ([\d, ]+)\))?\. Look: (.+)\. No code review ran\. (?:Commit ([0-9a-f]{7,})\.|No Git: not committed\.) Brief: (\S+\/brief\.md)\.$/;
+// [AC:sl3-01-close-line] the line holds the Tests segment after the look.
+const linePattern = /^Path: small job\. (\d+) of (\d+) lines checked(?: \(not checked: ([\d, ]+)\))?\. Look: (.+)\. (Tests: \d+ files passed\.|Tests failed, closed with --accept\.|Tests not run: [^.]+\.) No code review ran\. (?:Commit ([0-9a-f]{7,})\.|No Git: not committed\.) Brief: (\S+\/brief\.md)\.$/;
+const notRun = 'Tests not run: no test command is recorded.';
 const rows = (root: string) => readFileSync(join(root, '.joycraft/local/small-jobs.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
 
 const dirs: string[] = [home];
@@ -55,7 +57,7 @@ describe('close.mjs', () => {
     expect(git(root, 'status', '--porcelain')).toBe('');
     const [line] = result.stdout.trim().split('\n');
     expect(line).toMatch(linePattern);
-    expect(line).toBe(`Path: small job. 2 of 2 lines checked. Look: OK. No code review ran. Commit ${git(root, 'rev-parse', '--short', 'HEAD')}. Brief: docs/archive/title/brief.md.`);
+    expect(line).toBe(`Path: small job. 2 of 2 lines checked. Look: OK. ${notRun} No code review ran. Commit ${git(root, 'rev-parse', '--short', 'HEAD')}. Brief: docs/archive/title/brief.md.`);
   });
 
   it('[AC:sl2-01] an unborn HEAD gives one commit and sets the first-commit flag', () => {
@@ -74,7 +76,7 @@ describe('close.mjs', () => {
     put(join(root, 'docs/features/title/brief.md'), brief(marked));
     const result = runClose(root, 'title', '-m', 'feat: add a title');
     expect(result.status, result.stderr).toBe(0);
-    expect(result.stdout.trim()).toBe('Path: small job. 2 of 2 lines checked. Look: OK. No code review ran. No Git: not committed. Brief: docs/archive/title/brief.md.');
+    expect(result.stdout.trim()).toBe(`Path: small job. 2 of 2 lines checked. Look: OK. ${notRun} No code review ran. No Git: not committed. Brief: docs/archive/title/brief.md.`);
     expect(existsSync(join(root, 'docs/archive/title/brief.md'))).toBe(true);
     expect(existsSync(join(root, 'docs/features/title'))).toBe(false);
     expect(rows(root).at(-1)).toMatchObject({ commit: null, firstCommit: false });
@@ -99,7 +101,7 @@ describe('close.mjs', () => {
     expect(match?.slice(1, 4)).toEqual(['2', '4', '3, 4']);
     expect(notes).toContain('Note: --accept closed past 1 problem.');
     // The jsonl row holds the same counts as the printed line.
-    expect(rows(root).at(-1)).toMatchObject({ event: 'closed', slug: 'title', lines: 4, checked: 2, notChecked: 2, notCheckedLines: [3, 4], look: 'OK', refused: 1, accepted: true, firstCommit: false, commit: match?.[5] });
+    expect(rows(root).at(-1)).toMatchObject({ event: 'closed', slug: 'title', lines: 4, checked: 2, notChecked: 2, notCheckedLines: [3, 4], look: 'OK', refused: 1, accepted: true, firstCommit: false, commit: match?.[6] });
     expect(typeof rows(root).at(-1).briefCreated).toBe('string');
   });
 
@@ -154,6 +156,65 @@ describe('close.mjs', () => {
       'Note: 2 files are not staged and not in this commit.',
       'Note: other open briefs: docs/features/other/brief.md.',
     ]);
+  });
+});
+
+describe('close.mjs runs the recorded tests (sl3-01)', () => {
+  const focused = (root: string) => put(join(root, 'joycraft.yaml'), 'tests:\n  focused: node --test {files}\n');
+  const pass = "import test from 'node:test';\ntest('ok', () => {});\n";
+  const fail = "import test from 'node:test';\nimport assert from 'node:assert';\ntest('red', () => { assert.equal(1, 2); });\n";
+
+  it('[AC:sl3-01-close-green] one passing test file: exit 0 and "Tests: 1 files passed."', () => {
+    const root = project();
+    focused(root);
+    put(join(root, 'tests/ok.test.mjs'), pass);
+    put(join(root, 'docs/features/title/brief.md'), brief(['The page shows the title. test: tests/ok.test.mjs', 'The title is bold. seen: .tmp/shot.png', 'Twice. test: tests/ok.test.mjs']));
+    const result = runClose(root, 'title', '-m', 'feat: x');
+    expect(result.status, result.stderr).toBe(0);
+    const [line] = result.stdout.trim().split('\n');
+    expect(line).toMatch(linePattern);
+    expect(line).toContain('Look: OK. Tests: 1 files passed. No code review ran.');
+    expect(rows(root).at(-1)).toMatchObject({ event: 'closed', tests: 'passed', testFiles: 1 });
+  });
+
+  it('[AC:sl3-01-close-red] a failing test file: exit 2 names the command and status and moves nothing; --accept closes', () => {
+    const root = project();
+    focused(root);
+    put(join(root, 'tests/bad.test.mjs'), fail);
+    put(join(root, 'docs/features/title/brief.md'), brief(['The page shows the title. test: tests/bad.test.mjs']));
+    const refused = runClose(root, 'title', '-m', 'feat: x');
+    expect(refused.status).toBe(2);
+    expect(refused.stderr).toContain('The tests failed (exit 1): node --test tests/bad.test.mjs');
+    expect(refused.stderr).toContain('--accept');
+    expect(existsSync(join(root, 'docs/features/title/brief.md'))).toBe(true);
+    expect(existsSync(join(root, 'docs/archive'))).toBe(false);
+    expect(git(root, 'rev-list', '--count', 'HEAD')).toBe('1');
+
+    const accepted = runClose(root, 'title', '-m', 'feat: x', '--accept');
+    expect(accepted.status, accepted.stderr).toBe(0);
+    const [line] = accepted.stdout.trim().split('\n');
+    expect(line).toMatch(linePattern);
+    expect(line).toContain('Tests failed, closed with --accept.');
+    expect(rows(root).at(-1)).toMatchObject({ event: 'closed', tests: 'failed', testFiles: 1, accepted: true });
+  });
+
+  it('[AC:sl3-01-close-no-command] no joycraft.yaml: exit 0 and the line says no test command is recorded', () => {
+    const root = project();
+    put(join(root, 'docs/features/title/brief.md'), brief(marked));
+    const result = runClose(root, 'title', '-m', 'feat: x');
+    expect(result.status, result.stderr).toBe(0);
+    expect(result.stdout).toContain('Tests not run: no test command is recorded.');
+    expect(rows(root).at(-1)).toMatchObject({ tests: 'not-run', testFiles: 0 });
+  });
+
+  it('[AC:sl3-01-close-no-command] a command but no `test:` line: exit 0 and nothing runs', () => {
+    const root = project();
+    focused(root);
+    put(join(root, 'docs/features/title/brief.md'), brief(['The title is bold. seen: .tmp/shot.png']));
+    const result = runClose(root, 'title', '-m', 'feat: x');
+    expect(result.status, result.stderr).toBe(0);
+    expect(result.stdout.trim().split('\n')[0]).toMatch(linePattern);
+    expect(result.stdout).toContain('Tests not run: no line names a test file.');
   });
 });
 

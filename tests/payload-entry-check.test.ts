@@ -86,6 +86,8 @@ describe('shipped entry check', () => {
     expect(lines[5]).toMatch(/^- Search the mapped pages first\. A doc that no map row reaches is working material, not current truth\.$/);
     expect(lines[6]).toBe('- Work: before you change code, say `Path: small job` or `Path: feature`.');
     expect(lines.slice(7, 11).map(line => /^  - (\w+(?: \w+)?)/.exec(line)?.[1])).toEqual(['Small job', 'Look', 'Close', 'Feature']);
+    // [AC:sl3-01-block-current] the close runs the recorded tests.
+    expect(lines[9]).toContain('which runs the `test:` files, archives the brief and commits.');
   });
 
   it('[AC:payload-entry-check] the exact block is clean; a block with one changed word is one advisory and --ci exits 0', () => {

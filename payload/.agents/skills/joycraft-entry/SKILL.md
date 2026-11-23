@@ -76,9 +76,9 @@ the answer instead of a reviewer discovering it.
 and its tools required. Record a waiver only from the user's own words in that
 feature's interview: put them in the note of a settled brief decision and write
 the feature's `waiver.json` naming that decision, before any review runs
-(`.joycraft/references/completion.md`). A `no-review` waiver blocks reviewer
-dispatch for the feature. Never propose or ask about one, and never carry it
-into the next feature. A small job has no code review. Its look is its review.
+(`.joycraft/references/completion.md`). Never propose or ask about one, and
+never carry it into the next feature. A small job has no code review: its look
+and the tests that its close runs are its checks.
 
 **Feature sessions stay quiet about the review loop.** A feature interview
 asks nothing about review tools: read the recorded `## Review loop` and write

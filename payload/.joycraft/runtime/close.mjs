@@ -2,13 +2,16 @@ import { execFileSync } from 'node:child_process';
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { workPaths } from './config.mjs';
+import { readConfig, workPaths } from './config.mjs';
+import { templateArgv } from './dispatch-start.mjs';
 import { gitState } from './kickoff.mjs';
 import { managedClose, managedOpen } from './wiring.mjs';
 
 // The small-job close as one command. It reads the brief's "Done when" lines,
 // refuses once (exit 2) and names every problem, or it moves the brief folder to
 // the archive, commits what is staged with the move, and prints one line.
+// Before any change it runs the recorded focused test command on the `test:`
+// files, so a red run refuses like any other soft problem.
 // It never amends and never pushes.
 const usage = 'Usage: close.mjs <slug> -m "<message>" [--accept] [--root <project>]';
 const queueName = 'specs/.joycraft-spec-queue.json';
@@ -129,6 +132,24 @@ function refusedRuns(root, slug) {
   } catch { return 0; }
 }
 
+/** Run `tests.focused` once on the brief's existing `test:` files. */
+function runTests(root, lines) {
+  const files = [...new Set(lines.flatMap(line => line.tests))].filter(file => existsSync(path.join(root, file)));
+  const template = readConfig(root).tests?.focused;
+  if (!template) return { tests: 'not-run', files: 0, segment: 'Tests not run: no test command is recorded.' };
+  if (!files.length) return { tests: 'not-run', files: 0, segment: 'Tests not run: no line names a test file.' };
+  const argv = templateArgv(template, files);
+  try {
+    execFileSync(argv[0], argv.slice(1), { cwd: root, env: { ...process.env, CI: '1' }, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 600_000, maxBuffer: 64 * 1024 * 1024 });
+    return { tests: 'passed', files: files.length, segment: `Tests: ${files.length} files passed.` };
+  } catch (error) {
+    const status = error.code === 'ETIMEDOUT' ? 'timed out after 10 minutes' : error.status ?? error.signal ?? error.code ?? 'unknown';
+    const output = `${error.stdout ?? ''}${error.stderr ?? ''}`.trimEnd().split('\n').slice(-20).map(line => `  ${line}`).join('\n');
+    return { tests: 'failed', files: files.length, segment: 'Tests failed, closed with --accept.',
+      problem: `The tests failed (exit ${status}): ${argv.join(' ')}${output.trim() ? `\n${output}` : ''}` };
+  }
+}
+
 /** Every reason to stop, found before any change. `hard` problems stop even with --accept. */
 function problems(root, { slug, accept }, paths, git) {
   const briefPath = `${paths.features}/${slug}/brief.md`;
@@ -137,6 +158,7 @@ function problems(root, { slug, accept }, paths, git) {
   const soft = [];
   let lines = [];
   let look = null;
+  let missingTest = false;
   if (!existsSync(path.join(root, briefPath))) hard.push(`There is no brief at ${briefPath}.`);
   else {
     const brief = readFileSync(path.join(root, briefPath), 'utf8');
@@ -145,14 +167,21 @@ function problems(root, { slug, accept }, paths, git) {
     if (!lines.length) soft.push('The brief has no "Done when" line.');
     for (const line of lines) {
       if (line.mark === 'unmarked') soft.push(`Line ${line.number} has no mark. Add \`test: <file>\`, \`seen: <render>\` or \`not checked: <why>\`.`);
-      for (const file of line.tests) if (!existsSync(path.join(root, file))) soft.push(`Line ${line.number} names the test file ${file}, which does not exist.`);
+      for (const file of line.tests) {
+        if (!existsSync(path.join(root, file))) { missingTest = true; soft.push(`Line ${line.number} names the test file ${file}, which does not exist.`); }
+      }
     }
     if (!look) soft.push('The brief has no `Look:` line with the look result.');
   }
   if (existsSync(path.join(root, target))) hard.push(`${target}/ already exists.`);
   if (git && !hasIdentity(root)) hard.push('Git has no user name and email. Set them with `git config user.name` and `git config user.email`.');
   for (const number of notEstablished(root)) soft.push(`AGENTS.md line ${number} says "not established" outside the managed block. Update it.`);
-  return { hard, soft: accept ? [] : soft, accepted: accept ? soft : [], lines, look, briefPath, target };
+  // The tests run last, and only when nothing hard stops the close and every named file exists.
+  const tests = hard.length ? null
+    : missingTest ? { tests: 'not-run', files: 0, segment: 'Tests not run: a named test file does not exist.' }
+    : runTests(root, lines);
+  if (tests?.problem) soft.push(tests.problem);
+  return { hard, soft: accept ? [] : soft, accepted: accept ? soft : [], lines, look, tests, briefPath, target };
 }
 
 export function close(argv) {
@@ -195,14 +224,14 @@ export function close(argv) {
   const look = found.look ?? 'none';
   const counts = `${checked} of ${lines.length} lines checked${notChecked.length ? ` (not checked: ${notChecked.join(', ')})` : ''}.`;
   const committed = git ? `Commit ${hash}.` : 'No Git: not committed.';
-  const out = [`Path: small job. ${counts} Look: ${look}. No code review ran. ${committed} Brief: ${found.target}/brief.md.`];
+  const out = [`Path: small job. ${counts} Look: ${look}. ${found.tests.segment} No code review ran. ${committed} Brief: ${found.target}/brief.md.`];
   if (unstaged) out.push(`Note: ${unstaged} ${unstaged === 1 ? 'file is' : 'files are'} not staged and not in this commit.`);
   const open = otherOpenBriefs(root, paths.features, options.slug);
   if (open.length) out.push(`Note: other open briefs: ${open.join(', ')}.`);
   if (found.accepted.length) out.push(`Note: --accept closed past ${found.accepted.length} ${found.accepted.length === 1 ? 'problem' : 'problems'}.`);
 
   logRow(root, { event: 'closed', slug: options.slug, briefCreated: created, closedAt: new Date().toISOString(), lines: lines.length, checked, notChecked: notChecked.length, notCheckedLines: notChecked,
-    look, refused: refusedRuns(root, options.slug), accepted: options.accept, commit: hash, firstCommit: git && !born });
+    look, tests: found.tests.tests, testFiles: found.tests.files, refused: refusedRuns(root, options.slug), accepted: options.accept, commit: hash, firstCommit: git && !born });
   return out.join('\n');
 }
 

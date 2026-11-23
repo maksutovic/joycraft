@@ -89,7 +89,7 @@ const BUILD_BRIEF = [
   '', 'Look: OK', '',
 ].join('\n');
 const S2_BRIEF = ['## Done when', '', '1. The list shows one call per day. — test: tests/more.test.ts', '2. Each day gives a reason.', ''].join('\n');
-const CLOSE_OUT = 'Path: small job. 2 of 3 lines checked (not checked: 3). Look: OK. No code review ran. Commit 1a2b3c4. Brief: docs/archive/ride/brief.md.';
+const CLOSE_OUT = 'Path: small job. 2 of 3 lines checked (not checked: 3). Look: OK. Tests: 1 files passed. No code review ran. Commit 1a2b3c4. Brief: docs/archive/ride/brief.md.';
 
 function writeProject(root: string) {
   const project = join(root, 'project-demo');
@@ -263,6 +263,11 @@ describe('the defects fixed in sl2-05', () => {
     expect(closeLine('Path: small job. 3 of 3 lines checked. Look: OK. No code review ran. No Git: not committed. Brief: docs/archive/a/brief.md.'))
       .toEqual({ checked: 3, lines: 3, commit: null, target: 'docs/archive/a' });
     expect(closeLine('Close stopped: nothing was moved or committed.')).toBeNull();
+    // [AC:sl3-01-close-line] each Tests segment of the sl3-01 line reads the same way.
+    for (const tests of ['Tests: 2 files passed.', 'Tests failed, closed with --accept.', 'Tests not run: no test command is recorded.', 'Tests not run: no line names a test file.']) {
+      expect(closeLine(`Path: small job. 1 of 2 lines checked (not checked: 2). Look: OK. ${tests} No code review ran. Commit abcdef1. Brief: docs/archive/b/brief.md.`))
+        .toEqual({ checked: 1, lines: 2, commit: 'abcdef1', target: 'docs/archive/b' });
+    }
     const build = fixture.phases.build;
     expect(build.briefClosed).toBe(true);
     expect(build.linesChecked).toBe('2 of 3');
@@ -376,7 +381,7 @@ describe('the fixture trace', () => {
 
   it('[AC:sl2-05] counts runtime calls, refusals, commits, close calls, retries, reply words and user messages', () => {
     expect(fixture.phases.build.counts).toEqual({
-      runtimeCalls: 2, refusals: 1, commits: 1, amends: 0, closeCalls: 1, refusedCloses: 0, archiveRetries: 0, finalReplyWords: 27, userMessages: 1,
+      runtimeCalls: 2, refusals: 1, commits: 1, amends: 0, closeCalls: 1, refusedCloses: 0, archiveRetries: 0, finalReplyWords: 31, userMessages: 1,
     });
     expect(fixture.phases.build.commitHashes).toEqual(['1a2b3c4']);
     expect(fixture.phases.setup.counts.runtimeCalls).toBe(1);
