@@ -49,17 +49,26 @@ describe('session end review-25 fixes', () => {
     expect(flat).toContain('it carries only the tidy fixes');
     expect(flat).not.toContain('it carries the records');
     expect(flat).toContain('docs: archive <slug>');
-    expect(flat).toContain('one push can carry up to three commits');
     expect(flat).toContain('Never archive a feature whose question the user asked to wait');
   });
 
   it('[review-25-2] names the read-only form of each step on a dirty tree', () => {
-    const dirty = flat.slice(flat.indexOf('git status --porcelain'), flat.indexOf('The steps run in this order'));
+    const dirty = flat.slice(flat.indexOf('git status --porcelain'), flat.indexOf('When every spec of the queue is done'));
     for (const form of ['`status.mjs` without `--fix`', '`cleanup.mjs tidy` to report', 'prune preview without `--apply`', 'archive preview without `--apply`']) expect(dirty, form).toContain(form);
   });
 
   it('[review-25-3] with no remote it makes the same commits, skips the push and says the work is local', () => {
     expect(flat).toContain('With no remote, make the same commits, skip the push and say the work is local');
+  });
+});
+
+// sl3-05: one close command for a finished queue.
+describe('session end runs one close command for a finished queue', () => {
+  it('[AC:sl3-05-text] names close.mjs --feature under the clean-tree paragraph and has at most 1,113 words', () => {
+    expect(flat).toContain('When every spec of the queue is done, run `node .joycraft/runtime/close.mjs --feature <slug> --session <id> --context <pages>` and act on what it prints. Use the steps below only when it refuses or the queue is not finished.');
+    expect(flat.indexOf('close.mjs --feature')).toBeGreaterThan(flat.indexOf('git status --porcelain'));
+    expect(flat.indexOf('close.mjs --feature')).toBeLessThan(flat.indexOf('status.mjs --fix'));
+    expect(skill.split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(1113);
   });
 });
 
@@ -78,7 +87,7 @@ describe('session end names a commit for every edit', () => {
     const records = sentence('`docs: session-end records`, before tidy');
     expect(records).toContain('cleanup');
     expect(flat.indexOf('joycraft-cleanup')).toBeLessThan(flat.indexOf('`docs: session-end records`'));
-    const dirty = flat.slice(flat.indexOf('git status --porcelain'), flat.indexOf('The steps run in this order'));
+    const dirty = flat.slice(flat.indexOf('git status --porcelain'), flat.indexOf('When every spec of the queue is done'));
     for (const words of ['gate messages', 'cleanup fixes', 'lease']) expect(dirty.toLowerCase(), words).toContain(words);
   });
 });

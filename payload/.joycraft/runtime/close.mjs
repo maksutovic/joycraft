@@ -1,10 +1,17 @@
 import { execFileSync } from 'node:child_process';
-import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, realpathSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { archiveFeature } from './archive.mjs';
+import { tidyVerify } from './cleanup.mjs';
 import { readConfig, workPaths } from './config.mjs';
+import { readLease, release } from './coordinator.mjs';
 import { templateArgv } from './dispatch-start.mjs';
+import { checkGates } from './gate.mjs';
+import { parseJson, readLocal } from './identity.mjs';
 import { gitState } from './kickoff.mjs';
+import { projectStatus } from './status.mjs';
+import { pruneWorktrees } from './worktrees.mjs';
 import { managedClose, managedOpen } from './wiring.mjs';
 
 // The small-job close as one command. It reads the brief's "Done when" lines,
@@ -12,8 +19,10 @@ import { managedClose, managedOpen } from './wiring.mjs';
 // the archive, commits what is staged with the move, and prints one line.
 // Before any change it runs the recorded focused test command on the `test:`
 // files, so a red run refuses like any other soft problem.
+// With --feature it ends the session of a queue whose specs are all done: the
+// session-end steps (records, tidy, prune, lease, archive) as one command.
 // It never amends and never pushes.
-const usage = 'Usage: close.mjs <slug> -m "<message>" [--accept] [--root <project>]';
+const usage = 'Usage: close.mjs <slug> -m "<message>" [--accept] [--root <project>] | close.mjs --feature <slug> --session <id> --context <page>[,<page>] [--root <project>]';
 const queueName = 'specs/.joycraft-spec-queue.json';
 const logFile = '.joycraft/local/small-jobs.jsonl';
 
@@ -185,6 +194,7 @@ function problems(root, { slug, accept }, paths, git) {
 }
 
 export function close(argv) {
+  if (argv.includes('--feature')) return closeFeature(argv);
   const options = parseArgs(argv);
   const root = path.resolve(options.root);
   const paths = workPaths(root);
@@ -233,6 +243,123 @@ export function close(argv) {
   logRow(root, { event: 'closed', slug: options.slug, briefCreated: created, closedAt: new Date().toISOString(), lines: lines.length, checked, notChecked: notChecked.length, notCheckedLines: notChecked,
     look, tests: found.tests.tests, testFiles: found.tests.files, refused: refusedRuns(root, options.slug), accepted: options.accept, commit: hash, firstCommit: git && !born });
   return out.join('\n');
+}
+
+export function parseFeatureArgs(argv) {
+  const options = { root: '.', feature: null, session: null, context: null };
+  const names = { '--feature': 'feature', '--session': 'session', '--context': 'context', '--root': 'root' };
+  for (let index = 0; index < argv.length; index += 1) {
+    const key = names[argv[index]];
+    const value = argv[index += 1];
+    if (!key || value === undefined || value.startsWith('--')) throw new Error(usage);
+    options[key] = value;
+  }
+  if (!options.feature || !options.session?.trim() || !options.context) throw new Error(usage);
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]*$/.test(options.feature)) throw new Error(`The slug must be one folder name: ${options.feature}`);
+  options.context = options.context.split(',').map(page => page.trim()).filter(Boolean);
+  return options;
+}
+
+/** The feature folder: the slug itself, or one dated YYYY-MM-DD-<slug> folder. */
+function featureFolder(root, features, slug) {
+  if (existsSync(path.join(root, features, slug, queueName))) return `${features}/${slug}`;
+  const home = path.join(root, features);
+  const dated = existsSync(home) ? readdirSync(home).filter(name => new RegExp(`^\\d{4}-\\d{2}-\\d{2}-${slug.replace(/[.]/g, '\\.')}$`).test(name) && existsSync(path.join(home, name, queueName))) : [];
+  return dated.length === 1 ? `${features}/${dated[0]}` : null;
+}
+
+/** Every reason to stop a feature close, found before any change. */
+function featureProblems(root, options, paths, git) {
+  const found = [];
+  const folder = featureFolder(root, paths.features, options.feature);
+  const attestation = { schemaVersion: 1, phase: 'session-end', host: { sessionId: options.session, quiescent: true, activeWorkers: [], dependentWork: [] },
+    durableContext: { carried: true, references: [] } };
+  if (!git) found.push('This folder is not a Git repository; the feature close commits.');
+  else {
+    const dirty = run(root, ['status', '--porcelain', '--untracked-files=all']).split('\n').filter(Boolean);
+    if (dirty.length) found.push(`The tree has ${dirty.length} uncommitted ${dirty.length === 1 ? 'change' : 'changes'} (git status --porcelain). Commit or remove them first.`);
+    if (!hasIdentity(root)) found.push('Git has no user name and email. Set them with `git config user.name` and `git config user.email`.');
+  }
+  for (const page of options.context) {
+    const inFeatures = [paths.features, paths.archive].some(home => page === home || page.startsWith(`${home}/`));
+    if (!page.endsWith('.md') || inFeatures) found.push(`Context page ${page} must be a Markdown page outside ${paths.features}/ and ${paths.archive}/.`);
+    else if (!existsSync(path.join(root, page))) found.push(`Context page ${page} does not exist.`);
+    else attestation.durableContext.references.push(page);
+  }
+  if (!folder) return { problems: [...found, `There is no queue at ${paths.features}/${options.feature}/${queueName}.`], attestation };
+  const queuePath = `${folder}/${queueName}`;
+  let queue;
+  try { queue = parseJson(readLocal(root, queuePath), queuePath); } catch (error) { return { problems: [...found, error.message], attestation }; }
+  const specs = Array.isArray(queue.specs) ? queue.specs : [];
+  for (const spec of specs) if (spec.status !== 'done') found.push(`Spec ${spec.id} (${spec.file}) is ${spec.status}, not done.`);
+  // Drift that status --fix repairs is the first step of the close, not a stop.
+  const status = projectStatus({ root, queue: queuePath });
+  const repairs = new Set(status.drift.filter(item => item.fixable).map(item => item.file));
+  for (const failure of checkGates(root).failures) if (!(failure.kind === 'drift' && repairs.has(failure.file))) found.push(failure.message);
+  for (const item of status.questions) {
+    found.push(`Status question on spec ${item.specId} (${item.class} ${item.id}): ${item.summary} Ask the user, then follow the session-end steps.`);
+  }
+  try {
+    const lease = readLease(root, queue.feature);
+    if (lease && lease.sessionId !== options.session) found.push(`Queue ${queue.feature} is coordinated by session ${lease.sessionId}, not ${options.session}.`);
+  } catch (error) { found.push(error.message); }
+  let preview = null;
+  if (specs.length && specs.every(spec => spec.status === 'done') && attestation.durableContext.references.length) {
+    try { preview = archiveFeature({ root, feature: path.posix.basename(folder), phase: 'session-end', attestation }).plan; }
+    catch (error) {
+      // A lagging frontmatter that the first step repairs stops this preview only; apply checks again after the repair.
+      const lag = /status disagreement for spec (\d+);/.exec(error.message);
+      const repaired = lag && specs.some(spec => String(spec.id) === lag[1] && repairs.has(path.posix.join(path.posix.dirname(queuePath), spec.file)));
+      if (!repaired) found.push(`The archive preview stopped: ${error.message}`);
+    }
+  }
+  return { problems: found, attestation, folder, queuePath, queue, specs, namedTests: (preview?.namedFiles ?? []).filter(file => file.test) };
+}
+
+/** Commit everything changed in the tree, when anything is. Returns the short hash or null. */
+function commitAll(root, message) {
+  if (!run(root, ['status', '--porcelain', '--untracked-files=all'])) return null;
+  run(root, ['add', '-A', '--', '.']);
+  run(root, ['commit', '-q', '-m', message]);
+  return run(root, ['rev-parse', '--short', 'HEAD']);
+}
+
+export function closeFeature(argv) {
+  const options = parseFeatureArgs(argv);
+  const root = realpathSync(path.resolve(options.root));
+  const paths = workPaths(root);
+  const found = featureProblems(root, options, paths, gitState(root).git);
+  if (found.problems.length) throw new Refusal(`Close stopped: nothing was changed.\n${found.problems.map(problem => `- ${problem}`).join('\n')}\nFix these, or use the session-end steps.`);
+  const { folder, queuePath, queue, specs, attestation, namedTests } = found;
+  const commits = [];
+  const notes = [];
+  const step = (name, action) => {
+    try { return action(); } catch (error) {
+      throw new Error(`the ${name} step failed after ${commits.length ? `commits ${commits.join(', ')}` : 'no commit'}: ${String(error.stderr ?? error.message).trim()}`);
+    }
+  };
+  step('records', () => {
+    projectStatus({ root, fix: true, queue: queuePath });
+    const hash = commitAll(root, 'docs: session-end records');
+    if (hash) commits.push(hash);
+  });
+  step('tidy', () => {
+    const tidy = tidyVerify({ root });
+    if (tidy.status === 'pass' && tidy.message) { run(root, ['commit', '-q', '-a', '-m', tidy.message]); commits.push(run(root, ['rev-parse', '--short', 'HEAD'])); }
+  });
+  step('prune', () => {
+    for (const item of pruneWorktrees({ root, apply: true }).plan) if (item.action === 'keep') notes.push(`Note: kept worktree ${item.path}: ${item.reason}`);
+  });
+  step('lease', () => { if (readLease(root, queue.feature)) release({ root, queuePath, session: options.session }); });
+  const archived = step('archive', () => archiveFeature({ root, feature: path.posix.basename(folder), phase: 'session-end', attestation, apply: true }));
+  step('archive commit', () => {
+    const hash = commitAll(root, `docs: archive ${path.posix.basename(folder)}`);
+    if (hash) commits.push(hash);
+  });
+  for (const file of namedTests) notes.push(`Note: ${file.path}:${file.line} names ${folder}; if the test reads the folder, change the path to ${archived.destination}/feature, run it, and commit.`);
+  if (archived.afterArchive && !archived.afterArchive.ok) notes.push(`Note: the after-archive hook failed (exit ${archived.afterArchive.exitCode}): ${archived.afterArchive.command}`);
+  const count = `${specs.length} of ${specs.length} specs done.`;
+  return [`Path: feature. ${count} Commits: ${commits.join(', ')}. Archive: ${archived.destination}.`, ...notes].join('\n');
 }
 
 export function main(argv = process.argv.slice(2)) {

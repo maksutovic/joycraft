@@ -9,13 +9,13 @@ compatibility: Requires Node.js 22+ and the installed .joycraft runtime for the 
 Start with the clean-tree check: run `git status --porcelain`. When it prints
 anything, the tree holds the user's work: report what the steps below find, fix
 nothing, commit nothing of the user's and push nothing. Run each step in its
-read-only form only: `status.mjs` without `--fix`, `cleanup.mjs tidy` to report,
+read-only form: `status.mjs` without `--fix`, `cleanup.mjs tidy` to report,
 the prune preview without `--apply`, the archive preview without `--apply`.
 Gate messages, cleanup fixes and the lease release also wait.
 
-The steps run in this order: records and their commit, one tidy commit,
-worktree prune, archive last with its commit, then one push that opens the PR.
-That one push can carry up to three commits.
+When every spec of the queue is done, run `node .joycraft/runtime/close.mjs --feature <slug> --session <id> --context <pages>`
+and act on what it prints. Use the steps below only when it refuses or the queue
+is not finished.
 
 Read each touched queue and report the real state of every affected spec: `todo`, `in-review`, or `done`. `done` must have either an accepted PASS report receipt or a completion-helper owner-acceptance record bound to a current failed or unverified report; a commit, PASS command, or implementer assertion is not acceptance. Keep blocked or failed dependency branches explicit while identifying independent ready work that can continue next.
 
