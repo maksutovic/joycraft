@@ -102,6 +102,21 @@ describe('small-job routing in the skills, setup and templates', () => {
     expect(entry).not.toContain('existing direct path');
   });
 
+  it('[AC:sl3-03-no-plan] [AC:sl3-03-no-page] [AC:sl3-03-words] a feature asks no setup or meta question', () => {
+    const entry = text('.agents/skills/joycraft-entry/SKILL.md');
+    const flat = entry.replace(/\s+/g, ' ');
+    // [AC:sl3-03-no-plan] the review-tools plan stays in setup.md.
+    expect(entry).not.toContain('review-tools.mjs plan');
+    expect(entry).not.toMatch(/review-loop plan/i);
+    // [AC:sl3-03-no-page]
+    expect(flat).toContain('A brief with no open decision gets no page.');
+    expect(flat).toContain('and ask as it prints.');
+    expect(flat).not.toContain('numbered prose in chat');
+    expect(flat).not.toContain('lacks this rule');
+    // [AC:sl3-03-words]
+    expect(entry.split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(1240);
+  });
+
   it('[AC:sl1-01] the implement skill scopes out a small job', () => {
     expect(text('.agents/skills/joycraft-implement/SKILL.md')).toContain('A small job (the `Work` line in `AGENTS.md`) has no queue and does not use this skill.');
   });

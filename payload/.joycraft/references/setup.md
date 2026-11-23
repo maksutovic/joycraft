@@ -184,8 +184,8 @@ run `git init` first, as [step 2](#set-up-the-context-map) says for a bare proje
 ## Review loop tools
 
 The review loop needs tools that can show the work: a browser for a web app, a
-simulator or emulator for a mobile app, an HTTP check for an API. On first entry,
-setup and every upgrade, run the read-only plan:
+simulator or emulator for a mobile app, an HTTP check for an API. At setup and
+every upgrade, run the read-only plan:
 
 ```sh
 node .joycraft/runtime/review-tools.mjs plan --root . --host-tools <observed host tools>

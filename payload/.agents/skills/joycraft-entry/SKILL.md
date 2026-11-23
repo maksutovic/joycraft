@@ -30,9 +30,7 @@ choosing skills; preserved custom content is not a completed migration.
 On a bare project, offer the
 [kickoff](../../../.joycraft/references/setup.md#kickoff-for-a-new-project)
 in one line before any brief or scaffold, and run it when the user asks for it on
-any project. On first entry, setup and upgrade, also run the review-loop plan in
-[review loop tools](../../../.joycraft/references/setup.md#review-loop-tools);
-install nothing without the user's yes.
+any project.
 Continue the user's work after setup; setup alone does not require a feature
 brief, spec queue or app scaffold.
 
@@ -91,12 +89,9 @@ record the answer, so it is not asked again.
 **Ask in the user's question style.** When the user must choose between
 options, record each choice as a brief decision. Then run
 `node .joycraft/runtime/artifacts/cli.mjs questions --brief <brief>` and ask as
-it says: one decision at a time with a short discussion after each answer, or a
-page of decisions; in the decision artifact or as numbered prose in chat. Give
-each consequential question its context, options with an example and a
-trade-off, and your recommendation with the reason, in Simplified Technical
-English. Never assume the user remembers what you remember. Save every answer
-to the brief. Follow
+it prints. Give each consequential question its context, options with an example
+and a trade-off, and your recommendation with the reason, in Simplified Technical
+English. Save every answer to the brief. Follow
 [asking questions](../../../.joycraft/references/artifacts.md#asking-questions).
 Plain chat with no decision is only for one quick yes/no or an open question
 with no options.
@@ -115,12 +110,10 @@ page, connect their wiki, see their settings or remove Joycraft, follow
 what they do, follow [gates](../../../.joycraft/references/gates.md).
 
 **Show documents as pages.** A brief, plan, spec set, report or review that the
-user must read or approve is also rendered, never left as Markdown in chat. The
-artifact engine builds each page: decisions from the brief, documents with
+user must read or approve is also rendered, never left as Markdown in chat. A
+brief with no open decision gets no page. The artifact engine builds each page: decisions from the brief, documents with
 `--doc`, both on one page when a document has questions. Never write your own HTML page. Show it as
 [showing a page](../../../.joycraft/references/artifacts.md#showing-a-page) says and give its path.
-If the project's `AGENTS.md` lacks this rule or its context-map row for
-`.joycraft/references/artifacts.md`, add them as `setup.md` describes.
 
 For a request to keep an artifact theme or colors from now on, record
 `artifacts.theme` or `artifacts.colors` in that project's
