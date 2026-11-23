@@ -42,6 +42,7 @@ pnpm build && node dist/cli.js init /tmp/test-project --yes   # try the CLI as n
 | Focused test | `pnpm test tests/<file>.test.ts` | vitest.config.ts |
 | Project gate | `pnpm test && pnpm typecheck` | package.json |
 | Full suite | CI: Test workflow on the PR (tarball gates, OS matrix, upgrade from the published release) | .github/workflows/test.yml |
+| Reviewer benchmark | `node scripts/trial/reviewer-bench.mjs --subjects <subjects folder> --record` | Run when the reviewer agent, the verify skill or testing-review.md changes. The subjects are outside the repo. |
 
 ## Execution Profile
 

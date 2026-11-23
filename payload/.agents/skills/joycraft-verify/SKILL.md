@@ -8,11 +8,6 @@ compatibility: Requires Node.js 22+, the installed .joycraft runtime, and Git fo
 
 Use this skill after an implementer has finished an authorized spec and placed it in `in-review`.
 
-An artifact can make the current brief's decisions and review summary easier to
-inspect; it does not verify behavior or change a queue status. Read
-`.joycraft/references/artifacts.md` only when that view is part of the
-review material. A read-only artifact status cannot mark a spec done.
-
 For work that used a worker tree, prepare the subject from the coordinator's
 final integrated bytes, not the implementer's pre-integration tree. A stable
 source-read-only review may use that fixed tree and write its declared report
@@ -29,20 +24,31 @@ using the parent's identity. After launch, the reviewer child runs
 `dispatch-start.mjs --role reviewer` at its actual root, which captures the
 subject, preflights delivery and writes the bounded packet. Without a separate
 reviewer context, or a real agent ID that the child sees or the launch result
-gives, leave the spec `in-review`; do not manufacture either. This holds only
-the claimed review, not unrelated work.
+gives, leave the spec `in-review`; do not manufacture either.
 Reviewer startup output also carries `trace`, the spec's criteria with the tests
-tagged `[AC:<criterion-id>]` (`node .joycraft/runtime/trace.mjs --queue <queue> --spec <id>`
-produces the same). Report untraced criteria as findings; a missing tag alone is
+tagged `[AC:<criterion-id>]`. Report untraced criteria as findings; a missing tag alone is
 not a FAIL.
-Write packets and snapshots beneath a confirmed Git-ignored project-local
-directory so they do not create unrelated scope paths.
 
 Dispatch `collaboration.spawn_agent` with `fork_turns: "none"` and the packet's raw sources and output contract. Do not give the reviewer an intended verdict, conclusion, or implementer reasoning. In Claude Code, use its `Agent` tool with the same limited inputs and the `joycraft-reviewer` agent type when installed (otherwise the project-selected reviewer model); a fresh worker is the separate review context. Otherwise use a separate accessible review context. Record its returned native host, session and child agent identity; a shared parent session does not make two native actors the same. Follow the actor-report fields in the dispatch reference. Do not invent IDs or create a worktree solely to obtain a different session string.
 
 When already dispatched as the independent reviewer, perform the review directly; do not recursively dispatch another reviewer. Read the parent brief, spec, queue entry, declared criteria and exact verification inputs. Use the supplied subject, set independence truthfully, and do not self-certify implementation from your own context.
 
 Read the diff of each changed test file and judge it by [test changes](../../../.joycraft/references/testing-review.md#test-changes), test-only specs by [fault proof](../../../.joycraft/references/testing-review.md#test-only-specs).
+
+Green tagged tests alone pass no criterion. For each spec, also:
+
+- **Probe:** name one input that a user or an outsider can change and the code
+  trusts (an argument, a path, a link, a stored file). Try it tampered on the
+  real surface.
+- **Can the test fail?** For the key criterion, revert the change (or its key
+  line) in a scratch copy and run its test. Record the red run. A test that
+  stays green is `blocking`.
+- **Docs against code:** check each changed doc line that states behavior
+  against the code it describes. A false line is `blocking`.
+- **Fix round:** read the fix diff for new defects, not only whether each open
+  finding is closed.
+
+Skip style.
 
 Review scope as well as behavior: determine whether the listed inputs and criteria cover the requested work, including relevant newly changed files. For a cross-boundary change, inspect the combined observable behavior across the relevant producer, consumer, state or storage boundary; separate green helpers, snapshots, or assertion counts do not establish that behavior. If a material counterpart or owning decision/context source was omitted, report the scope gap and require its exact path to be added before a fresh current review subject is prepared. Preserve the snapshot's implementation revision as provenance while checking its current bound inputs. A changed, missing, or renamed input makes the subject stale; do not substitute a newer HEAD as its identity.
 
@@ -59,26 +65,24 @@ Items under a spec's "Deferred until deploy" section are not criteria; list
 each as a `follow-up` finding for the owner.
 
 Findings rule: give each `findings` entry its `class`, `origin`, and `criterion`
-or `at` (file:line or receipt). `blocking` is only a failing stated criterion or
-a reproducible defect or regression in the changed code. A case the spec does
-not decide is a `follow-up`: take the reading closest to the brief's intent,
-recorded as `assumption`. `decision-needed` is only for two readings that give
+or `at` (file:line or receipt). `blocking` is only a failing stated criterion,
+or a defect or regression in the changed code that you reproduced (command, exit
+status, what you saw). A reproduced defect is never a `follow-up`. A defect
+inside a criterion's scope that a user would hit blocks the spec: reproduce it.
+A case the spec does not decide is a `follow-up`: take the reading closest to
+the brief's intent, recorded as `assumption`. `decision-needed` is only for two readings that give
 opposite verdicts on a stated criterion, or a guess that cannot be undone; it
-holds this spec and its dependents, never the queue. A probe outside the named
-checks is a `follow-up` unless it regresses. Never repeat an earlier round's
+holds this spec and its dependents, never the queue. Never repeat an earlier round's
 finding as new.
 
 Set a PASS verdict only when scope is reviewed, all required evidence is sufficient, and no blocking finding or unresolved UNVERIFIED evidence remains. Then run guarded completion, the startup output's `commands.finalizeReview`. When startup printed `commands.finish` instead, do not finalize: return the report path.
 
-`finalize-review` is the primary command and has exactly the validation of the
-legacy-compatible `complete` alias. Completion validates the report and receipt
+Completion validates the report and receipt
 hashes, distinct native implementer/reviewer actors (or legacy distinct session
 IDs), independent-review attestation, subject freshness, and evidence
-sufficiency. It may reject an otherwise green suite. Do not edit the queue or
+sufficiency. Do not edit the queue or
 spec to make a report fit. For rejections or interrupted writes, follow
 [completion guidance](../../../.joycraft/references/completion.md).
-Once it returns, let the implementer continue the autonomous ready queue; do not
-hold independent work behind an unrelated failed branch.
 
 For scope-enabled work, completion compares the recorded base and inferred
 relevant paths with the current change topology. Do not replace the base with
@@ -94,5 +98,3 @@ trusted human explicitly accepts this spec's current findings, use the separate
 owner-acceptance completion path described in [completion guidance](../../../.joycraft/references/completion.md). That path validates bindings and
 receipts, not the authenticity of a human instruction; it never turns this
 report into PASS or verified evidence.
-
-Report the reviewer identity, checks and observed outcomes, receipt paths, verdict, helper result, and limitations without claiming evidence that was not observed.

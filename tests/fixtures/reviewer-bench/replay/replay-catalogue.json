@@ -1,0 +1,4 @@
+[
+  { "feature": "demo", "spec": 1, "round": 1, "blocking": [{ "id": "d1-trusted-path", "at": "src/a.mjs:10", "text": "A path from the user is read without a check." }] },
+  { "feature": "demo", "spec": 2, "round": 1, "blocking": [{ "id": "d2-false-doc", "at": "docs/b.md:3", "text": "The doc says the command refuses; the code accepts." }] }
+]

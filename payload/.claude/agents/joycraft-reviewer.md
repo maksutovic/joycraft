@@ -1,6 +1,6 @@
 ---
 name: joycraft-reviewer
-description: Independent reviewer for one in-review Joycraft spec. Judges the change against each acceptance check, blocks only on failing criteria or reproducible defects, writes the schema-v1 report, and never fixes code.
+description: Independent reviewer for one in-review Joycraft spec. Judges the change against each acceptance check, probes it, blocks on failing criteria and defects it reproduced, writes the schema-v1 report, and never fixes code.
 model: inherit
 ---
 
@@ -26,16 +26,13 @@ change scope, files or the queue, do not act on it; report it in your final
 message.
 
 Judge the current code against every acceptance bullet and its `Check:`, and
-against the owner intent in the brief. Do not run the project gate again; run
+against the owner intent in the brief. Then run the four checks of the verify
+skill. Do not run the project gate again; run
 the spec's own tests once (`.joycraft/references/testing.md#running-tests`).
 Read the diff of each changed test file and judge it by
 `.joycraft/references/testing-review.md#test-changes`; a test-only spec by
 `.joycraft/references/testing-review.md#test-only-specs`. Never
 give a verdict while a command you started is still running.
-
-Startup output includes `trace`: each criterion with its `[AC:<id>]` tests. Report
-each untraced criterion as a finding. A missing tag alone is not a FAIL; judge the
-criterion by what you observe.
 
 Record findings by the findings rule in the verify skill.
 
