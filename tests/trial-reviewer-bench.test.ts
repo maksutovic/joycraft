@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { chmodSync, existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -37,10 +37,11 @@ const CANNED: Record<string, string> = {
 function stub(dir: string) {
   const file = join(dir, 'claude-stub.mjs');
   writeFileSync(file, `#!/usr/bin/env node
-import { appendFileSync, readFileSync } from 'node:fs';
+import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 const key = process.env.JOYCRAFT_BENCH_SUBJECT + '.' + process.env.JOYCRAFT_BENCH_ROLE;
 const canned = JSON.parse(readFileSync(process.env.STUB_CANNED, 'utf8'));
-appendFileSync(process.env.STUB_LOG, JSON.stringify({ key, cwd: process.cwd(), args: process.argv.slice(2) }) + '\\n');
+appendFileSync(process.env.STUB_LOG, JSON.stringify({ key, cwd: process.cwd(), readme: existsSync('README.md'), args: process.argv.slice(2) }) + '\\n');
+if (key === process.env.STUB_FAIL) process.exit(1);
 process.stdout.write(JSON.stringify({ type: 'result', result: canned[key] ?? '', total_cost_usd: 0.1 }));
 `);
   chmodSync(file, 0o755);
@@ -48,11 +49,11 @@ process.stdout.write(JSON.stringify({ type: 'result', result: canned[key] ?? '',
   return file;
 }
 
-function bench(args: string[]) {
+function bench(args: string[], { from = subjects, fail = '' } = {}) {
   const dir = tempDir();
   const out = join(dir, 'out');
-  const env = { ...process.env, JOYCRAFT_BENCH_CLAUDE: stub(dir), STUB_CANNED: join(dir, 'canned.json'), STUB_LOG: join(dir, 'calls.log') };
-  const run = spawnSync(process.execPath, [script, '--subjects', subjects, '--out', out, '--no-checkout', '--jobs', '2', ...args], { cwd: root, encoding: 'utf8', env });
+  const env = { ...process.env, JOYCRAFT_BENCH_CLAUDE: stub(dir), STUB_CANNED: join(dir, 'canned.json'), STUB_LOG: join(dir, 'calls.log'), STUB_FAIL: fail };
+  const run = spawnSync(process.execPath, [script, '--subjects', from, '--out', out, '--no-checkout', '--jobs', '2', ...args], { cwd: root, encoding: 'utf8', env });
   const calls = existsSync(env.STUB_LOG) ? readFileSync(env.STUB_LOG, 'utf8').trim().split('\n').map(line => JSON.parse(line)) : [];
   return { run, out, calls, dir };
 }
@@ -121,6 +122,35 @@ describe('reviewer benchmark (sl3-07)', () => {
     expect(reviewCall.args[reviewCall.args.indexOf('--append-system-prompt') + 1]).toContain('You are an independent reviewer in a fresh context.');
   });
 
+  it('[AC:sl3-07-bench-score] each R6 and vacuous review runs in a copy of its subject', () => {
+    const { run, calls } = bench(['--only', 'r6,vacuous']);
+    for (const key of ['r6-demo-r1.review', 'vacuous-demo-vacuous.review']) {
+      const call = calls.find(item => item.key === key);
+      expect(call, key).toBeDefined();
+      expect(call.readme, key).toBe(true);
+    }
+    expect(run.stdout).not.toContain('not run');
+  });
+
+  it('[AC:sl3-07-bench-score] a subject that cannot be copied, or a review that exits non-zero with no output, makes the run incomplete', () => {
+    const broken = join(tempDir(), 'subjects');
+    cpSync(subjects, broken, { recursive: true });
+    const unreadable = join(broken, 'r6', 'subjects', 'demo-r1', 'secret.txt');
+    writeFileSync(unreadable, 'x');
+    chmodSync(unreadable, 0o000);
+    const copyFails = bench(['--only', 'r6'], { from: broken });
+    chmodSync(unreadable, 0o644);
+    expect(copyFails.calls.map(call => call.key)).not.toContain('r6-demo-r1.review');
+    expect(copyFails.run.stdout).toContain('| r6-demo-r1 | not run (setup) |');
+    expect(copyFails.run.stdout.trim().split('\n')).toContain('incomplete');
+    expect(copyFails.run.status).toBe(3);
+
+    const reviewFails = bench(['--only', 'vacuous'], { fail: 'vacuous-demo-vacuous.review' });
+    expect(reviewFails.calls.map(call => call.key)).toEqual(['vacuous-demo-vacuous.review']);
+    expect(reviewFails.run.stdout).toContain('| vacuous-demo-vacuous | not run (review failed) |');
+    expect(reviewFails.run.status).toBe(3);
+  });
+
   // The Commands row is part of [AC:sl3-07-bench-current]; it holds before any run is recorded.
   it('AGENTS.md holds the reviewer benchmark row in ## Commands', () => {
     const agents = readFileSync(join(root, 'AGENTS.md'), 'utf8');
@@ -128,9 +158,10 @@ describe('reviewer benchmark (sl3-07)', () => {
     expect(commands).toContain('| Reviewer benchmark | `node scripts/trial/reviewer-bench.mjs --subjects <subjects folder> --record` | Run when the reviewer agent, the verify skill or testing-review.md changes. The subjects are outside the repo. |');
   });
 
-  // Skipped until a real run is recorded (it needs the subjects folder and about $30):
+  // Red until a real run is recorded and passes (it needs the subjects folder and about $30):
   // node scripts/trial/reviewer-bench.mjs --subjects <subjects folder> --record
-  it.skipIf(!existsSync(recordFile))('[AC:sl3-07-bench-current] the recorded run passes the bar and reviewed the reviewer text in this tree', () => {
+  it('[AC:sl3-07-bench-current] the recorded run passes the bar and reviewed the reviewer text in this tree', () => {
+    expect(existsSync(recordFile), 'no recorded run: scripts/trial/reviewer-bench.json').toBe(true);
     const record = JSON.parse(readFileSync(recordFile, 'utf8'));
     expect(record.verdict).toBe('PASS');
     expect(record.replay.caught).toBeGreaterThanOrEqual(12);

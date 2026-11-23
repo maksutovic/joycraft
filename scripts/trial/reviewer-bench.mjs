@@ -22,7 +22,8 @@
 // JOYCRAFT_BENCH_SUBJECT in its environment.
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { constants, copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { cp } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -269,7 +270,14 @@ async function prepare(context, subject, label) {
   let ok = true;
   if (subject.kind === 'copy') {
     mkdirSync(path.dirname(dir), { recursive: true });
-    ok = await step('cp', process.platform === 'darwin' ? ['-cR', subject.source, dir] : ['-a', subject.source, dir]);
+    // Node's own copy: the `cp` on PATH may be GNU or BSD, whose flags differ. A clone where the disk allows it.
+    try {
+      await cp(subject.source, dir, { recursive: true, verbatimSymlinks: true, mode: constants.COPYFILE_FICLONE });
+      log.push(`copy ${subject.source} -> ${dir}\nok`);
+    } catch (error) {
+      log.push(`copy ${subject.source} -> ${dir}\n${error}`);
+      ok = false;
+    }
   } else {
     mkdirSync(dir, { recursive: true });
     if (!context.noCheckout) {
@@ -337,6 +345,11 @@ async function runSubject(context, subject) {
   const record = { id: subject.id, group: subject.group };
   const work = await prepare(context, subject, 'review');
   record.setupOk = work.ok;
+  // A subject whose folder could not be made is not reviewed, and the run cannot pass or fail on it.
+  if (!work.ok) {
+    rmSync(work.dir, { recursive: true, force: true });
+    return { ...record, incomplete: true, why: 'setup' };
+  }
   const prompt = subject.kind === 'checkout'
     ? rewriteToday(readFileSync(subject.promptFile, 'utf8'), context.todayDir)
     : renderCopyPrompt({ request: subject.request, workDir: work.dir, base: subject.base, todayDir: context.todayDir });
@@ -346,21 +359,26 @@ async function runSubject(context, subject) {
     extra: ['--append-system-prompt', context.system, '--dangerously-skip-permissions', ...addDirs],
   });
   rmSync(work.dir, { recursive: true, force: true });
-  if (!review) return { ...record, incomplete: true };
+  if (!review) return { ...record, incomplete: true, why: 'cap' };
   const output = extractJson(review.text);
   const blocking = (Array.isArray(output?.findings) ? output.findings : []).filter(finding => finding?.class === 'blocking');
   Object.assign(record, { exit: review.exit, seconds: review.seconds, cost: review.cost, parsed: Boolean(output), blocking: blocking.length });
+  if (review.exit !== 0 && !output) return { ...record, incomplete: true, why: 'review failed' };
 
   if (subject.group === 'controls') {
     record.falseBlocking = 0;
     if (!blocking.length) return record;
     const reproWork = await prepare(context, subject, 'repro');
+    if (!reproWork.ok) {
+      rmSync(reproWork.dir, { recursive: true, force: true });
+      return { ...record, incomplete: true, why: 'setup' };
+    }
     const repro = await callClaude(context, {
       role: 'repro', subject, cwd: reproWork.dir, prompt: reproPrompt(blocking), budget: BUDGETS.repro, effort: 'medium',
       extra: ['--dangerously-skip-permissions'],
     });
     rmSync(reproWork.dir, { recursive: true, force: true });
-    if (!repro) return { ...record, incomplete: true };
+    if (!repro) return { ...record, incomplete: true, why: 'cap' };
     record.cost += repro.cost;
     const answers = extractJson(repro.text)?.findings;
     const reproduced = Array.isArray(answers) ? answers.filter(answer => answer?.reproduced === true).length : 0;
@@ -371,7 +389,7 @@ async function runSubject(context, subject) {
 
   const scorePrompt = context.scoreTemplate.replace('{{REFERENCE}}', referenceList(subject.reference)).replace('{{REPLAY}}', review.text || '(no output)');
   const score = await callClaude(context, { role: 'score', subject, cwd: context.scoresDir, prompt: scorePrompt, budget: BUDGETS.score, effort: 'low', extra: ['--tools', ''] });
-  if (!score) return { ...record, incomplete: true };
+  if (!score) return { ...record, incomplete: true, why: 'cap' };
   record.cost += score.cost;
   const scores = Array.isArray(extractJson(score.text)?.findings) ? extractJson(score.text).findings : [];
   const scoreOf = id => scores.find(item => item?.id === id)?.score ?? 'missed';
@@ -446,7 +464,7 @@ export function report(records, summary, { rules, verdict }) {
     if (!rows.length) continue;
     lines.push(`## ${group}`, '', '| subject | result | blocking | seconds | cost |', '|---|---|---|---|---|');
     for (const record of rows) {
-      const result = record.incomplete ? 'not run (cap)'
+      const result = record.incomplete ? `not run (${record.why ?? 'cap'})`
         : group === 'controls' ? `${record.falseBlocking} false of ${record.blocking}`
         : group === 'r6' ? `found ${record.found} of ${record.defects.length}`
         : record.caught ? 'caught' : 'missed';

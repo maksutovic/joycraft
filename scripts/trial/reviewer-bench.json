@@ -1,0 +1,16 @@
+{
+  "textSha256": "4a6295b37aedafed10a80e9eae74a4a6f21c286da0ee6170548d18c3b11d5872",
+  "effort": "medium",
+  "date": "2026-11-23",
+  "replay": {
+    "caught": 4,
+    "of": 18
+  },
+  "r6": {
+    "found": 5,
+    "of": 8
+  },
+  "controlsFalse": 0,
+  "vacuousFound": true,
+  "verdict": "FAIL"
+}
