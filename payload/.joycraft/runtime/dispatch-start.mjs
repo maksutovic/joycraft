@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { assertReviewAllowed, visibleReports } from './completion.mjs';
 import { readConfig } from './config.mjs';
 import { mainTree, readLease } from './coordinator.mjs';
+import { gitState, noGitCommit } from './kickoff.mjs';
 import { prepareDispatch } from './dispatch-preflight.mjs';
 import { testChanges } from './test-changes.mjs';
 import { traceSpec } from './trace.mjs';
@@ -301,6 +302,7 @@ function gitIgnored(root, relative) {
     return true;
   } catch (error) {
     if (error.status === 1) return false;
+    if (!gitState(root).commit) throw new Error(noGitCommit('start'));
     throw new Error(`Could not check whether ${relative} is git-ignored`);
   }
 }

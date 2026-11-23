@@ -15,13 +15,13 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true, maxRetries: 5 }); });
 
 /** A git project with the shipped runtime installed and one spec whose check inputs are tests/a and tests/b. */
-function fixture({ focused, checks = ['tests/a.test.ts', 'tests/b.test.ts'], status = 'todo', rootName }: { focused?: string; checks?: string[]; status?: string; rootName?: string }) {
+function fixture({ focused, checks = ['tests/a.test.ts', 'tests/b.test.ts'], status = 'todo', rootName, noGit = false }: { focused?: string; checks?: string[]; status?: string; rootName?: string; noGit?: boolean }) {
   const base = realpathSync(mkdtempSync(join(tmpdir(), 'jc-dispatch-commands-')));
   const pinned = realpathSync(mkdtempSync(join(tmpdir(), 'jc-dispatch-pin-')));
   dirs.push(base, pinned);
   const root = rootName ? join(base, rootName) : base;
   mkdirSync(root, { recursive: true });
-  git(root, 'init', '-q', '-b', 'main');
+  if (!noGit) git(root, 'init', '-q', '-b', 'main');
   applyInstall(planInstall(root, ['claude']));
   copyFileSync(join(root, '.joycraft/installation.json'), join(pinned, 'installation.json'));
   if (focused) put(join(root, 'joycraft.yaml'), `tests:\n  focused: ${JSON.stringify(focused)}\n`);
@@ -34,7 +34,7 @@ function fixture({ focused, checks = ['tests/a.test.ts', 'tests/b.test.ts'], sta
   put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature: 'f', specs: [{ id: 1, file: '01-a.md', depends_on: [], status, mode: 'checkpoint',
     verification: { inputs: [{ path: `${folder}/brief.md`, kind: 'requirement' }, { path: spec, kind: 'requirement' }, { path: 'src/a.ts', kind: 'code' }, ...checks.map(path => ({ path, kind: 'check' }))],
       criteria: [{ id: 'spec-1-1', requirement: { path: spec, anchor: 'acceptance' }, requiredKinds: ['runtime'] }] } }] }, null, 2));
-  git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'init');
+  if (!noGit) { git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'init'); }
   return { root, manifest: join(pinned, 'installation.json') };
 }
 
@@ -202,5 +202,38 @@ describe('task startup commands', () => {
     const other = spawnSync(process.execPath, [join(root, '.joycraft/runtime/dispatch-start.mjs'), '--helpme'], { cwd: root, encoding: 'utf8' });
     expect(other.status).toBe(1);
     expect(other.stderr).toContain('Invalid startup argument: --helpme');
+  });
+});
+
+// Spec: .joycraft/local/loop/iter1/chair.md, sl1-03 (Git settled at setup; early plain refusal).
+describe('no Git: early plain refusal (sl1-03)', () => {
+  const noGit = 'this folder is not a Git repository with a commit. Run git init, commit, then';
+
+  it('[AC:sl1-03-submit] submit exits 1 with the plain message and leaves the spec todo', () => {
+    const { root } = fixture({ noGit: true });
+    const queueBefore = readFileSync(join(root, queuePath), 'utf8');
+    const specBefore = readFileSync(join(root, folder, 'specs/01-a.md'), 'utf8');
+    const result = spawnSync(process.execPath, [join(root, '.joycraft/runtime/completion.mjs'), 'submit', '--queue', queuePath, '--spec', '1'], { cwd: root, encoding: 'utf8' });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toBe(`Completion stopped: ${noGit} submit again.\n`);
+    expect(result.stdout).toBe('');
+    expect(JSON.parse(readFileSync(join(root, queuePath), 'utf8')).specs[0].status).toBe('todo');
+    expect(readFileSync(join(root, queuePath), 'utf8')).toBe(queueBefore);
+    expect(readFileSync(join(root, folder, 'specs/01-a.md'), 'utf8')).toBe(specBefore);
+  });
+
+  it('[AC:sl1-03-submit] a repository with no commit gets the same refusal', () => {
+    const { root } = fixture({ noGit: true });
+    git(root, 'init', '-q', '-b', 'main');
+    const result = spawnSync(process.execPath, [join(root, '.joycraft/runtime/completion.mjs'), 'submit', '--queue', queuePath, '--spec', '1'], { cwd: root, encoding: 'utf8' });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain(noGit);
+  });
+
+  it('[AC:sl1-03-start] task startup with no Git says the same instead of the ignore message', () => {
+    const result = start(fixture({ noGit: true }), 'implementer');
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain(`${noGit} start again.`);
+    expect(result.stderr).not.toContain('git-ignored');
   });
 });

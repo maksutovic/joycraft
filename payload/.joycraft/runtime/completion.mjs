@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { readConfig } from './config.mjs';
+import { gitState, noGitCommit } from './kickoff.mjs';
 import { briefDecisionRecords, canonical, isObject, isSha256, localPath, nonempty, parseJson, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, subjectIdentity, validateIndependentReview } from './identity.mjs';
 
 export { snapshot } from './identity.mjs';
@@ -337,9 +338,11 @@ export async function complete({ root = process.cwd(), queuePath, specId, report
  * surfaces in one journaled write, plus a `submitted` record that subject
  * bindings leave out, like status. An in-review spec is left unchanged. A
  * criterion with no [AC:id] test is returned as a warning, never a refusal.
- * Every refusal carries exitCode 2.
+ * Every refusal carries exitCode 2. A folder with no Git commit stops first,
+ * with exitCode 1 and the spec left as it is: review needs a commit.
  */
 export async function submit({ root = process.cwd(), queuePath, specId }) {
+  if (!gitState(root).commit) throw new Error(noGitCommit('submit'));
   try {
     queuePath = relativePath(queuePath);
     assertNoJournal(root, queuePath);

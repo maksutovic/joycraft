@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -97,5 +97,60 @@ describe('start advice polish (spec 27)', () => {
     const lines = advice[0].lines ?? [];
     expect(lines.some(line => line.includes('recent commits removed'))).toBe(true);
     expect(lines.some(line => line.includes('this branch'))).toBe(false);
+  });
+});
+
+// Spec: .joycraft/local/loop/iter1/chair.md, sl1-03 (Git settled at setup).
+describe('no-git start advice (sl1-03)', () => {
+  const kickoff = join(__dirname, '..', 'payload', '.joycraft', 'runtime', 'kickoff.mjs');
+  const agents = '# P\n\n## Context Map\n\n| Document | Read it when |\n|---|---|\n| `docs/context/guide.md` | Always |\n';
+  const plain = () => {
+    const root = tempDir();
+    put(join(root, 'AGENTS.md'), agents);
+    put(join(root, 'docs/context/guide.md'), '# Guide\n');
+    return root;
+  };
+  const gitAdvice = (root: string) => run(root).json.advice.filter(item => item.check === 'no-git');
+
+  it('[AC:sl1-03-detect] kickoff detect prints "git": false with no Git and true in a repository', () => {
+    const root = plain();
+    const detect = (dir: string) => JSON.parse(execFileSync('node', [kickoff, 'detect', '--root', dir], { encoding: 'utf8' })) as { git: boolean };
+    expect(execFileSync('node', [kickoff, 'detect', '--root', root], { encoding: 'utf8' })).toContain('"git": false');
+    git(root, ['init', '-q', '-b', 'main']);
+    expect(detect(root).git).toBe(true);
+  });
+
+  it('[AC:sl1-03-advice] no Git gives no-git advice, never a finding, and wiring keeps its exit code', () => {
+    const bare = plain();
+    const repo = plain();
+    git(repo, ['init', '-q', '-b', 'main']);
+    save(repo, 'init');
+    const without = run(bare);
+    const withGit = run(repo);
+    expect(gitAdvice(bare)).toHaveLength(1);
+    const findings = (without.json as unknown as { findings: { check: string }[] }).findings;
+    expect(findings.map(item => item.check)).not.toContain('no-git');
+    expect(findings).toEqual((withGit.json as unknown as { findings: unknown[] }).findings);
+    expect(without.status).toBe(withGit.status);
+    expect(gitAdvice(repo)).toEqual([]);
+    // A repository with no commit still gets the advice: submit needs a commit.
+    const empty = plain();
+    git(empty, ['init', '-q', '-b', 'main']);
+    expect(gitAdvice(empty)).toHaveLength(1);
+  });
+
+  it('[AC:sl1-03-declined] a `- No Git` rule in AGENTS.md stops the advice', () => {
+    const root = plain();
+    put(join(root, 'AGENTS.md'), `${agents}\n## Rules\n\n- No Git: keep this folder out of version control.\n`);
+    expect(gitAdvice(root)).toEqual([]);
+  });
+
+  it('[AC:sl1-03-setup] setup settles Git once: init on a bare project, ask once otherwise, record a no', () => {
+    const setup = readFileSync(join(__dirname, '..', 'payload', '.joycraft', 'references', 'setup.md'), 'utf8').replace(/\s+/g, ' ');
+    expect(setup).toContain('On a bare project, run `git init`, say so, and say that deleting the `.git` folder undoes it.');
+    expect(setup).toContain('On a project with files, ask once, yes or no');
+    expect(setup).toContain('On no, write `- No Git:` and the user\'s words under `## Rules` in `AGENTS.md`');
+    expect(setup).toContain('When the folder is bare or has an ignore file, make the first commit.');
+    expect(setup).toContain('When `detect` prints `"git": false`, run `git init` first');
   });
 });

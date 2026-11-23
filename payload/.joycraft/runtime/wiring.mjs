@@ -8,7 +8,7 @@ import { workPaths } from './config.mjs';
 // Claude Code is installed) a CLAUDE.md that imports AGENTS.md, unless AGENTS.md
 // itself imports CLAUDE.md. It never edits a file; the agent writes the missing
 // pieces after talking with the person. `findings` decide the exit code;
-// `advice` (areas setup has not mapped yet) never does.
+// `advice` (areas setup has not mapped yet; at session start, tidy and no-git) never does.
 const read = (root, file) => { try { return readFileSync(path.join(root, file), 'utf8'); } catch { return null; } };
 
 // Joycraft's own lines in AGENTS.md: one block between markers, the same for
@@ -188,6 +188,8 @@ export function checkWiring(root, { hosts } = {}) {
   return { wired: findings.length === 0, findings, advice };
 }
 
+const noGitRule = /^\s*[-*] No Git\b/m;
+
 export async function main(argv = process.argv.slice(2)) {
   const index = argv.indexOf('--root');
   if (!(argv.length === 0 || (argv.length === 2 && index === 0))) throw new Error('Usage: wiring.mjs [--root <project>]');
@@ -200,6 +202,12 @@ export async function main(argv = process.argv.slice(2)) {
     const tidy = tidyAdvice({ root });
     if (tidy) result.advice.push(tidy);
   } catch { /* no tidy advice */ }
+  // Git advice: submit and the small-job close need a commit. Advice only, never a finding.
+  // A `- No Git` line in AGENTS.md records the user's no, so the advice stops.
+  try {
+    const { gitState } = await import('./kickoff.mjs');
+    if (!noGitRule.test(read(root, 'AGENTS.md') ?? '') && !gitState(root).commit) result.advice.push({ check: 'no-git', path: '.', detail: 'This folder is not a Git repository with a commit, so submit stops and a small job cannot close in one commit.', fix: 'Settle Git once, as step 2 of .joycraft/references/setup.md says.' });
+  } catch { /* no Git advice */ }
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (!result.wired) process.exitCode = 2;
   return result;
