@@ -8,7 +8,7 @@ compatibility: Guarded review and completion require Node.js 22+, the installed 
 
 Use this skill to carry out already-authorized specs in `docs/features/<slug>/specs/.joycraft-spec-queue.json`. A small job (the `Work` line in `AGENTS.md`) has no queue and does not use this skill.
 
-Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec, the parent brief, the selected spec, and its declared verification inputs before changing code. Reuse current decisions and context; record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision. Do not require a new interview for settled work.
+Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec, the parent brief, the selected spec, and its declared verification inputs before changing code. Record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision.
 
 For a change across state, data or producer/consumer boundaries, inspect the
 counterpart code and owning decisions, and add them to the exact verification
@@ -120,8 +120,7 @@ opens the PR) and read CI once, on the PR, after session end's push. After a
 second red CI run, stop and report.
 
 After review and completion, continue with the next ready authorized spec.
-When no spec can start, that is, each remaining spec is held or waits on a
-held spec, run `$joycraft-session-end` without waiting for the user.
+When no spec can start (each one held or waiting on a held spec), run `$joycraft-session-end` without waiting for the user.
 Report blockers and the next action first, then measured progress. Tell the user
 when a run stops or planned work is omitted, with the reason and retained state;
 explain any needed external setting and its effect. Give each concise stage
