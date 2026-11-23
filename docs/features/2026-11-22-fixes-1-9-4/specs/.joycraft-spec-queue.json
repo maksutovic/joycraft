@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-reopen.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -90,13 +90,16 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-23T06:21:28.781Z"
       }
     },
     {
       "id": 2,
       "file": "02-isolation-warning.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -138,13 +141,16 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-23T06:21:28.829Z"
       }
     },
     {
       "id": 3,
       "file": "03-field-text.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -220,6 +226,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-23T06:21:28.874Z"
       }
     },
     {

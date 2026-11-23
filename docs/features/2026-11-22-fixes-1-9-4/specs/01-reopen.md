@@ -1,6 +1,6 @@
 ---
 id: 1
-status: todo
+status: in-review
 ---
 # Reopen a done spec whose accepted input changed
 
