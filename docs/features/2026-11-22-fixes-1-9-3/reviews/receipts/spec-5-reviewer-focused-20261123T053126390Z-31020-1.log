@@ -1,0 +1,18 @@
+
+> joycraft@1.9.3 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3
+> vitest tests/runtime-archive-merge-amendment.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3[39m
+
+ [32m✓[39m tests/runtime-archive-merge-amendment.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 4370[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:merge-keeps-parent-brief] a --no-ff merge into a main without the brief needs no amendment record [33m 1187[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:merge-changes-brief] a merge whose brief differs from every parent still needs its own record [33m 1805[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:spec-5-1] a missing amendment record names each later commit with its hashes and the reference that shows the record [33m 1378[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 21:31:30
+[2m   Duration [22m 4.55s[2m (transform 114ms, setup 0ms, collect 22ms, tests 4.37s, environment 0ms, prepare 43ms)[22m
+
+joycraft-evidence: {"wallMs":5602,"load":[35.9150390625,36.48193359375],"cores":14,"loaded":true,"argv":["pnpm","test","tests/runtime-archive-merge-amendment.test.ts"],"exitCode":0,"timedOut":false,"revision":"e98f7b96a5c5e19a306121373758a3f6b816778a","dirty":true,"env":["VITEST_MAX_FORKS","VITEST_MIN_FORKS"]}

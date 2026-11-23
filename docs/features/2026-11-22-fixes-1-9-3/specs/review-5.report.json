@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "e98f7b96a5c5e19a306121373758a3f6b816778a",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+    "specId": 5,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md",
+    "criteria": [
+      {
+        "id": "spec-5-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "amendment-message",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "0af7f4e656db9715879d68b89c64b6be2debc2a35ec588c183133f178bc5c9b9",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "088b50dfc70df21bad3ae9c404a612931e56c81e09bea42b9dac87f7c0407b59",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md",
+        "kind": "requirement",
+        "sha256": "0f20224724fbe821e0113b8c6287d6a4a7d7a905f2bbad18fba3e374a2e54de5",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "d662ed35ebe19a54d39b8fd3567b992b2773510b2ea5ee423366937cd6c24e47",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-merge-amendment.test.ts",
+        "kind": "check",
+        "sha256": "8d506ce161e748b2a43899d4e5d80f75a645bd28fb7809b0beac42f6117ddba9",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          5
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+          "anchors": [
+            "amendment-message",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "fdb555d612b775f44c37a437737720b0623ba25c95c9c250e854b97c7c56febf"
+  },
+  "implementerSessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b"
+  },
+  "reviewer": {
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+    "actor": {
+      "host": "claude",
+      "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+      "agentId": "ad7e45f12055275a6"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-spec-5-1",
+      "subjectIdentity": "fdb555d612b775f44c37a437737720b0623ba25c95c9c250e854b97c7c56febf",
+      "criteria": [
+        "spec-5-1"
+      ],
+      "representativeInput": "Temporary Git repo from tests/runtime-archive-merge-amendment.test.ts: brief accepted on a feature branch, amended once; historicalRequirement called with no record, an empty record, then a matching record. Diff c519b3f..HEAD of archive.mjs and the test read.",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-5-1] passed (3 tests, exit 0). The test builds a feature branch whose brief is accepted then amended once, and asserts: with no record, historicalRequirement throws 'no docs/features/f/brief-amendments.json records its amendments; add one entry for each later brief commit, with the answered owner decision that authorized it, as .joycraft/references/archive.md shows for brief-amendments.json: <commit> (fromSha256 <hash v1>, toSha256 <hash v2>)', matching the spec's text; with an empty record it throws 'commit <commit> has no single amendment record; add one entry ... : <same entry>'; a record with those hashes and answered decision D1 then returns the amendment. Source read (payload/.joycraft/runtime/archive.mjs briefAmendments, diff c519b3f..HEAD): entryFor hashes committedBytes at commit^ and commit, the same bytes the later match check uses, so the printed hashes are the ones the record must carry; the list is joined with '; ' one item per later commit after merges that keep a parent's brief are filtered; the existing refusal paths (malformed record, hash mismatch, decision unanswered) are unchanged. The refusal itself is kept, as the brief's amendment-message section and the spec require; the existing merge-changes-brief test still matches its prefix and passes. Brief intent: keeping the refusal is right. A brief edit after acceptance changes what was reviewed; the refusal now tells the agent exactly what to record and cites archive.md, whose brief-amendments.json example has the same fields (commit, fromSha256, toSha256, decisions, summary), and it still demands an answered owner decision, so it cannot be cleared without the owner.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-5-reviewer-focused-20261123T053126390Z-31020-1.log",
+              "sha256": "1f8e4878a0bfc56e06d04cb750e60c9fdd842bc468360af4dc16ac2c44d9fc02"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-merge-amendment.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused test only; project gate not rerun (implementer receipt docs/features/2026-11-22-fixes-1-9-3/receipts/spec-4-5-implementer-gate.log)."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md:13",
+      "summary": "Spec 5 and the brief amendment-message section did not exist at the base c519b3f; both were committed in 37c0fc6, after the code commit 4a9a049. Startup therefore lists tests/runtime-archive-merge-amendment.test.ts as undeclared and its class-1 line as addedAfterBase. The change only adds one test, and the acceptance bullet requires it, so it does not block. The fails-before receipt (receipts/spec-5-implementer-fails-before.log) records revision 443cb58 dirty, a commit after the fix, so it does not show which tree failed. Other undeclared files (runtime-dispatch-commands, runtime-evidence-receipt, text-worker-commands) belong to spec 4 and earlier specs in the range."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:118",
+      "summary": "When the brief does not exist at commit^ (deleted then re-added), entryFor prints the hash of an empty buffer as fromSha256; a record that copies it is then refused as not matching. Rare; the spec does not decide it."
+    },
+    {
+      "id": "f3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-archive-merge-amendment.test.ts:75",
+      "summary": "The test covers one later commit only; the \"one item per later commit\" joining with \"; \" is read in source, not exercised by a two-commit fixture."
+    },
+    {
+      "id": "f4",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/brief.md:20",
+      "summary": "This feature's own brief changed in 37c0fc6 after specs 1 and 2 were accepted, and its frontmatter has decisions: []. If archive needs brief history for this feature, the new refusal will ask for a brief-amendments.json entry with an answered owner decision that the brief does not record yet. Check at archive time; the added sections may sit outside specs 1 and 2 scoped anchors."
+    }
+  ],
+  "createdAt": "2026-11-23T05:32:50.215Z"
+}
