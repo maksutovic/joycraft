@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -11,8 +11,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.9.2",
-    "summary": "Fixes from the 1.9.1 reviews: a report that ran one part of a chained gate is refused, jsconfig, deno.json and pnpm-workspace.yaml need the gate again under the docs root, cleanup skips a check as not found only for its own command, and archive reads every line ending.",
+    "release": "1.9.3",
+    "summary": "Parallel worker dispatch fixes: a parallel implementer starts without hand-added workspace flags (or is told the exact command), each parallel worker gets one Joycraft worker tree and never host worktree isolation as well, and the coordinator says each stage update once.",
     "autoSafeEligible": false
   },
   "scripts": {
