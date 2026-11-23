@@ -56,8 +56,8 @@ describe('one worker home (1.9.3)', () => {
   const worktrees = read('.joycraft', 'references', 'worktrees.md');
 
   it('[AC:spec-2-1] parallel workers get a worktrees.mjs tree on every host and never the host isolation as well', () => {
-    expect(implement).toContain('own tree, including its build/cache state, on every host:');
-    expect(implement).toContain("Launch the worker without the host's worktree isolation (in Claude Code, no `isolation` on the Agent call) and name the printed `workerRoot` in its task.");
+    expect(implement).toContain('own tree and build/cache state, on every host:');
+    expect(implement).toContain('Launch its worker without host worktree isolation (Claude Code: no Agent `isolation`), naming the printed `workerRoot`.');
     expect(implement).not.toContain('when the host has no native worktree isolation');
     expect(worktrees).toContain('`worktrees.mjs` is the one home for worker trees on every host:');
     expect(worktrees).toContain('Never use both:');
@@ -72,6 +72,6 @@ describe('one worker home (1.9.3)', () => {
   });
 
   it('[AC:spec-2-3] each stage update is said once, not again after the dispatch', () => {
-    expect(implement).toContain('Give concise stage updates during long work, each once: after a dispatch, do not repeat what you said before it.');
+    expect(implement).toContain('Give each concise stage update once; never repeat pre-dispatch text after the dispatch.');
   });
 });

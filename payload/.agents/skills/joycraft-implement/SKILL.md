@@ -44,11 +44,10 @@ If another session holds the queue, stop and report the holder; use
 `node .joycraft/runtime/queue-check.mjs --queue <queue>`; act on each gap.
 
 For a spec marked `execution.parallel: true`, give each concurrent mutator its
-own tree, including its build/cache state, on every host:
-`node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <your-session-id>`;
-never invent another folder. Launch the worker without the host's worktree
-isolation (in Claude Code, no `isolation` on the Agent call) and name the printed
-`workerRoot` in its task. Its first action is the documented project bootstrap. Read [worker isolation](../../../.joycraft/references/worktrees.md)
+own tree and build/cache state, on every host:
+`node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <your-session-id>`.
+Launch its worker without host worktree isolation (Claude Code: no Agent
+`isolation`), naming the printed `workerRoot`. It first runs the project bootstrap. Read [worker isolation](../../../.joycraft/references/worktrees.md)
 when parallel work, integration, cleanup, or resource capacity is in play. If
 isolation cannot be obtained, replan the affected wave and set the current
 queue entry's `execution.parallel` to `false` before dispatch, recording why;
@@ -128,6 +127,6 @@ When no spec can start, that is, each remaining spec is held or waits on a
 held spec, run `$joycraft-session-end` without waiting for the user.
 Report blockers and the next action first, then measured progress. Tell the user
 when a run stops or planned work is omitted, with the reason and retained state;
-explain any needed external setting and its effect. Give concise stage updates
-during long work, each once: after a dispatch, do not repeat what you said before it. Never describe unavailable,
+explain any needed external setting and its effect. Give each concise stage
+update once; never repeat pre-dispatch text after the dispatch. Never describe unavailable,
 failed, or uninspected evidence as passing.
