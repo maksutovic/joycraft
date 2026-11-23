@@ -54,6 +54,7 @@ pnpm build && node dist/cli.js init /tmp/test-project --yes   # try the CLI as n
 | `docs/context/production-map.md` | Touching npm publishing, CI workflows or anything users install |
 | `docs/guides/releasing.md` | Changing release, version or publish behavior |
 | `docs/context/institutional-knowledge.md` | Looking for a convention or constraint the code does not show |
+| `docs/guides/benchmark-trial.md` | Running or changing the ride trial, the framework benchmark before a release |
 | `docs/context/dangerous-assumptions.md` | Before trusting a belief about this repo; add a row when one turns out false |
 
 **Records** (search them; do not read them at the start):
