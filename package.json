@@ -12,7 +12,7 @@
   ],
   "joycraft": {
     "release": "1.9.3",
-    "summary": "Parallel worker dispatch fixes: a parallel implementer starts without hand-added workspace flags (or is told the exact command), each parallel worker gets one Joycraft worker tree and never host worktree isolation as well, and the coordinator says each stage update once.",
+    "summary": "Parallel and review dispatch fixes: a parallel implementer starts without hand-added workspace flags, each worker gets one Joycraft tree and never host isolation too, a reviewer starts on the first try (--help, agent ID), and two refusals say what to fix.",
     "autoSafeEligible": false
   },
   "scripts": {
