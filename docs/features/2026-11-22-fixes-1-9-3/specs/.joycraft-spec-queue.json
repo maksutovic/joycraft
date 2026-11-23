@@ -273,7 +273,7 @@
         1,
         2
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -359,13 +359,16 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-23T05:29:14.524Z"
       }
     },
     {
       "id": 5,
       "file": "05-amendment-message.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -407,6 +410,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-23T05:29:14.582Z"
       }
     }
   ]
