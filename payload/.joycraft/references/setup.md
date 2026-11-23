@@ -165,9 +165,9 @@ user can decline; then continue as usual.
    scaffold, manifest or source file; no empty file; no dangling link; every
    existing guidance line kept.
 6. Show `kickoff.mjs summary --root .` and apply the user's corrections.
-7. Then write the first brief for the first outcome, with its "Done when"
-   settled. Choosing the stack and scaffolding the app are normal work after
-   that: a brief, specs and review.
+7. Then start the first outcome by the `Work` line in `AGENTS.md`: say its
+   path, and write its brief with the "Done when" lines. Choosing the stack and
+   scaffolding the app are normal work on that path.
 
 ## Review loop tools
 

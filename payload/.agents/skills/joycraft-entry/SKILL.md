@@ -1,8 +1,11 @@
 ---
 name: joycraft-entry
-description: Start any Joycraft work. After Joycraft is installed, when asked to "set up Joycraft", "check the context map", change Joycraft settings or remove Joycraft, read the project, interview the user and build the context map in AGENTS.md; then turn a repair, feature, or mixed request into a context-backed brief and the next useful action.
+description: Set up Joycraft or start a feature. After Joycraft is installed, when asked to "set up Joycraft", "check the context map", change Joycraft settings or remove Joycraft, read the project, interview the user and build the context map in AGENTS.md. Then turn a repair, feature, or mixed request into a context-backed brief and the next useful action.
 compatibility: Setup helpers require Node.js 22+ and the installed .joycraft runtime only when used; ordinary brief and context navigation has no project-stack prerequisite.
 ---
+
+A small job by the `Work` line in `AGENTS.md` does not use this skill and reads
+nothing here.
 
 Run `node .joycraft/runtime/update-check.mjs check` first, once per session. If it
 prints nothing, say nothing. If it prints JSON, follow
@@ -75,7 +78,7 @@ feature's interview: put them in the note of a settled brief decision and write
 the feature's `waiver.json` naming that decision, before any review runs
 (`.joycraft/references/completion.md`). A `no-review` waiver blocks reviewer
 dispatch for the feature. Never propose or ask about one, and never carry it
-into the next feature.
+into the next feature. A small job has no code review. Its look is its review.
 
 **Feature sessions stay quiet about the review loop.** A feature interview
 asks nothing about review tools: read the recorded `## Review loop` and write
@@ -130,10 +133,6 @@ Choose the next action from what is missing: inspect code for facts, use
 `joycraft-decompose` for understood authorized work. Ask a short contextual
 question only when its consequential answer is absent; typically one choice is
 enough. Do not ask again for settled intent or routine implementation refinements.
-For a small authorized tooling repair or content operation, use the project's
-existing direct path when it fits the request. Do not turn routine data entry
-into a code-spec factory or create per-record plans when an approved batch tool
-already owns the operation. Preserve its validation, approval and readback rules.
 
 Use `joycraft-context` when you need to find relevant project files beyond the
 context map. Its deterministic search provides pointers; read the selected

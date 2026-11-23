@@ -6,7 +6,7 @@ compatibility: Guarded review and completion require Node.js 22+, the installed 
 
 # Joycraft Implement
 
-Use this skill to carry out already-authorized specs in `docs/features/<slug>/specs/.joycraft-spec-queue.json`.
+Use this skill to carry out already-authorized specs in `docs/features/<slug>/specs/.joycraft-spec-queue.json`. A small job (the `Work` line in `AGENTS.md`) has no queue and does not use this skill.
 
 Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec, the parent brief, the selected spec, and its declared verification inputs before changing code. Reuse current decisions and context; record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision. Do not require a new interview for settled work.
 

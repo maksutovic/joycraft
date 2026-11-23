@@ -22,6 +22,13 @@ const oldBlock = [
   '<!-- /joycraft:managed -->',
 ].join('\n');
 
+// The five-line block that 1.9.x generated, before the Work line (sl1-01).
+const fiveLineBlock = [
+  ...oldBlock.split('\n').slice(0, -1),
+  `- ${sentence}`,
+  '<!-- /joycraft:managed -->',
+].join('\n');
+
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
@@ -50,6 +57,9 @@ describe('trust sentence in the managed block', () => {
     const findings = managedFindings(run('--root', stale).stdout);
     expect(findings).toHaveLength(1);
     expect(findings[0]).toMatchObject({ path: 'AGENTS.md', line: 3, detail: expect.stringContaining('differs') });
+    const fiveLine = managedFindings(run('--root', fixture(fiveLineBlock)).stdout);
+    expect(fiveLine).toHaveLength(1);
+    expect(fiveLine[0]).toMatchObject({ path: 'AGENTS.md', line: 3, detail: expect.stringContaining('differs') });
     const current = fixture(run('block').stdout.trimEnd());
     expect(managedFindings(run('--root', current).stdout)).toEqual([]);
   });

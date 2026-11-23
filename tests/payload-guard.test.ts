@@ -384,7 +384,9 @@ describe('shipped payload text', () => {
     // [AC:spec-2-1] 1.9.3 cut the Claude native-isolation recipe and its hook note from worktrees.md too.
     expect(bundle.read('.joycraft/references/worktrees.md')).not.toMatch(/WorktreeCreate/);
     expect(bundle.read('.agents/skills/joycraft-testing/SKILL.md')).not.toMatch(/sized like neighboring tests/);
-    expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(12201);
+    // sl1-01 added the 17-word small-job scope line to the implement skill. The cut still holds against the
+    // count before spec 1 plus that line; EVERY_SPEC_CAP stays the limit for new every-spec text.
+    expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(12201 + 17);
   });
 
   it('every relative link and named reference or runtime path is shipped', () => {

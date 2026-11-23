@@ -15,6 +15,7 @@ const read = (root, file) => { try { return readFileSync(path.join(root, file), 
 // every project. This is the one definition. The runtime prints it
 // (entry-check.mjs block) and checks it; the agent places it. A release that
 // changes Joycraft's lines changes this text and nothing else in the file.
+// An entry can hold indented sub-items on its own lines (the `Work` line).
 export const managedOpen = '<!-- joycraft:managed -->';
 export const managedClose = '<!-- /joycraft:managed -->';
 const managedLines = [
@@ -23,6 +24,13 @@ const managedLines = [
   'A Context Map row that matches your next step binds: read that page first, and again after a compaction or in a new agent. A record (a log or history) is an audit trail: search it to learn why or when; do not read it at the start.',
   'When a fact here disagrees with the code, trust the code and report it. A rule holds even when the code breaks it.',
   'Search the mapped pages first. A doc that no map row reaches is working material, not current truth.',
+  [
+    'Work: before you change code, say `Path: small job` or `Path: feature`.',
+    '  - Small job: it fits one session, needs no owner answer you cannot assume, and has no migration, auth, payment, deploy or public-API change. A time limit from the user means this path. Write `docs/features/<slug>/brief.md` (the features folder in `joycraft.yaml` when set): the user\'s request word for word, then "Done when" lines, each a state or input with its expected result. The first line gives the one answer the whole screen or output shows when its parts disagree. Write each guess as an `Assumed:` line. Do not ask. Build no page for this brief. Build, and check each line with a test or by looking at the running result.',
+    '  - Look, before you close: give a fresh agent (Claude Code: agent type `joycraft-look`) only the user\'s words and renders of the default state and one mixed state. Give it no brief and no code. Ask: "Quote any two statements on this screen that disagree about the main answer, or reply OK. At most 8 lines." Two such quotes block the close: fix, then look again one time. Its other remarks are notes. With no separate agent, read the renders yourself and say the look was not independent.',
+    '  - Close in one commit (no Git: say so). Mark each line with its check (`test: <file>` or `seen: <render>`) and the look result. Update the mapped page that the change makes stale, with how to run and look at the result. Add a trap you hit to the traps page. Put a standing instruction from the user under `## Rules` in their words. Move the brief folder to `docs/archive/<slug>/`. Final message: the path, "N of N lines checked", the look result, and that no code review ran.',
+    '  - Feature: all other work, or when the user asks for the full loop: use the `joycraft-entry` skill. A small job becomes a feature when it needs an owner answer, meets one of those changes, or fails the same check twice: keep the brief and add specs.',
+  ].join('\n'),
 ];
 export const managedBlock = [managedOpen, ...managedLines.map(line => `- ${line}`), managedClose].join('\n');
 // The command that every version of Joycraft's first-action line names.
