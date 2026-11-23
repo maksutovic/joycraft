@@ -53,8 +53,7 @@ declared input hashes, prepares and binds the current packet, and writes it to a
 project-relative parent directory. Write packets and subjects under
 `.joycraft/local/packets/` so they do not become unrelated scope paths; startup
 creates that directory and refuses an output Git would track, so do not create
-or check it yourself. For an auto-created worktree whose
-path is unknown until launch, the child bootstraps and starts from its actual
+or check it yourself. The child bootstraps and starts from its actual worker
 root before mutation; never start against a guessed path:
 
 ```sh
@@ -72,7 +71,9 @@ node .joycraft/runtime/dispatch-start.mjs \
 
 `--coordinator-session` is required while the queue has a coordinator lease
 (`coordinator.mjs claim`) and must equal the holder; startup output then names
-the coordinator. Omit it only for an unclaimed queue.
+the coordinator. Omit it only for an unclaimed queue. A parallel spec's startup
+reads `--coordinator`, `--parallel` and `--access` from its `worktrees.mjs`
+record or the lease; pass them only to override.
 
 Run each `git` command and each Joycraft runtime call (`node
 .joycraft/runtime/…`, `pnpm joycraft:…`) as its own plain shell

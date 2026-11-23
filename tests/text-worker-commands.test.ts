@@ -49,3 +49,29 @@ describe('worker commands text', () => {
     expect(readFileSync(join(dir, receipt), 'utf8')).toContain('workers=3');
   });
 });
+
+// Spec: docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md
+describe('one worker home (1.9.3)', () => {
+  const implement = read('.agents', 'skills', 'joycraft-implement', 'SKILL.md');
+  const worktrees = read('.joycraft', 'references', 'worktrees.md');
+
+  it('[AC:spec-2-1] parallel workers get a worktrees.mjs tree on every host and never the host isolation as well', () => {
+    expect(implement).toContain('own tree, including its build/cache state, on every host:');
+    expect(implement).toContain("Launch the worker without the host's worktree isolation (in Claude Code, no `isolation` on the Agent call) and name the printed `workerRoot` in its task.");
+    expect(implement).not.toContain('when the host has no native worktree isolation');
+    expect(worktrees).toContain('`worktrees.mjs` is the one home for worker trees on every host:');
+    expect(worktrees).toContain('Never use both:');
+    for (const gone of ['isolation: "worktree"', 'worktree.baseRef', '.worktreeinclude', 'WorktreeCreate']) expect(worktrees).not.toContain(gone);
+    expect(dispatch).not.toContain('auto-created worktree');
+    expect(dispatch).toContain("A parallel spec's startup reads `--coordinator`, `--parallel` and `--access` from its `worktrees.mjs` record or the lease; pass them only to override.");
+  });
+
+  it('[AC:spec-2-2] the implementer runs each command in a named worker root with one cd prefix', () => {
+    expect(agents.implementer).toContain("When the task names a worker root that is not your shell's folder, run each command as `cd <worker-root> && <one command>`: no worktree isolation is active, so this is the one allowed compound form.");
+    expect(agents.implementer).toContain("which worktree isolation refuses. Paste the startup output's `commands`.");
+  });
+
+  it('[AC:spec-2-3] each stage update is said once, not again after the dispatch', () => {
+    expect(implement).toContain('Give concise stage updates during long work, each once: after a dispatch, do not repeat what you said before it.');
+  });
+});
