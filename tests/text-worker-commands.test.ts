@@ -114,3 +114,11 @@ describe('reviewer reading (sl2-06b)', () => {
     for (const gone of ['references/completion.md', 'contracts/types.d.ts', 'references/dispatch.md']) expect(agents.reviewer).not.toContain(gone);
   });
 });
+
+// Spec: .joycraft/local/loop/iter2/chair.md, sl2-06 part d (look before submit).
+describe('look before submit (sl2-06d)', () => {
+  it('[AC:sl2-06d-look] the implement skill runs the Look bullet before submit on a spec that changes what a user sees', () => {
+    const implement = read('.agents', 'skills', 'joycraft-implement', 'SKILL.md');
+    expect(implement).toContain('Before `submit` on a spec that changes what a user sees, run the Look bullet in `AGENTS.md`. When the implementation is finished, set it `in-review`');
+  });
+});

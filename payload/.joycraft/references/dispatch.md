@@ -51,7 +51,7 @@ Use the child command for ordinary new work. After the host launches a worker,
 the worker runs startup from its actual root before any change. Startup derives
 the queue, spec, brief (or `--brief`) and input hashes, then writes the bound
 packet. Keep packets and subjects under `.joycraft/local/packets/`: startup
-creates that folder and refuses an output Git would track.
+creates that folder and refuses an output that Git tracks.
 
 ```sh
 node .joycraft/runtime/dispatch-start.mjs --queue <queue-path> --spec <id> \

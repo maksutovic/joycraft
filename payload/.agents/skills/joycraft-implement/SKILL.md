@@ -49,7 +49,7 @@ isolation cannot be obtained, replan the affected wave and set the current
 queue entry's `execution.parallel` to `false` before dispatch, recording why;
 then run it serially. Otherwise leave it unstarted.
 
-Implement the spec; run checks and any relevant rendered inspection as you go, in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Tests come from the spec, tagged `[AC:<criterion-id>]`. Add a test only when it can fail for a reason no existing test can; one test may carry several `[AC:]` tags and cover several checks; extend the existing test file first. A new acceptance test runs once and fails before the code exists; its receipt comes first. Do not commit tests of one-off run state. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
+Implement the spec; run checks and any relevant rendered inspection as you go, in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Tests come from the spec, tagged `[AC:<criterion-id>]`. Add a test only when it can fail for a reason no existing test can; one test may carry several `[AC:]` tags and cover several checks; extend the existing test file first. A new acceptance test runs once and fails before the code exists; its receipt comes first. Do not commit tests of one-off run state. Before `submit` on a spec that changes what a user sees, run the Look bullet in `AGENTS.md`. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
 
 Honor the queue's commit mode. In `batch`, commit and review the independent ready
 wave at its boundary before advancing its dependents; do not wait for an entire
@@ -65,8 +65,9 @@ At the review boundary, invoke `$joycraft-verify`. Use the single native
 verify worker delivery, prepare and bind the bounded packet. Supply only
 observed host capabilities and raw current sources, including coupled
 sources discovered during implementation; never a desired verdict or reasoning.
-It needs actual host session/agent identity and available current authority
-as described in [dispatch guidance](../../../.joycraft/references/dispatch.md).
+It needs the actual host session identity, as described in
+[dispatch guidance](../../../.joycraft/references/dispatch.md). Keep packets and
+subjects under `.joycraft/local/packets/`, not among reviewed sources.
 When `submit` warns that a done spec's accepted input changed, run the printed
 `completion.mjs reopen` for that spec and review it again.
 If a separate review context/capability is unavailable, leave the spec
