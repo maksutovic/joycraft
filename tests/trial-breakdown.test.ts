@@ -22,6 +22,7 @@ import {
   procedureLabel,
   runtimeCallCount,
   stripHeredocs,
+  STUBS_SOURCE,
   usageCost,
   waitClass,
   writtenFiles,
@@ -519,6 +520,19 @@ describe('the look result', () => {
     expect(joined.looks[0].reply).toBe(TWO_QUOTES);
     expect(joined.milestones.lookEnd).toBe(1);
     expect(writeLookRun(root, 'unjoined-r1', ASYNC_NOTE, { text: 'OK', toolUseId: 'other' }).look).toBe('no result');
+  });
+});
+
+describe('the stub check', () => {
+  it('counts a fake fetch passed as an argument as a stubbed source', () => {
+    expect(STUBS_SOURCE.test('const c = await getConditions({ now, fetch: f });')).toBe(true);
+    expect(STUBS_SOURCE.test('await loadTides(station, { fetchImpl: async () => ({ ok: true }) });')).toBe(true);
+    expect(STUBS_SOURCE.test('getForecast({ tideFetcher: fakeTides })')).toBe(true);
+  });
+  it('does not count a type or the real fetch passed through', () => {
+    expect(STUBS_SOURCE.test('type Deps = { fetch: typeof fetch };')).toBe(false);
+    expect(STUBS_SOURCE.test('getConditions({ fetch: globalThis.fetch })')).toBe(false);
+    expect(STUBS_SOURCE.test('getConditions({ fetch })')).toBe(false);
   });
 });
 

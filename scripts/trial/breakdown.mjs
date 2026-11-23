@@ -133,8 +133,9 @@ const BRIEF_FILE = /\/([^/\s]+)\/brief\.md$/;
 export const TONE_LINE = /\b(?:feel|feels|tone|fun|silly|playful|tongue|cheek|cheeky|joke|jokey|humou?r|funny|whims\w*|cheerful|friendly|calm|delight\w*)\b/i;
 /** A Done-when line about an input that is missing or fails. */
 export const MISSING_INPUT_LINE = /\b(?:missing|fails?|failed|unavailable|not available|denied|offline|unreachable|errors?|no (?:data|location|network|response)|empty|times? out)\b/i;
-/** A test that stubs an outside source. */
-export const STUBS_SOURCE = /\bvi\.(?:fn|mock|spyOn|stubGlobal)\b|\bjest\.(?:fn|mock|spyOn)\b|\bmock(?:Resolved|Rejected|Implementation|ReturnValue)\w*\(|\bnock\(|\bmsw\b|\b(?:globalThis|global|window)\.fetch\s*=|\bfetch\s*=\s*(?:async|\()|\bstubGlobal\b/;
+/** A test that stubs an outside source: a mock library, a replaced global fetch,
+ *  or a fake fetch passed in as an argument (`getConditions({ fetch: stub })`). */
+export const STUBS_SOURCE = /\bvi\.(?:fn|mock|spyOn|stubGlobal)\b|\bjest\.(?:fn|mock|spyOn)\b|\bmock(?:Resolved|Rejected|Implementation|ReturnValue)\w*\(|\bnock\(|\bmsw\b|\b(?:globalThis|global|window)\.fetch\s*=|\bfetch\s*=\s*(?:async|\()|\bstubGlobal\b|\b(?:fetch|fetchImpl|fetchFn|fetcher|\w+Fetch(?:er|Fn|Impl)?)\s*:\s*(?!typeof\b|(?:globalThis\.|global\.|window\.)?fetch\b)[\w(]/;
 
 const round = (value, places = 2) => Number(value.toFixed(places));
 const minutes = ms => ms / 60000;
