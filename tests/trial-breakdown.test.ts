@@ -7,8 +7,11 @@ import {
   breakdownRun,
   budgetVerdict,
   callKind,
+  handBackReport,
+  lookOutcome,
   PROCEDURE_PATTERNS,
   procedureLabel,
+  runtimeCallCount,
   stripHeredocs,
   usageCost,
 } from '../scripts/trial/breakdown.mjs';
@@ -42,6 +45,17 @@ const result = (ts: number, id: string, text: string, isError = false) => ({
   type: 'user', timestamp: at(ts), message: { role: 'user', content: [{ type: 'tool_result', tool_use_id: id, content: text, is_error: isError }] },
 });
 const userText = (ts: number, text: string) => ({ type: 'user', timestamp: at(ts), message: { role: 'user', content: text } });
+// The host never returns a bare report: it wraps it in this frame, indents it two
+// spaces, and adds the agent id and usage. Some results start with a tools line.
+const handBack = (report: string, toolsLine = false) => [
+  ...(toolsLine ? ['  <tools-used-before-summary>Read</tools-used-before-summary>', '  '] : []),
+  '[Subagent hand-back] The text below is the final report of a subagent this session delegated to. The report follows:',
+  ...report.split('\n').map(line => `  ${line}`),
+  "agentId: alook (use SendMessage with to: 'alook', summary: '<5-10 word recap>' to continue this agent)",
+  '<usage>subagent_tokens: 1200\ntool_uses: 1\nduration_ms: 24000</usage>',
+].join('\n');
+const ASYNC_NOTE = 'Async agent launched successfully.\nagentId: alook (internal ID)\nThe agent is working in the background.';
+const TWO_QUOTES = '"Ride today: YES" disagrees with "Wind 40 km/h: stay home".';
 
 function writeFixture(root: string) {
   const run = join(root, 'demo-r1');
@@ -73,7 +87,7 @@ function writeFixture(root: string) {
     call(B + 120_000, 100, [toolUse('t4', 'Read', { file_path: '/p/.tmp/shots/default.png' })]),
     result(B + 121_000, 't4', '[image]'),
     call(B + 180_000, 200, [toolUse('t5', 'Agent', { subagent_type: 'joycraft-look', description: 'Look', prompt: '...' })]),
-    result(B + 210_000, 't5', 'OK'),
+    result(B + 210_000, 't5', handBack('OK')),
     call(B + 240_000, 100, [toolUse('t6', 'Bash', { command: 'node .joycraft/runtime/status.mjs --bad' })]),
     result(B + 241_000, 't6', 'Status stopped: Usage: status.mjs [--root <project>]', true),
     call(B + 300_000, 200, [toolUse('t7', 'Bash', { command: "git mv docs/features/ride docs/archive/ride && git commit -q -m 'feat: ride'" })]),
@@ -81,7 +95,7 @@ function writeFixture(root: string) {
     call(B + 330_000, 300, [{ type: 'text', text: 'Path: small job. 3 of 3 lines checked. Look: OK. No code review ran.' }]),
   ]));
   const subDir = join(run, 'transcripts', 'S1', 'subagents');
-  put(join(subDir, 'agent-alook.meta.json'), JSON.stringify({ agentType: 'joycraft-look', model: 'claude-haiku-4-5' }));
+  put(join(subDir, 'agent-alook.meta.json'), JSON.stringify({ agentType: 'joycraft-look', model: 'claude-haiku-4-5', toolUseId: 't5' }));
   put(join(subDir, 'agent-alook.jsonl'), lines([
     userText(B + 181_000, 'The user asked: ... Render: .tmp/shots/default.png'),
     call(B + 190_000, 50, [toolUse('s1', 'Read', { file_path: '/p/.tmp/shots/default.png' })], subUsage, 'msg_s1', 'claude-haiku-4-5'),
@@ -191,12 +205,12 @@ describe('the fixture trace', () => {
     ]);
   });
 
-  it('[AC:sl1-04] gives the milestones in active minutes from the phase start', () => {
+  it('[AC:sl1-04] gives the milestones in wall minutes inside turns from the phase start', () => {
     expect(report.phases.build.milestones).toEqual({
       firstCodeWrite: 0.5,
       firstRenderOpened: 2,
       lookStart: 3,
-      lookEnd: 3.5,
+      lookEnd: 3.42,
       closeCommit: 5,
     });
   });
@@ -222,6 +236,74 @@ describe('the fixture trace', () => {
     expect(budgetVerdict({ calls: 7, output: 100 }).verdict).toBe('FAIL');
     expect(budgetVerdict({ calls: 6, output: 6_001 }).verdict).toBe('FAIL');
     expect(budgetVerdict({ calls: 6, output: 6_000 }).verdict).toBe('PASS');
+  });
+});
+
+/** A one-call build with a look: the Agent tool result, and optionally the look's own transcript. */
+function writeLookRun(root: string, name: string, toolResult: string, own?: { text: string; toolUseId: string }) {
+  const run = join(root, name);
+  put(join(run, 'events.jsonl'), lines([
+    { at: at(T0), event: 'setup-done' },
+    { at: at(T0 + 1_000), event: 'turn-start', turn: 1, session: 1 },
+    { at: at(T0 + 121_000), event: 'turn-end', turn: 1, session: 1, endedAt: at(T0 + 121_000), activeMs: 120_000, cost: 0 },
+  ]));
+  put(join(run, 'transcripts', 'S1.jsonl'), lines([
+    userText(T0 + 2_000, 'Build the app.'),
+    call(T0 + 31_000, 100, [toolUse('look1', 'Agent', { subagent_type: 'joycraft-look', description: 'Look', prompt: '...' })]),
+    result(T0 + 33_000, 'look1', toolResult),
+  ]));
+  if (own) {
+    const subDir = join(run, 'transcripts', 'S1', 'subagents');
+    put(join(subDir, 'agent-alook.meta.json'), JSON.stringify({ agentType: 'joycraft-look', toolUseId: own.toolUseId }));
+    put(join(subDir, 'agent-alook.jsonl'), lines([
+      userText(T0 + 32_000, 'The user asked: ...'),
+      call(T0 + 61_000, 50, [{ type: 'text', text: own.text }], subUsage, `msg_${++n}`, 'claude-haiku-4-5'),
+    ]));
+  }
+  return breakdownRun(run).phases.build;
+}
+
+describe('the look result', () => {
+  it('[AC:sl1-04] removes the host frame from a hand-back report', () => {
+    expect(handBackReport(handBack('OK'))).toBe('OK');
+    expect(handBackReport(handBack(`${TWO_QUOTES}\nNote: the icon is small.`, true))).toBe(`${TWO_QUOTES}\nNote: the icon is small.`);
+    expect(lookOutcome(handBack('OK', true))).toBe('OK');
+    expect(lookOutcome(handBack('**OK.** Nothing disagrees.'))).toBe('OK');
+    expect(lookOutcome(handBack(TWO_QUOTES))).toBe('quotes');
+  });
+
+  it('[AC:sl1-04] reads OK and quotes from the framed tool result when no look transcript matches', () => {
+    expect(writeLookRun(root, 'frame-ok-r1', handBack('OK')).look).toBe('OK');
+    expect(writeLookRun(root, 'frame-quotes-r1', handBack(TWO_QUOTES, true)).look).toBe('quotes');
+  });
+
+  it("[AC:sl1-04] reads the look's own last text block, joined by toolUseId, and ends the look there", () => {
+    const joined = writeLookRun(root, 'joined-r1', ASYNC_NOTE, { text: TWO_QUOTES, toolUseId: 'look1' });
+    expect(joined.look).toBe('quotes');
+    expect(joined.milestones.lookEnd).toBe(1);
+    expect(writeLookRun(root, 'unjoined-r1', ASYNC_NOTE, { text: 'OK', toolUseId: 'other' }).look).toBe('no result');
+  });
+});
+
+describe('the run checks', () => {
+  it('[AC:sl1-04] counts runtime calls in sub-folders and through a variable set to the runtime folder', () => {
+    expect(runtimeCallCount('node .joycraft/runtime/artifacts/cli.mjs build')).toBe(1);
+    expect(runtimeCallCount('R=.joycraft/runtime; node $R/status.mjs && node ${R}/gate.mjs')).toBe(2);
+    expect(runtimeCallCount('node .joycraft/runtime/x.mjs && node $HOME/tool.mjs')).toBe(1);
+    expect(runtimeCallCount('node $R/status.mjs')).toBe(0);
+  });
+
+  it('[AC:sl1-04] warns when a run has no setup-done event', () => {
+    const run = join(root, 'nosetup-r1');
+    put(join(run, 'events.jsonl'), lines([
+      { at: at(T0), event: 'turn-start', turn: 1, session: 1 },
+      { at: at(T0 + 60_000), event: 'turn-end', turn: 1, session: 1, endedAt: at(T0 + 60_000), activeMs: 60_000, cost: 0 },
+    ]));
+    put(join(run, 'transcripts', 'S1.jsonl'), lines([userText(T0 + 1_000, 'Build the app.')]));
+    const nosetup = breakdownRun(run);
+    expect(Object.keys(nosetup.phases)).toEqual(['setup']);
+    expect(nosetup.warnings[0]).toMatch(/no setup-done event/);
+    expect(report.warnings).toEqual([]);
   });
 });
 

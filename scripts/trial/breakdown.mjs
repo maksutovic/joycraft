@@ -9,10 +9,12 @@
 // - main and subagent calls, tokens and output, de-duplicated by message id;
 // - main calls split into product and procedure by PROCEDURE_PATTERNS;
 // - each subagent: type, model, seconds, calls, cost;
-// - milestones (active minutes from the phase start): first code write, first
-//   render opened, look start and end, close commit;
+// - milestones (wall minutes inside the phase's turns, from the phase start):
+//   first code write, first render opened, look start and end, close commit;
 // - counts: runtime calls, `stopped:` refusals, commits, user messages;
-// - the path announced, whether the brief was closed, and the look result;
+// - the path announced, whether the brief was closed, and the look result
+//   (from the look's own transcript, joined by toolUseId, else from the
+//   hand-back report with the host frame removed);
 // - the budget verdict for a build: non-product main calls <= 6 and
 //   non-product output <= 6K tokens.
 //
@@ -55,7 +57,8 @@ export const PROCEDURE_PATTERNS = [
 
 const IMAGE = /\.(png|jpe?g|webp|gif)$/i;
 const SOURCE = /\.(tsx?|jsx?|mjs|cjs|css|scss|html|vue|svelte|py|go|rs|rb|java|kt|swift)$/i;
-const RUNTIME_CALL = /(?:\.joycraft\/runtime|\$\{?\w+\}?)\/[\w-]+\.mjs/g;
+const RUNTIME_DIR = /\.joycraft\/runtime/;
+const RUNTIME_VAR = /\b([A-Za-z_]\w*)=["']?[^\s;&|"']*\.joycraft\/runtime(?:["'\s;&|]|$)/g;
 const REFUSAL = /(?:^|\n)[A-Z][A-Za-z ]{0,40} stopped: /;
 const GIT_COMMIT = /\bgit\s+(?:-C\s+\S+\s+)?commit\b/;
 const PATH_LINE = /Path:\s*[`*]*\s*(small job|feature)\b/i;
@@ -73,8 +76,7 @@ export function stripHeredocs(command) {
 export function toolDescriptor(name, input = {}) {
   if (typeof input.command === 'string') return `${name} ${stripHeredocs(input.command)}`;
   const target = input.file_path ?? input.notebook_path ?? input.skill ?? input.subagent_type
-    ?? [input.pattern, input.path].filter(Boolean).join(' ')
-    ?? '';
+    ?? [input.pattern, input.path].filter(Boolean).join(' ');
   return `${name} ${target || input.url || input.query || input.description || ''}`.trim();
 }
 
@@ -175,7 +177,6 @@ export function readCalls(runDir, turns) {
   for (const source of transcriptFiles(runDir)) {
     const byId = new Map();
     const results = new Map();
-    const userTexts = [];
     let previousTs = null;
     for (const record of readJsonl(source.file)) {
       const ts = record.timestamp ? Date.parse(record.timestamp) : null;
@@ -185,14 +186,12 @@ export function readCalls(runDir, turns) {
             results.set(part.tool_use_id, { ts, text: resultText(part.content), isError: Boolean(part.is_error) });
           }
         }
-      } else if (record.type === 'user' && typeof record.message?.content === 'string') {
-        userTexts.push(record.message.content);
       }
       if (record.type === 'assistant' && record.message?.id) {
         const id = record.message.id;
         let call = byId.get(id);
         if (!call) {
-          call = { id, agent: source.agent, meta: source.meta, model: record.message.model, ts0: ts, ts1: ts, previousTs, tools: [], text: '', usage: null };
+          call = { id, agent: source.agent, meta: source.meta, model: record.message.model, ts0: ts, ts1: ts, previousTs, tools: [], text: '', lastText: null, usage: null };
           byId.set(id, call);
           calls.push(call);
         }
@@ -201,7 +200,7 @@ export function readCalls(runDir, turns) {
         if (usage && (!call.usage || (usage.output_tokens ?? 0) >= (call.usage.output_tokens ?? 0))) call.usage = usage;
         for (const block of record.message.content ?? []) {
           if (block.type === 'tool_use') call.tools.push({ id: block.id, name: block.name, input: block.input ?? {} });
-          if (block.type === 'text') call.text += block.text;
+          if (block.type === 'text') { call.text += block.text; call.lastText = block.text; }
         }
       }
       if (ts && (record.type === 'user' || record.type === 'assistant')) previousTs = ts;
@@ -223,12 +222,16 @@ export function readCalls(runDir, turns) {
   return calls;
 }
 
-/** Active minutes from the start of the phase to a time stamp. */
+/**
+ * Wall minutes inside the phase's turns, from the start of the phase to a time
+ * stamp. Gaps between turns do not count. One clock throughout: a milestone can
+ * be later than the phase's active minutes, because active time excludes waits.
+ */
 function phaseMinute(turns, phase, ts) {
   if (ts == null) return null;
   let minutes = 0;
   for (const turn of turns.filter(t => t.phase === phase)) {
-    if (ts > turn.end + 2000) { minutes += turn.activeMs / 60000; continue; }
+    if (ts > turn.end + 2000) { minutes += (turn.end - turn.start) / 60000; continue; }
     return round(minutes + Math.max(0, ts - turn.start) / 60000);
   }
   return round(minutes);
@@ -249,9 +252,50 @@ function isCodeWrite(tool) {
   return Boolean(file && SOURCE.test(file) && !/(^|\/)\.tmp\//.test(file) && !procedureLabel('Write', { file_path: file }));
 }
 
-function lookOutcome(text) {
-  const body = text.trim().replace(/^[*_`"'\s]+/, '');
+/** Runtime script calls in one Bash command: `.joycraft/runtime/...x.mjs`, or `$VAR/...x.mjs` where VAR is set to the runtime folder. */
+export function runtimeCallCount(command) {
+  if (!RUNTIME_DIR.test(command)) return 0;
+  const vars = [...command.matchAll(RUNTIME_VAR)].map(match => match[1]);
+  const roots = ['\\.joycraft\\/runtime', ...vars.map(name => `\\$\\{?${name}(?!\\w)\\}?`)];
+  const pattern = new RegExp(`(?:${roots.join('|')})(?:\\/[\\w.-]+)*\\/[\\w-]+\\.mjs`, 'g');
+  return (command.match(pattern) ?? []).length;
+}
+
+/**
+ * The subagent's own report inside an Agent tool result. The host wraps it: an
+ * optional `<tools-used-before-summary>` line, a `[Subagent hand-back]` frame
+ * that ends with `The report follows:`, the report indented two spaces, then an
+ * `agentId:` line and a `<usage>` block. Text without the frame comes back trimmed.
+ */
+export function handBackReport(text) {
+  const marker = 'The report follows:';
+  const at = text.indexOf(marker);
+  if (at < 0) return text.trim();
+  let body = text.slice(at + marker.length).replace(/^[^\n]*\n/, '');
+  const end = body.search(/^agentId: /m);
+  if (end >= 0) body = body.slice(0, end);
+  return body.split('\n').map(line => line.replace(/^ {2}/, '')).join('\n').trim();
+}
+
+/** OK when the look's report starts with OK; otherwise it quoted statements. */
+export function lookOutcome(text) {
+  const body = handBackReport(text).replace(/^[*_`"'\s]+/, '');
   return /^OK\b/.test(body) ? 'OK' : 'quotes';
+}
+
+/** The subagent calls that a tool use started, joined by the meta file's toolUseId. */
+function subagentCallsFor(calls, toolUseId) {
+  return calls.filter(call => call.agent !== 'main' && call.meta?.toolUseId === toolUseId);
+}
+
+/** The look's result and end time: its own last text block, else the hand-back report. */
+function lookFinding(calls, tool) {
+  const own = subagentCallsFor(calls, tool.id);
+  const report = [...own].reverse().find(call => call.lastText)?.lastText;
+  if (report != null) return { result: lookOutcome(report), end: Math.max(...own.map(call => call.endTs)) };
+  const text = tool.result?.text;
+  if (text == null || /^Async agent launched/.test(text.trim())) return { result: 'no result', end: null };
+  return { result: lookOutcome(text), end: tool.result.ts };
 }
 
 function closesBrief(tool) {
@@ -302,6 +346,7 @@ function subagentRows(calls) {
 
 /** The breakdown of one phase. */
 export function phaseBreakdown(turns, calls, phase) {
+  // `calls` holds every phase: a subagent call is joined to its Agent tool use by id.
   const phaseTurns = turns.filter(t => t.phase === phase);
   const phaseCalls = calls.filter(c => c.phase === phase);
   const main = phaseCalls.filter(c => c.agent === 'main');
@@ -320,8 +365,8 @@ export function phaseBreakdown(turns, calls, phase) {
   const mainCommits = commits.filter(({ call }) => call.agent === 'main');
   const texts = main.map(call => call.text).filter(Boolean);
 
-  const lookResults = looks.map(({ tool }) => (tool.result ? lookOutcome(tool.result.text) : 'no result'));
-  let look = lookResults.length ? lookResults.join(' then ') : null;
+  const lookFindings = looks.map(({ tool }) => lookFinding(calls, tool));
+  let look = lookFindings.length ? lookFindings.map(finding => finding.result).join(' then ') : null;
   if (!look && texts.some(text => NOT_INDEPENDENT.test(text))) look = 'not independent';
   const checked = [...texts].reverse().map(text => CHECKED_LINE.exec(text)).find(Boolean);
 
@@ -344,14 +389,13 @@ export function phaseBreakdown(turns, calls, phase) {
       firstCodeWrite: minute(firstCode?.call.ts1),
       firstRenderOpened: minute(firstRender?.call.ts1),
       lookStart: minute(looks[0]?.call.ts1),
-      lookEnd: minute(looks.at(-1)?.tool.result?.ts),
+      lookEnd: minute(lookFindings.at(-1)?.end ?? null),
       closeCommit: minute(mainCommits.at(-1)?.call.ts1),
     },
     counts: {
-      runtimeCalls: allTools.reduce((total, { tool }) => {
-        const command = tool.name === 'Bash' ? stripHeredocs(tool.input.command ?? '') : '';
-        return total + (command.includes('.joycraft/runtime') ? (command.match(RUNTIME_CALL) ?? []).length : 0);
-      }, 0),
+      runtimeCalls: allTools.reduce((total, { tool }) => (
+        total + (tool.name === 'Bash' ? runtimeCallCount(stripHeredocs(tool.input.command ?? '')) : 0)
+      ), 0),
       refusals: allTools.filter(({ tool }) => REFUSAL.test(tool.result?.text ?? '')).length,
       commits: commits.length,
       userMessages: phaseTurns.length,
@@ -378,8 +422,12 @@ export function breakdownRun(runDir) {
   for (const phase of ['setup', 'build', 's2']) {
     if (turns.some(t => t.phase === phase)) phases[phase] = phaseBreakdown(turns, calls, phase);
   }
+  const warnings = [];
+  if (turns.some(t => t.session === 1) && !turns.some(t => t.phase === 'build')) {
+    warnings.push('no setup-done event: all of session 1 counts as setup, so there is no build phase and no budget line');
+  }
   const run = path.basename(runDir);
-  return { run, arm: run.replace(/-r\d+$/, ''), phases };
+  return { run, arm: run.replace(/-r\d+$/, ''), phases, warnings };
 }
 
 /** Means per arm and phase of the main numbers. */
@@ -428,6 +476,7 @@ export function formatReport(runs) {
   const lines = [];
   for (const run of runs) {
     lines.push(`# ${run.run}`);
+    for (const warning of run.warnings ?? []) lines.push(`WARNING: ${warning}`);
     for (const [phase, b] of Object.entries(run.phases)) {
       lines.push(`## ${phase}: ${b.activeMinutes} min, ${money(b.cost)} (recorded ${money(b.recordedCost)}, residual ${b.residualPercent ?? '-'}%)`);
       lines.push(`- main: ${b.main.calls} calls, ${mega(b.main.tokens)} tokens, ${kilo(b.main.output)} output, ${money(b.main.cost)}`);
@@ -437,7 +486,7 @@ export function formatReport(runs) {
         lines.push(`  - ${s.type} (${s.model}): ${s.seconds} s, ${s.calls} calls, ${money(s.cost)}`);
       }
       const m = b.milestones;
-      lines.push(`- milestones (min): first code write ${show(m.firstCodeWrite)}, first render ${show(m.firstRenderOpened)}, look ${show(m.lookStart)} to ${show(m.lookEnd)}, close commit ${show(m.closeCommit)}`);
+      lines.push(`- milestones (wall min in turns): first code write ${show(m.firstCodeWrite)}, first render ${show(m.firstRenderOpened)}, look ${show(m.lookStart)} to ${show(m.lookEnd)}, close commit ${show(m.closeCommit)}`);
       const c = b.counts;
       lines.push(`- counts: ${c.runtimeCalls} runtime calls, ${c.refusals} refusals, ${c.commits} commits, ${c.userMessages} user messages`);
       lines.push(`- path: ${show(b.path)}; brief closed: ${b.briefClosed ? 'yes' : 'no'}; look: ${show(b.look)}; lines checked: ${show(b.linesChecked)}`);
