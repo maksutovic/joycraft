@@ -116,4 +116,17 @@ describe('parallel worker startup', () => {
     const rerun = spawnSync(process.execPath, [join(real, '.joycraft/runtime/dispatch-start.mjs'), ...args], { cwd: real, encoding: 'utf8' });
     expect(rerun.status, rerun.stderr).toBe(0);
   }, 60000);
+
+  // Spec: docs/features/2026-11-22-fixes-1-9-4/specs/02-isolation-warning.md
+  it('[AC:spec-2-1] worktrees.mjs create warns when a project agent type sets isolation: worktree', () => {
+    const { root } = project();
+    put(join(root, '.claude/agents/opus-implementer.md'), '---\nname: opus-implementer\nmodel: opus\nisolation: worktree\n---\nImplement.\n');
+    put(join(root, '.claude/agents/plain.md'), '---\nname: plain\n---\nMentions isolation: worktree in the body only.\n');
+    const created = node(root, 'worktrees.mjs', 'create', '--queue', queuePath, '--spec', '1', '--session', 'coord-1');
+    expect(created.status, created.stderr).toBe(0);
+    expect(JSON.parse(created.stdout).warnings).toEqual(['.claude/agents/opus-implementer.md sets isolation: worktree, so a worker launched as that agent type gets its own host worktree and cannot use this tree. Launch this worker as an agent type without it, such as joycraft-implementer or general-purpose.']);
+    rmSync(join(root, '.claude/agents/opus-implementer.md'));
+    const quiet = node(root, 'worktrees.mjs', 'create', '--queue', queuePath, '--spec', '2', '--session', 'coord-1');
+    expect(JSON.parse(quiet.stdout).warnings).toBeUndefined();
+  }, 60000);
 });
