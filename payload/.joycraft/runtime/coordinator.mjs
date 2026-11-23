@@ -99,6 +99,43 @@ export function queueFeature(root, queuePath) {
   return { feature: queue.feature, queuePath };
 }
 
+/** One word as a POSIX shell reads it: bare when it holds only safe
+ * characters, otherwise single-quoted with each embedded quote as '\''. */
+export function shellQuote(word) {
+  const text = String(word);
+  return /^[A-Za-z0-9_./:=@%+,-]+$/.test(text) ? text : `'${text.replace(/'/g, "'\\''")}'`;
+}
+
+/** HEAD of root, or null in a folder with no commit. */
+function headRevision(root) {
+  try { return execFileSync('git', ['rev-parse', '--verify', '-q', 'HEAD^{commit}'], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() || null; } catch { return null; }
+}
+
+/** The one command to run next on a queue: review an in-review spec (`prefer` first),
+ * else start the first ready todo spec, else read the queue's status. A claimed
+ * queue fills in its coordinator session; an unclaimed one leaves a placeholder. */
+export function nextCommand({ root = process.cwd(), queuePath, prefer }) {
+  queuePath = relativePath(queuePath);
+  const queue = parseJson(readLocal(root, queuePath), queuePath);
+  validateQueue(queue, { select: () => false });
+  const line = words => words.map(shellQuote).join(' ');
+  const done = new Set(queue.specs.filter(spec => spec.status === 'done').map(spec => spec.id));
+  const reviewing = queue.specs.filter(spec => spec.status === 'in-review');
+  const review = reviewing.find(spec => spec.id === prefer) ?? reviewing[0];
+  const ready = queue.specs.find(spec => spec.status === 'todo' && (spec.depends_on ?? []).every(id => done.has(id)));
+  const [spec, role] = review ? [review, 'reviewer'] : ready ? [ready, 'implementer'] : [];
+  if (!spec) return line(['node', '.joycraft/runtime/status.mjs', '--queue', queuePath]);
+  const lease = readLease(root, queue.feature);
+  return `${line(['node', '.joycraft/runtime/dispatch-start.mjs', '--queue', queuePath, '--spec', spec.id, '--role', role, ...(lease ? ['--coordinator-session', lease.sessionId] : [])])}${lease ? '' : ' --native-session <your-session-id>'}`;
+}
+
+/** Files changed since the lease's baseRevision (tracked, as `git diff --name-only`), or null when the queue's lease has none. */
+export function changedSinceBase(root, feature) {
+  const base = readLease(root, feature)?.baseRevision;
+  if (!nonempty(base)) return null;
+  try { return execFileSync('git', ['diff', '--name-only', base, '--'], { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).split('\n').filter(Boolean); } catch { return null; }
+}
+
 const isStale = (lease, now, staleMinutes) => now - Date.parse(lease.heartbeatAt) >= staleMinutes * 60_000;
 const holder = lease => `session ${lease.sessionId}${lease.host ? ` on ${lease.host}` : ''}`;
 
@@ -123,9 +160,11 @@ function claimLocked({ root = process.cwd(), queuePath, session, host, takeOver 
     const stale = isStale(current, now, staleMinutes);
     throw new Error(`Queue ${feature} is coordinated by ${holder(current)} (last heartbeat ${current.heartbeatAt}${stale ? ', stale' : ''}). Work under that session, or rerun with --take-over if it has ended.`);
   }
+  // The review subject is the diff since this base: the first claim records HEAD, a take-over keeps it.
+  const baseRevision = current?.baseRevision ?? headRevision(root);
   const lease = {
     schemaVersion: 1, feature, queuePath: queue, sessionId: session, ...(nonempty(host) ? { host } : {}),
-    root: path.relative(mainTree(root), realpathSync(root)) || '.', claimedAt: at, heartbeatAt: at,
+    root: path.relative(mainTree(root), realpathSync(root)) || '.', claimedAt: at, heartbeatAt: at, ...(baseRevision ? { baseRevision } : {}),
     ...(current ? { previous: { sessionId: current.sessionId, ...(current.host ? { host: current.host } : {}), heartbeatAt: current.heartbeatAt, stale: isStale(current, now, staleMinutes), takenOverAt: at } } : {}),
   };
   writeLease(root, feature, lease);
@@ -216,7 +255,7 @@ export async function main(argv = process.argv.slice(2)) {
   const [command, ...rest] = argv;
   const flags = {};
   for (let index = 0; index < rest.length; index += 1) {
-    if (rest[index] === '--take-over') { flags[rest[index]] = true; continue; }
+    if (rest[index] === '--take-over' || rest[index] === '--json') { flags[rest[index]] = true; continue; }
     if (rest[index] === '--file') { (flags['--file'] ??= []).push(rest[index + 1]); index += 1; continue; }
     flags[rest[index]] = rest[index + 1]; index += 1;
   }
@@ -225,13 +264,23 @@ export async function main(argv = process.argv.slice(2)) {
   requireValue(Number.isFinite(staleMinutes) && staleMinutes > 0, '--stale-minutes must be a positive number');
   const options = { root, queuePath: flags['--queue'], session: flags['--session'], staleMinutes };
   let result;
-  if (command === 'claim') result = claim({ ...options, host: flags['--host'], takeOver: flags['--take-over'] === true });
+  if (command === 'claim') {
+    result = claim({ ...options, host: flags['--host'], takeOver: flags['--take-over'] === true });
+    const { lease } = result;
+    // The default output is the short form; --json prints the whole lease.
+    const next = nextCommand({ root, queuePath: lease.queuePath });
+    if (flags['--json'] !== true) {
+      process.stdout.write(`${JSON.stringify({ ready: true, renewed: result.renewed, feature: lease.feature, sessionId: lease.sessionId, ...(lease.baseRevision ? { baseRevision: lease.baseRevision } : {}), next }, null, 2)}\n`);
+      return result;
+    }
+    result = { ...result, ready: true, next };
+  }
   else if (command === 'heartbeat') result = heartbeat(options);
   else if (command === 'release') result = release(options);
   else if (command === 'show') result = show(options);
   else if (command === 'gate-plan') result = gatePlan(options);
   else if (command === 'gate-owner') result = gateOwner({ ...options, files: flags['--file'] });
-  else throw new Error('Usage: coordinator.mjs claim --queue <queue> --session <id> [--host <host>] [--take-over] | heartbeat|release --queue <queue> --session <id> | show|gate-plan --queue <queue> | gate-owner --queue <queue> --file <path>... [--root <project>] [--stale-minutes <n>]');
+  else throw new Error('Usage: coordinator.mjs claim --queue <queue> --session <id> [--host <host>] [--take-over] [--json] | heartbeat|release --queue <queue> --session <id> | show|gate-plan --queue <queue> | gate-owner --queue <queue> --file <path>... [--root <project>] [--stale-minutes <n>]');
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   return result;
 }

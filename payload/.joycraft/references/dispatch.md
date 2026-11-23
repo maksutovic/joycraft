@@ -100,8 +100,8 @@ cause and the repair it tried. The coordinator tells the user at the first hold,
 in the conversation, while other workers keep running; it does not wait for the
 session end. The session-end summary lists every held spec again.
 
-A valid startup returns `hooks: { enabled: false, reason: "hooks-not-installed" }`
-and `ready: true`. It is not a cryptographic attestation.
+Startup prints `ready: true` and `next`; `--json` adds `hooks: { enabled: false,
+reason: "hooks-not-installed" }`. Neither is a cryptographic attestation.
 
 When the host reports a native agent ID, also pass `--implementer-host <host>
 --implementer-agent <actual-agent-id>`. A root session can pass

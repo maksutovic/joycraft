@@ -3,6 +3,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { journalPath, validateOwnerAcceptance, visibleReports } from './completion.mjs';
 import { workPaths } from './config.mjs';
+import { nextCommand } from './coordinator.mjs';
 import { readFooter } from './evidence.mjs';
 import { reviewRoundKey } from './dispatch-start.mjs';
 import { briefDecisionRecords, isObject, localPath, nonempty, parseJson, readLocal, sha256, snapshot, specStatus, validateQueue } from './identity.mjs';
@@ -171,7 +172,9 @@ export function projectStatus({ root = process.cwd(), fix = false, queue: only =
       return row;
     });
     const load = loadLine(root, receiptPaths(root, folder, queuePath, queue.specs));
-    features.push({ feature: queue.feature, queuePath, pendingJournal, specs, ...(load ? { load } : {}) });
+    let next = null;
+    try { next = nextCommand({ root, queuePath }); } catch { /* an unreadable lease leaves next empty */ }
+    features.push({ feature: queue.feature, queuePath, pendingJournal, specs, next, ...(load ? { load } : {}) });
     if (queue.specs.every(spec => spec.status === 'done')) readyToArchive.push({ feature: queue.feature, folder, openDecisions: openDecisions(root, folder) });
   }
   return { features, drift, fixed, readyToArchive, worktrees: worktreeCounts(root), problems, questions, unreadReports, legacyDecisions, openBriefs: openBriefs(root) };

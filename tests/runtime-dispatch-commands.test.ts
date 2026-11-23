@@ -385,7 +385,8 @@ describe('reviewer agent ID bound at finish (sl2-06c)', () => {
     expect(without.status).toBe(1);
     expect(without.stderr).toContain('An independent reviewer must have a distinct native actor; bind the agent ID from the launch result first: completion.mjs bind-reviewer');
     expect(status(root)).toBe('in-review');
-    const bound = finalize(root, '--reviewer-agent', 'agent-7');
+    // --json prints the full result with the accepted-report hash; the default is the short form.
+    const bound = finalize(root, '--reviewer-agent', 'agent-7', '--json');
     expect(bound.status, bound.stderr).toBe(0);
     const result = JSON.parse(bound.stdout);
     expect(result).toMatchObject({ status: 'done', unchanged: false });
@@ -514,4 +515,93 @@ describe('reviewer agent ID bound at finish (sl2-06c)', () => {
     expect(own.finalizeReview).toBe(`node .joycraft/runtime/completion.mjs finalize-review --queue ${queuePath} --spec 1 --report ${reportPath}`);
     expect(own.finish).toBeUndefined();
   });
+});
+
+// Spec: .joycraft/local/loop/iter4/specs.md, sl3-04 (the runtime prints the next command).
+describe('the runtime prints the next command (sl3-04)', () => {
+  const reportPath = `${folder}/specs/review-1.report.json`;
+  const sha = (bytes: Buffer | string) => createHash('sha256').update(bytes).digest('hex');
+  const node = (root: string, script: string, args: string[]) => spawnSync(process.execPath, [join(root, '.joycraft/runtime', script), ...args], { cwd: root, encoding: 'utf8' });
+  const sh = (root: string, command: string) => spawnSync('/bin/sh', ['-c', command], { cwd: root, encoding: 'utf8' });
+  const lease = (root: string) => JSON.parse(readFileSync(join(root, '.joycraft/local/coordinators/f.json'), 'utf8'));
+  const claim = (root: string, session: string, ...extra: string[]) => node(root, 'coordinator.mjs', ['claim', '--queue', queuePath, '--session', session, '--host', 'claude', ...extra]);
+
+  it('[AC:sl3-04-base] a first claim records HEAD as baseRevision; a renewal and a take-over keep it', () => {
+    const { root } = fixture({ focused: 'node {files}', checks: ['tests/a.mjs'] });
+    const head = git(root, 'rev-parse', 'HEAD');
+    const first = claim(root, 'lead-1');
+    expect(first.status, first.stderr).toBe(0);
+    expect(lease(root).baseRevision).toBe(head);
+    expect(JSON.parse(first.stdout)).toMatchObject({ ready: true, renewed: false, baseRevision: head });
+    put(join(root, 'src/a.ts'), 'export const a = 2;\n');
+    git(root, 'commit', '-q', '-am', 'later');
+    expect(claim(root, 'lead-1').status).toBe(0);
+    expect(lease(root).baseRevision).toBe(head);
+    expect(claim(root, 'lead-2', '--take-over').status).toBe(0);
+    expect(lease(root)).toMatchObject({ sessionId: 'lead-2', baseRevision: head });
+    // --json prints the whole lease, as before.
+    expect(JSON.parse(claim(root, 'lead-2', '--json').stdout).lease.baseRevision).toBe(head);
+  });
+
+  it('[AC:sl3-04-next] claim, implementer startup, submit and finalize-review each print a next command that runs unchanged', () => {
+    const { root } = fixture({ focused: 'node {files}', checks: ['tests/a.mjs'] });
+    const claimed = claim(root, 'lead-1');
+    expect(claimed.status, claimed.stderr).toBe(0);
+    const afterClaim = JSON.parse(claimed.stdout).next;
+    expect(afterClaim).toBe(`node .joycraft/runtime/dispatch-start.mjs --queue ${queuePath} --spec 1 --role implementer --coordinator-session lead-1`);
+    const started = sh(root, afterClaim);
+    expect(started.status, started.stderr).toBe(0);
+    const startup = JSON.parse(started.stdout);
+    expect(startup).toMatchObject({ ready: true, next: `node .joycraft/runtime/completion.mjs submit --queue ${queuePath} --spec 1` });
+    // The short form leaves out the bookkeeping that --json prints.
+    expect(startup.hooks).toBeUndefined();
+    const submitted = sh(root, startup.next);
+    expect(submitted.status, submitted.stderr).toBe(0);
+    const submit = JSON.parse(submitted.stdout);
+    expect(submit).toMatchObject({ ready: true, status: 'in-review', next: `node .joycraft/runtime/dispatch-start.mjs --queue ${queuePath} --spec 1 --role reviewer --coordinator-session lead-1` });
+    const reviewer = sh(root, submit.next);
+    expect(reviewer.status, reviewer.stderr).toBe(0);
+    const review = JSON.parse(reviewer.stdout);
+    expect(review.next).toBe(review.commands.checkReport);
+    // A PASS report from the same session, finalized with the launch-result agent ID.
+    expect(node(root, 'completion.mjs', ['snapshot', '--queue', queuePath, '--spec', '1', '--out', '.joycraft/local/subject.json']).status).toBe(0);
+    const subject = JSON.parse(readFileSync(join(root, '.joycraft/local/subject.json'), 'utf8'));
+    put(join(root, '.joycraft/local/receipt.log'), 'ok\n');
+    put(join(root, reportPath), JSON.stringify({ schemaVersion: 1, subject, implementerSessionId: 'lead-1', implementerActor: { host: 'claude', sessionId: 'lead-1' },
+      reviewer: { sessionId: 'lead-1', actor: { host: 'claude', sessionId: 'lead-1' }, independent: true, scopeReviewed: true },
+      verdict: 'PASS', unresolved: [], createdAt: new Date().toISOString(),
+      flows: [{ id: 'flow-1', subjectIdentity: subject.identity, representativeInput: 'the fixture', expected: 'the tests pass', limits: ['fixture only'], criteria: ['spec-1-1'],
+        observations: [{ kind: 'runtime', method: 'test', result: 'PASS', actual: 'they ran', receipts: [{ path: '.joycraft/local/receipt.log', sha256: sha('ok\n') }], command: { argv: ['node', 'tests/a.mjs'], exitCode: 0 } }] }] }, null, 2));
+    const finalized = node(root, 'completion.mjs', ['finalize-review', '--queue', queuePath, '--spec', '1', '--report', reportPath, '--reviewer-agent', 'agent-7']);
+    expect(finalized.status, finalized.stderr).toBe(0);
+    const final = JSON.parse(finalized.stdout);
+    expect(final).toMatchObject({ ready: true, status: 'done', next: `node .joycraft/runtime/status.mjs --queue ${queuePath}` });
+    expect(final.acceptedReport).toBeUndefined();
+    const status = sh(root, final.next);
+    expect(status.status, status.stderr).toBe(0);
+    expect(JSON.parse(status.stdout).features[0].next).toBe(final.next);
+    // --json still prints the full result, with next added.
+    const full = node(root, 'completion.mjs', ['finalize-review', '--queue', queuePath, '--spec', '1', '--report', reportPath, '--json']);
+    expect(JSON.parse(full.stdout)).toMatchObject({ status: 'done', unchanged: true, acceptedReport: { path: reportPath }, next: final.next });
+  }, 60_000);
+
+  it('[AC:sl3-04-changed] submit lists a changed file the inputs do not name and exits 0; reviewer startup notes it as scope', () => {
+    const { root } = fixture({ focused: 'node {files}', checks: ['tests/a.mjs'] });
+    expect(claim(root, 'lead-1').status).toBe(0);
+    put(join(root, 'src/a.ts'), 'export const a = 2;\n');
+    put(join(root, 'src/stray.ts'), 'export const stray = 1;\n');
+    git(root, 'add', '-A');
+    git(root, 'commit', '-q', '-m', 'work');
+    const submitted = node(root, 'completion.mjs', ['submit', '--queue', queuePath, '--spec', '1']);
+    expect(submitted.status, submitted.stderr).toBe(0);
+    const { changed } = JSON.parse(submitted.stdout);
+    expect(changed).toContain('src/stray.ts');
+    expect(changed).toContain('src/a.ts');
+    const reviewer = node(root, 'dispatch-start.mjs', ['--queue', queuePath, '--spec', '1', '--role', 'reviewer', '--coordinator-session', 'lead-1']);
+    expect(reviewer.status, reviewer.stderr).toBe(0);
+    const { scope } = JSON.parse(reviewer.stdout);
+    expect(scope.diff).toBe(`git diff ${lease(root).baseRevision}`);
+    expect(scope.outside).toContain('src/stray.ts');
+    expect(scope.outside).not.toContain('src/a.ts');
+  }, 60_000);
 });

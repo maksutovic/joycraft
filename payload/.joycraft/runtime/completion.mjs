@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { readConfig } from './config.mjs';
+import { changedSinceBase, nextCommand } from './coordinator.mjs';
 import { gitState, noGitCommit } from './kickoff.mjs';
 import { briefDecisionRecords, canonical, isObject, isSha256, localPath, nonempty, parseJson, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, subjectIdentity, validateIndependentReview, validateNativeActor } from './identity.mjs';
 
@@ -416,7 +417,11 @@ export async function submit({ root = process.cwd(), queuePath, specId }) {
       root, queuePath, specId, state, status: 'in-review', metadataKey: 'submitted', metadata: { at: new Date().toISOString() },
       stableFiles: [], validate: requireDependencies,
     });
-    return { status: 'in-review', unchanged: false, untraced, acceptedInputsChanged: acceptedInputsChanged({ root, queuePath, queue: state.queue, except: specId }) };
+    // A report, not a refusal: what changed since the claim's base that no accepted spec owns.
+    const changed = changedSinceBase(root, state.queue.feature);
+    const owned = new Set(state.queue.specs.filter(spec => spec.status === 'done').flatMap(spec => spec.verification.inputs.map(input => relativePath(input.path))));
+    return { status: 'in-review', unchanged: false, untraced, acceptedInputsChanged: acceptedInputsChanged({ root, queuePath, queue: state.queue, except: specId }),
+      ...(changed ? { changed: changed.filter(file => !owned.has(file)) } : {}) };
   } catch (error) { throw refused(error); }
 }
 
@@ -802,11 +807,13 @@ export async function acceptWaiver({ root = process.cwd(), queuePath, specId, wa
 }
 
 function argumentsFor(argv) {
-  const [command, ...rest] = argv;
+  const [command, ...all] = argv;
+  const json = all.includes('--json');
+  const rest = all.filter(arg => arg !== '--json');
   const legacy = command === 'accept-owner' && rest.includes('--legacy');
   const args = legacy ? rest.filter(arg => arg !== '--legacy') : rest;
   requireValue(args.length === rest.length - (legacy ? 1 : 0), 'Invalid or duplicate argument: --legacy');
-  requireValue(['snapshot', 'scope', 'submit', 'reopen', 'complete', 'finalize-review', 'bind-reviewer', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope|submit --queue <path> --spec <id> | reopen --queue <path> --spec <id> --reason <text> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> [--reviewer-agent <id>] | bind-reviewer --queue <path> --spec <id> --report <report.json> --reviewer-agent <id> | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-owner --legacy --queue <path> --spec <id>[,<id>...] --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
+  requireValue(['snapshot', 'scope', 'submit', 'reopen', 'complete', 'finalize-review', 'bind-reviewer', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope|submit --queue <path> --spec <id> [--json] | reopen --queue <path> --spec <id> --reason <text> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> [--reviewer-agent <id>] [--json] | bind-reviewer --queue <path> --spec <id> --report <report.json> --reviewer-agent <id> | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-owner --legacy --queue <path> --spec <id>[,<id>...] --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
   const flags = {};
   for (let i = 0; i < args.length; i += 2) {
     requireValue(['--queue', '--spec', '--out', '--report', '--decision', '--waiver', '--reason', '--reviewer-agent'].includes(args[i]) && nonempty(args[i + 1]) && flags[args[i]] === undefined, `Invalid or duplicate argument: ${args[i]}`);
@@ -818,11 +825,11 @@ function argumentsFor(argv) {
   const id = /^(?:0|[1-9]\d*)$/;
   if (legacy) { if (!flags['--spec'].split(',').every(item => id.test(item) && Number.isSafeInteger(Number(item)))) throw refused(new Error('Spec IDs must be nonnegative integers separated by commas')); }
   else if (command !== 'recover') requireValue(id.test(flags['--spec']) && Number.isSafeInteger(Number(flags['--spec'])), 'Spec ID must be a nonnegative integer');
-  return { command, flags, legacy };
+  return { command, flags, legacy, json };
 }
 
 export async function main(argv = process.argv.slice(2)) {
-  const { command, flags, legacy } = argumentsFor(argv);
+  const { command, flags, legacy, json } = argumentsFor(argv);
   const root = process.cwd();
   const queuePath = flags['--queue'];
   let result;
@@ -850,6 +857,16 @@ export async function main(argv = process.argv.slice(2)) {
   else if (legacy) result = await acceptLegacy({ root, queuePath, specIds: flags['--spec'].split(',').map(Number), decisionPath: flags['--decision'] });
   else if (command === 'accept-owner') result = await acceptOwner({ root, queuePath, specId: Number(flags['--spec']), decisionPath: flags['--decision'] });
   else result = await complete({ root, queuePath, specId: Number(flags['--spec']), reportPath: flags['--report'], reviewerAgent: flags['--reviewer-agent'] });
+  // submit, complete and finalize-review print the short form with the next command; --json prints all of it.
+  if (['submit', 'complete', 'finalize-review'].includes(command)) {
+    const next = nextCommand({ root, queuePath, prefer: Number(flags['--spec']) });
+    result = { ...result, ready: true, next };
+    if (!json) {
+      const { status, unchanged, changed, acceptedInputsChanged: reopen, ready } = result;
+      process.stdout.write(`${JSON.stringify({ ready, status, unchanged, ...(changed ? { changed } : {}), ...(reopen?.length ? { acceptedInputsChanged: reopen } : {}), next }, null, 2)}\n`);
+      return result;
+    }
+  }
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   return result;
 }

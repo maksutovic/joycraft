@@ -112,7 +112,8 @@ describe('reopen a done spec (1.9.4)', () => {
     const clean = fixture();
     passReport(clean, `${folder}/specs/review-1.report.json`);
     expect(completion(clean, 'finalize-review', '--queue', queuePath, '--spec', '1', '--report', `${folder}/specs/review-1.report.json`).status).toBe(0);
-    const quiet = completion(clean, 'submit', '--queue', queuePath, '--spec', '2');
+    // The short form leaves out an empty list; --json prints it.
+    const quiet = completion(clean, 'submit', '--queue', queuePath, '--spec', '2', '--json');
     expect(JSON.parse(quiet.stdout).acceptedInputsChanged).toEqual([]);
     expect(quiet.stderr).not.toContain('accepted input changed');
   });

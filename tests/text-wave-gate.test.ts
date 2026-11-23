@@ -62,10 +62,10 @@ describe('wave-gate and CI-once text', () => {
     expect(paragraph).toContain('`-- <verifier>` without `tests.gate`');
   });
 
-  // Decision cap-raise: the implement skill cannot grow. 1315 is its `wc -w` before spec 29;
-  // retire this constant with the other per-spec word tests once the feature is accepted.
-  it('[AC:spec-29-9] the implement skill is no longer than before spec 29', () => {
-    expect(raw(IMPLEMENT).split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(1315);
+  // Decision cap-raise: the implement skill cannot grow. 1315 was its `wc -w` before spec 29;
+  // sl3-04 cuts the receipt clause and moves the cap down to 1309.
+  it('[AC:spec-29-9] [AC:sl3-04-words] the implement skill is no longer than 1309 words', () => {
+    expect(raw(IMPLEMENT).split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(1309);
   });
 
   it('[AC:spec-15-3] in wave mode the verifier states the gate is not run, and the project-gate tier names tests.gateRuns', () => {

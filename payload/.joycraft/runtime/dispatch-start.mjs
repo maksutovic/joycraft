@@ -4,7 +4,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { assertReviewAllowed, visibleReports } from './completion.mjs';
 import { readConfig } from './config.mjs';
-import { mainTree, readLease } from './coordinator.mjs';
+import { changedSinceBase, mainTree, readLease, shellQuote } from './coordinator.mjs';
 import { gitState, noGitCommit } from './kickoff.mjs';
 import { prepareDispatch } from './dispatch-preflight.mjs';
 import { testChanges } from './test-changes.mjs';
@@ -50,12 +50,7 @@ function earlierReviews({ roots, queuePath, spec }) {
   return rounds;
 }
 
-/** One word as a POSIX shell reads it: bare when it holds only safe
- * characters, otherwise single-quoted with each embedded quote as '\''. */
-export function shellQuote(word) {
-  const text = String(word);
-  return /^[A-Za-z0-9_./:=@%+,-]+$/.test(text) ? text : `'${text.replace(/'/g, "'\\''")}'`;
-}
+export { shellQuote };
 
 /** The words of a command template, split as a shell would: whitespace
  * separates words, single quotes keep everything literal, double quotes keep
@@ -271,8 +266,18 @@ export async function startDispatch(options, nativeEvent) {
     ...workerCommands({ root, queuePath, spec, role: options.role, reportPath: packet.outputContract.reportPath,
       featureFolder: path.posix.dirname(path.posix.dirname(queuePath)), focused,
       agentAtFinish: nativeEvent.agent_id === undefined && nativeEvent.session_id === options.implementerSessionId }) };
-  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(warnings.length ? { warnings } : {}), ...(trace ? { trace } : {}), ...(changes ? { testChanges: changes } : {}), commands,
-    ready: !hookConfig.enabled || hooks.eligible === true };
+  // A reviewer's subject is the diff since the base the claim recorded. The declared
+  // inputs stay the scope check: a changed file outside them is a note, not a refusal.
+  let scope;
+  const changed = options.role === 'reviewer' ? changedSinceBase(root, queue.feature) : null;
+  if (changed) {
+    const declared = new Set(spec.verification.inputs.map(input => relativePath(input.path)));
+    const outside = changed.filter(file => !declared.has(file));
+    scope = { diff: ['git', 'diff', lease.baseRevision].join(' '), changed, ...(outside.length ? { outside, note: 'These changed files are outside the declared inputs: note each in the report; it is not a refusal.' } : {}) };
+  }
+  const next = options.role === 'implementer' ? commands.submit : commands.checkReport;
+  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(warnings.length ? { warnings } : {}), ...(trace ? { trace } : {}), ...(changes ? { testChanges: changes } : {}), ...(scope ? { scope } : {}), commands,
+    ready: !hookConfig.enabled || hooks.eligible === true, next };
 }
 
 export const workspaceFlags = coordinatorRoot => ['--coordinator', coordinatorRoot, '--parallel', 'true', '--access', 'mutating'];
@@ -319,8 +324,8 @@ export const usage = `Usage: node .joycraft/runtime/dispatch-start.mjs \\
   [--capabilities filesystem:read,filesystem:write-report[,agent:separate-context]] \\
   [--out .joycraft/local/packets/<packet.json>] \\
   [--coordinator <root> --parallel true|false --access mutating|read-only] [--base-revision <sha>] \\
-  [--brief <path>] [--changes-base <sha>]
-Pass --coordinator-session on a claimed queue. A flag you pass wins over its default:
+  [--brief <path>] [--changes-base <sha>] [--json]
+Pass --coordinator-session on a claimed queue. The output is the short form; --json prints all of it. A flag you pass wins over its default:
   --worker-root: this folder.
   --expected-manifest: .joycraft/installation.json in the main checkout.
   --native-session: the coordinator lease's session (a child of that session).
@@ -365,6 +370,8 @@ export function startupDefaults(given, cwd = process.cwd()) {
 
 export async function main(argv = process.argv.slice(2)) {
   if (argv.length === 1 && ['--help', '-h'].includes(argv[0])) { process.stdout.write(usage); return null; }
+  const json = argv.includes('--json');
+  argv = argv.filter(arg => arg !== '--json');
   const flags = {};
   const allowed = new Set(['--worker-root', '--expected-manifest', '--queue', '--spec', '--role', '--implementer-session',
     '--implementer-host', '--implementer-agent', '--out', '--brief', '--capabilities', '--coordinator', '--parallel',
@@ -390,8 +397,8 @@ export async function main(argv = process.argv.slice(2)) {
     access: flags['--access'], baseRevision: flags['--base-revision'], nativeHost: flags['--native-host'],
     coordinatorSession: flags['--coordinator-session'], changesBase: flags['--changes-base'],
   }, { cwd: flags['--worker-root'], session_id: flags['--native-session'], ...(flags['--native-agent'] ? { agent_id: flags['--native-agent'] } : {}) });
-  const { packet, ...status } = result;
-  process.stdout.write(`${JSON.stringify(status, null, 2)}\n`);
+  const { packet, schemaVersion, hooks, ...short } = result;
+  process.stdout.write(`${JSON.stringify(json ? { schemaVersion, hooks, ...short } : { ...short, ...(result.ready ? {} : { hooks }) }, null, 2)}\n`);
   if (!result.ready) process.exitCode = 2;
   return result;
 }
