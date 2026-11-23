@@ -186,4 +186,21 @@ describe('task startup commands', () => {
     const quotedOnly = start(fixture({ focused: `runner "a && b" {files}`, checks: ['tests/a.test.ts'] }), 'implementer').output.commands.focused;
     expect(quotedOnly.argv).toEqual(['runner', 'a && b', 'tests/a.test.ts']);
   }, 60_000);
+
+  // Spec: docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md
+  it('[AC:spec-4-1] --help prints the ready-to-run startup with placeholders and exits 0', () => {
+    const { root } = fixture({});
+    for (const flag of ['--help', '-h']) {
+      const result = spawnSync(process.execPath, [join(root, '.joycraft/runtime/dispatch-start.mjs'), flag], { cwd: root, encoding: 'utf8' });
+      expect(result.status, result.stderr).toBe(0);
+      expect(result.stderr).toBe('');
+      for (const word of ['--worker-root <absolute-worker-root>', '--expected-manifest', '--role implementer|reviewer', '--native-session <your-host-session-id>', '--native-agent <your-host-agent-id>', '--coordinator-session', 'agent:separate-context', '.joycraft/local/packets/<packet.json>']) {
+        expect(result.stdout).toContain(word);
+      }
+    }
+    // Any other unknown flag still stops startup.
+    const other = spawnSync(process.execPath, [join(root, '.joycraft/runtime/dispatch-start.mjs'), '--helpme'], { cwd: root, encoding: 'utf8' });
+    expect(other.status).toBe(1);
+    expect(other.stderr).toContain('Invalid startup argument: --helpme');
+  });
 });

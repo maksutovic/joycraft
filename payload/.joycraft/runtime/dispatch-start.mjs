@@ -302,7 +302,21 @@ function gitIgnored(root, relative) {
   }
 }
 
+export const usage = `Usage: node .joycraft/runtime/dispatch-start.mjs \\
+  --worker-root <absolute-worker-root> --expected-manifest <absolute-pinned-manifest> \\
+  --queue <queue-path> --spec <id> --role implementer|reviewer \\
+  --implementer-session <implementer-session-id> \\
+  --capabilities filesystem:read,filesystem:write-report[,agent:separate-context] \\
+  --out .joycraft/local/packets/<packet.json> \\
+  --native-session <your-host-session-id> [--native-agent <your-host-agent-id>] [--native-host <host>] \\
+  [--coordinator-session <coordinator-session-id>] [--implementer-host <host> --implementer-agent <id>] \\
+  [--coordinator <root> --parallel true|false --access mutating|read-only] [--base-revision <sha>] \\
+  [--brief <path>] [--changes-base <sha>]
+A reviewer adds agent:separate-context. Use host-issued identities only; .joycraft/references/dispatch.md explains each flag.
+`;
+
 export async function main(argv = process.argv.slice(2)) {
+  if (argv.length === 1 && ['--help', '-h'].includes(argv[0])) { process.stdout.write(usage); return null; }
   const flags = {};
   const allowed = new Set(['--worker-root', '--expected-manifest', '--queue', '--spec', '--role', '--implementer-session',
     '--implementer-host', '--implementer-agent', '--out', '--brief', '--capabilities', '--coordinator', '--parallel',

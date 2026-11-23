@@ -17,6 +17,8 @@ A coordinator in a field project (Claude Code, Opus implementers) ran a queue wi
 
 The session that started this work asked for the fix, a test for each bug, a 1.9.3 CHANGELOG entry and the release fields, then a PR for Max to merge. Its rule for bug 1: use the host's worktree isolation or Joycraft's worker tree, never both.
 
+Later, the starting session added three cheap items from a second trial project (a serial queue of 3 specs with reviewer subagents): every reviewer ran `dispatch-start.mjs --help` and was refused, then searched the script for flag names; `check-report` refused an observation for missing receipts without saying what to add; and archive refused a brief that recorded an owner decision after a spec was accepted. The reviewers here also could not see their own agent IDs, and they asked for the same `cd <worker-root> &&` form the implementer got.
+
 Assumption (bug 1): Joycraft's worker tree is the one home on every host, and a Joycraft worker never gets host worktree isolation. Why: it is the path that worked in the field; it keeps the coordinator's captured base revision (Claude's native base is the default branch unless `worktree.baseRef` is set), its ledger (`list`, `prune`) and a known path before launch. The other path (native isolation only) needs a user setting and gives a path the coordinator only learns after launch.
 
 Rules for every spec:
@@ -38,6 +40,14 @@ The implement skill, `worktrees.md`, `dispatch.md` and the implementer agent sen
 ### one-update
 
 The implement skill says a stage update once: the coordinator does not repeat before-dispatch text after the dispatch.
+
+### reviewer-start
+
+`dispatch-start.mjs --help` prints the startup command with placeholders and exits 0. `check-report`'s refusal of an observation without receipts shows the field to add. The reviewer agent names the start command and the `cd <worker-root> &&` form, and `dispatch.md` says the coordinator sends a Claude Code child its agent ID.
+
+### amendment-message
+
+A brief edited after acceptance stays a requirement change: archive keeps refusing until `brief-amendments.json` names the owner decision for each later commit, as `archive.md` documents. The refusal names that record, each commit with its before and after hashes, and the reference.
 
 ### release
 

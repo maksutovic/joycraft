@@ -75,3 +75,12 @@ describe('one worker home (1.9.3)', () => {
     expect(implement).toContain('Give each concise stage update once; never repeat pre-dispatch text after the dispatch.');
   });
 });
+
+// Spec: docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md
+describe('reviewer start text (1.9.3)', () => {
+  it('[AC:spec-4-3] the reviewer gets the start command, --help, the worker-root cd form and its agent ID from the coordinator', () => {
+    expect(agents.reviewer).toContain('with the command in `.joycraft/references/dispatch.md#start-a-native-dispatch` (`--help` prints it).');
+    expect(agents.reviewer).toContain("When the task names a worker root that is not your shell's folder, run each command as `cd <worker-root> && <one command>`.");
+    expect(dispatch).toContain('A Claude Code child cannot see its own agent ID: the coordinator sends it the ID from the launch result before its startup.');
+  });
+});

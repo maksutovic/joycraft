@@ -196,7 +196,9 @@
       "file": "03-release-1-9-3.md",
       "depends_on": [
         1,
-        2
+        2,
+        4,
+        5
       ],
       "status": "todo",
       "mode": "checkpoint",
@@ -255,6 +257,149 @@
             "id": "spec-3-2",
             "requirement": {
               "path": "docs/features/2026-11-22-fixes-1-9-3/specs/03-release-1-9-3.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "file": "04-reviewer-start.md",
+      "depends_on": [
+        1,
+        2
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "reviewer-start",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/evidence.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-reviewer.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/dispatch.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-dispatch-commands.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-evidence-receipt.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-worker-commands.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-4-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-3",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "file": "05-amendment-message.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "amendment-message",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-archive-merge-amendment.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-5-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md",
               "anchor": "acceptance"
             },
             "requiredKinds": [

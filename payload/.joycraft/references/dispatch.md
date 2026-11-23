@@ -83,7 +83,9 @@ the startup output's `commands`. For a root or revision, run `pwd` or
 `git rev-parse HEAD` alone and paste the value.
 
 `--native-agent` is present only when the host issued a child identity;
-`--native-host` is optional. Use actual host-issued values only. The start flow
+`--native-host` is optional. Use actual host-issued values only. A Claude Code
+child cannot see its own agent ID: the coordinator sends it the ID from the
+launch result before its startup. The start flow
 consumes the existing `--coordinator`, `--parallel`, `--access`,
 `--base-revision`, `--implementer-host`, and `--implementer-agent` options.
 Startup never writes `verification.changeScope`; a spec opts in by recording
