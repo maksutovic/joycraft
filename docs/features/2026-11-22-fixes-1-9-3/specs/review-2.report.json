@@ -1,0 +1,336 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "286c0dc65802dc8c10cbcf6709d56c08df489418",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+    "specId": 2,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+    "criteria": [
+      {
+        "id": "spec-2-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-3",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-4",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "one-home",
+            "one-update",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "4a676bcfe3a48d003517799379955b228d84f0e1b973b9a4bef7ad191405c5d5",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "f20494a00cd74baa277562d7188bc412afc8cf66e85e1c6afd96cf3352523daf",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md",
+        "kind": "requirement",
+        "sha256": "aa095ebfda43385166db66d2339cd3bb0b3c8c09d892ab1cf90bef82aca242ca",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+        "kind": "code",
+        "sha256": "56933341a14f1499a46a0ef8e2b8fa86c4d4068a47fb9358e92ca7df6fa7198c",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.claude/agents/joycraft-implementer.md",
+        "kind": "code",
+        "sha256": "a2dfc59cec141319052c4b4eb91929328c00439802290b31c45d09e3de6ca147",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/dispatch.md",
+        "kind": "code",
+        "sha256": "61a173503c495b4a63bb4a86a48a68675e5c2f8ffa2d093f84cc828623f5ff2f",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/setup.md",
+        "kind": "code",
+        "sha256": "84a87fb54690f414a9ec93e1977121f7803265451a3cd73eeded1e09e13da91b",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/worktrees.md",
+        "kind": "code",
+        "sha256": "9e583d96c0be46032ac39b142f9becfca5ff8c3da94533ad390880dfe4d898be",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "71399672a3059075ea96e280f6489d8ece7662b5cd7a96b39b713092d3b77f91",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "kind": "check",
+        "sha256": "dfc7aee30cbffa91f588d234cd78b5ebc5e57a23bb0bb25b79603bdb353f5b71",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+          "anchors": [
+            "one-home",
+            "one-update",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "0420c0308a9b8786a35bdc55bbdfc4f2eb05e0a7ac8328b7fcaff49b78a1b632"
+  },
+  "implementerSessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b"
+  },
+  "reviewer": {
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+    "actor": {
+      "host": "claude",
+      "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+      "agentId": "a1988f7f3b4c9a5a9"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-spec-2-1",
+      "subjectIdentity": "0420c0308a9b8786a35bdc55bbdfc4f2eb05e0a7ac8328b7fcaff49b78a1b632",
+      "criteria": [
+        "spec-2-1"
+      ],
+      "representativeInput": "Shipped payload text under payload/ read by tests/text-worker-commands.test.ts and tests/payload-guard.test.ts; diff ee846b5..HEAD read",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-1] passed (text-worker-commands + payload-guard). Implement skill: worktrees.mjs create 'on every host', 'Launch its worker without host worktree isolation (Claude Code: no Agent `isolation`), naming the printed `workerRoot`'; 'when the host has no native worktree isolation' gone. worktrees.md: 'one home for worker trees on every host', the Claude recipe (isolation: \"worktree\", worktree.baseRef), .worktreeinclude and WorktreeCreate hook notes removed, replaced by the no-isolation rule with a one-line why ('Never use both: an isolated worker's sandbox cannot reach the Joycraft tree, and the host deletes its own tree while empty'). dispatch.md: 'auto-created worktree whose path is unknown until launch' removed. setup.md: native .worktreeinclude mention replaced by 'an explicit copy step'. grep of payload/ finds no remaining isolation: \"worktree\", worktreeinclude, WorktreeCreate, baseRef, 'native worktree' or 'auto-created'. The added dispatch.md sentence about reading --coordinator/--parallel/--access from the worktrees.mjs record or lease matches dispatch-start.mjs parallelWorkspace (source read, lines 280-292).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-2-reviewer-focused-20261123T052453517Z-42426-1.log",
+              "sha256": "7ecafde9da997cbd3425c4e0411a87c677b34d513bc01065baa1f33ccc9196d4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused tests only; project gate not rerun (implementer receipt receipts/spec-1-2-implementer-gate.log)."
+      ]
+    },
+    {
+      "id": "flow-spec-2-2",
+      "subjectIdentity": "0420c0308a9b8786a35bdc55bbdfc4f2eb05e0a7ac8328b7fcaff49b78a1b632",
+      "criteria": [
+        "spec-2-2"
+      ],
+      "representativeInput": "Shipped payload text under payload/ read by tests/text-worker-commands.test.ts and tests/payload-guard.test.ts; diff ee846b5..HEAD read",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-2] passed. payload/.claude/agents/joycraft-implementer.md keeps the forbidden-forms sentence ('never &&, ;, |, $(git …), a heredoc, source or cd out of the root, which worktree isolation refuses') and adds: when the task names a worker root that is not the shell's folder, run each command as `cd <worker-root> && <one command>`, the one allowed compound form because no worktree isolation is active.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-2-reviewer-focused-20261123T052453517Z-42426-1.log",
+              "sha256": "7ecafde9da997cbd3425c4e0411a87c677b34d513bc01065baa1f33ccc9196d4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused tests only; project gate not rerun (implementer receipt receipts/spec-1-2-implementer-gate.log)."
+      ]
+    },
+    {
+      "id": "flow-spec-2-3",
+      "subjectIdentity": "0420c0308a9b8786a35bdc55bbdfc4f2eb05e0a7ac8328b7fcaff49b78a1b632",
+      "criteria": [
+        "spec-2-3"
+      ],
+      "representativeInput": "Shipped payload text under payload/ read by tests/text-worker-commands.test.ts and tests/payload-guard.test.ts; diff ee846b5..HEAD read",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-3] passed. Implement skill stage-update line now reads 'Give each concise stage update once; never repeat pre-dispatch text after the dispatch.' beside the existing stage-update instruction (diff of payload/.agents/skills/joycraft-implement/SKILL.md).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-2-reviewer-focused-20261123T052453517Z-42426-1.log",
+              "sha256": "7ecafde9da997cbd3425c4e0411a87c677b34d513bc01065baa1f33ccc9196d4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused tests only; project gate not rerun (implementer receipt receipts/spec-1-2-implementer-gate.log)."
+      ]
+    },
+    {
+      "id": "flow-spec-2-4",
+      "subjectIdentity": "0420c0308a9b8786a35bdc55bbdfc4f2eb05e0a7ac8328b7fcaff49b78a1b632",
+      "criteria": [
+        "spec-2-4"
+      ],
+      "representativeInput": "Shipped payload text under payload/ read by tests/text-worker-commands.test.ts and tests/payload-guard.test.ts; diff ee846b5..HEAD read",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-4] passed: payload-guard every-spec words 12148 (cap 12256, 108 spare; brief base had 79 spare), on-demand 20558 (605 spare). payload-guard diff = [AC:spec-1-4] WorktreeCreate expectation flipped to not.toMatch on worktrees.md (declared class 1, required by bullet 1) and the words test title gained [AC:spec-2-4] with no assertion change (declared). 21/21 tests in the two files passed.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-2-reviewer-focused-20261123T052453517Z-42426-1.log",
+              "sha256": "7ecafde9da997cbd3425c4e0411a87c677b34d513bc01065baa1f33ccc9196d4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused tests only; project gate not rerun (implementer receipt receipts/spec-1-2-implementer-gate.log)."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md:19",
+      "summary": "The implementer edited the spec's Test changes line after the base to declare the [AC:spec-2-4] title tag. The change adds a tag only, and bullet 4's requiring line existed at the base, so it is accepted; noting that a governing input was edited during implementation."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/dispatch.md:80",
+      "summary": "dispatch.md and payload/.claude/agents/joycraft-reviewer.md still say never chain with && / never cd out of the root, without the implementer's new `cd <worker-root> && <one command>` allowance. A reviewer or dispatcher in a shared-root worker sees the old absolute rule (this review's own task prompt had to grant the cd form). Outside this spec's named files for the allowance; consider the same sentence in the reviewer agent and dispatch.md."
+    },
+    {
+      "id": "f3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/text-worker-commands.test.ts:58",
+      "summary": "Changed test text-worker-commands.test.ts (and payload-guard) read no feature-folder paths at runtime; featurePaths hits are comments and fixture strings only. tests/public-docs.test.ts appears as undeclared for spec 2 but is spec 3's declared class-1 tag change (commit 5059e3c), not spec 2 scope."
+    },
+    {
+      "id": "f4",
+      "class": "follow-up",
+      "origin": "unknown",
+      "summary": "The reviewer agentId a1988f7f3b4c9a5a9 was supplied by the coordinator from the host's launch result; this reviewer could not observe it directly in its own context."
+    },
+    {
+      "id": "f5",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-evidence-receipt.test.ts",
+      "summary": "Second startup ran at HEAD 286c0dc (spec 1 follow-up commit) with uncommitted edits to archive.mjs, evidence.mjs, runtime-archive-merge-amendment.test.ts and runtime-evidence-receipt.test.ts in the shared tree (other specs' work). All ten spec 2 input hashes are identical to the first packet; these paths are outside spec 2 scope and were not judged here."
+    }
+  ],
+  "createdAt": "2026-11-23T05:25:28.541Z"
+}
