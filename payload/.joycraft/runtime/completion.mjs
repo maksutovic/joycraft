@@ -217,11 +217,12 @@ function validatePassingReport(root, report, state, reportPath, { gateRuns = tru
  * agentAtFinish, a same-session reviewer with no agentId passes the identity
  * check; complete() binds its ID and checks it in full.
  */
-export async function checkReport({ root = process.cwd(), queuePath, specId, reportPath, gateRuns = true, agentAtFinish = false }) {
+export async function checkReport({ root = process.cwd(), queuePath, specId, reportPath, gateRuns = true, agentAtFinish = false, reportBytes }) {
   queuePath = relativePath(queuePath);
   reportPath = relativePath(reportPath);
   const state = readQueue({ root, queuePath, specId });
-  const reportBytes = readLocal(root, reportPath);
+  // complete() passes the bytes it bound in memory; they reach disk only after every check passes.
+  reportBytes ??= readLocal(root, reportPath);
   const report = parseJson(reportBytes, reportPath);
   validatePassingReport(root, report, state, reportPath, { gateRuns, agentAtFinish });
   // Missing or broken peer validation is an error, never a passing fallback.
@@ -312,21 +313,45 @@ async function writeCompletion({ root, queuePath, specId, state, status = 'done'
 }
 
 /**
- * Write the coordinator's host-issued reviewer agent ID into the report's
- * reviewer.actor, before the report is checked and hashed. A Claude Code child
- * cannot see its own ID; the launch result gives it to the coordinator. The
- * report must carry reviewer.actor. An agentId already there must match.
+ * The report bytes with the coordinator's host-issued reviewer agent ID in
+ * reviewer.actor. Nothing is written. A Claude Code child cannot see its own ID;
+ * the launch result gives it to the coordinator. The report must carry
+ * reviewer.actor. An agentId already there must match; then the bytes return as they are.
  */
-export function bindReviewerAgent({ root = process.cwd(), reportPath, agentId }) {
-  reportPath = relativePath(reportPath);
-  const report = parseJson(readLocal(root, reportPath), reportPath);
+function withReviewerAgent(reportBytes, reportPath, agentId) {
+  const report = parseJson(reportBytes, reportPath);
   requireValue(isObject(report?.reviewer) && isObject(report.reviewer.actor), `--reviewer-agent needs a report with reviewer.actor: ${reportPath}`);
   const actor = report.reviewer.actor;
-  if (actor.agentId === agentId) return false;
+  if (actor.agentId === agentId) return reportBytes;
   requireValue(actor.agentId === undefined, `Report reviewer.actor.agentId ${JSON.stringify(actor.agentId)} differs from --reviewer-agent ${JSON.stringify(agentId)}`);
   report.reviewer.actor = validateNativeActor({ ...actor, agentId }, 'Reviewer actor');
-  replaceFile(root, reportPath, Buffer.from(`${JSON.stringify(report, null, 2)}\n`));
-  return true;
+  return Buffer.from(`${JSON.stringify(report, null, 2)}\n`);
+}
+
+/** Write bound report bytes over the original, unless another writer changed the file first. */
+function writeBound(root, reportPath, original, bound) {
+  requireValue(sha256(readLocal(root, reportPath)) === sha256(original), `Report ${reportPath} changed while its reviewer ID was checked`);
+  replaceFile(root, reportPath, bound);
+}
+
+/**
+ * Bind the reviewer agent ID into an in-review spec's report of any verdict. The
+ * coordinator runs it when the report returns, before it writes an owner
+ * decision or waiver call, whose receipt hashes the report. The ID is checked in
+ * memory with the full review check (independence, distinct actors, freshness)
+ * and written only when that passes; a refusal leaves the report bytes as they were.
+ */
+export function bindReviewer({ root = process.cwd(), queuePath, specId, reportPath, agentId }) {
+  queuePath = relativePath(queuePath);
+  reportPath = relativePath(reportPath);
+  assertNoJournal(root, queuePath);
+  const state = readQueue({ root, queuePath, specId });
+  requireValue(state.spec.status === 'in-review', `Spec ${specId} is ${state.spec.status}; only an in-review spec's report takes a reviewer ID`);
+  const original = readLocal(root, reportPath);
+  const bound = withReviewerAgent(original, reportPath, agentId);
+  validateReview({ root, report: parseJson(bound, reportPath), state, reportPath, artifactPaths: [featureWaiverPath(queuePath)] });
+  if (bound !== original) writeBound(root, reportPath, original, bound);
+  return { status: 'bound', unchanged: bound === original, report: { path: reportPath, sha256: sha256(bound) } };
 }
 
 export async function complete({ root = process.cwd(), queuePath, specId, reportPath, reviewerAgent }) {
@@ -335,11 +360,13 @@ export async function complete({ root = process.cwd(), queuePath, specId, report
   assertNoJournal(root, queuePath);
   const state = readQueue({ root, queuePath, specId });
   requireValue(state.spec.status === 'in-review' || state.spec.status === 'done', 'Only an in-review spec can move to done');
-  // The ID goes in before the checks, so the accepted hash covers it. A done spec's report is never rewritten.
-  if (reviewerAgent !== undefined && state.spec.status === 'in-review') bindReviewerAgent({ root, reportPath, agentId: reviewerAgent });
+  // The ID goes into the bytes before the checks, so the accepted hash covers it.
+  // They reach disk only after the checks pass. A done spec's report is never rewritten.
+  const original = readLocal(root, reportPath);
+  const bound = reviewerAgent !== undefined && state.spec.status === 'in-review' ? withReviewerAgent(original, reportPath, reviewerAgent) : original;
   // A done spec's re-check skips the gate-run check: its report was accepted
   // under the gate recorded then, and the accepted-report hash below still binds it.
-  const checked = await checkReport({ root, queuePath, specId, reportPath, gateRuns: state.spec.status !== 'done' });
+  const checked = await checkReport({ root, queuePath, specId, reportPath, gateRuns: state.spec.status !== 'done', reportBytes: bound });
   const { report, acceptedReport } = checked;
   if (state.spec.status === 'done') {
     requireValue(state.spec.ownerAcceptance === undefined && state.spec.waiver === undefined, 'Done spec has an owner acceptance or waiver; ordinary completion cannot relabel it as PASS');
@@ -347,11 +374,18 @@ export async function complete({ root = process.cwd(), queuePath, specId, report
     return { status: 'done', unchanged: true, acceptedReport, implementationRevision: report.subject.implementationRevision };
   }
   requireValue(state.spec.acceptedReport === undefined && state.spec.ownerAcceptance === undefined && state.spec.waiver === undefined, 'In-review spec already has completion metadata; reconcile its status before retrying');
-  await writeCompletion({
-    root, queuePath, specId, state, metadataKey: 'acceptedReport', metadata: acceptedReport,
-    stableFiles: [{ path: reportPath, sha256: acceptedReport.sha256, label: 'Report' }],
-    validate: currentState => validatePassingReport(root, report, currentState, reportPath),
-  });
+  if (bound !== original) writeBound(root, reportPath, original, bound);
+  try {
+    await writeCompletion({
+      root, queuePath, specId, state, metadataKey: 'acceptedReport', metadata: acceptedReport,
+      stableFiles: [{ path: reportPath, sha256: acceptedReport.sha256, label: 'Report' }],
+      validate: currentState => validatePassingReport(root, report, currentState, reportPath),
+    });
+  } catch (error) {
+    // With no journal left, both status files are as they were, so the report goes back too.
+    if (bound !== original && !existsSync(localPath(root, journalPath(queuePath), true)) && sha256(readLocal(root, reportPath)) === acceptedReport.sha256) replaceFile(root, reportPath, original);
+    throw error;
+  }
   return { status: 'done', unchanged: false, acceptedReport, implementationRevision: report.subject.implementationRevision };
 }
 
@@ -772,13 +806,13 @@ function argumentsFor(argv) {
   const legacy = command === 'accept-owner' && rest.includes('--legacy');
   const args = legacy ? rest.filter(arg => arg !== '--legacy') : rest;
   requireValue(args.length === rest.length - (legacy ? 1 : 0), 'Invalid or duplicate argument: --legacy');
-  requireValue(['snapshot', 'scope', 'submit', 'reopen', 'complete', 'finalize-review', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope|submit --queue <path> --spec <id> | reopen --queue <path> --spec <id> --reason <text> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> [--reviewer-agent <id>] | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-owner --legacy --queue <path> --spec <id>[,<id>...] --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
+  requireValue(['snapshot', 'scope', 'submit', 'reopen', 'complete', 'finalize-review', 'bind-reviewer', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope|submit --queue <path> --spec <id> | reopen --queue <path> --spec <id> --reason <text> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> [--reviewer-agent <id>] | bind-reviewer --queue <path> --spec <id> --report <report.json> --reviewer-agent <id> | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-owner --legacy --queue <path> --spec <id>[,<id>...] --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
   const flags = {};
   for (let i = 0; i < args.length; i += 2) {
     requireValue(['--queue', '--spec', '--out', '--report', '--decision', '--waiver', '--reason', '--reviewer-agent'].includes(args[i]) && nonempty(args[i + 1]) && flags[args[i]] === undefined, `Invalid or duplicate argument: ${args[i]}`);
     flags[args[i]] = args[i + 1];
   }
-  const expected = command === 'recover' ? ['--queue'] : command === 'scope' || command === 'submit' ? ['--queue', '--spec'] : ['--queue', '--spec', command === 'snapshot' ? '--out' : command === 'reopen' ? '--reason' : command === 'accept-owner' ? '--decision' : command === 'accept-waiver' ? '--waiver' : '--report'];
+  const expected = command === 'recover' ? ['--queue'] : command === 'scope' || command === 'submit' ? ['--queue', '--spec'] : ['--queue', '--spec', command === 'snapshot' ? '--out' : command === 'reopen' ? '--reason' : command === 'accept-owner' ? '--decision' : command === 'accept-waiver' ? '--waiver' : '--report', ...(command === 'bind-reviewer' ? ['--reviewer-agent'] : [])];
   const optional = command === 'accept-waiver' ? ['--report'] : command === 'complete' || command === 'finalize-review' ? ['--reviewer-agent'] : [];
   requireValue(expected.every(flag => flags[flag] !== undefined) && Object.keys(flags).every(flag => expected.includes(flag) || optional.includes(flag)), `Missing or unexpected arguments for ${command}`);
   const id = /^(?:0|[1-9]\d*)$/;
@@ -811,6 +845,7 @@ export async function main(argv = process.argv.slice(2)) {
   } else if (command === 'reopen') {
     result = await reopen({ root, queuePath, specId: Number(flags['--spec']), reason: flags['--reason'] });
   } else if (command === 'recover') result = recover({ root, queuePath });
+  else if (command === 'bind-reviewer') result = bindReviewer({ root, queuePath, specId: Number(flags['--spec']), reportPath: flags['--report'], agentId: flags['--reviewer-agent'] });
   else if (command === 'accept-waiver') result = await acceptWaiver({ root, queuePath, specId: Number(flags['--spec']), waiverPath: flags['--waiver'], reportPath: flags['--report'] });
   else if (legacy) result = await acceptLegacy({ root, queuePath, specIds: flags['--spec'].split(',').map(Number), decisionPath: flags['--decision'] });
   else if (command === 'accept-owner') result = await acceptOwner({ root, queuePath, specId: Number(flags['--spec']), decisionPath: flags['--decision'] });

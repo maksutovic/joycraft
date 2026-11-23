@@ -170,8 +170,8 @@ function workerCommands({ root, queuePath, spec, role, reportPath, featureFolder
   if (role === 'implementer') steps.submit = line(['node', '.joycraft/runtime/completion.mjs', 'submit', '--queue', queuePath, '--spec', spec.id]);
   else {
     steps.checkReport = line(['node', '.joycraft/runtime/dispatch-preflight.mjs', 'check-report', '--worker-root', root, '--queue', queuePath, '--spec', spec.id, '--report', reportPath, ...(agentAtFinish ? ['--agent-at-finish', 'true'] : [])]);
-    // A same-session child cannot see its own agent ID, so the coordinator finalizes with the ID from the launch result.
-    if (agentAtFinish) steps.finish = `Do not run finalize-review. Return the report path: the coordinator runs ${line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath])} --reviewer-agent <agent ID from the launch result>.`;
+    // A same-session child cannot see its own agent ID, so the coordinator binds the ID from the launch result.
+    if (agentAtFinish) steps.finish = `Do not run finalize-review. Return the report path: for a PASS the coordinator runs ${line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath])} --reviewer-agent <agent ID from the launch result>. For FAIL or UNVERIFIED it runs ${line(['node', '.joycraft/runtime/completion.mjs', 'bind-reviewer', '--queue', queuePath, '--spec', spec.id, '--report', reportPath])} --reviewer-agent <that ID> before any owner decision.`;
     else steps.finalizeReview = line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
   }
   return steps;

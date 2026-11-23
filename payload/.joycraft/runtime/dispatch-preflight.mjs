@@ -471,7 +471,7 @@ export function prepareDispatch({ workerRoot, coordinatorRoot, parallel, access,
     // The project's entry file comes first: its rules bind a worker, and its map names the pages for the spec.
     // Then the role skill only. Its links name the references to read and when; runtime scripts are run, not read.
     readFirst: [...(existsSync(path.join(root, 'AGENTS.md')) ? ['AGENTS.md'] : []), prepared.roles[0].files[0]],
-    outputContract: { reportPath: reportDestination, schemaVersion: 1, completeWith: 'node .joycraft/runtime/completion.mjs finalize-review --queue <queue-path> --spec <id> --report <report-path>' },
+    outputContract: { reportPath: reportDestination, schemaVersion: 1, completeWith: "the startup output's commands.finalizeReview; when it prints commands.finish instead, return the report path for the coordinator to finish" },
     nativePrompt: role === 'reviewer' ? 'Read the listed files first. Review current raw sources and report observed evidence only. Do not infer an expected verdict or reasoning. Return the schema-v1 report at the declared report path.' : 'Read the listed files first. Implement only the current raw task sources. Do not certify acceptance; preserve planned missing inputs as work to create, then prepare an independent review after committing.',
   };
   // The project's recorded review-loop tools and commands, so workers use the same setup, and this
@@ -506,7 +506,7 @@ export function nativeDispatch(request, native = {}) {
 }
 
 /** Validate a returned report without accepting it or changing queue/spec status.
- * With agentAtFinish, a same-session reviewer's missing agent ID waits for finalize-review --reviewer-agent. */
+ * With agentAtFinish, a same-session reviewer's missing agent ID waits for the coordinator's --reviewer-agent. */
 export async function checkDispatchedReport({ workerRoot, queuePath, specId, reportPath, agentAtFinish = false }) {
   return checkReport({ root: workerDirectory(workerRoot), queuePath, specId, reportPath, agentAtFinish });
 }

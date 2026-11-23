@@ -82,7 +82,7 @@ describe('reviewer start text (1.9.3)', () => {
   it('[AC:spec-4-3] [AC:sl2-06c-text] the reviewer gets the start command, --help, the worker-root cd form, and the coordinator binds its agent ID at finish', () => {
     expect(agents.reviewer).toContain('run `node .joycraft/runtime/dispatch-start.mjs --queue <queue> --spec <id> --role reviewer` from your worker root, adding `--coordinator-session <id>` when the task names one. `--help` lists the defaults.');
     expect(agents.reviewer).toContain("When the task names a worker root that is not your shell's folder, run each command as `cd <worker-root> && <one command>`.");
-    expect(dispatch).toContain('A Claude Code child cannot see its own agent ID. A reviewer child starts without it, writes `reviewer.actor` without `agentId` and returns the report path. The coordinator runs `finalize-review --reviewer-agent <id from the launch result>`, which writes the ID into the report before it checks and hashes it.');
+    expect(dispatch).toContain('A Claude Code child cannot see its own agent ID. A reviewer child starts without it, writes `reviewer.actor` without `agentId` and returns the report path. The coordinator passes the launch-result ID as `--reviewer-agent <id>` to `finalize-review` for a PASS, else to `bind-reviewer` before any owner decision or waiver.');
   });
 });
 

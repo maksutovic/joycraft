@@ -79,8 +79,8 @@ Pass `--native-agent` only with a host-issued child ID the child can see.
 `--native-host` is optional. Use actual host-issued values only. A Claude Code
 child cannot see its own agent ID. A reviewer child starts without it, writes
 `reviewer.actor` without `agentId` and returns the report path. The coordinator
-runs `finalize-review --reviewer-agent <id from the launch result>`, which writes
-the ID into the report before it checks and hashes it. The start flow
+passes the launch-result ID as `--reviewer-agent <id>` to `finalize-review` for
+a PASS, else to `bind-reviewer` before any owner decision or waiver. The start flow
 consumes the existing `--coordinator`, `--parallel`, `--access`,
 `--base-revision`, `--implementer-host`, and `--implementer-agent` options.
 Startup never writes `verification.changeScope`; a spec opts in by recording

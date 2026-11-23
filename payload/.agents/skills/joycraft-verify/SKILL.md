@@ -25,12 +25,12 @@ When called from the implementer's context, launch the independent reviewer with
 only current raw brief/spec/queue/input sources plus scoped owning decisions; do
 not pass an expected verdict, reasoning, or proposed report. A parent may
 prepare a source packet for a manual boundary, but it must not bind the child
-using the parent's identity. After launch, the reviewer child bootstraps at its
-actual root and runs `dispatch-start.mjs --role reviewer` with its own actual
-native identity, which captures the subject, preflights delivery, writes the
-bounded packet. If the real ID or a separate reviewer context is unavailable,
-leave the spec `in-review`; do not manufacture either. This holds only the
-claimed review, not unrelated work.
+using the parent's identity. After launch, the reviewer child runs
+`dispatch-start.mjs --role reviewer` at its actual root, which captures the
+subject, preflights delivery and writes the bounded packet. Without a separate
+reviewer context, or a real agent ID that the child sees or the launch result
+gives, leave the spec `in-review`; do not manufacture either. This holds only
+the claimed review, not unrelated work.
 Reviewer startup output also carries `trace`, the spec's criteria with the tests
 tagged `[AC:<criterion-id>]` (`node .joycraft/runtime/trace.mjs --queue <queue> --spec <id>`
 produces the same). Report untraced criteria as findings; a missing tag alone is
@@ -68,11 +68,7 @@ holds this spec and its dependents, never the queue. A probe outside the named
 checks is a `follow-up` unless it regresses. Never repeat an earlier round's
 finding as new.
 
-Set a PASS verdict only when scope is reviewed, all required evidence is sufficient, and no blocking finding or unresolved UNVERIFIED evidence remains. Then run guarded completion:
-
-```sh
-node .joycraft/runtime/completion.mjs finalize-review --queue <queue-path> --spec <id> --report <report.json>
-```
+Set a PASS verdict only when scope is reviewed, all required evidence is sufficient, and no blocking finding or unresolved UNVERIFIED evidence remains. Then run guarded completion, the startup output's `commands.finalizeReview`. When startup printed `commands.finish` instead, do not finalize: return the report path.
 
 `finalize-review` is the primary command and has exactly the validation of the
 legacy-compatible `complete` alias. Completion validates the report and receipt

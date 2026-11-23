@@ -345,18 +345,19 @@ describe('reviewer agent ID bound at finish (sl2-06c)', () => {
   const checkReport = (root: string, ...extra: string[]) => node(root, 'dispatch-preflight.mjs', ['check-report', '--worker-root', root, '--queue', queuePath, '--spec', '1', '--report', reportPath, ...extra]);
   const finalize = (root: string, ...extra: string[]) => node(root, 'completion.mjs', ['finalize-review', '--queue', queuePath, '--spec', '1', '--report', reportPath, ...extra]);
 
-  /** An in-review spec with a PASS report from a child of the implementer's session that wrote no agentId. */
-  function reviewed({ implementerAgent, reviewerAgent }: { implementerAgent?: string; reviewerAgent?: string } = {}) {
+  /** An in-review spec with a report (PASS unless told) from a child of the implementer's session that wrote no agentId. */
+  function reviewed({ implementerAgent, reviewerAgent, verdict = 'PASS', result = 'PASS', cause, brief }: { implementerAgent?: string; reviewerAgent?: string; verdict?: string; result?: string; cause?: string; brief?: string } = {}) {
     const { root } = fixture({ status: 'in-review' });
+    if (brief) put(join(root, folder, 'brief.md'), brief);
     const out = node(root, 'completion.mjs', ['snapshot', '--queue', queuePath, '--spec', '1', '--out', '.joycraft/local/subject.json']);
     expect(out.status, out.stderr).toBe(0);
     const subject = JSON.parse(readFileSync(join(root, '.joycraft/local/subject.json'), 'utf8'));
     put(join(root, '.joycraft/local/receipt.log'), 'ok\n');
     const report = { schemaVersion: 1, subject, implementerSessionId: 'lead-1', implementerActor: { host: 'claude', sessionId: 'lead-1', ...(implementerAgent ? { agentId: implementerAgent } : {}) },
       reviewer: { sessionId: 'lead-1', actor: { host: 'claude', sessionId: 'lead-1', ...(reviewerAgent ? { agentId: reviewerAgent } : {}) }, independent: true, scopeReviewed: true },
-      verdict: 'PASS', unresolved: [], createdAt: new Date().toISOString(),
+      verdict, unresolved: verdict === 'PASS' ? [] : ['the check did not pass'], createdAt: new Date().toISOString(),
       flows: [{ id: 'flow-1', subjectIdentity: subject.identity, representativeInput: 'the fixture', expected: 'the tests pass', limits: ['fixture only'], criteria: ['spec-1-1'],
-        observations: [{ kind: 'runtime', method: 'test', result: 'PASS', actual: 'they passed', receipts: [{ path: '.joycraft/local/receipt.log', sha256: sha('ok\n') }], command: { argv: ['pnpm', 'test', 'tests/a.test.ts'], exitCode: 0 } }] }] };
+        observations: [{ kind: 'runtime', method: 'test', result, ...(cause ? { cause } : {}), actual: 'they ran', receipts: [{ path: '.joycraft/local/receipt.log', sha256: sha('ok\n') }], command: { argv: ['pnpm', 'test', 'tests/a.test.ts'], exitCode: 0 } }] }] };
     put(join(root, reportPath), JSON.stringify(report, null, 2));
     return root;
   }
@@ -366,7 +367,7 @@ describe('reviewer agent ID bound at finish (sl2-06c)', () => {
     const root = reviewed();
     const strict = checkReport(root);
     expect(strict.status).toBe(1);
-    expect(strict.stderr).toContain('finalize-review --reviewer-agent <id>');
+    expect(strict.stderr).toContain('completion.mjs bind-reviewer --queue <path> --spec <id> --report <path> --reviewer-agent <id>');
     const deferred = checkReport(root, '--agent-at-finish', 'true');
     expect(deferred.status, deferred.stderr).toBe(0);
     // Every other check still runs: a reviewer that is not independent is refused in the same mode.
@@ -382,7 +383,7 @@ describe('reviewer agent ID bound at finish (sl2-06c)', () => {
     const root = reviewed();
     const without = finalize(root);
     expect(without.status).toBe(1);
-    expect(without.stderr).toContain('An independent reviewer must have a distinct native actor; pass the agent ID from the launch result as finalize-review --reviewer-agent <id>');
+    expect(without.stderr).toContain('An independent reviewer must have a distinct native actor; bind the agent ID from the launch result first: completion.mjs bind-reviewer');
     expect(status(root)).toBe('in-review');
     const bound = finalize(root, '--reviewer-agent', 'agent-7');
     expect(bound.status, bound.stderr).toBe(0);
@@ -418,6 +419,84 @@ describe('reviewer agent ID bound at finish (sl2-06c)', () => {
     expect(finalize(legacy, '--reviewer-agent', 'agent-7').stderr).toContain('--reviewer-agent needs a report with reviewer.actor');
   });
 
+  it('[AC:sl2-06c-unchanged] a refused finalize leaves the report bytes unchanged, and the correct ID is accepted afterwards', () => {
+    const root = reviewed({ implementerAgent: 'agent-1' });
+    const before = readFileSync(join(root, reportPath));
+    const wrong = finalize(root, '--reviewer-agent', 'agent-1');
+    expect(wrong.status).toBe(1);
+    expect(wrong.stderr).toContain('distinct');
+    expect(readFileSync(join(root, reportPath)).equals(before)).toBe(true);
+    expect(status(root)).toBe('in-review');
+    const right = finalize(root, '--reviewer-agent', 'agent-7');
+    expect(right.status, right.stderr).toBe(0);
+    expect(JSON.parse(readFileSync(join(root, reportPath), 'utf8')).reviewer.actor.agentId).toBe('agent-7');
+    expect(status(root)).toBe('done');
+  });
+
+  const bind = (root: string, agent: string) => node(root, 'completion.mjs', ['bind-reviewer', '--queue', queuePath, '--spec', '1', '--report', reportPath, '--reviewer-agent', agent]);
+
+  it('[AC:sl2-06c-owner] a FAIL report from the agent-at-finish flow takes its ID with bind-reviewer, then accept-owner accepts it', () => {
+    const root = reviewed({ implementerAgent: 'agent-1', verdict: 'FAIL', result: 'FAIL' });
+    expect(checkReport(root, '--agent-at-finish', 'true').stderr).toContain('Report verdict must be PASS');
+    const decisionPath = `${folder}/owner-acceptance.json`;
+    const decide = () => {
+      const bytes = readFileSync(join(root, reportPath));
+      const report = JSON.parse(bytes.toString('utf8'));
+      put(join(root, decisionPath), JSON.stringify({ schemaVersion: 1, kind: 'owner-acceptance', queuePath, specId: 1, subjectIdentity: report.subject.identity,
+        review: { path: reportPath, sha256: sha(bytes) }, instruction: 'Accept spec 1 as it is.', limitations: ['the check did not pass'], createdAt: new Date().toISOString() }, null, 2));
+      return node(root, 'completion.mjs', ['accept-owner', '--queue', queuePath, '--spec', '1', '--decision', decisionPath]);
+    };
+    // Without the ID, accept-owner refuses and names the bind step.
+    const unbound = decide();
+    expect(unbound.status).toBe(1);
+    expect(unbound.stderr).toContain('completion.mjs bind-reviewer');
+    // A refused bind leaves the bytes as they were.
+    const before = readFileSync(join(root, reportPath));
+    const wrong = bind(root, 'agent-1');
+    expect(wrong.status).toBe(1);
+    expect(wrong.stderr).toContain('distinct');
+    expect(readFileSync(join(root, reportPath)).equals(before)).toBe(true);
+    const bound = bind(root, 'agent-7');
+    expect(bound.status, bound.stderr).toBe(0);
+    expect(JSON.parse(bound.stdout)).toMatchObject({ status: 'bound', unchanged: false, report: { path: reportPath, sha256: sha(readFileSync(join(root, reportPath))) } });
+    expect(JSON.parse(bind(root, 'agent-7').stdout).unchanged).toBe(true);
+    const accepted = decide();
+    expect(accepted.status, accepted.stderr).toBe(0);
+    expect(JSON.parse(accepted.stdout)).toMatchObject({ status: 'done', unchanged: false, verdict: 'FAIL' });
+    expect(status(root)).toBe('done');
+    expect(bind(root, 'agent-7').stderr).toContain('only an in-review spec');
+  });
+
+  it('[AC:sl2-06c-waiver] an UNVERIFIED tool-break report from the agent-at-finish flow takes its ID with bind-reviewer, then accept-waiver --report accepts it', () => {
+    const instruction = 'skip the browser check when tools break';
+    const brief = `---\ndecisions: [{"id": "waive", "status": "clarified", "answer": "yes", "note": "${instruction}"}]\n---\n# Brief\n\n## Goal\n\nText.\n`;
+    const root = reviewed({ verdict: 'UNVERIFIED', result: 'UNVERIFIED', cause: 'tool-break', brief });
+    const waiverPath = `${folder}/waiver.json`;
+    put(join(root, waiverPath), JSON.stringify({ schemaVersion: 1, kind: 'feature-waiver', queuePath, covers: ['tool-break'], instruction, decision: 'waive',
+      source: { path: `${folder}/brief.md`, sha256: sha(readFileSync(join(root, folder, 'brief.md'))) }, createdAt: new Date().toISOString() }, null, 2));
+    const waive = () => node(root, 'completion.mjs', ['accept-waiver', '--queue', queuePath, '--spec', '1', '--waiver', waiverPath, '--report', reportPath]);
+    const unbound = waive();
+    expect(unbound.status).toBe(1);
+    expect(unbound.stderr).toContain('completion.mjs bind-reviewer');
+    const bound = bind(root, 'agent-7');
+    expect(bound.status, bound.stderr).toBe(0);
+    const waived = waive();
+    expect(waived.status, waived.stderr).toBe(0);
+    expect(JSON.parse(waived.stdout)).toMatchObject({ status: 'done', unchanged: false, verdict: 'UNVERIFIED', waiver: { review: { path: reportPath, sha256: sha(readFileSync(join(root, reportPath))) } } });
+    expect(status(root)).toBe('done');
+  });
+
+  it('[AC:sl2-06c-no-actor] a same-session report with no actor records fails agent-at-finish check-report and says what to write', () => {
+    const root = reviewed();
+    const report = JSON.parse(readFileSync(join(root, reportPath), 'utf8'));
+    delete report.implementerActor; delete report.reviewer.actor;
+    put(join(root, reportPath), JSON.stringify(report, null, 2));
+    const refused = checkReport(root, '--agent-at-finish', 'true');
+    expect(refused.status).toBe(1);
+    expect(refused.stderr).toContain('write implementerActor and reviewer.actor as { host, sessionId } with no agentId');
+    expect(checkReport(root).stderr).not.toContain('implementerActor and reviewer.actor');
+  });
+
   it('[AC:sl2-06c-commands] a same-session reviewer with no agent ID gets check-report in agent-at-finish mode and no finalize step', () => {
     const project = fixture({ focused: 'pnpm test {files}', status: 'in-review' });
     const claim = node(project.root, 'coordinator.mjs', ['claim', '--queue', queuePath, '--session', 'lead-1', '--host', 'claude']);
@@ -427,7 +506,7 @@ describe('reviewer agent ID bound at finish (sl2-06c)', () => {
     const commands = JSON.parse(child.stdout).commands;
     expect(commands.checkReport).toBe(`node .joycraft/runtime/dispatch-preflight.mjs check-report --worker-root ${project.root} --queue ${queuePath} --spec 1 --report ${reportPath} --agent-at-finish true`);
     expect(commands.finalizeReview).toBeUndefined();
-    expect(commands.finish).toBe(`Do not run finalize-review. Return the report path: the coordinator runs node .joycraft/runtime/completion.mjs finalize-review --queue ${queuePath} --spec 1 --report ${reportPath} --reviewer-agent <agent ID from the launch result>.`);
+    expect(commands.finish).toBe(`Do not run finalize-review. Return the report path: for a PASS the coordinator runs node .joycraft/runtime/completion.mjs finalize-review --queue ${queuePath} --spec 1 --report ${reportPath} --reviewer-agent <agent ID from the launch result>. For FAIL or UNVERIFIED it runs node .joycraft/runtime/completion.mjs bind-reviewer --queue ${queuePath} --spec 1 --report ${reportPath} --reviewer-agent <that ID> before any owner decision.`);
     const withAgent = node(project.root, 'dispatch-start.mjs', ['--queue', queuePath, '--spec', '1', '--role', 'reviewer', '--coordinator-session', 'lead-1', '--native-agent', 'agent-7']);
     expect(withAgent.status, withAgent.stderr).toBe(0);
     const own = JSON.parse(withAgent.stdout).commands;

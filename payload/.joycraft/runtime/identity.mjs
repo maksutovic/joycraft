@@ -54,8 +54,8 @@ export function sameNativeActor(left, right) {
  * and session-end archival. This is intentionally an integrity check, not a
  * cryptographic authentication service. With agentAtFinish, a reviewer that
  * shares the implementer's session and has no agentId yet passes: the
- * coordinator binds its ID at finish (finalize-review --reviewer-agent), and
- * finalize-review runs the full check. Only that child-ID check is skipped.
+ * coordinator binds its ID at finish (finalize-review or bind-reviewer with
+ * --reviewer-agent), which runs the full check. Only that child-ID check is skipped.
  */
 export function validateIndependentReview(report, { agentAtFinish = false } = {}) {
   requireValue(nonempty(report?.implementerSessionId) && isObject(report?.reviewer) && nonempty(report.reviewer.sessionId), 'Report needs implementer and reviewer session IDs');
@@ -70,7 +70,7 @@ export function validateIndependentReview(report, { agentAtFinish = false } = {}
     const sameSession = implementerActor.host.toLowerCase() === reviewerActor.host.toLowerCase() && implementerActor.sessionId === reviewerActor.sessionId;
     // A same-session child with no agentId yet waits for its ID at finish; the rest of the report is still checked.
     if (!(agentAtFinish && sameSession && reviewerActor.agentId === undefined)) {
-      const hint = sameSession && reviewerActor.agentId === undefined ? '; pass the agent ID from the launch result as finalize-review --reviewer-agent <id>' : '';
+      const hint = sameSession && reviewerActor.agentId === undefined ? '; bind the agent ID from the launch result first: completion.mjs bind-reviewer --queue <path> --spec <id> --report <path> --reviewer-agent <id>' : '';
       requireValue(!sameNativeActor(implementerActor, reviewerActor), `An independent reviewer must have a distinct native actor${hint}`);
       if (sameSession) {
         requireValue(reviewerActor.agentId !== undefined, `A reviewer sharing the implementer root session needs its host-issued child identity${hint}`);
@@ -78,7 +78,9 @@ export function validateIndependentReview(report, { agentAtFinish = false } = {}
       }
     }
   } else {
-    requireValue(report.reviewer.sessionId !== report.implementerSessionId, 'An independent reviewer with a distinct session ID is required');
+    // A child of the implementer's session that wrote no actor records cannot take its ID at finish.
+    const hint = agentAtFinish ? '; a reviewer in the implementer\'s session must write implementerActor and reviewer.actor as { host, sessionId } with no agentId, and the coordinator binds the agent ID' : '';
+    requireValue(report.reviewer.sessionId !== report.implementerSessionId, `An independent reviewer with a distinct session ID is required${hint}`);
   }
   requireValue(report.reviewer.independent === true, 'An independent reviewer is required');
   requireValue(report.reviewer.scopeReviewed === true, 'Independent reviewer must attest scope completeness');
