@@ -1,0 +1,303 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "2b8458f3698b9bebe98601399c37b7ca703e4bdc",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+    "specId": 4,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md",
+    "criteria": [
+      {
+        "id": "spec-4-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-3",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "reviewer-start",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "675c7150d852e372bc565454542c23a920afc2cd733e9da8110e9fca64cba630",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "f24728279f3e78daf383b60110954c1746e5b67d98c3100f09d5a751e55e274d",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md",
+        "kind": "requirement",
+        "sha256": "ac80da61abd1378efd8626ac2a26f988efb7218a8215e56ef2f7609f28a50968",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.claude/agents/joycraft-reviewer.md",
+        "kind": "code",
+        "sha256": "4f27f55ce0cb3d9dd8794bf96273ca0ea54c2eb4a87394952fc9532aa7cfe62d",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/dispatch.md",
+        "kind": "code",
+        "sha256": "11f862b6711226ac8682c014edaf52fdc665ba45d3bae6ba9ca8329e9d9a4409",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+        "kind": "code",
+        "sha256": "56bc097d6c548c6c04e6077a8acd6e27499e198e60363d1719c1347e7c86c8b5",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/evidence.mjs",
+        "kind": "code",
+        "sha256": "f295dfbd36d0a32002b4f8a3279f89d8a2f45beb933d8749618997f4912f37f2",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "71399672a3059075ea96e280f6489d8ece7662b5cd7a96b39b713092d3b77f91",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-dispatch-commands.test.ts",
+        "kind": "check",
+        "sha256": "2cacf71f0bb5826401ad9a88c66d2a3462bc6b07c9654438a272789b9db5ddf6",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-evidence-receipt.test.ts",
+        "kind": "check",
+        "sha256": "d61196a4eb87ad90ef6b139ea6f1bd66a7db96dc7cd8bfa1a9dcd09ed4884e90",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "kind": "check",
+        "sha256": "9a53b7efcc05c5ebee1ec05f49d657e8407c67c81776b4e249be5dd63fccf5b9",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          4
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+          "anchors": [
+            "reviewer-start",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "7910cb58b0537884d2a3330e51e972cf0d44a2510fc460736b41764b0e864a90"
+  },
+  "implementerSessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b"
+  },
+  "reviewer": {
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+    "actor": {
+      "host": "claude",
+      "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+      "agentId": "adcac242218247fdb"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-spec-4-1",
+      "subjectIdentity": "7910cb58b0537884d2a3330e51e972cf0d44a2510fc460736b41764b0e864a90",
+      "criteria": [
+        "spec-4-1"
+      ],
+      "representativeInput": "Code and tests from c519b3f..37c0fc6 (commits 4a9a049 and 37c0fc6) read; focused tests run at e98f7b9 (one later docs/CHANGELOG commit, none of spec 4's inputs changed)",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-1] passed for --help and -h (exit 0, empty stderr, stdout carries every placeholder checked) and --helpme (exit 1, 'Invalid startup argument: --helpme'). Own probe: `node payload/.joycraft/runtime/dispatch-start.mjs -h` exit 0, 0 bytes stderr, usage lists all 20 allowed flags incl. `--native-agent <your-host-agent-id>`, `--coordinator-session`, `agent:separate-context` and the line 'A reviewer adds agent:separate-context.'; `--help --spec 4` (not alone) exit 1 'Invalid startup argument: --help'. Source: main() returns usage only when argv.length === 1 and argv[0] is --help/-h; the flag loop is unchanged.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-4-reviewer-focused-20261123T053109743Z-27082-1.log",
+              "sha256": "19119f0bf68ca4baaddd8357d531db505317d735069daba709edd3d6a45d9cbb"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/runtime-evidence-receipt.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused tests only (4 files, 39 tests passed); project gate not rerun (implementer receipt receipts/spec-4-5-implementer-gate.log)."
+      ]
+    },
+    {
+      "id": "flow-spec-4-2",
+      "subjectIdentity": "7910cb58b0537884d2a3330e51e972cf0d44a2510fc460736b41764b0e864a90",
+      "criteria": [
+        "spec-4-2"
+      ],
+      "representativeInput": "Code and tests from c519b3f..37c0fc6 (commits 4a9a049 and 37c0fc6) read; focused tests run at e98f7b9 (one later docs/CHANGELOG commit, none of spec 4's inputs changed)",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-2] passed: validateEvidence on an observation without receipts returns exactly 'flows[0].observations[0] needs supporting receipt references: add \"receipts\": [{ \"path\": \"<project-relative receipt path>\", \"sha256\": \"<its SHA-256>\" }] for the receipt that evidence.mjs run --receipt wrote for this check'. evidence.mjs diff (4a9a049) changes only that one fail() message.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-4-reviewer-focused-20261123T053109743Z-27082-1.log",
+              "sha256": "19119f0bf68ca4baaddd8357d531db505317d735069daba709edd3d6a45d9cbb"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/runtime-evidence-receipt.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused tests only (4 files, 39 tests passed); project gate not rerun (implementer receipt receipts/spec-4-5-implementer-gate.log)."
+      ]
+    },
+    {
+      "id": "flow-spec-4-3",
+      "subjectIdentity": "7910cb58b0537884d2a3330e51e972cf0d44a2510fc460736b41764b0e864a90",
+      "criteria": [
+        "spec-4-3"
+      ],
+      "representativeInput": "Code and tests from c519b3f..37c0fc6 (commits 4a9a049 and 37c0fc6) read; focused tests run at e98f7b9 (one later docs/CHANGELOG commit, none of spec 4's inputs changed)",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-3] passed. payload/.claude/agents/joycraft-reviewer.md now points to `.joycraft/references/dispatch.md#start-a-native-dispatch` (heading '## Start a native dispatch' exists at dispatch.md:24) with '(`--help` prints it)', and adds 'When the task names a worker root that is not your shell's folder, run each command as `cd <worker-root> && <one command>`.' dispatch.md adds 'A Claude Code child cannot see its own agent ID: the coordinator sends it the ID from the launch result before its startup.' payload-guard.test.ts unchanged in the range and passed (every-spec word cap held).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-4-reviewer-focused-20261123T053109743Z-27082-1.log",
+              "sha256": "19119f0bf68ca4baaddd8357d531db505317d735069daba709edd3d6a45d9cbb"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/runtime-evidence-receipt.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused tests only (4 files, 39 tests passed); project gate not rerun (implementer receipt receipts/spec-4-5-implementer-gate.log)."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.claude/agents/joycraft-reviewer.md:16",
+      "summary": "The reviewer agent now says 'never `&&` ... or `cd` out of the root' and, two lines later, 'run each command as `cd <worker-root> && <one command>`'. The implementer agent (spec 2) explains why the cd form is the one allowed exception (no worktree isolation is active); the reviewer text does not, so a reader may see a contradiction. Brief asked for the form, so not blocking; consider the same one-clause reason."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": ".claude/agents/joycraft-reviewer.md",
+      "summary": "This repo's own installed copy .claude/agents/joycraft-reviewer.md still has the pre-change text (differs from payload/). payload/ is the source and shipped bundle is correct; this repo's installed copy updates only on a Joycraft update. This review's task prompt had to supply the cd form and agent ID by hand."
+    },
+    {
+      "id": "f3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/brief.md:20",
+      "summary": "Commit 37c0fc6 added the reviewer-start and amendment-message sections and a context paragraph to the brief after specs 1 and 2 were accepted (c519b3f, 443cb58); brief frontmatter has `decisions: []`. Archive at session end will refuse until brief-amendments.json names an answered owner decision for that commit (the behavior spec 5 documents). Coordinator should record it before archive."
+    },
+    {
+      "id": "f4",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-archive-merge-amendment.test.ts:74",
+      "summary": "testChanges lists all four changed test files as undeclared because the spec file was first committed after the --changes-base. The three spec-4 test diffs are add-only new `it` blocks, each required by an acceptance bullet that names the file and states the new value (class 1, as the spec's Test changes section declares). runtime-archive-merge-amendment.test.ts is spec 5's test (in range only because 4a9a049 carried both specs) and is not judged here."
+    },
+    {
+      "id": "f5",
+      "class": "follow-up",
+      "origin": "unknown",
+      "summary": "Reviewer agentId adcac242218247fdb was supplied by the coordinator from the host's launch result; this reviewer cannot observe it directly."
+    }
+  ],
+  "createdAt": "2026-11-23T05:32:14.000Z"
+}

@@ -1,6 +1,6 @@
 ---
 id: 4
-status: in-review
+status: done
 ---
 # A reviewer starts on the first try
 
