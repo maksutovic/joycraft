@@ -47,14 +47,11 @@ commit permitted receipts or a sanitized index, and deliver approved local
 sensitive evidence through the existing scoped path. A private screenshot need
 not become a tracked asset, and an inaccessible gitignored path is not evidence.
 
-Use the child command for ordinary new work. Once the host has launched a worker
-and its root is known, the child derives the current queue, spec, brief (or explicit `--brief`) and
-declared input hashes, prepares and binds the current packet, and writes it to a
-project-relative parent directory. Write packets and subjects under
-`.joycraft/local/packets/` so they do not become unrelated scope paths; startup
-creates that directory and refuses an output Git would track, so do not create
-or check it yourself. The child bootstraps and starts from its actual worker
-root before mutation; never start against a guessed path:
+Use the child command for ordinary new work. After the host launches a worker,
+the worker runs startup from its actual root before any change. Startup derives
+the queue, spec, brief (or `--brief`) and input hashes, then writes the bound
+packet. Keep packets and subjects under `.joycraft/local/packets/`: startup
+creates that folder and refuses an output Git would track.
 
 ```sh
 node .joycraft/runtime/dispatch-start.mjs --queue <queue-path> --spec <id> \

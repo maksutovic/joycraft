@@ -80,7 +80,7 @@ describe('one worker home (1.9.3)', () => {
 // Spec: docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md
 describe('reviewer start text (1.9.3)', () => {
   it('[AC:spec-4-3] the reviewer gets the start command, --help, the worker-root cd form and its agent ID from the coordinator', () => {
-    expect(agents.reviewer).toContain('with the command in `.joycraft/references/dispatch.md#start-a-native-dispatch` (`--help` prints it).');
+    expect(agents.reviewer).toContain('run `node .joycraft/runtime/dispatch-start.mjs --queue <queue> --spec <id> --role reviewer` from your worker root, adding `--coordinator-session <id>` when the task names one. `--help` lists the defaults.');
     expect(agents.reviewer).toContain("When the task names a worker root that is not your shell's folder, run each command as `cd <worker-root> && <one command>`.");
     expect(dispatch).toContain('A Claude Code child cannot see its own agent ID: the coordinator sends it the ID from the launch result before its startup.');
   });
@@ -103,5 +103,14 @@ describe('field follow-up text (1.9.4)', () => {
     expect(completionRef).toContain("`reopen` moves such a spec back to `in-review`, keeps the old report in `reopened`, and restarts its review round count.");
     expect(dispatch).toContain('Each reviewer startup gets a new report path, which wins over any project naming rule.');
     expect(update).toContain('Update only between specs, while no implementer or reviewer runs; finish or park the work in progress first.');
+  });
+});
+
+// Spec: .joycraft/local/loop/iter2/chair.md, sl2-06 part b (reviewer reading).
+describe('reviewer reading (sl2-06b)', () => {
+  it('[AC:sl2-06b-reading] the reviewer reads AGENTS.md, the matching map pages and the verify skill only, and skips the update check', () => {
+    const text = agents.reviewer;
+    expect(text).toContain('Read `AGENTS.md` (or `CLAUDE.md`), each page whose context-map row matches the spec, and `.claude/skills/joycraft-verify/SKILL.md`. Skip the update check. Open another reference only when a command refuses or a step below names it.');
+    for (const gone of ['references/completion.md', 'contracts/types.d.ts', 'references/dispatch.md']) expect(agents.reviewer).not.toContain(gone);
   });
 });

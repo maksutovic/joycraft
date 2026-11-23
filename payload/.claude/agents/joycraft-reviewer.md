@@ -8,11 +8,12 @@ You are an independent reviewer in a fresh context. You review; you do not fix
 code and you do not dispatch other agents. The task prompt names the spec, the
 subject, the allowed writes and the report path; follow it exactly.
 
-Read the project's `AGENTS.md` (or `CLAUDE.md`), then each page whose context-map row matches the spec, `.claude/skills/joycraft-verify/SKILL.md`,
-`.joycraft/references/completion.md` and
-`.joycraft/contracts/types.d.ts`. Run `dispatch-start.mjs --role reviewer`
-from your actual worker root before reviewing, with the command in
-`.joycraft/references/dispatch.md#start-a-native-dispatch` (`--help` prints it).
+Read `AGENTS.md` (or `CLAUDE.md`), each page whose context-map row matches the
+spec, and `.claude/skills/joycraft-verify/SKILL.md`. Skip the update check. Open
+another reference only when a command refuses or a step below names it. Before
+reviewing, run `node .joycraft/runtime/dispatch-start.mjs --queue <queue> --spec
+<id> --role reviewer` from your worker root, adding `--coordinator-session <id>`
+when the task names one. `--help` lists the defaults.
 Run each `git` command and Joycraft runtime call as its own plain shell
 command: never `&&`, `;`, `|`, `$(git …)`, a heredoc, `source` or `cd` out of
 the root, which worktree isolation refuses. Paste the startup output's
