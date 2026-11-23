@@ -7,6 +7,18 @@ claim that a release has shipped.
 
 ---
 
+## Unreleased
+
+### Changed
+
+- **`joycraft update` refreshes Joycraft's block in `AGENTS.md`.** When the text
+  between the `<!-- joycraft:managed -->` markers differs from the current block,
+  `update` rewrites only that text, saves the previous file under
+  `.joycraft-backups/update-<stamp>/files/AGENTS.md` and prints one line with the
+  backup path. It also does this when no Joycraft file changed. Every byte outside
+  the markers stays. With no markers, one marker or markers in a code fence, and on
+  `init`, it does nothing; `--plan` says it will update the block.
+
 ## 1.9.4 — Field follow-ups for queue runs
 
 A field project's four-spec queue showed what happens when a later spec has to

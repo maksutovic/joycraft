@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join, resolve } from 'path';
 import { createInterface } from 'node:readline/promises';
-import { applyInstall, checkWiring, doctor, formatPlan, formatWiring, WIRING_SENTENCE, planInstall, readManifest, recordedHosts, recoverInstall } from './install-v1.js';
+import { applyInstall, checkWiring, doctor, formatManagedBlock, formatPlan, formatWiring, refreshManagedBlock, WIRING_SENTENCE, planInstall, readManifest, recordedHosts, recoverInstall } from './install-v1.js';
 import { detectLegacy, formatLegacyPlan, migrateLegacy, planLegacy, recoverLegacy } from './legacy-07.js';
 import { applyRollback, formatRollback, planRollback } from './rollback.js';
 import { GUARD_FLAG_HINT, guardQuestion, type GuardAnswer, type LegacyGuard } from './legacy-guard.js';
@@ -152,26 +152,38 @@ async function install(dir: string, opts: InstallOptions, mode: 'init' | 'update
   const plan = planInstall(root, hosts);
   if (opts.plan) {
     // Nothing records the hosts yet, so the check is told which ones were chosen.
-    const wiring = await checkWiring(root, { hosts });
-    out(opts.json, { ...plan, wiring }, [formatPlan(plan), ...formatWiring(wiring, '  ', { planned: true })].join('\n'));
+    let wiring = await checkWiring(root, { hosts });
+    const managedBlock = mode === 'update' ? await refreshManagedBlock(root, { dryRun: true }) : null;
+    // The update rewrites the block, so its finding is not left for the agent.
+    if (wiring && managedBlock?.lines) {
+      const findings = wiring.findings.filter((finding) => finding.check !== 'managed-block');
+      wiring = { ...wiring, findings, wired: !findings.length };
+    }
+    out(opts.json, { ...plan, wiring, ...(managedBlock ? { managedBlock } : {}) },
+      [formatPlan(plan), ...formatManagedBlock(managedBlock, { planned: true }), ...formatWiring(wiring, '  ', { planned: true })].join('\n'));
     return;
   }
   const guardAnswer = await answerGuard(plan.guard, opts);
   if (guardAnswer === 'stop') return;
   plan.guardAnswer = guardAnswer;
   if (!plan.actions.some((action) => action.kind !== 'conflict') && !plan.gitignore.length && !guardAnswer) {
+    // A stale block between Joycraft's markers is rewritten even when no file changes.
+    const managedBlock = mode === 'update' ? await refreshManagedBlock(root) : null;
     const wiring = await checkWiring(root);
-    out(opts.json, { status: 'noop', exitCode: 0, version: plan.to.joycraft, hosts, plan, wiring },
-      [`Joycraft ${plan.to.joycraft} is up to date for ${hosts.join(', ')}.`, ...formatWiring(wiring)].join('\n'));
+    out(opts.json, { status: 'noop', exitCode: 0, version: plan.to.joycraft, hosts, plan, wiring, ...(managedBlock ? { managedBlock } : {}) },
+      [`Joycraft ${plan.to.joycraft} is up to date for ${hosts.join(', ')}.`, ...formatManagedBlock(managedBlock), ...formatWiring(wiring)].join('\n'));
     return;
   }
   if (!(await approved(opts, formatPlan(plan), installed ? 'Update Joycraft?' : 'Install Joycraft?'))) return;
   const result = applyInstall(plan);
-  // Report only: the CLI never writes AGENTS.md or CLAUDE.md; the agent wires them up.
+  // The CLI writes no entry file, except that `update` rewrites the text between
+  // Joycraft's markers in AGENTS.md (backed up); the agent wires up the rest.
+  const managedBlock = mode === 'update' ? await refreshManagedBlock(root, { backup: result.backup }) : null;
   const wiring = await checkWiring(root);
-  out(opts.json, { status: 'applied', exitCode: 0, version: plan.to.joycraft, hosts, ...result, wiring }, [
+  out(opts.json, { status: 'applied', exitCode: 0, version: plan.to.joycraft, hosts, ...result, wiring, ...(managedBlock ? { managedBlock } : {}) }, [
     `${installed ? 'Updated' : 'Installed'} Joycraft ${plan.to.joycraft} for ${hosts.join(', ')}: ${result.written.length} written, ${result.removed.length} removed.`,
     ...(result.backup ? [`Previous files are in ${result.backup}/.`] : []),
+    ...formatManagedBlock(managedBlock),
     ...guardDone(guardAnswer),
     ...result.conflicts.map((path) => `Kept your file (not installed): ${path}`),
     ...(installed || wiring?.findings.length ? [] : ['Next: open your coding agent here and say what you want to build. Joycraft sets up the rest.']),

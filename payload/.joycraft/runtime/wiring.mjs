@@ -50,7 +50,7 @@ function claudeInstalled(root, hosts) {
 }
 
 // Lines outside fenced code, so an example in a fence is not read as the map.
-function proseLines(text) {
+export function proseLines(text) {
   let fence = null;
   return text.split(/\r?\n/).map(line => {
     const marker = /^\s*(`{3,}|~{3,})/.exec(line)?.[1];

@@ -6,7 +6,8 @@ import { afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { applyInstall, checkWiring, formatWiring, planInstall, WIRING_SENTENCE } from '../src/install-v1.js';
 
 // Spec 10 (install-entry-files): init, update and doctor report an unwired
-// project and never write AGENTS.md or CLAUDE.md.
+// project and never write AGENTS.md or CLAUDE.md. Spec sl3-02: the one exception,
+// `update` rewrites the text between Joycraft's markers in AGENTS.md.
 const repo = join(__dirname, '..');
 // Its own build folder, so it never races the other CLI test file's build.
 const cli = join(repo, '.test-dist-wiring/cli.js');
@@ -40,6 +41,22 @@ function project(files: Record<string, string> = {}): string {
   }
   return dir;
 }
+
+const entryCheck = join(repo, 'payload/.joycraft/runtime/entry-check.mjs');
+const currentBlock = () => execFileSync(process.execPath, [entryCheck, 'block'], { encoding: 'utf8' }).replace(/\n$/, '');
+// The block that Joycraft 1.9.4 installed.
+const BLOCK_194 = [
+  '<!-- joycraft:managed -->',
+  '- First action in each session: run `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow `.joycraft/references/update.md`.',
+  "- Ask a person to answer or approve anything only through Joycraft's decision artifact (`node .joycraft/runtime/artifacts/cli.mjs`, see `.joycraft/references/artifacts.md#asking-questions`), in the project's question style. Every page that shows a person a document, a question or a decision comes from that engine: never write your own HTML page for one. Show every other document a person must read (a plan, spec set, report or review) as an engine page (`--doc`), never only as Markdown in chat, where the person works (see `.joycraft/references/artifacts.md#showing-a-page`), and say where it is.",
+  '- A Context Map row that matches your next step binds: read that page first, and again after a compaction or in a new agent. A record (a log or history) is an audit trail: search it to learn why or when; do not read it at the start.',
+  '- When a fact here disagrees with the code, trust the code and report it. A rule holds even when the code breaks it.',
+  '- Search the mapped pages first. A doc that no map row reaches is working material, not current truth.',
+  '<!-- /joycraft:managed -->',
+].join('\n');
+const ABOVE = '# App\n\nMy own rules above.\n\n';
+const BELOW = '\n\n## Context Map\n\n| Document | Read it when… |\n|---|---|\n| `docs/architecture.md` | Changing modules |\n\nMy notes below.\n';
+const UPDATED_LINE = /^Updated Joycraft's block in AGENTS\.md \(lines (\d+)–(\d+)\)\. The previous file is in (\S+)\/\.$/m;
 
 const bytes = (dir: string, path: string) => (existsSync(join(dir, path)) ? readFileSync(join(dir, path), 'utf8') : null);
 
@@ -142,5 +159,75 @@ describe('spec 10: init, update and doctor report an unwired project', () => {
     expect(wiring?.wired).toBe(true);
     expect(wiring?.advice.map((item) => item.check)).toEqual(['unmapped-areas']);
     expect(formatWiring(wiring).join('\n')).toContain('Not mapped yet');
+  });
+});
+
+describe('sl3-02: update refreshes the managed block', () => {
+  const installed = (agents: string) => {
+    const dir = project({ 'AGENTS.md': agents });
+    expect(run(dir, 'init', '.', '--harness', 'codex', '--yes').status).toBe(0);
+    return dir;
+  };
+
+  it('[AC:sl3-02-rewrite] [AC:sl3-02-backup-line] update --yes replaces the 1.9.4 block and keeps every byte outside the markers', () => {
+    const before = `${ABOVE}${BLOCK_194}${BELOW}`;
+    const dir = installed(before);
+    expect(bytes(dir, 'AGENTS.md'), 'init leaves the block').toBe(before);
+    rmSync(join(dir, '.joycraft/runtime/scope.mjs'));
+    const result = run(dir, 'update', '.', '--yes');
+    expect(result.status, result.stderr).toBe(0);
+    expect(bytes(dir, 'AGENTS.md')).toBe(`${ABOVE}${currentBlock()}${BELOW}`);
+    const lines = result.stdout.split('\n').filter((line) => UPDATED_LINE.test(line));
+    expect(lines).toHaveLength(1);
+    const [, a, b, backup] = UPDATED_LINE.exec(lines[0])!;
+    expect([Number(a), Number(b)]).toEqual([5, 4 + currentBlock().split('\n').length]);
+    expect(result.stdout).toContain(`Previous files are in ${backup}/.`);
+    expect(bytes(dir, join(backup, 'files', 'AGENTS.md'))).toBe(before);
+    expect(JSON.parse(run(dir, 'update', '.', '--yes', '--json').stdout).managedBlock).toEqual({ updated: false, backup: null, lines: null });
+  });
+
+  it('[AC:sl3-02-rewrite] CRLF line endings stay CRLF, inside and outside the block', () => {
+    const crlf = (text: string) => text.replace(/\n/g, '\r\n');
+    const dir = installed(crlf(`${ABOVE}${BLOCK_194}${BELOW}`));
+    expect(run(dir, 'update', '.', '--yes').status).toBe(0);
+    expect(bytes(dir, 'AGENTS.md')).toBe(crlf(`${ABOVE}${currentBlock()}${BELOW}`));
+  });
+
+  it('[AC:sl3-02-noop-update] with no payload change, update still rewrites a stale block and reports it in --json', () => {
+    const dir = installed(`${ABOVE}${BLOCK_194}${BELOW}`);
+    const result = JSON.parse(run(dir, 'update', '.', '--yes', '--json').stdout);
+    expect(result.status).toBe('noop');
+    expect(result.managedBlock).toMatchObject({ updated: true, lines: [5, expect.any(Number)] });
+    expect(bytes(dir, join(result.managedBlock.backup, 'files', 'AGENTS.md'))).toBe(`${ABOVE}${BLOCK_194}${BELOW}`);
+    expect(bytes(dir, 'AGENTS.md')).toBe(`${ABOVE}${currentBlock()}${BELOW}`);
+    expect(result.wiring.findings.map((finding: { check: string }) => finding.check)).not.toContain('managed-block');
+  });
+
+  it('[AC:sl3-02-no-touch] no markers, one marker, a fenced block, a current block, init and --plan leave AGENTS.md as it is', () => {
+    const [open] = BLOCK_194.split('\n');
+    const cases = {
+      'no markers': UNWIRED_AGENTS,
+      'one marker': `${ABOVE}${BLOCK_194.split('\n').slice(0, -1).join('\n')}${BELOW}`,
+      'fenced block': `${ABOVE}\`\`\`md\n${BLOCK_194}\n\`\`\`${BELOW}`,
+      'closing before opening': `${ABOVE}<!-- /joycraft:managed -->\n- old\n${open}${BELOW}`,
+      'current block': `${ABOVE}${currentBlock()}${BELOW}`,
+    };
+    for (const [name, text] of Object.entries(cases)) {
+      const dir = installed(text);
+      expect(bytes(dir, 'AGENTS.md'), `${name}: init`).toBe(text);
+      const result = run(dir, 'update', '.', '--yes');
+      expect(result.status, `${name}: ${result.stderr}`).toBe(0);
+      expect(result.stdout, name).not.toMatch(UPDATED_LINE);
+      expect(bytes(dir, 'AGENTS.md'), name).toBe(text);
+    }
+    const stale = `${ABOVE}${BLOCK_194}${BELOW}`;
+    const dir = project({ 'AGENTS.md': stale });
+    expect(run(dir, 'init', '.', '--harness', 'codex', '--yes').status).toBe(0);
+    expect(run(dir, 'init', '.', '--harness', 'codex', '--yes').status).toBe(0);
+    const plan = run(dir, 'update', '.', '--plan');
+    expect(plan.stdout).toContain("Will update Joycraft's block in AGENTS.md");
+    expect(JSON.parse(run(dir, 'update', '.', '--plan', '--json').stdout).managedBlock).toMatchObject({ updated: false, lines: [5, expect.any(Number)] });
+    expect(bytes(dir, 'AGENTS.md')).toBe(stale);
+    expect(existsSync(join(dir, '.joycraft-backups'))).toBe(false);
   });
 });

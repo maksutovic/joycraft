@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-05ed9a5e0c72",
-  "commit": "05ed9a5e0c72c102d8467ef6cc48825461449bf4f31d739e98c6d4415513ef64",
+  "tag": "payload-2bbc6c7714c1",
+  "commit": "2bbc6c7714c1bc00e8fa943f9e572513e7ef687d22f4eabdbe20ac6cee6d2fa6",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -42,7 +42,7 @@
     ".joycraft/references/testing-page.md": "cebab29e0debb7d5484a068dc36e0cf17a5855832585163eed5af58b773de110",
     ".joycraft/references/testing-review.md": "059634cc301287e223c743a4f57252364a1e811d09b05209bb9276565ae3130d",
     ".joycraft/references/testing.md": "8882ec478956b07d6f166bac0e38bf4bbf0e29c7d8dcc3d286ef34e2a70bb190",
-    ".joycraft/references/update.md": "2ed126b867ec8ddfa9404d0ae156e3270e2312c5d72482e232e17361ab31f312",
+    ".joycraft/references/update.md": "30af34c5257315a264c2e467b8f151871d9f6b6539eb2f6091c3c1fc13ff9b29",
     ".joycraft/references/workflow.md": "5b330debc6759b8f7975b159632f51074802067291fe4f4bebfb344f5b60cc52",
     ".joycraft/references/worktrees.md": "b37d659e46ddc40736c2e4c83c5b2448a258f9ff03498604edaaad047128b5e7",
     ".joycraft/runtime/archive.mjs": "d662ed35ebe19a54d39b8fd3567b992b2773510b2ea5ee423366937cd6c24e47",
@@ -79,7 +79,7 @@
     ".joycraft/runtime/test-changes.mjs": "dba78445fa51e272b328a65b29f002902c088f65cbe6572396fc93ed117aa155",
     ".joycraft/runtime/trace.mjs": "4ea96667566e01856e86f4fcdf36d211ff423ff01415edbc32c8f1cf77b0a224",
     ".joycraft/runtime/update-check.mjs": "a133133614fbda368d411166f7ab563ccbfe9cb325955c3125d84e544221051f",
-    ".joycraft/runtime/wiring.mjs": "ae80d85ef9e30ead568550a9ce95fe825fd55f91d6b593042f2df366821cc696",
+    ".joycraft/runtime/wiring.mjs": "885b1a142d32fcfe46defc55f852927ec25f2b405c037218d39f223723635fa6",
     ".joycraft/runtime/worktrees.mjs": "7b3b0e793745c0280d3c652b9f32335f4e6ad75c39e5582e27987af000d46409",
     ".joycraft/templates/README.md": "56a166d0729e8b6c3bcb098afb8145006259357087fd8b1f1f343d9a2b4d36e0",
     ".joycraft/templates/artifact.json": "fda5f7c32516d6ab094ee0e8506d84a1a0d6d4d0f49048b01aa392c619996f05",

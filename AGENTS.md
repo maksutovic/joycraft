@@ -24,7 +24,7 @@ The `joycraft` npm package. Its CLI installs and updates Joycraft, a skill bundl
 - Implement from the atomic specs in `docs/features/<slug>/specs/`.
 - Run `/release-docs-sync` before `gh pr create`: a PR that touches `src/`, `scripts/` or `payload/` must change `CHANGELOG.md` or carry a `Docs: none — <reason>` line in its body.
 - A merge to main that changes a product path (`isProductPath` in `scripts/release-preparation.mjs`) publishes to npm and needs its release fields; a docs-only merge publishes nothing. Do not introduce a second release PR, manual promotion approval or new credential gate without the maintainer's explicit approval.
-- Never overwrite user files without explicit confirmation or `--force`. One approved exception: an explicit `update` replaces an edited Joycraft-owned file (skill, template, hook, script) after saving the edited copy under `.joycraft-backups/`; user-owned files (`CLAUDE.md`, `AGENTS.md`, settings, `deny-patterns.txt`) are never replaced this way.
+- Never overwrite user files without explicit confirmation or `--force`. One approved exception: an explicit `update` replaces an edited Joycraft-owned file (skill, template, hook, script) after saving the edited copy under `.joycraft-backups/`; user-owned files (`CLAUDE.md`, `AGENTS.md`, settings, `deny-patterns.txt`) are never replaced this way. The text between Joycraft's two markers in `AGENTS.md` is Joycraft's: an explicit `update` rewrites it, with the same backup.
 - Never add a runtime dependency that is not strictly necessary.
 - Never reference absolute paths: everything in `payload/` uses project-relative paths.
 - Never put methodology research, project assessments or personal notes in the shipped tool.

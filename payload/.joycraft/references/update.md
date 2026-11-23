@@ -43,9 +43,9 @@ Use the version that the line or `latest` names:
    migration plan and stops: show the plan and follow its steps with the user. Never
    apply a migration without the user's yes.
 3. Run `npx joycraft@<latest> doctor .`, then `node .joycraft/runtime/entry-check.mjs`.
-   When it reports `managed-block`, replace the block in `AGENTS.md` with the
-   output of `entry-check.mjs block` and remove each older Joycraft line that
-   the block replaces. This is the one entry-file edit that an unattended run
+   The update rewrote the text between Joycraft's markers in `AGENTS.md` and
+   printed its backup. When `entry-check.mjs` still reports `managed-block`, the
+   lines are loose: replace them with the output of `entry-check.mjs block`. This is the one entry-file edit that an unattended run
    makes, besides a path with one unique Git rename.
    When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`,
    ask once whether search should skip the archive; rerun it with `--apply` on
@@ -67,8 +67,7 @@ Use the version that the line or `latest` names:
    detected tool, offer to switch that package to it and re-record only that
    package with `--choose`.
    When it reports `recorded with v1; re-record to keep it`, confirm the table with the
-   user and run record again, repeating any `--choose` or `--skip` the table shows; a
-   v1 record does not carry them over.
+   user and run record again, repeating any `--choose` or `--skip` the table shows.
 
 If the update fails, run `npx joycraft@<latest> update . --recover`, tell the user
 that the files are back as they were, and continue your work.

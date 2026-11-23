@@ -264,6 +264,60 @@ export async function checkWiring(dir: string, { hosts }: { hosts?: readonly Hos
   } catch { return null; }
 }
 
+/** What `update` did to Joycraft's block in AGENTS.md; `lines` is the block's new range. */
+export interface ManagedBlockResult { updated: boolean; backup: string | null; lines: [number, number] | null }
+
+/**
+ * Rewrite the text between Joycraft's two markers in AGENTS.md when it is not
+ * the package's block. Only that range changes; every other byte stays, the
+ * line ending style included. Nothing happens with no AGENTS.md, no markers, one
+ * marker, a marker in a code fence or a current block; loose older lines stay
+ * for the agent. The previous file goes to `backup` (a new update folder when
+ * none is given). `dryRun` reports the range and writes nothing.
+ */
+export async function refreshManagedBlock(dir: string, { backup, dryRun = false }: { backup?: string | null; dryRun?: boolean } = {}): Promise<ManagedBlockResult> {
+  const none: ManagedBlockResult = { updated: false, backup: null, lines: null };
+  const root = resolve(dir);
+  let bytes: Buffer | null;
+  try { bytes = readBytes(root, 'AGENTS.md'); } catch { return none; }
+  const path = join(payloadRoot(), WIRING_MODULE);
+  if (!bytes || !existsSync(path)) return none;
+  let wiring: {
+    managedState?: (text: string) => { state: string }; proseLines?: (text: string) => string[];
+    managedBlock?: string; managedOpen?: string; managedClose?: string;
+  };
+  try { wiring = await import(pathToFileURL(path).href); } catch { return none; }
+  const { managedState, proseLines, managedBlock, managedOpen, managedClose } = wiring;
+  if (!managedState || !proseLines || !managedBlock || !managedOpen || !managedClose) return none;
+  const text = bytes.toString('utf8');
+  if (managedState(text).state !== 'changed') return none;
+  // Fenced lines read as blank, so a marker in a code fence is not a marker.
+  const prose = proseLines(text).map((line) => line.trimEnd());
+  const open = prose.indexOf(managedOpen); const close = prose.indexOf(managedClose);
+  if (open === -1 || close <= open) return none;
+  const raw = text.split('\n');
+  const start = raw.slice(0, open).reduce((sum, line) => sum + line.length + 1, 0);
+  const closeStart = raw.slice(0, close).reduce((sum, line) => sum + line.length + 1, 0);
+  const end = closeStart + raw[close].replace(/\r$/, '').length;
+  const eol = raw[open].endsWith('\r') ? '\r\n' : '\n';
+  const block = managedBlock.split('\n');
+  const lines: [number, number] = [open + 1, open + block.length];
+  if (dryRun) return { ...none, lines };
+  const folder = backup ?? join(BACKUP_ROOT, `update-${stamp()}`);
+  mkdirSync(inside(root, join(folder, 'files')), { recursive: true });
+  copyFileSync(inside(root, 'AGENTS.md'), inside(root, join(folder, 'files', 'AGENTS.md')));
+  if (!existsSync(inside(root, join(folder, '.gitignore')))) writeFile(root, join(folder, '.gitignore'), '*\n');
+  writeFile(root, 'AGENTS.md', `${text.slice(0, start)}${block.join(eol)}${text.slice(end)}`);
+  return { updated: true, backup: folder, lines };
+}
+
+/** The line `update` prints for a rewritten block; none when nothing changed. */
+export function formatManagedBlock(result: ManagedBlockResult | null, { planned = false } = {}): string[] {
+  if (!result?.lines) return [];
+  if (planned) return [`  Will update Joycraft's block in AGENTS.md (lines ${result.lines[0]}–${result.lines[1]}).`];
+  return result.updated ? [`Updated Joycraft's block in AGENTS.md (lines ${result.lines[0]}–${result.lines[1]}). The previous file is in ${result.backup}/.`] : [];
+}
+
 /** Plain-words lines for an unwired project; none when it is wired. */
 export function formatWiring(wiring: WiringResult | null, indent = '', { planned = false } = {}): string[] {
   if (!wiring) return [];
