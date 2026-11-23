@@ -237,6 +237,22 @@ describe('the offline look check (scripts/trial/look-eval.mjs)', () => {
     expect(screenVerdict(['ok', 'unclear'])).toBe('unclear');
   });
 
+  it('[AC:sl2-02] the top part starts at sips row 1, because row 0 gives the centre crop', async () => {
+    const { partOffsets, sipsOffset } = await import('../scripts/trial/look-eval.mjs');
+    const rows = partOffsets(1100, 2600).map(part => sipsOffset(part.y, part.height, 2600));
+    expect(rows).toEqual([1, 440, 880, 1320, 1719]);
+  });
+
+  it('[AC:sl2-02] each look task states the date its screen was rendered', async () => {
+    const { CAPTURED, SCREENS, lookTask, renderLine } = await import('../scripts/trial/look-eval.mjs');
+    expect(Object.keys(CAPTURED).sort()).toEqual(Object.keys(SCREENS).sort());
+    expect(renderLine('2026-11-22T21:50')).toBe('The render was made on Sunday, Nov 22, 2026, at 9:50 PM.');
+    expect(renderLine('2026-11-23T00:05')).toBe('The render was made on Monday, Nov 23, 2026, at 12:05 AM.');
+    const task = lookTask('words', ['/x/screen.png'], 'Question?', CAPTURED.Q2).split('\n');
+    expect(task.slice(-4)).toEqual(['Render: /x/screen.png', 'The render was made on Sunday, Nov 22, 2026, at 11:45 PM.', '', 'Question?']);
+    expect(lookTask('words', ['/x/screen.png'], 'Question?')).not.toContain('render was made');
+  });
+
   it('[AC:sl2-02] the ship rules: (b) only when it passes and (a) does not; crop only when it wins and never loses', async () => {
     const { decide, LABELS } = await import('../scripts/trial/look-eval.mjs');
     const labelled = Object.keys(LABELS).filter(screen => LABELS[screen] !== 'info');

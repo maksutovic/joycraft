@@ -17,7 +17,7 @@
 // Usage:
 //   node scripts/trial/look-eval.mjs --trial <dir> --words <file>[,<file>]
 //     [--models haiku] [--cells full-a,full-b,crop-a,crop-b] [--runs 1]
-//     [--jobs 4] [--second] [--out <file.json>]
+//     [--jobs 4] [--second] [--out <file.json>] [--note <text>]
 // <dir> is the ride trial folder (see SCREENS). Each <file> holds the user's words.
 import { execFileSync, spawn } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -41,6 +41,28 @@ export const SCREENS = Object.fromEntries([
   ...['P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9', 'Q1', 'Q2', 'Q3'].map(screen => [screen, `v2/judge/${screen}/screen.png`]),
   ['Q2-flooded', 'loop/arms/jc-i1-r3/.tmp/shots/forecast-flooded.png'],
 ]);
+// When each screen was rendered, local time, from the file dates. All are the
+// evening of Sunday, Nov 22. A real look runs on the day of its render, but the
+// eval may run later. The look reads "today" from the system date, so the task
+// states the render date (see renderLine).
+export const CAPTURED = {
+  P1: '2026-11-22T22:03', P2: '2026-11-22T21:50', P3: '2026-11-22T21:50', P4: '2026-11-22T21:50',
+  P5: '2026-11-22T21:50', P6: '2026-11-22T21:50', P7: '2026-11-22T21:50', P8: '2026-11-22T21:50',
+  P9: '2026-11-22T21:50', Q1: '2026-11-22T23:45', Q2: '2026-11-22T23:45', Q3: '2026-11-22T23:45',
+  'Q2-flooded': '2026-11-22T23:43',
+};
+
+/** The task line that gives the render date, such as "The render was made on Sunday, Nov 22, 2026, at 9:50 PM." */
+export function renderLine(stamp) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(stamp ?? '');
+  if (!match) throw new Error(`Bad render date: ${stamp}`);
+  const [year, month, day, hour, minute] = match.slice(1).map(Number);
+  const weekday = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date(Date.UTC(year, month - 1, day)).getUTCDay()];
+  const name = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][month - 1];
+  const clock = `${hour % 12 || 12}:${String(minute).padStart(2, '0')} ${hour < 12 ? 'AM' : 'PM'}`;
+  return `The render was made on ${weekday}, ${name} ${day}, ${year}, at ${clock}.`;
+}
+
 // The 12 screens the product judges scored.
 export const JUDGED = Object.keys(SCREENS).filter(screen => /^[PQ]\d$/.test(screen));
 // Cheapest first.
@@ -68,7 +90,8 @@ export function withWording(body, key) {
 export const SECOND = 'Then list any fact shown with two values, and one thing the user asked for that is missing. At most 3 lines.';
 
 // What the judges noted on each judged screen for the second question. `match`
-// is a rough test of a reply; read the replies before you trust a count.
+// is a rough test of a reply; read the replies before you trust a count. The
+// judges noted no fact with two values and nothing missing on P1, P5, P9 and Q1.
 export const NOTES = {
   P3: [{ kind: 'two values', note: 'Snorkel session 8:59-10:04 AM up top, 8:55-10:05 AM in the Monday card.', match: /8:5[59]|10:0[45]/ }],
   P6: [
@@ -120,11 +143,15 @@ export function userWords(text) {
   return words.split(/\n---\n/)[0].trim();
 }
 
-/** The task a builder gives the look: the user's words, the renders, the question. */
-export function lookTask(words, renders, question) {
+/**
+ * The task a builder gives the look: the user's words, the renders, the render
+ * date when given, and the question.
+ */
+export function lookTask(words, renders, question, made) {
   return [
     'The user asked:', '', words, '',
-    ...renders.map(render => `Render: ${render}`), '',
+    ...renders.map(render => `Render: ${render}`),
+    ...(made ? [renderLine(made)] : []), '',
     question,
   ].join('\n');
 }
@@ -154,6 +181,15 @@ export function partOffsets(width, height) {
   for (let y = 0; y + tall < height; y += stride) parts.push({ y, height: tall });
   parts.push({ y: height - tall, height: tall });
   return parts;
+}
+
+/**
+ * The row where sips starts a part. `sips --cropOffset 0 0` acts as no offset
+ * and gives the centre crop, so the top part starts at row 1. sips also skips a
+ * crop that reaches the bottom edge, so the last part starts one row higher.
+ */
+export function sipsOffset(y, partHeight, height) {
+  return Math.max(1, Math.min(y, height - partHeight - 1));
 }
 
 /** The screen verdict from its parts: block when any part blocks, ok when all are ok. */
@@ -239,7 +275,7 @@ function args(argv) {
     if (name === 'models' || name === 'cells') out[name] = value.split(',').map(item => item.trim()).filter(Boolean);
     else if (name === 'runs' || name === 'jobs') out[name] = Number(value);
     else if (name === 'words') out.words = value.split(',').map(item => item.trim()).filter(Boolean);
-    else if (['trial', 'out'].includes(name)) out[name] = value;
+    else if (['trial', 'out', 'note'].includes(name)) out[name] = value;
     else throw new Error(`Unknown option: ${argv[i - 1]}`);
   }
   if (!out.trial || !out.words) throw new Error('Usage: look-eval.mjs --trial <dir> --words <file>[,<file>] [--models haiku] [--cells full-a,full-b,crop-a,crop-b] [--runs 1] [--jobs 4] [--second] [--out <file.json>]');
@@ -253,15 +289,20 @@ function cropScreen(image, dir) {
   const width = Number(/pixelWidth: (\d+)/.exec(size)?.[1]);
   const height = Number(/pixelHeight: (\d+)/.exec(size)?.[1]);
   mkdirSync(dir, { recursive: true });
-  return partOffsets(width, height).map((part, index) => {
+  const parts = partOffsets(width, height);
+  // A plain `sips -c` gives the centre crop. A part away from the centre that
+  // equals it means sips ignored the offset.
+  const centre = path.join(dir, 'centre.png');
+  if (parts.length > 1) execFileSync('sips', ['-c', String(parts[0].height), String(width), image, '-o', centre], { stdio: 'ignore' });
+  return parts.map((part, index) => {
     const out = path.join(dir, `part-${index + 1}.png`);
-    // sips skips a crop whose offset plus height reaches the bottom edge, so the
-    // last part starts one row higher.
-    const y = Math.min(part.y, height - part.height - 1);
+    const y = sipsOffset(part.y, part.height, height);
     if (part.height === height) execFileSync('cp', [image, out]);
-    else execFileSync('sips', ['-c', String(part.height), String(width), '--cropOffset', String(Math.max(0, y)), '0', image, '-o', out], { stdio: 'ignore' });
+    else execFileSync('sips', ['-c', String(part.height), String(width), '--cropOffset', String(y), '0', image, '-o', out], { stdio: 'ignore' });
     const check = execFileSync('sips', ['-g', 'pixelHeight', out], { encoding: 'utf8' });
     if (Number(/pixelHeight: (\d+)/.exec(check)?.[1]) !== part.height) throw new Error(`sips did not crop ${image} at ${y}.`);
+    const middle = Math.abs(y - (height - part.height) / 2) <= 1;
+    if (parts.length > 1 && !middle && readFileSync(out).equals(readFileSync(centre))) throw new Error(`sips gave the centre crop of ${image} for the part at ${y}.`);
     return out;
   });
 }
@@ -336,7 +377,7 @@ async function main() {
           for (let run = 1; run <= options.runs; run += 1) {
             tasks.push(async () => {
               const renders = render === 'crop' ? parts[screen] : [images[screen]];
-              const looks = await Promise.all(renders.map(image => runLook({ model, image, task: lookTask(words, [image], question), prompt, description: agent.fields.description, cwd })));
+              const looks = await Promise.all(renders.map(image => runLook({ model, image, task: lookTask(words, [image], question, CAPTURED[screen]), prompt, description: agent.fields.description, cwd })));
               const cost = looks.reduce((sum, look) => sum + (look.cost ?? 0), 0);
               return {
                 model, cell, screen, run, label: LABELS[screen], verdict: screenVerdict(looks.map(look => look.verdict)),
@@ -355,7 +396,7 @@ async function main() {
         for (let run = 1; run <= options.runs; run += 1) {
           second.push(async () => {
             const image = path.resolve(options.trial, SCREENS[screen]);
-            const look = await runLook({ model: options.models[0], image, task: lookTask(words, [image], `${question} ${SECOND}`), prompt, description: agent.fields.description, cwd });
+            const look = await runLook({ model: options.models[0], image, task: lookTask(words, [image], `${question} ${SECOND}`, CAPTURED[screen]), prompt, description: agent.fields.description, cwd });
             return { screen, run, verdict: look.verdict, reply: look.reply, cost: look.cost, error: look.error };
           });
         }
@@ -376,7 +417,7 @@ async function main() {
     const decisions = Object.fromEntries(options.models.map(model => [model, decide(Object.fromEntries(options.cells.map(cell => [cell, cells[`${model}:${cell}`]])))]));
     const secondResults = results.filter(result => !result.cell && result.reply !== undefined).sort((a, b) => a.screen.localeCompare(b.screen) || a.run - b.run);
     const report = {
-      question, second: options.second ? SECOND : undefined, words, runs: options.runs, labels: LABELS, screens: SCREENS, wordings: WORDING,
+      note: options.note, question, second: options.second ? SECOND : undefined, words, runs: options.runs, labels: LABELS, screens: SCREENS, captured: CAPTURED, wordings: WORDING,
       summary, decisions, cells,
       secondRun: options.second ? { ...scoreSecond(secondResults), results: secondResults } : undefined,
     };
