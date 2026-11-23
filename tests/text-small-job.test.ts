@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { applyInstall, planInstall } from '../src/install-v1.js';
+import { filesForHosts, type Host } from '../src/payload.js';
 
 // sl1-01: the small-job path lives inline in the managed block. These tests pin
 // its rules, the routing in the entry and implement skills, the kickoff step,
@@ -138,5 +139,59 @@ describe('a queue-less brief in the runtime', () => {
     git(root, 'commit', '-q', '-m', 'small jobs');
     expect(reports(root)).toEqual(before);
     expect(before.map(report => report.status)).toEqual([0, 0, 0, 0]);
+  });
+});
+
+// sl1-02: the look is a cheap fresh-eyes agent. Claude Code installs it; other
+// hosts use any fresh agent with the same inline question.
+describe('the joycraft-look agent', () => {
+  const look = text('.claude/agents/joycraft-look.md');
+  const frontmatter = /^---\n([\s\S]*?)\n---\n/.exec(look)?.[1] ?? '';
+
+  it('[AC:sl1-02] has tools: Read and a model, and stays under 120 words', () => {
+    expect(frontmatter).toMatch(/^name: joycraft-look$/m);
+    expect(frontmatter).toMatch(/^tools: Read$/m);
+    expect(frontmatter).toMatch(/^model: \S+$/m);
+    expect(look.split(/\s+/).filter(Boolean).length).toBeLessThan(120);
+  });
+
+  it('[AC:sl1-02] answers only the question, never reads code or specs, at most 8 lines', () => {
+    const body = look.slice(look.indexOf('\n---\n', 4) + 5).replace(/\s+/g, ' ');
+    expect(body).toContain('Open each file the task names. Answer only its question.');
+    expect(body).toContain('When nothing disagrees, reply OK and nothing else.');
+    expect(body).toContain('Never read code, specs or a brief.');
+    expect(body).toContain('Reply in at most 8 lines.');
+  });
+
+  it('[AC:sl1-02] the managed block names joycraft-look', () => {
+    expect(workLines.join('\n')).toContain('agent type `joycraft-look`');
+  });
+
+  it('[AC:sl1-02] a Claude install has the agent file; a non-Claude install does not', () => {
+    const paths = (hosts: Host[]) => filesForHosts(hosts).map(file => file.path);
+    expect(paths(['claude'])).toContain('.claude/agents/joycraft-look.md');
+    for (const host of ['codex', 'pi', 'omp', 'copilot', 'opencode'] as Host[]) {
+      expect(paths([host]).some(path => path.startsWith('.claude/agents/')), host).toBe(false);
+    }
+  });
+});
+
+describe('the offline look check (scripts/trial/look-eval.mjs)', () => {
+  it('[AC:sl1-02] asks the Look question word for word and reads verdicts', async () => {
+    const evalScript = await import('../scripts/trial/look-eval.mjs');
+    expect(await evalScript.lookQuestion()).toBe('Quote any two statements on this screen that disagree about the main answer, or reply OK. At most 8 lines.');
+    expect(evalScript.readAgent().fields.tools).toBe('Read');
+    expect(evalScript.verdict('OK')).toBe('ok');
+    expect(evalScript.verdict('- "NO. Unless you are a fish."\n- "Bike? Yes!"')).toBe('block');
+    expect(evalScript.verdict('Not sure.')).toBe('unclear');
+    expect(evalScript.LABELS).toMatchObject({ P4: 'block', P8: 'block', P3: 'ok', P5: 'ok', P7: 'ok' });
+  });
+
+  it('[AC:sl1-02] a tier passes when most runs of each labelled screen give the label', async () => {
+    const { tierPasses } = await import('../scripts/trial/look-eval.mjs');
+    const runs = (screen: string, ...verdicts: string[]) => verdicts.map(verdict => ({ screen, verdict }));
+    const good = [...runs('P4', 'block', 'block', 'ok'), ...runs('P3', 'ok', 'ok', 'block'), ...runs('P1', 'block', 'block', 'block')];
+    expect(tierPasses(good)).toBe(true);
+    expect(tierPasses([...good, ...runs('P8', 'ok', 'ok', 'block')])).toBe(false);
   });
 });
