@@ -262,9 +262,13 @@ export function recover({ root = process.cwd(), queuePath }) {
   return { status: 'restored', queuePath, specId: journal.specId };
 }
 
-async function writeCompletion({ root, queuePath, specId, state, status = 'done', metadataKey, metadata, validate, stableFiles, specIds = [specId], criteria = true }) {
+async function writeCompletion({ root, queuePath, specId, state, status = 'done', metadataKey, metadata, validate, stableFiles, specIds = [specId], criteria = true, remove = [] }) {
   const updatedQueue = structuredClone(state.queue);
-  for (const id of specIds) Object.assign(updatedQueue.specs.find(spec => spec.id === id), { status, [metadataKey]: metadata });
+  for (const id of specIds) {
+    const entry = updatedQueue.specs.find(spec => spec.id === id);
+    for (const key of remove) delete entry[key];
+    Object.assign(entry, { status, [metadataKey]: metadata });
+  }
   const journal = {
     schemaVersion: 1, queuePath, specId,
     files: [
@@ -353,7 +357,54 @@ export async function submit({ root = process.cwd(), queuePath, specId }) {
       root, queuePath, specId, state, status: 'in-review', metadataKey: 'submitted', metadata: { at: new Date().toISOString() },
       stableFiles: [], validate: requireDependencies,
     });
-    return { status: 'in-review', unchanged: false, untraced };
+    return { status: 'in-review', unchanged: false, untraced, acceptedInputsChanged: acceptedInputsChanged({ root, queuePath, queue: state.queue, except: specId }) };
+  } catch (error) { throw refused(error); }
+}
+
+/** The code, check and fixture inputs of a done spec's accepted report whose
+ * bytes differ now. Requirements are left out: archive and review own them. */
+export function changedAcceptedInputs({ root, spec }) {
+  if (spec.status !== 'done' || !isObject(spec.acceptedReport)) return [];
+  let report;
+  try { report = parseJson(readLocal(root, relativePath(spec.acceptedReport.path)), spec.acceptedReport.path); } catch { return []; }
+  const inputs = Array.isArray(report?.subject?.inputs) ? report.subject.inputs : [];
+  return inputs.filter(input => isObject(input) && ['code', 'check', 'fixture'].includes(input.kind) && isSha256(input.sha256)).filter(input => {
+    const file = localPath(root, relativePath(input.path), true);
+    if (input.normalization === 'absent') return existsSync(file);
+    if (input.normalization !== undefined && input.normalization !== 'none') return false;
+    return !existsSync(file) || sha256(readFileSync(file)) !== input.sha256;
+  }).map(input => input.path);
+}
+
+/** Every other done spec whose accepted code, check or fixture input changed. */
+export function acceptedInputsChanged({ root, queuePath, queue, except }) {
+  return queue.specs.filter(spec => spec.id !== except).map(spec => ({ specId: spec.id, paths: changedAcceptedInputs({ root, spec }) }))
+    .filter(item => item.paths.length > 0)
+    .map(item => ({ ...item, next: `node .joycraft/runtime/completion.mjs reopen --queue ${queuePath} --spec ${item.specId} --reason <why it changed>` }));
+}
+
+/**
+ * Move a done spec back to in-review when a bound code, check or fixture input
+ * changed after its PASS acceptance. The accepted report stays on record in
+ * `reopened`; the next review starts a fresh round count and is accepted with
+ * finalize-review as usual. Every refusal carries exitCode 2.
+ */
+export async function reopen({ root = process.cwd(), queuePath, specId, reason }) {
+  try {
+    queuePath = relativePath(queuePath);
+    assertNoJournal(root, queuePath);
+    requireValue(nonempty(reason), 'Reopen needs --reason: what changed and why');
+    const state = readQueue({ root, queuePath, specId });
+    requireValue(state.spec.status === 'done', `Spec ${specId} is ${state.spec.status}; reopen moves only a done spec back to in-review`);
+    requireValue(isObject(state.spec.acceptedReport), `Spec ${specId} was accepted by an owner acceptance or waiver, not a PASS review; reopen does not apply`);
+    const changed = changedAcceptedInputs({ root, spec: state.spec });
+    requireValue(changed.length > 0, `No code, check or fixture input of spec ${specId} changed since its acceptance; nothing to review again`);
+    const entry = { at: new Date().toISOString(), reason, report: state.spec.acceptedReport, changed };
+    await writeCompletion({
+      root, queuePath, specId, state, status: 'in-review', metadataKey: 'reopened', metadata: [...(state.spec.reopened ?? []), entry],
+      remove: ['acceptedReport'], stableFiles: [], validate: () => {},
+    });
+    return { status: 'in-review', reopened: entry };
   } catch (error) { throw refused(error); }
 }
 
@@ -696,13 +747,13 @@ function argumentsFor(argv) {
   const legacy = command === 'accept-owner' && rest.includes('--legacy');
   const args = legacy ? rest.filter(arg => arg !== '--legacy') : rest;
   requireValue(args.length === rest.length - (legacy ? 1 : 0), 'Invalid or duplicate argument: --legacy');
-  requireValue(['snapshot', 'scope', 'submit', 'complete', 'finalize-review', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope|submit --queue <path> --spec <id> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-owner --legacy --queue <path> --spec <id>[,<id>...] --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
+  requireValue(['snapshot', 'scope', 'submit', 'reopen', 'complete', 'finalize-review', 'accept-owner', 'accept-waiver', 'recover'].includes(command), 'Usage: completion.mjs scope|submit --queue <path> --spec <id> | reopen --queue <path> --spec <id> --reason <text> | snapshot --queue <path> --spec <id> --out <subject.json> | complete|finalize-review --queue <path> --spec <id> --report <report.json> | accept-owner --queue <path> --spec <id> --decision <decision.json> | accept-owner --legacy --queue <path> --spec <id>[,<id>...] --decision <decision.json> | accept-waiver --queue <path> --spec <id> --waiver <waiver.json> [--report <report.json>] | recover --queue <path>');
   const flags = {};
   for (let i = 0; i < args.length; i += 2) {
-    requireValue(['--queue', '--spec', '--out', '--report', '--decision', '--waiver'].includes(args[i]) && nonempty(args[i + 1]) && flags[args[i]] === undefined, `Invalid or duplicate argument: ${args[i]}`);
+    requireValue(['--queue', '--spec', '--out', '--report', '--decision', '--waiver', '--reason'].includes(args[i]) && nonempty(args[i + 1]) && flags[args[i]] === undefined, `Invalid or duplicate argument: ${args[i]}`);
     flags[args[i]] = args[i + 1];
   }
-  const expected = command === 'recover' ? ['--queue'] : command === 'scope' || command === 'submit' ? ['--queue', '--spec'] : ['--queue', '--spec', command === 'snapshot' ? '--out' : command === 'accept-owner' ? '--decision' : command === 'accept-waiver' ? '--waiver' : '--report'];
+  const expected = command === 'recover' ? ['--queue'] : command === 'scope' || command === 'submit' ? ['--queue', '--spec'] : ['--queue', '--spec', command === 'snapshot' ? '--out' : command === 'reopen' ? '--reason' : command === 'accept-owner' ? '--decision' : command === 'accept-waiver' ? '--waiver' : '--report'];
   const optional = command === 'accept-waiver' ? ['--report'] : [];
   requireValue(expected.every(flag => flags[flag] !== undefined) && Object.keys(flags).every(flag => expected.includes(flag) || optional.includes(flag)), `Missing or unexpected arguments for ${command}`);
   const id = /^(?:0|[1-9]\d*)$/;
@@ -731,6 +782,9 @@ export async function main(argv = process.argv.slice(2)) {
   } else if (command === 'submit') {
     result = await submit({ root, queuePath, specId: Number(flags['--spec']) });
     for (const id of result.untraced) process.stderr.write(`Warning: criterion ${id} has no [AC:${id}] test in the spec's check inputs\n`);
+    for (const item of result.acceptedInputsChanged ?? []) process.stderr.write(`Warning: done spec ${item.specId}'s accepted input changed: ${item.paths.join(', ')}; its acceptance no longer covers these bytes. Reopen it for a fresh review: ${item.next}\n`);
+  } else if (command === 'reopen') {
+    result = await reopen({ root, queuePath, specId: Number(flags['--spec']), reason: flags['--reason'] });
   } else if (command === 'recover') result = recover({ root, queuePath });
   else if (command === 'accept-waiver') result = await acceptWaiver({ root, queuePath, specId: Number(flags['--spec']), waiverPath: flags['--waiver'], reportPath: flags['--report'] });
   else if (legacy) result = await acceptLegacy({ root, queuePath, specIds: flags['--spec'].split(',').map(Number), decisionPath: flags['--decision'] });
