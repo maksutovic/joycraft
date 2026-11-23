@@ -259,8 +259,7 @@ another worktree had one.
 
 Use a gitignored file only when an explicit project allowlist names its
 path. The project owner may authorize copying an allowed path from the
-same project's coordinator through native `.worktreeinclude` or an explicit
-manual equivalent. Do not copy files by default, including secrets,
+same project's coordinator through an explicit copy step. Do not copy files by default, including secrets,
 credentials, browser profiles, or host configuration.
 
 Keep each worker's `node_modules`, build caches such as `.next`, runtime state,

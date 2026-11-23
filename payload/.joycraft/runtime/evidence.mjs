@@ -103,7 +103,7 @@ export function validateEvidence(report, criteria) {
         fail(`${at}: a source scan supports structural claims only`);
       }
       if (!Array.isArray(observation.receipts) || observation.receipts.length === 0) {
-        fail(`${at} needs supporting receipt references`);
+        fail(`${at} needs supporting receipt references: add "receipts": [{ "path": "<project-relative receipt path>", "sha256": "<its SHA-256>" }] for the receipt that evidence.mjs run --receipt wrote for this check`);
       } else {
         observation.receipts.forEach((receipt, receiptIndex) => {
           if (!record(receipt) || !relativePath(receipt.path) || !hash(receipt.sha256)) {

@@ -47,8 +47,7 @@ run's resources from another session's.
 
 ## Commands
 
-`worktrees.mjs` is the one home for worker trees on hosts without native
-worktree isolation:
+`worktrees.mjs` is the one home for worker trees on every host:
 
 ```sh
 node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <coordinator-session>
@@ -59,7 +58,7 @@ node .joycraft/runtime/worktrees.mjs prune --apply
 
 `create` adds `.joycraft/local/worktrees/<feature>-<spec>` on branch
 `joycraft/<feature>-<spec>` from the current or `--base` revision and records the
-owner in `.joycraft/local/worktrees.json`. `list` shows every linked tree with
+owner and the coordinator's root in `.joycraft/local/worktrees.json`. `list` shows every linked tree with
 its spec status, merged and clean state and size; a tree not in the ledger is
 `unknown-owner`. `prune --apply` removes a tree only when it is recorded, its spec
 is `done`, it is clean and its branch is contained in `--into` (default `HEAD`).
@@ -79,6 +78,8 @@ Dispatch accepts an optional runtime workspace input:
 { coordinatorRoot, parallel?: boolean, access: 'mutating' | 'read-only', baseRevision?: '<full-commit-SHA>' }
 ```
 
+A parallel implementer's `dispatch-start.mjs` reads it from the tree's record,
+else the lease, so the coordinator passes no workspace flags.
 For a known parallel mutator, `access` is `mutating` and the runtime derives and
 attests real paths, Git topology, and the actual `workerRoot` in the packet. A
 read-only reviewer may use the coordinator root while its inputs remain stable,
@@ -110,24 +111,10 @@ work starts. Do not copy untracked caches, credentials, or mutable state from
 another worker. If bootstrap fails, preserve the tree and its failure output for
 diagnosis; do not reuse it for another worker.
 
-With [Claude Code worktrees](https://code.claude.com/docs/en/worktrees), use a
-native agent's `isolation: "worktree"` capability when it is actually available,
-or a custom-agent frontmatter worktree isolation setting. Claude's default
-subagent base is the default branch, so select the captured current revision with
-`worktree.baseRef: "head"` or an explicit manual ref and verify it. A native
-auto-created path is unknown until the child launches: the child bootstraps, then
-prepares or checks its packet from its real root before mutation. The coordinator
-must not prepare a packet against an invented path.
-
-`.worktreeinclude` is Claude-native only and applies to matching Git-ignored
-files. A `WorktreeCreate` hook replaces creation and disables that automatic
-include behavior. `CLAUDE_PROJECT_DIR` remains the original project directory;
-the hook event's `cwd` is the active worktree. See the [Claude worktree
-documentation](https://code.claude.com/docs/en/worktrees) and its [hook path
-guidance](https://code.claude.com/docs/en/hooks#reference-scripts-by-path).
-
-On hosts without that native capability, create an equivalent manual Git linked
-worktree at an explicit, verified ref. Build each packet from its actual root:
+Launch each worker without the host's own worktree isolation (in Claude Code, no
+`isolation` on the Agent call or in agent frontmatter), and name its `workerRoot`
+in the task. Never use both: an isolated worker's sandbox cannot reach the
+Joycraft tree, and the host deletes its own tree while empty. Build each packet from its actual root:
 `workerRoot`, manifest path, source paths, commands,
 receipts, and report paths must resolve there. A coordinator may not substitute
 the shared checkout merely because its sources look equivalent.

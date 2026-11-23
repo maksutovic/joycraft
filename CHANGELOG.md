@@ -7,6 +7,45 @@ claim that a release has shipped.
 
 ---
 
+## 1.9.3 — Parallel worker dispatch fixes
+
+A coordinator that ran two specs in parallel hit three problems in 1.9.2: its
+implementer could not reach its worker tree, startup refused the first spec, and
+the coordinator said the same thing twice. A second trial showed reviewers losing
+time on startup and on two refusals that did not say what to fix. This release
+fixes both.
+
+### Update notes
+
+- **A coordinator no longer passes workspace flags or host worktree isolation
+  for parallel specs.** Create each worker tree with `worktrees.mjs create`, launch
+  the worker as a plain agent (in Claude Code, no `isolation` on the Agent call)
+  and name the printed `workerRoot` in its task.
+
+### Fixed
+
+- **A parallel implementer starts without hand-added workspace flags.**
+  `worktrees.mjs create` records the coordinator's root, and `dispatch-start.mjs`
+  reads it, else the coordinator lease, for a spec marked `execution.parallel:
+  true`. When neither names it, the refusal prints the same startup with
+  `--coordinator`, `--parallel` and `--access` added.
+- **One worker home.** The implement skill, `worktrees.md` and `dispatch.md` no
+  longer offer the host's own worktree isolation next to the Joycraft worker
+  tree. Used together, the worker's sandbox could not reach its tree, and the host
+  deleted its own empty tree. The implementer runs each command in a named worker
+  root with one `cd <worker-root> && ` prefix.
+- **Each stage update is said once.** The implement skill tells the coordinator
+  not to repeat its before-dispatch text after the dispatch.
+- **A reviewer starts on the first try.** `dispatch-start.mjs --help` prints the
+  startup command with placeholders instead of refusing. The reviewer agent
+  points to that command and runs commands in its named worker root, and
+  `dispatch.md` says the coordinator sends a Claude Code child its agent ID,
+  which the child cannot see itself.
+- **Two refusals say what to fix.** `check-report` shows the `receipts` field an
+  observation needs. Archive's refusal of a brief that changed after acceptance
+  names `brief-amendments.json`, each later commit with the hashes its entry
+  needs, and `archive.md`. A brief edit after acceptance still needs that record.
+
 ## 1.9.2 — Fixes from the 1.9.1 reviews
 
 Reviewers of 1.9.1 left a few small gaps open in the review gate, cleanup, archive

@@ -1,0 +1,34 @@
+
+> joycraft@1.9.3 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3
+> vitest tests/runtime-archive-merge-amendment.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-3[39m
+
+ [31m❯[39m tests/runtime-archive-merge-amendment.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 2528[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:merge-keeps-parent-brief] a --no-ff merge into a main without the brief needs no amendment record [33m 838[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:merge-changes-brief] a merge whose brief differs from every parent still needs its own record [33m 1175[2mms[22m[39m
+[31m   [31m×[31m archive brief amendments across a merge commit[2m > [22m[AC:spec-5-1] a missing amendment record names each later commit with its hashes and the reference that shows the record[39m[33m 515[2mms[22m[39m
+[31m     → expected [Function check] to throw error including 'no docs/features/f/brief-amendments.j…' but got 'Original requirement changed after ac…'[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-archive-merge-amendment.test.ts[2m > [22marchive brief amendments across a merge commit[2m > [22m[AC:spec-5-1] a missing amendment record names each later commit with its hashes and the reference that shows the record
+[31m[1mAssertionError[22m: expected [Function check] to throw error including 'no docs/features/f/brief-amendments.j…' but got 'Original requirement changed after ac…'[39m
+
+Expected: [32m"[7mno docs/features/f/brief-amendments.json records its amendments; add one entry for each later brief commit, with the answered owner decision that authorized it, as .joycraft/references/archive.md shows for brief-amendments.json: 2cf150d14c98d1b5676c358d51054dc8851d3142 (fromSha256 a616ae9a0e37ebef0ec8285f1cd717b0630c80a324fb7c2c425ace57a3f148ed, toSha256 4dc86ffae60b8d0f3ddbc75847c2a6b1802de40d834a04ff2b4b83ea598d0eae)[27m)"[39m
+Received: [31m"[7mOriginal requirement changed after acceptance: docs/features/f/brief.md (no docs/features/f/brief-amendments.json records its amendments[27m)"[39m
+
+[36m [2m❯[22m tests/runtime-archive-merge-amendment.test.ts:[2m81:19[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 21:28:47
+[2m   Duration [22m 2.68s[2m (transform 99ms, setup 0ms, collect 17ms, tests 2.53s, environment 0ms, prepare 37ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":3410,"load":[18.92236328125,17.72705078125],"cores":14,"loaded":true,"argv":["pnpm","test","tests/runtime-archive-merge-amendment.test.ts"],"exitCode":1,"timedOut":false,"revision":"443cb5849f555d88e2440c2af224e50d31c441b2","dirty":true,"env":["VITEST_MAX_FORKS","VITEST_MIN_FORKS"]}

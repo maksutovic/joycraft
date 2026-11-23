@@ -43,11 +43,11 @@ If another session holds the queue, stop and report the holder; use
 `--take-over` only when the user says that session has ended. Then run
 `node .joycraft/runtime/queue-check.mjs --queue <queue>`; act on each gap.
 
-For a spec marked `execution.parallel: true`, use a separate linked worktree for
-each concurrent mutator, including its build/cache state. Create it with
-`node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <your-session-id>`
-when the host has no native worktree isolation; never invent another folder. Its first action is
-the documented project bootstrap. Dispatch from its actual root. Read [worker isolation](../../../.joycraft/references/worktrees.md)
+For a spec marked `execution.parallel: true`, give each concurrent mutator its
+own tree and build/cache state, on every host:
+`node .joycraft/runtime/worktrees.mjs create --queue <queue> --spec <id> --session <your-session-id>`.
+Launch its worker without host worktree isolation (Claude Code: no Agent
+`isolation`), naming the printed `workerRoot`. It first runs the project bootstrap. Read [worker isolation](../../../.joycraft/references/worktrees.md)
 when parallel work, integration, cleanup, or resource capacity is in play. If
 isolation cannot be obtained, replan the affected wave and set the current
 queue entry's `execution.parallel` to `false` before dispatch, recording why;
@@ -127,6 +127,6 @@ When no spec can start, that is, each remaining spec is held or waits on a
 held spec, run `$joycraft-session-end` without waiting for the user.
 Report blockers and the next action first, then measured progress. Tell the user
 when a run stops or planned work is omitted, with the reason and retained state;
-explain any needed external setting and its effect. Give concise stage updates
-during long work. Never describe unavailable,
+explain any needed external setting and its effect. Give each concise stage
+update once; never repeat pre-dispatch text after the dispatch. Never describe unavailable,
 failed, or uninspected evidence as passing.

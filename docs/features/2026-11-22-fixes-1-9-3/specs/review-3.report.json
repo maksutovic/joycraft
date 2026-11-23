@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "0c444bdf93360164de1544ccff21f8c9309789ad",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+    "specId": 3,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-3/specs/03-release-1-9-3.md",
+    "criteria": [
+      {
+        "id": "spec-3-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/03-release-1-9-3.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/03-release-1-9-3.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "code",
+        "sha256": "0001dc61da6c74cc63658d4514702d975765334cae574bb1a8ed5acad3033c11",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "cb838f855d4bf76ac48888c288726e83d7b6a53a40b1abdc581fd364d4bb88d8",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "c20e8ab2c509fb1490e98bec5a15343daf1a3ee6daa1f0358f64db4d5c7c49d8",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/03-release-1-9-3.md",
+        "kind": "requirement",
+        "sha256": "31a20cad3ab406c3647cf762e0fbeb9f604bda7c2a03b0060ab9b15f809bd94c",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "package.json",
+        "kind": "code",
+        "sha256": "584aea7f985c6dee50a46b725fb29f53a9ad57fcc4f6bcfa1a3d3ff75e5672de",
+        "normalization": "none"
+      },
+      {
+        "path": "src/joycraft-release.json",
+        "kind": "code",
+        "sha256": "fdfa85cc7cd198655613254fe2e7a24e16d5327469dcdb0b25086df7e3e39e19",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/public-docs.test.ts",
+        "kind": "check",
+        "sha256": "d5282e0e3ac1fa615e9361ebfbb9ca8ea849fd89216a58c209a7126176738818",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/release-preparation.test.ts",
+        "kind": "check",
+        "sha256": "32ae9ce8e74fbe4fdd872c1859b29a9e130f6c19b0a744132421085554204d9c",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "585205c1b21ff24cb801442667932ef2017135f86d6374999fc1c58bdbe7e7c5"
+  },
+  "implementerSessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b"
+  },
+  "reviewer": {
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+    "actor": {
+      "host": "claude",
+      "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+      "agentId": "a38451dca26ffb6eb"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-spec-3-1",
+      "subjectIdentity": "585205c1b21ff24cb801442667932ef2017135f86d6374999fc1c58bdbe7e7c5",
+      "criteria": [
+        "spec-3-1"
+      ],
+      "representativeInput": "Current package.json, src/joycraft-release.json, CHANGELOG.md and tests/public-docs.test.ts; diff 4320fda..HEAD of those files; acceptance bullets of specs 1, 2, 4 and 5 and their payload text.",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Both [AC:spec-3-1] tests in tests/public-docs.test.ts passed (2 files, 39 tests, exit 0). They assert joycraft.release equals version, the summary is one line of at most 300 characters, releaseVersion equals version, and CHANGELOG.md has a \"## 1.9.3 — \" entry. Diff read: package.json version and joycraft.release 1.9.2 -> 1.9.3, summary replaced with one line about this release; src/joycraft-release.json releaseVersion 1.9.3; the test diff only appends [AC:spec-3-1] to the two [AC:release-fields] titles, no assertion change (class 1, as the spec allows). CHANGELOG read: \"## 1.9.3 — Parallel worker dispatch fixes\" sits above the 1.9.2 entry, has an Update notes bullet that a coordinator no longer passes workspace flags or host worktree isolation for parallel specs, and a Fixed list whose bullets match what specs 1, 2, 4 and 5 accept: derived workspace from the worktrees.mjs ledger else the lease, with the refusal printing --coordinator/--parallel/--access (spec 1); one worker home, cd <worker-root> && form, stage update said once (spec 2); dispatch-start --help, reviewer text, agent ID sent by coordinator, check-report receipts field (spec 4); archive amendment refusal naming brief-amendments.json, commits with hashes and archive.md, refusal kept (spec 5). I checked the claims against payload: payload/.claude/agents/joycraft-reviewer.md names dispatch.md#start-a-native-dispatch, --help and the cd form; payload dispatch.md says a child cannot see its own agent ID; the implement skill says launch without host worktree isolation. I found no overclaim.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-3-reviewer-focused-20261123T053447688Z-73221-1.log",
+              "sha256": "8be95e827e56a700c6eadcf697cad6841f91a828b7eaa876a3cfac38ae4294d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused tests only; project gate not rerun (implementer receipt docs/features/2026-11-22-fixes-1-9-3/receipts/spec-3-implementer-gate.log)."
+      ]
+    },
+    {
+      "id": "flow-spec-3-2",
+      "subjectIdentity": "585205c1b21ff24cb801442667932ef2017135f86d6374999fc1c58bdbe7e7c5",
+      "criteria": [
+        "spec-3-2"
+      ],
+      "representativeInput": "tests/release-preparation.test.ts at HEAD; git diff --stat 4320fda -- tests/release-preparation.test.ts.",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "tests/release-preparation.test.ts passed in the same run (exit 0, 2 files and 39 tests passed). git diff --stat 4320fda on the file prints nothing, so it is unchanged, as the criterion requires. The 1.9.3 entry is found by the [AC:spec-3-1] changelog test in the same run.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-3-reviewer-focused-20261123T053447688Z-73221-1.log",
+              "sha256": "8be95e827e56a700c6eadcf697cad6841f91a828b7eaa876a3cfac38ae4294d2"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused tests only; project gate not rerun (implementer receipt docs/features/2026-11-22-fixes-1-9-3/receipts/spec-3-implementer-gate.log)."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-3-2",
+      "summary": "Startup trace lists spec-3-2 as untraced. The spec requires tests/release-preparation.test.ts to pass unchanged, so no [AC:spec-3-2] tag could be added; I judged the criterion by running the file and checking it is unchanged since 4320fda."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/public-docs.test.ts:86",
+      "summary": "The changelog test checks only that a \"## 1.9.3 — \" entry exists. The Update notes line and the list of specs 1, 2, 4 and 5 fixes were judged by reading CHANGELOG.md against the spec files and payload, not by an assertion."
+    },
+    {
+      "id": "f3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": ".claude/agents/joycraft-reviewer.md:14",
+      "summary": "This repo's own installed Joycraft (.joycraft/runtime, .claude/agents) is still the pre-1.9.3 copy: `node .joycraft/runtime/dispatch-start.mjs --help` here exits 1, and the installed reviewer agent lacks the --help and cd-form lines that payload/ has. Expected until this repo updates from the release; not part of this spec."
+    }
+  ],
+  "createdAt": "2026-11-23T05:35:22.481Z"
+}

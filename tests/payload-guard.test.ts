@@ -357,7 +357,7 @@ describe('shipped payload text', () => {
     }
   });
 
-  it('[AC:spec-1-2] [AC:spec-7-2] every-spec and on-demand words stay under their own caps', () => {
+  it('[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps', () => {
     const { everySpec, onDemand, over } = splitCap(treeBundle());
     console.log(`every-spec words: ${everySpec} (cap ${EVERY_SPEC_CAP}, ${EVERY_SPEC_CAP - everySpec} spare)`);
     console.log(`on-demand words: ${onDemand} (cap ${ON_DEMAND_CAP}, ${ON_DEMAND_CAP - onDemand} spare)`);
@@ -381,7 +381,8 @@ describe('shipped payload text', () => {
     const bundle = treeBundle();
     expect(bundle.read('.joycraft/references/setup.md')).not.toMatch(/WorktreeCreate/);
     expect(bundle.read('.joycraft/references/setup.md')).toMatch(/resource-lease convention/);
-    expect(bundle.read('.joycraft/references/worktrees.md')).toMatch(/A `WorktreeCreate` hook replaces creation/);
+    // [AC:spec-2-1] 1.9.3 cut the Claude native-isolation recipe and its hook note from worktrees.md too.
+    expect(bundle.read('.joycraft/references/worktrees.md')).not.toMatch(/WorktreeCreate/);
     expect(bundle.read('.agents/skills/joycraft-testing/SKILL.md')).not.toMatch(/sized like neighboring tests/);
     expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(12201);
   });
