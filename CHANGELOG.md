@@ -7,6 +7,41 @@ claim that a release has shipped.
 
 ---
 
+## 1.9.4 — Field follow-ups for queue runs
+
+A field project's four-spec queue showed what happens when a later spec has to
+change an accepted spec: nothing warned, the accepted spec could not be reviewed
+again, and a re-review overwrote the earlier report. This release adds a supported
+path for that, and closes smaller gaps from the same run.
+
+### Update notes
+
+- **`completion.mjs reopen` moves a done spec back to review.** When a later spec
+  changes a done spec's accepted code, check or fixture input, `submit` now warns
+  and prints the command. Run it, review that spec again, and accept the new report
+  with `finalize-review`. The old report stays on record in the queue.
+- **Each review gets its own report path.** When `review-<id>.report.json` already
+  exists, reviewer startup gives `review-<id>-r2.report.json` and so on. Use the
+  path startup prints, even if the project names another one.
+
+### Added
+
+- **Reopen a done spec.** `reopen --reason` works only for a spec accepted by a
+  PASS review whose bound code, check or fixture input changed. It keeps the old
+  accepted report in `reopened`, and the spec's review rounds count afresh.
+- **A warning for host worktree isolation.** `worktrees.mjs create` names each
+  project agent type whose frontmatter sets `isolation: worktree` and says to
+  launch the worker as one without it.
+
+### Fixed
+
+- **A re-review no longer overwrites the earlier report.** Before, a second review
+  wrote to the same path, and the review-round count fell back to 1.
+- **Clearer rules for queue runs.** The implement skill reruns a spec's focused
+  tests after any integration edit and names agent types with `isolation`
+  frontmatter. The update guide says to update only between specs, while no
+  implementer or reviewer runs.
+
 ## 1.9.3 — Parallel worker dispatch fixes
 
 A coordinator that ran two specs in parallel hit three problems in 1.9.2: its
