@@ -46,15 +46,15 @@ run focused tests only; the coordinator runs the project gate (`tests.gate`).
 - **Clean tree:** `delivery.mjs` rejects a receipt whose footer says
   `dirty: true` as stale (`gate-receipt-stale`). Write the receipt to a
   git-ignored path, or commit pending files first, so the run sees a clean
-  tree at `HEAD`. A receipt must be inside the project, git-ignored or in a
+  `HEAD`. A receipt must be inside the project, git-ignored or in a
   feature folder, as `evidence.mjs` enforces. A receipt on an earlier
   revision still counts when every path changed since is under the docs
   root: a Markdown or JSON file there, or a record
   (`.md .json .log .txt .diff .patch .yaml .yml`) in a feature or archive
-  folder, never `package.json`, `tsconfig*.json` or a lockfile. Save a probe
-  script kept as a receipt with a `.txt` suffix (`probe.mjs.txt`) so it
-  stays a record. Any other
-  changed path needs the gate again.
+  folder. Anywhere under the docs root, a manifest is never a record:
+  `package.json`, `tsconfig*.json`, `jsconfig*.json`, `deno.json`,
+  `deno.jsonc`, `pnpm-workspace.yaml` or a lockfile. Name a kept probe
+  script `probe.mjs.txt`. Any other changed path needs the gate again.
 - **Push:** `delivery.mjs push ... --gate-receipt <path>.log` refuses without a
   green receipt for `HEAD`. A failed verifier stops delivery. Neither replaces
   independent review on the final integrated revision or authorizes a push.

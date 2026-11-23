@@ -243,11 +243,11 @@ command.
 ## Project-owned worktrees
 
 For an observed Git project with a parallel-worker preference, keep bootstrap
-guidance in the existing `docs/context/worktrees.md` home or another mapped
-worktree/bootstrap home. If neither exists, setup may create
+guidance in the existing `docs/context/worktrees.md` or another mapped
+worktree/bootstrap home and its conventions. If neither exists, setup may create
 `docs/context/worktrees.md` and add one `AGENTS.md` context-map link. Do not
-create a worktree document for a non-Git or explicitly serial project, and do
-not use it to turn setup into a questionnaire.
+create a worktree document for a non-Git or explicitly serial project, or use
+it to turn setup into a questionnaire.
 
 Create a worker worktree before setup. Its first action, before editing or UI
 work, is to inspect the manifest, lockfile, and documented commands from inside
@@ -257,8 +257,8 @@ command only when the current request authorizes it. Do not infer that a
 package manager, cache, port, browser, or other host feature exists because
 another worktree had one.
 
-Use a gitignored file only when its path appears in an explicit project
-allowlist. The project owner may authorize copying an allowed path from the
+Use a gitignored file only when an explicit project allowlist names its
+path. The project owner may authorize copying an allowed path from the
 same project's coordinator through native `.worktreeinclude` or an explicit
 manual equivalent. Do not copy files by default, including secrets,
 credentials, browser profiles, or host configuration.
@@ -295,7 +295,7 @@ routed, changed in place and kept current. There
 is no setup-complete sentinel: useful source content, not a flag, determines
 whether context is available.
 
-Outside setup's interview, ask only for missing human knowledge that
+Outside setup's interview, ask only for missing human knowledge that materially
 changes the next action. Prefer one short contextual question and continue
 independent work while it is pending. Do not generate a questionnaire or start
 building an imagined app.

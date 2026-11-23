@@ -182,7 +182,7 @@ function historyPage(file, text) {
 
 const inside = (file, folder) => file === folder || file.startsWith(`${folder}/`);
 /** A backlog file, by its path under the docs root: a `backlog` folder on the way, or a name that starts with `backlog` in any case. */
-const backlogFile = relative => relative.split('/').slice(0, -1).includes('backlog') || path.posix.basename(relative).toLowerCase().startsWith('backlog');
+const backlogFile = relative => relative.toLowerCase().split('/').slice(0, -1).includes('backlog') || path.posix.basename(relative).toLowerCase().startsWith('backlog');
 
 /**
  * The project root: the nearest folder up from `start` (default: the working
@@ -590,13 +590,20 @@ export function checkFinding(text, root) {
 }
 
 // A shell's "command not found" line: `sh: 1: x: not found` (dash), `bash: x: command not found`
-// (also `bash: line 1: x: ...`, `/bin/sh: x: ...`), `zsh: command not found: x`.
-const notFound = /^[^\s:]+:(?: (?:line )?\d+:)? (?:[^:\n]+: (?:command )?not found|command not found: .+)\s*$/m;
+// (also `bash: line 1: x: ...`, `/bin/sh: x: ...`), `zsh: command not found: x`. Group 1 or 2 is the name.
+const notFound = /^[^\s:]+:(?: (?:line )?\d+:)? (?:([^:\n]+): (?:command )?not found|command not found: (.+?))\s*$/gm;
+const baseWord = word => path.posix.basename(word.replace(/^['"]|['"]$/g, '').replaceAll('\\', '/'));
+/** A not-found line on stderr that names a word of `run` (by basename), so the missing tool is the check's own. */
+function ownNotFound(stderr, run) {
+  const words = new Set(String(run).split(/[\s|&;()<>]+/).filter(Boolean).map(baseWord));
+  return [...String(stderr).matchAll(notFound)].some(match => words.has(baseWord((match[1] ?? match[2]).trim())));
+}
 
 /**
  * The project's own checkers (joycraft.yaml checks:). Each line of stdout or
  * stderr that reads `path:line: message` is a finding. A command not found,
- * also one that exits 0 after a shell's "not found" line and gives no finding,
+ * also one that exits 0 after a shell's "not found" line naming a word of its
+ * `run` and gives no finding,
  * or one that runs past its timeout (default 120 seconds), is skipped.
  */
 function customChecks(root, checks, skipped) {
@@ -619,7 +626,7 @@ function customChecks(root, checks, skipped) {
       findings.push({ check: name, path: finding.file, line: finding.line, detail: finding.message, fix: `Fix it as ${name} says, then run tidy again.`, fixable: false });
     }
     // A missing tool in a pipeline: the shell says so on stderr, but the last command's exit 0 wins.
-    if (result.status === 0 && found === 0 && notFound.test(result.stderr ?? '')) { skipped.push({ check: name, reason: `Command not found: ${run}` }); continue; }
+    if (result.status === 0 && found === 0 && ownNotFound(result.stderr ?? '', run)) { skipped.push({ check: name, reason: `Command not found: ${run}` }); continue; }
     if (result.status !== 0 && found === 0) findings.push({ check: name, path: '.', detail: `${run} failed (exit ${result.status ?? result.signal}) with no path:line output.`, fix: `Run ${run} and read its output.`, fixable: false });
   }
   return findings;

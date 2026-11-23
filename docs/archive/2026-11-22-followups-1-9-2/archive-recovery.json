@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "kind": "joycraft-archive-recovery",
+  "feature": "followups-1-9-2",
+  "source": "docs/features/2026-11-22-followups-1-9-2",
+  "destination": "docs/archive/2026-11-22-followups-1-9-2",
+  "stage": "docs/archive/.2026-11-22-followups-1-9-2.staging-51588-1795383291314",
+  "phase": "session-end",
+  "featureFiles": [
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/brief.md",
+      "sha256": "5940e522afc36ded94dbdd030e25fd806c2afab95d61d8dcd766e252cb084920"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/review-followups.md",
+      "sha256": "b5dffc9c684c10018d7c299e314d976d88fed5beda228f04114fbaa37dafb937"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-1-reviewer-focused-20261122T175535622Z-69284-1.log",
+      "sha256": "c9bc580661b99f6e948b15b4847523725bbb55269d023438e5ccd2de995151f4"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-2-reviewer-focused-20261122T175631481Z-41292-1.log",
+      "sha256": "a00e2e9d5576748ef030a5881942362dea00576eb7093a82c1fd1df307881809"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-2-reviewer-probe-output.log",
+      "sha256": "0c0dcd19a783709ba7c24c0b3f1557d306badeb2803ba49a50d8ca97d34e2744"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-2-reviewer-probe.mjs.txt",
+      "sha256": "98704d266daa891586ba66ba53b0a0ceb521d95928af275d420203bd88955d3a"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-3-reviewer-focused-20261122T175937324Z-86344-1.log",
+      "sha256": "90181cb7aae9bd0a6d7724ec2ae74fb14f682ef11dfe7de139d04bee4e9e70b2"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-4-reviewer-focused-20261122T175958601Z-9653-1.log",
+      "sha256": "22dd17405c66130dd411f46fe31136e1a9e7370a2073357a1720acae01def7b7"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-5-reviewer-focused-20261122T175956323Z-6513-1.log",
+      "sha256": "552850ecc7ddd436a4c0ddbcb02034bee83c80fe1cc67f7d2de6eed41494746a"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-5-reviewer-guard-diff.log",
+      "sha256": "b3f31a1052d0c63f58d56efd3ffa66fb618597d044818bb2c30cec82ae74b45f"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-delivery-1-9-0.log",
+      "sha256": "653664b9b0517568835ccf412d854f0624b4d013d5a74fdee1a889ce4bae58ec"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-delivery-1-9-1.log",
+      "sha256": "ded222576aecd7af91ce56b03bd278e4d97831d70369264aa57eb95baa985037"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-focused-20261122T180302963Z-65192-1.log",
+      "sha256": "f744fd7b22958f19561bd3dc559b70b9a082472794f137e642f519e3dd954fa1"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-focused-20261122T180607582Z-94364-1.log",
+      "sha256": "f08a4f8e3d83bc9461075225b4a79ff44c5d37280f7f901c32736e00222497e9"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-r2-changelog-fix.log",
+      "sha256": "d51f236ea7f38dd76ed1be4d4a1d08852aa9f40c898552b63d579712756e020c"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/reviews/receipts/spec-6-reviewer-r2-delivery-head.log",
+      "sha256": "d4b2ba2b727298d4c67c432b5fd790998b7962c27113890b5959943c431b5279"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/.joycraft-spec-queue.json",
+      "sha256": "ca5847ff69636ff727ac4fc2980b2f159b2047a374cc1ec1898bef5fc08252ce"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/01-chained-gate-parts.md",
+      "sha256": "98781e789c4c88cf1a67638a738a9152340b01f186b9ba5c4e7643b061058c3a"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/02-cleanup-checker-fixes.md",
+      "sha256": "26e2d73b5126e48509d119613344e0efa3e952adbe9b2a349ef46a39ee5b512c"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/03-more-manifests.md",
+      "sha256": "89537df89600d547306a6a07b3be96f5c7331c8b01ea18dfdee64a891d497593"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/04-archive-lines.md",
+      "sha256": "0670235548ec6193424b65b32fed99774b6f31134d7b23cb26bdc841331c62cb"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/05-text-restore.md",
+      "sha256": "5233ecaa9ecf372af092dca71cef42710a3c53529dbff9ea233806e6dd00a6dc"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/06-release-1-9-2.md",
+      "sha256": "813479086982e394750269559b1b4ee941c0efad88fee82fcc2caedaeb94d155"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-1.report.json",
+      "sha256": "7d45615a1e2d06d2cb25bdc0ecabd08b720a24be9320699cdadf105eb59c5d14"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-2.report.json",
+      "sha256": "5ccf4255b43e11e9759244e268c6ca2d3a167e9c680772aece123424054a984b"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-3.report.json",
+      "sha256": "90c762bf5a76edf9eb08c54990108339d9fdf5aa6fb66c2d323abd480a07cee1"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-4.report.json",
+      "sha256": "4b397e977a0e057426c6be2b051693f0aef2b6640217ebbbf2e7f38b6a09618b"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-5.report.json",
+      "sha256": "cdf01c5a346823e09348fff1723663458e0463d9e88c434ab1ef6c129861ebdb"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-6-r2.report.json",
+      "sha256": "5d2b0a376a87f8c11494dae6aa431496f26d7290663369feabb22717915946b1"
+    },
+    {
+      "path": "docs/features/2026-11-22-followups-1-9-2/specs/review-6.report.json",
+      "sha256": "54e61233f5595571a93ed3e4b704fc5986348f0ff4d5f99e709635934b64d2e6"
+    }
+  ],
+  "copiedEvidence": [],
+  "requirementHistory": []
+}
