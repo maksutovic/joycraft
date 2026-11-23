@@ -56,7 +56,7 @@ wave at its boundary before advancing its dependents; do not wait for an entire
 dependency chain to be implemented. In `checkpoint`, commit each finished spec,
 integrate it, rerun its focused tests after any integration edit, and review the
 integrated bytes before continuing. In `isolated`,
-also give each implementation spec an actual fresh agent context
+also give each implementation spec a fresh agent context
 (`fork_turns: "none"` when spawning; in Claude Code the `joycraft-implementer`
 agent type when installed) with its raw requirements and project context. A worktree is operational isolation; it does not prove review independence.
 
@@ -71,8 +71,7 @@ subjects under `.joycraft/local/packets/`, not among reviewed sources.
 When `submit` warns that a done spec's accepted input changed, run the printed
 `completion.mjs reopen` for that spec and review it again.
 If a separate review context/capability is unavailable, leave the spec
-`in-review`; do not invent an ID to continue. This holds the claimed review,
-not unrelated authorized work.
+`in-review`; do not invent an ID to continue.
 
 When a recorded tool breaks during a run, repair and record it as
 `$joycraft-verify` says, leave that spec `in-review`, and continue with the
