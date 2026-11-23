@@ -1,0 +1,256 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "cbda2ce4e234a0a21cc6284807a661eafee14c9a",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+    "specId": 3,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-4/specs/03-field-text.md",
+    "criteria": [
+      {
+        "id": "spec-3-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/03-field-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/03-field-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "field-text",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "076f4eae4df356b34a647bf5a9a495e56bc85e90a37b4ee45e32be631e02cfc8",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "c6daa2910a1b7d50c5c8c949883034ac5fbcb3a7973fa101ea9456bf025f4843",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/03-field-text.md",
+        "kind": "requirement",
+        "sha256": "40fe4cedaf32d1fdcdc1b65f57c3586fa691d3ca61a11f844eb0472c08af645e",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+        "kind": "code",
+        "sha256": "971a729fbf6860ffa765c30c756897d398044b56ab925669de3b72e36fa686a9",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/completion.md",
+        "kind": "code",
+        "sha256": "de131603ca3a10783f30ea9885ddb7edaead0928b2a8f5ff10d1fe857a368b79",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/dispatch.md",
+        "kind": "code",
+        "sha256": "3457d9811184016327cc3eb8e21818cb52c8a7a96ab04f2ec45f88d76c875b49",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/update.md",
+        "kind": "code",
+        "sha256": "9a97e9db6a3b9a34446c1c3d9d07a558b34bacf86f6875a232f6ca0c10cff35d",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/worktrees.md",
+        "kind": "code",
+        "sha256": "b37d659e46ddc40736c2e4c83c5b2448a258f9ff03498604edaaad047128b5e7",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "71399672a3059075ea96e280f6489d8ece7662b5cd7a96b39b713092d3b77f91",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "f6f09dfab92cff01600426f67e5800095967f757749483deef8f386feb62e79b",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "kind": "check",
+        "sha256": "875b4b80020706c204359799e8dd16481084780c5f1840f374799c83f7347a03",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          3
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+          "anchors": [
+            "field-text",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "30cc7add82478e1839532404e9056c287892608e269c58f4dd4fcdb193dbddc3"
+  },
+  "implementerSessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b"
+  },
+  "reviewer": {
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+    "actor": {
+      "host": "claude",
+      "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+      "agentId": "abecf88764a98303b"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-3-1-implement-skill",
+      "subjectIdentity": "30cc7add82478e1839532404e9056c287892608e269c58f4dd4fcdb193dbddc3",
+      "criteria": [
+        "spec-3-1"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-implement/SKILL.md at cbda2ce",
+      "expected": "Parallel sentence names an agent type without isolation frontmatter; checkpoint sentence reruns focused tests after any integration edit; one sentence points to the printed completion.mjs reopen when submit warns; skill <= 1315 words.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Focused tests exit 0, 33/33 passed, including [AC:spec-3-1] tests at text-worker-commands.test.ts:60 and :95 and the 1315-word cap test (text-wave-gate.test.ts:68). wc -w of the skill is 1310. Source read confirms all three sentences; the reopen sentence sits at the review boundary (SKILL.md:70-71).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-3-reviewer-focused-20261123T062255473Z-91440-1.log",
+              "sha256": "51d4f8a3ec1dbc886aa03fc84957d73bc44e46cf227c299d4777005e63b5e38c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-wave-gate.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Text-only change; behavior of reopen itself belongs to spec 1."
+      ]
+    },
+    {
+      "id": "spec-3-2-references",
+      "subjectIdentity": "30cc7add82478e1839532404e9056c287892608e269c58f4dd4fcdb193dbddc3",
+      "criteria": [
+        "spec-3-2"
+      ],
+      "representativeInput": "payload/.joycraft/references/{completion,dispatch,update,worktrees}.md at cbda2ce",
+      "expected": "completion.md lists reopen and what it does; dispatch.md says each reviewer startup gets a new report path that wins over project naming; update.md says update only between specs while no implementer or reviewer runs; every-spec words < 12,201; on-demand keeps >= 600 spare; payload-guard.test.ts unchanged.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Focused tests exit 0; [AC:spec-3-2] test at text-worker-commands.test.ts:101 passes; payload-guard prints every-spec words 12193 and on-demand 20557 (cap 21163, 606 spare). git diff c57f5ac..HEAD shows no change to tests/payload-guard.test.ts or tests/text-wave-gate.test.ts. Doc text matches payload runtime: completion.mjs reopen keeps acceptedReport in reopened[], dispatch-start.mjs skips reports before the last reopen, dispatch-preflight.mjs picks review-<id>-r<n> when the base path exists.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-3-reviewer-focused-20261123T062255473Z-91440-1.log",
+              "sha256": "51d4f8a3ec1dbc886aa03fc84957d73bc44e46cf227c299d4777005e63b5e38c"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-wave-gate.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Trace also lists text-wave-gate.test.ts:102 for spec-3-2; that test belongs to an older feature's spec 3 (followups-1-9-2) and is not evidence here."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "cut-discovery",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-implement/SKILL.md:13",
+      "summary": "The discovery paragraph cut drops 'report unresolved coverage' and the condition 'when the boundary is unclear'; 'a local repair needs none' now reads less precisely than 'needs no architecture review'. The linked architecture.md:49 still says to record unresolved coverage, so the rule survives only on that page.",
+      "assumption": "Carrying the rule in the linked reference is acceptable for a word-cap cut."
+    },
+    {
+      "id": "cut-packet-location",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-implement/SKILL.md:70",
+      "summary": "A cut not named in the change notes: 'Write its packet or subject beneath a confirmed Git-ignored project-local directory, not among reviewed sources' was replaced by the reopen sentence. The rule is still carried by joycraft-verify SKILL.md:38, completion.md:25 and the dispatch.md --out example (.joycraft/local/packets/).",
+      "assumption": "The rule lives where the reviewer startup actually picks the packet path, so the implement skill need not repeat it."
+    },
+    {
+      "id": "cut-dispatch-plan",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/worktrees.md:34",
+      "summary": "The dispatch-plan cut softens 'print and retain a deterministic dispatch plan' to 'keep a dispatch plan', drops 'aggregate ... across active runs' and 'host capabilities'. Host capabilities and lifecycle features stay covered by worktrees.md:22-24; the print/deterministic and cross-run aggregate wording is lost.",
+      "assumption": "These are nuances, not separate rules; restore them if a later cap raise allows."
+    },
+    {
+      "id": "cut-preflight-and-legacy",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/references/dispatch.md:130",
+      "summary": "Checked, no loss: the legacy API paragraph keeps 'not normal startup' and 'never the intended release' without expectedManifestPath; the dropped 'Dispatch preflight checks this against the actual queue' was a description, and the readiness rule stays in the skill."
+    },
+    {
+      "id": "trace-tag-collision",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "at": "tests/text-wave-gate.test.ts:102",
+      "summary": "[AC:spec-3-2] tags are not namespaced by feature, so trace counts an older feature's test for this spec's criterion. Not a defect of this spec."
+    }
+  ],
+  "createdAt": "2026-11-23T06:24:15.353Z"
+}
