@@ -20,8 +20,8 @@ Keep assumptions explicit. Remove the example decision when no choice is needed.
   **Done when** line: example inputs or states with their expected results. For
   a rule over open-ended input, also name the check set, which error costs more,
   and the pass threshold.
-- Add one whole-result **Done when** line for a mixed state: the one answer the
-  whole screen or output shows when its parts disagree.
+- Make the first **Done when** line the one answer that the screen or output
+  shows, and that each repeated item in it shows, when its inputs disagree.
 
 ## Agent work and pending choices
 

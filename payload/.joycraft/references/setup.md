@@ -64,7 +64,8 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
    files, ask once, yes or no: "Make this folder a Git repository?" On yes,
    run `git init`. On no, write `- No Git:` and the user's words under
    `## Rules` in `AGENTS.md`, and do not ask again. When the folder is bare
-   or has an ignore file, make the first commit. Otherwise, do not commit.
+   or has an ignore file, commit what is there as `chore: set up Joycraft`.
+   Otherwise, do not commit.
 3. **Propose.** Draft every change:
    - **Joycraft's block** in `AGENTS.md`: when it is missing, put the output
      of `node .joycraft/runtime/entry-check.mjs block` there. It replaces
@@ -173,9 +174,9 @@ run `git init` first, as [step 2](#set-up-the-context-map) says for a bare proje
    A stated stack preference stays `proposed` until the user confirms it.
 5. Run `kickoff.mjs check --root .` and fix every problem it reports: no
    scaffold, manifest or source file; no empty file; no dangling link; every
-   existing guidance line kept.
+   existing guidance line kept. When Git is on, commit what is there as
+   `chore: set up Joycraft`.
 6. Show `kickoff.mjs summary --root .` and apply the user's corrections.
-   Then make the first commit.
 7. Then start the first outcome by the `Work` line in `AGENTS.md`: say its
    path, and write its brief with the "Done when" lines. Choosing the stack and
    scaffolding the app are normal work on that path.
@@ -325,6 +326,7 @@ When `.joycraft/installation.json` lists the `claude` host, offer the [gates](ga
 When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`, ask once whether search should skip the archive; rerun it with `--apply` on a yes, `--decline` on a no.
 When `node .joycraft/runtime/entry-check.mjs` reports `gate-rule` and `node .joycraft/runtime/cleanup.mjs gate-rule --check` prints `unset`, show the findings once with the before-and-after rewrite ([cleanup](cleanup.md)) as one question. Rewrite on a yes, and record the answer with `cleanup.mjs gate-rule --record rewritten` or `--record kept`.
 When the project already uses a doc or code checker (vale, or knip through a wrapper that prints `path:line: message`), offer once to add it to `checks:` ([settings](settings.md)).
+End setup in at most 120 words: what changed, what you assumed, what to say next.
 
 ## Upgrade and agent onboarding
 

@@ -60,6 +60,12 @@ describe('trust sentence in the managed block', () => {
     const fiveLine = managedFindings(run('--root', fixture(fiveLineBlock)).stdout);
     expect(fiveLine).toHaveLength(1);
     expect(fiveLine[0]).toMatchObject({ path: 'AGENTS.md', line: 3, detail: expect.stringContaining('differs') });
+    // sl2-03: the sl1-01 Work line, with its old Close part, is stale too.
+    const sl1Close = '  - Close in one commit (no Git: say so). Move the brief folder to `docs/archive/<slug>/`.';
+    const sl1Block = run('block').stdout.trimEnd().split('\n').map(line => (line.startsWith('  - Close:') ? sl1Close : line)).join('\n');
+    const sl1 = managedFindings(run('--root', fixture(sl1Block)).stdout);
+    expect(sl1).toHaveLength(1);
+    expect(sl1[0]).toMatchObject({ path: 'AGENTS.md', detail: expect.stringContaining('differs') });
     const current = fixture(run('block').stdout.trimEnd());
     expect(managedFindings(run('--root', current).stdout)).toEqual([]);
   });

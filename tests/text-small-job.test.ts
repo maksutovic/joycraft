@@ -24,40 +24,59 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 describe('small-job rules in the managed block', () => {
-  it('[AC:sl1-01] the Work line names both paths and its four parts', () => {
+  it('[AC:sl2-03] the Work line names both paths and its four parts', () => {
     expect(workLines[0]).toBe('- Work: before you change code, say `Path: small job` or `Path: feature`.');
-    expect(workLines.slice(1).map(line => line.slice(4, line.indexOf(':')))).toEqual(['Small job', 'Look, before you close', 'Close in one commit (no Git', 'Feature']);
+    expect(workLines.slice(1).map(line => line.slice(4, line.indexOf(':')))).toEqual(['Small job', 'Look, before you close', 'Close', 'Feature']);
+  });
+
+  it('[AC:sl2-03] the Work line is at most 480 words', () => {
+    expect(workLines.join(' ').split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(480);
   });
 
   it.each([
-    // Small job: the line, the brief, the guesses.
+    // Small job: the line, the first commit, the brief, the guesses.
     'it fits one session, needs no owner answer you cannot assume, and has no migration, auth, payment, deploy or public-API change.',
     'A time limit from the user means this path.',
+    'When Git has no commit yet, first commit what is there as `chore: set up Joycraft`.',
     'Write `docs/features/<slug>/brief.md` (the features folder in `joycraft.yaml` when set)',
-    "the user's request word for word, then \"Done when\" lines, each a state or input with its expected result.",
-    'The first line gives the one answer the whole screen or output shows when its parts disagree.',
+    "the user's request word for word, then a \"Done when\" list.",
+    'Each line is a state or input with its expected result and its check (`test: <file>` or `seen: <render>`).',
+    'Write one line for each thing the user asked for, in their words, with how it must feel, and one for a missing input.',
+    'The first line gives the one answer that the screen or output shows, and that each repeated item in it shows, when its inputs disagree.',
+    'Every other statement there is a reason for that answer.',
+    'Test a line about an outside source where the source enters, with the source stubbed.',
     'Write each guess as an `Assumed:` line. Do not ask.',
     'Build no page for this brief.',
-    'check each line with a test or by looking at the running result.',
-    // Look: fresh eyes, one question, two quotes block.
-    "give a fresh agent (Claude Code: agent type `joycraft-look`) only the user's words and renders of the default state and one mixed state.",
+    'Build, and check each line.',
+    // Look: fresh eyes on the first line's inputs, one question, two quotes block.
+    "give a fresh agent (Claude Code: agent type `joycraft-look`) only the user's words and renders of the default state and of a state where the inputs of the first line disagree.",
+    'Save the renders in `.joycraft/local/looks/<slug>/`.',
+    'A switch that fakes data says so on the screen.',
     'Give it no brief and no code.',
     'Ask: "Quote any two statements on this screen that disagree about the main answer, or reply OK. At most 8 lines."',
     'Two such quotes block the close: fix, then look again one time. Its other remarks are notes.',
     'With no separate agent, read the renders yourself and say the look was not independent.',
-    // Close: one commit, marks, docs, archive, final message.
-    'Close in one commit (no Git: say so).',
-    'Mark each line with its check (`test: <file>` or `seen: <render>`) and the look result.',
-    'Update the mapped page that the change makes stale, with how to run and look at the result.',
-    'Add a trap you hit to the traps page.',
+    // Close: marks, docs, traps, rules, close.mjs, final message.
+    'Close: mark each line `test: <file>`, `seen: <render>` or `not checked: <why>`, and add a `Look:` line with the result.',
+    'Update what the change makes stale, in this file (purpose, commands, map rows) and in the mapped page, with how to run and look at the result.',
+    'Add a trap (it cost you a retry) to `docs/context/traps.md`, with a map row.',
     'Put a standing instruction from the user under `## Rules` in their words.',
-    'Move the brief folder to `docs/archive/<slug>/`.',
-    'Final message: the path, "N of N lines checked", the look result, and that no code review ran.',
+    'Stage your work, then run `node .joycraft/runtime/close.mjs <slug> -m "<message>"`, which archives the brief and commits.',
+    'Final message, at most 120 words: how to run the result, each guess that changes the answer, then the line that the command printed.',
     // Feature: the full loop, and when a small job escalates.
     'Feature: all other work, or when the user asks for the full loop: use the `joycraft-entry` skill.',
     'A small job becomes a feature when it needs an owner answer, meets one of those changes, or fails the same check twice: keep the brief and add specs.',
-  ])('[AC:sl1-01] pins: %s', phrase => {
+  ])('[AC:sl2-03] pins: %s', phrase => {
     expect(workLines.join('\n')).toContain(phrase);
+  });
+
+  it.each([
+    'Close in one commit',
+    'one mixed state',
+    'Move the brief folder to `docs/archive/<slug>/`.',
+    'N of N lines checked',
+  ])('[AC:sl2-03] drops the old phrase: %s', phrase => {
+    expect(workLines.join('\n')).not.toContain(phrase);
   });
 
   it('[AC:sl1-01] the Work line holds no semicolon (STE fix-to-zero class)', () => {
@@ -87,9 +106,20 @@ describe('small-job routing in the skills, setup and templates', () => {
     expect(step).not.toContain('a brief, specs and review');
   });
 
-  it('[AC:sl1-01] the brief template asks for a whole-result Done when line for a mixed state', () => {
-    expect(text('.joycraft/templates/brief.md').replace(/\s+/g, ' '))
-      .toContain('Add one whole-result **Done when** line for a mixed state: the one answer the whole screen or output shows when its parts disagree.');
+  it('[AC:sl2-03] the brief template gives the same first-line rule as the Work line', () => {
+    const brief = text('.joycraft/templates/brief.md').replace(/\s+/g, ' ');
+    expect(brief).toContain('Make the first **Done when** line the one answer that the screen or output shows, and that each repeated item in it shows, when its inputs disagree.');
+    expect(brief).not.toContain('mixed state');
+  });
+
+  it('[AC:sl2-03] setup commits at kickoff step 5 and caps its last message', () => {
+    const setup = text('.joycraft/references/setup.md');
+    const kickoff = setup.slice(setup.indexOf('## Kickoff for a new project'));
+    const kickStep = (n: number) => new RegExp(`^${n}\\. [\\s\\S]*?(?=\\n\\d\\. |\\n\\n)`, 'm').exec(kickoff)?.[0].replace(/\s+/g, ' ') ?? '';
+    expect(kickStep(5)).toMatch(/When Git is on, commit what is there as `chore: set up Joycraft`\.$/);
+    expect(kickStep(6)).toContain('kickoff.mjs summary --root .');
+    expect(kickStep(6)).not.toContain('first commit');
+    expect(setup).toContain('End setup in at most 120 words: what changed, what you assumed, what to say next.');
   });
 
   it('[AC:sl1-01] the project context template has How it works with a Run and look line', () => {
@@ -128,6 +158,15 @@ describe('a queue-less brief in the runtime', () => {
     expect(wiring.status, wiring.stdout).toBe(0);
     expect(JSON.parse(wiring.stdout).findings).toEqual([]);
     expect(runtime(root, 'entry-check.mjs', '--root', root, '--ci').status).toBe(0);
+  });
+
+  it('[AC:sl2-03] the block may name the traps page before it exists, and a line outside the block may not', () => {
+    const root = installed();
+    const missing = () => JSON.parse(runtime(root, 'cleanup.mjs', '--root', root).stdout || '{"findings":[]}').findings
+      .filter((item: { check: string }) => item.check === 'missing-path').map((item: { detail: string }) => item.detail);
+    expect(missing()).toEqual([]);
+    put(join(root, 'AGENTS.md'), readFileSync(join(root, 'AGENTS.md'), 'utf8') + '\nSee `docs/context/traps.md`.\n');
+    expect(missing()).toEqual(['Names docs/context/traps.md, which does not exist.']);
   });
 
   it('[AC:sl1-01] an open brief and a hand-closed one (no queue) add nothing to wiring, status, cleanup or gate check', () => {
