@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-parallel-workspace.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -79,6 +79,10 @@
       },
       "submitted": {
         "at": "2026-11-23T05:15:57.306Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-1.report.json",
+        "sha256": "972155e78b50b0ba410a82c7af4e1261bab3dc84feb6a59773f45520f1ed7e7c"
       }
     },
     {

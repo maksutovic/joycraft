@@ -1,6 +1,6 @@
 ---
 id: 1
-status: in-review
+status: done
 ---
 # A parallel implementer starts without hand-added workspace flags
 

@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "c519b3fd0a95e486cbd5570935b3502e6cf53309",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+    "specId": 1,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-3/specs/01-parallel-workspace.md",
+    "criteria": [
+      {
+        "id": "spec-1-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/01-parallel-workspace.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/01-parallel-workspace.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-3",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/01-parallel-workspace.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "workspace",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "e042744eb82abbd000d5bf8c94ebf0bdd0465f6c9ab5d5ddaac5aa865a46f861",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "08e2cd658bfe24d25febc10135552cf840dda2ddcd2d9bae1a57540de7947b1b",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/01-parallel-workspace.md",
+        "kind": "requirement",
+        "sha256": "f890dbdc28904a5111bd576ed16c7515717e0e0f661325bf801fd9b054c63e26",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-preflight.mjs",
+        "kind": "code",
+        "sha256": "1a38c83c65b5d8df0fb7ac3e26a7f1db12ce561777427e0d9d22246b72b925db",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+        "kind": "code",
+        "sha256": "586fe5eafa90560e2f56237766e5defd74baf10e3fb98905010a82d5c7fb2ed2",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/worktrees.mjs",
+        "kind": "code",
+        "sha256": "a3e3adadc2504c51bd3c311fc05383b6c548e5e5b29f5b301399eca841aff5a5",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-dispatch-parallel.test.ts",
+        "kind": "check",
+        "sha256": "679df61f4f9b23a9c0c6185a00fcd8c112ae4fb0fa8277bcd2e03bc688b5581b",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+          "anchors": [
+            "workspace",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "6efc0669dcc20d2488b491cf1c0bdf4a0ce509e8f393f32cb7e22284fcecbb94"
+  },
+  "implementerSessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b"
+  },
+  "reviewer": {
+    "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+    "actor": {
+      "host": "claude",
+      "sessionId": "22d52220-8e66-42e0-9536-fdac3049c74b",
+      "agentId": "ae0db013197ed9c73"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-spec-1-1",
+      "subjectIdentity": "6efc0669dcc20d2488b491cf1c0bdf4a0ce509e8f393f32cb7e22284fcecbb94",
+      "criteria": [
+        "spec-1-1"
+      ],
+      "representativeInput": "Fixture Git project with the shipped payload and a queue of two execution.parallel specs (tests/runtime-dispatch-parallel.test.ts)",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-1] passed (run at 4a9a049, spec inputs identical to subject c519b3f): for a coordinator in the main checkout and in a linked tree, worktrees.mjs create recorded coordinatorRoot ('.' / '../<linked>'), printed workerRoot and a next line saying 'without host worktree isolation'; both parallel specs started ready:true from their trees with only --coordinator-session added (packet workspace git-worktree, parallel true, coordinatorRoot = coordinator tree).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-1-reviewer-focused-20261123T052608212Z-59622-1.log",
+              "sha256": "b735353e4c3d678e1c34d66a62947cc31dcc2780fe51c82d83b78809c37383b7"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-parallel.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Round-2 blocking finding re-checked: every committed payload file at HEAD 4a9a049 hashes to its entry in HEAD:payload/PIN, no extra entries, and the PIN commit digest matches (exit 0).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-1-reviewer-pin-r3.log",
+              "sha256": "d580ef7d7906f452e77015f6c6d62baf84a6e1b458a65b508a7dec8b45b75303"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "-e",
+              "<compare HEAD:payload/PIN with committed payload hashes>"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused test only; project gate not rerun by the reviewer. Evidence 'dirty' flag reflects untracked review receipts only; tracked files were clean at 4a9a049."
+      ]
+    },
+    {
+      "id": "flow-spec-1-2",
+      "subjectIdentity": "6efc0669dcc20d2488b491cf1c0bdf4a0ce509e8f393f32cb7e22284fcecbb94",
+      "criteria": [
+        "spec-1-2"
+      ],
+      "representativeInput": "Fixture Git project with the shipped payload and a queue of two execution.parallel specs (tests/runtime-dispatch-parallel.test.ts)",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-2] passed: a linked tree with no ledger entry took the lease root; explicit --coordinator/--parallel/--access were used as given (preflight refused the worker-as-coordinator with 'distinct linked worker worktree'). parallelWorkspace returns {} for non-implementer roles or any explicit flag, so serial and reviewer startup are unchanged.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-1-reviewer-focused-20261123T052608212Z-59622-1.log",
+              "sha256": "b735353e4c3d678e1c34d66a62947cc31dcc2780fe51c82d83b78809c37383b7"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-parallel.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused test only; project gate not rerun by the reviewer. Evidence 'dirty' flag reflects untracked review receipts only; tracked files were clean at 4a9a049."
+      ]
+    },
+    {
+      "id": "flow-spec-1-3",
+      "subjectIdentity": "6efc0669dcc20d2488b491cf1c0bdf4a0ce509e8f393f32cb7e22284fcecbb94",
+      "criteria": [
+        "spec-1-3"
+      ],
+      "representativeInput": "Fixture Git project with the shipped payload and a queue of two execution.parallel specs (tests/runtime-dispatch-parallel.test.ts)",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-3] passed: with neither ledger entry nor lease, startup exited 1 with 'Spec 2 runs in parallel' and last line = the same startup plus --coordinator '<coordinator-root>' --parallel true --access mutating; with the root filled in it exited 0. dispatch-preflight.mjs refusal names the flags (source read).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-1-reviewer-focused-20261123T052608212Z-59622-1.log",
+              "sha256": "b735353e4c3d678e1c34d66a62947cc31dcc2780fe51c82d83b78809c37383b7"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-parallel.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused test only; project gate not rerun by the reviewer. Evidence 'dirty' flag reflects untracked review receipts only; tracked files were clean at 4a9a049."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/runtime-dispatch-parallel.test.ts:107",
+      "summary": "The spec-1-3 rerun splits the printed command on spaces and matches the quoted placeholder literally; it holds only for temp paths without spaces. shellQuote in the code handles such paths."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "unknown",
+      "summary": "Reviewer agentId ae0db013197ed9c73 was supplied by the coordinator from the host launch result, not observed by the reviewer itself. Reviewer startup printed reviewRound 1 on this third startup although the previous startup printed 2."
+    }
+  ],
+  "createdAt": "2026-11-23T05:26:53.731328Z"
+}

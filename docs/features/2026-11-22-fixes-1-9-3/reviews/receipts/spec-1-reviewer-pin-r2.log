@@ -1,0 +1,4 @@
+PIN@HEAD c8effc4cb5114e3b6bfaf38457559729a765fc6019f0e6cb0367b902eff292a6
+file@HEAD a3e3adadc2504c51bd3c311fc05383b6c548e5e5b29f5b301399eca841aff5a5
+payload/PIN at HEAD is stale for .joycraft/runtime/worktrees.mjs
+joycraft-evidence: {"wallMs":68,"load":[20.09716796875,20.09716796875],"cores":14,"loaded":true,"argv":["node","-e","const {execFileSync:x}=require('child_process');const c=require('crypto');const pin=JSON.parse(x('git',['show','HEAD:payload/PIN']));const f='.joycraft/runtime/worktrees.mjs';const head=c.createHash('sha256').update(x('git',['show','HEAD:payload/'+f])).digest('hex');console.log('PIN@HEAD',pin.files[f]);console.log('file@HEAD',head);if(pin.files[f]!==head){console.log('payload/PIN at HEAD is stale for '+f);process.exit(1)}"],"exitCode":1,"timedOut":false,"revision":"286c0dc65802dc8c10cbcf6709d56c08df489418","dirty":true,"env":["VITEST_MAX_FORKS","VITEST_MIN_FORKS"]}
