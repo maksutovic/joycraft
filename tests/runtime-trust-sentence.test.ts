@@ -66,6 +66,11 @@ describe('trust sentence in the managed block', () => {
     const sl1 = managedFindings(run('--root', fixture(sl1Block)).stdout);
     expect(sl1).toHaveLength(1);
     expect(sl1[0]).toMatchObject({ path: 'AGENTS.md', detail: expect.stringContaining('differs') });
+    // sl2-04: the first line from before the one-line update notice is stale too.
+    const jsonOnly = run('block').stdout.trimEnd().replace(' If it prints one line, end your next reply with it.', '');
+    const sl2 = managedFindings(run('--root', fixture(jsonOnly)).stdout);
+    expect(sl2).toHaveLength(1);
+    expect(sl2[0]).toMatchObject({ path: 'AGENTS.md', line: 3, detail: expect.stringContaining('differs') });
     const current = fixture(run('block').stdout.trimEnd());
     expect(managedFindings(run('--root', current).stdout)).toEqual([]);
   });

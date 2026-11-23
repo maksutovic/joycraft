@@ -4,23 +4,38 @@
 exists. It reads npm once a day at most, sends no project data, and stops after
 two seconds. If it prints nothing, say nothing and continue.
 
-If it prints JSON, read `action`. Put the line below in your next reply to the user,
-however short or off-topic:
+If it prints one line, end your next reply with that line, however short or
+off-topic. Do not ask anything. It stays quiet about that version for seven days.
+When the user answers the line, read "Other answers" below.
 
-- `note`: tell the user `message` in one line. Do not ask anything.
-- `ask`: tell the user `message` and ask once: update now, not now, or turn off.
-  Do not ask again in this session. `message` names each release since the
-  installed one (newest five, then how many more) and ends with the changelog link.
-- `kind` is `patch` (same minor), `minor` (newer minor), or `migration` (newer major).
+If it prints JSON, read `action`:
+
 - `apply`: the user chose automatic updates. Follow "Update" below without asking.
   If the plan would back up an edited file, stop and ask instead.
+- `ask` or `note` with `kind: migration` (a newer major): put `message` in your next
+  reply. With `ask`, ask once: update now, not now, or turn off. `message` names each
+  release since the installed one (newest five, then how many more) and ends with
+  the changelog link.
 
 Update only between specs, while no implementer or reviewer runs; finish or park
 the work in progress first.
 
+## Other answers
+
+- Update Joycraft: follow "Update" below.
+- Not now: `node .joycraft/runtime/update-check.mjs snooze <latest>` stays quiet about
+  that version for seven days.
+- No Joycraft updates, or turn off: `node .joycraft/runtime/update-check.mjs policy off`.
+- Automatic updates: `node .joycraft/runtime/update-check.mjs policy auto-safe`. Only
+  a `patch` release marked safe applies by itself. A `minor` or `migration` never does.
+- Stay on this version: `node .joycraft/runtime/update-check.mjs pin`, and `unpin` to
+  undo it.
+
+These choices stay in `.joycraft/local/preferences.json`, on this machine.
+
 ## Update
 
-Use the version from `latest`:
+Use the version that the line or `latest` names:
 
 1. Run `npx joycraft@<latest> update . --plan --json`. Show the user the plan in
    short lists: files changed and files backed up. With `apply`, skip this display.
@@ -57,15 +72,3 @@ Use the version from `latest`:
 
 If the update fails, run `npx joycraft@<latest> update . --recover`, tell the user
 that the files are back as they were, and continue your work.
-
-## Other answers
-
-- Not now: `node .joycraft/runtime/update-check.mjs snooze <latest>` stays quiet about
-  that version for seven days.
-- Turn off: `node .joycraft/runtime/update-check.mjs policy off`.
-- Automatic updates: `node .joycraft/runtime/update-check.mjs policy auto-safe`. Only
-  a `patch` release marked safe applies by itself. A `minor` or `migration` always asks.
-- Stay on this version: `node .joycraft/runtime/update-check.mjs pin`, and `unpin` to
-  undo it.
-
-These choices stay in `.joycraft/local/preferences.json`, on this machine.

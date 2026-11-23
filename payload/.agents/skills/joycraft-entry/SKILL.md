@@ -8,8 +8,8 @@ A small job by the `Work` line in `AGENTS.md` does not use this skill and reads
 nothing here.
 
 Run `node .joycraft/runtime/update-check.mjs check` first, once per session. If it
-prints nothing, say nothing. If it prints JSON, follow
-[updates](../../../.joycraft/references/update.md).
+prints nothing, say nothing. If it prints one line, end your next reply with it.
+If it prints JSON, follow [updates](../../../.joycraft/references/update.md).
 
 Then run `node .joycraft/runtime/wiring.mjs --root .`. When the check exits 2, or right after an install, or when the user
 asks to set up Joycraft or check the context map, say in one line that you are

@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Daily check for a newer Joycraft. Prints nothing unless there is something to say,
-// and never fails a session. The one request reads the public package document
+// and never fails a session. A release the user only needs to hear about prints one
+// plain line, then stays quiet about that version for seven days. An automatic update
+// or a migration prints JSON for the flow in references/update.md. The one request reads the public package document
 // (every version's metadata, about 25 KB compressed), never project data.
 import { lstatSync, mkdirSync, openSync, closeSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -152,12 +154,23 @@ export const setPolicy = (root, policy) => {
 
 export const setPin = (root, pin) => savePreference(root, update => ({ ...update, pin }));
 
-export async function main(argv, root = process.cwd(), options) {
+/** The one line for a release the user only needs to hear about; null when the JSON flow applies. */
+export function notice(result) {
+  if (!result || result.action === 'apply' || result.kind === 'migration') return null;
+  if (result.action === 'note') return result.message;
+  return `Joycraft ${result.latest} is available (you have ${result.installed}). Say "update Joycraft" to update, or "no Joycraft updates" to turn this off.`;
+}
+
+export async function main(argv, root = process.cwd(), options = {}) {
   const [command = 'check', value] = argv;
   if (command === 'check') {
     let result = null;
     try { result = await check(root, options); } catch { /* a version check never stops a session */ }
-    if (result) console.log(JSON.stringify(result, null, 2));
+    const line = notice(result);
+    if (line) {
+      console.log(line);
+      try { snooze(root, result.latest, options.now ?? Date.now()); } catch { /* the line still showed */ }
+    } else if (result) console.log(JSON.stringify(result, null, 2));
     return result;
   }
   if (command === 'snooze') return snooze(root, value);

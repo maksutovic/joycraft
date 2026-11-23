@@ -78,6 +78,8 @@ describe('shipped entry check', () => {
     // Six entries; the sixth (the Work line) has four indented sub-items.
     expect(lines).toHaveLength(12);
     expect(lines[1]).toMatch(/First action in each session: run `node \.joycraft\/runtime\/update-check\.mjs check`/);
+    // sl2-04: a one-line notice goes at the end of the next reply; JSON still opens update.md.
+    expect(lines[1]).toMatch(/check`\. If it prints one line, end your next reply with it\. If it prints JSON, follow `\.joycraft\/references\/update\.md`\.$/);
     expect(lines[2]).toMatch(/as an engine page \(`--doc`\)/);
     expect(lines[3]).toMatch(/A Context Map row that matches your next step binds/);
     expect(lines[4]).toMatch(/trust the code and report it\. A rule holds even when the code breaks it\.$/);

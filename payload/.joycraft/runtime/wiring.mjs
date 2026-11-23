@@ -19,7 +19,7 @@ const read = (root, file) => { try { return readFileSync(path.join(root, file), 
 export const managedOpen = '<!-- joycraft:managed -->';
 export const managedClose = '<!-- /joycraft:managed -->';
 const managedLines = [
-  'First action in each session: run `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow `.joycraft/references/update.md`.',
+  'First action in each session: run `node .joycraft/runtime/update-check.mjs check`. If it prints one line, end your next reply with it. If it prints JSON, follow `.joycraft/references/update.md`.',
   'Ask a person to answer or approve anything only through Joycraft\'s decision artifact (`node .joycraft/runtime/artifacts/cli.mjs`, see `.joycraft/references/artifacts.md#asking-questions`), in the project\'s question style. Every page that shows a person a document, a question or a decision comes from that engine: never write your own HTML page for one. Show every other document a person must read (a plan, spec set, report or review) as an engine page (`--doc`), never only as Markdown in chat, where the person works (see `.joycraft/references/artifacts.md#showing-a-page`), and say where it is.',
   'A Context Map row that matches your next step binds: read that page first, and again after a compaction or in a new agent. A record (a log or history) is an audit trail: search it to learn why or when; do not read it at the start.',
   'When a fact here disagrees with the code, trust the code and report it. A rule holds even when the code breaks it.',
