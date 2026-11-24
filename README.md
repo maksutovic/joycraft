@@ -227,8 +227,9 @@ Between cleanups, three things keep the file right:
   fixes. When a release changed Joycraft's block, it replaces the block. When Git
   shows one file that a dead path was renamed to, it corrects the path.
 - **Joycraft's block.** Joycraft's own lines in `AGENTS.md` are between two markers,
-  `<!-- joycraft:managed -->`. After an update, the agent replaces only that block.
-  Your text stays as it is.
+  `<!-- joycraft:managed -->`. `joycraft update` rewrites only that block, saves the
+  old file under `.joycraft-backups/` and prints the backup path. Your text stays
+  as it is.
 - **A check for CI.** Run `node .joycraft/runtime/entry-check.mjs --ci`. It reads
   `AGENTS.md` and `CLAUDE.md`. It prints one line for each dead path, broken link,
   `@` import and package script that does not exist. It also prints a line for
@@ -487,9 +488,10 @@ after an archive runs only if you asked for one.
 ## Updates
 
 At the start of a session, your agent checks npm for a newer Joycraft, at most once a
-day. The check sends no project data. If there is a new version, the agent tells you
-whether it is a patch, a minor release or a migration, lists each release since
-yours, and asks: update now, not now, or turn off. Automatic updates apply only
+day. The check sends no project data. For a new patch or minor release, the agent
+ends its reply with one line that says so, and does not repeat it for 7 days. For a
+migration, it lists each release since yours and asks: update now, not now, or
+turn off. Automatic updates apply only
 patches. On a yes, it does the update
 for you, checks the result, and tells you what is different. After a minor release
 it names what you can now do, and asks how you want questions if you have not said
