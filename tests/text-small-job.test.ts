@@ -57,7 +57,7 @@ describe('small-job rules in the managed block', () => {
     // Close: marks, docs, traps, rules, close.mjs, final message.
     'Close: mark each line `test: <file>`, `seen: <render>` or `not checked: <why>`, and add a `Look:` line with the result.',
     'Update what the change makes stale, here and in the mapped page, with how to run and look at the result.',
-    "Add a trap (it cost you a retry) to the map's traps page, else make one (traps.md in `paths.context`, default docs/context) with a map row.",
+    "Add a trap (it cost you a retry) to the map's troubleshooting page, else make one (traps.md in `paths.context`, default docs/context) with a map row.",
     'Put a standing instruction from the user under `## Rules` in their words.',
     'Stage your work, then run `node .joycraft/runtime/close.mjs <slug> -m "<message>"`, which runs the `test:` files, archives the brief and commits.',
     'Final message, at most 120 words: how to run the result, each guess that changes the answer, then the line the command printed.',
