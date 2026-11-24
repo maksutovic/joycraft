@@ -47,6 +47,10 @@ Use the version that the line or `latest` names:
    printed its backup. When `entry-check.mjs` still reports `managed-block`, the
    lines are loose: replace them with the output of `entry-check.mjs block`. This is the one entry-file edit that an unattended run
    makes, besides a path with one unique Git rename.
+   After a rewrite, run the project gate and read the new block against the
+   Context Map. When it names a page that the project lacks (`block-page`), map
+   it to the project's page for that kind, or make the page with a map row,
+   before you continue. Tell the user what changed in `AGENTS.md`.
    When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`,
    ask once whether search should skip the archive; rerun it with `--apply` on
    a yes, `--decline` on a no.

@@ -1,4 +1,4 @@
-import { readFileSync, realpathSync } from 'node:fs';
+import { existsSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { workPaths } from './config.mjs';
@@ -26,13 +26,37 @@ const managedLines = [
   'Search the mapped pages first. A doc that no map row reaches is working material, not current truth.',
   [
     'Work: first, before any question, page or edit, say `Path: small job` or `Path: feature`.',
-    '  - Small job: it fits one session (several goals can), every open choice has a safe default (`Assumed:` line, never ask), and has no auth, payment, deploy or data-migration change. When Git has no commit yet, first commit what is there as `chore: set up Joycraft`. Write `docs/features/<slug>/brief.md` (the features folder in `joycraft.yaml` when set): the user\'s request word for word, then a "Done when" list with one group for each goal. Each line is a state or input with its expected result and its check (`test: <file>` or `seen: <render>`). Write one line for each thing the user asked for, in their words, and one for a missing input. The first line gives the one answer that the screen or output shows, and that each repeated item in it shows, when its inputs disagree. Every other statement there is a reason for that answer. Each answer says which hours, days or items it covers, and the answers leave no gap. Test an outside source through the function that calls it, with the network call stubbed, for a good reply and a failed one. Build no page for this brief. Build, and check each line.',
-    '  - Look, before you close: give a fresh agent (Claude Code: agent type `joycraft-look`) only the user\'s words and renders of the default state and of a state where the inputs of the first line disagree. Save the renders in `.joycraft/local/looks/<slug>/`. A switch that fakes data says so on the screen. Give it no brief and no code. Ask: "Quote any two statements on this screen that disagree about the main answer, or reply OK. At most 8 lines." Two such quotes block the close: fix, then look again one time. With no separate agent, read the renders yourself and say the look was not independent.',
-    '  - Close: mark each line `test: <file>`, `seen: <render>` or `not checked: <why>`, and add a `Look:` line with the result. Update what the change makes stale, in this file and in the mapped page, with how to run and look at the result. Add a trap (it cost you a retry) to `docs/context/traps.md`, with a map row. Put a standing instruction from the user under `## Rules` in their words. Stage your work, then run `node .joycraft/runtime/close.mjs <slug> -m "<message>"`, which runs the `test:` files, archives the brief and commits. Final message, at most 120 words: how to run the result, each guess that changes the answer, then the line that the command printed.',
+    '  - Small job: it fits one session (several goals can), every open choice has a safe default (`Assumed:` line, never ask), and has no auth, payment, deploy or data-migration change. When Git has no commit, first commit what is there as `chore: set up Joycraft`. Write brief.md in a slug folder under `paths.features` in `joycraft.yaml` (default docs/features): the user\'s request word for word, then a "Done when" list with one group per goal. Each line is a state or input with its expected result and its check (`test: <file>` or `seen: <render>`). Write one line per thing the user asked for, in their words, and one for a missing input. The first line gives the one answer that the screen or output shows, and that each repeated item in it shows, when its inputs disagree. Every other statement there is a reason for that answer. Each answer says which hours, days or items it covers, and the answers leave no gap. Test an outside source through its caller, with the network call stubbed, for a good reply and a failed one. Build no page for this brief. Build, and check each line.',
+    '  - Look, before you close: give a fresh agent (Claude Code: agent type `joycraft-look`) only the user\'s words and renders of the default state and one where the first line\'s inputs disagree. Save the renders under `.joycraft/local/looks/`. A switch that fakes data says so on the screen. Give it no brief or code. Ask: "Quote any two statements on this screen that disagree about the main answer, or reply OK. At most 8 lines." Two such quotes block the close: fix, then look again once. With no separate agent, read the renders yourself and say the look was not independent.',
+    '  - Close: mark each line `test: <file>`, `seen: <render>` or `not checked: <why>`, and add a `Look:` line with the result. Update what the change makes stale, here and in the mapped page, with how to run and look at the result. Add a trap (it cost you a retry) to the map\'s troubleshooting page, else make one (traps.md in `paths.context`, default docs/context) with a map row. Put a standing instruction from the user under `## Rules` in their words. Stage your work, then run `node .joycraft/runtime/close.mjs <slug> -m "<message>"`, which runs the `test:` files, archives the brief and commits. Final message, at most 120 words: how to run the result, each guess that changes the answer, then the line the command printed.',
     '  - Feature: all other work, or when the user asks for the full loop: use the `joycraft-entry` skill. A small job becomes a feature when a choice has no safe default, meets one of those changes, or fails the same check twice: keep the brief and add specs.',
   ].join('\n'),
 ];
 export const managedBlock = [managedOpen, ...managedLines.map(line => `- ${line}`), managedClose].join('\n');
+
+// Pages (backticked .md paths with a folder) that a managed block names outside
+// .joycraft/, which Joycraft installs. The block should name none: a project
+// keeps its pages where its map says, so any page named here may be missing.
+const pageSpans = text => [...text.matchAll(/`([^`\s]+)`/g)].map(match => match[1].split('#')[0])
+  .filter(target => target.includes('/') && target.endsWith('.md') && !target.startsWith('.joycraft/'));
+
+/**
+ * The pages that the managed block in `text` (an AGENTS.md; by default this
+ * version's block) names and the project at `root` does not have, each with its
+ * 1-based line in `text`. A guard against a block that names a fixed page.
+ */
+export function missingBlockPages(root, text = managedBlock) {
+  const lines = proseLines(text).map(line => line.trimEnd());
+  const open = lines.indexOf(managedOpen), close = lines.indexOf(managedClose);
+  if (open === -1 || close <= open) return [];
+  const missing = [];
+  for (let index = open + 1; index < close; index += 1) {
+    for (const page of pageSpans(lines[index])) {
+      if (!missing.some(item => item.page === page) && !existsSync(path.join(root, page))) missing.push({ page, line: index + 1 });
+    }
+  }
+  return missing;
+}
 // The command that every version of Joycraft's first-action line names.
 const firstAction = 'update-check.mjs check';
 // Words of the older loose lines that the block replaced.

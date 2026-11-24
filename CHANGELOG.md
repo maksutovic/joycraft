@@ -7,6 +7,31 @@ claim that a release has shipped.
 
 ---
 
+## 1.10.1 — The AGENTS.md block names no fixed doc pages
+
+A field report against 1.10.0 showed a project guard, which checks that every page
+named in `AGENTS.md` exists, fail right after the update: the block named a brief
+path with a placeholder and a fixed traps page that the project keeps elsewhere.
+The same report showed `update --plan` say the block would not change before
+`update --yes` rewrote it.
+
+### Fixed
+
+- **The block names no fixed doc pages.** The small-job lines name the brief as a
+  `brief.md` in a slug folder under the features folder (`paths.features`), and add
+  a trap to the page that the Context Map names for traps. Only when the map names
+  none does the agent make `traps.md` in the context folder, with a map row. The
+  look renders go under `.joycraft/local/looks/`, with no placeholder path.
+- **`update --plan` tells the truth about the block.** When the project's block
+  differs from the one the update writes, `--plan --json` reports
+  `managedBlock.updated: true` and the backup folder, and the plain plan says it
+  will update the block. A current block still reports no change.
+- **The agent reconciles a rewritten block.** After an update rewrites the block,
+  the update guide says to run the project gate, read the new block against the
+  Context Map and map or make any page it names that the project lacks, then tell
+  the user what changed. `entry-check.mjs` reports such a page as `block-page`, and
+  `update` prints a line for it.
+
 ## 1.10.0 — A short path for one-session work
 
 Trials showed that a small change paid for the whole feature loop: setup and meta

@@ -264,8 +264,15 @@ export async function checkWiring(dir: string, { hosts }: { hosts?: readonly Hos
   } catch { return null; }
 }
 
-/** What `update` did to Joycraft's block in AGENTS.md; `lines` is the block's new range. */
-export interface ManagedBlockResult { updated: boolean; backup: string | null; lines: [number, number] | null }
+/**
+ * What `update` did (or, for a plan, will do) to Joycraft's block in AGENTS.md;
+ * `lines` is the block's new range. `missing` lists the pages the new block names
+ * that the project lacks; it is there only when there are some.
+ */
+export interface ManagedBlockResult { updated: boolean; backup: string | null; lines: [number, number] | null; missing?: string[] }
+
+/** The plan's name for the backup folder: `update` names it by the time it runs. */
+export const PLANNED_BACKUP = join(BACKUP_ROOT, 'update-<time>');
 
 /**
  * Rewrite the text between Joycraft's two markers in AGENTS.md when it is not
@@ -273,7 +280,9 @@ export interface ManagedBlockResult { updated: boolean; backup: string | null; l
  * line ending style included. Nothing happens with no AGENTS.md, no markers, one
  * marker, a marker in a code fence or a current block; loose older lines stay
  * for the agent. The previous file goes to `backup` (a new update folder when
- * none is given). `dryRun` reports the range and writes nothing.
+ * none is given). `dryRun` reports what the update will do (`updated` and the
+ * backup folder, `PLANNED_BACKUP` when none is given) and writes nothing. It
+ * compares the project's block with the package's block, the one `update` writes.
  */
 export async function refreshManagedBlock(dir: string, { backup, dryRun = false }: { backup?: string | null; dryRun?: boolean } = {}): Promise<ManagedBlockResult> {
   const none: ManagedBlockResult = { updated: false, backup: null, lines: null };
@@ -285,6 +294,7 @@ export async function refreshManagedBlock(dir: string, { backup, dryRun = false 
   let wiring: {
     managedState?: (text: string) => { state: string }; proseLines?: (text: string) => string[];
     managedBlock?: string; managedOpen?: string; managedClose?: string;
+    missingBlockPages?: (root: string, text?: string) => { page: string }[];
   };
   try { wiring = await import(pathToFileURL(path).href); } catch { return none; }
   const { managedState, proseLines, managedBlock, managedOpen, managedClose } = wiring;
@@ -302,20 +312,26 @@ export async function refreshManagedBlock(dir: string, { backup, dryRun = false 
   const eol = raw[open].endsWith('\r') ? '\r\n' : '\n';
   const block = managedBlock.split('\n');
   const lines: [number, number] = [open + 1, open + block.length];
-  if (dryRun) return { ...none, lines };
+  // Pages the new block names that the project lacks; Joycraft's own folder may not be there before a plan.
+  let missing: string[] = [];
+  try { missing = (wiring.missingBlockPages?.(root, managedBlock) ?? []).map((item) => item.page); } catch { /* no page check */ }
+  const extra = missing.length ? { missing } : {};
+  if (dryRun) return { updated: true, backup: backup ?? PLANNED_BACKUP, lines, ...extra };
   const folder = backup ?? join(BACKUP_ROOT, `update-${stamp()}`);
   mkdirSync(inside(root, join(folder, 'files')), { recursive: true });
   copyFileSync(inside(root, 'AGENTS.md'), inside(root, join(folder, 'files', 'AGENTS.md')));
   if (!existsSync(inside(root, join(folder, '.gitignore')))) writeFile(root, join(folder, '.gitignore'), '*\n');
   writeFile(root, 'AGENTS.md', `${text.slice(0, start)}${block.join(eol)}${text.slice(end)}`);
-  return { updated: true, backup: folder, lines };
+  return { updated: true, backup: folder, lines, ...extra };
 }
 
 /** The line `update` prints for a rewritten block; none when nothing changed. */
 export function formatManagedBlock(result: ManagedBlockResult | null, { planned = false } = {}): string[] {
-  if (!result?.lines) return [];
-  if (planned) return [`  Will update Joycraft's block in AGENTS.md (lines ${result.lines[0]}–${result.lines[1]}).`];
-  return result.updated ? [`Updated Joycraft's block in AGENTS.md (lines ${result.lines[0]}–${result.lines[1]}). The previous file is in ${result.backup}/.`] : [];
+  if (!result?.lines || !result.updated) return [];
+  const indent = planned ? '  ' : '';
+  const pages = (result.missing ?? []).map((page) => `${indent}The new block names ${page}, which this project does not have: map that kind of page to the project's own page, or make it with a map row.`);
+  if (planned) return [`  Will update Joycraft's block in AGENTS.md (lines ${result.lines[0]}–${result.lines[1]}). The previous file goes to ${result.backup}/.`, ...pages];
+  return [`Updated Joycraft's block in AGENTS.md (lines ${result.lines[0]}–${result.lines[1]}). The previous file is in ${result.backup}/.`, ...pages];
 }
 
 /** Plain-words lines for an unwired project; none when it is wired. */
