@@ -18,9 +18,9 @@ Do not assume the user remembers what you remember. Before you ask, run:
 node .joycraft/runtime/artifacts/cli.mjs questions --brief docs/features/<slug>/brief.md
 ```
 
-It prints `pacing`, `surface` and where each came from. With `unset: true`, the
-project has no recorded style yet: ask for it as [setup](setup.md) step 2 says,
-then continue.
+It prints `pacing`, `surface` and where each came from. With `unset: true`, use
+a page of decisions on the decision page, and say once: "Say 'ask me one at a
+time' or 'ask in chat' to change this."
 
 - **Pacing `one-at-a-time`.** Ask one decision. After the answer, tell the user
   what it changes and ask if that is correct, and stop there: do not put the

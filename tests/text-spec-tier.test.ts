@@ -41,7 +41,7 @@ describe('spec tier text', () => {
     expect(template).not.toContain('the command or test');
   });
 
-  it('[AC:spec-14-2] [AC:spec-28-5] verify takes runtime evidence from the startup output\'s commands.focused; the implementer never runs the gate one time', () => {
+  it('[AC:spec-14-2] [AC:spec-28-5] [AC:sl3-07-reproduced] verify takes runtime evidence from the startup output\'s commands.focused; the implementer never runs the gate one time', () => {
     expect(verify).toMatch(/Take runtime evidence once from the spec's own tests \(the startup output's `commands\.focused`\), never the project gate/);
     expect(verify).not.toMatch(/Take evidence with the package's recorded tool/);
     expect(implementer).not.toContain('project gate one time');

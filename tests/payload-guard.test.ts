@@ -22,7 +22,7 @@ const FIELD_24_WORDS = 29919;
 // Every-spec text is what an agent reads while it works a spec: the implement,
 // verify, decompose and testing skills, the implementer and reviewer agent
 // files, and the references those always read per spec, including worktrees.md,
-// which every dispatch packet lists in readFirst (dispatch-preflight.mjs). Other
+// which the implement and verify skills link for worker isolation. Other
 // references they link (architecture, artifacts, delivery, recurring failures)
 // are read only "when" a condition holds, so they are on-demand. Every-spec text
 // stays flat: its cap is the field-24 total minus the on-demand words measured
@@ -55,7 +55,7 @@ export const EVERY_SPEC_FILES: Record<string, string> = {
   '.joycraft/references/dispatch.md': 'implement and the implementer run its dispatch preflight on every spec',
   '.joycraft/references/completion.md': 'the reviewer reads it at start; verify and implement use it to submit and accept',
   '.joycraft/references/gates.md': 'the gate check and Stop hook run on every spec once gates are on',
-  '.joycraft/references/worktrees.md': 'every implementer and reviewer packet lists it in readFirst (dispatch-preflight.mjs)',
+  '.joycraft/references/worktrees.md': 'the implement and verify skills link it for worker isolation; a packet\'s readFirst is AGENTS.md and the role skill only',
 };
 export const EVERY_SPEC_CAP = FIELD_24_WORDS - 17663;
 // Decision `on-demand-budget` = `plus-1500` (Max, 2026-11-21): on-demand text may
@@ -368,12 +368,14 @@ describe('shipped payload text', () => {
     // At least 200, and always one past the spare, so later cuts cannot make this pass without a regression.
     const spare = EVERY_SPEC_CAP - splitCap(treeBundle()).everySpec;
     expect(splitCap(grown('.agents/skills/joycraft-implement/SKILL.md', Math.max(200, spare + 1))).over).toEqual([expect.stringMatching(/^every-spec /)]);
-    // 600 more on-demand words: no every-spec entry, and still under the on-demand cap.
+    // 600 more on-demand words: no every-spec entry.
     const review = splitCap(grown('.joycraft/references/testing-review.md', 600));
     expect(review.over.filter((entry) => entry.startsWith('every-spec '))).toEqual([]);
-    expect(review.onDemand).toBeLessThanOrEqual(ON_DEMAND_CAP);
-    // One word past the on-demand spare breaks only the on-demand cap.
+    // Growth up to the on-demand spare stays under the on-demand cap. sl1-02's look agent
+    // (96 on-demand words) left less than 600 spare; ON_DEMAND_CAP itself did not move.
     const onDemandSpare = ON_DEMAND_CAP - splitCap(treeBundle()).onDemand;
+    expect(splitCap(grown('.joycraft/references/testing-review.md', Math.min(600, onDemandSpare))).onDemand).toBeLessThanOrEqual(ON_DEMAND_CAP);
+    // One word past the on-demand spare breaks only the on-demand cap.
     expect(splitCap(grown('.joycraft/references/testing-review.md', onDemandSpare + 1)).over).toEqual([expect.stringMatching(/^on-demand /)]);
   });
 
@@ -384,7 +386,10 @@ describe('shipped payload text', () => {
     // [AC:spec-2-1] 1.9.3 cut the Claude native-isolation recipe and its hook note from worktrees.md too.
     expect(bundle.read('.joycraft/references/worktrees.md')).not.toMatch(/WorktreeCreate/);
     expect(bundle.read('.agents/skills/joycraft-testing/SKILL.md')).not.toMatch(/sized like neighboring tests/);
-    expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(12201);
+    // sl1-01 added the 17-word small-job scope line to the implement skill. The cut still holds against the
+    // count before spec 1 plus that line; EVERY_SPEC_CAP stays the limit for new every-spec text.
+    // sl1-05 added the 17-word sentence in the decompose skill that names the four input kinds.
+    expect(payloadWords(bundle, (path) => !isOnDemand(path))).toBeLessThan(12201 + 17 + 17);
   });
 
   it('every relative link and named reference or runtime path is shipped', () => {

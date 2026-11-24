@@ -4,12 +4,13 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { assertReviewAllowed, visibleReports } from './completion.mjs';
 import { readConfig } from './config.mjs';
-import { mainTree, readLease } from './coordinator.mjs';
+import { changedSinceBase, mainTree, readLease, shellQuote } from './coordinator.mjs';
+import { gitState, noGitCommit } from './kickoff.mjs';
 import { prepareDispatch } from './dispatch-preflight.mjs';
 import { testChanges } from './test-changes.mjs';
 import { traceSpec } from './trace.mjs';
 import { readLedger } from './worktrees.mjs';
-import { canonical, isObject, localPath, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, validateNativeActor } from './identity.mjs';
+import { canonical, isObject, localPath, parseJson, readLocal, readQueue, relativePath, requireValue, sha256, snapshot, validateNativeActor } from './identity.mjs';
 
 export const reviewLimit = 3;
 
@@ -49,12 +50,7 @@ function earlierReviews({ roots, queuePath, spec }) {
   return rounds;
 }
 
-/** One word as a POSIX shell reads it: bare when it holds only safe
- * characters, otherwise single-quoted with each embedded quote as '\''. */
-export function shellQuote(word) {
-  const text = String(word);
-  return /^[A-Za-z0-9_./:=@%+,-]+$/.test(text) ? text : `'${text.replace(/'/g, "'\\''")}'`;
-}
+export { shellQuote };
 
 /** The words of a command template, split as a shell would: whitespace
  * separates words, single quotes keep everything literal, double quotes keep
@@ -159,7 +155,7 @@ let receiptCounter = 0;
 // $(, heredoc, source or cd) and a path with a space survives the paste.
 // Reviewer receipts go to <feature>/reviews/receipts/ beside the review
 // evidence; implementer receipts go to <feature>/receipts/.
-function workerCommands({ root, queuePath, spec, role, reportPath, featureFolder, focused }) {
+function workerCommands({ root, queuePath, spec, role, reportPath, featureFolder, focused, agentAtFinish = false }) {
   const stamp = `${new Date().toISOString().replace(/[-:.]/g, '')}-${process.pid}-${receiptCounter += 1}`;
   const receiptFolder = role === 'reviewer' ? path.posix.join(featureFolder, 'reviews', 'receipts') : path.posix.join(featureFolder, 'receipts');
   const receipt = path.posix.join(receiptFolder, `spec-${spec.id}-${role}-focused-${stamp}.log`);
@@ -168,8 +164,10 @@ function workerCommands({ root, queuePath, spec, role, reportPath, featureFolder
   if (focused) steps.evidence = `${line(['node', '.joycraft/runtime/evidence.mjs', 'run', '--receipt', receipt, '--'])} ${focused.command}`;
   if (role === 'implementer') steps.submit = line(['node', '.joycraft/runtime/completion.mjs', 'submit', '--queue', queuePath, '--spec', spec.id]);
   else {
-    steps.checkReport = line(['node', '.joycraft/runtime/dispatch-preflight.mjs', 'check-report', '--worker-root', root, '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
-    steps.finalizeReview = line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
+    steps.checkReport = line(['node', '.joycraft/runtime/dispatch-preflight.mjs', 'check-report', '--worker-root', root, '--queue', queuePath, '--spec', spec.id, '--report', reportPath, ...(agentAtFinish ? ['--agent-at-finish', 'true'] : [])]);
+    // A same-session child cannot see its own agent ID, so the coordinator binds the ID from the launch result.
+    if (agentAtFinish) steps.finish = `Do not run finalize-review. Return the report path: for a PASS the coordinator runs ${line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath])} --reviewer-agent <agent ID from the launch result>. For FAIL or UNVERIFIED it runs ${line(['node', '.joycraft/runtime/completion.mjs', 'bind-reviewer', '--queue', queuePath, '--spec', spec.id, '--report', reportPath])} --reviewer-agent <that ID> before any owner decision.`;
+    else steps.finalizeReview = line(['node', '.joycraft/runtime/completion.mjs', 'finalize-review', '--queue', queuePath, '--spec', spec.id, '--report', reportPath]);
   }
   return steps;
 }
@@ -266,9 +264,20 @@ export async function startDispatch(options, nativeEvent) {
   const { focused, note } = focusedCommand({ root, spec, config });
   const commands = { focused, ...(note ? { note } : {}),
     ...workerCommands({ root, queuePath, spec, role: options.role, reportPath: packet.outputContract.reportPath,
-      featureFolder: path.posix.dirname(path.posix.dirname(queuePath)), focused }) };
-  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(warnings.length ? { warnings } : {}), ...(trace ? { trace } : {}), ...(changes ? { testChanges: changes } : {}), commands,
-    ready: !hookConfig.enabled || hooks.eligible === true };
+      featureFolder: path.posix.dirname(path.posix.dirname(queuePath)), focused,
+      agentAtFinish: nativeEvent.agent_id === undefined && nativeEvent.session_id === options.implementerSessionId }) };
+  // A reviewer's subject is the diff since the base the claim recorded. The declared
+  // inputs stay the scope check: a changed file outside them is a note, not a refusal.
+  let scope;
+  const changed = options.role === 'reviewer' ? changedSinceBase(root, queue.feature) : null;
+  if (changed) {
+    const declared = new Set(spec.verification.inputs.map(input => relativePath(input.path)));
+    const outside = changed.filter(file => !declared.has(file));
+    scope = { diff: ['git', 'diff', lease.baseRevision].join(' '), changed, ...(outside.length ? { outside, note: 'These changed files are outside the declared inputs: note each in the report; it is not a refusal.' } : {}) };
+  }
+  const next = options.role === 'implementer' ? commands.submit : commands.checkReport;
+  return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(warnings.length ? { warnings } : {}), ...(trace ? { trace } : {}), ...(changes ? { testChanges: changes } : {}), ...(scope ? { scope } : {}), commands,
+    ready: !hookConfig.enabled || hooks.eligible === true, next };
 }
 
 export const workspaceFlags = coordinatorRoot => ['--coordinator', coordinatorRoot, '--parallel', 'true', '--access', 'mutating'];
@@ -301,25 +310,68 @@ function gitIgnored(root, relative) {
     return true;
   } catch (error) {
     if (error.status === 1) return false;
+    if (!gitState(root).commit) throw new Error(noGitCommit('start'));
     throw new Error(`Could not check whether ${relative} is git-ignored`);
   }
 }
 
 export const usage = `Usage: node .joycraft/runtime/dispatch-start.mjs \\
-  --worker-root <absolute-worker-root> --expected-manifest <absolute-pinned-manifest> \\
   --queue <queue-path> --spec <id> --role implementer|reviewer \\
-  --implementer-session <implementer-session-id> \\
-  --capabilities filesystem:read,filesystem:write-report[,agent:separate-context] \\
-  --out .joycraft/local/packets/<packet.json> \\
-  --native-session <your-host-session-id> [--native-agent <your-host-agent-id>] [--native-host <host>] \\
-  [--coordinator-session <coordinator-session-id>] [--implementer-host <host> --implementer-agent <id>] \\
+  [--coordinator-session <coordinator-session-id>] \\
+  [--worker-root <absolute-worker-root>] [--expected-manifest <absolute-pinned-manifest>] \\
+  [--native-session <your-host-session-id>] [--native-agent <your-host-agent-id>] [--native-host <host>] \\
+  [--implementer-session <implementer-session-id>] [--implementer-host <host> --implementer-agent <id>] \\
+  [--capabilities filesystem:read,filesystem:write-report[,agent:separate-context]] \\
+  [--out .joycraft/local/packets/<packet.json>] \\
   [--coordinator <root> --parallel true|false --access mutating|read-only] [--base-revision <sha>] \\
-  [--brief <path>] [--changes-base <sha>]
-A reviewer adds agent:separate-context. Use host-issued identities only; .joycraft/references/dispatch.md explains each flag.
+  [--brief <path>] [--changes-base <sha>] [--json]
+Pass --coordinator-session on a claimed queue. The output is the short form; --json prints all of it. A flag you pass wins over its default:
+  --worker-root: this folder.
+  --expected-manifest: .joycraft/installation.json in the main checkout.
+  --native-session: the coordinator lease's session (a child of that session).
+  --implementer-session: the native session for an implementer, the lease session for a reviewer.
+  --out: a fresh packet under .joycraft/local/packets/.
+  --capabilities: filesystem:read,filesystem:write-report, and a reviewer adds agent:separate-context.
+    That default is a claim, not an observation: pass --capabilities when the host shows less.
+Use host-issued identities only. .joycraft/references/dispatch.md explains each flag.
 `;
+
+const requiredFlags = ['--worker-root', '--expected-manifest', '--queue', '--spec', '--role', '--implementer-session', '--out', '--capabilities', '--native-session'];
+
+/** The coordinator lease of the queue at queuePath in root, or null when the
+ * queue cannot be read or has no lease. */
+function queueLease(root, queuePath) {
+  try { return readLease(root, parseJson(readLocal(root, relativePath(queuePath)), queuePath).feature); }
+  catch { return null; }
+}
+
+/** Startup flags with each absent default filled: the worker root from cwd,
+ * the expected manifest from the main checkout's .joycraft/installation.json,
+ * the native and implementer sessions from the coordinator lease, a fresh
+ * packet path and the role's capabilities. `--coordinator-session` has no
+ * default. Returns the filled flags and every required flag still missing. */
+export function startupDefaults(given, cwd = process.cwd()) {
+  const flags = { ...given };
+  flags['--worker-root'] ??= realpathSync(cwd);
+  const root = flags['--worker-root'];
+  flags['--expected-manifest'] ??= path.join(mainTree(root), '.joycraft', 'installation.json');
+  const lease = flags['--queue'] ? queueLease(root, flags['--queue']) : null;
+  if (lease) flags['--native-session'] ??= lease.sessionId;
+  if (flags['--role'] === 'implementer') flags['--implementer-session'] ??= flags['--native-session'];
+  else if (lease) flags['--implementer-session'] ??= lease.sessionId;
+  if (flags['--spec'] && flags['--role']) {
+    flags['--out'] ??= `.joycraft/local/packets/spec-${flags['--spec']}-${flags['--role']}-${new Date().toISOString().replace(/[-:.]/g, '')}-${process.pid}.json`;
+  }
+  if (flags['--role'] === 'implementer' || flags['--role'] === 'reviewer') {
+    flags['--capabilities'] ??= ['filesystem:read', 'filesystem:write-report', ...(flags['--role'] === 'reviewer' ? ['agent:separate-context'] : [])].join(',');
+  }
+  return { flags, missing: requiredFlags.filter(key => !flags[key]) };
+}
 
 export async function main(argv = process.argv.slice(2)) {
   if (argv.length === 1 && ['--help', '-h'].includes(argv[0])) { process.stdout.write(usage); return null; }
+  const json = argv.includes('--json');
+  argv = argv.filter(arg => arg !== '--json');
   const flags = {};
   const allowed = new Set(['--worker-root', '--expected-manifest', '--queue', '--spec', '--role', '--implementer-session',
     '--implementer-host', '--implementer-agent', '--out', '--brief', '--capabilities', '--coordinator', '--parallel',
@@ -330,9 +382,9 @@ export async function main(argv = process.argv.slice(2)) {
       `Invalid startup argument: ${key}; use named flags with literal values`);
     flags[key] = value;
   }
-  for (const key of ['--worker-root', '--expected-manifest', '--queue', '--spec', '--role', '--implementer-session', '--out', '--capabilities', '--native-session']) {
-    requireValue(flags[key], `Task startup requires ${key}; native identities must come from the active host`);
-  }
+  const { flags: filled, missing } = startupDefaults(flags);
+  requireValue(missing.length === 0, `Task startup requires ${missing.join(', ')}; native identities must come from the active host (--help lists each flag and its default)`);
+  Object.assign(flags, filled);
   requireValue(/^(?:0|[1-9]\d*)$/.test(flags['--spec']), 'Spec ID must be a nonnegative integer');
   requireValue(flags['--parallel'] === undefined || ['true', 'false'].includes(flags['--parallel']), '--parallel must be true or false');
   requireValue(!flags['--implementer-agent'] || flags['--implementer-host'], 'A native implementer agent ID needs its host');
@@ -345,8 +397,8 @@ export async function main(argv = process.argv.slice(2)) {
     access: flags['--access'], baseRevision: flags['--base-revision'], nativeHost: flags['--native-host'],
     coordinatorSession: flags['--coordinator-session'], changesBase: flags['--changes-base'],
   }, { cwd: flags['--worker-root'], session_id: flags['--native-session'], ...(flags['--native-agent'] ? { agent_id: flags['--native-agent'] } : {}) });
-  const { packet, ...status } = result;
-  process.stdout.write(`${JSON.stringify(status, null, 2)}\n`);
+  const { packet, schemaVersion, hooks, ...short } = result;
+  process.stdout.write(`${JSON.stringify(json ? { schemaVersion, hooks, ...short } : { ...short, ...(result.ready ? {} : { hooks }) }, null, 2)}\n`);
   if (!result.ready) process.exitCode = 2;
   return result;
 }

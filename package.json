@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.9.4",
+  "version": "1.10.0",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -11,8 +11,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.9.4",
-    "summary": "Field follow-ups for queue runs: reopen a done spec whose accepted code or test changed, a warning when a later spec edits one, a new report path for each review, a warning for agent types with host worktree isolation, and clearer integration and update rules.",
+    "release": "1.10.0",
+    "summary": "One-session work now takes a short brief path whose close runs your tests. Feature runs ask fewer questions and print each next command. joycraft update refreshes the AGENTS.md block. The reviewer tries bad input, checks that tests can fail and checks docs against code.",
     "autoSafeEligible": false
   },
   "scripts": {

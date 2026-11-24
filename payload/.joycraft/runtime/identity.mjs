@@ -52,9 +52,12 @@ export function sameNativeActor(left, right) {
 /**
  * Validate the role-attested independent-review identity shared by completion
  * and session-end archival. This is intentionally an integrity check, not a
- * cryptographic authentication service.
+ * cryptographic authentication service. With agentAtFinish, a reviewer that
+ * shares the implementer's session and has no agentId yet passes: the
+ * coordinator binds its ID at finish (finalize-review or bind-reviewer with
+ * --reviewer-agent), which runs the full check. Only that child-ID check is skipped.
  */
-export function validateIndependentReview(report) {
+export function validateIndependentReview(report, { agentAtFinish = false } = {}) {
   requireValue(nonempty(report?.implementerSessionId) && isObject(report?.reviewer) && nonempty(report.reviewer.sessionId), 'Report needs implementer and reviewer session IDs');
   const hasImplementerActor = report.implementerActor !== undefined;
   const hasReviewerActor = report.reviewer.actor !== undefined;
@@ -64,13 +67,20 @@ export function validateIndependentReview(report) {
     const reviewerActor = validateNativeActor(report.reviewer.actor, 'Reviewer actor');
     requireValue(implementerActor.sessionId === report.implementerSessionId, 'Implementer actor sessionId must match implementerSessionId');
     requireValue(reviewerActor.sessionId === report.reviewer.sessionId, 'Reviewer actor sessionId must match reviewer.sessionId');
-    requireValue(!sameNativeActor(implementerActor, reviewerActor), 'An independent reviewer must have a distinct native actor');
-    if (implementerActor.host.toLowerCase() === reviewerActor.host.toLowerCase() && implementerActor.sessionId === reviewerActor.sessionId) {
-      requireValue(reviewerActor.agentId !== undefined, 'A reviewer sharing the implementer root session needs its host-issued child identity');
-      requireValue(implementerActor.agentId !== reviewerActor.agentId, 'A reviewer sharing the implementer root session needs a distinct child identity');
+    const sameSession = implementerActor.host.toLowerCase() === reviewerActor.host.toLowerCase() && implementerActor.sessionId === reviewerActor.sessionId;
+    // A same-session child with no agentId yet waits for its ID at finish; the rest of the report is still checked.
+    if (!(agentAtFinish && sameSession && reviewerActor.agentId === undefined)) {
+      const hint = sameSession && reviewerActor.agentId === undefined ? '; bind the agent ID from the launch result first: completion.mjs bind-reviewer --queue <path> --spec <id> --report <path> --reviewer-agent <id>' : '';
+      requireValue(!sameNativeActor(implementerActor, reviewerActor), `An independent reviewer must have a distinct native actor${hint}`);
+      if (sameSession) {
+        requireValue(reviewerActor.agentId !== undefined, `A reviewer sharing the implementer root session needs its host-issued child identity${hint}`);
+        requireValue(implementerActor.agentId !== reviewerActor.agentId, 'A reviewer sharing the implementer root session needs a distinct child identity');
+      }
     }
   } else {
-    requireValue(report.reviewer.sessionId !== report.implementerSessionId, 'An independent reviewer with a distinct session ID is required');
+    // A child of the implementer's session that wrote no actor records cannot take its ID at finish.
+    const hint = agentAtFinish ? '; a reviewer in the implementer\'s session must write implementerActor and reviewer.actor as { host, sessionId } with no agentId, and the coordinator binds the agent ID' : '';
+    requireValue(report.reviewer.sessionId !== report.implementerSessionId, `An independent reviewer with a distinct session ID is required${hint}`);
   }
   requireValue(report.reviewer.independent === true, 'An independent reviewer is required');
   requireValue(report.reviewer.scopeReviewed === true, 'Independent reviewer must attest scope completeness');
@@ -150,11 +160,32 @@ function validateScope(scope, label) {
   };
 }
 
+const kindWords = {
+  implementation: 'code', source: 'code', src: 'code', file: 'code', module: 'code', component: 'code',
+  spec: 'requirement', brief: 'requirement', doc: 'requirement', docs: 'requirement', queue: 'requirement', requirements: 'requirement',
+  test: 'check', tests: 'check', testing: 'check', checks: 'check', verification: 'check', config: 'check', configuration: 'check',
+  fixtures: 'fixture', data: 'fixture', sample: 'fixture', example: 'fixture',
+};
+
+/** Suggest a valid kind for a bad verification input: from its word first, then from its path. */
+function suggestKind(input) {
+  const word = typeof input?.kind === 'string' ? input.kind.trim().toLowerCase() : '';
+  if (kindWords[word]) return kindWords[word];
+  const file = typeof input?.path === 'string' ? input.path.toLowerCase() : '';
+  if (/(^|\/)docs\/|\.md$/.test(file)) return 'requirement';
+  if (/(^|\/)(tests?|__tests__|spec)\/|\.(test|spec)\.[a-z]+$/.test(file)) return 'check';
+  if (/(^|\/)(fixtures?|testdata)\//.test(file)) return 'fixture';
+  return 'code';
+}
+
 /** `select` limits criteria checks to the specs being worked on, so a sibling
  * spec's unfinished criteria never block dispatch or review of another spec. */
 export function validateQueue(queue, { select } = {}) {
   requireValue(isObject(queue) && queue.schemaVersion === 1, 'Unsupported or missing queue schemaVersion');
   requireValue(nonempty(queue.feature) && Array.isArray(queue.specs) && queue.specs.length > 0, 'Queue needs a feature and specs');
+  const badKinds = queue.specs.flatMap(spec => (isObject(spec) && isObject(spec.verification) && Array.isArray(spec.verification.inputs) ? spec.verification.inputs : [])
+    .flatMap((input, index) => (isObject(input) && kinds.includes(input.kind) ? [] : [`spec ${spec.id} input ${index}${isObject(input) && typeof input.path === 'string' ? ` (${input.path})` : ''}: kind ${JSON.stringify(input?.kind)} is not valid; use "${suggestKind(input)}"`])));
+  requireValue(badKinds.length === 0, `Invalid verification input kinds. ${badKinds.join('. ')}. A kind is one of code, requirement, check, fixture.`);
   const ids = new Set();
   const files = new Set();
   for (const spec of queue.specs) {
@@ -173,7 +204,6 @@ export function validateQueue(queue, { select } = {}) {
     if (!select || select(spec)) validateCriteria(spec.verification.criteria);
     const inputs = new Set();
     for (const [inputIndex, input] of spec.verification.inputs.entries()) {
-      requireValue(isObject(input) && kinds.includes(input.kind), `Invalid verification input at index ${inputIndex} for spec ${spec.id}: kind must be one of code, requirement, check, fixture; got ${JSON.stringify(input?.kind)}`);
       const inputPath = relativePath(input.path);
       requireValue(!inputs.has(inputPath), `Duplicate verification input: ${inputPath}`);
       inputs.add(inputPath);

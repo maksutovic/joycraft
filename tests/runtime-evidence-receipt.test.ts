@@ -1,7 +1,8 @@
 import { execFileSync, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -93,5 +94,62 @@ describe('report receipt refusal (1.9.3)', () => {
       observations: [{ kind: 'runtime', method: 'test', result: 'PASS', actual: '3 passed', command: 'pnpm test x' }] }] };
     const { errors } = validateEvidence(report, criteria);
     expect(errors.join('\n')).toContain('flows[0].observations[0] needs supporting receipt references: add "receipts": [{ "path": "<project-relative receipt path>", "sha256": "<its SHA-256>" }] for the receipt that evidence.mjs run --receipt wrote for this check');
+  });
+});
+
+// sl1-05: the runtime accepts an argv it emitted itself. Only the first word must not be blank.
+describe('report argv as evidence.mjs emits it (sl1-05)', () => {
+  const runtime = join(__dirname, '..', 'payload', '.joycraft', 'runtime');
+  const put = (file: string, body: string) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
+  const folder = 'docs/features/2026-11-22-f';
+  const queuePath = `${folder}/specs/.joycraft-spec-queue.json`;
+  const reportPath = `${folder}/specs/review-1.report.json`;
+
+  /** An in-review spec whose PASS report cites one evidence.mjs run: its receipt, and `argv` as the command. */
+  function reviewed(argv: (emitted: string[]) => string[]) {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-evidence-argv-')));
+    dirs.push(root);
+    git(root, 'init', '-q', '-b', 'main');
+    put(join(root, '.gitignore'), '.joycraft/local/\n');
+    put(join(root, folder, 'brief.md'), '# Brief\n\n## Goal\n\nText.\n');
+    const spec = `${folder}/specs/01-a.md`;
+    put(join(root, spec), '---\nid: 1\nstatus: in-review\n---\n# A\n\n## acceptance\n\n- It works.\n');
+    put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature: 'f', specs: [{ id: 1, file: '01-a.md', depends_on: [], status: 'in-review', mode: 'checkpoint',
+      verification: { inputs: [{ path: `${folder}/brief.md`, kind: 'requirement' }, { path: spec, kind: 'requirement' }],
+        criteria: [{ id: 'c-1', requirement: { path: spec, anchor: 'acceptance' }, requiredKinds: ['runtime'] }] } }] }, null, 2));
+    git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'init');
+    const receipt = '.joycraft/local/receipts/a.log';
+    const ran = spawnSync(process.execPath, [script, 'run', '--receipt', receipt, '--', process.execPath, '-e', 'console.log(process.argv.length)', ''], { cwd: root, encoding: 'utf8' });
+    expect(ran.status, ran.stderr).toBe(0);
+    const emitted: string[] = JSON.parse(ran.stdout).command.argv;
+    expect(emitted.at(-1)).toBe('');
+    execFileSync(process.execPath, [join(runtime, 'completion.mjs'), 'snapshot', '--queue', queuePath, '--spec', '1', '--out', '.joycraft/local/subject.json'], { cwd: root, stdio: 'ignore' });
+    const subject = JSON.parse(readFileSync(join(root, '.joycraft/local/subject.json'), 'utf8'));
+    const sha256 = createHash('sha256').update(readFileSync(join(root, receipt))).digest('hex');
+    put(join(root, reportPath), JSON.stringify({ schemaVersion: 1, subject, implementerSessionId: 'impl-1', reviewer: { sessionId: 'review-1', independent: true, scopeReviewed: true },
+      verdict: 'PASS', unresolved: [], createdAt: new Date().toISOString(),
+      flows: [{ id: 'flow-1', subjectIdentity: subject.identity, representativeInput: 'the fixture', expected: 'it runs', limits: ['fixture only'], criteria: ['c-1'],
+        observations: [{ kind: 'runtime', method: 'command', result: 'PASS', actual: 'it ran', receipts: [{ path: receipt, sha256 }], command: { argv: argv(emitted), exitCode: 0 } }] }] }, null, 2));
+    return spawnSync(process.execPath, [join(runtime, 'dispatch-preflight.mjs'), 'check-report', '--worker-root', root, '--queue', queuePath, '--spec', '1', '--report', reportPath], { cwd: root, encoding: 'utf8' });
+  }
+
+  it('[AC:sl1-05-argv] an emitted argv with an empty word passes check-report', () => {
+    const result = reviewed(emitted => emitted);
+    expect(result.status, result.stderr).toBe(0);
+  });
+
+  it('[AC:sl1-05-argv] argv [] and a blank first word are still refused', async () => {
+    for (const argv of [[], [' ', 'x']]) {
+      const result = reviewed(() => argv);
+      expect(result.status, result.stderr).not.toBe(0);
+      expect(result.stderr).toContain('needs the executed command argv');
+    }
+    const { validateEvidence } = await import(pathToFileURL(script).href);
+    const criteria = [{ id: 'c-1', requirement: { path: 'docs/features/x/spec.md', anchor: 'acceptance' }, requiredKinds: ['runtime'] }];
+    const report = (argv: unknown) => ({ schemaVersion: 1, subject: { identity: 'a'.repeat(64) }, flows: [{ id: 'f', criteria: ['c-1'], observations: [{ kind: 'runtime', method: 'test', result: 'PASS', actual: 'ok',
+      receipts: [{ path: 'r.log', sha256: 'a'.repeat(64) }], command: { argv, exitCode: 0 } }] }] });
+    expect(validateEvidence(report(['node', '-e', '0', '']), criteria).errors.join('\n')).not.toContain('argv');
+    expect(validateEvidence(report([]), criteria).errors.join('\n')).toContain('needs the executed command argv');
+    expect(validateEvidence(report(['node', 1]), criteria).errors.join('\n')).toContain('needs the executed command argv');
   });
 });

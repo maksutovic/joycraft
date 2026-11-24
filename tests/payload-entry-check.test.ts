@@ -75,12 +75,19 @@ describe('shipped entry check', () => {
     expect([result.status, result.stderr]).toEqual([0, '']);
     const lines = result.stdout.trimEnd().split('\n');
     expect([lines[0], lines.at(-1)]).toEqual(['<!-- joycraft:managed -->', '<!-- /joycraft:managed -->']);
-    expect(lines).toHaveLength(7);
+    // Six entries; the sixth (the Work line) has four indented sub-items.
+    expect(lines).toHaveLength(12);
     expect(lines[1]).toMatch(/First action in each session: run `node \.joycraft\/runtime\/update-check\.mjs check`/);
+    // sl2-04: a one-line notice goes at the end of the next reply; JSON still opens update.md.
+    expect(lines[1]).toMatch(/check`\. If it prints one line, end your next reply with it\. If it prints JSON, follow `\.joycraft\/references\/update\.md`\.$/);
     expect(lines[2]).toMatch(/as an engine page \(`--doc`\)/);
     expect(lines[3]).toMatch(/A Context Map row that matches your next step binds/);
     expect(lines[4]).toMatch(/trust the code and report it\. A rule holds even when the code breaks it\.$/);
     expect(lines[5]).toMatch(/^- Search the mapped pages first\. A doc that no map row reaches is working material, not current truth\.$/);
+    expect(lines[6]).toBe('- Work: first, before any question, page or edit, say `Path: small job` or `Path: feature`.');
+    expect(lines.slice(7, 11).map(line => /^  - (\w+(?: \w+)?)/.exec(line)?.[1])).toEqual(['Small job', 'Look', 'Close', 'Feature']);
+    // [AC:sl3-01-block-current] the close runs the recorded tests.
+    expect(lines[9]).toContain('which runs the `test:` files, archives the brief and commits.');
   });
 
   it('[AC:payload-entry-check] the exact block is clean; a block with one changed word is one advisory and --ci exits 0', () => {

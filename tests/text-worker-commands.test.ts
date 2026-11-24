@@ -79,10 +79,10 @@ describe('one worker home (1.9.3)', () => {
 
 // Spec: docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md
 describe('reviewer start text (1.9.3)', () => {
-  it('[AC:spec-4-3] the reviewer gets the start command, --help, the worker-root cd form and its agent ID from the coordinator', () => {
-    expect(agents.reviewer).toContain('with the command in `.joycraft/references/dispatch.md#start-a-native-dispatch` (`--help` prints it).');
+  it('[AC:spec-4-3] [AC:sl2-06c-text] the reviewer gets the start command, --help, the worker-root cd form, and the coordinator binds its agent ID at finish', () => {
+    expect(agents.reviewer).toContain('run `node .joycraft/runtime/dispatch-start.mjs --queue <queue> --spec <id> --role reviewer` from your worker root, adding `--coordinator-session <id>` when the task names one. `--help` lists the defaults.');
     expect(agents.reviewer).toContain("When the task names a worker root that is not your shell's folder, run each command as `cd <worker-root> && <one command>`.");
-    expect(dispatch).toContain('A Claude Code child cannot see its own agent ID: the coordinator sends it the ID from the launch result before its startup.');
+    expect(dispatch).toContain('A Claude Code child cannot see its own agent ID. A reviewer child starts without it, writes `reviewer.actor` without `agentId` and returns the report path. The coordinator passes the launch-result ID as `--reviewer-agent <id>` to `finalize-review` for a PASS, else to `bind-reviewer` before any owner decision or waiver.');
   });
 });
 
@@ -103,5 +103,79 @@ describe('field follow-up text (1.9.4)', () => {
     expect(completionRef).toContain("`reopen` moves such a spec back to `in-review`, keeps the old report in `reopened`, and restarts its review round count.");
     expect(dispatch).toContain('Each reviewer startup gets a new report path, which wins over any project naming rule.');
     expect(update).toContain('Update only between specs, while no implementer or reviewer runs; finish or park the work in progress first.');
+  });
+});
+
+// Spec: .joycraft/local/loop/iter2/chair.md, sl2-06 part b (reviewer reading).
+describe('reviewer reading (sl2-06b)', () => {
+  it('[AC:sl2-06b-reading] the reviewer reads AGENTS.md, the matching map pages and the verify skill only, and skips the update check', () => {
+    const text = agents.reviewer;
+    expect(text).toContain('Read `AGENTS.md` (or `CLAUDE.md`), each page whose context-map row matches the spec, and `.claude/skills/joycraft-verify/SKILL.md`. Skip the update check. Open another reference only when a command refuses or a step below names it.');
+    for (const gone of ['references/completion.md', 'contracts/types.d.ts', 'references/dispatch.md']) expect(agents.reviewer).not.toContain(gone);
+  });
+});
+
+// Spec: .joycraft/local/loop/iter2/chair.md, sl2-06 part d (look before submit).
+describe('look before submit (sl2-06d)', () => {
+  it('[AC:sl2-06d-look] the implement skill runs the Look bullet before submit on a spec that changes what a user sees', () => {
+    const implement = read('.agents', 'skills', 'joycraft-implement', 'SKILL.md');
+    expect(implement).toContain('Before `submit` on a spec that changes what a user sees, run the Look bullet in `AGENTS.md`. When the implementation is finished, set it `in-review`');
+  });
+});
+
+// Spec: .joycraft/local/loop/iter4/spec-reviewer.md, sl3-07 (the reviewer probes,
+// breaks a test and checks docs against code).
+describe('reviewer checks (sl3-07)', () => {
+  const verify = read('.agents', 'skills', 'joycraft-verify', 'SKILL.md');
+  const words = (text: string) => text.split(/\s+/).filter(Boolean).length;
+
+  it('[AC:sl3-07-probe] the verify skill probes one trusted input on the real surface', () => {
+    expect(verify).toContain('name one input that a user or an outsider can change and the code trusts');
+    expect(verify).toContain('Try it tampered on the real surface.');
+  });
+
+  it('[AC:sl3-07-can-fail] the verify skill reverts the change in a scratch copy and sees the test fail', () => {
+    expect(verify).toContain('revert the change (or its key line) in a scratch copy and run its test. Record the red run. A test that stays green is `blocking`.');
+  });
+
+  it('[AC:sl3-07-docs] the verify skill checks changed doc lines against the code', () => {
+    expect(verify).toContain('check each changed doc line that states behavior against the code it describes. A false line is `blocking`.');
+  });
+
+  it('[AC:sl3-07-reproduced] a reproduced defect blocks and is never a follow-up', () => {
+    expect(verify).toContain('that you reproduced (command, exit status, what you saw). A reproduced defect is never a `follow-up`.');
+    expect(verify).toContain("A defect inside a criterion's scope that a user would hit blocks the spec");
+    expect(verify).not.toContain('A probe outside the named checks');
+  });
+
+  it('[AC:sl3-07-fix-round] the verify skill reads a fix diff for new defects', () => {
+    expect(verify).toContain('read the fix diff for new defects, not only whether each open finding is closed.');
+  });
+
+  it('[AC:sl3-07-style] green tagged tests alone pass nothing, and style is skipped', () => {
+    expect(verify).toContain('Skip style.');
+    expect(verify).toContain('Green tagged tests alone pass no criterion.');
+  });
+
+  it('[AC:sl3-07-agent] the reviewer agent runs the four checks, blocks on reproduced defects and names no trace', () => {
+    expect(agents.reviewer).toContain('Then run the four checks of the verify skill.');
+    expect(agents.reviewer).toContain('defects it reproduced');
+    expect(agents.reviewer).toContain('Read `AGENTS.md` (or `CLAUDE.md`), each page whose context-map row matches the spec, and `.claude/skills/joycraft-verify/SKILL.md`.');
+    expect(agents.reviewer).not.toContain('trace');
+    expect(verify).toContain('Report untraced criteria as findings');
+  });
+
+  it('[AC:sl3-07-words] the verify skill and the reviewer agent stay under their own caps', () => {
+    expect(words(raw('.agents', 'skills', 'joycraft-verify', 'SKILL.md'))).toBeLessThanOrEqual(1367);
+    expect(words(raw('.claude', 'agents', 'joycraft-reviewer.md'))).toBeLessThanOrEqual(347);
+    // The every-spec files of tests/payload-guard.test.ts (which pins the list): this spec keeps their total at or below 12,192.
+    const everySpec = ['.agents/skills/joycraft-implement/SKILL.md', '.agents/skills/joycraft-verify/SKILL.md', '.agents/skills/joycraft-decompose/SKILL.md',
+      '.agents/skills/joycraft-testing/SKILL.md', '.claude/agents/joycraft-implementer.md', '.claude/agents/joycraft-reviewer.md',
+      '.joycraft/references/testing.md', '.joycraft/references/workflow.md', '.joycraft/references/dispatch.md',
+      '.joycraft/references/completion.md', '.joycraft/references/gates.md', '.joycraft/references/worktrees.md'];
+    expect(everySpec.reduce((sum, path) => sum + words(raw(path)), 0)).toBeLessThanOrEqual(12192);
+    const guard = readFileSync(join(root, 'tests', 'payload-guard.test.ts'), 'utf8');
+    expect(guard).toContain('const FIELD_24_WORDS = 29919;');
+    expect(guard).toContain('export const EVERY_SPEC_CAP = FIELD_24_WORDS - 17663;');
   });
 });

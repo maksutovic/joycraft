@@ -43,13 +43,22 @@ describe('fewer, sharper tests text', () => {
       expect(text, path).toContain('fails before');
       expect(text, path).toContain('several checks');
     }
-    expect(flat(IMPLEMENTER)).toContain('receipt first');
     // The skill is the only carrier on every host but Claude: it states the whole fail-first rule and the fewer-tests default.
     const skill = flat(IMPLEMENT);
-    expect(skill).toContain('A new acceptance test runs once and fails before the code exists; its receipt comes first');
+    expect(skill).toContain('A new acceptance test fails before the code exists.');
     expect(skill).toContain('Add a test only when it can fail for a reason no existing test can');
     expect(skill).toContain('one test may carry several `[AC:]` tags');
     expect(skill).toContain('Do not commit tests of one-off run state');
+  });
+
+  // Spec: .joycraft/local/loop/iter4/specs.md, sl3-04 (no red-run receipt).
+  it('[AC:sl3-04-no-receipt] neither text asks for a red-run receipt; both keep fails before the code exists', () => {
+    for (const path of [IMPLEMENT, IMPLEMENTER]) {
+      const text = flat(path);
+      expect(text, path).not.toContain('receipt comes first');
+      expect(text, path).not.toContain('receipt first');
+      expect(text, path).toContain('fails before the code exists');
+    }
   });
 
   it('[AC:spec-22-2] the spec template asks each user-flow check for the real boundary or the mocked one under Not covered', () => {

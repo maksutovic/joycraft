@@ -6,9 +6,9 @@ compatibility: Guarded review and completion require Node.js 22+, the installed 
 
 # Joycraft Implement
 
-Use this skill to carry out already-authorized specs in `docs/features/<slug>/specs/.joycraft-spec-queue.json`.
+Use this skill to carry out already-authorized specs in `docs/features/<slug>/specs/.joycraft-spec-queue.json`. A small job (the `Work` line in `AGENTS.md`) has no queue and does not use this skill.
 
-Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec, the parent brief, the selected spec, and its declared verification inputs before changing code. Reuse current decisions and context; record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision. Do not require a new interview for settled work.
+Read the project's entry file (`AGENTS.md`), then each page whose context-map row matches the spec, the parent brief, the selected spec, and its declared verification inputs before changing code. Record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision.
 
 For a change across state, data or producer/consumer boundaries, inspect the
 counterpart code and owning decisions, and add them to the exact verification
@@ -20,11 +20,11 @@ dependency is `done`; a merge or `in-review` status is insufficient. Preserve th
 explicitly owner-accepted dependency. Choose independent ready work while an
 affected branch waits for review, environment repair or a recorded owner hold.
 
-For normal native execution, the host launches the selected worker first. The
-child bootstraps from its actual root, then runs `dispatch-start.mjs --role
-implementer` with its actual native identity before any tasked edit or mutation.
-The coordinator runs that start itself only when it is the implementer actor.
-Use the returned packet only when `ready` is true.
+The host launches the worker first. Before any edit, the worker runs
+`node .joycraft/runtime/dispatch-start.mjs --queue <queue> --spec <id> --role
+implementer --coordinator-session <id>` from its root (`--help` lists the
+defaults). The coordinator runs it only when it implements the spec itself.
+Use the packet only when `ready` is true.
 
 If existing independent reports reveal a possible recurring failure, follow [recurring failure guidance](../../../.joycraft/references/recurring-failures.md) before carrying it forward.
 
@@ -49,14 +49,14 @@ isolation cannot be obtained, replan the affected wave and set the current
 queue entry's `execution.parallel` to `false` before dispatch, recording why;
 then run it serially. Otherwise leave it unstarted.
 
-Implement the spec; run checks and any relevant rendered inspection as you go, in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Tests come from the spec, tagged `[AC:<criterion-id>]`. Add a test only when it can fail for a reason no existing test can; one test may carry several `[AC:]` tags and cover several checks; extend the existing test file first. A new acceptance test runs once and fails before the code exists; its receipt comes first. Do not commit tests of one-off run state. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
+Implement the spec; run checks and any relevant rendered inspection as you go, in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Tests come from the spec, tagged `[AC:<criterion-id>]`. Add a test only when it can fail for a reason no existing test can; one test may carry several `[AC:]` tags and cover several checks; extend the existing test file first. A new acceptance test fails before the code exists. Do not commit tests of one-off run state. Before `submit` on a spec that changes what a user sees, run the Look bullet in `AGENTS.md`. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
 
 Honor the queue's commit mode. In `batch`, commit and review the independent ready
 wave at its boundary before advancing its dependents; do not wait for an entire
 dependency chain to be implemented. In `checkpoint`, commit each finished spec,
 integrate it, rerun its focused tests after any integration edit, and review the
 integrated bytes before continuing. In `isolated`,
-also give each implementation spec an actual fresh agent context
+also give each implementation spec a fresh agent context
 (`fork_turns: "none"` when spawning; in Claude Code the `joycraft-implementer`
 agent type when installed) with its raw requirements and project context. A worktree is operational isolation; it does not prove review independence.
 
@@ -65,13 +65,13 @@ At the review boundary, invoke `$joycraft-verify`. Use the single native
 verify worker delivery, prepare and bind the bounded packet. Supply only
 observed host capabilities and raw current sources, including coupled
 sources discovered during implementation; never a desired verdict or reasoning.
-It needs actual host session/agent identity and available current authority
-as described in [dispatch guidance](../../../.joycraft/references/dispatch.md).
+It needs the actual host session identity, as described in
+[dispatch guidance](../../../.joycraft/references/dispatch.md). Keep packets and
+subjects under `.joycraft/local/packets/`, not among reviewed sources.
 When `submit` warns that a done spec's accepted input changed, run the printed
 `completion.mjs reopen` for that spec and review it again.
 If a separate review context/capability is unavailable, leave the spec
-`in-review`; do not invent an ID to continue. This holds the claimed review,
-not unrelated authorized work.
+`in-review`; do not invent an ID to continue.
 
 When a recorded tool breaks during a run, repair and record it as
 `$joycraft-verify` says, leave that spec `in-review`, and continue with the
@@ -120,8 +120,7 @@ opens the PR) and read CI once, on the PR, after session end's push. After a
 second red CI run, stop and report.
 
 After review and completion, continue with the next ready authorized spec.
-When no spec can start, that is, each remaining spec is held or waits on a
-held spec, run `$joycraft-session-end` without waiting for the user.
+When no spec can start (each one held or waiting on a held spec), run `$joycraft-session-end` without waiting for the user.
 Report blockers and the next action first, then measured progress. Tell the user
 when a run stops or planned work is omitted, with the reason and retained state;
 explain any needed external setting and its effect. Give each concise stage

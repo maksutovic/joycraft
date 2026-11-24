@@ -8,21 +8,29 @@ import { workPaths } from './config.mjs';
 // Claude Code is installed) a CLAUDE.md that imports AGENTS.md, unless AGENTS.md
 // itself imports CLAUDE.md. It never edits a file; the agent writes the missing
 // pieces after talking with the person. `findings` decide the exit code;
-// `advice` (areas setup has not mapped yet) never does.
+// `advice` (areas setup has not mapped yet; at session start, tidy and no-git) never does.
 const read = (root, file) => { try { return readFileSync(path.join(root, file), 'utf8'); } catch { return null; } };
 
 // Joycraft's own lines in AGENTS.md: one block between markers, the same for
 // every project. This is the one definition. The runtime prints it
 // (entry-check.mjs block) and checks it; the agent places it. A release that
 // changes Joycraft's lines changes this text and nothing else in the file.
+// An entry can hold indented sub-items on its own lines (the `Work` line).
 export const managedOpen = '<!-- joycraft:managed -->';
 export const managedClose = '<!-- /joycraft:managed -->';
 const managedLines = [
-  'First action in each session: run `node .joycraft/runtime/update-check.mjs check`. If it prints JSON, follow `.joycraft/references/update.md`.',
+  'First action in each session: run `node .joycraft/runtime/update-check.mjs check`. If it prints one line, end your next reply with it. If it prints JSON, follow `.joycraft/references/update.md`.',
   'Ask a person to answer or approve anything only through Joycraft\'s decision artifact (`node .joycraft/runtime/artifacts/cli.mjs`, see `.joycraft/references/artifacts.md#asking-questions`), in the project\'s question style. Every page that shows a person a document, a question or a decision comes from that engine: never write your own HTML page for one. Show every other document a person must read (a plan, spec set, report or review) as an engine page (`--doc`), never only as Markdown in chat, where the person works (see `.joycraft/references/artifacts.md#showing-a-page`), and say where it is.',
   'A Context Map row that matches your next step binds: read that page first, and again after a compaction or in a new agent. A record (a log or history) is an audit trail: search it to learn why or when; do not read it at the start.',
   'When a fact here disagrees with the code, trust the code and report it. A rule holds even when the code breaks it.',
   'Search the mapped pages first. A doc that no map row reaches is working material, not current truth.',
+  [
+    'Work: first, before any question, page or edit, say `Path: small job` or `Path: feature`.',
+    '  - Small job: it fits one session (several goals can), every open choice has a safe default (`Assumed:` line, never ask), and has no auth, payment, deploy or data-migration change. When Git has no commit yet, first commit what is there as `chore: set up Joycraft`. Write `docs/features/<slug>/brief.md` (the features folder in `joycraft.yaml` when set): the user\'s request word for word, then a "Done when" list with one group for each goal. Each line is a state or input with its expected result and its check (`test: <file>` or `seen: <render>`). Write one line for each thing the user asked for, in their words, and one for a missing input. The first line gives the one answer that the screen or output shows, and that each repeated item in it shows, when its inputs disagree. Every other statement there is a reason for that answer. Each answer says which hours, days or items it covers, and the answers leave no gap. Test an outside source through the function that calls it, with the network call stubbed, for a good reply and a failed one. Build no page for this brief. Build, and check each line.',
+    '  - Look, before you close: give a fresh agent (Claude Code: agent type `joycraft-look`) only the user\'s words and renders of the default state and of a state where the inputs of the first line disagree. Save the renders in `.joycraft/local/looks/<slug>/`. A switch that fakes data says so on the screen. Give it no brief and no code. Ask: "Quote any two statements on this screen that disagree about the main answer, or reply OK. At most 8 lines." Two such quotes block the close: fix, then look again one time. With no separate agent, read the renders yourself and say the look was not independent.',
+    '  - Close: mark each line `test: <file>`, `seen: <render>` or `not checked: <why>`, and add a `Look:` line with the result. Update what the change makes stale, in this file and in the mapped page, with how to run and look at the result. Add a trap (it cost you a retry) to `docs/context/traps.md`, with a map row. Put a standing instruction from the user under `## Rules` in their words. Stage your work, then run `node .joycraft/runtime/close.mjs <slug> -m "<message>"`, which runs the `test:` files, archives the brief and commits. Final message, at most 120 words: how to run the result, each guess that changes the answer, then the line that the command printed.',
+    '  - Feature: all other work, or when the user asks for the full loop: use the `joycraft-entry` skill. A small job becomes a feature when a choice has no safe default, meets one of those changes, or fails the same check twice: keep the brief and add specs.',
+  ].join('\n'),
 ];
 export const managedBlock = [managedOpen, ...managedLines.map(line => `- ${line}`), managedClose].join('\n');
 // The command that every version of Joycraft's first-action line names.
@@ -42,7 +50,7 @@ function claudeInstalled(root, hosts) {
 }
 
 // Lines outside fenced code, so an example in a fence is not read as the map.
-function proseLines(text) {
+export function proseLines(text) {
   let fence = null;
   return text.split(/\r?\n/).map(line => {
     const marker = /^\s*(`{3,}|~{3,})/.exec(line)?.[1];
@@ -180,6 +188,8 @@ export function checkWiring(root, { hosts } = {}) {
   return { wired: findings.length === 0, findings, advice };
 }
 
+const noGitRule = /^\s*[-*] No Git\b/m;
+
 export async function main(argv = process.argv.slice(2)) {
   const index = argv.indexOf('--root');
   if (!(argv.length === 0 || (argv.length === 2 && index === 0))) throw new Error('Usage: wiring.mjs [--root <project>]');
@@ -192,6 +202,12 @@ export async function main(argv = process.argv.slice(2)) {
     const tidy = tidyAdvice({ root });
     if (tidy) result.advice.push(tidy);
   } catch { /* no tidy advice */ }
+  // Git advice: submit and the small-job close need a commit. Advice only, never a finding.
+  // A `- No Git` line in AGENTS.md records the user's no, so the advice stops.
+  try {
+    const { gitState } = await import('./kickoff.mjs');
+    if (!noGitRule.test(read(root, 'AGENTS.md') ?? '') && !gitState(root).commit) result.advice.push({ check: 'no-git', path: '.', detail: 'This folder is not a Git repository with a commit, so submit stops and a small job cannot close in one commit.', fix: 'Settle Git once, as step 2 of .joycraft/references/setup.md says.' });
+  } catch { /* no Git advice */ }
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (!result.wired) process.exitCode = 2;
   return result;

@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -39,6 +39,24 @@ describe('claude-artifact-pages', () => {
     expect(await main(['pages'], dir)).toEqual({ pages: 'local', source: '.joycraft/preferences.json' });
     await expect(main(['pages', '--set', 'web'], dir)).rejects.toThrow('claude or local');
     expect(JSON.parse(readFileSync(join(dir, '.joycraft/preferences.json'), 'utf8')).artifacts).toEqual({ pages: 'local' });
+  });
+
+  it('[AC:sl3-03-no-style-ask] artifacts.md uses the default style and asks for none outside setup', () => {
+    const text = readFileSync(join(__dirname, '../payload/.joycraft/references/artifacts.md'), 'utf8').replace(/\s+/g, ' ');
+    expect(text).toContain(`With \`unset: true\`, use a page of decisions on the decision page, and say once: "Say 'ask me one at a time' or 'ask in chat' to change this."`);
+    expect(text).not.toMatch(/ask for it as \[setup\]/);
+    expect(text).not.toContain('setup.md) step 2');
+  });
+
+  it('[AC:sl3-03-default-style] questions with no preferences prints a page on the decision page and writes nothing', async () => {
+    const { main } = await load('cli.mjs');
+    const dir = project();
+    const printed: string[] = [];
+    const log = console.log;
+    console.log = (line: string) => { printed.push(line); };
+    try { await main(['questions'], dir); } finally { console.log = log; }
+    expect(JSON.parse(printed.join('\n'))).toMatchObject({ pacing: 'page', surface: 'artifact', unset: true });
+    expect(existsSync(join(dir, '.joycraft'))).toBe(false);
   });
 
   it('[AC:one-page] a Claude build shows the document above its questions on one page', async () => {

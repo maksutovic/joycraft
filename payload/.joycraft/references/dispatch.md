@@ -47,27 +47,20 @@ commit permitted receipts or a sanitized index, and deliver approved local
 sensitive evidence through the existing scoped path. A private screenshot need
 not become a tracked asset, and an inaccessible gitignored path is not evidence.
 
-Use the child command for ordinary new work. Once the host has launched a worker
-and its root is known, the child derives the current queue, spec, brief (or explicit `--brief`) and
-declared input hashes, prepares and binds the current packet, and writes it to a
-project-relative parent directory. Write packets and subjects under
-`.joycraft/local/packets/` so they do not become unrelated scope paths; startup
-creates that directory and refuses an output Git would track, so do not create
-or check it yourself. The child bootstraps and starts from its actual worker
-root before mutation; never start against a guessed path:
+Use the child command for ordinary new work. After the host launches a worker,
+the worker runs startup from its actual root before any change. Startup derives
+the queue, spec, brief (or `--brief`) and input hashes, then writes the bound
+packet. Keep packets and subjects under `.joycraft/local/packets/`: startup
+creates that folder and refuses an output that Git tracks.
 
 ```sh
-node .joycraft/runtime/dispatch-start.mjs \
-  --worker-root <absolute-worker-root> --expected-manifest <absolute-pinned-manifest> \
-  --queue <queue-path> --spec <id> --role implementer \
-  --implementer-session <actual-session-id> \
-  --capabilities filesystem:read,filesystem:write-report,agent:separate-context \
-  --out .joycraft/local/packets/<packet.json> \
-  --native-session <actual-host-session-id> \
-  --native-agent <actual-host-child-agent-id> \
-  --native-host <host> \
-  --coordinator-session <coordinator-session-id>
+node .joycraft/runtime/dispatch-start.mjs --queue <queue-path> --spec <id> \
+  --role implementer --coordinator-session <coordinator-session-id>
 ```
+
+Other flags have defaults, which `--help` lists. A flag you pass wins. The
+capabilities default is a claim, not an observation: pass `--capabilities` when
+the host shows less. One refusal lists every missing flag.
 
 `--coordinator-session` is required while the queue has a coordinator lease
 (`coordinator.mjs claim`) and must equal the holder; startup output then names
@@ -82,10 +75,12 @@ command: never chain them with `&&`, `;` or `|`, or use `$(git …)`, a heredoc,
 the startup output's `commands`. For a root or revision, run `pwd` or
 `git rev-parse HEAD` alone and paste the value.
 
-`--native-agent` is present only when the host issued a child identity;
+Pass `--native-agent` only with a host-issued child ID the child can see.
 `--native-host` is optional. Use actual host-issued values only. A Claude Code
-child cannot see its own agent ID: the coordinator sends it the ID from the
-launch result before its startup. The start flow
+child cannot see its own agent ID. A reviewer child starts without it, writes
+`reviewer.actor` without `agentId` and returns the report path. The coordinator
+passes the launch-result ID as `--reviewer-agent <id>` to `finalize-review` for
+a PASS, else to `bind-reviewer` before any owner decision or waiver. The start flow
 consumes the existing `--coordinator`, `--parallel`, `--access`,
 `--base-revision`, `--implementer-host`, and `--implementer-agent` options.
 Startup never writes `verification.changeScope`; a spec opts in by recording
@@ -105,24 +100,22 @@ cause and the repair it tried. The coordinator tells the user at the first hold,
 in the conversation, while other workers keep running; it does not wait for the
 session end. The session-end summary lists every held spec again.
 
-A valid startup returns `hooks: { enabled: false, reason: "hooks-not-installed" }`
-and `ready: true`. It is not a cryptographic attestation.
+Startup prints `ready: true` and `next`; `--json` adds `hooks: { enabled: false,
+reason: "hooks-not-installed" }`. Neither is a cryptographic attestation.
 
-When the host reports a native agent/invocation ID, also pass
-`--implementer-host <host> --implementer-agent <actual-agent-id>`. For a root
-session, `--implementer-host <host>` may be used without a child agent ID.
-Record the returned reviewer actor after launch; never invent it before dispatch.
-Claude's plain Agent worker can share the parent session while having its own
-native agent ID. It can review in the same checkout when a separate context is
-observed and the reviewed inputs stay fixed. A worktree alone proves neither
+When the host reports a native agent ID, also pass `--implementer-host <host>
+--implementer-agent <actual-agent-id>`. A root session can pass
+`--implementer-host <host>` alone. A Claude Code reviewer child can review in
+the same checkout when a separate context is observed and the reviewed inputs
+stay fixed. A worktree alone proves neither
 independent context nor current evidence. Reports carry both actor records or
 neither; see `completion.md` for the legacy fallback.
 
 The setup/export flow writes `.joycraft/installation.json` with the
-actual exported file paths and SHA-256 values. Give the helper an explicit
-absolute `workerRoot` and an explicit pinned expected manifest path; it compares
-role/shared files against both. A worker's own manifest cannot attest that an
-old, internally consistent installation is the intended export.
+actual exported file paths and SHA-256 values. Startup compares role/shared
+files against the worker's copy and the expected manifest (by default, the main
+checkout's copy). A worker's own manifest cannot attest that an old, internally
+consistent installation is the intended export.
 Include the reviewer skill, every reference it needs, and every runtime module
 it needs in `delivery.roles`. A matching path is insufficient when the bytes
 are from an older install.

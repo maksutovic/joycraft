@@ -7,6 +7,81 @@ claim that a release has shipped.
 
 ---
 
+## 1.10.0 — A short path for one-session work
+
+Trials showed that a small change paid for the whole feature loop: setup and meta
+questions, a spec, a reviewer and several close steps. This release gives work that
+fits one session a short path of its own, makes feature runs ask less and say the
+next command, and makes the reviewer test what it reviews.
+
+### Changed
+
+- **One-session work takes a short brief path.** Joycraft's block in `AGENTS.md`
+  has a Work line. Work that fits one session, where every open choice has a safe
+  default and nothing touches auth, payment, deploy or a data migration, gets a
+  brief with "Done when" lines, a build, a look and one close command
+  (`close.mjs`). The close runs the tests the brief records, marks each line and
+  makes one commit. Other work, or a job that needs an owner answer or fails the
+  same check twice, becomes a feature. The reply starts with a `Path:` line.
+- **A fresh agent looks at the result.** Before the close, a look agent (Claude
+  Code: `joycraft-look`, a small read-only agent) gets only the user's words and
+  renders of the default state and of a state where the inputs disagree, and
+  quotes any two statements on the screen that disagree.
+- **Feature runs ask fewer questions.** A feature session asks no setup or meta
+  question. A brief with no open decision gets no decision page, and a project
+  with no recorded question style gets a page of decisions with one line on how
+  to change it.
+- **The runtime prints the next command.** Startup, the coordinator claim,
+  `submit` and `finalize-review` print `next`. `dispatch-start.mjs` fills missing
+  flags from the current folder and the coordinator lease, and names every flag
+  still missing in one refusal. A claim records `baseRevision`.
+- **One close command for a finished queue.** `close.mjs --feature <slug>` runs
+  the records, tidy, prune and archive steps of session end in order.
+- **`joycraft update` refreshes Joycraft's block in `AGENTS.md`.** When the text
+  between the `<!-- joycraft:managed -->` markers differs from the current block,
+  `update` rewrites only that text, saves the previous file under
+  `.joycraft-backups/update-<stamp>/files/AGENTS.md` and prints one line with the
+  backup path. It also does this when no Joycraft file changed. Every byte outside
+  the markers stays. With no markers, one marker or markers in a code fence, and on
+  `init`, it does nothing; `--plan` says it will update the block.
+- **The reviewer probes the change.** Green tagged tests alone pass no criterion.
+  The reviewer tries input the change trusts in tampered form, breaks the code a
+  test covers in a scratch copy to see that the test can fail, and checks changed
+  docs against the code. A test that stays green or a false doc line is
+  `blocking`, and a reproduced defect is never a `follow-up`. The reviewer reads
+  only `AGENTS.md`, the map pages and the verify skill at start.
+- **The update notice is one line.** For a patch or minor release, the
+  session-start check prints one plain statement and does not repeat it for 7
+  days. Automatic updates and migrations keep the full flow.
+
+### Added
+
+- **Git is settled at setup.** Setup runs `git init` on a bare project, asks once
+  on a project with files and records a no. Submit and startup stop early with a
+  plain message when the folder has no Git commit.
+- **Reviewer agent ID bound at finish.** A Claude Code reviewer child cannot see
+  its own agent ID; the coordinator now passes it to `finalize-review
+  --reviewer-agent`, and `completion.mjs bind-reviewer` does the same for a FAIL
+  or UNVERIFIED report. The ID is written only after every check passes.
+- **A look before submit** on a spec that changes what a user sees.
+- **Maintainer tools (not shipped):** a trial breakdown analyzer, a look-agent
+  evaluation and a reviewer benchmark. The recorded benchmark run caught 5 of 18
+  replayed defects (floor 4), found 5 of 8 seeded ones, raised no false finding on
+  the controls and found the vacuous test.
+
+### Fixed
+
+- Smaller queue fixes: `evidence` accepts an argv as `run` emits it, one queue
+  refusal names every bad input kind, `status` accepts `--queue` and lists briefs
+  with no queue, and packets read only `AGENTS.md` and the role skill first.
+
+### Update notes
+
+- **Run `joycraft update` to get the new Work line.** It rewrites only the text
+  between the managed markers in `AGENTS.md` and keeps a backup.
+- **sl3-06 (a batch-end reviewer for a run of small jobs) is not in this
+  release.**
+
 ## 1.9.4 — Field follow-ups for queue runs
 
 A field project's four-spec queue showed what happens when a later spec has to

@@ -191,3 +191,44 @@ describe('queue-check gate-in-spec chains, scope and comment (1.9.1 spec 4)', ()
     expect(comment).not.toContain('`:`, `-` or `=`');
   });
 });
+
+// sl1-05: one refusal names every bad kind with the word to use; the template shows each kind.
+describe('queue-check verification input kinds (sl1-05)', () => {
+  const template = join(__dirname, '..', 'payload', '.joycraft', 'templates', 'queue.json');
+  const templateFolder = 'docs/features/example-feature';
+  const templateQueue = `${templateFolder}/specs/.joycraft-spec-queue.json`;
+  function templated(edit: (body: string) => string) {
+    const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-queue-kinds-')));
+    dirs.push(root);
+    execFileSync('git', ['init', '-q', '-b', 'main'], { cwd: root });
+    put(join(root, templateFolder, 'brief.md'), '# Brief\n\n## Goal\n\nText.\n');
+    put(join(root, templateFolder, 'specs', '01-outcome.md'), '---\nid: 1\nstatus: todo\n---\n# Outcome\n\n## acceptance\n\n- It works. Check: `pnpm test tests/example.test.ts`.\n');
+    put(join(root, templateQueue), edit(readFileSync(template, 'utf8')));
+    return spawnSync(process.execPath, [runtime, '--queue', templateQueue, '--root', root], { encoding: 'utf8' });
+  }
+
+  it('[AC:sl1-05-kind] the template queue passes and shows one input of each kind', () => {
+    const result = templated(body => body);
+    expect(result.status, result.stderr).toBe(0);
+    const kinds = JSON.parse(readFileSync(template, 'utf8')).specs[0].verification.inputs.map((input: { kind: string }) => input.kind);
+    expect(new Set(kinds)).toEqual(new Set(['requirement', 'code', 'check', 'fixture']));
+  });
+
+  it('[AC:sl1-05-kind] two bad kinds give one message that names both, each with a suggestion', () => {
+    const result = templated(body => body.replace('"kind": "code"', '"kind": "implementation"').replace('"kind": "check"', '"kind": "tests"'));
+    expect(result.status).not.toBe(0);
+    const lines = result.stderr.trim().split('\n');
+    expect(lines).toHaveLength(1);
+    expect(lines[0]).toContain('kind "implementation" is not valid; use "code"');
+    expect(lines[0]).toContain('kind "tests" is not valid; use "check"');
+    expect(lines[0]).toContain('src/example.ts');
+    expect(lines[0]).toContain('tests/example.test.ts');
+  });
+});
+
+describe('decompose names the four kind words (sl1-05)', () => {
+  it('[AC:sl1-05-kind] the decompose skill lists requirement, code, check and fixture', () => {
+    const skill = readFileSync(join(__dirname, '..', 'payload', '.agents', 'skills', 'joycraft-decompose', 'SKILL.md'), 'utf8');
+    expect(skill).toMatch(/kind` is one\s+of four words: `requirement` \(brief, spec\), `code`, `check` \(test,\s+configuration\) or `fixture`/);
+  });
+});

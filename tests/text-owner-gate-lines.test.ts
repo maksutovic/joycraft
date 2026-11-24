@@ -55,4 +55,9 @@ describe('owner gate lines', () => {
     expect(block).toContain('joycraft-implement/SKILL.md');
     for (const file of ['joycraft-cleanup/SKILL.md', 'references/update.md', 'references/cleanup.md']) expect(block).not.toContain(file);
   });
+
+  it('[AC:sl3-02-update-text] update.md says the update rewrote the block and leaves only loose lines to the agent', () => {
+    expect(update).toContain("The update rewrote the text between Joycraft's markers in `AGENTS.md` and printed its backup. When `entry-check.mjs` still reports `managed-block`, the lines are loose: replace them with the output of `entry-check.mjs block`.");
+    expect(update).not.toContain('replace the block in `AGENTS.md` with the output of `entry-check.mjs block` and remove each older Joycraft line that the block replaces');
+  });
 });

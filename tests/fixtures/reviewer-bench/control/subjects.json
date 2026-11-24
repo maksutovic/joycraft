@@ -1,0 +1,5 @@
+[
+  { "n": 1, "kind": "first-round", "feature": "demo", "spec": 1, "round": 1, "revision": "0000000000000000000000000000000000000001" },
+  { "n": 2, "kind": "first-round", "feature": "demo", "spec": 2, "round": 1, "revision": "0000000000000000000000000000000000000002" },
+  { "n": 3, "kind": "control", "feature": "demo", "spec": 3, "round": 1, "revision": "0000000000000000000000000000000000000003" }
+]

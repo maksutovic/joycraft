@@ -6,7 +6,7 @@ import { parseYaml, readConfig } from './config.mjs';
 import { isObject, parseJson, requireValue } from './identity.mjs';
 import { namesCommand } from './queue-check.mjs';
 import { projectStatus } from './status.mjs';
-import { managedState } from './wiring.mjs';
+import { managedClose, managedOpen, managedState } from './wiring.mjs';
 import { listWorktrees } from './worktrees.mjs';
 
 // A sweep for stale project knowledge. Every check is deterministic: files,
@@ -320,13 +320,19 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   // missing-path: a backticked project path that names nothing in the project,
   // read from the root or, in a context page, from the page's own folder.
   // History pages (a decision log, a shipped ledger) rightly name removed paths.
+  // Joycraft's managed block names pages that the agent makes when it needs
+  // one (the traps page), so its lines are not read here.
   const exists = relative => existsSync(path.join(root, relative));
   const missing = [];
   for (const file of authorities) {
     const { text, spans } = parsed.get(file);
     if (historyPage(file, text)) continue;
+    const lines = file === 'AGENTS.md' ? text.split(/\r?\n/).map(line => line.trimEnd()) : [];
+    const open = lines.indexOf(managedOpen), close = lines.indexOf(managedClose);
+    const managed = line => open !== -1 && close > open && line > open + 1 && line < close + 1;
     const seen = new Set();
     for (const { span, line } of spans) {
+      if (managed(line)) continue;
       const target = projectPath(span, exists);
       if (!target || seen.has(target)) continue;
       seen.add(target);
