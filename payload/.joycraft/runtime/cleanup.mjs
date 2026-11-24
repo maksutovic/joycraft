@@ -320,8 +320,8 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   // missing-path: a backticked project path that names nothing in the project,
   // read from the root or, in a context page, from the page's own folder.
   // History pages (a decision log, a shipped ledger) rightly name removed paths.
-  // Joycraft's managed block names pages that the agent makes when it needs
-  // one (the traps page), so its lines are not read here.
+  // Joycraft's managed block is Joycraft's text, so its lines are not read here:
+  // entry-check.mjs reports a page that the block names and the project lacks (block-page).
   const exists = relative => existsSync(path.join(root, relative));
   const missing = [];
   for (const file of authorities) {

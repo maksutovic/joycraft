@@ -8,7 +8,7 @@ import { readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { cleanupReport, tidyReport } from './cleanup.mjs';
-import { managedBlock } from './wiring.mjs';
+import { managedBlock, missingBlockPages } from './wiring.mjs';
 
 // Entry files by name: the root pair, an AGENTS.md in a folder below, and the Codex override file.
 const entryFiles = ['AGENTS.md', 'CLAUDE.md', 'AGENTS.override.md'];
@@ -20,7 +20,15 @@ const pageChecks = ['unmapped', 'orphan'];
 /** The cleanup findings that are about an entry file, each with its level. */
 export function entryReport({ root = process.cwd(), now = Date.now() } = {}) {
   const report = cleanupReport({ root, now });
-  const findings = report.findings
+  // block-page: a page that Joycraft's block in AGENTS.md names and the project lacks.
+  // The block should name none; this catches a release that names one again.
+  let agents = null;
+  try { agents = readFileSync(path.join(root, 'AGENTS.md'), 'utf8'); } catch { /* no AGENTS.md */ }
+  const blockPages = agents === null ? [] : missingBlockPages(root, agents).map(({ page, line }) => ({
+    check: 'block-page', path: 'AGENTS.md', line, detail: `Joycraft's block names ${page}, which this project does not have.`,
+    fix: 'Map that kind of page to the page the project already has, or make it with a map row; then report the block line to Joycraft.',
+  }));
+  const findings = [...report.findings, ...blockPages]
     .filter(item => entryFiles.includes(path.posix.basename(item.path)) || pageChecks.includes(item.check))
     .map(item => ({ level: gateChecks.includes(item.check) ? 'gate' : 'advisory', ...item }))
     // In file order, so a reader can go down the file once.

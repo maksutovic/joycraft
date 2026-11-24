@@ -36,31 +36,31 @@ describe('small-job rules in the managed block', () => {
   it.each([
     // Small job: the line, the first commit, the brief, the guesses.
     'it fits one session (several goals can), every open choice has a safe default (`Assumed:` line, never ask), and has no auth, payment, deploy or data-migration change.',
-    'When Git has no commit yet, first commit what is there as `chore: set up Joycraft`.',
-    'Write `docs/features/<slug>/brief.md` (the features folder in `joycraft.yaml` when set)',
-    "the user's request word for word, then a \"Done when\" list with one group for each goal.",
+    'When Git has no commit, first commit what is there as `chore: set up Joycraft`.',
+    'Write brief.md in a slug folder under `paths.features` in `joycraft.yaml` (default docs/features):',
+    "the user's request word for word, then a \"Done when\" list with one group per goal.",
     'Each line is a state or input with its expected result and its check (`test: <file>` or `seen: <render>`).',
-    'Write one line for each thing the user asked for, in their words, and one for a missing input.',
+    'Write one line per thing the user asked for, in their words, and one for a missing input.',
     'The first line gives the one answer that the screen or output shows, and that each repeated item in it shows, when its inputs disagree.',
     'Every other statement there is a reason for that answer. Each answer says which hours, days or items it covers, and the answers leave no gap.',
-    'Test an outside source through the function that calls it, with the network call stubbed, for a good reply and a failed one.',
+    'Test an outside source through its caller, with the network call stubbed, for a good reply and a failed one.',
     'Build no page for this brief.',
     'Build, and check each line.',
     // Look: fresh eyes on the first line's inputs, one question, two quotes block.
-    "give a fresh agent (Claude Code: agent type `joycraft-look`) only the user's words and renders of the default state and of a state where the inputs of the first line disagree.",
-    'Save the renders in `.joycraft/local/looks/<slug>/`.',
+    "give a fresh agent (Claude Code: agent type `joycraft-look`) only the user's words and renders of the default state and one where the first line's inputs disagree.",
+    'Save the renders under `.joycraft/local/looks/`.',
     'A switch that fakes data says so on the screen.',
-    'Give it no brief and no code.',
+    'Give it no brief or code.',
     'Ask: "Quote any two statements on this screen that disagree about the main answer, or reply OK. At most 8 lines."',
-    'Two such quotes block the close: fix, then look again one time. With no separate agent',
+    'Two such quotes block the close: fix, then look again once. With no separate agent',
     'With no separate agent, read the renders yourself and say the look was not independent.',
     // Close: marks, docs, traps, rules, close.mjs, final message.
     'Close: mark each line `test: <file>`, `seen: <render>` or `not checked: <why>`, and add a `Look:` line with the result.',
-    'Update what the change makes stale, in this file and in the mapped page, with how to run and look at the result.',
-    'Add a trap (it cost you a retry) to `docs/context/traps.md`, with a map row.',
+    'Update what the change makes stale, here and in the mapped page, with how to run and look at the result.',
+    "Add a trap (it cost you a retry) to the map's traps page, else make one (traps.md in `paths.context`, default docs/context) with a map row.",
     'Put a standing instruction from the user under `## Rules` in their words.',
     'Stage your work, then run `node .joycraft/runtime/close.mjs <slug> -m "<message>"`, which runs the `test:` files, archives the brief and commits.',
-    'Final message, at most 120 words: how to run the result, each guess that changes the answer, then the line that the command printed.',
+    'Final message, at most 120 words: how to run the result, each guess that changes the answer, then the line the command printed.',
     // Feature: the full loop, and when a small job escalates.
     'Feature: all other work, or when the user asks for the full loop: use the `joycraft-entry` skill.',
     'A small job becomes a feature when a choice has no safe default, meets one of those changes, or fails the same check twice: keep the brief and add specs.',
@@ -81,6 +81,16 @@ describe('small-job rules in the managed block', () => {
     '(purpose, commands, map rows)',
   ])('[AC:sl2-03] [AC:sl3-01-work-line] drops the old phrase: %s', phrase => {
     expect(workLines.join('\n')).not.toContain(phrase);
+  });
+
+  it('[AC:fix-1-10-1-no-fixed-paths] the block names no <slug> path and no backticked docs page', () => {
+    const spans = [...block.matchAll(/`([^`]+)`/g)].map(match => match[1]);
+    // A <slug> in a path (a slash next to it), not the close command's argument.
+    expect(block).not.toMatch(/<slug>\/|\/<slug>/);
+    expect(spans.filter(span => /^docs\/\S*\.md(#|$)/.test(span))).toEqual([]);
+    // Every backticked page with a folder is one Joycraft installs.
+    expect(spans.filter(span => /^\S+\/\S+\.md(#|$)/.test(span) && !span.startsWith('.joycraft/'))).toEqual([]);
+    for (const gone of ['`docs/features/<slug>/brief.md`', '`docs/context/traps.md`', '`.joycraft/local/looks/<slug>/`']) expect(block).not.toContain(gone);
   });
 
   it('[AC:sl1-01] [AC:sl3-01-work-cap] the Work line holds no semicolon (STE fix-to-zero class)', () => {
@@ -181,13 +191,31 @@ describe('a queue-less brief in the runtime', () => {
     expect(runtime(root, 'entry-check.mjs', '--root', root, '--ci').status).toBe(0);
   });
 
-  it('[AC:sl2-03] the block may name the traps page before it exists, and a line outside the block may not', () => {
+  it('[AC:sl2-03] a line outside the block that names a missing page is a missing path', () => {
     const root = installed();
     const missing = () => JSON.parse(runtime(root, 'cleanup.mjs', '--root', root).stdout || '{"findings":[]}').findings
       .filter((item: { check: string }) => item.check === 'missing-path').map((item: { detail: string }) => item.detail);
     expect(missing()).toEqual([]);
     put(join(root, 'AGENTS.md'), readFileSync(join(root, 'AGENTS.md'), 'utf8') + '\nSee `docs/context/traps.md`.\n');
     expect(missing()).toEqual(['Names docs/context/traps.md, which does not exist.']);
+  });
+
+  it('[AC:fix-1-10-1-entry-check] entry-check reports a page that the block names and the project lacks', () => {
+    const root = installed();
+    const blockPages = () => (JSON.parse(runtime(root, 'entry-check.mjs', '--root', root).stdout || '{"findings":[]}').findings as { check: string; line: number; detail: string; level: string }[])
+      .filter(item => item.check === 'block-page');
+    expect(blockPages()).toEqual([]);
+    // A deliberately bad block: the 1.10.0 Close line, which named a fixed traps page.
+    const agents = readFileSync(join(root, 'AGENTS.md'), 'utf8');
+    const close = agents.split('\n').findIndex(line => line.startsWith('  - Close:'));
+    put(join(root, 'AGENTS.md'), agents.replace(/^  - Close: .*$/m, '  - Close: Add a trap to `docs/context/traps.md`, with a map row. Write `docs/features/<slug>/brief.md`.'));
+    expect(blockPages()).toEqual([
+      expect.objectContaining({ level: 'advisory', line: close + 1, detail: "Joycraft's block names docs/context/traps.md, which this project does not have." }),
+      expect.objectContaining({ level: 'advisory', line: close + 1, detail: "Joycraft's block names docs/features/<slug>/brief.md, which this project does not have." }),
+    ]);
+    // Once the page exists, the finding goes.
+    put(join(root, 'docs/context/traps.md'), '# Traps\n');
+    expect(blockPages().map(item => item.detail)).toEqual(["Joycraft's block names docs/features/<slug>/brief.md, which this project does not have."]);
   });
 
   it('[AC:sl1-01] an open brief and a hand-closed one (no queue) add nothing to wiring, status, cleanup or gate check', () => {
