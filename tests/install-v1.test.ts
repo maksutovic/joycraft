@@ -226,8 +226,39 @@ describe('sl3-02: update refreshes the managed block', () => {
     expect(run(dir, 'init', '.', '--harness', 'codex', '--yes').status).toBe(0);
     const plan = run(dir, 'update', '.', '--plan');
     expect(plan.stdout).toContain("Will update Joycraft's block in AGENTS.md");
-    expect(JSON.parse(run(dir, 'update', '.', '--plan', '--json').stdout).managedBlock).toMatchObject({ updated: false, lines: [5, expect.any(Number)] });
+    expect(JSON.parse(run(dir, 'update', '.', '--plan', '--json').stdout).managedBlock).toMatchObject({ updated: true, lines: [5, expect.any(Number)] });
     expect(bytes(dir, 'AGENTS.md')).toBe(stale);
     expect(existsSync(join(dir, '.joycraft-backups'))).toBe(false);
+  });
+
+  it('[AC:fix-1-10-1-plan] update --plan says what update --yes then does to the block, and a current block plans no change', () => {
+    const dir = installed(`${ABOVE}${BLOCK_194}${BELOW}`);
+    const plan = JSON.parse(run(dir, 'update', '.', '--plan', '--json').stdout).managedBlock;
+    expect(plan).toEqual({ updated: true, backup: '.joycraft-backups/update-<time>', lines: [5, 4 + currentBlock().split('\n').length] });
+    const human = run(dir, 'update', '.', '--plan').stdout;
+    expect(human).toContain(`Will update Joycraft's block in AGENTS.md (lines 5–${4 + currentBlock().split('\n').length}). The previous file goes to .joycraft-backups/update-<time>/.`);
+    expect(bytes(dir, 'AGENTS.md')).toBe(`${ABOVE}${BLOCK_194}${BELOW}`);
+    const applied = JSON.parse(run(dir, 'update', '.', '--yes', '--json').stdout).managedBlock;
+    expect(applied).toMatchObject({ updated: true, lines: plan.lines, backup: expect.stringMatching(/^\.joycraft-backups\/update-/) });
+    expect(JSON.parse(run(dir, 'update', '.', '--plan', '--json').stdout).managedBlock).toEqual({ updated: false, backup: null, lines: null });
+    expect(run(dir, 'update', '.', '--plan').stdout).not.toContain("Joycraft's block");
+  });
+
+  it('[AC:fix-1-10-1-guard] a project guard that every backticked page in AGENTS.md exists stays green after update from a 1.9 block', () => {
+    // The field guard: each backticked .md path in AGENTS.md (anchor dropped) names a file.
+    const guard = (dir: string) => [...bytes(dir, 'AGENTS.md')!.matchAll(/`([^`\s]+?\.md)(?:#[^`\s]*)?`/g)]
+      .map((match) => match[1]).filter((page) => !existsSync(join(dir, page)));
+    const dir = installed(`${ABOVE}${BLOCK_194}${BELOW}`);
+    mkdirSync(join(dir, 'docs'), { recursive: true });
+    writeFileSync(join(dir, 'docs/architecture.md'), '# Architecture\n');
+    expect(guard(dir), 'green before the update').toEqual([]);
+    const result = run(dir, 'update', '.', '--yes');
+    expect(result.status, result.stderr).toBe(0);
+    expect(bytes(dir, 'AGENTS.md')).toBe(`${ABOVE}${currentBlock()}${BELOW}`);
+    expect(guard(dir)).toEqual([]);
+    expect(result.stdout).not.toContain('which this project does not have');
+    // The guard bites: the 1.10.0 Close line named a fixed traps page.
+    writeFileSync(join(dir, 'AGENTS.md'), `${bytes(dir, 'AGENTS.md')}\nAdd a trap to \`docs/context/traps.md\`.\n`);
+    expect(guard(dir)).toEqual(['docs/context/traps.md']);
   });
 });
