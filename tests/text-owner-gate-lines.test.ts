@@ -60,4 +60,8 @@ describe('owner gate lines', () => {
     expect(update).toContain("The update rewrote the text between Joycraft's markers in `AGENTS.md` and printed its backup. When `entry-check.mjs` still reports `managed-block`, the lines are loose: replace them with the output of `entry-check.mjs block`.");
     expect(update).not.toContain('replace the block in `AGENTS.md` with the output of `entry-check.mjs block` and remove each older Joycraft line that the block replaces');
   });
+
+  it('[AC:fix-1-10-1-update-text] after a rewrite, update.md runs the gate, reconciles the new block with the map and tells the user', () => {
+    expect(update).toContain("After a rewrite, run the project gate and read the new block against the Context Map. When it names a page that the project lacks (`block-page`), map it to the project's page for that kind, or make the page with a map row, before you continue. Tell the user what changed in `AGENTS.md`.");
+  });
 });
