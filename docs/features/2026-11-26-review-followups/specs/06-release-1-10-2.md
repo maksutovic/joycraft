@@ -1,6 +1,6 @@
 ---
 id: 6
-status: in-review
+status: done
 ---
 # 1.10.2 carries its release fields and a CHANGELOG entry
 
