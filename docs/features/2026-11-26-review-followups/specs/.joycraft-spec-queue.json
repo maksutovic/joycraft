@@ -437,7 +437,7 @@
         1,
         3
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -477,6 +477,14 @@
           {
             "path": "tests/payload-guard.test.ts",
             "kind": "check"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-wave-gate.test.ts",
+            "kind": "check"
           }
         ],
         "criteria": [
@@ -501,6 +509,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-26T17:24:08.995Z"
       }
     },
     {
