@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-reviewer-notes.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -93,6 +93,10 @@
       },
       "submitted": {
         "at": "2026-11-26T16:37:13.676Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-26-review-followups/specs/review-1.report.json",
+        "sha256": "294a77a413c3afa9cc3bfa69c636859e6e9fbed52caffab122e30050ac03bfd9"
       }
     },
     {
@@ -138,6 +142,10 @@
           },
           {
             "path": "tests/runtime-trace-archived.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-worker-commands.test.ts",
             "kind": "check"
           }
         ],

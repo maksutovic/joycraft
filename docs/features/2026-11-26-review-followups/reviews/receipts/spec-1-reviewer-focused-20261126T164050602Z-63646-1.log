@@ -1,0 +1,26 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-review-notes.test.ts tests/payload-guard.test.ts tests/text-worker-commands.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/text-worker-commands.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 278[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12162 (cap 12256, 94 spare)
+on-demand words: 20822 (cap 21163, 341 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1660[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 430[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 402[2mms[22m[39m
+ [32m✓[39m tests/runtime-review-notes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 2017[2mms[22m[39m
+   [33m[2m✓[22m[39m note findings[2m > [22m[AC:spec-1-1] a note with no criterion or at passes check-report and finalize-review; an unknown class names note [33m 612[2mms[22m[39m
+   [33m[2m✓[22m[39m note findings[2m > [22m[AC:spec-1-2] status lists a question for the follow-up of an accepted report, none for its note [33m 428[2mms[22m[39m
+   [33m[2m✓[22m[39m note findings[2m > [22m[AC:spec-1-3] a report with only the three old classes, and one with no findings, validate as before [33m 976[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m38 passed[39m[22m[90m (38)[39m
+[2m   Start at [22m 08:40:55
+[2m   Duration [22m 2.28s[2m (transform 128ms, setup 0ms, collect 104ms, tests 3.95s, environment 0ms, prepare 126ms)[22m
+
+joycraft-evidence: {"wallMs":3001,"load":[12.31982421875,12.6943359375],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-review-notes.test.ts","tests/payload-guard.test.ts","tests/text-worker-commands.test.ts"],"exitCode":0,"timedOut":false,"revision":"096b2fae85406a7fbffa50d1520272cd543f3609","dirty":true}
