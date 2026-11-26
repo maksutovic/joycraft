@@ -6,7 +6,7 @@ decisions: [
 ]
 ---
 
-# 1.10.2: review follow-ups are fixed during the queue, not piled up at session end
+# 1.10.2: review follow-ups are fixed during the queue, and the entry budget counts only the project's text
 
 Field report, 2026-11-26, 1.10.0 on Claude Code: a 14-spec queue finished with every spec at PASS, then session end held 52 follow-ups. Only about 20 were real; the rest were bookkeeping. `close.mjs --feature` printed one "Status question … Ask the user" line for each and would not archive. Max: "we shouldn't be ending all of our queues with 40+ followups, something is wrong with our procedure … you should have the agency and autonomy to fix these issues as they arise."
 
@@ -75,13 +75,25 @@ Uses decision `resolution-record`. A handled follow-up is not a question.
 - `joycraft-session-end` asks only the questions that are left, and records each answer so close passes (payload text);
 - a 1.10.0 feature with noise follow-ups can be closed by dismissing them, without editing its reports (test).
 
+### entry-size-own-text
+
+Second field issue, same project: `entry-size` (`cleanup.mjs:361-366`) counts every word of `AGENTS.md`, Joycraft's own text included. The managed block is 731 words and the `## Review loop` section about 110, so a project has about 160 words of its 1,000 for its own rules and Context Map. The field project is at 1,418 words after moving its stack, commands and contract text out. Max, 2026-11-26: "i like their idea the budget only counts against the own text".
+
+The budget counts only the project's own text. Left out of the count: the text between the `joycraft:managed` markers, and the `## Review loop` section through its `joycraft:review-loop` marker. The budget stays 1,000 words (`cleanup.entryWords`).
+
+**Done when:**
+- an entry file whose own text is under the budget, with a full managed block and review-loop section, has no `entry-size` finding (test);
+- an entry file whose own text is over the budget has one, and its detail gives the own-text count and says Joycraft's sections are not counted (test);
+- an entry file with no markers is counted whole, as before (test);
+- `settings.md` and the cleanup check list say what the budget counts (payload text).
+
 ### release
 
 `package.json`, `src/joycraft-release.json` and `CHANGELOG.md` carry 1.10.2.
 
 ## Agent work and pending choices
 
-`wave-noise` and the `triage` skill text can start now. `reviewer-notes` waits on `note-shape`; `close-clears` and the triage record wait on `resolution-record`.
+`wave-noise`, `entry-size-own-text` and the `triage` skill text can start now. `reviewer-notes` waits on `note-shape`; `close-clears` and the triage record wait on `resolution-record`.
 
 ## Scope and limits
 
