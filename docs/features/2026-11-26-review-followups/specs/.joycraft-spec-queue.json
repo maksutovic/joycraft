@@ -250,6 +250,10 @@
           {
             "path": "tests/runtime-follow-ups-ledger.test.ts",
             "kind": "check"
+          },
+          {
+            "path": "payload/.joycraft/runtime/gate.mjs",
+            "kind": "code"
           }
         ],
         "criteria": [

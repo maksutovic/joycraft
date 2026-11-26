@@ -1,0 +1,385 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "6770c2562ed022d8a7e5890b15c09b9ab9ee46fb",
+    "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+    "specId": 3,
+    "specPath": "docs/features/2026-11-26-review-followups/specs/03-follow-ups-ledger.md",
+    "criteria": [
+      {
+        "id": "spec-3-1",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/03-follow-ups-ledger.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-2",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/03-follow-ups-ledger.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-3",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/03-follow-ups-ledger.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-4",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/03-follow-ups-ledger.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-5",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/03-follow-ups-ledger.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-26-review-followups/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "close-clears",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "77e482f8f95cf7330a0e6f7b42ad00ab3932aa8e721efb11a656a4b3549373b3",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "9e826910595c44f76a936059232c5cd2164fff6fab059f17fda6961a2168a896",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/03-follow-ups-ledger.md",
+        "kind": "requirement",
+        "sha256": "add049a253bec74e81664dcee8d69aadee8269a10da72322c6c86eafc2a86488",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+        "kind": "code",
+        "sha256": "3971f49d5d016463198bb8d91cadad5e18549eb0072c7951f1d3fe29271de462",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/completion.md",
+        "kind": "code",
+        "sha256": "f9194116b73f9d8c6c6655a08eb8a2dd34f62a403587f49a79108e137ff2a539",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "d662ed35ebe19a54d39b8fd3567b992b2773510b2ea5ee423366937cd6c24e47",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/close.mjs",
+        "kind": "code",
+        "sha256": "b98435ad74d13d79560640057aed94239caf5509633873792bebd4fff9d89ec3",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/follow-ups.mjs",
+        "kind": "code",
+        "sha256": "6b05fb77e1f823acfe4362a639b27ed7e36bee17025f00042c21e10dfb608a68",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/kickoff.mjs",
+        "kind": "code",
+        "sha256": "4cf0fb15ce3105a85f5d8b44f2c6f75d5d723aec71c5db6b0c6aaa2f4c7c40b7",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/status.mjs",
+        "kind": "code",
+        "sha256": "96cae7c5cdadda659ac613280a9849c3362b44348923210e290f5db9735474e8",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/wiring.mjs",
+        "kind": "code",
+        "sha256": "5d4193bad15e0811c86a920d05edb4f0481d131164ba78ce158128759f8e17f0",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-follow-ups-ledger.test.ts",
+        "kind": "check",
+        "sha256": "c3ebde68c9fd5df358602ea3b59e085a1039a196edcf1c2c7a9677faf8edc176",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          3
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-26-review-followups/brief.md",
+          "anchors": [
+            "close-clears",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+  },
+  "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d"
+  },
+  "reviewer": {
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+      "agentId": "aa0d304484be631dc"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "flow-ledger-command",
+      "criteria": [
+        "spec-3-1"
+      ],
+      "representativeInput": "Temp git project: spec 1 accepted with follow-ups f1, f2 and note n1; spec 2 legacy-done; brief with answered, open and assigned decisions.",
+      "expected": "follow-ups.mjs writes schemaVersion 1 entries for --fixed/--decided/--dismissed, replaces a repeat, and exits 2 on an unknown spec, a spec without an accepted report, an unknown finding, an unknown fixing spec or decision, an empty reason, no outcome or two outcomes, leaving the file unchanged.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-1] passed (6 files, 67 tests, exit 0). Source: follow-ups.mjs recordFollowUp checks the accepted report hash and its follow-up ids, the fixing spec in the same queue, the brief decision id, a nonempty reason; writes atomically via temp file + rename.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170114690Z-56544-1.log",
+              "sha256": "fd55049f8816b41329dfc4bd9a4167c33e2719b8544459ff446d580f89cb5239"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-follow-ups-ledger.test.ts",
+              "tests/runtime-close-feature.test.ts",
+              "tests/runtime-close.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/install-v1.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+      ],
+      "subjectIdentity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+    },
+    {
+      "id": "flow-status",
+      "criteria": [
+        "spec-3-2"
+      ],
+      "representativeInput": "Same fixture with hand-written follow-ups.json variants.",
+      "expected": "Only unhandled follow-ups are questions; fixed by a non-done spec, decided by open/assigned, empty reason stay questions; malformed ledger is a problems entry naming the file and every follow-up stays a question.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-2] five cases passed. Source: status.mjs filters followUps through handledBy(readLedger) and pushes { path, problem } for a malformed ledger.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170114690Z-56544-1.log",
+              "sha256": "fd55049f8816b41329dfc4bd9a4167c33e2719b8544459ff446d580f89cb5239"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-follow-ups-ledger.test.ts",
+              "tests/runtime-close-feature.test.ts",
+              "tests/runtime-close.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/install-v1.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+      ],
+      "subjectIdentity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+    },
+    {
+      "id": "flow-close",
+      "criteria": [
+        "spec-3-3"
+      ],
+      "representativeInput": "Same fixture, claimed lease; f1 fixed by spec 2, f2 unhandled, then decided.",
+      "expected": "close.mjs --feature refuses with exactly one Status question line for f2 that names follow-ups.mjs --finding f2; after f2 is decided it archives and docs/archive/x/feature/follow-ups.json has the same bytes.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-3] passed (the discriminating scenario). Source: close.mjs featureProblems prints the follow-ups.mjs command for follow-up questions; archive.mjs renames the whole feature folder, so follow-ups.json moves with it.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170114690Z-56544-1.log",
+              "sha256": "fd55049f8816b41329dfc4bd9a4167c33e2719b8544459ff446d580f89cb5239"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-follow-ups-ledger.test.ts",
+              "tests/runtime-close-feature.test.ts",
+              "tests/runtime-close.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/install-v1.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+      ],
+      "subjectIdentity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+    },
+    {
+      "id": "flow-old-features",
+      "criteria": [
+        "spec-3-4"
+      ],
+      "representativeInput": "Same fixture; both follow-ups dismissed as 1.10.0 bookkeeping.",
+      "expected": "Close refuses first, passes after both dismissals; the report bytes are unchanged before and after archive.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-4] passed; report bytes compared with Buffer.equals before and in the archive.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170114690Z-56544-1.log",
+              "sha256": "fd55049f8816b41329dfc4bd9a4167c33e2719b8544459ff446d580f89cb5239"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-follow-ups-ledger.test.ts",
+              "tests/runtime-close-feature.test.ts",
+              "tests/runtime-close.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/install-v1.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+      ],
+      "subjectIdentity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+    },
+    {
+      "id": "flow-session-end-text",
+      "criteria": [
+        "spec-3-5"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-session-end/SKILL.md text and its word cap.",
+      "expected": "Skill asks only status questions and records each answer with follow-ups.mjs: --decided after a brief decision, --fixed once the new spec is done, --dismissed with the user's words.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-5] passed; text-session-end-pr and payload-guard caps pass. Reviewer read the SKILL.md diff of the Records section.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170114690Z-56544-1.log",
+              "sha256": "fd55049f8816b41329dfc4bd9a4167c33e2719b8544459ff446d580f89cb5239"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-follow-ups-ledger.test.ts",
+              "tests/runtime-close-feature.test.ts",
+              "tests/runtime-close.test.ts",
+              "tests/text-session-end-pr.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/install-v1.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+      ],
+      "subjectIdentity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "blocking",
+      "origin": "new",
+      "at": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-gate-probe.log",
+      "summary": "A malformed follow-ups.json reaches gate.mjs as status problem { path, problem }, but checkGates reads only queuePath or specPath, so `gate.mjs check` (and close.mjs --feature, which calls checkGates) prints \"Joycraft gate: undefined does not parse: ... Repair undefined and tell the user.\" Reproduced in a temp project with a broken follow-ups.json (exit 2). payload/.joycraft/runtime/gate.mjs:44-55 is a coupled reader of status problems that is not in the spec's declared inputs.",
+      "assumption": "Fix either side so the gate message names docs/<feature>/follow-ups.json (for example give the ledger problem a key gate renders, or render problem.path in gate.mjs), add gate.mjs as a declared input, and add a test for the gate/close message."
+    }
+  ],
+  "createdAt": "2026-11-26T17:02:52.082Z"
+}
