@@ -150,11 +150,12 @@ export interface VerificationReport {
   findings?: ReviewFinding[];
   createdAt: string;
 }
-/** A follow-up never blocks; a blocking or decision-needed finding refuses completion (exit 2). */
+/** A follow-up or note never blocks; a blocking or decision-needed finding refuses completion (exit 2). */
 export interface ReviewFinding {
   /** Unique in the report. */
   id: string;
-  class: 'blocking' | 'decision-needed' | 'follow-up';
+  /** `note`: seen, needs no work (a check that passed, another spec's file); status never asks about it. */
+  class: 'blocking' | 'decision-needed' | 'follow-up' | 'note';
   origin: 'new' | 'pre-existing' | 'unknown';
   /** A criterion id of the spec. A blocking or decision-needed finding needs `criterion` or `at`. */
   criterion?: string;

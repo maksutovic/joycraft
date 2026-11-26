@@ -1,6 +1,6 @@
 ---
 id: 1
-status: todo
+status: in-review
 ---
 # A reviewer files what needs no work as a `note`, and status never asks about it
 

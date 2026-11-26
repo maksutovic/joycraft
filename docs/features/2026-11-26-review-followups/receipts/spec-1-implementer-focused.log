@@ -1,0 +1,41 @@
+$ pnpm test tests/runtime-review-notes.test.ts
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-review-notes.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+
+ ✓ tests/runtime-review-notes.test.ts (4 tests) 2249ms
+   ✓ note findings > [AC:spec-1-1] a note with no criterion or at passes check-report and finalize-review; an unknown class names note  569ms
+   ✓ note findings > [AC:spec-1-2] status lists a question for the follow-up of an accepted report, none for its note  435ms
+   ✓ note findings > [AC:spec-1-3] a report with only the three old classes, and one with no findings, validate as before  1243ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  08:37:05
+   Duration  2.51s (transform 82ms, setup 0ms, collect 21ms, tests 2.25s, environment 0ms, prepare 44ms)
+
+exit status: 0
+$ pnpm test tests/payload-guard.test.ts
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/payload-guard.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+
+stdout | tests/payload-guard.test.ts > shipped payload text > [AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+every-spec words: 12208 (cap 12256, 48 spare)
+on-demand words: 20822 (cap 21163, 341 spare)
+
+ ✓ tests/payload-guard.test.ts (16 tests) 2030ms
+   ✓ shipped payload text > [AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on  649ms
+   ✓ shipped payload text > [AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name  450ms
+
+ Test Files  1 passed (1)
+      Tests  16 passed (16)
+   Start at  08:37:08
+   Duration  2.42s (transform 27ms, setup 0ms, collect 30ms, tests 2.03s, environment 0ms, prepare 55ms)
+
+exit status: 0

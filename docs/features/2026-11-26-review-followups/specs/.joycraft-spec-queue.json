@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-reviewer-notes.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -90,6 +90,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-26T16:37:13.676Z"
       }
     },
     {

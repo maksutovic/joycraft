@@ -76,7 +76,7 @@ export function validateReview({ root = process.cwd(), report, state, reportPath
 }
 
 const refused = error => Object.assign(error, { exitCode: 2 });
-const findingClasses = ['blocking', 'decision-needed', 'follow-up'];
+const findingClasses = ['blocking', 'decision-needed', 'follow-up', 'note'];
 const findingOrigins = ['new', 'pre-existing', 'unknown'];
 const findingFields = ['id', 'class', 'origin', 'criterion', 'at', 'summary', 'assumption'];
 
@@ -101,13 +101,13 @@ function validateFindings(report, criteria) {
     check(nonempty(finding.summary), `${at}.summary`, 'must be a nonempty string');
     for (const key of ['criterion', 'at', 'assumption']) check(finding[key] === undefined || nonempty(finding[key]), `${at}.${key}`, 'must be a nonempty string when given');
     check(finding.criterion === undefined || criteria.some(item => item.id === finding.criterion), `${at}.criterion`, `names no criterion of this spec: ${finding.criterion}`);
-    check(finding.class === 'follow-up' || finding.criterion !== undefined || finding.at !== undefined, `${at}.criterion`, `or .at is required for a ${finding.class} finding`);
+    check(finding.class === 'follow-up' || finding.class === 'note' || finding.criterion !== undefined || finding.at !== undefined, `${at}.criterion`, `or .at is required for a ${finding.class} finding`);
   });
 }
 
 const findingPlace = finding => [finding.criterion && `criterion ${finding.criterion}`, finding.at].filter(Boolean).join(', ');
 
-/** A blocking or decision-needed finding refuses completion with exit 2; a follow-up never does. */
+/** A blocking or decision-needed finding refuses completion with exit 2; a follow-up or note never does. */
 function refuseHeldFindings(report, specId) {
   const named = cls => (report.findings ?? []).filter(finding => finding.class === cls).map(finding => `${finding.id} (${findingPlace(finding)})`);
   const blocking = named('blocking');

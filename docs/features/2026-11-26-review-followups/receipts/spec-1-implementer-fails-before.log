@@ -1,0 +1,84 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-review-notes.test.ts
+
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+
+ ❯ tests/runtime-review-notes.test.ts (4 tests | 3 failed) 1276ms
+   × note findings > [AC:spec-1-1] a note with no criterion or at passes check-report and finalize-review; an unknown class names note 201ms
+     → Dispatch stopped: Report findings[0].class must be blocking, decision-needed, follow-up; correct the report and run check-report again
+: expected 2 to be +0 // Object.is equality
+   × note findings > [AC:spec-1-2] status lists a question for the follow-up of an accepted report, none for its note 184ms
+     → Completion stopped: Report findings[0].class must be blocking, decision-needed, follow-up; correct the report and run check-report again
+: expected 2 to be +0 // Object.is equality
+   ✓ note findings > [AC:spec-1-3] a report with only the three old classes, and one with no findings, validate as before  890ms
+   × note findings > [AC:spec-1-4] the verify skill sends each no-work kind to a note, and types.d.ts lists note 1ms
+     → expected 'Items under a spec\'s "Deferred until…' to contain '`note`'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/runtime-review-notes.test.ts > note findings > [AC:spec-1-1] a note with no criterion or at passes check-report and finalize-review; an unknown class names note
+AssertionError: Dispatch stopped: Report findings[0].class must be blocking, decision-needed, follow-up; correct the report and run check-report again
+: expected 2 to be +0 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 2[39m
+
+ ❯ tests/runtime-review-notes.test.ts:57:44
+     55|     const root = fixture([note]);
+     56|     const checked = checkReport(root);
+     57|     expect(checked.status, checked.stderr).toBe(0);
+       |                                            ^
+     58|     const final = finalize(root);
+     59|     expect(final.status, final.stderr).toBe(0);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/runtime-review-notes.test.ts > note findings > [AC:spec-1-2] status lists a question for the follow-up of an accepted report, none for its note
+AssertionError: Completion stopped: Report findings[0].class must be blocking, decision-needed, follow-up; correct the report and run check-report again
+: expected 2 to be +0 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 2[39m
+
+ ❯ tests/runtime-review-notes.test.ts:71:40
+     69|     const root = fixture([note, followUp]);
+     70|     const final = finalize(root);
+     71|     expect(final.status, final.stderr).toBe(0);
+       |                                        ^
+     72|     const { projectStatus } = await import(join(runtime, 'status.mjs')…
+     73|     const { questions } = projectStatus({ root });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/runtime-review-notes.test.ts > note findings > [AC:spec-1-4] the verify skill sends each no-work kind to a note, and types.d.ts lists note
+AssertionError: expected 'Items under a spec\'s "Deferred until…' to contain '`note`'
+
+Expected: [32m"`note`"[39m
+Received: [31m"Items under a spec's "Deferred until deploy" section are not criteria; list each as a `follow-up` finding for the owner. Findings rule: give each `findings` entry its `class`, `origin`, and `criterion` or `at` (file:line or receipt)."[39m
+
+ ❯ tests/runtime-review-notes.test.ts:104:22
+    102|     const skill = readFileSync(join(payload, '.agents/skills/joycraft-…
+    103|     const deferred = skill.match(/Items under a spec's "Deferred until…
+    104|     expect(deferred).toContain('`note`');
+       |                      ^
+    105|     expect(deferred).not.toContain('`follow-up`');
+    106|     const rule = skill.slice(skill.indexOf('Findings rule:'));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed (4)
+   Start at  08:36:39
+   Duration  1.45s (transform 19ms, setup 0ms, collect 21ms, tests 1.28s, environment 0ms, prepare 40ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
+exit status: 1
