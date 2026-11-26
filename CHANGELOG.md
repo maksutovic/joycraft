@@ -7,6 +7,40 @@ claim that a release has shipped.
 
 ---
 
+## 1.10.2 — Review follow-ups that are handled stop being questions
+
+Field use of 1.10.0 showed reviewers filing checks that passed, other specs' files
+and archived test tags as follow-ups, and status asking about each one with no way
+to answer it, so a feature could not close.
+
+### Fixed
+
+- **A `note` class for findings that need no work.** A reviewer files a passed
+  check, another spec's file, an archived feature's tag, a "Deferred until deploy"
+  item or log noise as a `note`. A note never blocks completion, and status never
+  asks about it.
+- **Reviewers are not shown other work as their own.** Reviewer startup lists
+  changed files of sibling specs as `siblings` and tags from archived features as
+  `archivedTags`; reviewers do not file them. A tag that names a criterion of the
+  current queue is never an archived tag.
+- **Handled follow-ups are recorded.** Each feature may hold `follow-ups.json`, and
+  `follow-ups.mjs` records a follow-up as fixed (by a spec), decided (by a brief
+  decision) or dismissed (with a reason). Status, the gate and
+  `close.mjs --feature` stop asking about handled follow-ups.
+- **The implement skill triages follow-ups after each review wave.** A defect gets
+  a fix spec in the same queue without a question, a scope change becomes a brief
+  decision, and the rest are dismissed. The skill again states the `isolated` mode
+  and owner-acceptance rules that an earlier trim weakened.
+- **The `AGENTS.md` size budget counts only the project's own text.** Joycraft's
+  managed block and review-loop section are not counted. The check stays advisory.
+
+### Update notes
+
+- **Leftover 1.10.0 follow-ups can be dismissed.** A feature that cannot close
+  because of noise follow-ups closes after you record each one with
+  `follow-ups.mjs --dismissed <reason>`; the records go in the feature's
+  `follow-ups.json`. New reviews file such findings as `note`.
+
 ## 1.10.1 — The AGENTS.md block names no fixed doc pages
 
 A field report against 1.10.0 showed a project guard, which checks that every page

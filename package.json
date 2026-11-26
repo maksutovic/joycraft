@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.10.1",
+  "version": "1.10.2",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -11,8 +11,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.10.1",
-    "summary": "Joycraft's AGENTS.md block no longer names fixed doc pages, and update --plan now says when update will rewrite that block.",
+    "release": "1.10.2",
+    "summary": "Reviewers file no-work findings as notes, handled follow-ups are recorded in follow-ups.json and stop being questions, and the implement skill triages each review wave's follow-ups.",
     "autoSafeEligible": false
   },
   "scripts": {

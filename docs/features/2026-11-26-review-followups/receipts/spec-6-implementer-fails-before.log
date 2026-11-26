@@ -1,0 +1,15 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/public-docs.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/public-docs.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 36[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m18 passed[39m[22m[90m (18)[39m
+[2m   Start at [22m 09:34:27
+[2m   Duration [22m 202ms[2m (transform 39ms, setup 0ms, collect 17ms, tests 36ms, environment 0ms, prepare 36ms)[22m
+
+joycraft-evidence: {"wallMs":773,"load":[10.5556640625,10.5556640625],"cores":14,"loaded":false,"argv":["pnpm","test","tests/public-docs.test.ts"],"exitCode":0,"timedOut":false,"revision":"8efa17d77298cded921815d1365c1d7122c3bdf6","dirty":false}
