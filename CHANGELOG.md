@@ -25,8 +25,8 @@ to answer it, so a feature could not close.
   current queue is never an archived tag.
 - **Handled follow-ups are recorded.** Each feature may hold `follow-ups.json`, and
   `follow-ups.mjs` records a follow-up as fixed (by a spec), decided (by a brief
-  decision) or dismissed (with a reason). Status, the gate and
-  `close.mjs --feature` stop asking about handled follow-ups.
+  decision) or dismissed (with a reason). Status and `close.mjs --feature` stop
+  asking about handled follow-ups, and a malformed `follow-ups.json` fails the gate.
 - **The implement skill triages follow-ups after each review wave.** A defect gets
   a fix spec in the same queue without a question, a scope change becomes a brief
   decision, and the rest are dismissed. The skill again states the `isolated` mode
