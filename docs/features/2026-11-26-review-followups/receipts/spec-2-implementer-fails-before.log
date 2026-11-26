@@ -1,0 +1,90 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-trace-archived.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [31m❯[39m tests/runtime-trace-archived.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 878[2mms[22m[39m
+[31m   [31m×[31m a reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-1] a tag of an archived feature is an archived tag, not unknown; reviewer startup carries it[39m[32m 249[2mms[22m[39m
+[31m     → expected undefined to deeply equal [ { id: 'old-7', …(2) } ][39m
+[31m   [31m×[31m a reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-2] reviewer startup lists a sibling spec's changed files as siblings, apart from outside[39m[33m 627[2mms[22m[39m
+[31m     → expected undefined to deeply equal [ 'src/b.ts' ][39m
+[31m   [31m×[31m a reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-3] the verify skill says not to file siblings or archived tags, and a hang is UNVERIFIED, never FAIL[39m[32m 1[2mms[22m[39m
+[31m     → expected '--- name: joycraft-verify description…' to match /Do not file `siblings` or `archivedTa…/[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-trace-archived.test.ts[2m > [22ma reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-1] a tag of an archived feature is an archived tag, not unknown; reviewer startup carries it
+[31m[1mAssertionError[22m: expected undefined to deeply equal [ { id: 'old-7', …(2) } ][39m
+
+[32m- Expected:[39m 
+[
+  {
+    "file": "tests/a.test.ts",
+    "id": "old-7",
+    "line": 2,
+  },
+]
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/runtime-trace-archived.test.ts:[2m64:34[22m[39m
+    [90m 62| [39m      [35mconst[39m root [33m=[39m [34mfixture[39m({ archive })[33m;[39m
+    [90m 63| [39m      [35mconst[39m trace [33m=[39m [34mtraceSpec[39m({ root[33m,[39m queuePath[33m,[39m specId[33m:[39m [34m1[39m })[33m;[39m
+    [90m 64| [39m      expect(trace.archivedTags).toEqual([{ id: 'old-7', file: 'tests/…
+    [90m   | [39m                                 [31m^[39m
+    [90m 65| [39m      expect(trace.unknownTags).toEqual([{ id: 'nowhere-9', file: 'tes…
+    [90m 66| [39m      [34mexpect[39m(trace[33m.[39muntraced)[33m.[39m[34mtoEqual[39m([])[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-trace-archived.test.ts[2m > [22ma reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-2] reviewer startup lists a sibling spec's changed files as siblings, apart from outside
+[31m[1mAssertionError[22m: expected undefined to deeply equal [ 'src/b.ts' ][39m
+
+[32m- Expected:[39m 
+[
+  "src/b.ts",
+]
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/runtime-trace-archived.test.ts:[2m84:28[22m[39m
+    [90m 82| [39m    [35mconst[39m first [33m=[39m [34mreviewerStart[39m(root)[33m.[39mscope[33m;[39m
+    [90m 83| [39m    expect([...first.changed].sort()).toEqual(['src/a.ts', 'src/b.ts']…
+    [90m 84| [39m    [34mexpect[39m(first[33m.[39msiblings)[33m.[39m[34mtoEqual[39m([[32m'src/b.ts'[39m])[33m;[39m
+    [90m   | [39m                           [31m^[39m
+    [90m 85| [39m    [34mexpect[39m(first)[33m.[39mnot[33m.[39m[34mtoHaveProperty[39m([32m'outside'[39m)[33m;[39m
+    [90m 86| [39m    [34mexpect[39m(first)[33m.[39mnot[33m.[39m[34mtoHaveProperty[39m([32m'note'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-trace-archived.test.ts[2m > [22ma reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-3] the verify skill says not to file siblings or archived tags, and a hang is UNVERIFIED, never FAIL
+[31m[1mAssertionError[22m: expected '--- name: joycraft-verify description…' to match /Do not file `siblings` or `archivedTa…/[39m
+
+[32m- Expected:[39m 
+/Do not file `siblings` or `archivedTags`/
+
+[31m+ Received:[39m 
+"--- name: joycraft-verify description: Independently review an in-review Joycraft spec and produce an evidence-backed completion report for the guarded local helper. compatibility: Requires Node.js 22+, the installed .joycraft runtime, and Git for revision-bound completion. A separate reviewer context completes a spec; UI inspection is needed only for visual criteria. --- # Joycraft Verify Use this skill after an implementer has finished an authorized spec and placed it in `in-review`. For work that used a worker tree, prepare the subject from the coordinator's final integrated bytes, not the implementer's pre-integration tree. A stable source-read-only review may use that fixed tree and write its declared report and receipts outside frozen inputs; it cannot modify governing inputs. Runtime checks that mutate caches, browser profiles, or other state need independent mutable runtime state. Read [worker isolation](../../../.joycraft/references/worktrees.md) when this boundary applies. When called from the implementer's context, launch the independent reviewer with only current raw brief/spec/queue/input sources plus scoped owning decisions; do not pass an expected verdict, reasoning, or proposed report. A parent may prepare a source packet for a manual boundary, but it must not bind the child using the parent's identity. After launch, the reviewer child runs `dispatch-start.mjs --role reviewer` at its actual root, which captures the subject, preflights delivery and writes the bounded packet. Without a separate reviewer context, or a real agent ID that the child sees or the launch result gives, leave the spec `in-review`; do not manufacture either. Reviewer startup output also carries `trace`, the spec's criteria with the tests tagged `[AC:<criterion-id>]`. Report untraced criteria as findings; a missing tag alone is not a FAIL. Dispatch `collaboration.spawn_agent` with `fork_turns: \"none\"` and the packet's raw sources and output contract. In Claude Code, use its `Agent` tool with the same limited inputs and the `joycraft-reviewer` agent type when installed (otherwise the project-selected reviewer model); a fresh worker is the separate review context. Otherwise use a separate accessible review context. Record its returned native host, session and child agent identity; a shared parent session does not make two native actors the same. Follow the actor-report fields in the dispatch reference. Do not invent IDs or create a worktree solely to obtain a different session string. When already dispatched as the independent reviewer, perform the review directly; do not recursively dispatch another reviewer. Read the parent brief, spec, queue entry, declared criteria and exact verification inputs. Use the supplied subject, set independence truthfully, and do not self-certify implementation from your own context. Read the diff of each changed test file and judge it by [test changes](../../../.joycraft/references/testing-review.md#test-changes), test-only specs by [fault proof](../../../.joycraft/references/testing-review.md#test-only-specs). Green tagged tests alone pass no criterion. For each spec, also: - **Probe:** name one input that a user or an outsider can change and the code trusts (an argument, a path, a link, a stored file). Try it tampered on the real surface. - **Can the test fail?** For the key criterion, revert the change (or its key line) in a scratch copy and run its test. Record the red run. A test that stays green is `blocking`. - **Docs against code:** check each changed doc line that states behavior against the code it describes. A false line is `blocking`. - **Fix round:** read the fix diff for new defects, not only whether each open finding is closed. Skip style. Review scope as well as behavior: determine whether the listed inputs and criteria cover the requested work, including relevant newly changed files. For a cross-boundary change, inspect the combined observable behavior across the relevant producer, consumer, state or storage boundary; separate green helpers, snapshots, or assertion counts do not establish that behavior. If a material counterpart or owning decision/context source was omitted, report the scope gap and require its exact path to be added before a fresh current review subject is prepared. Preserve the snapshot's implementation revision as provenance while checking its current bound inputs. A changed, missing, or renamed input makes the subject stale; do not substitute a newer HEAD as its identity. Create a schema-v1 verification report tied to that subject, using the shared fields in [.joycraft/contracts/types.d.ts](../../../.joycraft/contracts/types.d.ts). For every declared criterion, provide PASS observations for its required evidence kinds. Keep unfiltered command output and its real exit status in hashed, project-relative receipts. A source scan supports only structural observations. Visual observations require a reviewer-inspected render plus route, state, viewport, interactions, and outcomes. Take runtime evidence once from the spec's own tests (the startup output's `commands.focused`), never the project gate ([running tests](../../../.joycraft/references/testing.md#running-tests)); in wave mode, state \"gate not run; due at wave end\"; other evidence with the package's recorded tool, start command and evidence command from the packet's `reviewLoop` (`section`: the `Review loop` section of `AGENTS.md`; `local`: this machine's host tools), within that tool's `canShow`. A claim beyond `canShow`, or in a package the user skipped, is an agreed limit, not `UNVERIFIED`: check what the agreed tool can show, say in plain words how you checked, and leave what is left to the parent agent. A picture-only tool gives `interactions: []`. `UNVERIFIED` means a check that should have run and did not: the tool broke, the app did not start, or a render was saved but not inspected. On a tool break, first repair with what the user agreed to: restart the dev server, free the port, relaunch the browser or simulator, retry once. A repair never installs, upgrades or reconfigures anything. If it still fails, record `UNVERIFIED` with `cause: 'tool-break'` and the reason. Mark a failing result, an unresolved concern or a hang as `FAIL` or `UNVERIFIED` truthfully, with its receipt. Run the dispatch helper's `check-report` before completion. If it rejects a packaging or report problem, return the correction to this same reviewer; do not invent observations or replace the independent identity. Items under a spec's \"Deferred until deploy\" section are not criteria; each is a `note`. Findings rule: give each `findings` entry its `class`, `origin`, and `criterion` or `at` (file:line or receipt). `blocking` is only a failing stated criterion, or a defect or regression in the changed code that you reproduced (command, exit status, what you saw). A reproduced defect is never a `follow-up`. A defect inside a criterion's scope that a user would hit blocks the spec: reproduce it. A case the spec does not decide is a `follow-up`: take the reading closest to the brief's intent, recorded as `assumption`. `decision-needed` is only for two readings that give opposite verdicts on a stated criterion, or a guess that cannot be undone; it holds this spec and its dependents, never the queue. Never repeat an earlier round's finding as new. Each of these is a `note`, not a `follow-up`: a check that passed (a test change matching its class), a changed file of another spec, a test tag of an archived feature, a \"Deferred until deploy\" item, a flaky retry or log noise with no defect. Set a PASS verdict only when scope is reviewed, all required evidence is sufficient, and no blocking finding or unresolved UNVERIFIED evidence remains. Then run guarded completion, the startup output's `commands.finalizeReview`. When startup printed `commands.finish` instead, do not finalize: return the report path. Completion validates the report, receipts, actors and subject freshness. Do not edit the queue or spec to make a report fit. For rejections or interrupted writes, follow [completion guidance](../../../.joycraft/references/completion.md). For scope-enabled work, completion compares the recorded base and inferred relevant paths with the current change topology. Do not replace the base with current `HEAD`. Give every unrelated changed path an explicit, narrow exclusion and reason; never add an entire branch or directory blindly. A deletion is a deliberate non-requirement input with `state: 'absent'`; requirements must remain present, and a rename binds both the old absent and new present paths. For a current `FAIL` or `UNVERIFIED` report, preserve the evidence, receipt, subject identity, and explicit limits. Do not solicit owner acceptance as part of review or soften the verdict. The implementer may repair it or, after a trusted human explicitly accepts this spec's current findings, use the separate owner-acceptance completion path described in [completion guidance](../../../.joycraft/references/completion.md). That path validates bindings and receipts, not the authenticity of a human instruction; it never turns this report into PASS or verified evidence. "
+
+[36m [2m❯[22m tests/runtime-trace-archived.test.ts:[2m100:18[22m[39m
+    [90m 98| [39m  it('[AC:spec-2-3] the verify skill says not to file siblings or arch…
+    [90m 99| [39m    const text = readFileSync(join(__dirname, '..', 'payload', '.agent…
+    [90m100| [39m    [34mexpect[39m(text)[33m.[39m[34mtoMatch[39m([36m/Do not file `siblings` or `archivedTags`/[39m)[33m;[39m
+    [90m   | [39m                 [31m^[39m
+    [90m101| [39m    expect(text).toMatch(/hang is `UNVERIFIED` with its receipt, never…
+    [90m102| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m   Start at [22m 08:45:05
+[2m   Duration [22m 1.11s[2m (transform 49ms, setup 0ms, collect 59ms, tests 878ms, environment 0ms, prepare 53ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":1861,"load":[9.7548828125,9.7548828125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-trace-archived.test.ts"],"exitCode":1,"timedOut":false,"revision":"019aa43db07e97828a2524f1bd7b226fc435c713","dirty":true}

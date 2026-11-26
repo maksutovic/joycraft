@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { checkGlob, globToRegExp } from './config.mjs';
+import { checkGlob, defaults, globToRegExp, readConfig } from './config.mjs';
 import { parseJson, readLocal, relativePath, requireValue, validateQueue } from './identity.mjs';
 
 // Tests name the acceptance criterion they check with [AC:<criterion-id>]. The
@@ -29,6 +29,19 @@ function filesUnder(root, base, keep = () => true) {
   };
   walk(base);
   return out;
+}
+
+// Criterion IDs of every queue under the archive folder: a test tag of a finished
+// feature is not this spec's gap, so the reviewer need not file it.
+function archivedCriteria(root) {
+  let archive = defaults.paths.archive;
+  try { archive = readConfig(root).paths.archive; } catch { /* A broken joycraft.yaml is reported by config.mjs. */ }
+  const ids = new Set();
+  for (const file of filesUnder(root, archive, child => child.endsWith('/.joycraft-spec-queue.json'))) {
+    try { for (const spec of JSON.parse(readFileSync(path.join(root, file), 'utf8')).specs ?? []) for (const item of spec?.verification?.criteria ?? []) if (typeof item?.id === 'string') ids.add(item.id); }
+    catch { /* An unreadable archived queue adds no IDs. */ }
+  }
+  return ids;
 }
 
 /** Map each criterion of one spec to the test lines tagged with its ID. */
@@ -59,8 +72,11 @@ export function traceSpec({ root = process.cwd(), queuePath, specId, tests = [] 
     }
   }
   const untraced = criteria.filter(id => traced[id].length === 0);
+  const archived = unknownTags.length ? archivedCriteria(root) : new Set();
+  const archivedTags = unknownTags.filter(item => archived.has(item.id));
   return {
-    queuePath, specId, files, criteria: criteria.map(id => ({ id, tests: traced[id] })), untraced, unknownTags, missingFiles,
+    queuePath, specId, files, criteria: criteria.map(id => ({ id, tests: traced[id] })), untraced,
+    unknownTags: unknownTags.filter(item => !archived.has(item.id)), archivedTags, missingFiles,
     ...(untraceableIds.length ? { untraceableIds, untraceableNote: 'These criterion IDs contain characters an [AC:<id>] tag cannot hold; use letters, digits, ., _ and -.' } : {}),
     ...(files.length === 0 ? { note: 'No check inputs are declared and no --tests glob was given.' } : {}),
   };

@@ -246,7 +246,7 @@ export async function startDispatch(options, nativeEvent) {
   // The reviewer sees which criteria have a tagged test. It reports; it never blocks startup.
   let trace;
   if (options.role === 'reviewer') {
-    try { const { criteria, untraced, unknownTags, missingFiles, note } = traceSpec({ root, queuePath: options.queuePath, specId: options.specId }); trace = { criteria, untraced, unknownTags, missingFiles, ...(note ? { note } : {}) }; }
+    try { const { criteria, untraced, unknownTags, archivedTags, missingFiles, note } = traceSpec({ root, queuePath: options.queuePath, specId: options.specId }); trace = { criteria, untraced, unknownTags, archivedTags, missingFiles, ...(note ? { note } : {}) }; }
     catch (error) { trace = { error: error.message }; }
   }
   // The coordinator passes the spec's captured base; startup never guesses one.
@@ -271,9 +271,14 @@ export async function startDispatch(options, nativeEvent) {
   let scope;
   const changed = options.role === 'reviewer' ? changedSinceBase(root, queue.feature) : null;
   if (changed) {
-    const declared = new Set(spec.verification.inputs.map(input => relativePath(input.path)));
-    const outside = changed.filter(file => !declared.has(file));
-    scope = { diff: ['git', 'diff', lease.baseRevision].join(' '), changed, ...(outside.length ? { outside, note: 'These changed files are outside the declared inputs: note each in the report; it is not a refusal.' } : {}) };
+    const inputsOf = item => new Set((item.verification?.inputs ?? []).map(input => relativePath(input.path)));
+    const declared = inputsOf(spec);
+    // A file another spec of this queue declares is that spec's work in the same wave, not this spec's scope.
+    const others = new Set(queue.specs.filter(item => item.id !== spec.id).flatMap(item => [...inputsOf(item)]));
+    const siblings = changed.filter(file => !declared.has(file) && others.has(file));
+    const outside = changed.filter(file => !declared.has(file) && !others.has(file));
+    scope = { diff: ['git', 'diff', lease.baseRevision].join(' '), changed, ...(siblings.length ? { siblings } : {}),
+      ...(outside.length ? { outside, note: 'No spec of this queue declares these changed files: file each `outside` path as a `note` finding; it is not a refusal. Do not file `siblings`.' } : {}) };
   }
   const next = options.role === 'implementer' ? commands.submit : commands.checkReport;
   return { schemaVersion: 1, packetPath: outPath, packet, hooks, coordinator, ...review, ...(warnings.length ? { warnings } : {}), ...(trace ? { trace } : {}), ...(changes ? { testChanges: changes } : {}), ...(scope ? { scope } : {}), commands,
