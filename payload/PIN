@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-fa3b19dba2a2",
-  "commit": "fa3b19dba2a2d6f304482e7cb1ab31ef86c28d3380dbecc54320ddb2ff0b37a9",
+  "tag": "payload-fc7cda858131",
+  "commit": "fc7cda858131a8b6700d66ad9a112bd91c4e9d8bd68969c6956f885e714ca66e",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -11,7 +11,7 @@
     ".agents/skills/joycraft-implement/SKILL.md": "762d14c9006d17d4f928018fc795b304e561688a866f9ab0ff21a67b5bc1b883",
     ".agents/skills/joycraft-retro/SKILL.md": "156f36cb047604c734bf273bd02822d964b6af86619ed6c2a30fa6d79eb9a986",
     ".agents/skills/joycraft-retro/agents/openai.yaml": "f0eb4732261635f41e08f0bbe9a931d62fd8ac645149d3406e6fc7e16a81750b",
-    ".agents/skills/joycraft-session-end/SKILL.md": "b5b27888393e09b6c3d9cffd556fdd6c7322f7922c1b93c8a2854bcf62922df0",
+    ".agents/skills/joycraft-session-end/SKILL.md": "3971f49d5d016463198bb8d91cadad5e18549eb0072c7951f1d3fe29271de462",
     ".agents/skills/joycraft-testing/SKILL.md": "607c67503363a63d32ef0877fe51b481ff0815a102cf6fe5df533da37bdfb45c",
     ".agents/skills/joycraft-ui-slice/SKILL.md": "baf394edc4a31e582cb936c525d8ad28bea42a713ec3114f5921fa7e2bff833f",
     ".agents/skills/joycraft-ui-slice/scripts/serve.mjs": "c16858800b6fbe6f7a3a21b21e785ad70c9a89a3fe970bc08701fefeac5042fa",
