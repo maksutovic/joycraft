@@ -1,0 +1,54 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-trace-archived.test.ts tests/runtime-review-notes.test.ts tests/text-worker-commands.test.ts tests/runtime-dispatch-commands.test.ts tests/payload-guard.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/text-worker-commands.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 254[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12178 (cap 12256, 78 spare)
+on-demand words: 20841 (cap 21163, 322 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1630[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 435[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 411[2mms[22m[39m
+ [32m✓[39m tests/runtime-review-notes.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 1936[2mms[22m[39m
+   [33m[2m✓[22m[39m note findings[2m > [22m[AC:spec-1-1] a note with no criterion or at passes check-report and finalize-review; an unknown class names note [33m 563[2mms[22m[39m
+   [33m[2m✓[22m[39m note findings[2m > [22m[AC:spec-1-2] status lists a question for the follow-up of an accepted report, none for its note [33m 424[2mms[22m[39m
+   [33m[2m✓[22m[39m note findings[2m > [22m[AC:spec-1-3] a report with only the three old classes, and one with no findings, validate as before [33m 947[2mms[22m[39m
+ [32m✓[39m tests/runtime-trace-archived.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 2310[2mms[22m[39m
+   [33m[2m✓[22m[39m a reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-1] a tag of an archived feature is an archived tag, not unknown; reviewer startup carries it [33m 1228[2mms[22m[39m
+   [33m[2m✓[22m[39m a reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-2] reviewer startup lists a sibling spec's changed files as siblings, apart from outside [33m 850[2mms[22m[39m
+ [32m✓[39m tests/runtime-dispatch-commands.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 20983[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-1] implementer and reviewer startup print the focused command built from the check inputs [33m 1065[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-2] each step is one plain command with literal paths [33m 824[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-3] without tests.focused or without check inputs, focused is null with a note and startup succeeds [33m 569[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-1] printed commands run as printed through /bin/sh with a space in the worker root or a check path [33m 1887[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-2] {files} inside a word is replaced in place and quoted template arguments stay whole [33m 873[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-3] two startups in the same second print different receipt paths [33m 368[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-4] reviewer receipts go to reviews/receipts and implementer receipts to receipts [33m 707[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-2] an unclosed quote in tests.focused gives focused null with a note, and startup exits 0 [33m 567[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-3] a focused command with shell syntax runs as sh -c under evidence [33m 3172[2mms[22m[39m
+   [33m[2m✓[22m[39m packet readFirst (sl1-05)[2m > [22m[AC:sl1-05-readfirst] each packet lists AGENTS.md and the role skill only, with no runtime .mjs [33m 600[2mms[22m[39m
+   [33m[2m✓[22m[39m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-defaults] on a claimed queue, queue, spec, role and coordinator session are enough for both roles [33m 1025[2mms[22m[39m
+   [33m[2m✓[22m[39m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-one-refusal] one refusal lists every missing flag [33m 333[2mms[22m[39m
+   [33m[2m✓[22m[39m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-explicit-wins] explicit flags win, and --coordinator-session stays explicit [33m 628[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-check] check-report skips only the child-ID check in agent-at-finish mode [33m 438[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-finish] finalize-review writes the launch-result ID into the report, then checks and hashes it [33m 491[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-distinct] the distinct-actor check stays: the implementer's own ID or a different recorded ID is refused [33m 889[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-unchanged] a refused finalize leaves the report bytes unchanged, and the correct ID is accepted afterwards [33m 421[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-owner] a FAIL report from the agent-at-finish flow takes its ID with bind-reviewer, then accept-owner accepts it [33m 649[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-waiver] an UNVERIFIED tool-break report from the agent-at-finish flow takes its ID with bind-reviewer, then accept-waiver --report accepts it [33m 465[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-no-actor] a same-session report with no actor records fails agent-at-finish check-report and says what to write [33m 379[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-commands] a same-session reviewer with no agent ID gets check-report in agent-at-finish mode and no finalize step [33m 720[2mms[22m[39m
+   [33m[2m✓[22m[39m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-base] a first claim records HEAD as baseRevision; a renewal and a take-over keep it [33m 851[2mms[22m[39m
+   [33m[2m✓[22m[39m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-next] claim, implementer startup, submit and finalize-review each print a next command that runs unchanged [33m 1207[2mms[22m[39m
+   [33m[2m✓[22m[39m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-changed] submit lists a changed file the inputs do not name and exits 0; reviewer startup notes it as scope [33m 761[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m      Tests [22m [1m[32m73 passed[39m[22m[90m (73)[39m
+[2m   Start at [22m 09:17:46
+[2m   Duration [22m 21.22s[2m (transform 230ms, setup 0ms, collect 286ms, tests 27.11s, environment 0ms, prepare 205ms)[22m
+
+joycraft-evidence: {"wallMs":21901,"load":[39.453125,27.89892578125],"cores":14,"loaded":true,"argv":["pnpm","test","tests/runtime-trace-archived.test.ts","tests/runtime-review-notes.test.ts","tests/text-worker-commands.test.ts","tests/runtime-dispatch-commands.test.ts","tests/payload-guard.test.ts"],"exitCode":0,"timedOut":false,"revision":"ea752ca87632dff6741c12647731c532fa7374e4","dirty":false}

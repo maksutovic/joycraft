@@ -1,6 +1,6 @@
 ---
 id: 7
-status: in-review
+status: done
 ---
 # Archived tags never hide the current queue's tags, and the verify rules agree
 
