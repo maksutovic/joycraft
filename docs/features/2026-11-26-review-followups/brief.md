@@ -1,8 +1,62 @@
 ---
 feature: review-followups
 decisions: [
-  {"id":"note-shape","status":"open","question":"Where does a reviewer put what it saw but that needs no work?","answer":null,"context":"A reviewer can file a finding only as blocking, decision-needed or follow-up. So it files confirmations (\"test change is class 1\"), sibling specs' files and old [AC:] tags as follow-ups. In the field queue, 30 of 52 follow-ups were this kind. status.mjs makes each follow-up a question for you.","options":[{"value":"note-class","label":"A fourth class: note","recommended":true,"description":"Add `note` to the finding classes. status.mjs already reads follow-ups by class, so it ignores notes with no other change.","example":"{\"id\":\"f4\",\"class\":\"note\",\"summary\":\"Test change is class 1; no assertion weakened.\"}","tradeoff":"Notes stay in `findings`, so a page or tool that counts all findings counts notes too."},{"value":"observations","label":"A separate observations list","description":"Add a top-level `observations` array of plain strings next to `findings`.","example":"\"observations\": [\"Test change is class 1; no assertion weakened.\"]","tradeoff":"Two lists for the reviewer to choose between, and a second field to validate and show."}],"recommendation":"One list with one more class is the smallest change, and the existing class filter already keeps notes out of questions.","affected":["reviewer-notes"]},
-  {"id":"resolution-record","status":"open","question":"Where is it recorded that a follow-up is handled, so close.mjs stops asking?","answer":null,"context":"Accepted review reports are hashed and never change. status.mjs rebuilds its questions from them every time, so close.mjs --feature refuses forever once a feature has one follow-up, even after you answer it. A follow-up ends one of three ways: a later spec fixes it, you decide it, or the agent shows it is not a defect.","options":[{"value":"ledger","label":"One follow-ups.json per feature","recommended":true,"description":"The feature folder gets follow-ups.json. Each entry names the report and finding id, the outcome (fixed, decided or dismissed) and its proof: the fixing spec id, the brief decision id, or a reason. status.mjs checks a fixed entry's spec is done and a decided entry's decision is answered.","example":"{\"report\":\"reviews/spec-3-r1.json\",\"finding\":\"f2\",\"outcome\":\"fixed\",\"by\":\"15\"}","tradeoff":"A new file in each feature folder that archive must carry."},{"value":"queue-fixes","label":"A fixes field on the fixing spec","description":"A fix spec's queue entry lists the findings it fixes. Decided follow-ups point from the brief decision; dismissals need a third place.","example":"{\"id\":\"15\",\"fixes\":[{\"spec\":\"3\",\"finding\":\"f2\"}]}","tradeoff":"Three places to read, and the dismissal (needed for 1.10.0 reports already full of noise) has no natural home."}],"recommendation":"One file covers all three outcomes and the noise already in 1.10.0 reports, and status.mjs reads one place.","affected":["close-clears"]}
+  {
+  "id": "note-shape",
+  "status": "clarified",
+  "question": "Where does a reviewer put what it saw but that needs no work?",
+  "answer": "note-class",
+  "context": "A reviewer can file a finding only as blocking, decision-needed or follow-up. So it files confirmations (\"test change is class 1\"), sibling specs' files and old [AC:] tags as follow-ups. In the field queue, 30 of 52 follow-ups were this kind. status.mjs makes each follow-up a question for you.",
+  "options": [
+    {
+      "value": "note-class",
+      "label": "A fourth class: note",
+      "recommended": true,
+      "description": "Add `note` to the finding classes. status.mjs already reads follow-ups by class, so it ignores notes with no other change.",
+      "example": "{\"id\":\"f4\",\"class\":\"note\",\"summary\":\"Test change is class 1; no assertion weakened.\"}",
+      "tradeoff": "Notes stay in `findings`, so a page or tool that counts all findings counts notes too."
+    },
+    {
+      "value": "observations",
+      "label": "A separate observations list",
+      "description": "Add a top-level `observations` array of plain strings next to `findings`.",
+      "example": "\"observations\": [\"Test change is class 1; no assertion weakened.\"]",
+      "tradeoff": "Two lists for the reviewer to choose between, and a second field to validate and show."
+    }
+  ],
+  "recommendation": "One list with one more class is the smallest change, and the existing class filter already keeps notes out of questions.",
+  "affected": [
+    "reviewer-notes"
+  ]
+},
+  {
+  "id": "resolution-record",
+  "status": "clarified",
+  "question": "Where is it recorded that a follow-up is handled, so close.mjs stops asking?",
+  "answer": "ledger",
+  "context": "Accepted review reports are hashed and never change. status.mjs rebuilds its questions from them every time, so close.mjs --feature refuses forever once a feature has one follow-up, even after you answer it. A follow-up ends one of three ways: a later spec fixes it, you decide it, or the agent shows it is not a defect.",
+  "options": [
+    {
+      "value": "ledger",
+      "label": "One follow-ups.json per feature",
+      "recommended": true,
+      "description": "The feature folder gets follow-ups.json. Each entry names the report and finding id, the outcome (fixed, decided or dismissed) and its proof: the fixing spec id, the brief decision id, or a reason. status.mjs checks a fixed entry's spec is done and a decided entry's decision is answered.",
+      "example": "{\"report\":\"reviews/spec-3-r1.json\",\"finding\":\"f2\",\"outcome\":\"fixed\",\"by\":\"15\"}",
+      "tradeoff": "A new file in each feature folder that archive must carry."
+    },
+    {
+      "value": "queue-fixes",
+      "label": "A fixes field on the fixing spec",
+      "description": "A fix spec's queue entry lists the findings it fixes. Decided follow-ups point from the brief decision; dismissals need a third place.",
+      "example": "{\"id\":\"15\",\"fixes\":[{\"spec\":\"3\",\"finding\":\"f2\"}]}",
+      "tradeoff": "Three places to read, and the dismissal (needed for 1.10.0 reports already full of noise) has no natural home."
+    }
+  ],
+  "recommendation": "One file covers all three outcomes and the noise already in 1.10.0 reports, and status.mjs reads one place.",
+  "affected": [
+    "close-clears"
+  ]
+}
 ]
 ---
 
