@@ -94,6 +94,29 @@ describe('follow-up triage', () => {
     expect(readFileSync(IMPLEMENT, 'utf8').split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(1309);
   });
 
+  // 1.10.2 spec 8: the word-cap trim of spec 5 lost two rules (review-5 f1, f2); they are back.
+  it('[AC:spec-8-1] isolated mode does all of checkpoint and also gives each implementation spec a fresh agent context', () => {
+    const text = flat();
+    const start = text.indexOf('In `isolated`,');
+    expect(start).toBeGreaterThan(-1);
+    const sentence = text.slice(start, text.indexOf('A worktree is operational isolation', start));
+    expect(sentence).toMatch(/^In `isolated`, do all of `checkpoint` and also give each implementation spec a fresh agent context/);
+    // Checkpoint, which isolated includes, commits, integrates and reviews each spec, then triages its follow-ups.
+    expect(text).toContain('In `checkpoint`, commit each finished spec, integrate it, rerun its focused tests after any integration edit, and review the integrated bytes before continuing.');
+    expect(text).toContain('(in `checkpoint`, after each accepted spec)');
+  });
+
+  it('[AC:spec-8-2] owner acceptance is explicit and its instruction and limits go in the decision record, within the cap', () => {
+    const text = flat();
+    const start = text.indexOf('An owner can explicitly accept the current findings and their stated limits through `accept-owner`');
+    expect(start).toBeGreaterThan(-1);
+    const paragraph = text.slice(start, text.indexOf('never as PASS or verified.', start));
+    expect(paragraph).toContain('persist the owner\'s actual instruction and nonempty limits in the decision record');
+    expect(paragraph).toContain('is not acceptance');
+    expect(paragraph).toMatch(/If the owner already explicitly accepted, do not reconfirm\./);
+    expect(readFileSync(IMPLEMENT, 'utf8').split(/\s+/).filter(Boolean).length).toBeLessThanOrEqual(1309);
+  });
+
   it('[AC:spec-5-2] a fix spec appended after spec 1 is done leaves its accepted report valid and passes queue-check', async () => {
     const root = fixture();
     const before = await status(root);

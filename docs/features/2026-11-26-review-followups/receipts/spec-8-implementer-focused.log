@@ -1,0 +1,63 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/text-follow-up-triage.test.ts tests/text-wave-gate.test.ts tests/payload-guard.test.ts tests/text-worker-commands.test.ts tests/text-small-job.test.ts tests/text-owner-gate-lines.test.ts tests/text-spec-tier.test.ts tests/text-fault-proof.test.ts tests/text-fewer-tests.test.ts tests/text-session-end-pr.test.ts tests/runtime-dispatch-commands.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/text-spec-tier.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 201[2mms[22m[39m
+ [32m✓[39m tests/text-worker-commands.test.ts [2m([22m[2m18 tests[22m[2m)[22m[33m 408[2mms[22m[39m
+   [33m[2m✓[22m[39m worker commands text[2m > [22m[AC:spec-23-2] attended setup sends a runner worker variable to the machine-local evidence-env.json, which evidence applies [33m 404[2mms[22m[39m
+ [32m✓[39m tests/text-fewer-tests.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 485[2mms[22m[39m
+   [33m[2m✓[22m[39m fewer, sharper tests text[2m > [22m[AC:spec-22-5] the two rules spec 1 cut are back in the payload [33m 483[2mms[22m[39m
+ [32m✓[39m tests/text-owner-gate-lines.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 515[2mms[22m[39m
+   [33m[2m✓[22m[39m owner gate lines[2m > [22m[AC:spec-16-2] [AC:spec-28-3] setup and update show the entry-check gate-rule finding once and records the answer; cleanup.md names the check [33m 514[2mms[22m[39m
+ [32m✓[39m tests/text-wave-gate.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 734[2mms[22m[39m
+ [32m✓[39m tests/text-fault-proof.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 796[2mms[22m[39m
+   [33m[2m✓[22m[39m fault proof text[2m > [22m[AC:spec-18-5] fault patches and receipts go in a git-ignored path: there --patch runs and restores; an untracked patch is refused [33m 793[2mms[22m[39m
+ [32m✓[39m tests/text-follow-up-triage.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 1260[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-up triage[2m > [22m[AC:spec-5-2] a fix spec appended after spec 1 is done leaves its accepted report valid and passes queue-check [33m 1258[2mms[22m[39m
+ [32m✓[39m tests/text-session-end-pr.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 1301[2mms[22m[39m
+   [33m[2m✓[22m[39m session end review-25 runtime[2m > [22m[review-25-1] a records commit, then the tidy fix: tidy --verify passes on the new HEAD [33m 1298[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12179 (cap 12256, 77 spare)
+on-demand words: 20841 (cap 21163, 322 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1817[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 442[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 401[2mms[22m[39m
+ [32m✓[39m tests/text-small-job.test.ts [2m([22m[2m63 tests[22m[2m)[22m[33m 3568[2mms[22m[39m
+   [33m[2m✓[22m[39m a queue-less brief in the runtime[2m > [22m[AC:sl1-01] wiring exits 0 on a fresh install that carries the new block [33m 897[2mms[22m[39m
+   [33m[2m✓[22m[39m a queue-less brief in the runtime[2m > [22m[AC:sl2-03] a line outside the block that names a missing page is a missing path [33m 623[2mms[22m[39m
+   [33m[2m✓[22m[39m a queue-less brief in the runtime[2m > [22m[AC:fix-1-10-1-entry-check] entry-check reports a page that the block names and the project lacks [33m 712[2mms[22m[39m
+   [33m[2m✓[22m[39m a queue-less brief in the runtime[2m > [22m[AC:sl1-01] an open brief and a hand-closed one (no queue) add nothing to wiring, status, cleanup or gate check [33m 1307[2mms[22m[39m
+ [32m✓[39m tests/runtime-dispatch-commands.test.ts [2m([22m[2m30 tests[22m[2m)[22m[33m 20103[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-1] implementer and reviewer startup print the focused command built from the check inputs [33m 1317[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-2] each step is one plain command with literal paths [33m 726[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-3] without tests.focused or without check inputs, focused is null with a note and startup succeeds [33m 524[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-1] printed commands run as printed through /bin/sh with a space in the worker root or a check path [33m 2018[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-2] {files} inside a word is replaced in place and quoted template arguments stay whole [33m 888[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-3] two startups in the same second print different receipt paths [33m 402[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-4] reviewer receipts go to reviews/receipts and implementer receipts to receipts [33m 718[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-2] an unclosed quote in tests.focused gives focused null with a note, and startup exits 0 [33m 541[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-3] a focused command with shell syntax runs as sh -c under evidence [33m 2997[2mms[22m[39m
+   [33m[2m✓[22m[39m packet readFirst (sl1-05)[2m > [22m[AC:sl1-05-readfirst] each packet lists AGENTS.md and the role skill only, with no runtime .mjs [33m 646[2mms[22m[39m
+   [33m[2m✓[22m[39m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-defaults] on a claimed queue, queue, spec, role and coordinator session are enough for both roles [33m 1150[2mms[22m[39m
+   [33m[2m✓[22m[39m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-explicit-wins] explicit flags win, and --coordinator-session stays explicit [33m 521[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-check] check-report skips only the child-ID check in agent-at-finish mode [33m 389[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-finish] finalize-review writes the launch-result ID into the report, then checks and hashes it [33m 423[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-distinct] the distinct-actor check stays: the implementer's own ID or a different recorded ID is refused [33m 844[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-unchanged] a refused finalize leaves the report bytes unchanged, and the correct ID is accepted afterwards [33m 371[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-owner] a FAIL report from the agent-at-finish flow takes its ID with bind-reviewer, then accept-owner accepts it [33m 562[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-waiver] an UNVERIFIED tool-break report from the agent-at-finish flow takes its ID with bind-reviewer, then accept-waiver --report accepts it [33m 407[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-commands] a same-session reviewer with no agent ID gets check-report in agent-at-finish mode and no finalize step [33m 573[2mms[22m[39m
+   [33m[2m✓[22m[39m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-base] a first claim records HEAD as baseRevision; a renewal and a take-over keep it [33m 654[2mms[22m[39m
+   [33m[2m✓[22m[39m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-next] claim, implementer startup, submit and finalize-review each print a next command that runs unchanged [33m 1207[2mms[22m[39m
+   [33m[2m✓[22m[39m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-changed] submit lists a changed file the inputs do not name and exits 0; reviewer startup notes it as scope [33m 648[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m11 passed[39m[22m[90m (11)[39m
+[2m      Tests [22m [1m[32m174 passed[39m[22m[90m (174)[39m
+[2m   Start at [22m 09:30:17
+[2m   Duration [22m 20.41s[2m (transform 379ms, setup 0ms, collect 659ms, tests 31.19s, environment 1ms, prepare 522ms)[22m
+
+joycraft-evidence: {"wallMs":21001,"load":[5.08935546875,5.61279296875],"cores":14,"loaded":false,"argv":["pnpm","test","tests/text-follow-up-triage.test.ts","tests/text-wave-gate.test.ts","tests/payload-guard.test.ts","tests/text-worker-commands.test.ts","tests/text-small-job.test.ts","tests/text-owner-gate-lines.test.ts","tests/text-spec-tier.test.ts","tests/text-fault-proof.test.ts","tests/text-fewer-tests.test.ts","tests/text-session-end-pr.test.ts","tests/runtime-dispatch-commands.test.ts"],"exitCode":0,"timedOut":false,"revision":"5a8c1eae01c8a51cb772c2bfa34d0543f2c4df5d","dirty":true}

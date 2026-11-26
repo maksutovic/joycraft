@@ -1,0 +1,56 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/text-follow-up-triage.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [31m❯[39m tests/text-follow-up-triage.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 915[2mms[22m[39m
+   [32m✓[39m follow-up triage[2m > [22m[AC:spec-5-1] the implement skill acts on each wave's follow-ups with three outcomes, within its word caps[32m 1[2mms[22m[39m
+[31m   [31m×[31m follow-up triage[2m > [22m[AC:spec-8-1] isolated mode does all of checkpoint and also gives each implementation spec a fresh agent context[39m[32m 2[2mms[22m[39m
+[31m     → expected 'In `isolated`, give each spec a fresh…' to match /^In `isolated`, do all of `checkpoint…/[39m
+[31m   [31m×[31m follow-up triage[2m > [22m[AC:spec-8-2] owner acceptance is explicit and its instruction and limits go in the decision record, within the cap[39m[32m 0[2mms[22m[39m
+[31m     → expected -1 to be greater than -1[39m
+   [33m[2m✓[22m[39m follow-up triage[2m > [22m[AC:spec-5-2] a fix spec appended after spec 1 is done leaves its accepted report valid and passes queue-check [33m 911[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/text-follow-up-triage.test.ts[2m > [22mfollow-up triage[2m > [22m[AC:spec-8-1] isolated mode does all of checkpoint and also gives each implementation spec a fresh agent context
+[31m[1mAssertionError[22m: expected 'In `isolated`, give each spec a fresh…' to match /^In `isolated`, do all of `checkpoint…/[39m
+
+[32m- Expected:[39m 
+/^In `isolated`, do all of `checkpoint` and also give each implementation spec a fresh agent context/
+
+[31m+ Received:[39m 
+"In `isolated`, give each spec a fresh agent context (`fork_turns: \"none\"` when spawning; in Claude Code the `joycraft-implementer` agent type when installed) with its raw requirements and project context. "
+
+[36m [2m❯[22m tests/text-follow-up-triage.test.ts:[2m103:22[22m[39m
+    [90m101| [39m    [34mexpect[39m(start)[33m.[39m[34mtoBeGreaterThan[39m([33m-[39m[34m1[39m)[33m;[39m
+    [90m102| [39m    const sentence = text.slice(start, text.indexOf('A worktree is ope…
+    [90m103| [39m    expect(sentence).toMatch(/^In `isolated`, do all of `checkpoint` a…
+    [90m   | [39m                     [31m^[39m
+    [90m104| [39m    // Checkpoint, which isolated includes, commits, integrates and re…
+    [90m105| [39m    expect(text).toContain('In `checkpoint`, commit each finished spec…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/text-follow-up-triage.test.ts[2m > [22mfollow-up triage[2m > [22m[AC:spec-8-2] owner acceptance is explicit and its instruction and limits go in the decision record, within the cap
+[31m[1mAssertionError[22m: expected -1 to be greater than -1[39m
+[36m [2m❯[22m tests/text-follow-up-triage.test.ts:[2m112:19[22m[39m
+    [90m110| [39m    [35mconst[39m text [33m=[39m [34mflat[39m()[33m;[39m
+    [90m111| [39m    const start = text.indexOf('An owner can explicitly accept the cur…
+    [90m112| [39m    [34mexpect[39m(start)[33m.[39m[34mtoBeGreaterThan[39m([33m-[39m[34m1[39m)[33m;[39m
+    [90m   | [39m                  [31m^[39m
+    [90m113| [39m    const paragraph = text.slice(start, text.indexOf('never as PASS or…
+    [90m114| [39m    expect(paragraph).toContain('persist the owner\'s actual instructi…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 09:29:28
+[2m   Duration [22m 1.12s[2m (transform 77ms, setup 0ms, collect 18ms, tests 915ms, environment 0ms, prepare 40ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":1795,"load":[6.22314453125,6.22314453125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/text-follow-up-triage.test.ts"],"exitCode":1,"timedOut":false,"revision":"5a8c1eae01c8a51cb772c2bfa34d0543f2c4df5d","dirty":true}

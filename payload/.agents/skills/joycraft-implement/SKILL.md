@@ -6,7 +6,7 @@ compatibility: Guarded review and completion require Node.js 22+, the installed 
 
 # Joycraft Implement
 
-Use this skill to carry out already-authorized specs in `docs/features/<slug>/specs/.joycraft-spec-queue.json`. A small job (the `Work` line in `AGENTS.md`) has no queue and does not use this skill.
+Carry out already-authorized specs in `docs/features/<slug>/specs/.joycraft-spec-queue.json`. A small job (the `Work` line in `AGENTS.md`) has no queue and does not use this skill.
 
 Before changing code, read `AGENTS.md`, each page whose context-map row matches the spec, the parent brief, the spec, and its declared verification inputs. Record assumptions when context is missing. Stop for a scope-changing contradiction or an unresolved consequential decision.
 
@@ -48,13 +48,13 @@ for parallel work, integration, cleanup or resource limits. Without
 isolation, replan the wave: set the entry's `execution.parallel` to `false`
 before dispatch, with the reason, and run it serially; else leave it unstarted.
 
-Implement the spec; run checks and any rendered inspection as you go, in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Tests come from the spec, tagged `[AC:<criterion-id>]`. Add a test only when it can fail for a reason no existing test can; one test may carry several `[AC:]` tags and cover several checks; extend the existing test file first. A new acceptance test fails before the code exists. Do not commit tests of one-off run state. Before `submit` on a spec that changes what a user sees, run the Look bullet in `AGENTS.md`. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing test suite, commit, or empty ready set does not accept the work.
+Implement the spec; run checks and any rendered inspection as you go, in the tiers of [running tests](../../../.joycraft/references/testing.md#running-tests). Tests come from the spec, tagged `[AC:<criterion-id>]`. Add a test only when it can fail for a reason no existing test can; one test may carry several `[AC:]` tags and cover several checks; extend the existing test file first. A new acceptance test fails before the code exists. Do not commit tests of one-off run state. Before `submit` on a spec that changes what a user sees, run the Look bullet in `AGENTS.md`. When the implementation is finished, set it `in-review` with `node .joycraft/runtime/completion.mjs submit --queue <queue> --spec <id>`. A passing suite, commit or empty ready set accepts nothing.
 
 Honor the queue's commit mode. In `batch`, commit and review the independent ready
 wave at its boundary before advancing its dependents, not after the whole dependency chain. In `checkpoint`, commit each finished spec,
 integrate it, rerun its focused tests after any integration edit, and review the
-integrated bytes before continuing. In `isolated`,
-give each spec a fresh agent context
+integrated bytes before continuing. In `isolated`, do all of `checkpoint` and
+also give each implementation spec a fresh agent context
 (`fork_turns: "none"` when spawning; in Claude Code the `joycraft-implementer`
 agent type when installed) with its raw requirements and project context. A worktree is operational isolation; it does not prove review independence.
 
@@ -69,13 +69,13 @@ When `submit` warns that a done spec's accepted input changed, run the printed
 `completion.mjs reopen` for that spec and review it again.
 Without a separate review context, leave the spec `in-review`; invent no ID.
 
-When a recorded tool breaks during a run, repair and record it as
-`$joycraft-verify` says, leave that spec `in-review`, and continue with the
+When a recorded tool breaks mid-run, repair and record it as
+`$joycraft-verify` says, leave that spec `in-review`, and continue with
 specs that do not depend on it. At the first hold, tell the user the spec,
 tool, cause and repair tried. Session end lists every held
 spec.
 
-A tool break stops the whole queue only when the project will not build or
+A tool break stops the queue only when the project will not build or
 install, the worktree or repository is broken, or the next step would touch data
 or systems outside the project (a shared database, a deploy). Every other tool
 break is repair, then hold.
@@ -83,20 +83,20 @@ break is repair, then hold.
 Only the guarded completion path can move an `in-review` spec to `done`. Use manual snapshot/complete only at an explicit non-native boundary, after reading [completion guidance](../../../.joycraft/references/completion.md).
 
 When a current independent review is `FAIL` or `UNVERIFIED`, fix
-straightforward failures within the existing authorization and get a fresh
+straightforward failures within existing authorization and get a fresh
 review. A spec gets at most three reviews: reviewer startup prints
 `reviewRound` and refuses a fourth. If startup refuses a review or a second FAIL
 on the same criterion occurs, send no further fix and never amend acceptance
 yourself: note it under `## Decision needed` in the spec, leave it `in-review`,
 and continue independent ready work. Treat a held `decision-needed` finding
-(`$joycraft-verify`) the same, without the note: `status.mjs` lists it. An owner can accept the
+(`$joycraft-verify`) the same, without the note: `status.mjs` lists it. An owner can explicitly accept the
 current findings and their stated limits through `accept-owner`: a bounded
 exception, not a PASS or verified result. Ask only when proceeding needs that
 override and no trusted human acceptance of this spec's current findings exists.
-Give one short summary and focused choice, then record the owner's actual
-instruction and nonempty limits. A general "continue" or "go," another agent's
+Give one short summary and focused choice, then persist the owner's actual
+instruction and nonempty limits in the decision record. A general "continue" or "go," another agent's
 direction, or authorization to add this capability is not acceptance. If the
-owner already accepted, do not reconfirm. Dependent work continues only within
+owner already explicitly accepted, do not reconfirm. Dependent work continues only within
 those limits, without deployment, security or other blanket authority. Report it as `done, owner-accepted with
 <limits>`, never as PASS or verified.
 
