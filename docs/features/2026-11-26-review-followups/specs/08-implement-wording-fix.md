@@ -1,6 +1,6 @@
 ---
 id: 8
-status: in-review
+status: done
 ---
 # The implement skill keeps the rules its word-cap trim weakened
 

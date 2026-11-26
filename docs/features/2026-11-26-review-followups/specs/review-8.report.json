@@ -1,0 +1,212 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "2286138bd40887fb092ed3ce5d4693841ef034da",
+    "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+    "specId": 8,
+    "specPath": "docs/features/2026-11-26-review-followups/specs/08-implement-wording-fix.md",
+    "criteria": [
+      {
+        "id": "spec-8-1",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/08-implement-wording-fix.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-8-2",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/08-implement-wording-fix.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-26-review-followups/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "triage",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "49e05fe8d189c97c149b8d46fee94f8025407a18486c3703a035c59915ddac4f",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "5a6b92f0c9ed605235599cef3f6f8494120947af82af83fcf6e4528c52a46baf",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/08-implement-wording-fix.md",
+        "kind": "requirement",
+        "sha256": "84a15a1f22051283fbb9d459e3a763bca2c97f89df82c7ece2b5a499f808dd1a",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/review-5.report.json",
+        "kind": "requirement",
+        "sha256": "3a41ef4036de7b0278761e1b2086a39f9fa83212fc5321d1f7930385226a3378",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+        "kind": "code",
+        "sha256": "9ba2c0e465c8f931ba437dec5d5e00ea5a6ff2d36320ed55c0f44ac0b4794567",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/PIN",
+        "kind": "code",
+        "sha256": "cfc7602b50c4b4e0280238f251e282270aedd2546afdcb2ba459256b685df8a1",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "ce946f413bae5831664c7074f4e710d7975e54763758a61ff8b0b39ab62de8bc",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-follow-up-triage.test.ts",
+        "kind": "check",
+        "sha256": "502a4352516ec776ed272df0cdc7c869634712ffe953f363ccefa977b9b41dd0",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "c13ecbc0651135883306c0d3d6f2f3e3cd61b841a0022fda18760d842f92d6d4",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          3,
+          5,
+          8
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-26-review-followups/brief.md",
+          "anchors": [
+            "triage",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "9d8f1e423df78b9c0c419e15b268891789308796f1bc7cbdbb47720ad43202d4"
+  },
+  "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d"
+  },
+  "reviewer": {
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+      "agentId": "a0a77cc0377176415"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "unresolved": [],
+  "createdAt": "2026-11-26T17:33:22.883079Z",
+  "flows": [
+    {
+      "id": "flow-isolated-mode",
+      "criteria": [
+        "spec-8-1"
+      ],
+      "subjectIdentity": "9d8f1e423df78b9c0c419e15b268891789308796f1bc7cbdbb47720ad43202d4",
+      "representativeInput": "payload/.agents/skills/joycraft-implement/SKILL.md at 2286138, compared with 2802017 and 5a8c1ea.",
+      "expected": "Isolated mode is defined as all of checkpoint (commit, integrate, review each spec, then the follow-up step) plus a fresh agent context per implementation spec.",
+      "limits": [
+        "Gate not run by the reviewer; coordinator gate receipts spec-8-gate-test.log and spec-8-gate-typecheck.log were supplied (two load timeouts pass alone in spec-3-gate-timeouts-rerun.log; bench-current is the known pending re-record from review-1)."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-8-1] passed; 5 files, 52 tests, exit 0, revision 2286138, clean tree. The skill now reads 'In `isolated`, do all of `checkpoint` and also give each implementation spec a fresh agent context'. The checkpoint sentence (commit, integrate, rerun focused tests, review integrated bytes) and the triage step '(in `checkpoint`, after each accepted spec)' are unchanged, so isolated mode inherits the per-spec cadence and the triage step. This fixes review-5 f1.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-8-reviewer-focused-20261126T173235396Z-6485-1.log",
+              "sha256": "526d467823bb6c5286b5a45e41db998f7105040d714ac1df6cb70545edf375d5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-follow-up-triage.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/text-owner-gate-lines.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-owner-acceptance-and-cap",
+      "criteria": [
+        "spec-8-2"
+      ],
+      "subjectIdentity": "9d8f1e423df78b9c0c419e15b268891789308796f1bc7cbdbb47720ad43202d4",
+      "representativeInput": "The owner-acceptance paragraph of the implement skill at 2286138 against 2802017; word count; git diff 5a8c1ea..HEAD of the skill and both cap tests.",
+      "expected": "Owner acceptance is explicit twice and the instruction and nonempty limits are persisted in the decision record, same meaning as 2802017; skill at or under 1309 words; cap tests unchanged and passing; no rule dropped for room.",
+      "limits": [
+        "Gate not run by the reviewer; coordinator gate receipts spec-8-gate-test.log and spec-8-gate-typecheck.log were supplied (two load timeouts pass alone in spec-3-gate-timeouts-rerun.log; bench-current is the known pending re-record from review-1)."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-8-2] and both cap tests passed (text-wave-gate.test.ts 9 tests, payload-guard.test.ts 16 tests), exit 0. The paragraph again says 'An owner can explicitly accept', 'persist the owner's actual instruction and nonempty limits in the decision record' and 'If the owner already explicitly accepted, do not reconfirm', matching 2802017; a general 'continue' or 'go' is still not acceptance. wc -w gives 1309 against the 1309 cap. git diff 5a8c1ea..HEAD shows no change to tests/text-wave-gate.test.ts or tests/payload-guard.test.ts. The cuts made for room are 'Use this skill to carry out'->'Carry out', 'A passing test suite, commit, or empty ready set does not accept the work'->'A passing suite, commit or empty ready set accepts nothing', 'during a run'->'mid-run', and three dropped 'the'/'whole'; each keeps its rule. payload/PIN records the skill hash 9ba2c0e4..., equal to the reviewed file. The new tests are class 1 wording checks; an implementer fails-before receipt exists.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-8-reviewer-focused-20261126T173235396Z-6485-1.log",
+              "sha256": "526d467823bb6c5286b5a45e41db998f7105040d714ac1df6cb70545edf375d5"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-follow-up-triage.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/text-owner-gate-lines.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "findings": []
+}
