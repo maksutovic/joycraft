@@ -1,0 +1,120 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-cleanup-checks.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [31m❯[39m tests/runtime-cleanup-checks.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 2526[2mms[22m[39m
+   [32m✓[39m cleanup lists its own checks[2m > [22m[AC:spec-1-1] --checks prints one line per check, and the ids equal every check id the source can emit[32m 44[2mms[22m[39m
+   [32m✓[39m cleanup lists its own checks[2m > [22m[AC:spec-1-2] cleanup.md has no check table and names cleanup.mjs --checks, with fewer words[32m 1[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup lists its own checks[2m > [22m[AC:spec-1-3] missing-path filters ignored paths with one check-ignore process [33m 513[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup lists its own checks[2m > [22m[AC:spec-1-4] impact-drift asks to update the page or add a verified: line [33m 335[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup review fixes[2m > [22m[review-a-4] a path beyond a symlink or in a submodule does not hide the other ignored paths [33m 408[2mms[22m[39m
+   [32m✓[39m cleanup review fixes[2m > [22m[review-a-8] the header says only age-out --apply moves files[32m 0[2mms[22m[39m
+   [32m✓[39m cleanup review fixes[2m > [22m[review-a-9] cleanup.md and --checks keep the entry-check and temporal wording[32m 97[2mms[22m[39m
+[31m   [31m×[31m entry-size counts only the project's own text[2m > [22m[AC:spec-4-1] leaves out Joycraft's block and the review-loop section[39m[32m 268[2mms[22m[39m
+[31m     → expected [ { check: 'entry-size', …(4) } ] to deeply equal [][39m
+[31m   [31m×[31m entry-size counts only the project's own text[2m > [22m[AC:spec-4-2] the detail gives the own-text count and says Joycraft's sections are not counted[39m[32m 247[2mms[22m[39m
+[31m     → expected 1821 to be 1100 // Object.is equality[39m
+   [33m[2m✓[22m[39m entry-size counts only the project's own text[2m > [22m[AC:spec-4-3] a file with no markers, or an unclosed managed block, is counted whole [33m 499[2mms[22m[39m
+[31m   [31m×[31m entry-size counts only the project's own text[2m > [22m[AC:spec-4-4] entry-size stays advisory, and the check list, settings.md and cleanup.md say what it counts[39m[32m 113[2mms[22m[39m
+[31m     → expected 'unarchived\treport\tA feature whose s…' to match /^entry-size\treport\t.*own text/m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-cleanup-checks.test.ts[2m > [22mentry-size counts only the project's own text[2m > [22m[AC:spec-4-1] leaves out Joycraft's block and the review-loop section
+[31m[1mAssertionError[22m: expected [ { check: 'entry-size', …(4) } ] to deeply equal [][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- [][39m
+[31m+ [[39m
+[31m+   {[39m
+[31m+     "check": "entry-size",[39m
+[31m+     "detail": "1621 words; the budget is 1000 (cleanup.entryWords).",[39m
+[31m+     "fix": "Move reference detail into context pages and leave a map row that says when to read each.",[39m
+[31m+     "path": "AGENTS.md",[39m
+[31m+     "words": 1621,[39m
+[31m+   },[39m
+[31m+ ][39m
+
+[36m [2m❯[22m tests/runtime-cleanup-checks.test.ts:[2m144:87[22m[39m
+    [90m142| [39m    [35mconst[39m managed [33m=[39m [35mawait[39m [34mblock[39m()[33m;[39m
+    [90m143| [39m    [90m// "# A" is 2 words, so 898 + 2 = 900 own words.[39m
+    [90m144| [39m    expect(await entrySize(`# A\n\n${managed}\n\n${ownWords(898)}\n\n$…
+    [90m   | [39m                                                                                      [31m^[39m
+    [90m145| [39m    const over = await entrySize(`# A\n\n${managed}\n\n${ownWords(1098…
+    [90m146| [39m    [34mexpect[39m(over)[33m.[39m[34mtoHaveLength[39m([34m1[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-cleanup-checks.test.ts[2m > [22mentry-size counts only the project's own text[2m > [22m[AC:spec-4-2] the detail gives the own-text count and says Joycraft's sections are not counted
+[31m[1mAssertionError[22m: expected 1821 to be 1100 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1100[39m
+[31m+ 1821[39m
+
+[36m [2m❯[22m tests/runtime-cleanup-checks.test.ts:[2m152:27[22m[39m
+    [90m150| [39m  it('[AC:spec-4-2] the detail gives the own-text count and says Joycr…
+    [90m151| [39m    const [finding] = await entrySize(`# A\n\n${await block()}\n\n${ow…
+    [90m152| [39m    [34mexpect[39m(finding[33m.[39mwords)[33m.[39m[34mtoBe[39m([34m1100[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m153| [39m    [34mexpect[39m(finding[33m.[39mdetail)[33m.[39m[34mtoContain[39m([32m'1100 own words'[39m)[33m;[39m
+    [90m154| [39m    expect(finding.detail).toMatch(/Joycraft's block and review-loop s…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-cleanup-checks.test.ts[2m > [22mentry-size counts only the project's own text[2m > [22m[AC:spec-4-4] entry-size stays advisory, and the check list, settings.md and cleanup.md say what it counts
+[31m[1mAssertionError[22m: expected 'unarchived\treport\tA feature whose s…' to match /^entry-size\treport\t.*own text/m[39m
+
+[32m- Expected:[39m 
+/^entry-size\treport\t.*own text/m
+
+[31m+ Received:[39m 
+"unarchived	report	A feature whose specs are all done, still in paths.features
+status-drift	mechanical	A spec whose queue status and frontmatter status differ (status.mjs --fix)
+frontmatter-unreadable	report	Context-page frontmatter that cleanup cannot parse
+stale-after	report	A context page whose stale_after date has passed
+working-link	report	A guide or entry file linking a feature or archive folder
+deprecated-link	report	A link to a page marked status: deprecated
+broken-link	report gate	A Markdown link to a file that does not exist
+missing-path	mechanical gate	A backticked project path that does not exist and Git does not ignore (fixed when Git shows one rename)
+unmapped	report	A context page that only other context pages mention
+entry-size	report	An entry file over cleanup.entryWords words (default 1000)
+temporal	report	A date (YYYY-MM-DD) or a link to a dated file in an entry file, outside code spans
+script-name	report gate	A package script that an entry file names and no package.json defines
+gate-rule	report	An entry-file line outside a table that names the recorded tests.gate or tests.full command
+codex-bytes	report gate	AGENTS.md files from the root to one folder over 32,768 bytes, the Codex limit
+managed-block	mechanical	Joycraft's AGENTS.md block differs from entry-check.mjs block
+import	report gate	An @path line in an entry file (not @AGENTS.md in CLAUDE.md), or AGENTS.override.md
+orphan	report	A context page that nothing links to
+impact-drift	report	A page in cleanup.impact whose mapped code changed after the page last changed
+unknown-worktree	report	A linked worktree that worktrees.mjs did not create
+tidy	report	tidy: the range cannot be read (shallow clone or no Git); everything else is skipped
+gone-symbol	mechanical	tidy: a backticked name in a mapped page that the range removed from all code (report-only in an entry file)
+new-doc	report	tidy: Markdown the range added under the docs root, outside features, archive and backlog, by folder
+"
+
+[36m [2m❯[22m tests/runtime-cleanup-checks.test.ts:[2m170:48[22m[39m
+    [90m168| [39m    const { gateChecks } = await import(join(runtimeDir, 'entry-check.…
+    [90m169| [39m    [34mexpect[39m(gateChecks)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'entry-size'[39m)[33m;[39m
+    [90m170| [39m    expect(run(tmpdir(), ['--checks']).stdout).toMatch(/^entry-size\tr…
+    [90m   | [39m                                               [31m^[39m
+    [90m171| [39m    const settings = readFileSync(join(runtimeDir, '..', 'references',…
+    [90m172| [39m    [34mexpect[39m(settings)[33m.[39m[34mtoMatch[39m([36m/cleanup\.entryWords`[^\n]*own text/[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m8 passed[39m[22m[90m (11)[39m
+[2m   Start at [22m 09:09:35
+[2m   Duration [22m 2.78s[2m (transform 83ms, setup 0ms, collect 18ms, tests 2.53s, environment 0ms, prepare 44ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":3507,"load":[9.5712890625,14.73046875],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-cleanup-checks.test.ts"],"exitCode":1,"timedOut":false,"revision":"b0e2bcb7a52a217961100b43fd74abc3fc73542f","dirty":true}

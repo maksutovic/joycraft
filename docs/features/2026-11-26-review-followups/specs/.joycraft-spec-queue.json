@@ -321,7 +321,7 @@
       "id": 4,
       "file": "04-entry-size-own-text.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -369,6 +369,14 @@
           {
             "path": "tests/runtime-cleanup-checks.test.ts",
             "kind": "check"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
           }
         ],
         "criteria": [
@@ -413,6 +421,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-26T17:10:28.642Z"
       }
     },
     {

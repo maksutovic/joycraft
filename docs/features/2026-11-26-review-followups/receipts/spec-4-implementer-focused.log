@@ -1,0 +1,48 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-cleanup-checks.test.ts tests/payload-entry-check.test.ts tests/payload-guard.test.ts tests/text-test-review.test.ts tests/runtime-cleanup-checks-seam.test.ts tests/text-owner-gate-lines.test.ts tests/text-spec-tier.test.ts tests/runtime-cleanup-age-out.test.ts tests/drift-tidy-text.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/drift-tidy-text.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m tests/text-spec-tier.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 158[2mms[22m[39m
+ [32m✓[39m tests/text-test-review.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 280[2mms[22m[39m
+ [32m✓[39m tests/text-owner-gate-lines.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 350[2mms[22m[39m
+   [33m[2m✓[22m[39m owner gate lines[2m > [22m[AC:spec-16-2] [AC:spec-28-3] setup and update show the entry-check gate-rule finding once and records the answer; cleanup.md names the check [33m 348[2mms[22m[39m
+ [32m✓[39m tests/payload-entry-check.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 859[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped entry check[2m > [22m[AC:payload-entry-check] the exact block is clean; a block with one changed word is one advisory and --ci exits 0 [33m 380[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12180 (cap 12256, 76 spare)
+on-demand words: 20841 (cap 21163, 322 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1607[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 455[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 392[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-checks.test.ts [2m([22m[2m11 tests[22m[2m)[22m[33m 3301[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup lists its own checks[2m > [22m[AC:spec-1-3] missing-path filters ignored paths with one check-ignore process [33m 638[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup lists its own checks[2m > [22m[AC:spec-1-4] impact-drift asks to update the page or add a verified: line [33m 468[2mms[22m[39m
+   [33m[2m✓[22m[39m cleanup review fixes[2m > [22m[review-a-4] a path beyond a symlink or in a submodule does not hide the other ignored paths [33m 484[2mms[22m[39m
+   [33m[2m✓[22m[39m entry-size counts only the project's own text[2m > [22m[AC:spec-4-1] leaves out Joycraft's block and the review-loop section [33m 561[2mms[22m[39m
+   [33m[2m✓[22m[39m entry-size counts only the project's own text[2m > [22m[AC:spec-4-3] a file with no markers, or an unclosed managed block, is counted whole [33m 583[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-checks-seam.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 4326[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: in joycraft.yaml[2m > [22m[AC:spec-10-2] each path:line: message output line is a finding with the check name; other lines are ignored [33m 445[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: in joycraft.yaml[2m > [22m[AC:spec-10-3] a command not found is one skipped entry and tidy exits 0 [33m 476[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: review fixes[2m > [22m[review-a-5] stderr lines count, stack-trace lines do not [33m 397[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: review fixes[2m > [22m[review-a-5] a check past its timeout is skipped, even when it pipes [33m 1407[2mms[22m[39m
+   [33m[2m✓[22m[39m checks seam line forms (spec 27)[2m > [22m[AC:spec-27-16] reads the markdownlint-cli2 form and project-absolute paths; host:port lines are not findings [33m 394[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: 1.9.1 cleanup fixes[2m > [22m[AC:spec-3-4] a missing tool in a pipeline that exits 0 is skipped as not found; a check with a finding is unchanged [33m 412[2mms[22m[39m
+   [33m[2m✓[22m[39m checks: 1.9.2 own not-found line only[2m > [22m[AC:spec-2-1] a not-found line skips a check only when it names a word of run; a working checker that prints one is not skipped [33m 458[2mms[22m[39m
+ [32m✓[39m tests/runtime-cleanup-age-out.test.ts [2m([22m[2m19 tests[22m[2m)[22m[33m 7685[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out[2m > [22m[AC:spec-9-1] --days 14 lists only the working doc last committed 20 days ago, with count and age [33m 330[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out[2m > [22m[AC:spec-9-2] --apply moves the doc under the archive with git mv and commits nothing [33m 354[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out review fixes[2m > [22m[review-a-1] about 3 MB of log names does not overflow the Git buffer [33m 4431[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out review 9 fixes[2m > [22m[review-9-3] a doc changed in a merge counts as changed [33m 321[2mms[22m[39m
+   [33m[2m✓[22m[39m age-out review 9 fixes[2m > [22m[review-9-r2-2] a symlinked docs root, or a symlink on the way to it, gives one skipped entry [33m 301[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m      Tests [22m [1m[32m81 passed[39m[22m[90m (81)[39m
+[2m   Start at [22m 09:10:02
+[2m   Duration [22m 7.90s[2m (transform 214ms, setup 0ms, collect 336ms, tests 18.57s, environment 1ms, prepare 396ms)[22m
+
+joycraft-evidence: {"wallMs":8476,"load":[10.93603515625,11.34130859375],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-cleanup-checks.test.ts","tests/payload-entry-check.test.ts","tests/payload-guard.test.ts","tests/text-test-review.test.ts","tests/runtime-cleanup-checks-seam.test.ts","tests/text-owner-gate-lines.test.ts","tests/text-spec-tier.test.ts","tests/runtime-cleanup-age-out.test.ts","tests/drift-tidy-text.test.ts"],"exitCode":0,"timedOut":false,"revision":"b0e2bcb7a52a217961100b43fd74abc3fc73542f","dirty":true}

@@ -123,3 +123,53 @@ describe('cleanup review fixes', () => {
     expect(run(repo(), ['--checks']).stdout).toMatch(/^temporal\t.*YYYY-MM-DD/m);
   });
 });
+
+// Spec: docs/features/2026-11-26-review-followups/specs/04-entry-size-own-text.md
+describe('entry-size counts only the project\'s own text', () => {
+  const ownWords = (count: number) => Array.from({ length: count }, (_, index) => `w${index}`).join(' ');
+  const reviewLoop = ['## Review loop', '', 'Recorded by Joycraft setup. The implementer, reviewer and UI checks use these tools.', '',
+    '| Package | Tools |', '|---|---|', '| . | vitest |', '', '<!-- joycraft:review-loop v2 {"packages":{}} -->', ''].join('\n');
+  async function entrySize(body: string) {
+    const root = repo();
+    put(join(root, 'AGENTS.md'), body);
+    git(root, 'add', '.'); git(root, 'commit', '-q', '-m', 'docs');
+    const report = JSON.parse(run(root, []).stdout);
+    return report.findings.filter((item: { check: string }) => item.check === 'entry-size');
+  }
+  const block = async () => (await import(join(runtimeDir, 'wiring.mjs'))).managedBlock as string;
+
+  it('[AC:spec-4-1] leaves out Joycraft\'s block and the review-loop section', async () => {
+    const managed = await block();
+    // "# A" is 2 words, so 898 + 2 = 900 own words.
+    expect(await entrySize(`# A\n\n${managed}\n\n${ownWords(898)}\n\n${reviewLoop}`)).toEqual([]);
+    const over = await entrySize(`# A\n\n${managed}\n\n${ownWords(1098)}\n\n${reviewLoop}`);
+    expect(over).toHaveLength(1);
+    expect(over[0].words).toBe(1100);
+  });
+
+  it('[AC:spec-4-2] the detail gives the own-text count and says Joycraft\'s sections are not counted', async () => {
+    const [finding] = await entrySize(`# A\n\n${await block()}\n\n${ownWords(1098)}\n\n${reviewLoop}`);
+    expect(finding.words).toBe(1100);
+    expect(finding.detail).toContain('1100 own words');
+    expect(finding.detail).toMatch(/Joycraft's block and review-loop section are not counted/);
+  });
+
+  it('[AC:spec-4-3] a file with no markers, or an unclosed managed block, is counted whole', async () => {
+    const [plain] = await entrySize(`# A\n\n${ownWords(1098)}\n`);
+    expect(plain.words).toBe(1100);
+    const managed = await block();
+    const unclosed = managed.replace('<!-- /joycraft:managed -->', '');
+    const whole = `# A\n\n${unclosed}\n\n${ownWords(500)}\n`;
+    const [finding] = await entrySize(whole);
+    expect(finding.words).toBe(whole.split(/\s+/).filter(Boolean).length);
+  });
+
+  it('[AC:spec-4-4] entry-size stays advisory, and the check list, settings.md and cleanup.md say what it counts', async () => {
+    const { gateChecks } = await import(join(runtimeDir, 'entry-check.mjs'));
+    expect(gateChecks).not.toContain('entry-size');
+    expect(run(tmpdir(), ['--checks']).stdout).toMatch(/^entry-size\treport\t.*own text/m);
+    const settings = readFileSync(join(runtimeDir, '..', 'references', 'settings.md'), 'utf8');
+    expect(settings).toMatch(/cleanup\.entryWords`[^\n]*own text/);
+    expect(readFileSync(reference, 'utf8').replace(/\s+/g, ' ')).toMatch(/`entry-size` counts only own text/);
+  });
+});
