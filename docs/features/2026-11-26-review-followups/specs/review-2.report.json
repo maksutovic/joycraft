@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "e3a9e6faf636d6ca4364ae6656ab185cb315c772",
+    "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+    "specId": 2,
+    "specPath": "docs/features/2026-11-26-review-followups/specs/02-wave-noise.md",
+    "criteria": [
+      {
+        "id": "spec-2-1",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/02-wave-noise.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-2",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/02-wave-noise.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-3",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/02-wave-noise.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-26-review-followups/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "wave-noise",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "9f06fa815c441115cce97827cc90c9e590caec6bd6da968c4028465f27f486b2",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "1ba7b93e2b331152e338469d576c8e5d87f5010edc99d8016b4e38a4ddf72c9e",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/02-wave-noise.md",
+        "kind": "requirement",
+        "sha256": "7a3aeaf73ec9698be1c98c681b418fead4a58bc3bf5a1bcf2d5f134097bd60e2",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+        "kind": "code",
+        "sha256": "a7c55fc777c5aa37e11a69998d9ff355092170bf50a839fb88b6dd52f1be241b",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/config.mjs",
+        "kind": "code",
+        "sha256": "dac5f409c01d593f9230fe695fa0ea29c343c1e7cb04bb09775af05dc240f62d",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+        "kind": "code",
+        "sha256": "bacc1cd60e5e16e81316e781f4246c066c38103d1b498fcd19263523675c4fc2",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/trace.mjs",
+        "kind": "code",
+        "sha256": "6d125a8ef82ffab27b8be76291bfb3bec8ce2561f196f2208cd5e8add70d2b4e",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-trace-archived.test.ts",
+        "kind": "check",
+        "sha256": "485f08b67d9e64578eacec9c2acc2183034012cdd95519ed2fd8eb7a066d79cf",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "kind": "check",
+        "sha256": "5691585ba4d945ada95eb331f54e5606862036cd5b288752d3b438a753e56a11",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-26-review-followups/brief.md",
+          "anchors": [
+            "wave-noise",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "b7dd07bf09288a6cfbff9dde44bf8ac0b7e6041805ea96d1573f5ffc88719ca9"
+  },
+  "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d"
+  },
+  "reviewer": {
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+      "agentId": "ae483fb23dad92367"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-archived-tags",
+      "criteria": [
+        "spec-2-1"
+      ],
+      "representativeInput": "Temp git project (applyInstall of payload) with a two-spec queue, tests tagged spec-1-1, old-7 and nowhere-9, and an archived queue declaring old-7, under docs/archive and under a custom paths.archive docs/old.",
+      "expected": "traceSpec and reviewer startup's trace list old-7 as archivedTags {id,file,line} and keep nowhere-9 in unknownTags.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-1] passed for both archive paths (5 files, 71 tests, exit 0). Source: trace.mjs archivedCriteria reads readConfig(root).paths.archive (default defaults.paths.archive), collects criterion ids from every .joycraft-spec-queue.json under it, and splits unknownTags into archivedTags; dispatch-start.mjs passes archivedTags into trace. Probe: payload trace.mjs on this repo's queue (spec 2) exits 0 and moves spec-23-*, spec-3-*, spec-4-3 to archivedTags.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-2-reviewer-focused.log",
+              "sha256": "d61d0369466ac09639f2503a2db2d325d14d3a1289b907a9afcfb6575e1b45d8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-trace-archived.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/runtime-review-notes.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+      ],
+      "subjectIdentity": "b7dd07bf09288a6cfbff9dde44bf8ac0b7e6041805ea96d1573f5ffc88719ca9"
+    },
+    {
+      "id": "flow-siblings",
+      "criteria": [
+        "spec-2-2"
+      ],
+      "representativeInput": "Same fixture: claimed queue, both specs change src/a.ts and src/b.ts in one commit, then a stray src/stray.ts no spec declares.",
+      "expected": "Reviewer startup scope for spec 1 lists siblings [src/b.ts] with no outside/note; after the stray commit, outside [src/stray.ts] with a note that says file outside as a note and do not file siblings.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-2] passed. Source: dispatch-start.mjs builds others from every other queue spec's verification inputs, siblings = changed and not declared and in others, outside = changed and in neither; outside and note are spread only when outside is nonempty.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-2-reviewer-focused.log",
+              "sha256": "d61d0369466ac09639f2503a2db2d325d14d3a1289b907a9afcfb6575e1b45d8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-trace-archived.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/runtime-review-notes.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture project only."
+      ],
+      "subjectIdentity": "b7dd07bf09288a6cfbff9dde44bf8ac0b7e6041805ea96d1573f5ffc88719ca9"
+    },
+    {
+      "id": "flow-verify-text",
+      "criteria": [
+        "spec-2-3"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-verify/SKILL.md text and its word caps.",
+      "expected": "Skill says not to file siblings or archivedTags at all, restates that an unresolved hang is UNVERIFIED with its receipt, never FAIL, and stays under the sl3-07-words cap.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-3] and [AC:sl3-07-words] passed; payload-guard caps pass. Reviewer read the SKILL.md diff: line 56 now ends 'an unresolved hang is `UNVERIFIED` with its receipt, never `FAIL`' and the findings rule ends 'Do not file `siblings` or `archivedTags` at all.'",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-2-reviewer-focused.log",
+              "sha256": "d61d0369466ac09639f2503a2db2d325d14d3a1289b907a9afcfb6575e1b45d8"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-trace-archived.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/runtime-review-notes.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Text checks only; whether reviewers follow the rule is the reviewer benchmark, not run here."
+      ],
+      "subjectIdentity": "b7dd07bf09288a6cfbff9dde44bf8ac0b7e6041805ea96d1573f5ffc88719ca9"
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-verify/SKILL.md:74",
+      "summary": "The findings rule still lists 'a changed file of another spec' and 'a test tag of an archived feature' as `note` findings, then the next sentence says not to file `siblings` or `archivedTags` at all. Those are the same two kinds, so the two sentences disagree.",
+      "assumption": "Closest to the brief: do not file them. Drop the two kinds from the note list, or say that they are a note only when startup did not already list them."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/trace.mjs:75",
+      "summary": "Archived matching uses the bare criterion id, and ids such as spec-N-M are reused across features. On this repo the payload trace for spec 2 puts spec-1-1 (the current queue's own spec 1) and spec-3-1 in archivedTags. A typo tag that matches an old id is also hidden. A stale archived tag whose id equals a current criterion still counts as traced (tests/text-worker-commands.test.ts:58 is traced as spec-2-1).",
+      "assumption": "The criterion is met as written (match by archived criterion id). Scoping a tag to its feature is a later improvement, not this spec's."
+    }
+  ],
+  "createdAt": "2026-11-26T16:50:46.447241Z"
+}

@@ -103,7 +103,7 @@
       "id": 2,
       "file": "02-wave-noise.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -184,6 +184,10 @@
       },
       "submitted": {
         "at": "2026-11-26T16:46:33.096Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-26-review-followups/specs/review-2.report.json",
+        "sha256": "1bbeae92b2d72fe9fe0edc099055cda31dc568db6933fa62239a95f6e7f4340c"
       }
     },
     {
@@ -477,7 +481,8 @@
         2,
         3,
         4,
-        5
+        5,
+        7
       ],
       "status": "todo",
       "mode": "checkpoint",
@@ -536,6 +541,82 @@
             "id": "spec-6-2",
             "requirement": {
               "path": "docs/features/2026-11-26-review-followups/specs/06-release-1-10-2.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "file": "07-archived-tags-fix.md",
+      "depends_on": [
+        2
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-26-review-followups/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "wave-noise",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-26-review-followups/specs/07-archived-tags-fix.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-26-review-followups/specs/review-2.report.json",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/trace.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-trace-archived.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-review-notes.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-worker-commands.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-7-1",
+            "requirement": {
+              "path": "docs/features/2026-11-26-review-followups/specs/07-archived-tags-fix.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-7-2",
+            "requirement": {
+              "path": "docs/features/2026-11-26-review-followups/specs/07-archived-tags-fix.md",
               "anchor": "acceptance"
             },
             "requiredKinds": [

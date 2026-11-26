@@ -1,6 +1,6 @@
 ---
 id: 2
-status: in-review
+status: done
 ---
 # A reviewer is not shown its siblings' work or archived tags as its own
 
