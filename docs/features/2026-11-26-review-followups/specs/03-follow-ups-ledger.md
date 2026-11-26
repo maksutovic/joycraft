@@ -1,6 +1,6 @@
 ---
 id: 3
-status: todo
+status: in-review
 ---
 # A handled follow-up, recorded in follow-ups.json, is no longer a question
 

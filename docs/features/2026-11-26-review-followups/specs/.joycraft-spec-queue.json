@@ -194,7 +194,7 @@
       "id": 3,
       "file": "03-follow-ups-ledger.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -241,6 +241,10 @@
           },
           {
             "path": "payload/.agents/skills/joycraft-session-end/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/completion.md",
             "kind": "code"
           },
           {
@@ -300,6 +304,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-26T16:56:41.736Z"
       }
     },
     {

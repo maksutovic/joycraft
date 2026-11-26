@@ -297,7 +297,10 @@ function featureProblems(root, options, paths, git) {
   const repairs = new Set(status.drift.filter(item => item.fixable).map(item => item.file));
   for (const failure of checkGates(root).failures) if (!(failure.kind === 'drift' && repairs.has(failure.file))) found.push(failure.message);
   for (const item of status.questions) {
-    found.push(`Status question on spec ${item.specId} (${item.class} ${item.id}): ${item.summary} Ask the user, then follow the session-end steps.`);
+    const answer = item.class === 'follow-up'
+      ? `Ask the user, then record the answer with node .joycraft/runtime/follow-ups.mjs --queue ${queuePath} --spec ${item.specId} --finding ${item.id} --fixed <spec> | --decided <decision> | --dismissed <reason>.`
+      : 'Ask the user, then follow the session-end steps.';
+    found.push(`Status question on spec ${item.specId} (${item.class} ${item.id}): ${item.summary} ${answer}`);
   }
   try {
     const lease = readLease(root, queue.feature);

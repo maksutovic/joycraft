@@ -38,7 +38,7 @@ A native child can share its parent session. Supply `implementerActor` and `revi
 
 `finalize-review` (with `complete` retained as a compatibility alias) accepts only an `in-review` spec with a matching current subject, a PASS verdict, truthful independent-review attestation, reviewed scope, valid receipt hashes, and sufficient evidence for every declared criterion. Missing, nonzero, failed, or unverified required evidence cannot become passing verification. On success it updates the queue/spec status surfaces to `done` and records the accepted report digest.
 
-A `follow-up` finding never blocks. A `blocking` or `decision-needed` finding refuses completion with exit 2 and names it; a held spec stays `in-review` and only its dependents wait. A malformed finding is refused with exit 2, naming the field; other report refusals exit 1. `status.mjs` lists as `questions` the follow-ups of accepted reports and the decision-needed findings of each `in-review` spec's latest current report.
+A `follow-up` finding never blocks. A `blocking` or `decision-needed` finding refuses completion with exit 2 and names it; a held spec stays `in-review` and only its dependents wait. A malformed finding is refused with exit 2, naming the field; other report refusals exit 1. `status.mjs` lists as `questions` the follow-ups of accepted reports that the feature's `follow-ups.json` (`follow-ups.mjs`) does not record as handled, and the decision-needed findings of each `in-review` spec's latest current report.
 
 Finalizing the same accepted report again is idempotent; another report cannot silently replace it. Treat any nonzero exit as a rejected or incomplete operation; preserve the current status and report the actual reason.
 

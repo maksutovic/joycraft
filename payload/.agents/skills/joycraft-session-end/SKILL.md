@@ -37,10 +37,14 @@ Run `node .joycraft/runtime/status.mjs --fix` (repairs lagging frontmatter of
 accepted specs, lists features ready to archive) and
 `node .joycraft/runtime/gate.mjs check`. Do the step each gate message names,
 such as a completing command. Tell the user each message you could not clear.
-Ask the user each status `questions` entry (findings rule: `$joycraft-verify`).
-Write each answer where it lasts: a decision in the decision log; a requested
-change in a new spec or the held spec. Never archive a feature whose question
-the user asked to wait.
+Ask the user only the status `questions` entries (findings rule:
+`$joycraft-verify`); a follow-up recorded as handled is not listed. Record each
+follow-up's answer with `node .joycraft/runtime/follow-ups.mjs --queue <queue>
+--spec <id> --finding <id>`: a decision in the brief, then `--decided
+<decision>`; a requested change in a new spec, then `--fixed <spec>` once it is
+done; a "no" as `--dismissed` with the user's words. A held decision-needed
+answer goes in the held spec. Never archive a feature whose question the user
+asked to wait.
 
 When an `UNVERIFIED` review identifies only an environment condition, record
 that condition and arrange a fresh review after it is corrected. Do not create
