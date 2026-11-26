@@ -321,7 +321,7 @@
       "id": 4,
       "file": "04-entry-size-own-text.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -424,6 +424,10 @@
       },
       "submitted": {
         "at": "2026-11-26T17:10:28.642Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-26-review-followups/specs/review-4.report.json",
+        "sha256": "63c67922143db62e502a6aec369c3f41f2e07dd13d0008b2e5609705a8ec6fc1"
       }
     },
     {
