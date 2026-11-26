@@ -11,6 +11,8 @@ last_updated_by: Maximilian Maksutovic
 
 | Agent Might Assume | But Actually | Impact If Wrong |
 |-------------------|-------------|----------------|
+| A red local `pnpm test` after a version bump is a real failure | `tests/package-acceptance.test.ts` reads the built `dist/`; after `package.json` or `src/joycraft-release.json` changes it fails with "Release descriptor version … does not match" until `pnpm build` runs. Under heavy load, the archive and report-gate runtime tests also time out at 5 s and pass alone | A queue holds a release spec or bisects a fix for a failure that is not there |
+| This repo's queues run the payload being changed | They run the installed `.joycraft/` (1.9.2 as of 2026-11-26), not `payload/`: a new report field or finding class cannot be used in this repo's own reviews until the install is updated | A reviewer files a new-class finding and `check-report` refuses the report |
 | A PR that changes only `payload/` releases | Until 1.8.0, release preparation and the docs-sync gate ignored `payload/`; check `isProductPath()` in `scripts/release-preparation.mjs` before trusting it | A payload fix merges and never reaches npm |
 | Main blocks a red PR | Branch protection on main requires no status checks; a red PR can merge, and a merge publishes. The suite runs again on main and in publish as the only guard | Removing a main or publish suite run lets a broken build ship |
 | An example path in a docs page is harmless | `tests/public-docs.test.ts` resolves every Markdown link in `docs/guides` and `docs/reference`; an installed-skill path such as `../../../.joycraft/...` fails there | CI fails on a docs-only PR |
