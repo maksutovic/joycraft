@@ -29,7 +29,7 @@ Reviewer startup output also carries `trace`, the spec's criteria with the tests
 tagged `[AC:<criterion-id>]`. Report untraced criteria as findings; a missing tag alone is
 not a FAIL.
 
-Dispatch `collaboration.spawn_agent` with `fork_turns: "none"` and the packet's raw sources and output contract. Do not give the reviewer an intended verdict, conclusion, or implementer reasoning. In Claude Code, use its `Agent` tool with the same limited inputs and the `joycraft-reviewer` agent type when installed (otherwise the project-selected reviewer model); a fresh worker is the separate review context. Otherwise use a separate accessible review context. Record its returned native host, session and child agent identity; a shared parent session does not make two native actors the same. Follow the actor-report fields in the dispatch reference. Do not invent IDs or create a worktree solely to obtain a different session string.
+Dispatch `collaboration.spawn_agent` with `fork_turns: "none"` and the packet's raw sources and output contract. In Claude Code, use its `Agent` tool with the same limited inputs and the `joycraft-reviewer` agent type when installed (otherwise the project-selected reviewer model); a fresh worker is the separate review context. Otherwise use a separate accessible review context. Record its returned native host, session and child agent identity; a shared parent session does not make two native actors the same. Follow the actor-report fields in the dispatch reference. Do not invent IDs or create a worktree solely to obtain a different session string.
 
 When already dispatched as the independent reviewer, perform the review directly; do not recursively dispatch another reviewer. Read the parent brief, spec, queue entry, declared criteria and exact verification inputs. Use the supplied subject, set independence truthfully, and do not self-certify implementation from your own context.
 
@@ -52,17 +52,15 @@ Skip style.
 
 Review scope as well as behavior: determine whether the listed inputs and criteria cover the requested work, including relevant newly changed files. For a cross-boundary change, inspect the combined observable behavior across the relevant producer, consumer, state or storage boundary; separate green helpers, snapshots, or assertion counts do not establish that behavior. If a material counterpart or owning decision/context source was omitted, report the scope gap and require its exact path to be added before a fresh current review subject is prepared. Preserve the snapshot's implementation revision as provenance while checking its current bound inputs. A changed, missing, or renamed input makes the subject stale; do not substitute a newer HEAD as its identity.
 
-Create a schema-v1 verification report tied to that subject, using the shared fields in [.joycraft/contracts/types.d.ts](../../../.joycraft/contracts/types.d.ts). For every declared criterion, provide PASS observations for its required evidence kinds. Keep unfiltered command output and its real exit status in hashed, project-relative receipts. A source scan supports only structural observations. Visual observations require a reviewer-inspected render plus route, state, viewport, interactions, and outcomes. Take runtime evidence once from the spec's own tests (the startup output's `commands.focused`), never the project gate ([running tests](../../../.joycraft/references/testing.md#running-tests)); in wave mode, state "gate not run; due at wave end"; other evidence with the package's recorded tool, start command and evidence command from the packet's `reviewLoop` (`section`: the `Review loop` section of `AGENTS.md`; `local`: this machine's host tools), within that tool's `canShow`. A claim beyond `canShow`, or in a package the user skipped, is an agreed limit, not `UNVERIFIED`: check what the agreed tool can show, say in plain words how you checked, and leave what is left to the parent agent. A picture-only tool gives `interactions: []`. `UNVERIFIED` means a check that should have run and did not: the tool broke, the app did not start, or a render was saved but not inspected. On a tool break, first repair with what the user agreed to: restart the dev server, free the port, relaunch the browser or simulator, retry once. A repair never installs, upgrades or reconfigures anything. If it still fails, record `UNVERIFIED` with `cause: 'tool-break'` and the reason. Mark a failing result or an unresolved concern as `FAIL` or `UNVERIFIED` truthfully.
+Create a schema-v1 verification report tied to that subject, using the shared fields in [.joycraft/contracts/types.d.ts](../../../.joycraft/contracts/types.d.ts). For every declared criterion, provide PASS observations for its required evidence kinds. Keep unfiltered command output and its real exit status in hashed, project-relative receipts. A source scan supports only structural observations. Visual observations require a reviewer-inspected render plus route, state, viewport, interactions, and outcomes. Take runtime evidence once from the spec's own tests (the startup output's `commands.focused`), never the project gate ([running tests](../../../.joycraft/references/testing.md#running-tests)); in wave mode, state "gate not run; due at wave end"; other evidence with the package's recorded tool, start command and evidence command from the packet's `reviewLoop` (`section`: the `Review loop` section of `AGENTS.md`; `local`: this machine's host tools), within that tool's `canShow`. A claim beyond `canShow`, or in a package the user skipped, is an agreed limit, not `UNVERIFIED`: check what the agreed tool can show, say in plain words how you checked, and leave what is left to the parent agent. A picture-only tool gives `interactions: []`. `UNVERIFIED` means a check that should have run and did not: the tool broke, the app did not start, or a render was saved but not inspected. On a tool break, first repair with what the user agreed to: restart the dev server, free the port, relaunch the browser or simulator, retry once. A repair never installs, upgrades or reconfigures anything. If it still fails, record `UNVERIFIED` with `cause: 'tool-break'` and the reason. Mark a failing result, an unresolved concern or a hang as `FAIL` or `UNVERIFIED`
+truthfully, with its receipt.
 
-Record an unresolved hang as `UNVERIFIED` with its receipt.
-
-Run the dispatch helper's `check-report` before completion. It reuses the same
-subject, receipt, and evidence validators without changing a queue status. If
+Run the dispatch helper's `check-report` before completion. If
 it rejects a packaging or report problem, return the correction to this same
 reviewer; do not invent observations or replace the independent identity.
 
-Items under a spec's "Deferred until deploy" section are not criteria; list
-each as a `note` finding.
+Items under a spec's "Deferred until deploy" section are not criteria; each is a
+`note`.
 
 Findings rule: give each `findings` entry its `class`, `origin`, and `criterion`
 or `at` (file:line or receipt). `blocking` is only a failing stated criterion,
@@ -80,11 +78,8 @@ or log noise with no defect.
 
 Set a PASS verdict only when scope is reviewed, all required evidence is sufficient, and no blocking finding or unresolved UNVERIFIED evidence remains. Then run guarded completion, the startup output's `commands.finalizeReview`. When startup printed `commands.finish` instead, do not finalize: return the report path.
 
-Completion validates the report and receipt
-hashes, distinct native implementer/reviewer actors (or legacy distinct session
-IDs), independent-review attestation, subject freshness, and evidence
-sufficiency. Do not edit the queue or
-spec to make a report fit. For rejections or interrupted writes, follow
+Completion validates the report, receipts, actors and subject freshness. Do not
+edit the queue or spec to make a report fit. For rejections or interrupted writes, follow
 [completion guidance](../../../.joycraft/references/completion.md).
 
 For scope-enabled work, completion compares the recorded base and inferred
