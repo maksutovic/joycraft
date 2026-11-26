@@ -72,7 +72,10 @@ export function traceSpec({ root = process.cwd(), queuePath, specId, tests = [] 
     }
   }
   const untraced = criteria.filter(id => traced[id].length === 0);
+  // A current spec's criterion is never archived, even when an old queue reused its ID.
+  const current = new Set(queue.specs.flatMap(item => (item?.verification?.criteria ?? []).map(entry => entry?.id)));
   const archived = unknownTags.length ? archivedCriteria(root) : new Set();
+  for (const id of current) archived.delete(id);
   const archivedTags = unknownTags.filter(item => archived.has(item.id));
   return {
     queuePath, specId, files, criteria: criteria.map(id => ({ id, tests: traced[id] })), untraced,

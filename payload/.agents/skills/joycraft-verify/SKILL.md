@@ -71,10 +71,10 @@ A case the spec does not decide is a `follow-up`: take the reading closest to
 the brief's intent, recorded as `assumption`. `decision-needed` is only for two readings that give
 opposite verdicts on a stated criterion, or a guess that cannot be undone; it
 holds this spec and its dependents, never the queue. Never repeat an earlier round's
-finding as new. Each of these is a `note`, not a `follow-up`: a check that
-passed (a test change matching its class), a changed file of another spec, a
-test tag of an archived feature, a "Deferred until deploy" item, a flaky retry
-or log noise with no defect. Do not file `siblings` or `archivedTags` at all.
+finding as new. Do not file `siblings` or `archivedTags`. Each of these is a
+`note`, not a `follow-up`: a check that passed (a test change matching its
+class), another spec's file or an archived feature's tag that startup did not
+list, a "Deferred until deploy" item, a flaky retry or log noise with no defect.
 
 Set a PASS verdict only when scope is reviewed, all required evidence is sufficient, and no blocking finding or unresolved UNVERIFIED evidence remains. Then run guarded completion, the startup output's `commands.finalizeReview`. When startup printed `commands.finish` instead, do not finalize: return the report path.
 

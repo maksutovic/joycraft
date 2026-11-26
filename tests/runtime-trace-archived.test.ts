@@ -8,6 +8,7 @@ import { applyInstall, planInstall } from '../src/install-v1.js';
 import { traceSpec } from '../payload/.joycraft/runtime/trace.mjs';
 
 // Spec: docs/features/2026-11-26-review-followups/specs/02-wave-noise.md
+// Spec: docs/features/2026-11-26-review-followups/specs/07-archived-tags-fix.md
 const git = (cwd: string, ...args: string[]) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const put = (file: string, body: string) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
 const node = (root: string, script: string, args: string[]) => spawnSync(process.execPath, [join(root, '.joycraft/runtime', script), ...args], { cwd: root, encoding: 'utf8' });
@@ -27,7 +28,7 @@ const specEntry = (id: number, name: string, status: string) => ({
 });
 
 /** A git project with the shipped runtime, a two-spec queue (a, b) and one archived feature whose criterion is old-7. */
-function fixture({ archive = 'docs/archive', status = 'in-review' }: { archive?: string; status?: string } = {}) {
+function fixture({ archive = 'docs/archive', status = 'in-review', archivedIds = ['old-7'] }: { archive?: string; status?: string; archivedIds?: string[] } = {}) {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'jc-trace-archived-')));
   dirs.push(root);
   git(root, 'init', '-q', '-b', 'main');
@@ -44,7 +45,7 @@ function fixture({ archive = 'docs/archive', status = 'in-review' }: { archive?:
   put(join(root, queuePath), JSON.stringify({ schemaVersion: 1, feature: 'f', specs: [specEntry(1, 'a', status), specEntry(2, 'b', 'todo')] }, null, 2));
   const old = `${archive}/2026-01-01-old/feature/specs`;
   put(join(root, old, '.joycraft-spec-queue.json'), JSON.stringify({ schemaVersion: 1, feature: 'old', specs: [{ id: 7, file: '07-old.md', depends_on: [], status: 'done', mode: 'checkpoint',
-    verification: { inputs: [{ path: `${old}/07-old.md`, kind: 'requirement' }], criteria: [{ id: 'old-7', requirement: { path: `${old}/07-old.md`, anchor: 'acceptance' }, requiredKinds: ['runtime'] }] } }] }, null, 2));
+    verification: { inputs: [{ path: `${old}/07-old.md`, kind: 'requirement' }], criteria: archivedIds.map(id => ({ id, requirement: { path: `${old}/07-old.md`, anchor: 'acceptance' }, requiredKinds: ['runtime'] })) } }] }, null, 2));
   git(root, 'add', '-A');
   git(root, 'commit', '-q', '-m', 'init');
   return root;
@@ -99,5 +100,20 @@ describe('a reviewer is not shown its siblings\' work or archived tags as its ow
     const text = readFileSync(join(__dirname, '..', 'payload', '.agents', 'skills', 'joycraft-verify', 'SKILL.md'), 'utf8').replace(/\s+/g, ' ');
     expect(text).toMatch(/Do not file `siblings` or `archivedTags`/);
     expect(text).toMatch(/hang is `UNVERIFIED` with its receipt, never `FAIL`/);
+  });
+
+  it('[AC:spec-7-1] a tag naming a current spec\'s criterion stays unknown even when an archived queue reuses its ID', () => {
+    const root = fixture({ archivedIds: ['old-7', 'spec-1-1'] });
+    const trace = traceSpec({ root, queuePath, specId: 2, tests: ['tests/a.test.ts'] });
+    expect(trace.archivedTags).toEqual([{ id: 'old-7', file: 'tests/a.test.ts', line: 2 }]);
+    expect(trace.unknownTags).toEqual([{ id: 'spec-1-1', file: 'tests/a.test.ts', line: 1 }, { id: 'nowhere-9', file: 'tests/a.test.ts', line: 3 }]);
+  });
+
+  it('[AC:spec-7-2] the verify skill never files startup\'s siblings or archivedTags, and notes only what startup did not list', () => {
+    const text = readFileSync(join(__dirname, '..', 'payload', '.agents', 'skills', 'joycraft-verify', 'SKILL.md'), 'utf8').replace(/\s+/g, ' ');
+    const rule = text.slice(text.indexOf('Findings rule:'));
+    expect(rule).toMatch(/Do not file `siblings` or `archivedTags`/);
+    expect(rule).toMatch(/another spec's file or an archived feature's tag that startup did not list/);
+    expect(rule).not.toMatch(/a changed file of another spec, a test tag of an archived feature/);
   });
 });

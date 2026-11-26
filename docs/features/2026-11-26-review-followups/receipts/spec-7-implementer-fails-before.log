@@ -1,0 +1,74 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-trace-archived.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [31m❯[39m tests/runtime-trace-archived.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 1765[2mms[22m[39m
+   [33m[2m✓[22m[39m a reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-1] a tag of an archived feature is an archived tag, not unknown; reviewer startup carries it [33m 904[2mms[22m[39m
+   [33m[2m✓[22m[39m a reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-2] reviewer startup lists a sibling spec's changed files as siblings, apart from outside [33m 677[2mms[22m[39m
+   [32m✓[39m a reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-2-3] the verify skill says not to file siblings or archived tags, and a hang is UNVERIFIED, never FAIL[32m 0[2mms[22m[39m
+[31m   [31m×[31m a reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-7-1] a tag naming a current spec's criterion stays unknown even when an archived queue reuses its ID[39m[32m 183[2mms[22m[39m
+[31m     → expected [ { id: 'spec-1-1', …(2) }, …(1) ] to deeply equal [ { id: 'old-7', …(2) } ][39m
+[31m   [31m×[31m a reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-7-2] the verify skill never files startup's siblings or archivedTags, and notes only what startup did not list[39m[32m 1[2mms[22m[39m
+[31m     → expected 'Findings rule: give each `findings` e…' to match /another spec's file or an archived fe…/[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-trace-archived.test.ts[2m > [22ma reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-7-1] a tag naming a current spec's criterion stays unknown even when an archived queue reuses its ID
+[31m[1mAssertionError[22m: expected [ { id: 'spec-1-1', …(2) }, …(1) ] to deeply equal [ { id: 'old-7', …(2) } ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    {[22m
+[2m      "file": "tests/a.test.ts",[22m
+[31m+     "id": "spec-1-1",[39m
+[31m+     "line": 1,[39m
+[31m+   },[39m
+[31m+   {[39m
+[31m+     "file": "tests/a.test.ts",[39m
+[2m      "id": "old-7",[22m
+[2m      "line": 2,[22m
+[2m    },[22m
+[2m  ][22m
+
+[36m [2m❯[22m tests/runtime-trace-archived.test.ts:[2m108:32[22m[39m
+    [90m106| [39m    [35mconst[39m root [33m=[39m [34mfixture[39m({ archivedIds[33m:[39m [[32m'old-7'[39m[33m,[39m [32m'spec-1-1'[39m] })[33m;[39m
+    [90m107| [39m    const trace = traceSpec({ root, queuePath, specId: 2, tests: ['tes…
+    [90m108| [39m    expect(trace.archivedTags).toEqual([{ id: 'old-7', file: 'tests/a.…
+    [90m   | [39m                               [31m^[39m
+    [90m109| [39m    expect(trace.unknownTags).toEqual([{ id: 'spec-1-1', file: 'tests/…
+    [90m110| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-trace-archived.test.ts[2m > [22ma reviewer is not shown its siblings' work or archived tags as its own[2m > [22m[AC:spec-7-2] the verify skill never files startup's siblings or archivedTags, and notes only what startup did not list
+[31m[1mAssertionError[22m: expected 'Findings rule: give each `findings` e…' to match /another spec's file or an archived fe…/[39m
+
+[32m- Expected:[39m 
+/another spec's file or an archived feature's tag that startup did not list/
+
+[31m+ Received:[39m 
+"Findings rule: give each `findings` entry its `class`, `origin`, and `criterion` or `at` (file:line or receipt). `blocking` is only a failing stated criterion, or a defect or regression in the changed code that you reproduced (command, exit status, what you saw). A reproduced defect is never a `follow-up`. A defect inside a criterion's scope that a user would hit blocks the spec: reproduce it. A case the spec does not decide is a `follow-up`: take the reading closest to the brief's intent, recorded as `assumption`. `decision-needed` is only for two readings that give opposite verdicts on a stated criterion, or a guess that cannot be undone; it holds this spec and its dependents, never the queue. Never repeat an earlier round's finding as new. Each of these is a `note`, not a `follow-up`: a check that passed (a test change matching its class), a changed file of another spec, a test tag of an archived feature, a \"Deferred until deploy\" item, a flaky retry or log noise with no defect. Do not file `siblings` or `archivedTags` at all. Set a PASS verdict only when scope is reviewed, all required evidence is sufficient, and no blocking finding or unresolved UNVERIFIED evidence remains. Then run guarded completion, the startup output's `commands.finalizeReview`. When startup printed `commands.finish` instead, do not finalize: return the report path. Completion validates the report, receipts, actors and subject freshness. Do not edit the queue or spec to make a report fit. For rejections or interrupted writes, follow [completion guidance](../../../.joycraft/references/completion.md). For scope-enabled work, completion compares the recorded base and inferred relevant paths with the current change topology. Do not replace the base with current `HEAD`. Give every unrelated changed path an explicit, narrow exclusion and reason; never add an entire branch or directory blindly. A deletion is a deliberate non-requirement input with `state: 'absent'`; requirements must remain present, and a rename binds both the old absent and new present paths. For a current `FAIL` or `UNVERIFIED` report, preserve the evidence, receipt, subject identity, and explicit limits. Do not solicit owner acceptance as part of review or soften the verdict. The implementer may repair it or, after a trusted human explicitly accepts this spec's current findings, use the separate owner-acceptance completion path described in [completion guidance](../../../.joycraft/references/completion.md). That path validates bindings and receipts, not the authenticity of a human instruction; it never turns this report into PASS or verified evidence. "
+
+[36m [2m❯[22m tests/runtime-trace-archived.test.ts:[2m116:18[22m[39m
+    [90m114| [39m    [35mconst[39m rule [33m=[39m text[33m.[39m[34mslice[39m(text[33m.[39m[34mindexOf[39m([32m'Findings rule:'[39m))[33m;[39m
+    [90m115| [39m    [34mexpect[39m(rule)[33m.[39m[34mtoMatch[39m([36m/Do not file `siblings` or `archivedTags`/[39m)[33m;[39m
+    [90m116| [39m    expect(rule).toMatch(/another spec's file or an archived feature's…
+    [90m   | [39m                 [31m^[39m
+    [90m117| [39m    expect(rule).not.toMatch(/a changed file of another spec, a test t…
+    [90m118| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 09:14:52
+[2m   Duration [22m 1.98s[2m (transform 46ms, setup 0ms, collect 56ms, tests 1.76s, environment 0ms, prepare 47ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":2639,"load":[4.365234375,4.365234375],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-trace-archived.test.ts"],"exitCode":1,"timedOut":false,"revision":"9a9b2b81c1eb3183a75bcc948777783e552226b0","dirty":true}

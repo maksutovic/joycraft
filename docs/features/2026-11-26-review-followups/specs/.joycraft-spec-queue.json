@@ -586,7 +586,7 @@
       "depends_on": [
         2
       ],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -617,6 +617,10 @@
           },
           {
             "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/PIN",
             "kind": "code"
           },
           {
@@ -654,6 +658,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-26T17:15:43.976Z"
       }
     }
   ]

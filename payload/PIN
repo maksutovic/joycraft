@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-04f2b2463f5c",
-  "commit": "04f2b2463f5c0499c12a69a4c932f6aeeae8e8fd3f5b93fecd73d89720ed6e8a",
+  "tag": "payload-45027dae9d85",
+  "commit": "45027dae9d8571b56506ec65e525a7e0621ee0079f5efb096136eb544d78869d",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -15,7 +15,7 @@
     ".agents/skills/joycraft-testing/SKILL.md": "607c67503363a63d32ef0877fe51b481ff0815a102cf6fe5df533da37bdfb45c",
     ".agents/skills/joycraft-ui-slice/SKILL.md": "baf394edc4a31e582cb936c525d8ad28bea42a713ec3114f5921fa7e2bff833f",
     ".agents/skills/joycraft-ui-slice/scripts/serve.mjs": "c16858800b6fbe6f7a3a21b21e785ad70c9a89a3fe970bc08701fefeac5042fa",
-    ".agents/skills/joycraft-verify/SKILL.md": "a7c55fc777c5aa37e11a69998d9ff355092170bf50a839fb88b6dd52f1be241b",
+    ".agents/skills/joycraft-verify/SKILL.md": "18f4d5488270b041e55a1bfab1302035b1dec569aa258c8ed3e7cfbe8621b11c",
     ".claude/agents/joycraft-implementer.md": "8d99b18a3b4ab8ecd39630d1755821649665e8b15aedb71178268857c035d915",
     ".claude/agents/joycraft-look.md": "1e8677eecf9f981451af504437d151ae2c9ef5f3ff3829fe6c3a8ed8294c0885",
     ".claude/agents/joycraft-reviewer.md": "39687574504fcab9c9653540e2625b38b83647f9def8826bd0c234ee5d2b31e2",
@@ -78,7 +78,7 @@
     ".joycraft/runtime/scope.mjs": "e2cdd929596246bf24e18850698db440119badc7068a3c5beab03ded45abbd65",
     ".joycraft/runtime/status.mjs": "96cae7c5cdadda659ac613280a9849c3362b44348923210e290f5db9735474e8",
     ".joycraft/runtime/test-changes.mjs": "dba78445fa51e272b328a65b29f002902c088f65cbe6572396fc93ed117aa155",
-    ".joycraft/runtime/trace.mjs": "6d125a8ef82ffab27b8be76291bfb3bec8ce2561f196f2208cd5e8add70d2b4e",
+    ".joycraft/runtime/trace.mjs": "278e71998f24a4abb0b8a33d2c55c12dfec1c6945b35ba60116e3d9b8381361c",
     ".joycraft/runtime/update-check.mjs": "a133133614fbda368d411166f7ab563ccbfe9cb325955c3125d84e544221051f",
     ".joycraft/runtime/wiring.mjs": "5d4193bad15e0811c86a920d05edb4f0481d131164ba78ce158128759f8e17f0",
     ".joycraft/runtime/worktrees.mjs": "7b3b0e793745c0280d3c652b9f32335f4e6ad75c39e5582e27987af000d46409",
