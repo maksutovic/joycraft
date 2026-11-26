@@ -79,7 +79,7 @@ Uses decision `resolution-record`. A handled follow-up is not a question.
 
 Second field issue, same project: `entry-size` (`cleanup.mjs:361-366`) counts every word of `AGENTS.md`, Joycraft's own text included. The managed block is 731 words and the `## Review loop` section about 110, so a project has about 160 words of its 1,000 for its own rules and Context Map. The field project is at 1,418 words after moving its stack, commands and contract text out. Max, 2026-11-26: "i like their idea the budget only counts against the own text".
 
-The budget counts only the project's own text. Left out of the count: the text between the `joycraft:managed` markers, and the `## Review loop` section through its `joycraft:review-loop` marker. The budget stays 1,000 words (`cleanup.entryWords`).
+The budget counts only the project's own text. Left out of the count: the text between the `joycraft:managed` markers, and the `## Review loop` section through its `joycraft:review-loop` marker. The budget stays 1,000 words (`cleanup.entryWords`). `entry-size` is already advisory, not a gate (`gateChecks` in `entry-check.mjs:16`), and stays so. But a budget a project cannot reach still pushes the agent to cut the owner's own rules, so the count changes, not the level.
 
 **Done when:**
 - an entry file whose own text is under the budget, with a full managed block and review-loop section, has no `entry-size` finding (test);
