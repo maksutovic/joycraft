@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "subject": {
     "schemaVersion": 1,
-    "implementationRevision": "6770c2562ed022d8a7e5890b15c09b9ab9ee46fb",
+    "implementationRevision": "e48c75977f1c31ab300c2cde5db87d0117956ca6",
     "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
     "specId": 3,
     "specPath": "docs/features/2026-11-26-review-followups/specs/03-follow-ups-ledger.md",
@@ -74,7 +74,7 @@
       {
         "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
         "kind": "requirement",
-        "sha256": "9e826910595c44f76a936059232c5cd2164fff6fab059f17fda6961a2168a896",
+        "sha256": "52f787f15a15aa2dcb997d5dba2cb7d5bb4d30835ba221b6cf6e41462809772c",
         "normalization": "queue-scope"
       },
       {
@@ -114,6 +114,12 @@
         "normalization": "none"
       },
       {
+        "path": "payload/.joycraft/runtime/gate.mjs",
+        "kind": "code",
+        "sha256": "e972a85f03fa94cf2d59885a415e627e0507fdce6f7f9d9f4d5e1d9e088eac38",
+        "normalization": "none"
+      },
+      {
         "path": "payload/.joycraft/runtime/kickoff.mjs",
         "kind": "code",
         "sha256": "4cf0fb15ce3105a85f5d8b44f2c6f75d5d723aec71c5db6b0c6aaa2f4c7c40b7",
@@ -134,7 +140,7 @@
       {
         "path": "tests/runtime-follow-ups-ledger.test.ts",
         "kind": "check",
-        "sha256": "c3ebde68c9fd5df358602ea3b59e085a1039a196edcf1c2c7a9677faf8edc176",
+        "sha256": "f303a70de89239ff0389e48b3050e38ebc431ab44b320991776e1e90b42f2687",
         "normalization": "none"
       }
     ],
@@ -155,7 +161,7 @@
         }
       ]
     },
-    "identity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+    "identity": "17c01b5ff57da6f060a13a13988e918b2ae548679e98702d0139942b1cec5494"
   },
   "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
   "implementerActor": {
@@ -167,12 +173,12 @@
     "actor": {
       "host": "claude-code",
       "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
-      "agentId": "aa0d304484be631dc"
+      "agentId": "af54238195abd7649"
     },
     "independent": true,
     "scopeReviewed": true
   },
-  "verdict": "FAIL",
+  "verdict": "PASS",
   "flows": [
     {
       "id": "flow-ledger-command",
@@ -186,11 +192,11 @@
           "kind": "runtime",
           "method": "test",
           "result": "PASS",
-          "actual": "[AC:spec-3-1] passed (6 files, 67 tests, exit 0). Source: follow-ups.mjs recordFollowUp checks the accepted report hash and its follow-up ids, the fixing spec in the same queue, the brief decision id, a nonempty reason; writes atomically via temp file + rename.",
+          "actual": "[AC:spec-3-1] passed (6 files, 68 tests, exit 0, revision e48c759, clean tree). Source unchanged since round 1: follow-ups.mjs checks the accepted report hash and follow-up ids, a fixing spec of the same queue, a brief decision id, a nonempty reason; writes via temp file + rename. PIN lists follow-ups.mjs, so the install manifest carries it (install-v1 passed).",
           "receipts": [
             {
-              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170114690Z-56544-1.log",
-              "sha256": "fd55049f8816b41329dfc4bd9a4167c33e2719b8544459ff446d580f89cb5239"
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170559771Z-71383-1.log",
+              "sha256": "8fb327737dca8027f35f1558195f4df53202a48b49d3d6eed5f10fced8267b8f"
             }
           ],
           "command": {
@@ -209,9 +215,9 @@
         }
       ],
       "limits": [
-        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer. Project gate not rerun by reviewer: coordinator receipts spec-3-r2-gate-test.log / spec-3-r2-gate-typecheck.log (runtime-archive-named-files timed out under load there; spec-3-gate-timeouts-rerun.log shows it passing alone)."
       ],
-      "subjectIdentity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+      "subjectIdentity": "17c01b5ff57da6f060a13a13988e918b2ae548679e98702d0139942b1cec5494"
     },
     {
       "id": "flow-status",
@@ -225,11 +231,11 @@
           "kind": "runtime",
           "method": "test",
           "result": "PASS",
-          "actual": "[AC:spec-3-2] five cases passed. Source: status.mjs filters followUps through handledBy(readLedger) and pushes { path, problem } for a malformed ledger.",
+          "actual": "[AC:spec-3-2] six cases passed, one per case plus the new gate/close case. Source: status.mjs filters followUps through handledBy(readLedger) and pushes { path, problem } for a malformed ledger. Round-1 f1 fix: gate.mjs checkGates now renders a problem with path and no specPath as kind 'file' naming the path; the new test asserts gate check and close --feature print 'Joycraft gate: docs/x/feature/follow-ups.json does not parse' and never 'undefined'. Only consumer of failures by kind (close.mjs drift filter, gate.mjs unaccepted-done) is unaffected by the new kind.",
           "receipts": [
             {
-              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170114690Z-56544-1.log",
-              "sha256": "fd55049f8816b41329dfc4bd9a4167c33e2719b8544459ff446d580f89cb5239"
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170559771Z-71383-1.log",
+              "sha256": "8fb327737dca8027f35f1558195f4df53202a48b49d3d6eed5f10fced8267b8f"
             }
           ],
           "command": {
@@ -248,9 +254,9 @@
         }
       ],
       "limits": [
-        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer. Project gate not rerun by reviewer: coordinator receipts spec-3-r2-gate-test.log / spec-3-r2-gate-typecheck.log (runtime-archive-named-files timed out under load there; spec-3-gate-timeouts-rerun.log shows it passing alone)."
       ],
-      "subjectIdentity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+      "subjectIdentity": "17c01b5ff57da6f060a13a13988e918b2ae548679e98702d0139942b1cec5494"
     },
     {
       "id": "flow-close",
@@ -264,11 +270,11 @@
           "kind": "runtime",
           "method": "test",
           "result": "PASS",
-          "actual": "[AC:spec-3-3] passed (the discriminating scenario). Source: close.mjs featureProblems prints the follow-ups.mjs command for follow-up questions; archive.mjs renames the whole feature folder, so follow-ups.json moves with it.",
+          "actual": "[AC:spec-3-3] passed (the discriminating scenario: close refuses on exactly the unhandled follow-up, naming follow-ups.mjs, then archives with follow-ups.json). Source: close.mjs featureProblems prints the follow-ups.mjs command for follow-up questions; archive.mjs moves the whole feature folder.",
           "receipts": [
             {
-              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170114690Z-56544-1.log",
-              "sha256": "fd55049f8816b41329dfc4bd9a4167c33e2719b8544459ff446d580f89cb5239"
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170559771Z-71383-1.log",
+              "sha256": "8fb327737dca8027f35f1558195f4df53202a48b49d3d6eed5f10fced8267b8f"
             }
           ],
           "command": {
@@ -287,9 +293,9 @@
         }
       ],
       "limits": [
-        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer. Project gate not rerun by reviewer: coordinator receipts spec-3-r2-gate-test.log / spec-3-r2-gate-typecheck.log (runtime-archive-named-files timed out under load there; spec-3-gate-timeouts-rerun.log shows it passing alone)."
       ],
-      "subjectIdentity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+      "subjectIdentity": "17c01b5ff57da6f060a13a13988e918b2ae548679e98702d0139942b1cec5494"
     },
     {
       "id": "flow-old-features",
@@ -303,11 +309,11 @@
           "kind": "runtime",
           "method": "test",
           "result": "PASS",
-          "actual": "[AC:spec-3-4] passed; report bytes compared with Buffer.equals before and in the archive.",
+          "actual": "[AC:spec-3-4] passed; report bytes compared with Buffer.equals before the dismissals and in the archive.",
           "receipts": [
             {
-              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170114690Z-56544-1.log",
-              "sha256": "fd55049f8816b41329dfc4bd9a4167c33e2719b8544459ff446d580f89cb5239"
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170559771Z-71383-1.log",
+              "sha256": "8fb327737dca8027f35f1558195f4df53202a48b49d3d6eed5f10fced8267b8f"
             }
           ],
           "command": {
@@ -326,9 +332,9 @@
         }
       ],
       "limits": [
-        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer. Project gate not rerun by reviewer: coordinator receipts spec-3-r2-gate-test.log / spec-3-r2-gate-typecheck.log (runtime-archive-named-files timed out under load there; spec-3-gate-timeouts-rerun.log shows it passing alone)."
       ],
-      "subjectIdentity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+      "subjectIdentity": "17c01b5ff57da6f060a13a13988e918b2ae548679e98702d0139942b1cec5494"
     },
     {
       "id": "flow-session-end-text",
@@ -342,11 +348,11 @@
           "kind": "runtime",
           "method": "test",
           "result": "PASS",
-          "actual": "[AC:spec-3-5] passed; text-session-end-pr and payload-guard caps pass. Reviewer read the SKILL.md diff of the Records section.",
+          "actual": "[AC:spec-3-5] passed; text-session-end-pr and payload-guard word caps pass. Reviewer read the Records section diff of payload/.agents/skills/joycraft-session-end/SKILL.md: asks only status questions; --decided after a brief decision, --fixed once the new spec is done, --dismissed with the user's words.",
           "receipts": [
             {
-              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170114690Z-56544-1.log",
-              "sha256": "fd55049f8816b41329dfc4bd9a4167c33e2719b8544459ff446d580f89cb5239"
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-focused-20261126T170559771Z-71383-1.log",
+              "sha256": "8fb327737dca8027f35f1558195f4df53202a48b49d3d6eed5f10fced8267b8f"
             }
           ],
           "command": {
@@ -365,21 +371,12 @@
         }
       ],
       "limits": [
-        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer."
+        "Temp fixture project; runtime run from payload/ copies, not an installed 1.10.2 consumer. Project gate not rerun by reviewer: coordinator receipts spec-3-r2-gate-test.log / spec-3-r2-gate-typecheck.log (runtime-archive-named-files timed out under load there; spec-3-gate-timeouts-rerun.log shows it passing alone)."
       ],
-      "subjectIdentity": "d9cee4e960672c2c9d03180a7598975223da979700ae37553e3c642e3b717407"
+      "subjectIdentity": "17c01b5ff57da6f060a13a13988e918b2ae548679e98702d0139942b1cec5494"
     }
   ],
   "unresolved": [],
-  "findings": [
-    {
-      "id": "f1",
-      "class": "blocking",
-      "origin": "new",
-      "at": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-3-reviewer-gate-probe.log",
-      "summary": "A malformed follow-ups.json reaches gate.mjs as status problem { path, problem }, but checkGates reads only queuePath or specPath, so `gate.mjs check` (and close.mjs --feature, which calls checkGates) prints \"Joycraft gate: undefined does not parse: ... Repair undefined and tell the user.\" Reproduced in a temp project with a broken follow-ups.json (exit 2). payload/.joycraft/runtime/gate.mjs:44-55 is a coupled reader of status problems that is not in the spec's declared inputs.",
-      "assumption": "Fix either side so the gate message names docs/<feature>/follow-ups.json (for example give the ledger problem a key gate renders, or render problem.path in gate.mjs), add gate.mjs as a declared input, and add a test for the gate/close message."
-    }
-  ],
-  "createdAt": "2026-11-26T17:02:52.082Z"
+  "findings": [],
+  "createdAt": "2026-11-26T17:07:31.747Z"
 }
