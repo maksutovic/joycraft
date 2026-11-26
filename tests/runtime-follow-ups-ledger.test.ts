@@ -158,6 +158,23 @@ describe('follow-ups ledger', () => {
     expect(JSON.stringify(wrong.problems)).toContain(ledgerPath);
   });
 
+  it('[AC:spec-3-2] a malformed follow-ups.json makes gate check and close --feature name the file', () => {
+    const root = fixture();
+    put(join(root, ledgerPath), '{ "schemaVersion": 1, "entries": [');
+    commit(root);
+    const gate = spawnSync(process.execPath, [join(runtime, 'gate.mjs'), 'check', '--root', root], { cwd: root, env, encoding: 'utf8' });
+    const gateText = `${gate.stdout}${gate.stderr}`;
+    expect(gate.status).not.toBe(0);
+    expect(gateText).toContain(`Joycraft gate: ${ledgerPath} does not parse`);
+    expect(gateText).toContain(`Repair ${ledgerPath}`);
+    expect(gateText).not.toContain('undefined');
+    const closed = runClose(root);
+    expect(closed.status).toBe(2);
+    expect(closed.stderr).toContain(`Joycraft gate: ${ledgerPath} does not parse`);
+    expect(closed.stderr).not.toContain('undefined');
+    expect(existsSync(join(root, folder))).toBe(true);
+  });
+
   it('[AC:spec-3-3] close refuses on exactly the unhandled follow-up, naming follow-ups.mjs, then archives with follow-ups.json once both are handled', () => {
     const root = fixture();
     expect(record(root, '--spec', '1', '--finding', 'f1', '--fixed', '2').status).toBe(0);

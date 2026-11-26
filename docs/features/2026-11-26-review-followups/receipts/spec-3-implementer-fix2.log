@@ -1,0 +1,46 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-follow-ups-ledger.test.ts tests/runtime-close-feature.test.ts tests/runtime-close.test.ts tests/payload-guard.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12180 (cap 12256, 76 spare)
+on-demand words: 20821 (cap 21163, 342 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1585[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 404[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 400[2mms[22m[39m
+ [32m✓[39m tests/runtime-close-feature.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 4677[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-close] a done, accepted queue closes with at most 2 commits, an archived folder, a released lease and the one line [33m 1521[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-refuse] an in-review spec, a dirty tree and a missing context page give exit 2, all three named, nothing changed [33m 576[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-refuse] another session's lease stops the close [33m 494[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-same-checks] the archive is byte-equal to the one the manual session-end steps write [33m 2086[2mms[22m[39m
+ [32m✓[39m tests/runtime-close.test.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 5792[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] archives an untracked brief in a repository with a commit, and the move is in HEAD [33m 691[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] an unborn HEAD gives one commit and sets the first-commit flag [33m 318[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] an unmarked line gives exit 2 and moves nothing; --accept closes and counts it as not checked [33m 440[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] a stale "not established" line outside the managed block stops the close; --accept passes it [33m 448[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] no brief stops the close; notes name unstaged files and other open briefs [33m 411[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs runs the recorded tests (sl3-01)[2m > [22m[AC:sl3-01-close-green] one passing test file: exit 0 and "Tests: 1 files passed." [33m 348[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs runs the recorded tests (sl3-01)[2m > [22m[AC:sl3-01-close-red] a failing test file: exit 2 names the command and status and moves nothing; --accept closes [33m 516[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs runs the recorded tests (sl3-01)[2m > [22m[AC:sl3-01-close-no-command] no joycraft.yaml: exit 0 and the line says no test command is recorded [33m 307[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs in the sl1-01 fixture[2m > [22m[AC:sl2-01] wiring, status, cleanup and gate check report nothing new after a close [33m 1573[2mms[22m[39m
+ [32m✓[39m tests/runtime-follow-ups-ledger.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 8343[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-1] follow-ups.mjs records fixed, decided and dismissed entries and refuses what the accepted report or queue lacks [33m 1177[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] fixed by a done spec: no question; the other follow-up still is one [33m 665[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] fixed by a spec that is not done: still a question [33m 603[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] decided by an answered decision: no question; by an open or assigned one: still a question [33m 581[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] dismissed with a reason: no question; with an empty reason: still a question [33m 515[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] a malformed follow-ups.json is a problem naming the file, and every follow-up stays a question [33m 577[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] a malformed follow-ups.json makes gate check and close --feature name the file [33m 888[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-3] close refuses on exactly the unhandled follow-up, naming follow-ups.mjs, then archives with follow-ups.json once both are handled [33m 1732[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-4] a feature whose report holds old follow-ups closes once each is dismissed, with no report bytes changed [33m 1605[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[32m43 passed[39m[22m[90m (43)[39m
+[2m   Start at [22m 09:03:57
+[2m   Duration [22m 8.59s[2m (transform 210ms, setup 0ms, collect 180ms, tests 20.40s, environment 0ms, prepare 208ms)[22m
+
+joycraft-evidence: {"wallMs":9251,"load":[8.09765625,9.5458984375],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-follow-ups-ledger.test.ts","tests/runtime-close-feature.test.ts","tests/runtime-close.test.ts","tests/payload-guard.test.ts"],"exitCode":0,"timedOut":false,"revision":"844fc46a6cc5468d639de06e00a8e7b3fa99a40e","dirty":true}
