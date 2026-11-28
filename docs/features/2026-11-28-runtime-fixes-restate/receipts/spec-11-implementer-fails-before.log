@@ -1,0 +1,40 @@
+
+> joycraft@1.10.3 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit
+> vitest tests/vitest-config.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit[39m
+
+ [31m❯[39m tests/vitest-config.test.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 3[2mms[22m[39m
+[31m   [31m×[31m suite test timeout (2026-11-28 spec 11)[2m > [22m[AC:spec-11-1] the default per-test timeout fits a full parallel gate run of the process-spawning tests[39m[32m 2[2mms[22m[39m
+[31m     → expected undefined to be 20000 // Object.is equality[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/vitest-config.test.ts[2m > [22msuite test timeout (2026-11-28 spec 11)[2m > [22m[AC:spec-11-1] the default per-test timeout fits a full parallel gate run of the process-spawning tests
+[31m[1mAssertionError[22m: expected undefined to be 20000 // Object.is equality[39m
+
+[32m- Expected:[39m 
+20000
+
+[31m+ Received:[39m 
+undefined
+
+[36m [2m❯[22m tests/vitest-config.test.ts:[2m5:38[22m[39m
+    [90m  3| [39m[34mdescribe[39m([32m'suite test timeout (2026-11-28 spec 11)'[39m[33m,[39m () [33m=>[39m {
+    [90m  4| [39m  it('[AC:spec-11-1] the default per-test timeout fits a full parallel…
+    [90m  5| [39m    [34mexpect[39m(config[33m.[39mtest[33m?.[39mtestTimeout)[33m.[39m[34mtoBe[39m([34m20000[39m)[33m;[39m
+    [90m   | [39m                                     [31m^[39m
+    [90m  6| [39m  })[33m;[39m
+    [90m  7| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m   Start at [22m 11:40:28
+[2m   Duration [22m 220ms[2m (transform 16ms, setup 0ms, collect 64ms, tests 3ms, environment 0ms, prepare 44ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":856,"load":[6.578125,6.578125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/vitest-config.test.ts"],"exitCode":1,"timedOut":false,"revision":"cdce71d74b5d64f8dbe0525ee11940091c780c4d","dirty":true}

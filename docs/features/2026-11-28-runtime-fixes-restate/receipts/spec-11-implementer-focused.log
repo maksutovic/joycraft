@@ -1,0 +1,15 @@
+
+> joycraft@1.10.3 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit
+> vitest tests/vitest-config.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit[39m
+
+ [32m✓[39m tests/vitest-config.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 11:40:29
+[2m   Duration [22m 216ms[2m (transform 14ms, setup 0ms, collect 61ms, tests 1ms, environment 0ms, prepare 31ms)[22m
+
+joycraft-evidence: {"wallMs":786,"load":[6.578125,6.578125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/vitest-config.test.ts"],"exitCode":0,"timedOut":false,"revision":"cdce71d74b5d64f8dbe0525ee11940091c780c4d","dirty":true}
