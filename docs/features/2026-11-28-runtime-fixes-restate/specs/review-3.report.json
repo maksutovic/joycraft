@@ -1,0 +1,299 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "4dfb128d6d19a53d827f554c0a7c902e17897207",
+    "queuePath": "docs/features/2026-11-28-runtime-fixes-restate/specs/.joycraft-spec-queue.json",
+    "specId": 3,
+    "specPath": "docs/features/2026-11-28-runtime-fixes-restate/specs/03-windows-spawn.md",
+    "criteria": [
+      {
+        "id": "spec-3-1",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/03-windows-spawn.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-2",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/03-windows-spawn.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-3-3",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/03-windows-spawn.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "windows-spawn",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "f7af9a6aae37e730650fcf20405e4d89aaa70e576fcf4889a844745f05a425f3",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "bc64b3944f24292c51a63c31cba57e35ce2e2c6afd951bcc4bfa586c0da93013",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/03-windows-spawn.md",
+        "kind": "requirement",
+        "sha256": "6ca08ad65796c6d0df87885e8569a6b60b1c1784d4bd44d4b9d06e4ba4ec657b",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/close.mjs",
+        "kind": "code",
+        "sha256": "c39d35215af7394298770abb0747d03d347d302412a737f7ba16abc3d3931220",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/evidence.mjs",
+        "kind": "code",
+        "sha256": "04937d981bbf8992b539f9b3dd17de2916e61c6c78cf4482c7a6640f1651d2be",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-command-spawn.test.ts",
+        "kind": "check",
+        "sha256": "8cf739e837b6d1dab7c57af82dc22da15d60482aa396b90d894210dc84f90f8f",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+          "anchors": [
+            "windows-spawn",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "3d5086ce3170043385803d3170b46b00b26de924568dc21bc4e223bb0302ca81"
+  },
+  "implementerSessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593"
+  },
+  "reviewer": {
+    "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+      "agentId": "ac72baad9691b3693"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-win32-shim",
+      "criteria": [
+        "spec-3-1"
+      ],
+      "subjectIdentity": "3d5086ce3170043385803d3170b46b00b26de924568dc21bc4e223bb0302ca81",
+      "representativeInput": "platform win32, argv [\"pnpm\",\"test\",\"tests/a b.test.ts\"], pnpm.CMD on PATH; plus metacharacter, quote, trailing-backslash, %VAR%, !VAR! arguments.",
+      "expected": "ComSpec /d /s /c \"<line>\" with windowsVerbatimArguments, every argument quoted and caret-escaped.",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator runs it.",
+        "No Windows host here: Windows behavior judged from the unit test, code and Node/cmd.exe parsing rules; the Windows CI leg is the remaining check (brief Scope and limits).",
+        "Revert run used a scratch copy outside the repo (evidence --patch refused: a concurrent spec-1 reviewer had untracked receipts in the tree)."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-1] 3 cases pass. commandSpawn (evidence.mjs:409) resolves argv[0] by PATH+PATHEXT, routes only .cmd/.bat through cmd.exe; quoting is the cross-spawn algorithm (MSVC backslash/quote doubling, then double caret-escape of ()[]%!^\"`<>&|;, *? for %* re-parse). Key line reverted in a scratch copy: 2 of 3 spec-3-1 cases fail, exit 1. Probe output for a\"&calc, dir\\, %PATH%, !PATH! leaves no bare metacharacter.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-3-reviewer-focused-20261128T192800502Z-86306-1.log",
+              "sha256": "b8b68990b4b7755dd38e3bb7a3c22a58942715db53fe1104a872a52cdcc32337"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-3-reviewer-revert-red.log",
+              "sha256": "310f3b12562faa738a3d1040e44ec6ba6bcb580ec7c2a6c97262f5b70af0ee09"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-3-reviewer-probe.log",
+              "sha256": "5698a9deadb9300d0cd3c7a108ce27b2c40080a4ba5e48cbb82a0101dca4be1e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-command-spawn.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-posix-direct",
+      "criteria": [
+        "spec-3-2"
+      ],
+      "subjectIdentity": "3d5086ce3170043385803d3170b46b00b26de924568dc21bc4e223bb0302ca81",
+      "representativeInput": "platform darwin/linux, same argv; real darwin evidence run with arg 'a b;touch jc-pwned$HOME&'.",
+      "expected": "argv[0] spawned directly, args untouched, no shell.",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator runs it.",
+        "No Windows host here: Windows behavior judged from the unit test, code and Node/cmd.exe parsing rules; the Windows CI leg is the remaining check (brief Scope and limits).",
+        "Revert run used a scratch copy outside the repo (evidence --patch refused: a concurrent spec-1 reviewer had untracked receipts in the tree)."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-2] passes; darwin probe printed the argument verbatim and created no file.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-3-reviewer-focused-20261128T192800502Z-86306-1.log",
+              "sha256": "b8b68990b4b7755dd38e3bb7a3c22a58942715db53fe1104a872a52cdcc32337"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-3-reviewer-probe-darwin.log",
+              "sha256": "14063d70f140794fc1477d435c3923b96f9015f0ae490110460bc0a98c0f0322"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-command-spawn.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-callers",
+      "criteria": [
+        "spec-3-3"
+      ],
+      "subjectIdentity": "3d5086ce3170043385803d3170b46b00b26de924568dc21bc4e223bb0302ca81",
+      "representativeInput": "evidence.mjs run and close.mjs with a focused command jc-no-such-command.",
+      "expected": "Both call commandSpawn; non-zero exit with \"Could not start jc-no-such-command\".",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator runs it.",
+        "No Windows host here: Windows behavior judged from the unit test, code and Node/cmd.exe parsing rules; the Windows CI leg is the remaining check (brief Scope and limits).",
+        "Revert run used a scratch copy outside the repo (evidence --patch refused: a concurrent spec-1 reviewer had untracked receipts in the tree)."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-3-3] 3 cases pass: evidence.mjs:457 and close.mjs:153 use commandSpawn; close gains an ENOENT branch with the clear message (exit 2). The caller check is a source scan; the two missing-command cases are runtime.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-3-reviewer-focused-20261128T192800502Z-86306-1.log",
+              "sha256": "b8b68990b4b7755dd38e3bb7a3c22a58942715db53fe1104a872a52cdcc32337"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-command-spawn.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "n-taskkill",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/evidence.mjs:418",
+      "summary": "taskkill /T /F tree stop is within intent: routing through cmd.exe makes child.kill hit only cmd.exe, leaving the test runner writing to the receipt after it is hashed; the tree stop keeps the existing timeout/signal behavior. Correct: spawnSync status null or non-zero falls back to child.kill; used only when not posix."
+    },
+    {
+      "id": "n-quoting",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/evidence.mjs:381",
+      "summary": "Quoting matches cross-spawn: command path caret-escaped once, args MSVC-quoted (trailing backslashes doubled) then caret-escaped twice; % and ! escaped (undefined PATH^^^ vars stay literal; delayed expansion off by default). Double escape is applied to every .cmd/.bat, not only node_modules/.bin shims as cross-spawn does; harmless for npm/pnpm/npx shims, which re-read %*."
+    },
+    {
+      "id": "f-close-timeout",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/close.mjs:154",
+      "summary": "close.mjs execFileSync timeout kills only cmd.exe on Windows (no tree stop); a hung grandchild holding the stdout pipe can keep execFileSync waiting past 10 minutes. Same class as the existing posix behavior; not reproduced (no Windows host).",
+      "assumption": "Spec asks only that close.mjs start through the helper; timeout hardening is out of scope."
+    },
+    {
+      "id": "f-edge-input",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-3-reviewer-probe.log",
+      "summary": "Edge inputs: an LF inside an argument is not escapable and cmd.exe ends the line there; a quoted PATH entry (\"C:\\x y\") is not unquoted, so the shim is not found and the start falls back to direct (Node EINVAL/ENOENT). Both rare for test-file argv.",
+      "assumption": "Test file paths from briefs do not contain newlines; quoted PATH entries are uncommon."
+    },
+    {
+      "id": "n-tests",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/runtime-command-spawn.test.ts:1",
+      "summary": "Test change is class 1 as declared: new file, 7 tagged cases; fails-before receipt shows all 7 red before the change."
+    },
+    {
+      "id": "n-red-run",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-3-reviewer-revert-red.log",
+      "summary": "Can-the-test-fail: commandSpawn forced to direct start (win32 branch removed) gives 2 failed / 5 passed, exit 1."
+    },
+    {
+      "id": "n-outside",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/PIN",
+      "summary": "Changed paths no spec declares: implementer/gate receipts, spec-1/2 reviewer receipts, the queue file, review-1/2 reports and payload/PIN (regenerated for the payload edit)."
+    }
+  ],
+  "createdAt": "2026-11-28T19:31:12.864Z"
+}

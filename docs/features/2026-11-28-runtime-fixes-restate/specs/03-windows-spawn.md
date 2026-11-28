@@ -1,6 +1,6 @@
 ---
 id: 3
-status: in-review
+status: done
 ---
 # Test commands start through cmd.exe on Windows
 

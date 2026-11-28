@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "spec": 3,
+      "finding": "f-close-timeout",
+      "outcome": "dismissed",
+      "reason": "Not introduced here: a hung grandchild outliving the execFileSync timeout behaves the same on POSIX today; not reproduced. Design for the common case."
+    },
+    {
+      "spec": 3,
+      "finding": "f-edge-input",
+      "outcome": "dismissed",
+      "reason": "Rare inputs (newline inside a test argument, quoted PATH entry) that no recorded gate or focused command uses; they fail loudly as 'could not start', not silently."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+
+> joycraft@1.10.3 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit
+> vitest tests/runtime-command-spawn.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit[39m
+
+ [32m✓[39m tests/runtime-command-spawn.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 408[2mms[22m[39m
+   [33m[2m✓[22m[39m callers[2m > [22m[AC:spec-3-3] close with a missing focused command says it could not start [33m 324[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m7 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 11:29:16
+[2m   Duration [22m 617ms[2m (transform 24ms, setup 0ms, collect 27ms, tests 408ms, environment 0ms, prepare 33ms)[22m
+
+joycraft-evidence: {"wallMs":1209,"load":[11.32275390625,11.32275390625],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-command-spawn.test.ts"],"exitCode":0,"timedOut":false,"revision":"4dfb128d6d19a53d827f554c0a7c902e17897207","dirty":true}

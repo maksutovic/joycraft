@@ -1,6 +1,6 @@
 ---
 id: 1
-status: in-review
+status: done
 ---
 # Worker trees start from the coordinator's tree, and prune works from a linked coordinator
 

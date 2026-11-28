@@ -1,0 +1,322 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "4dfb128d6d19a53d827f554c0a7c902e17897207",
+    "queuePath": "docs/features/2026-11-28-runtime-fixes-restate/specs/.joycraft-spec-queue.json",
+    "specId": 1,
+    "specPath": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+    "criteria": [
+      {
+        "id": "spec-1-1",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-2",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-3",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-1-4",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "linked-coordinator",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "160145f0f2241d956ecceb363afea42dd1d1d23cefb09865f7b75889283ae3ed",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "4b7a98442cd298ef7d9c87f8df35d0cc7b037b9747886398fdd745501935d39d",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+        "kind": "requirement",
+        "sha256": "a8b118c00476a1a05584a539f742f1ccbdc41cd35183d4e748843bb112f59ced",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/close.mjs",
+        "kind": "code",
+        "sha256": "c39d35215af7394298770abb0747d03d347d302412a737f7ba16abc3d3931220",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/worktrees.mjs",
+        "kind": "code",
+        "sha256": "70366937eeadddfb8b631026bdf4fe7c76a293ac6f39f46a302add30538a8e91",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-dispatch-parallel.test.ts",
+        "kind": "check",
+        "sha256": "ef52bf810c5c66c99e9a7f93686411f8cc605f2a0c411f65552d714df1415123",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+          "anchors": [
+            "linked-coordinator",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "536bf79436fa2913e8ef83223f85290557be54a217482be3e517679feaa86f85"
+  },
+  "implementerSessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593"
+  },
+  "reviewer": {
+    "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+      "agentId": "a41eaf7e69a660501"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-base",
+      "criteria": [
+        "spec-1-1"
+      ],
+      "subjectIdentity": "536bf79436fa2913e8ef83223f85290557be54a217482be3e517679feaa86f85",
+      "representativeInput": "Linked coordinator tree one commit ahead of main runs worktrees.mjs create --spec 1.",
+      "expected": "baseRevision and worker HEAD equal the coordinator HEAD.",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator runs it separately.",
+        "The close.mjs prune probe ran in a scratch repo outside the project; it has no receipt.",
+        "No new revert run this round: worktrees.mjs and the test file are byte-identical to round 1, so the round-1 red run (spec-1-reviewer-revert-red.log) still applies."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-1] test passes at 4dfb128 (whole file exits 0). Scratch probe from a linked coordinator: baseRevision = coordinator HEAD.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-1-reviewer-focused-20261128T192800987Z-86448-1.log",
+              "sha256": "99f47d0aaa5d24a2a8a8e4fcf35746f9c7488f848cb61cdf8bb50ee65d1dcd13"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-parallel.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-queue-branch-only",
+      "criteria": [
+        "spec-1-2"
+      ],
+      "subjectIdentity": "536bf79436fa2913e8ef83223f85290557be54a217482be3e517679feaa86f85",
+      "representativeInput": "Main drops the feature folder; the queue exists only on the coordinator branch; create --spec 1.",
+      "expected": "create exits 0 with the queue path and coordinator base.",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator runs it separately.",
+        "The close.mjs prune probe ran in a scratch repo outside the project; it has no receipt.",
+        "No new revert run this round: worktrees.mjs and the test file are byte-identical to round 1, so the round-1 red run (spec-1-reviewer-revert-red.log) still applies."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-2] test passes at 4dfb128.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-1-reviewer-focused-20261128T192800987Z-86448-1.log",
+              "sha256": "99f47d0aaa5d24a2a8a8e4fcf35746f9c7488f848cb61cdf8bb50ee65d1dcd13"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-parallel.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-prune",
+      "criteria": [
+        "spec-1-3"
+      ],
+      "subjectIdentity": "536bf79436fa2913e8ef83223f85290557be54a217482be3e517679feaa86f85",
+      "representativeInput": "Spec 1 tree merged into the coordinator branch and done in its queue; prune with no --into, and close.mjs's own call pruneWorktrees({ root: realpath(coordinator), apply: true }).",
+      "expected": "Spec 1 tree removed, spec 2 tree kept as todo.",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator runs it separately.",
+        "The close.mjs prune probe ran in a scratch repo outside the project; it has no receipt.",
+        "No new revert run this round: worktrees.mjs and the test file are byte-identical to round 1, so the round-1 red run (spec-1-reviewer-revert-red.log) still applies."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-3] test passes. close.mjs:336 still sets root = realpathSync(options.root) and close.mjs:358 calls pruneWorktrees({ root, apply: true }); spec 3 changed only runTests (commandSpawn import), not closeFeature. Scratch probe calling that exact call from a linked coordinator: spec 1 remove (Spec done, tree clean, branch integrated.), spec 2 keep; git worktree list then shows only p-2. close.mjs imports cleanly (evidence.mjs imports only node: builtins, no cycle).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-1-reviewer-focused-20261128T192800987Z-86448-1.log",
+              "sha256": "99f47d0aaa5d24a2a8a8e4fcf35746f9c7488f848cb61cdf8bb50ee65d1dcd13"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-parallel.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-main-unchanged",
+      "criteria": [
+        "spec-1-4"
+      ],
+      "subjectIdentity": "536bf79436fa2913e8ef83223f85290557be54a217482be3e517679feaa86f85",
+      "representativeInput": "Coordinator in the main checkout: create then prune --apply after marking spec 1 done.",
+      "expected": "Base is main HEAD, coordinatorRoot is ., spec 1 tree removed; earlier tests unchanged.",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator runs it separately.",
+        "The close.mjs prune probe ran in a scratch repo outside the project; it has no receipt.",
+        "No new revert run this round: worktrees.mjs and the test file are byte-identical to round 1, so the round-1 red run (spec-1-reviewer-revert-red.log) still applies."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-1-4] test passes, and the pre-existing tests in the file pass; test file unchanged since round 1.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-1-reviewer-focused-20261128T192800987Z-86448-1.log",
+              "sha256": "99f47d0aaa5d24a2a8a8e4fcf35746f9c7488f848cb61cdf8bb50ee65d1dcd13"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-parallel.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "n-close-r2",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/close.mjs:358",
+      "summary": "Reopen cause checked: the spec 3 diff to close.mjs touches only runTests (commandSpawn + ENOENT message). The prune step still passes the coordinator root; acceptance holds."
+    },
+    {
+      "id": "n-outside",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/PIN",
+      "summary": "Changed paths no spec declares: receipts under receipts/ and reviews/receipts/, the queue file, review-1.report.json, review-2.report.json and payload/PIN."
+    },
+    {
+      "id": "n-old-tags",
+      "class": "note",
+      "origin": "pre-existing",
+      "at": "tests/runtime-dispatch-parallel.test.ts:54",
+      "summary": "Trace maps [AC:spec-1-1..3] at 54, 85, 101 and [AC:spec-2-1]/[AC:spec-6-1] at 121, 134 to archived features; the real trace for this spec is lines 167-201."
+    },
+    {
+      "id": "n-red-run",
+      "class": "note",
+      "origin": "pre-existing",
+      "at": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-1-reviewer-revert-red.log",
+      "summary": "Can-the-test-fail: round-1 red run still applies; worktrees.mjs (70366937...) and the test file (ef52bf81...) have the same hashes as in round 1."
+    },
+    {
+      "id": "n-into-eq",
+      "class": "note",
+      "origin": "pre-existing",
+      "at": "payload/.joycraft/runtime/worktrees.mjs:239",
+      "summary": "Probe: prune --into=--output=/tmp/x is not parsed as --into and falls back to HEAD (dry run, exit 0). Same parsing as 08da57b; no harm seen, outside this spec."
+    },
+    {
+      "id": "n-installed-copy",
+      "class": "note",
+      "origin": "new",
+      "at": ".joycraft/runtime/close.mjs",
+      "summary": "The installed .joycraft/runtime/close.mjs and evidence.mjs differ from payload/; tests install from payload, so this does not affect the verdict. The repo install is not yet updated to the branch."
+    }
+  ],
+  "createdAt": "2026-11-28T19:29:50.749Z"
+}

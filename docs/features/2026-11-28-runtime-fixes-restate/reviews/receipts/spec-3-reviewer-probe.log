@@ -1,0 +1,10 @@
+"a\"&calc" => cmd.exe ["/d","/s","/c","\"C:\\Program^ Files^ ^(x86^)\\nodejs\\pnpm.CMD ^^^\"a\\^^^\"^^^&calc^^^\"\""]
+"dir\\" => cmd.exe ["/d","/s","/c","\"C:\\Program^ Files^ ^(x86^)\\nodejs\\pnpm.CMD ^^^\"dir\\\\^^^\"\""]
+"C:\\a b\\\\" => cmd.exe ["/d","/s","/c","\"C:\\Program^ Files^ ^(x86^)\\nodejs\\pnpm.CMD ^^^\"C:\\a^^^ b\\\\\\\\^^^\"\""]
+"%PATH%" => cmd.exe ["/d","/s","/c","\"C:\\Program^ Files^ ^(x86^)\\nodejs\\pnpm.CMD ^^^\"^^^%PATH^^^%^^^\"\""]
+"!PATH!" => cmd.exe ["/d","/s","/c","\"C:\\Program^ Files^ ^(x86^)\\nodejs\\pnpm.CMD ^^^\"^^^!PATH^^^!^^^\"\""]
+"x\ny" => cmd.exe ["/d","/s","/c","\"C:\\Program^ Files^ ^(x86^)\\nodejs\\pnpm.CMD ^^^\"x\ny^^^\"\""]
+"" => cmd.exe ["/d","/s","/c","\"C:\\Program^ Files^ ^(x86^)\\nodejs\\pnpm.CMD ^^^\"^^^\"\""]
+lowercase env path key: ["/d","/s","/c","\"C:\\Program^ Files^ ^(x86^)\\nodejs\\pnpm.CMD ^^^\"x^^^\"\""]
+quoted PATH entry: {"command":"pnpm","args":["x"],"options":{}}
+joycraft-evidence: {"wallMs":34,"load":[6.33544921875,6.33544921875],"cores":14,"loaded":false,"argv":["node","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/probe.mjs"],"exitCode":0,"timedOut":false,"revision":"4dfb128d6d19a53d827f554c0a7c902e17897207","dirty":true}

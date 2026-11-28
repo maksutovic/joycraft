@@ -1,0 +1,51 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/revert[39m
+
+ [31m❯[39m tests/runtime-command-spawn.test.ts [2m([22m[2m7 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 284[2mms[22m[39m
+[31m   [31m×[31m commandSpawn[2m > [22m[AC:spec-3-1] on win32 a .cmd shim starts through cmd.exe /d /s /c with each argument quoted[39m[32m 3[2mms[22m[39m
+[31m     → expected 'pnpm' to be 'C:\Windows\system32\cmd.exe' // Object.is equality[39m
+[31m   [31m×[31m commandSpawn[2m > [22m[AC:spec-3-1] on win32 cmd.exe metacharacters in an argument are escaped, never left bare[39m[32m 0[2mms[22m[39m
+[31m     → line is not iterable[39m
+   [32m✓[39m commandSpawn[2m > [22m[AC:spec-3-1] on win32 a found .exe and a command not on PATH start directly, without cmd.exe[32m 0[2mms[22m[39m
+   [32m✓[39m commandSpawn[2m > [22m[AC:spec-3-2] on darwin and linux the command starts directly with no shell[32m 0[2mms[22m[39m
+   [32m✓[39m callers[2m > [22m[AC:spec-3-3] evidence.mjs and close.mjs start commands through the helper[32m 1[2mms[22m[39m
+   [32m✓[39m callers[2m > [22m[AC:spec-3-3] evidence run with a missing command says it could not start[32m 84[2mms[22m[39m
+   [32m✓[39m callers[2m > [22m[AC:spec-3-3] close with a missing focused command says it could not start[32m 196[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-command-spawn.test.ts[2m > [22mcommandSpawn[2m > [22m[AC:spec-3-1] on win32 a .cmd shim starts through cmd.exe /d /s /c with each argument quoted
+[31m[1mAssertionError[22m: expected 'pnpm' to be 'C:\Windows\system32\cmd.exe' // Object.is equality[39m
+
+Expected: [32m"C:\Windows\system32\cmd.exe"[39m
+Received: [31m"pnpm"[39m
+
+[36m [2m❯[22m tests/runtime-command-spawn.test.ts:[2m23:27[22m[39m
+    [90m 21| [39m    [35mconst[39m spawn [33m=[39m [34mcommandSpawn[39m([[32m'pnpm'[39m[33m,[39m [32m'test'[39m[33m,[39m [32m'tests/a b.test.ts'[39m][33m,[39m
+    [90m 22| [39m      { platform: 'win32', env: windowsEnv, exists: onDisk('C:\\Progra…
+    [90m 23| [39m    [34mexpect[39m(spawn[33m.[39mcommand)[33m.[39m[34mtoBe[39m([32m'C:\\Windows\\system32\\cmd.exe'[39m)[33m;[39m
+    [90m   | [39m                          [31m^[39m
+    [90m 24| [39m    [34mexpect[39m(spawn[33m.[39margs[33m.[39m[34mslice[39m([34m0[39m[33m,[39m [34m3[39m))[33m.[39m[34mtoEqual[39m([[32m'/d'[39m[33m,[39m [32m'/s'[39m[33m,[39m [32m'/c'[39m])[33m;[39m
+    [90m 25| [39m    [34mexpect[39m(spawn[33m.[39moptions)[33m.[39m[34mtoEqual[39m({ windowsVerbatimArguments[33m:[39m [35mtrue[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-command-spawn.test.ts[2m > [22mcommandSpawn[2m > [22m[AC:spec-3-1] on win32 cmd.exe metacharacters in an argument are escaped, never left bare
+[31m[1mTypeError[22m: line is not iterable[39m
+[36m [2m❯[22m tests/runtime-command-spawn.test.ts:[2m36:39[22m[39m
+    [90m 34| [39m    // Every metacharacter that cmd.exe acts on carries a caret before…
+    [90m 35| [39m    [35mfor[39m ([35mconst[39m char [35mof[39m [[32m'&'[39m[33m,[39m [32m'|'[39m[33m,[39m [32m'<'[39m[33m,[39m [32m'>'[39m[33m,[39m [32m'%'[39m]) {
+    [90m 36| [39m      for (const [index, each] of [...line].entries()) if (each === ch…
+    [90m   | [39m                                      [31m^[39m
+    [90m 37| [39m    }
+    [90m 38| [39m    [34mexpect[39m(line)[33m.[39m[34mtoContain[39m([32m'\\^^^"g'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 11:29:55
+[2m   Duration [22m 465ms[2m (transform 29ms, setup 0ms, collect 31ms, tests 284ms, environment 0ms, prepare 32ms)[22m
+
+joycraft-evidence: {"wallMs":682,"load":[7.31298828125,7.31298828125],"cores":14,"loaded":false,"argv":["node_modules/.bin/vitest","run","--root","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/revert","tests/runtime-command-spawn.test.ts"],"exitCode":1,"timedOut":false,"revision":"4dfb128d6d19a53d827f554c0a7c902e17897207","dirty":true}

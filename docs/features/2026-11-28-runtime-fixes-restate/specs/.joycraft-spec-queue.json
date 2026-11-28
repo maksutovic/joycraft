@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-linked-coordinator.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -98,7 +98,11 @@
             "payload/.joycraft/runtime/close.mjs"
           ]
         }
-      ]
+      ],
+      "acceptedReport": {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/review-1-r2.report.json",
+        "sha256": "4eb5955f4f44107382265f05a8735bc84394dc5ef9b3f78f4ff9778e37d55303"
+      }
     },
     {
       "id": 2,
@@ -193,7 +197,7 @@
       "depends_on": [
         2
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -262,6 +266,10 @@
       },
       "submitted": {
         "at": "2026-11-28T19:25:51.440Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/review-3.report.json",
+        "sha256": "be38a3765863a859a96f186cb4a1cae0253ea010496cc4c7d2b893fbbc0172b7"
       }
     },
     {

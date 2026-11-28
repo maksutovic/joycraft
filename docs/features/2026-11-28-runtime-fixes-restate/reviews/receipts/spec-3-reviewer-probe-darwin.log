@@ -1,0 +1,2 @@
+["a b;touch jc-pwned$HOME&"]
+joycraft-evidence: {"wallMs":33,"load":[4.8896484375,4.8896484375],"cores":14,"loaded":false,"argv":["node","-e","console.log(JSON.stringify(process.argv.slice(1)))","a b;touch jc-pwned$HOME&"],"exitCode":0,"timedOut":false,"revision":"4dfb128d6d19a53d827f554c0a7c902e17897207","dirty":true}
