@@ -277,7 +277,7 @@
       "file": "04-stop-hook.md",
       "depends_on": [
         3,
-        10
+        11
       ],
       "status": "todo",
       "mode": "batch",
@@ -784,6 +784,56 @@
       "acceptedReport": {
         "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/review-10.report.json",
         "sha256": "cd229ca602de2038fa3b59b28923cd47cb07118cf90ca38c9639e8d683cc8272"
+      }
+    },
+    {
+      "id": 11,
+      "file": "11-suite-timeout.md",
+      "depends_on": [
+        10
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "gate-timeouts",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/11-suite-timeout.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "vitest.config.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/vitest-config.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-11-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/11-suite-timeout.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
       }
     }
   ]
