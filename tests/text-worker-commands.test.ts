@@ -178,4 +178,11 @@ describe('reviewer checks (sl3-07)', () => {
     expect(guard).toContain('const FIELD_24_WORDS = 29919;');
     expect(guard).toContain('export const EVERY_SPEC_CAP = FIELD_24_WORDS - 17663;');
   });
+
+  // Spec: docs/features/2026-11-22-fixes-1-9-3/specs/07-reviewer-cd-reason.md
+  it('[AC:spec-7-1] dispatch.md gives the cd form with the reason the implementer agent gives', () => {
+    const form = "When the task names a worker root that is not your shell's folder, run each command as `cd <worker-root> && <one command>`: no worktree isolation is active, so this is the one allowed compound form.";
+    expect(agents.implementer).toContain(form);
+    expect(dispatch).toContain(form);
+  });
 });

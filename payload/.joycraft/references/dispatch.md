@@ -72,8 +72,10 @@ Run each `git` command and each Joycraft runtime call (`node
 .joycraft/runtime/…`, `pnpm joycraft:…`) as its own plain shell
 command: never chain them with `&&`, `;` or `|`, or use `$(git …)`, a heredoc,
 `source` or `cd` out of the root; a worktree-isolated host refuses these. Paste
-the startup output's `commands`. For a root or revision, run `pwd` or
-`git rev-parse HEAD` alone and paste the value.
+the startup output's `commands`. When the task names a worker root that is not
+your shell's folder, run each command as `cd <worker-root> && <one command>`: no
+worktree isolation is active, so this is the one allowed compound form. For a
+root or revision, run `pwd` or `git rev-parse HEAD` alone and paste the value.
 
 Pass `--native-agent` only with a host-issued child ID the child can see.
 `--native-host` is optional. Use actual host-issued values only. A Claude Code

@@ -509,7 +509,7 @@
       "id": 7,
       "file": "07-reviewer-cd-reason.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -529,10 +529,6 @@
           {
             "path": "docs/features/2026-11-22-fixes-1-9-3/specs/07-reviewer-cd-reason.md",
             "kind": "requirement"
-          },
-          {
-            "path": "payload/.claude/agents/joycraft-reviewer.md",
-            "kind": "code"
           },
           {
             "path": "payload/.joycraft/references/dispatch.md",
@@ -559,6 +555,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-28T08:15:11.096Z"
       }
     }
   ]

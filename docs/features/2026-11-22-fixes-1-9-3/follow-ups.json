@@ -98,12 +98,6 @@
       "by": 7
     },
     {
-      "spec": 4,
-      "finding": "f1",
-      "outcome": "fixed",
-      "by": 7
-    },
-    {
       "spec": 5,
       "finding": "f2",
       "outcome": "fixed",
@@ -114,6 +108,12 @@
       "finding": "f3",
       "outcome": "fixed",
       "by": 6
+    },
+    {
+      "spec": 4,
+      "finding": "f1",
+      "outcome": "dismissed",
+      "reason": "Wording only: the reviewer agent gets the cd-form reason the next time its text changes. An edit to the agent alone forces a reviewer-bench re-record (~$30, [AC:sl3-07-bench-current]). dispatch.md gets the reason in spec 7."
     }
   ]
 }
