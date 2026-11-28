@@ -1,0 +1,12 @@
+diff --git a/payload/.joycraft/runtime/completion.mjs b/payload/.joycraft/runtime/completion.mjs
+index f9ec627..7ed12b4 100644
+--- a/payload/.joycraft/runtime/completion.mjs
++++ b/payload/.joycraft/runtime/completion.mjs
+@@ -199,7 +199,6 @@ function refuseGateRuns(root, report) {
+     const match = gates.find(([, , command]) => command === ran);
+     if (match) throw refused(new Error(`Report flows[${flowIndex}].observations[${index}] ran the recorded ${match[0]} command \`${match[1]}\`; a spec review runs the spec's own focused tests, so rerun with those and correct the report`));
+     const part = parts.find(([, , command]) => command === ran);
+-    if (part) throw refused(new Error(`Report flows[${flowIndex}].observations[${index}] ran \`${part[1]}\`, a part of the recorded ${part[0]} command; a spec review runs the spec's own focused tests, so rerun with those and correct the report`));
+   }));
+ }
+ 

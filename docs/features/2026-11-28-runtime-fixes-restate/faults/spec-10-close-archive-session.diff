@@ -1,0 +1,13 @@
+diff --git a/payload/.joycraft/runtime/close.mjs b/payload/.joycraft/runtime/close.mjs
+index df24a88..0adede1 100644
+--- a/payload/.joycraft/runtime/close.mjs
++++ b/payload/.joycraft/runtime/close.mjs
+@@ -276,7 +276,7 @@ function featureFolder(root, features, slug) {
+ function featureProblems(root, options, paths, git) {
+   const found = [];
+   const folder = featureFolder(root, paths.features, options.feature);
+-  const attestation = { schemaVersion: 1, phase: 'session-end', host: { sessionId: options.session, quiescent: true, activeWorkers: [], dependentWork: [] },
++  const attestation = { schemaVersion: 1, phase: 'session-end', host: { sessionId: `${options.session}x`, quiescent: true, activeWorkers: [], dependentWork: [] },
+     durableContext: { carried: true, references: [] } };
+   if (!git) found.push('This folder is not a Git repository; the feature close commits.');
+   else {
