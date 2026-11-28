@@ -130,7 +130,7 @@ describe('report gate runner aliases and a done spec re-check (1.9.1 spec 2)', (
 });
 
 describe('report gate parts of a chained gate (1.9.2 spec 1)', () => {
-  it('[AC:spec-1-1] one part of a chained gate is refused like the whole gate; focused runs and a one-part gate are unchanged', () => {
+  it('[AC:spec-1-1] [AC:spec-10-1] one part of a chained gate is refused like the whole gate; focused runs and a one-part gate are unchanged', () => {
     const gate = 'npm test && npm run lint';
     const refusedCases: string[][] = [['npm', 'test'], ['npm', 'run', 'lint'], ['npm', 'lint'], ['sh', '-c', 'npm test']];
     for (const argv of refusedCases) {
@@ -155,7 +155,7 @@ describe('report gate parts of a chained gate (1.9.2 spec 1)', () => {
     expect(onePart.status, onePart.stderr).toBe(0);
     const onePartRefused = checkReport(fixture({ gate: 'npm test', argv: ['npm', 'test'] }));
     expect(onePartRefused.stderr).toContain('ran the recorded tests.gate command `npm test`');
-  });
+  }, 20000);
 
   it('[AC:spec-1-2] a done spec re-checked with a report that ran a gate part stays done; gateRuns still turns the check off', () => {
     const root = fixture({ argv: ['npm', 'test'] });

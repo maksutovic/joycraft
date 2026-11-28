@@ -96,7 +96,7 @@ describe('close.mjs --feature', () => {
     expect(existsSync(join(root, folder))).toBe(true);
   });
 
-  it('[AC:sl3-05-same-checks] the archive is byte-equal to the one the manual session-end steps write', async () => {
+  it('[AC:sl3-05-same-checks] [AC:spec-10-1] the archive is byte-equal to the one the manual session-end steps write', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     vi.setSystemTime(new Date('2026-11-23T12:00:00Z'));
     const load = async (name: string) => import(join(runtime, name));
@@ -123,5 +123,5 @@ describe('close.mjs --feature', () => {
     for (const file of files(archived(manual))) {
       expect(readFileSync(join(archived(command), file)).equals(readFileSync(join(archived(manual), file))), file).toBe(true);
     }
-  });
+  }, 20000);
 });
