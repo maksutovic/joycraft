@@ -1,6 +1,6 @@
 ---
 id: 10
-status: in-review
+status: done
 ---
 # Two process-spawning tests get a timeout that fits a full parallel gate run
 

@@ -1,0 +1,68 @@
+
+> joycraft@1.10.3 test /private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec10-review
+> vitest tests/runtime-close-feature.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec10-review[39m
+
+ [31m❯[39m tests/runtime-close-feature.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[33m 2311[2mms[22m[39m
+[31m   [31m×[31m close.mjs --feature[2m > [22m[AC:sl3-05-close] a done, accepted queue closes with at most 2 commits, an archived folder, a released lease and the one line[39m[33m 629[2mms[22m[39m
+[31m     → Close stopped: nothing was changed.
+- The archive preview stopped: Host must attest the session is quiescent
+Fix these, or use the session-end steps.
+: expected 2 to be +0 // Object.is equality[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-refuse] an in-review spec, a dirty tree and a missing context page give exit 2, all three named, nothing changed [33m 677[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-refuse] another session's lease stops the close [33m 502[2mms[22m[39m
+[31m   [31m×[31m close.mjs --feature[2m > [22m[AC:sl3-05-same-checks] [AC:spec-10-1] the archive is byte-equal to the one the manual session-end steps write[39m[33m 502[2mms[22m[39m
+[31m     → Close stopped: nothing was changed.
+- The archive preview stopped: Host must attest the session is quiescent
+Fix these, or use the session-end steps.[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-close-feature.test.ts[2m > [22mclose.mjs --feature[2m > [22m[AC:sl3-05-close] a done, accepted queue closes with at most 2 commits, an archived folder, a released lease and the one line
+[31m[1mAssertionError[22m: Close stopped: nothing was changed.
+- The archive preview stopped: Host must attest the session is quiescent
+Fix these, or use the session-end steps.
+: expected 2 to be +0 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 2[39m
+
+[36m [2m❯[22m tests/runtime-close-feature.test.ts:[2m60:42[22m[39m
+    [90m 58| [39m    [34mexpect[39m([34mexistsSync[39m([34mlease[39m(root)))[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m 59| [39m    [35mconst[39m result [33m=[39m [34mrunClose[39m(root[33m,[39m [32m'--context'[39m[33m,[39m context)[33m;[39m
+    [90m 60| [39m    [34mexpect[39m(result[33m.[39mstatus[33m,[39m result[33m.[39mstderr)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m   | [39m                                         [31m^[39m
+    [90m 61| [39m    [35mconst[39m lines [33m=[39m result[33m.[39mstdout[33m.[39m[34mtrim[39m()[33m.[39m[34msplit[39m([32m'\n'[39m)[33m;[39m
+    [90m 62| [39m    [34mexpect[39m(lines)[33m.[39m[34mtoHaveLength[39m([34m1[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-close-feature.test.ts[2m > [22mclose.mjs --feature[2m > [22m[AC:sl3-05-same-checks] [AC:spec-10-1] the archive is byte-equal to the one the manual session-end steps write
+[31m[1mError[22m: Close stopped: nothing was changed.
+- The archive preview stopped: Host must attest the session is quiescent
+Fix these, or use the session-end steps.[39m
+[36m [2m❯[22m closeFeature payload/.joycraft/runtime/close.mjs:[2m339:36[22m[39m
+    [90m337| [39m  [35mconst[39m paths [33m=[39m [34mworkPaths[39m(root)[33m;[39m
+    [90m338| [39m  const found = featureProblems(root, options, paths, gitState(root).g…
+    [90m339| [39m  if (found.problems.length) throw new Refusal(`Close stopped: nothing…
+    [90m   | [39m                                   [31m^[39m
+    [90m340| [39m  const { folder, queuePath, queue, specs, attestation, namedTests } =…
+    [90m341| [39m  [35mconst[39m commits [33m=[39m [][33m;[39m
+[90m [2m❯[22m close payload/.joycraft/runtime/close.mjs:[2m201:42[22m[39m
+[90m [2m❯[22m tests/runtime-close-feature.test.ts:[2m107:5[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 11:38:30
+[2m   Duration [22m 2.52s[2m (transform 207ms, setup 0ms, collect 20ms, tests 2.31s, environment 0ms, prepare 67ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":3309,"load":[8.2333984375,8.37451171875],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-close-feature.test.ts"],"exitCode":1,"timedOut":false,"revision":"3fd9ebc6b198d90b7e44ed5f8ab46669024cd86f","dirty":false,"patch":{"path":".joycraft/local/faults/own-close-quiescent.diff","sha256":"8c2f040e276c122a214bed3d77dff78d83ce19ade3ba460e5aba61d2d2c89b5f","patched":true,"restored":true}}

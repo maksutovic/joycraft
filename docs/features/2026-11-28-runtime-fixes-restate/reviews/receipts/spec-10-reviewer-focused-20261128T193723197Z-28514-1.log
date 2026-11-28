@@ -1,0 +1,27 @@
+
+> joycraft@1.10.3 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit
+> vitest tests/runtime-close-feature.test.ts tests/runtime-report-gate.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit[39m
+
+ [32m✓[39m tests/runtime-close-feature.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 4706[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-close] a done, accepted queue closes with at most 2 commits, an archived folder, a released lease and the one line [33m 1310[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-refuse] an in-review spec, a dirty tree and a missing context page give exit 2, all three named, nothing changed [33m 508[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-refuse] another session's lease stops the close [33m 463[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-same-checks] [AC:spec-10-1] the archive is byte-equal to the one the manual session-end steps write [33m 2425[2mms[22m[39m
+ [32m✓[39m tests/runtime-report-gate.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 7148[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-1] a report whose observation ran the recorded gate is refused, also in a shell form [33m 457[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-2] a report that ran only focused commands passes, and a project with no gate is not checked [33m 372[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate wrappers and a broken joycraft.yaml (spec 27)[2m > [22m[AC:spec-27-3] each shell or env wrapper of the gate is refused; more arguments pass; a broken joycraft.yaml refuses [33m 1615[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate runner aliases and a done spec re-check (1.9.1 spec 2)[2m > [22m[AC:spec-2-1] npx, pnpm exec and the run of pnpm run name the same gate; a focused npx run passes [33m 1188[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate runner aliases and a done spec re-check (1.9.1 spec 2)[2m > [22m[AC:spec-2-2] a done spec re-checked with its accepted report is unchanged after tests.gate is recorded; an in-review one is refused [33m 598[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-1] [AC:spec-10-1] one part of a chained gate is refused like the whole gate; focused runs and a one-part gate are unchanged [33m 2522[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-2] a done spec re-checked with a report that ran a gate part stays done; gateRuns still turns the check off [33m 395[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m11 passed[39m[22m[90m (11)[39m
+[2m   Start at [22m 11:37:49
+[2m   Duration [22m 7.33s[2m (transform 236ms, setup 0ms, collect 49ms, tests 11.85s, environment 0ms, prepare 86ms)[22m
+
+joycraft-evidence: {"wallMs":7944,"load":[13.87890625,12.43310546875],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-close-feature.test.ts","tests/runtime-report-gate.test.ts"],"exitCode":0,"timedOut":false,"revision":"3fd9ebc6b198d90b7e44ed5f8ab46669024cd86f","dirty":false}

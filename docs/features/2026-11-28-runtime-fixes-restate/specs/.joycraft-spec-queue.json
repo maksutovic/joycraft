@@ -735,7 +735,7 @@
       "id": 10,
       "file": "10-gate-timeouts.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -780,6 +780,10 @@
       },
       "submitted": {
         "at": "2026-11-28T19:35:45.401Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/review-10.report.json",
+        "sha256": "cd229ca602de2038fa3b59b28923cd47cb07118cf90ca38c9639e8d683cc8272"
       }
     }
   ]

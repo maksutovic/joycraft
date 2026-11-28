@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "3fd9ebc6b198d90b7e44ed5f8ab46669024cd86f",
+    "queuePath": "docs/features/2026-11-28-runtime-fixes-restate/specs/.joycraft-spec-queue.json",
+    "specId": 10,
+    "specPath": "docs/features/2026-11-28-runtime-fixes-restate/specs/10-gate-timeouts.md",
+    "criteria": [
+      {
+        "id": "spec-10-1",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/10-gate-timeouts.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "gate-timeouts",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "8fa332546b19dcecc90f30a2812b8d0f7a51c0b0f7428836fa29bb56e67711bb",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "79657877b159938112b2e0873eaa07824707729dab2d4514a6cf98adb42982f8",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/10-gate-timeouts.md",
+        "kind": "requirement",
+        "sha256": "bfa8a4343b80db6435fe740c058ec1d7dbd3b2568313454e644abeab3be58eaf",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "tests/runtime-close-feature.test.ts",
+        "kind": "check",
+        "sha256": "1b6983c5ca295392f7604cb3b01000e6dff00ce1e112b1770dfa95d0c9c435bb",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-report-gate.test.ts",
+        "kind": "check",
+        "sha256": "45dd99f21c2c7e1e7f09b3567bc3ec04c5df1a2788ad2827759957d2ca4a834c",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          10
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+          "anchors": [
+            "gate-timeouts",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "ab8280e32231e79d6bbf28a73dc521980cdbf94a334f37a2bd6ee5036ecae5fb"
+  },
+  "implementerSessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593"
+  },
+  "reviewer": {
+    "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+      "agentId": "a758505693397f7d5"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-timeouts",
+      "criteria": [
+        "spec-10-1"
+      ],
+      "subjectIdentity": "ab8280e32231e79d6bbf28a73dc521980cdbf94a334f37a2bd6ee5036ecae5fb",
+      "representativeInput": "Focused run of tests/runtime-close-feature.test.ts and tests/runtime-report-gate.test.ts at 3fd9ebc; saved and own faults in a scratch clone; a 7 s delay injected into the close test with and without the 20000 argument.",
+      "expected": "Both files pass; each tagged test carries 20000 ms; diff changes only the timeout argument and the [AC:spec-10-1] tag; faults still fail the new files.",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator runs it in the same tree.",
+        "Fault runs used a scratch clone outside the repo (evidence --patch not used in the shared tree while the gate runs).",
+        "The chosen faults are still caught; this does not show the test is as strong as before."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-10-1] 2 files, 11 tests pass, exit 0. Diff 6c84f00: only the tag in two titles and `}, 20000)` on the two named tests. Saved gate-part fault on new file: spec-1-1 fails, exit 1. Own fault (close.mjs quiescent: 1) fails old (511c19b) and new files, exit 1. Timeout probe: 7 s delay passes with 20000 (exit 0) and times out at 5000 ms without it (exit 1), so the argument takes effect.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-10-reviewer-focused-20261128T193723197Z-28514-1.log",
+              "sha256": "da537251e29b693ae6a4853650a0a92b498251ab339f992b05ee2c8312e78a2c"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-10-reviewer-fault-saved-gate-new.log",
+              "sha256": "ffdd8a8c1c7aefa3c38ae6e2a27284ead566a702946d8a87efcb0d67f5a57930"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-10-reviewer-fault-own-close-new.log",
+              "sha256": "f8b6d48e83dcede4a4d42d7792686ec2c101c7ade8f8aaa18338a68dfe31133e"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-10-reviewer-fault-own-close-old.log",
+              "sha256": "684eed96cc9c4368779188cd72303f6780af089af53d28a8d4cd6a5282cd765e"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-10-reviewer-probe-timeout-20s.log",
+              "sha256": "6dbb05f38ffc1a389a7ac251267417545f1d857ffdc5e13e178cfc624f4f5bdf"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-10-reviewer-probe-timeout-default.log",
+              "sha256": "0b54881afa63b668db61fbb9ea36956903ab0376e6d29b0b3b58107b7054c90d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-close-feature.test.ts",
+              "tests/runtime-report-gate.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "n-test-changes",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/runtime-close-feature.test.ts:126",
+      "summary": "Both test diffs match their class-2 declarations: a 20000 timeout argument and the spec-10-1 title tag; no assertion or setup change."
+    },
+    {
+      "id": "n-fault-receipts",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-28-runtime-fixes-restate/receipts/spec-10-fault-close-old.log",
+      "summary": "Implementer fault receipts: old runs at 511c19b and new runs at 6c84f00, each with the patch sha256 committed in faults/spec-10-faults.sha256 before the test edit; all four exit 1 on assertion failures, not timeouts."
+    },
+    {
+      "id": "n-fault-wording",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-28-runtime-fixes-restate/faults/spec-10-close-archive-session.diff",
+      "summary": "The saved close fault changes the attestation session id in close.mjs, not a byte of the archive writer as the spec words it; it still changes the archive output (archive-replay.json differs), so it proves the same claim."
+    },
+    {
+      "id": "n-outside",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/PIN",
+      "summary": "Changed paths no spec declares: fault patches and hash list, implementer/gate/reviewer receipts, follow-ups.json, the queue file, review reports and payload/PIN."
+    }
+  ],
+  "createdAt": "2026-11-28T19:39:48.563Z"
+}

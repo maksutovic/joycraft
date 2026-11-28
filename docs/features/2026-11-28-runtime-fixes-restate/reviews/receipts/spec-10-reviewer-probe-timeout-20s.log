@@ -1,0 +1,18 @@
+
+> joycraft@1.10.3 test /private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec10-review
+> vitest tests/runtime-close-feature.test.ts
+
+
+ RUN  v3.2.4 /private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec10-review
+
+ ✓ tests/runtime-close-feature.test.ts (4 tests) 10613ms
+   ✓ close.mjs --feature > [AC:sl3-05-close] a done, accepted queue closes with at most 2 commits, an archived folder, a released lease and the one line  1034ms
+   ✓ close.mjs --feature > [AC:sl3-05-refuse] an in-review spec, a dirty tree and a missing context page give exit 2, all three named, nothing changed  437ms
+   ✓ close.mjs --feature > [AC:sl3-05-refuse] another session's lease stops the close  383ms
+   ✓ close.mjs --feature > [AC:sl3-05-same-checks] [AC:spec-10-1] the archive is byte-equal to the one the manual session-end steps write  8758ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  11:38:53
+   Duration  10.81s (transform 219ms, setup 0ms, collect 19ms, tests 10.61s, environment 0ms, prepare 31ms)
+

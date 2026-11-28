@@ -1,0 +1,37 @@
+
+> joycraft@1.10.3 test /private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec10-review
+> vitest tests/runtime-close-feature.test.ts
+
+
+ RUN  v3.2.4 /private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec10-review
+
+ ❯ tests/runtime-close-feature.test.ts (4 tests | 1 failed) 6986ms
+   ✓ close.mjs --feature > [AC:sl3-05-close] a done, accepted queue closes with at most 2 commits, an archived folder, a released lease and the one line  1131ms
+   ✓ close.mjs --feature > [AC:sl3-05-refuse] an in-review spec, a dirty tree and a missing context page give exit 2, all three named, nothing changed  439ms
+   ✓ close.mjs --feature > [AC:sl3-05-refuse] another session's lease stops the close  401ms
+   × close.mjs --feature > [AC:sl3-05-same-checks] [AC:spec-10-1] the archive is byte-equal to the one the manual session-end steps write 5015ms
+     → Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/runtime-close-feature.test.ts > close.mjs --feature > [AC:sl3-05-same-checks] [AC:spec-10-1] the archive is byte-equal to the one the manual session-end steps write
+Error: Test timed out in 5000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/runtime-close-feature.test.ts:99:3
+     97|   });
+     98| 
+     99|   it('[AC:sl3-05-same-checks] [AC:spec-10-1] the archive is byte-equal…
+       |   ^
+    100|     vi.useFakeTimers({ toFake: ["Date"] });
+    101|     vi.setSystemTime(new Date('2026-11-23T12:00:00Z'));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  11:39:05
+   Duration  7.16s (transform 235ms, setup 0ms, collect 18ms, tests 6.99s, environment 0ms, prepare 34ms)
+
+ ELIFECYCLE  Test failed. See above for more details.
