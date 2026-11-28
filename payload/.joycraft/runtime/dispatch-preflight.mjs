@@ -240,10 +240,19 @@ export function readInstallationManifest(root, manifestPath = '.joycraft/install
     requireValue(isObject(entry) && nonempty(entry.path) && isSha256(entry.sha256), 'Installation manifest file needs path and SHA-256');
     const filePath = relativePath(entry.path);
     requireValue(!files.has(filePath), `Installation manifest repeats ${filePath}`);
-    requireValue(sha256(readLocal(root, filePath)) === entry.sha256, `Installed file differs from manifest: ${filePath}`);
     files.set(filePath, entry.sha256);
   }
   return { path: manifestPath, files, sourceRevision: manifest.sourceRevision, harness: manifest.harness };
+}
+
+/** Check only the files a role reads or runs: an edit elsewhere is the project's business, and a CRLF checkout is not an edit. */
+function verifyInstalledFiles(root, manifest, files) {
+  for (const file of files) {
+    const bytes = readLocal(root, file);
+    const expected = manifest.files.get(file);
+    const matches = sha256(bytes) === expected || (bytes.includes(13) && sha256(Buffer.from(bytes.toString('utf8').replace(/\r\n/g, '\n'), 'utf8')) === expected);
+    requireValue(matches, `Installed file differs from manifest: ${file}`);
+  }
 }
 
 function readExpectedManifest(expectedManifestPath) {
@@ -345,11 +354,12 @@ function validateClaims(claims, roles, reportDestination, availableCapabilities 
  * preflight: callers dispatch in their host and completion remains the sole
  * acceptance writer.
  */
-export function preflightDispatch(request, { availableCapabilities } = {}) {
+export function preflightDispatch(request, { availableCapabilities, manifest: readManifest } = {}) {
   requireValue(isObject(request) && request.schemaVersion === 1, 'Dispatch request must use schemaVersion 1');
   const root = workerDirectory(request.workerRoot);
-  const manifest = readInstallationManifest(root, request.manifestPath);
+  const manifest = readManifest ?? readInstallationManifest(root, request.manifestPath);
   const roles = validateRoles(manifest, request.delivery?.roles);
+  verifyInstalledFiles(root, manifest, new Set(roles.flatMap(role => role.files)));
   if (request.expectedManifestPath !== undefined) {
     const expected = readExpectedManifest(request.expectedManifestPath);
     for (const role of roles) for (const file of role.files) {
@@ -379,10 +389,9 @@ export function preflightDispatch(request, { availableCapabilities } = {}) {
   };
 }
 
-function rolePaths(role, root) {
+function rolePaths(role, manifest) {
   requireValue(['implementer', 'reviewer'].includes(role), 'Role must be implementer or reviewer');
   const suffix = `joycraft-${role === 'implementer' ? 'implement' : 'verify'}/SKILL.md`;
-  const manifest = readInstallationManifest(root);
   // A multi-host install has one skill tree per discovery path. Workers read the
   // primary host's copy: .claude/skills for Claude Code, else .agents/skills.
   const tree = manifest.harness === 'claude' ? '.claude/skills/' : '.agents/skills/';
@@ -451,9 +460,10 @@ export function prepareDispatch({ workerRoot, coordinatorRoot, parallel, access,
   for (let round = 2; role === 'reviewer' && reportRoots.some(home => existsSync(path.join(home, reportDestination))); round += 1) {
     reportDestination = path.posix.join(path.posix.dirname(queuePath), `review-${specId}-r${round}.report.json`);
   }
+  const manifest = readInstallationManifest(root);
   const request = {
     schemaVersion: 1, workerRoot: root, expectedManifestPath,
-    delivery: { roles: [rolePaths(role, root)], sourceView, reportDestination },
+    delivery: { roles: [rolePaths(role, manifest)], sourceView, reportDestination },
     claims: { capabilities: availableCapabilities, reportDestination },
     effectiveModel, effectiveEffort,
   };
@@ -466,7 +476,7 @@ export function prepareDispatch({ workerRoot, coordinatorRoot, parallel, access,
     };
   }
   requireValue(Array.isArray(availableCapabilities), 'Prepare needs observed host capabilities; unknown capabilities hold dependent acceptance');
-  const prepared = preflightDispatch(request, { availableCapabilities });
+  const prepared = preflightDispatch(request, { availableCapabilities, manifest });
   const subject = role === 'reviewer' ? snapshot({ root, queuePath, specId }) : null;
   const packet = {
     schemaVersion: 1, ...prepared, role, implementerSessionId, ...(implementerActor === undefined ? {} : { implementerActor }), subject,

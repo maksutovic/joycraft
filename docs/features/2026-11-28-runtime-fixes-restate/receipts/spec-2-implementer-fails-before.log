@@ -1,0 +1,85 @@
+
+> joycraft@1.10.3 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit
+> vitest tests/runtime-dispatch-manifest.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit[39m
+
+ [31m❯[39m tests/runtime-dispatch-manifest.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 1031[2mms[22m[39m
+[31m   [31m×[31m dispatch installed-manifest check[2m > [22m[AC:spec-2-1] a blank line added to an unrelated installed skill (Claude and Codex copies) does not refuse implementer dispatch[39m[32m 284[2mms[22m[39m
+[31m     → expected 'Task startup stopped: Installed file …' not to contain 'Installed file differs from manifest'[39m
+[31m   [31m×[31m dispatch installed-manifest check[2m > [22m[AC:spec-2-2] a role file whose only change is LF to CRLF does not refuse[39m[32m 245[2mms[22m[39m
+[31m     → expected 'Task startup stopped: Installed file …' not to contain 'Installed file differs from manifest'[39m
+   [32m✓[39m dispatch installed-manifest check[2m > [22m[AC:spec-2-3] a real content edit to a role file still refuses with the message naming the file[32m 259[2mms[22m[39m
+[31m   [31m×[31m dispatch installed-manifest check[2m > [22m[AC:spec-2-4] the installation manifest is read once per dispatch and unrelated files are not hashed[39m[32m 242[2mms[22m[39m
+[31m     → expected 2 to be 1 // Object.is equality[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-dispatch-manifest.test.ts[2m > [22mdispatch installed-manifest check[2m > [22m[AC:spec-2-1] a blank line added to an unrelated installed skill (Claude and Codex copies) does not refuse implementer dispatch
+[31m[1mAssertionError[22m: expected 'Task startup stopped: Installed file …' not to contain 'Installed file differs from manifest'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Installed file differs from manifest[39m
+[31m+ [7mTask startup stopped: [27mInstalled file differs from manifest[7m: .agents/skills/joycraft-session-end/SKILL.md[27m[39m
+[31m+[39m
+
+[36m [2m❯[22m tests/runtime-dispatch-manifest.test.ts:[2m59:31[22m[39m
+    [90m 57| [39m    const fixture = project(root => { for (const file of unrelated) wr…
+    [90m 58| [39m    [35mconst[39m result [33m=[39m [34mstart[39m(fixture)[33m;[39m
+    [90m 59| [39m    expect(result.stderr).not.toContain('Installed file differs from m…
+    [90m   | [39m                              [31m^[39m
+    [90m 60| [39m    [34mexpect[39m(result[33m.[39mstatus[33m,[39m result[33m.[39mstderr)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m 61| [39m    [34mexpect[39m([33mJSON[39m[33m.[39m[34mparse[39m(result[33m.[39mstdout)[33m.[39mready)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-dispatch-manifest.test.ts[2m > [22mdispatch installed-manifest check[2m > [22m[AC:spec-2-2] a role file whose only change is LF to CRLF does not refuse
+[31m[1mAssertionError[22m: expected 'Task startup stopped: Installed file …' not to contain 'Installed file differs from manifest'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Installed file differs from manifest[39m
+[31m+ [7mTask startup stopped: [27mInstalled file differs from manifest[7m: .claude/skills/joycraft-implement/SKILL.md[27m[39m
+[31m+[39m
+
+[36m [2m❯[22m tests/runtime-dispatch-manifest.test.ts:[2m68:31[22m[39m
+    [90m 66| [39m    expect(readFileSync(join(fixture.root, roleSkill), 'utf8')).toCont…
+    [90m 67| [39m    [35mconst[39m result [33m=[39m [34mstart[39m(fixture)[33m;[39m
+    [90m 68| [39m    expect(result.stderr).not.toContain('Installed file differs from m…
+    [90m   | [39m                              [31m^[39m
+    [90m 69| [39m    [34mexpect[39m(result[33m.[39mstatus[33m,[39m result[33m.[39mstderr)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m 70| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-dispatch-manifest.test.ts[2m > [22mdispatch installed-manifest check[2m > [22m[AC:spec-2-4] the installation manifest is read once per dispatch and unrelated files are not hashed
+[31m[1mAssertionError[22m: expected 2 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+[36m [2m❯[22m tests/runtime-dispatch-manifest.test.ts:[2m86:71[22m[39m
+    [90m 84| [39m    [34mexpect[39m(result[33m.[39mstatus[33m,[39m result[33m.[39mstderr)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m 85| [39m    const counts: Record<string, number> = JSON.parse(readFileSync(cou…
+    [90m 86| [39m    expect(counts[join(fixture.root, '.joycraft/installation.json')]).…
+    [90m   | [39m                                                                      [31m^[39m
+    [90m 87| [39m    [34mexpect[39m(counts[[34mjoin[39m(fixture[33m.[39mroot[33m,[39m roleSkill)])[33m.[39m[34mtoBe[39m([34m1[39m)[33m;[39m
+    [90m 88| [39m    for (const file of unrelated) expect(counts[join(fixture.root, fil…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 11:17:54
+[2m   Duration [22m 1.24s[2m (transform 32ms, setup 0ms, collect 37ms, tests 1.03s, environment 0ms, prepare 39ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":1897,"load":[8.07373046875,13.4326171875],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-dispatch-manifest.test.ts"],"exitCode":1,"timedOut":false,"revision":"7611e047efcbf5162596586dd36873da44ab55e1","dirty":true}
