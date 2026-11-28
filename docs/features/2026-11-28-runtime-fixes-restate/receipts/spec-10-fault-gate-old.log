@@ -1,0 +1,46 @@
+
+> joycraft@1.10.3 test /private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec10-clone
+> vitest tests/runtime-report-gate.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec10-clone[39m
+
+ [31m❯[39m tests/runtime-report-gate.test.ts [2m([22m[2m7 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 4399[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-1] a report whose observation ran the recorded gate is refused, also in a shell form [33m 446[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-2] a report that ran only focused commands passes, and a project with no gate is not checked [33m 373[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate wrappers and a broken joycraft.yaml (spec 27)[2m > [22m[AC:spec-27-3] each shell or env wrapper of the gate is refused; more arguments pass; a broken joycraft.yaml refuses [33m 1530[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate runner aliases and a done spec re-check (1.9.1 spec 2)[2m > [22m[AC:spec-2-1] npx, pnpm exec and the run of pnpm run name the same gate; a focused npx run passes [33m 955[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate runner aliases and a done spec re-check (1.9.1 spec 2)[2m > [22m[AC:spec-2-2] a done spec re-checked with its accepted report is unchanged after tests.gate is recorded; an in-review one is refused [33m 515[2mms[22m[39m
+[31m   [31m×[31m report gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-1] one part of a chained gate is refused like the whole gate; focused runs and a one-part gate are unchanged[39m[32m 188[2mms[22m[39m
+[31m     → ["npm","test"]: : expected +0 to be 2 // Object.is equality[39m
+   [33m[2m✓[22m[39m report gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-2] a done spec re-checked with a report that ran a gate part stays done; gateRuns still turns the check off [33m 392[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-report-gate.test.ts[2m > [22mreport gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-1] one part of a chained gate is refused like the whole gate; focused runs and a one-part gate are unchanged
+[31m[1mAssertionError[22m: ["npm","test"]: : expected +0 to be 2 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 2[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m tests/runtime-report-gate.test.ts:[2m138:74[22m[39m
+    [90m136| [39m    [35mfor[39m ([35mconst[39m argv [35mof[39m refusedCases) {
+    [90m137| [39m      [35mconst[39m result [33m=[39m [34mcheckReport[39m([34mfixture[39m({ gate[33m,[39m argv }))[33m;[39m
+    [90m138| [39m      expect(result.status, `${JSON.stringify(argv)}: ${result.stderr}…
+    [90m   | [39m                                                                         [31m^[39m
+    [90m139| [39m      expect(result.stderr).toContain('a part of the recorded tests.ga…
+    [90m140| [39m    }
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m6 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 11:33:48
+[2m   Duration [22m 4.60s[2m (transform 20ms, setup 0ms, collect 19ms, tests 4.40s, environment 0ms, prepare 38ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":5288,"load":[6.5498046875,6.26513671875],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-report-gate.test.ts"],"exitCode":1,"timedOut":false,"revision":"511c19b1324c90261a9dde61b5cf819452acd0ee","dirty":false,"patch":{"path":"docs/features/2026-11-28-runtime-fixes-restate/faults/spec-10-gate-part-refusal.diff","sha256":"4773a142e7727adc6e178704f410d7d751f67817056faed843a3249d73135e92","patched":true,"restored":true}}

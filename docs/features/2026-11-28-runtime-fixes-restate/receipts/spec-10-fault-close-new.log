@@ -1,0 +1,43 @@
+
+> joycraft@1.10.3 test /private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec10-clone
+> vitest tests/runtime-close-feature.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec10-clone[39m
+
+ [31m❯[39m tests/runtime-close-feature.test.ts [2m([22m[2m4 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 4076[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-close] a done, accepted queue closes with at most 2 commits, an archived folder, a released lease and the one line [33m 1340[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-refuse] an in-review spec, a dirty tree and a missing context page give exit 2, all three named, nothing changed [33m 480[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-refuse] another session's lease stops the close [33m 442[2mms[22m[39m
+[31m   [31m×[31m close.mjs --feature[2m > [22m[AC:sl3-05-same-checks] [AC:spec-10-1] the archive is byte-equal to the one the manual session-end steps write[39m[33m 1814[2mms[22m[39m
+[31m     → archive-replay.json: expected false to be true // Object.is equality[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-close-feature.test.ts[2m > [22mclose.mjs --feature[2m > [22m[AC:sl3-05-same-checks] [AC:spec-10-1] the archive is byte-equal to the one the manual session-end steps write
+[31m[1mAssertionError[22m: archive-replay.json: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/runtime-close-feature.test.ts:[2m124:116[22m[39m
+    [90m122| [39m    [34mexpect[39m([34mfiles[39m([34marchived[39m(command))[33m.[39mlength)[33m.[39m[34mtoBeGreaterThan[39m([34m3[39m)[33m;[39m
+    [90m123| [39m    [35mfor[39m ([35mconst[39m file [35mof[39m [34mfiles[39m([34marchived[39m(manual))) {
+    [90m124| [39m      expect(readFileSync(join(archived(command), file)).equals(readFi…
+    [90m   | [39m                                                                                                                   [31m^[39m
+    [90m125| [39m    }
+    [90m126| [39m  }[33m,[39m [34m20000[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 11:35:14
+[2m   Duration [22m 4.31s[2m (transform 214ms, setup 0ms, collect 18ms, tests 4.08s, environment 0ms, prepare 44ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":5136,"load":[14.07421875,13.26708984375],"cores":14,"loaded":true,"argv":["pnpm","test","tests/runtime-close-feature.test.ts"],"exitCode":1,"timedOut":false,"revision":"6c84f00b01d191944073546e5d5138cc7d70a257","dirty":false,"patch":{"path":"docs/features/2026-11-28-runtime-fixes-restate/faults/spec-10-close-archive-session.diff","sha256":"210dbb97ea783935b05f3d8b3393b8387e7907b0ea684e14c9d5e77c98c4cd49","patched":true,"restored":true}}
