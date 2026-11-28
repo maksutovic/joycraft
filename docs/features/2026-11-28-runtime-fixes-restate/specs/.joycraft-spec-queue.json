@@ -276,7 +276,8 @@
       "id": 4,
       "file": "04-stop-hook.md",
       "depends_on": [
-        3
+        3,
+        10
       ],
       "status": "todo",
       "mode": "batch",
@@ -721,6 +722,54 @@
             "id": "spec-9-2",
             "requirement": {
               "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/09-release-1-11-0.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "file": "10-gate-timeouts.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "gate-timeouts",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/10-gate-timeouts.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "tests/runtime-close-feature.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/runtime-report-gate.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-10-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/10-gate-timeouts.md",
               "anchor": "acceptance"
             },
             "requiredKinds": [

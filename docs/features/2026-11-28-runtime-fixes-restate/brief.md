@@ -111,6 +111,15 @@ Done when:
 - The confirmed restatement, with the user's corrections in their words, goes
   into the brief's context section. `test: same`
 
+### gate-timeouts
+
+Added 2026-11-28 during the queue: the project gate blocks every push, and two
+process-spawning tests time out at 5 s in a full parallel run on this machine.
+
+Done when:
+- Both tests carry an explicit 20 s timeout and pass in the full gate, with no
+  assertion change. `test:` the two test files.
+
 ### release
 
 Done when:
