@@ -1,0 +1,700 @@
+{
+  "schemaVersion": 1,
+  "feature": "runtime-fixes-restate",
+  "specs": [
+    {
+      "id": 1,
+      "file": "01-linked-coordinator.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "linked-coordinator",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/worktrees.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/close.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-dispatch-parallel.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-1-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-2",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-3",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-1-4",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "file": "02-dispatch-manifest.md",
+      "depends_on": [
+        1
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "dispatch-manifest",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-preflight.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-dispatch-manifest.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-2-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-2",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-3",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-2-4",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "file": "03-windows-spawn.md",
+      "depends_on": [
+        2
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "windows-spawn",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/03-windows-spawn.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/evidence.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/close.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-command-spawn.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-3-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/03-windows-spawn.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-2",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/03-windows-spawn.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-3-3",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/03-windows-spawn.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 4,
+      "file": "04-stop-hook.md",
+      "depends_on": [
+        3
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "stop-hook",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/04-stop-hook.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/gate.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/status.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-stop-hook.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-4-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/04-stop-hook.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-2",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/04-stop-hook.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-3",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/04-stop-hook.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-4-4",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/04-stop-hook.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "file": "05-update-check-worktrees.md",
+      "depends_on": [
+        4
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "update-check-worktrees",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/05-update-check-worktrees.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/update-check.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-update-check.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-5-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/05-update-check-worktrees.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-2",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/05-update-check-worktrees.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-3",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/05-update-check-worktrees.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "file": "06-diff-paths.md",
+      "depends_on": [
+        5
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "diff-paths",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/06-diff-paths.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/coordinator.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-changed-paths.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-6-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/06-diff-paths.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-2",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/06-diff-paths.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "file": "07-worker-start.md",
+      "depends_on": [
+        6
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "worker-start",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/07-worker-start.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.claude/agents/joycraft-implementer.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-dispatch-commands.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-worker-start.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-7-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/07-worker-start.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-7-2",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/07-worker-start.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-7-3",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/07-worker-start.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "file": "08-restate.md",
+      "depends_on": [
+        7
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "restate",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/08-restate.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-entry/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/templates/brief.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-restate.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-8-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/08-restate.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-8-2",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/08-restate.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-8-3",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/08-restate.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-8-4",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/08-restate.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-8-5",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/08-restate.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "file": "09-release-1-11-0.md",
+      "depends_on": [
+        8
+      ],
+      "status": "todo",
+      "mode": "batch",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "release",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/09-release-1-11-0.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "package.json",
+            "kind": "code"
+          },
+          {
+            "path": "src/joycraft-release.json",
+            "kind": "code"
+          },
+          {
+            "path": "CHANGELOG.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/public-docs.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/release-preparation.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-9-1",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/09-release-1-11-0.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-2",
+            "requirement": {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/09-release-1-11-0.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
