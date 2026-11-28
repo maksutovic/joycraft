@@ -444,9 +444,11 @@ export function prepareDispatch({ workerRoot, coordinatorRoot, parallel, access,
     brief, spec: source(root, state.specPath), queue: source(root, queuePath),
     inputs: existingInputs, plannedMissing, decisionScope: decisionScope ?? null, ...decisionState,
   };
-  // Each review keeps its own report: a later startup never points at an earlier report's path.
+  // Each review keeps its own report: a later startup never points at an earlier report's path,
+  // in this tree or, for a worker tree, in the coordinator's.
+  const reportRoots = [...new Set([root, coordinatorRoot === undefined ? root : path.resolve(coordinatorRoot)])];
   let reportDestination = path.posix.join(path.posix.dirname(queuePath), `review-${specId}.report.json`);
-  for (let round = 2; role === 'reviewer' && existsSync(path.join(root, reportDestination)); round += 1) {
+  for (let round = 2; role === 'reviewer' && reportRoots.some(home => existsSync(path.join(home, reportDestination))); round += 1) {
     reportDestination = path.posix.join(path.posix.dirname(queuePath), `review-${specId}-r${round}.report.json`);
   }
   const request = {

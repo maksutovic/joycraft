@@ -328,7 +328,7 @@
       "id": 5,
       "file": "05-missing-report.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -384,6 +384,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-28T08:12:25.090Z"
       }
     },
     {
