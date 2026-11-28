@@ -5,10 +5,11 @@ only the lines that `cleanup.mjs tidy` names. Each finding has `check`, `path`,
 `detail` and `fix`. `node .joycraft/runtime/cleanup.mjs --checks` lists every
 check, what it finds, its kind, and whether it is a gate. `entry-check.mjs` prints the
 findings about entry files, and nothing when they are clean; `--ci` prints one
-line for each gate finding and exits 2.
+line for each gate finding and exits 2. `entry-size` counts only own text,
+not Joycraft's block or review-loop section.
 
 `missing-path` skips globs, placeholders, URLs, paths outside the
-project and paths that Git ignores. A record rightly names removed paths and
+project, paths that Git ignores and the managed block in `AGENTS.md`. A record rightly names removed paths and
 working material, so it is exempt from `missing-path` and `working-link`: a
 page with `type: log` or `type: history` frontmatter, `decision-log.md` and
 `shipped*.md`. `entry-check.mjs lost --base <rev>` lists the lines

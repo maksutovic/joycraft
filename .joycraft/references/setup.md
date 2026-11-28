@@ -56,6 +56,16 @@ render nothing, ask nothing: a repeated setup must leave the project unchanged.
    what the user answered or a home already states. Keep the user's words apart
    from your observations and assumptions. On a bare project, offer the [kickoff](#kickoff-for-a-new-project)
    instead.
+
+   **Git.** `node .joycraft/runtime/kickoff.mjs detect --root .` prints
+   `"git"`. When it is false, settle Git here, one time. Submit and the
+   small-job close need a commit. On a bare project, run `git init`, say so,
+   and say that deleting the `.git` folder undoes it. On a project with
+   files, ask once, yes or no: "Make this folder a Git repository?" On yes,
+   run `git init`. On no, write `- No Git:` and the user's words under
+   `## Rules` in `AGENTS.md`, and do not ask again. When the folder is bare
+   or has an ignore file, commit what is there as `chore: set up Joycraft`.
+   Otherwise, do not commit.
 3. **Propose.** Draft every change:
    - **Joycraft's block** in `AGENTS.md`: when it is missing, put the output
      of `node .joycraft/runtime/entry-check.mjs block` there. It replaces
@@ -142,7 +152,8 @@ node .joycraft/runtime/kickoff.mjs detect --root .
 
 Offer it only when `offer` is true; on an existing codebase run it only when the
 user asks ("kickoff", "let me tell you about this project", `--requested`). The
-user can decline; then continue as usual.
+user can decline; then continue as usual. When `detect` prints `"git": false`,
+run `git init` first, as [step 2](#set-up-the-context-map) says for a bare project.
 
 1. `kickoff.mjs start --root .` records what exists, so the check can prove what
    the kickoff changed.
@@ -163,17 +174,18 @@ user can decline; then continue as usual.
    A stated stack preference stays `proposed` until the user confirms it.
 5. Run `kickoff.mjs check --root .` and fix every problem it reports: no
    scaffold, manifest or source file; no empty file; no dangling link; every
-   existing guidance line kept.
+   existing guidance line kept. When Git is on, commit what is there as
+   `chore: set up Joycraft`.
 6. Show `kickoff.mjs summary --root .` and apply the user's corrections.
-7. Then write the first brief for the first outcome, with its "Done when"
-   settled. Choosing the stack and scaffolding the app are normal work after
-   that: a brief, specs and review.
+7. Then start the first outcome by the `Work` line in `AGENTS.md`: say its
+   path, and write its brief with the "Done when" lines. Choosing the stack and
+   scaffolding the app are normal work on that path.
 
 ## Review loop tools
 
 The review loop needs tools that can show the work: a browser for a web app, a
-simulator or emulator for a mobile app, an HTTP check for an API. On first entry,
-setup and every upgrade, run the read-only plan:
+simulator or emulator for a mobile app, an HTTP check for an API. At setup and
+every upgrade, run the read-only plan:
 
 ```sh
 node .joycraft/runtime/review-tools.mjs plan --root . --host-tools <observed host tools>
@@ -259,8 +271,7 @@ another worktree had one.
 
 Use a gitignored file only when an explicit project allowlist names its
 path. The project owner may authorize copying an allowed path from the
-same project's coordinator through native `.worktreeinclude` or an explicit
-manual equivalent. Do not copy files by default, including secrets,
+same project's coordinator through an explicit copy step. Do not copy files by default, including secrets,
 credentials, browser profiles, or host configuration.
 
 Keep each worker's `node_modules`, build caches such as `.next`, runtime state,
@@ -315,6 +326,7 @@ When `.joycraft/installation.json` lists the `claude` host, offer the [gates](ga
 When `node .joycraft/runtime/archive.mjs ignore --check` prints `missing`, ask once whether search should skip the archive; rerun it with `--apply` on a yes, `--decline` on a no.
 When `node .joycraft/runtime/entry-check.mjs` reports `gate-rule` and `node .joycraft/runtime/cleanup.mjs gate-rule --check` prints `unset`, show the findings once with the before-and-after rewrite ([cleanup](cleanup.md)) as one question. Rewrite on a yes, and record the answer with `cleanup.mjs gate-rule --record rewritten` or `--record kept`.
 When the project already uses a doc or code checker (vale, or knip through a wrapper that prints `path:line: message`), offer once to add it to `checks:` ([settings](settings.md)).
+End setup in at most 120 words: what changed, what you assumed, what to say next.
 
 ## Upgrade and agent onboarding
 

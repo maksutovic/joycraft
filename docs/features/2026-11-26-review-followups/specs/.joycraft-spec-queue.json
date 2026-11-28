@@ -772,6 +772,104 @@
         "path": "docs/features/2026-11-26-review-followups/specs/review-8.report.json",
         "sha256": "3a089be453fc83601b61d373fb1c7222b1494554b115e62c782e590cca5538f4"
       }
+    },
+    {
+      "id": 9,
+      "file": "09-reviewer-can-fail.md",
+      "depends_on": [
+        1
+      ],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-26-review-followups/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "reviewer-notes",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-26-review-followups/specs/review-1.report.json",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "scripts/trial/reviewer-bench.json",
+            "kind": "code"
+          },
+          {
+            "path": "CHANGELOG.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-reviewer-can-fail.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/trial-reviewer-bench.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-worker-commands.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-9-1",
+            "requirement": {
+              "path": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-2",
+            "requirement": {
+              "path": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-9-3",
+            "requirement": {
+              "path": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
     }
   ]
 }

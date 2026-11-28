@@ -39,9 +39,22 @@ function readQueueFile(root, queuePath) {
   return queue;
 }
 
+/** Claude agent files whose frontmatter asks for host worktree isolation: a
+ * worker launched as one of them cannot use a Joycraft worker tree. */
+export function isolatedAgents(root) {
+  const folder = path.join(root, '.claude', 'agents');
+  if (!existsSync(folder)) return [];
+  return readdirSync(folder).filter(name => name.endsWith('.md')).sort().filter(name => {
+    const frontmatter = /^(?:\uFEFF)?---\r?\n([\s\S]*?)\r?\n---/.exec(readFileSync(path.join(folder, name), 'utf8'))?.[1] ?? '';
+    return /^isolation:\s*["']?worktree["']?\s*$/m.test(frontmatter);
+  }).map(name => `.claude/agents/${name}`);
+}
+
 /** Create a worker tree for one spec from a captured base revision and record its owner. */
 export function createWorktree({ root = process.cwd(), queuePath, specId, session, base = 'HEAD' }) {
-  root = gitRoot(root);
+  const main = gitRoot(root);
+  const here = realpathSync(git(root, ['rev-parse', '--show-toplevel']).trim());
+  root = main;
   queuePath = relativePath(queuePath);
   requireValue(typeof session === 'string' && session.trim(), 'Creating a worker tree needs the coordinator --session');
   const queue = readQueueFile(root, queuePath);
@@ -59,10 +72,15 @@ export function createWorktree({ root = process.cwd(), queuePath, specId, sessio
     requireValue(!existsSync(path.join(root, treePath)), `Worker tree path already exists: ${treePath}`);
     mkdirSync(path.join(root, treeHome), { recursive: true });
     git(root, ['worktree', 'add', '-b', branch, treePath, baseRevision]);
-    const entry = { path: treePath, branch, feature: queue.feature, queuePath, specId, baseRevision, coordinatorSession: session, createdAt: new Date().toISOString() };
+    // The coordinator's own tree, so the worker's dispatch-start finds its parallel workspace here.
+    const entry = { path: treePath, branch, feature: queue.feature, queuePath, specId, baseRevision, coordinatorSession: session,
+      coordinatorRoot: path.relative(root, here) || '.', createdAt: new Date().toISOString() };
     ledger.trees.push(entry);
     writeLedger(root, ledger);
-    return { ...entry, next: 'Run the project bootstrap in this tree before any edit.' };
+    const isolated = isolatedAgents(here);
+    return { ...entry, workerRoot: path.join(root, treePath),
+      next: 'Run the project bootstrap in this tree before any edit. Launch the worker without host worktree isolation and give it workerRoot; its dispatch-start reads the parallel workspace from this record.',
+      ...(isolated.length ? { warnings: [`${isolated.join(', ')} ${isolated.length === 1 ? 'sets' : 'set'} isolation: worktree, so a worker launched as ${isolated.length === 1 ? 'that agent type' : 'those agent types'} gets its own host worktree and cannot use this tree. Launch this worker as an agent type without it, such as joycraft-implementer or general-purpose.`] } : {}) };
   });
 }
 

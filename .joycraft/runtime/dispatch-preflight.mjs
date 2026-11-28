@@ -98,7 +98,7 @@ export function assertReviewerNotWaived(sourceView, roles, workspace) {
 function attestWorkspace(workspace, workerRoot, roles, queueParallel) {
   const defaultAccess = roles.every(role => role.name === 'reviewer') ? 'read-only' : 'mutating';
   if (workspace === undefined) {
-    requireValue(!(queueParallel && defaultAccess === 'mutating'), 'Parallel queue execution needs an attested workspace');
+    requireValue(!(queueParallel && defaultAccess === 'mutating'), 'Parallel queue execution needs an attested workspace: pass --coordinator <coordinator-root> --parallel true --access mutating, or start through dispatch-start.mjs, which reads them from the worktrees.mjs record or the coordinator lease');
     return { workerRoot, coordinatorRoot: workerRoot, kind: 'serial', parallel: false, access: defaultAccess };
   }
   requireValue(isObject(workspace), 'Dispatch workspace must be an object');
@@ -444,7 +444,11 @@ export function prepareDispatch({ workerRoot, coordinatorRoot, parallel, access,
     brief, spec: source(root, state.specPath), queue: source(root, queuePath),
     inputs: existingInputs, plannedMissing, decisionScope: decisionScope ?? null, ...decisionState,
   };
-  const reportDestination = path.posix.join(path.posix.dirname(queuePath), `review-${specId}.report.json`);
+  // Each review keeps its own report: a later startup never points at an earlier report's path.
+  let reportDestination = path.posix.join(path.posix.dirname(queuePath), `review-${specId}.report.json`);
+  for (let round = 2; role === 'reviewer' && existsSync(path.join(root, reportDestination)); round += 1) {
+    reportDestination = path.posix.join(path.posix.dirname(queuePath), `review-${specId}-r${round}.report.json`);
+  }
   const request = {
     schemaVersion: 1, workerRoot: root, expectedManifestPath,
     delivery: { roles: [rolePaths(role, root)], sourceView, reportDestination },
@@ -465,8 +469,9 @@ export function prepareDispatch({ workerRoot, coordinatorRoot, parallel, access,
   const packet = {
     schemaVersion: 1, ...prepared, role, implementerSessionId, ...(implementerActor === undefined ? {} : { implementerActor }), subject,
     // The project's entry file comes first: its rules bind a worker, and its map names the pages for the spec.
-    readFirst: [...(existsSync(path.join(root, 'AGENTS.md')) ? ['AGENTS.md'] : []), ...prepared.roles[0].files],
-    outputContract: { reportPath: reportDestination, schemaVersion: 1, completeWith: 'node .joycraft/runtime/completion.mjs finalize-review --queue <queue-path> --spec <id> --report <report-path>' },
+    // Then the role skill only. Its links name the references to read and when; runtime scripts are run, not read.
+    readFirst: [...(existsSync(path.join(root, 'AGENTS.md')) ? ['AGENTS.md'] : []), prepared.roles[0].files[0]],
+    outputContract: { reportPath: reportDestination, schemaVersion: 1, completeWith: "the startup output's commands.finalizeReview; when it prints commands.finish instead, return the report path for the coordinator to finish" },
     nativePrompt: role === 'reviewer' ? 'Read the listed files first. Review current raw sources and report observed evidence only. Do not infer an expected verdict or reasoning. Return the schema-v1 report at the declared report path.' : 'Read the listed files first. Implement only the current raw task sources. Do not certify acceptance; preserve planned missing inputs as work to create, then prepare an independent review after committing.',
   };
   // The project's recorded review-loop tools and commands, so workers use the same setup, and this
@@ -500,14 +505,15 @@ export function nativeDispatch(request, native = {}) {
   };
 }
 
-/** Validate a returned report without accepting it or changing queue/spec status. */
-export async function checkDispatchedReport({ workerRoot, queuePath, specId, reportPath }) {
-  return checkReport({ root: workerDirectory(workerRoot), queuePath, specId, reportPath });
+/** Validate a returned report without accepting it or changing queue/spec status.
+ * With agentAtFinish, a same-session reviewer's missing agent ID waits for the coordinator's --reviewer-agent. */
+export async function checkDispatchedReport({ workerRoot, queuePath, specId, reportPath, agentAtFinish = false }) {
+  return checkReport({ root: workerDirectory(workerRoot), queuePath, specId, reportPath, agentAtFinish });
 }
 
 function argumentsFor(argv) {
   const [command, ...args] = argv;
-  requireValue(['preflight', 'prepare', 'check-report'].includes(command), 'Usage: dispatch-preflight.mjs preflight --request <request.json> | prepare --worker-root <root> --expected-manifest <manifest> --queue <path> --spec <id> --role implementer|reviewer --implementer-session <id> --out <packet.json> [--coordinator <root> --parallel true|false --access mutating|read-only --base-revision <full-commit-sha>] [--implementer-host <host> --implementer-agent <host-issued-id>] [--brief <path>] | check-report --worker-root <root> --queue <path> --spec <id> --report <report-path>');
+  requireValue(['preflight', 'prepare', 'check-report'].includes(command), 'Usage: dispatch-preflight.mjs preflight --request <request.json> | prepare --worker-root <root> --expected-manifest <manifest> --queue <path> --spec <id> --role implementer|reviewer --implementer-session <id> --out <packet.json> [--coordinator <root> --parallel true|false --access mutating|read-only --base-revision <full-commit-sha>] [--implementer-host <host> --implementer-agent <host-issued-id>] [--brief <path>] | check-report --worker-root <root> --queue <path> --spec <id> --report <report-path> [--agent-at-finish true]');
   const flags = {};
   for (let i = 0; i < args.length; i += 2) {
     requireValue(nonempty(args[i]) && nonempty(args[i + 1]) && flags[args[i]] === undefined, `Invalid or duplicate argument: ${args[i]}`);
@@ -537,9 +543,10 @@ export async function main(argv = process.argv.slice(2)) {
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     return result;
   }
-  requireValue(Object.keys(flags).length === 4 && flags['--worker-root'] && flags['--queue'] && flags['--spec'] && flags['--report'], 'check-report requires --worker-root, --queue, --spec, and --report');
+  requireValue(Object.keys(flags).every(flag => ['--worker-root', '--queue', '--spec', '--report', '--agent-at-finish'].includes(flag)) && flags['--worker-root'] && flags['--queue'] && flags['--spec'] && flags['--report'], 'check-report requires --worker-root, --queue, --spec, and --report, with optional --agent-at-finish true');
+  requireValue(flags['--agent-at-finish'] === undefined || flags['--agent-at-finish'] === 'true', '--agent-at-finish takes only true');
   requireValue(/^(?:0|[1-9]\d*)$/.test(flags['--spec']), 'Spec ID must be a nonnegative integer');
-  const result = await checkDispatchedReport({ workerRoot: flags['--worker-root'], queuePath: flags['--queue'], specId: Number(flags['--spec']), reportPath: flags['--report'] });
+  const result = await checkDispatchedReport({ workerRoot: flags['--worker-root'], queuePath: flags['--queue'], specId: Number(flags['--spec']), reportPath: flags['--report'], agentAtFinish: flags['--agent-at-finish'] === 'true' });
   process.stdout.write(`${JSON.stringify({ ok: true, acceptedReport: result.acceptedReport }, null, 2)}\n`);
   return result;
 }
