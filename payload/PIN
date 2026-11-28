@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "source": "joycraft",
-  "tag": "payload-c15cff8e2a5b",
-  "commit": "c15cff8e2a5bc869b0cffd19f7c42f7cc0b1eb381c73f24ab56da70c1f49eda2",
+  "tag": "payload-a70a37493fcf",
+  "commit": "a70a37493fcfc37f2b5a1952f4ccbce9d8a54549a61af4d16a34fb224e3a2466",
   "files": {
     ".agents/skills/joycraft-cleanup/SKILL.md": "28035726d1b5e87fb25c175d7caa81a510b867b8417820d10ef60d7ea0defef0",
     ".agents/skills/joycraft-context/SKILL.md": "8eb9374846b8f0d99280217b3fc73cfddac97d72f3ff6f3aca4a86af58dd8b85",
@@ -54,7 +54,7 @@
     ".joycraft/runtime/artifacts/render.mjs": "79d5a5628542ec87740096ef697fc1efa8649c5546ae72b449f43bc5c810035d",
     ".joycraft/runtime/artifacts/server.mjs": "b7e5efab7ef8afc060b56278e6bc7f21bff325ddd4f64a6dde8e1051647851ff",
     ".joycraft/runtime/cleanup.mjs": "d931eb94412feaed8ece8efede6c6f6fee835cf0dc39ef22095cda9294967ab4",
-    ".joycraft/runtime/close.mjs": "b98435ad74d13d79560640057aed94239caf5509633873792bebd4fff9d89ec3",
+    ".joycraft/runtime/close.mjs": "c39d35215af7394298770abb0747d03d347d302412a737f7ba16abc3d3931220",
     ".joycraft/runtime/completion.mjs": "9106db5ec5108353fa89abb5c21a0cb9adefeaa43ab0fb31ebae1a748019ced3",
     ".joycraft/runtime/config.mjs": "dac5f409c01d593f9230fe695fa0ea29c343c1e7cb04bb09775af05dc240f62d",
     ".joycraft/runtime/context/cli.mjs": "40adc206c8c3b7f4f5bedffb097d9ae1b0718f0586a055796e4987e9c3088eee",
@@ -65,7 +65,7 @@
     ".joycraft/runtime/dispatch-preflight.mjs": "174eb238114db76bbd7c3131c14d3fb1417d07e3fcd9dca72b451f4b60d64345",
     ".joycraft/runtime/dispatch-start.mjs": "86d68920cd58ffb5be099ca3f8132f65543d1e4f8cd935de1037dcaf5e130254",
     ".joycraft/runtime/entry-check.mjs": "be376385558c0207deb883564eb3ca45191a466d41bf205ce09bcac607f74639",
-    ".joycraft/runtime/evidence.mjs": "559d114c862a922a6a5e4120155b5f519d33c456a6d6ef36fb8e3f7d5c7b8e8c",
+    ".joycraft/runtime/evidence.mjs": "04937d981bbf8992b539f9b3dd17de2916e61c6c78cf4482c7a6640f1651d2be",
     ".joycraft/runtime/follow-ups.mjs": "6b05fb77e1f823acfe4362a639b27ed7e36bee17025f00042c21e10dfb608a68",
     ".joycraft/runtime/gate.mjs": "e972a85f03fa94cf2d59885a415e627e0507fdce6f7f9d9f4d5e1d9e088eac38",
     ".joycraft/runtime/identity.mjs": "dd8f611b6ace66aa111c0301eda65667f786c33e329e2369c6e2da0a0add1421",

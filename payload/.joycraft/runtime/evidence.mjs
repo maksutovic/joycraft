@@ -1,4 +1,4 @@
-import { execFileSync, spawn } from 'node:child_process';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { appendFileSync, closeSync, createReadStream, existsSync, readFileSync, fstatSync, fsyncSync, mkdirSync, openSync, readSync, realpathSync, unlinkSync } from 'node:fs';
 import os from 'node:os';
@@ -377,6 +377,46 @@ function readEnvMap(root) {
  * and gives exitCode null.
  * Every refusal happens before the child starts and carries exitCode 2.
  */
+// cmd.exe acts on these characters outside quotes; a caret before each makes it literal.
+const cmdMeta = /([()\][%!^"`<>&|;, *?])/g;
+const envValue = (env, name) => env[Object.keys(env).find(key => key.toUpperCase() === name) ?? name];
+/** One argument for cmd.exe: quoted for the program's own parser, then caret-escaped. A .cmd shim reads
+ * its arguments again through %*, so they are escaped twice (as cross-spawn does). */
+function cmdArgument(arg) {
+  const quoted = `"${arg.replace(/(\\*)"/g, '$1$1\\"').replace(/(\\*)$/, '$1$1')}"`;
+  return quoted.replace(cmdMeta, '^$1').replace(cmdMeta, '^$1');
+}
+
+/** The file Windows would start for `name`: a PATH and PATHEXT search, or null when none is found. */
+function windowsCommand(name, { env, exists, cwd }) {
+  const exts = /\.[^.\\/]+$/.test(name) ? [''] : (envValue(env, 'PATHEXT') || '.COM;.EXE;.BAT;.CMD').split(';').filter(Boolean);
+  const dirs = /[\\/]/.test(name) ? [null] : (envValue(env, 'PATH') || '').split(';').filter(Boolean);
+  for (const dir of dirs) {
+    for (const ext of exts) {
+      const file = dir === null ? path.win32.resolve(cwd, name + ext) : path.win32.join(dir, name + ext);
+      if (exists(file)) return file;
+    }
+  }
+  return null;
+}
+
+/** How to start argv without a shell of our own. On Windows a .cmd or .bat file (npm, npx, pnpm) cannot
+ * start without cmd.exe, and since CVE-2024-27980 Node refuses it, so it goes through `cmd.exe /d /s /c`
+ * with every word escaped. Everything else, and every other platform, starts argv[0] directly.
+ * @returns {{ command: string, args: string[], options: object }}
+ */
+export function commandSpawn(argv, { platform = process.platform, env = process.env, exists = existsSync, cwd = process.cwd() } = {}) {
+  const direct = { command: argv[0], args: argv.slice(1), options: {} };
+  if (platform !== 'win32') return direct;
+  const file = windowsCommand(argv[0], { env, exists, cwd });
+  if (!file || !/\.(cmd|bat)$/i.test(file)) return direct;
+  const line = [file.replace(cmdMeta, '^$1'), ...argv.slice(1).map(cmdArgument)].join(' ');
+  return { command: envValue(env, 'COMSPEC') || 'cmd.exe', args: ['/d', '/s', '/c', `"${line}"`], options: { windowsVerbatimArguments: true } };
+}
+
+/** Stop a child and, on Windows, the processes it started (cmd.exe runs the real command as its child). */
+const killWindowsTree = child => { if (spawnSync('taskkill', ['/pid', String(child.pid), '/T', '/F'], { stdio: 'ignore' }).status !== 0) child.kill('SIGKILL'); };
+
 export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = defaultTimeoutMs, argv, patch }) {
   refuse(commandArgv(argv), `A command is needed after --. ${usage}`);
   refuse(Number.isSafeInteger(timeoutMs) && timeoutMs > 0 && timeoutMs <= 2 ** 31 - 1, `--timeout-ms must be a whole number of milliseconds from 1 to ${2 ** 31 - 1}`);
@@ -396,7 +436,7 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
   // handlers are in place before the patch is applied: a stop before the child exists still restores it.
   let child = null;
   const stop = signal => {
-    if (child?.pid) { if (posix) signalGroup(child.pid, 'SIGKILL'); else child.kill('SIGKILL'); }
+    if (child?.pid) { if (posix) signalGroup(child.pid, 'SIGKILL'); else killWindowsTree(child); }
     if (fault) restorePatch(root, fault, relative);
     process.exit(128 + (os.constants.signals[signal] ?? 1));
   };
@@ -414,7 +454,8 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
       }
     }
     try {
-      child = spawn(argv[0], argv.slice(1), { cwd: root, env: { ...process.env, ...envMap, CI: '1', JOYCRAFT_EVIDENCE: '1' }, stdio: ['ignore', fd, fd], detached: posix, windowsHide: true });
+      const start = commandSpawn(argv, { cwd: root });
+      child = spawn(start.command, start.args, { ...start.options, cwd: root, env: { ...process.env, ...envMap, CI: '1', JOYCRAFT_EVIDENCE: '1' }, stdio: ['ignore', fd, fd], detached: posix, windowsHide: true });
       await new Promise((resolve, reject) => { child.once('spawn', resolve); child.once('error', reject); });
     } catch (error) {
       closeSync(fd);
@@ -424,7 +465,7 @@ export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = d
     }
     let timedOut = false;
     const exited = new Promise(resolve => child.once('exit', (code, signal) => resolve({ code, signal })));
-    const timer = setTimeout(() => { timedOut = true; if (posix) endGroup(child.pid); else child.kill('SIGKILL'); }, timeoutMs);
+    const timer = setTimeout(() => { timedOut = true; if (posix) endGroup(child.pid); else killWindowsTree(child); }, timeoutMs);
     const { code, signal } = await exited;
     clearTimeout(timer);
     // Leftover processes in the group would keep writing to the receipt after it is hashed.

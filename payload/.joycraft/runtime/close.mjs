@@ -7,6 +7,7 @@ import { tidyVerify } from './cleanup.mjs';
 import { readConfig, workPaths } from './config.mjs';
 import { readLease, release } from './coordinator.mjs';
 import { templateArgv } from './dispatch-start.mjs';
+import { commandSpawn } from './evidence.mjs';
 import { checkGates } from './gate.mjs';
 import { parseJson, readLocal } from './identity.mjs';
 import { gitState } from './kickoff.mjs';
@@ -149,9 +150,12 @@ function runTests(root, lines) {
   if (!files.length) return { tests: 'not-run', files: 0, segment: 'Tests not run: no line names a test file.' };
   const argv = templateArgv(template, files);
   try {
-    execFileSync(argv[0], argv.slice(1), { cwd: root, env: { ...process.env, CI: '1' }, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 600_000, maxBuffer: 64 * 1024 * 1024 });
+    const start = commandSpawn(argv, { cwd: root });
+    execFileSync(start.command, start.args, { ...start.options, cwd: root, env: { ...process.env, CI: '1' }, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 600_000, maxBuffer: 64 * 1024 * 1024 });
     return { tests: 'passed', files: files.length, segment: `Tests: ${files.length} files passed.` };
   } catch (error) {
+    if (error.code === 'ENOENT') return { tests: 'failed', files: files.length, segment: 'Tests failed, closed with --accept.',
+      problem: `Could not start ${argv[0]}: ${error.message}. Check the recorded focused test command: ${argv.join(' ')}` };
     const status = error.code === 'ETIMEDOUT' ? 'timed out after 10 minutes' : error.status ?? error.signal ?? error.code ?? 'unknown';
     const output = `${error.stdout ?? ''}${error.stderr ?? ''}`.trimEnd().split('\n').slice(-20).map(line => `  ${line}`).join('\n');
     return { tests: 'failed', files: files.length, segment: 'Tests failed, closed with --accept.',
