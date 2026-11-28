@@ -1,0 +1,22 @@
+
+> joycraft@1.10.3 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit
+> vitest tests/runtime-archive-named-files.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit[39m
+
+ [32m✓[39m tests/runtime-archive-named-files.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 7448[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-2] namedFiles lists the full path, split segments and the dated name, not look-alikes; marks only a non-test migration [33m 332[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-4] --rewrite is an unknown argument, and neither a preview nor an --apply writes under .joycraft/local [33m 383[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (check) [33m 351[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (stage) [33m 376[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[AC:spec-1-5] next names only tests that name the folder outside a comment, at that line; namedFiles matches the preview [33m 988[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[AC:spec-9-1] only sure comments are comment-only; a closed /* */ before code, a .ts #field and a bare * line are code [33m 1832[2mms[22m[39m
+   [33m[2m✓[22m[39m archive reads every line ending (1.9.2 spec 4)[2m > [22m[AC:spec-4-2] a CR-only test file gets real line numbers and its comment line counts as a comment; LF, CRLF, U+2028 and U+2029 agree [33m 1633[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m14 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m 11:13:30
+[2m   Duration [22m 7.65s[2m (transform 22ms, setup 0ms, collect 23ms, tests 7.45s, environment 0ms, prepare 31ms)[22m
+
+joycraft-evidence: {"wallMs":8231,"load":[24.1005859375,22.33056640625],"cores":14,"loaded":true,"argv":["pnpm","test","tests/runtime-archive-named-files.test.ts"],"exitCode":0,"timedOut":false,"revision":"7cb415c7dec77b9cafbc10951e6a70bd431a911d","dirty":true}

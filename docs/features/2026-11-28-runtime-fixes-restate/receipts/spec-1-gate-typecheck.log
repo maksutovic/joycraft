@@ -1,0 +1,5 @@
+
+> joycraft@1.10.3 typecheck /Users/compiler/Developer/Joycraft/worktrees/joycraft-talk-audit
+> tsc --noEmit
+
+joycraft-evidence: {"wallMs":1004,"load":[27.4541015625,27.4541015625],"cores":14,"loaded":true,"argv":["pnpm","typecheck"],"exitCode":0,"timedOut":false,"revision":"7cb415c7dec77b9cafbc10951e6a70bd431a911d","dirty":true}

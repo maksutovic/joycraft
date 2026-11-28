@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-linked-coordinator.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -85,6 +85,10 @@
       },
       "submitted": {
         "at": "2026-11-28T19:11:28.463Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/review-1.report.json",
+        "sha256": "174f25fdf271ced7a854f1f34b82abffeda5802a74dbbe75de0a9a37a9569f77"
       }
     },
     {
