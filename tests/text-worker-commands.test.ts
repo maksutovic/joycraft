@@ -50,7 +50,7 @@ describe('worker commands text', () => {
   });
 });
 
-// Spec: docs/features/2026-11-22-fixes-1-9-3/specs/02-one-worker-home.md
+// Spec: docs/archive/2026-11-22-fixes-1-9-3/feature/specs/02-one-worker-home.md
 describe('one worker home (1.9.3)', () => {
   const implement = read('.agents', 'skills', 'joycraft-implement', 'SKILL.md');
   const worktrees = read('.joycraft', 'references', 'worktrees.md');
@@ -77,7 +77,7 @@ describe('one worker home (1.9.3)', () => {
   });
 });
 
-// Spec: docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md
+// Spec: docs/archive/2026-11-22-fixes-1-9-3/feature/specs/04-reviewer-start.md
 describe('reviewer start text (1.9.3)', () => {
   it('[AC:spec-4-3] [AC:sl2-06c-text] the reviewer gets the start command, --help, the worker-root cd form, and the coordinator binds its agent ID at finish', () => {
     expect(agents.reviewer).toContain('run `node .joycraft/runtime/dispatch-start.mjs --queue <queue> --spec <id> --role reviewer` from your worker root, adding `--coordinator-session <id>` when the task names one. `--help` lists the defaults.');
@@ -86,7 +86,7 @@ describe('reviewer start text (1.9.3)', () => {
   });
 });
 
-// Spec: docs/features/2026-11-22-fixes-1-9-4/specs/03-field-text.md
+// Spec: docs/archive/2026-11-22-fixes-1-9-4/feature/specs/03-field-text.md
 describe('field follow-up text (1.9.4)', () => {
   const implement = read('.agents', 'skills', 'joycraft-implement', 'SKILL.md');
   const completionRef = read('.joycraft', 'references', 'completion.md');
@@ -177,5 +177,12 @@ describe('reviewer checks (sl3-07)', () => {
     const guard = readFileSync(join(root, 'tests', 'payload-guard.test.ts'), 'utf8');
     expect(guard).toContain('const FIELD_24_WORDS = 29919;');
     expect(guard).toContain('export const EVERY_SPEC_CAP = FIELD_24_WORDS - 17663;');
+  });
+
+  // Spec: docs/archive/2026-11-22-fixes-1-9-3/feature/specs/07-reviewer-cd-reason.md
+  it('[AC:spec-7-1] dispatch.md gives the cd form with the reason the implementer agent gives', () => {
+    const form = "When the task names a worker root that is not your shell's folder, run each command as `cd <worker-root> && <one command>`: no worktree isolation is active, so this is the one allowed compound form.";
+    expect(agents.implementer).toContain(form);
+    expect(dispatch).toContain(form);
   });
 });

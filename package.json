@@ -1,6 +1,6 @@
 {
   "name": "joycraft",
-  "version": "1.10.2",
+  "version": "1.10.3",
   "description": "Install and update Joycraft, a skill bundle and runtime for agent-led software work, in any project",
   "type": "module",
   "bin": {
@@ -11,8 +11,8 @@
     "payload"
   ],
   "joycraft": {
-    "release": "1.10.2",
-    "summary": "Reviewers file no-work findings as notes, handled follow-ups are recorded in follow-ups.json and stop being questions, and the implement skill triages each review wave's follow-ups.",
+    "release": "1.10.3",
+    "summary": "Archive accepts a null hash for a brief amendment with no brief on one side, reopen names a missing accepted report, and the isolation warning reads all of .claude/agents.",
     "autoSafeEligible": false
   },
   "scripts": {

@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "86d8b62b6b9386beefb07f428eb9b98b3b295063",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+    "specId": 5,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md",
+    "criteria": [
+      {
+        "id": "spec-5-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-5-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "followups-1-10-3",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "15b22be2d3a5882ed43508534f9c312eca13ebb1542cf02436e46894ca118b08",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "8ee9b6b2893385f3438493825897c8c94ddb62908d770ae99e0c1ff73aeb6236",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md",
+        "kind": "requirement",
+        "sha256": "bca00eb96cc25aa256c051858bdaa8669a87b06bd24827dd1a4e784ef7431eed",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/completion.mjs",
+        "kind": "code",
+        "sha256": "9106db5ec5108353fa89abb5c21a0cb9adefeaa43ab0fb31ebae1a748019ced3",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-preflight.mjs",
+        "kind": "code",
+        "sha256": "b18e1871d6e084f33c6f196e3f519ce3545e4a7cf37e9598e9e845515bef168c",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-reopen.test.ts",
+        "kind": "check",
+        "sha256": "d355f16a662a701afe491b6b4686bd22b557e8be82b9868b1a9fd737f9b8bbac",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          5
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+          "anchors": [
+            "followups-1-10-3",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "afceb074e8a926dee2c14cecbc6240de3e5417d7bd9e214be5eeb8a77a9217ae"
+  },
+  "implementerSessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1"
+  },
+  "reviewer": {
+    "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+    "actor": {
+      "host": "claude",
+      "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+      "agentId": "af66832fc4b27c9c2"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "missing-accepted-report",
+      "subjectIdentity": "afceb074e8a926dee2c14cecbc6240de3e5417d7bd9e214be5eeb8a77a9217ae",
+      "representativeInput": "done spec 1 accepted on review-1.report.json, report file deleted, then replaced with invalid JSON; reopen spec 1 and submit spec 2",
+      "expected": "reopen exits 2 naming the path, missing or unreadable, restore from Git, not the no-input-changed message; submit lists { specId, paths: [], reportMissing, next } and warns naming spec and path",
+      "limits": [
+        "temp-dir git fixtures driven through the payload runtime CLI; not a live queue",
+        "project gate not rerun (recorded green at 86d8b62)"
+      ],
+      "criteria": [
+        "spec-5-1"
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-5-1] passed with 6/6 tests (exit 0). Read completion.mjs: missingAcceptedReport is checked before changedAcceptedInputs in reopen and in acceptedInputsChanged, and the submit CLI prints the reportMissing warning from the same list.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-focused-20261128T081807979Z-39342-1.log",
+              "sha256": "f909478f1e2b7f49f1196241e284c9e950a4c6541b861b6c50e193048a01a2fa"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-reopen.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe of a tampered acceptedReport.path in the queue: ../../outside.json and /etc/passwd are refused by path checks (exit 2); a directory path is reported as missing or unreadable by reopen (exit 2) and by the submit warning (exit 0).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-probe-report-path.log",
+              "sha256": "b4645f72b19812a2f8d65df627948c55ab296e4c9d71ac7cf97fb82440aa0f1e"
+            }
+          ],
+          "command": {
+            "argv": [
+              "npx",
+              "vitest",
+              "run",
+              "tests/runtime-reopen.test.ts",
+              "-t",
+              "PROBE"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "coordinator-report-path",
+      "subjectIdentity": "afceb074e8a926dee2c14cecbc6240de3e5417d7bd9e214be5eeb8a77a9217ae",
+      "representativeInput": "reopened spec 1 whose review-1.report.json exists only in the coordinator root; reviewer startup in a linked worker worktree with --coordinator",
+      "expected": "checkReport names review-1-r2.report.json",
+      "limits": [
+        "temp-dir git fixtures driven through the payload runtime CLI; not a live queue",
+        "project gate not rerun (recorded green at 86d8b62)"
+      ],
+      "criteria": [
+        "spec-5-2"
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-5-2] passed (exit 0); test asserts the report is absent in the worker and present in the coordinator before startup. Read dispatch-preflight.mjs: reportRoots holds worker root and resolved coordinator root, and the -r<n> loop checks both.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-focused-20261128T081807979Z-39342-1.log",
+              "sha256": "f909478f1e2b7f49f1196241e284c9e950a4c6541b861b6c50e193048a01a2fa"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-reopen.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "n1",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/runtime-reopen.test.ts:143",
+      "summary": "Test changes match class 1: two tagged tests added, existing tests unchanged (diff is additions only)."
+    },
+    {
+      "id": "n3",
+      "class": "note",
+      "origin": "new",
+      "criterion": "spec-5-1",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-revert-completion-red.log",
+      "summary": "Can-fail check: completion.mjs reverted to base b7bc26b in a scratch copy; [AC:spec-5-1] fails (1 failed, 5 passed, vitest exit 1)."
+    },
+    {
+      "id": "n4",
+      "class": "note",
+      "origin": "new",
+      "criterion": "spec-5-2",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-revert-preflight-red.log",
+      "summary": "Can-fail check: dispatch-preflight.mjs reverted to base in a scratch copy; [AC:spec-5-2] fails (checkReport lacks review-1-r2, vitest exit 1)."
+    },
+    {
+      "id": "n2",
+      "class": "note",
+      "origin": "pre-existing",
+      "at": ".joycraft/runtime/completion.mjs",
+      "summary": "The repo's installed .joycraft/runtime/completion.mjs and dispatch-preflight.mjs differ from payload/; the change ships via payload, tests run the payload copy. The dogfood update is the coordinator's step."
+    },
+    {
+      "id": "o1",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o2",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/follow-ups.json",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o3",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/receipts/spec-6-implementer-focused.log",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o4",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/receipts/spec-7-implementer-focused.log",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o5",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o6",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o7",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/06-amendment-absent-brief.md",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o8",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/07-reviewer-cd-reason.md",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o9",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/follow-ups.json",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o10",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-5-implementer-focused.log",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o11",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-6-implementer-focused.log",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o12",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o13",
+      "class": "note",
+      "origin": "unknown",
+      "at": "payload/.joycraft/references/archive.md",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o14",
+      "class": "note",
+      "origin": "unknown",
+      "at": "payload/.joycraft/runtime/archive.mjs",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o15",
+      "class": "note",
+      "origin": "unknown",
+      "at": "payload/PIN",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    },
+    {
+      "id": "o16",
+      "class": "note",
+      "origin": "unknown",
+      "at": "tests/runtime-archive-merge-amendment.test.ts",
+      "summary": "Changed since the base but declared by no spec of this queue (startup outside list)."
+    }
+  ],
+  "createdAt": "2026-11-28T08:19:54.101Z"
+}

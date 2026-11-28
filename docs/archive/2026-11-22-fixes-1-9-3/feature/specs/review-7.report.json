@@ -1,0 +1,260 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "86d8b62b6b9386beefb07f428eb9b98b3b295063",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+    "specId": 7,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-3/specs/07-reviewer-cd-reason.md",
+    "criteria": [
+      {
+        "id": "spec-7-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/07-reviewer-cd-reason.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "followups-1-10-3",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "93657942817f0b9edcbeeb1d9e3018021c394a13fef64ec176f3bb8ded0cf434",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "463eb656aef685378b0a7ca072d47068fdd07a04503c3dcbc4507576b7b52ab5",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/07-reviewer-cd-reason.md",
+        "kind": "requirement",
+        "sha256": "9fd054a0492e45f28d1cff73bec871c9030b62037b21c927ef0863094f30235a",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/dispatch.md",
+        "kind": "code",
+        "sha256": "ab4e1966d0475117cc6d0d46c59cd669edafde65dcfa59abddd0c1c02c531dc0",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "ce946f413bae5831664c7074f4e710d7975e54763758a61ff8b0b39ab62de8bc",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "kind": "check",
+        "sha256": "600d004c002e174e06bd8bf7fd3decc87d12804166486034c0d4146c0477bbb2",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          7
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+          "anchors": [
+            "followups-1-10-3",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "f370da31c36c2c933a47e0a7667696455bc89ccf21411e49395a7746ab85e15b"
+  },
+  "implementerSessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1"
+  },
+  "reviewer": {
+    "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+    "actor": {
+      "host": "claude",
+      "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+      "agentId": "aafceea65981b01f7"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-spec-7-1",
+      "subjectIdentity": "f370da31c36c2c933a47e0a7667696455bc89ccf21411e49395a7746ab85e15b",
+      "criteria": [
+        "spec-7-1"
+      ],
+      "representativeInput": "payload/.joycraft/references/dispatch.md plain-command paragraph (diff b7bc26b..86d8b62) and payload/.claude/agents/joycraft-implementer.md, read with whitespace normalized as tests/text-worker-commands.test.ts reads them; every-spec word guard in tests/payload-guard.test.ts.",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Focused run exit 0: 2 test files, 35 tests passed, including [AC:spec-7-1] and the payload-guard word guard. dispatch.md now reads: \"When the task names a worker root that is not your shell's folder, run each command as `cd <worker-root> && <one command>`: no worktree isolation is active, so this is the one allowed compound form.\" The sentence is the same as the implementer agent's, as the brief section followups-1-10-3 asks. The reviewer agent file is unchanged, which the spec's Not covered section allows. With dispatch.md reverted to base in a scratch copy, the test failed (exit 1).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-7-reviewer-focused-20261128T081805743Z-39154-1.log",
+              "sha256": "a23e4959a646b4c353e08dc521261245052cfe71f5ac189fbdee5f0e64666bf0"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused tests only; the project gate was not rerun (receipt .joycraft/local/gate/gate-86d8b62.log, exit 0 at 86d8b62)."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "note",
+      "origin": "new",
+      "criterion": "spec-7-1",
+      "summary": "Test change matches its declared class: tests/text-worker-commands.test.ts class 1, one added test [AC:spec-7-1] that asserts the same whitespace-normalized sentence in both payload/.claude/agents/joycraft-implementer.md and payload/.joycraft/references/dispatch.md. No existing assertion was weakened or removed."
+    },
+    {
+      "id": "f2",
+      "class": "note",
+      "origin": "new",
+      "at": ".joycraft/local/scratch-rev7/.joycraft/local/rev7-canfail.log",
+      "summary": "Can the test fail: in a scratch copy under .joycraft/local/scratch-rev7 with dispatch.md restored to base b7bc26b, `npx vitest run tests/text-worker-commands.test.ts -t spec-7-1` exited 1 (1 failed, 18 skipped). Probe: with the current dispatch.md but the reason clause removed from the scratch implementer agent file, the same test also failed, so the reason must match in both files."
+    },
+    {
+      "id": "f3",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/references/dispatch.md:75",
+      "summary": "Docs against code: the new sentence only states guidance. Its claim that no worktree isolation is active when a task names another root agrees with the implementer agent text and with the 1.9.3 one-worker-home rule (parallel workers get a worktrees.mjs tree, never host isolation as well). The old plain-command rule and the `pwd`/`git rev-parse HEAD` sentence are kept unchanged."
+    },
+    {
+      "id": "f4",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/follow-ups.json",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f5",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/receipts/spec-6-implementer-focused.log",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f6",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/receipts/spec-7-implementer-focused.log",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f7",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f8",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/follow-ups.json",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f9",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-5-implementer-focused.log",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f10",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-6-implementer-focused.log",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f11",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f12",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f13",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f14",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/completion.mjs",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f15",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/PIN",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f16",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/runtime-reopen.test.ts",
+      "summary": "Startup lists this changed path as outside every spec of this queue; it is not part of spec 7 and was not reviewed here."
+    },
+    {
+      "id": "f17",
+      "class": "note",
+      "origin": "new",
+      "at": "CHANGELOG.md",
+      "summary": "The worker tree has uncommitted edits to CHANGELOG.md, package.json and src/joycraft-release.json (release fields, not spec 7). They are not reviewed inputs and do not touch the spec 7 files."
+    }
+  ],
+  "createdAt": "2026-11-28T08:19:11.505Z"
+}

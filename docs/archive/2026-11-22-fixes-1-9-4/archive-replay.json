@@ -1,0 +1,391 @@
+{
+  "schemaVersion": 1,
+  "kind": "joycraft-archive-replay",
+  "feature": "fixes-1-9-4",
+  "archivedAt": "2026-11-28T08:21:22.390Z",
+  "phase": "session-end",
+  "source": "docs/features/2026-11-22-fixes-1-9-4",
+  "evidence": [
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-1.report.json",
+      "sha256": "0d743aea9e0fc1a588724143346216a717fe8e9b67048d337691bb7a120fb52b",
+      "report": {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-1.report.json",
+        "sha256": "0d743aea9e0fc1a588724143346216a717fe8e9b67048d337691bb7a120fb52b",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-focused-20261123T062303580Z-93781-1.log",
+          "sha256": "0d56b5c84233599d2f907de9f39847215f602d0df5dc3e4195c1beed41901764"
+        },
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-probe-reopen-archive.log",
+          "sha256": "eb78fb140434d38bf3a640d976161eb3aa22699cd340015b2e600b7672106bf5"
+        },
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-focused-20261123T062303580Z-93781-1.log",
+          "sha256": "0d56b5c84233599d2f907de9f39847215f602d0df5dc3e4195c1beed41901764"
+        },
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-focused-20261123T062303580Z-93781-1.log",
+          "sha256": "0d56b5c84233599d2f907de9f39847215f602d0df5dc3e4195c1beed41901764"
+        },
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-focused-20261123T062303580Z-93781-1.log",
+          "sha256": "0d56b5c84233599d2f907de9f39847215f602d0df5dc3e4195c1beed41901764"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-2.report.json",
+      "sha256": "62f887848b99832be43451f9c7ba74338eaa10027fedd4afc25537bb58597350",
+      "report": {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-2.report.json",
+        "sha256": "62f887848b99832be43451f9c7ba74338eaa10027fedd4afc25537bb58597350",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-2-reviewer-focused-20261123T062304665Z-94662-1.log",
+          "sha256": "a74a799191590432adcdafb90a7ec62d91dd534c38e66f96ec9f0678148c8c7e"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-3.report.json",
+      "sha256": "b59ca4010a8219b357bd79576f3ec21ce0f81d3a92a5c5067f03c6885734e942",
+      "report": {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-3.report.json",
+        "sha256": "b59ca4010a8219b357bd79576f3ec21ce0f81d3a92a5c5067f03c6885734e942",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-3-reviewer-focused-20261123T062255473Z-91440-1.log",
+          "sha256": "51d4f8a3ec1dbc886aa03fc84957d73bc44e46cf227c299d4777005e63b5e38c"
+        },
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-3-reviewer-focused-20261123T062255473Z-91440-1.log",
+          "sha256": "51d4f8a3ec1dbc886aa03fc84957d73bc44e46cf227c299d4777005e63b5e38c"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-4.report.json",
+      "sha256": "5fac27120b8decbc980761250d755a103785d65d84d53dd691f303ce02f0a9fd",
+      "report": {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-4.report.json",
+        "sha256": "5fac27120b8decbc980761250d755a103785d65d84d53dd691f303ce02f0a9fd",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-4-reviewer-focused-20261123T062627286Z-38840-1.log",
+          "sha256": "a86c78e3c0fbe856b98566fca8b370147a3fef8972a1aaea9b10694b47aea0a7"
+        },
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-4-reviewer-focused-20261123T062627286Z-38840-1.log",
+          "sha256": "a86c78e3c0fbe856b98566fca8b370147a3fef8972a1aaea9b10694b47aea0a7"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-5.report.json",
+      "sha256": "c130640784f66fe124ce5afc98dc6c29b5e6fd2e867ddd8b45212651251e512a",
+      "report": {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-5.report.json",
+        "sha256": "c130640784f66fe124ce5afc98dc6c29b5e6fd2e867ddd8b45212651251e512a",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-focused-20261128T081807979Z-39342-1.log",
+          "sha256": "f909478f1e2b7f49f1196241e284c9e950a4c6541b861b6c50e193048a01a2fa"
+        },
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-probe-report-path.log",
+          "sha256": "b4645f72b19812a2f8d65df627948c55ab296e4c9d71ac7cf97fb82440aa0f1e"
+        },
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-focused-20261128T081807979Z-39342-1.log",
+          "sha256": "f909478f1e2b7f49f1196241e284c9e950a4c6541b861b6c50e193048a01a2fa"
+        }
+      ],
+      "limitations": []
+    },
+    {
+      "kind": "accepted-report",
+      "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-6.report.json",
+      "sha256": "ed758c03dcebb3e3cd1212baeabb9858342b20bba1ea4700d9ab7612e6232726",
+      "report": {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-6.report.json",
+        "sha256": "ed758c03dcebb3e3cd1212baeabb9858342b20bba1ea4700d9ab7612e6232726",
+        "verdict": "PASS"
+      },
+      "receipts": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-6-reviewer-focused-20261128T081808376Z-39481-1.log",
+          "sha256": "c89ffc8219e3a0314bc6ff4cd595f57f4fa8f1c3d53d2ec654715859e82d7855"
+        }
+      ],
+      "limitations": []
+    }
+  ],
+  "durableContext": {
+    "carried": true,
+    "references": [
+      "docs/context/shipped.md"
+    ]
+  },
+  "hostSession": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+  "historical": {
+    "codeInputHashesAreHistorical": true,
+    "currentAcceptanceRenewed": false
+  },
+  "files": [
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/brief.md",
+      "sha256": "3059e4aa2e4a24b40ef63afa22f249655da6a7f8156915a62adefc17402ab891",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/follow-ups.json",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/follow-ups.json",
+      "sha256": "103bff94943d9b0be8798b094ad8f64418445c1846a5d95c9a4514f1a9a8098e",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-1-3-implementer-gate.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-1-3-implementer-gate.log",
+      "sha256": "051cfbbfcddc6f8086c2211fe1786665284f0eced3dd55a29fa095021102987d",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-1-implementer-fails-before.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-1-implementer-fails-before.log",
+      "sha256": "35907d4d92950742a38affbbd8ca8afe9a53e33c4feda70ac296f6a25db7df27",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-1-implementer-focused.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-1-implementer-focused.log",
+      "sha256": "ade91b1c191458f2aa7fe79107213ffd98631817904a257e2b7e7c112c9e3597",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-2-implementer-fails-before.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-2-implementer-fails-before.log",
+      "sha256": "b2a667f69d2ea51da7c5890042dfb8582db0df8cbfc931c285bf3d8cbdbe9dde",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-2-implementer-focused.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-2-implementer-focused.log",
+      "sha256": "b66b0053fb43802491fff2bf96e0047045b42ba4798f42aae20de895286d44cc",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-3-implementer-fails-before.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-3-implementer-fails-before.log",
+      "sha256": "562e8e0315cc2b8e0c4e70621d33cb3588308643b9ad6311f8a1d989b12460c2",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-3-implementer-focused.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-3-implementer-focused.log",
+      "sha256": "f6e4034ed25f0d0baa2e74dab109609bebafb1412c6841dc9705c9d8dff26546",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-4-implementer-focused.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-4-implementer-focused.log",
+      "sha256": "5dcbee4ef690f6a853c9b727159f0b6c026cfff19fc43725424b2893d4112e7e",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-4-implementer-gate.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-4-implementer-gate.log",
+      "sha256": "e1bbe1dac9fee715a62b10cd854af4b4ae969ee978cd8d631807298e7b906a1f",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-5-implementer-focused.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-5-implementer-focused.log",
+      "sha256": "faa3cd89f01ce7ff633139f9f8b4e2a3384bf586dc8da8ae41b414b748898db6",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-6-implementer-focused.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/receipts/spec-6-implementer-focused.log",
+      "sha256": "214a504e6a186a4bb761007be429eaaad54f779656d1bd3a13f90c747db5c0ed",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/review-followups.md",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/review-followups.md",
+      "sha256": "502f4996162b575a965ba7f6668617a33db2ed41541d0263255fac896b687ec1",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-focused-20261123T062303580Z-93781-1.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-1-reviewer-focused-20261123T062303580Z-93781-1.log",
+      "sha256": "0d56b5c84233599d2f907de9f39847215f602d0df5dc3e4195c1beed41901764",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-1-reviewer-probe-reopen-archive.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-1-reviewer-probe-reopen-archive.log",
+      "sha256": "eb78fb140434d38bf3a640d976161eb3aa22699cd340015b2e600b7672106bf5",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-2-reviewer-focused-20261123T062304665Z-94662-1.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-2-reviewer-focused-20261123T062304665Z-94662-1.log",
+      "sha256": "a74a799191590432adcdafb90a7ec62d91dd534c38e66f96ec9f0678148c8c7e",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-3-reviewer-focused-20261123T062255473Z-91440-1.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-3-reviewer-focused-20261123T062255473Z-91440-1.log",
+      "sha256": "51d4f8a3ec1dbc886aa03fc84957d73bc44e46cf227c299d4777005e63b5e38c",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-4-reviewer-focused-20261123T062627286Z-38840-1.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-4-reviewer-focused-20261123T062627286Z-38840-1.log",
+      "sha256": "a86c78e3c0fbe856b98566fca8b370147a3fef8972a1aaea9b10694b47aea0a7",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-focused-20261128T081807979Z-39342-1.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-5-reviewer-focused-20261128T081807979Z-39342-1.log",
+      "sha256": "f909478f1e2b7f49f1196241e284c9e950a4c6541b861b6c50e193048a01a2fa",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-probe-report-path.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-5-reviewer-probe-report-path.log",
+      "sha256": "b4645f72b19812a2f8d65df627948c55ab296e4c9d71ac7cf97fb82440aa0f1e",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-revert-completion-red.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-5-reviewer-revert-completion-red.log",
+      "sha256": "094b7b3d386a90277e53de4f31163e5b7dc1c66d0909e52e7f2d9e9457179036",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-5-reviewer-revert-preflight-red.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-5-reviewer-revert-preflight-red.log",
+      "sha256": "27fb13fd22ae9499cad6137766806977c7b2a846393026ffe0ca802b09479a6d",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-6-reviewer-focused-20261128T081808376Z-39481-1.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-6-reviewer-focused-20261128T081808376Z-39481-1.log",
+      "sha256": "c89ffc8219e3a0314bc6ff4cd595f57f4fa8f1c3d53d2ec654715859e82d7855",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-6-reviewer-norecurse-red.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-6-reviewer-norecurse-red.log",
+      "sha256": "a490434b3b4d5bcb6a98c152c76157a5bf4d55b667dddcf58d6ba4280ed00356",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-6-reviewer-revert-red.log",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/reviews/receipts/spec-6-reviewer-revert-red.log",
+      "sha256": "a2ab770d6e16b1d25c56e9476072f181620fb8eb4cfee50826d6487c486bdd61",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/.joycraft-spec-queue.json",
+      "sha256": "fb107c3a22582b37cf6b003933100a07a9c26e723f9033c727e4dbae53573657",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/01-reopen.md",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/01-reopen.md",
+      "sha256": "5f9b2ffdc1185841a0129dd6b853cac5f0923ada42bc0f45353bacdf8ec241f2",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/02-isolation-warning.md",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/02-isolation-warning.md",
+      "sha256": "1aef5daf733bc2e129ef7d4356a111dff8e2ef503f0c5307ce0ab8d260ceb2ba",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/03-field-text.md",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/03-field-text.md",
+      "sha256": "7fe4a735e289dbf2d97bae8d8dd60d99a40709b499580fd7c3ede3ff0f87a3db",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/04-release-1-9-4.md",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/04-release-1-9-4.md",
+      "sha256": "1ec9428f8f6501de5c88342fba49f619af6afa122584438c6f6bfc050d6521f8",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/05-missing-report.md",
+      "sha256": "c0a133b5e4051001bdd7d205326185a112e52251d7dadf37ea9e687a3b64191a",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/06-agents-folder.md",
+      "sha256": "5cb2480ff671aa785b0f180cd26c1a2f93551b87fa2c1fabf11380086b99f63c",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/review-1.report.json",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/review-1.report.json",
+      "sha256": "0d743aea9e0fc1a588724143346216a717fe8e9b67048d337691bb7a120fb52b",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/review-2.report.json",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/review-2.report.json",
+      "sha256": "62f887848b99832be43451f9c7ba74338eaa10027fedd4afc25537bb58597350",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/review-3.report.json",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/review-3.report.json",
+      "sha256": "b59ca4010a8219b357bd79576f3ec21ce0f81d3a92a5c5067f03c6885734e942",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/review-4.report.json",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/review-4.report.json",
+      "sha256": "5fac27120b8decbc980761250d755a103785d65d84d53dd691f303ce02f0a9fd",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/review-5.report.json",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/review-5.report.json",
+      "sha256": "c130640784f66fe124ce5afc98dc6c29b5e6fd2e867ddd8b45212651251e512a",
+      "operation": "moved"
+    },
+    {
+      "originalPath": "docs/features/2026-11-22-fixes-1-9-4/specs/review-6.report.json",
+      "archivedPath": "docs/archive/2026-11-22-fixes-1-9-4/feature/specs/review-6.report.json",
+      "sha256": "ed758c03dcebb3e3cd1212baeabb9858342b20bba1ea4700d9ab7612e6232726",
+      "operation": "moved"
+    }
+  ]
+}

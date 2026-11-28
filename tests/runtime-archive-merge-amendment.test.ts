@@ -39,9 +39,10 @@ function fixture() {
   return { root, accepted, amendment };
 }
 
-function writeRecord(root: string, amendments: Array<{ commit: string; from: string; to: string }>) {
+function writeRecord(root: string, amendments: Array<{ commit: string; from: string | null; to: string | null }>) {
+  const digest = (body: string | null) => body === null ? null : hash(body);
   put(join(root, source, 'brief-amendments.json'), JSON.stringify({ schemaVersion: 1, kind: 'joycraft-brief-amendments', brief,
-    amendments: amendments.map(({ commit, from, to }) => ({ commit, fromSha256: hash(from), toSha256: hash(to), decisions: ['D1'], summary: 'Owner-directed change.' })) }));
+    amendments: amendments.map(({ commit, from, to }) => ({ commit, fromSha256: digest(from), toSha256: digest(to), decisions: ['D1'], summary: 'Owner-directed change.' })) }));
 }
 
 describe('archive brief amendments across a merge commit', () => {
@@ -71,7 +72,7 @@ describe('archive brief amendments across a merge commit', () => {
     expect(check).toThrow(`Brief amendment ${merge} does not match its commit's brief bytes`);
   });
 
-  // Spec: docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md
+  // Spec: docs/archive/2026-11-22-fixes-1-9-3/feature/specs/05-amendment-message.md
   it('[AC:spec-5-1] a missing amendment record names each later commit with its hashes and the reference that shows the record', async () => {
     const { root, amendment } = fixture();
     git(root, 'checkout', '-q', 'feature');
@@ -84,5 +85,36 @@ describe('archive brief amendments across a merge commit', () => {
     // The named hashes are the ones the record must carry.
     writeRecord(root, [{ commit: amendment, from: v1, to: v2 }]);
     expect(check().amendments.map((item: { commit: string }) => item.commit)).toEqual([amendment]);
+  });
+
+  // Spec: docs/archive/2026-11-22-fixes-1-9-3/feature/specs/06-amendment-absent-brief.md
+  it('[AC:spec-6-1] a commit whose first parent has no brief is named with fromSha256 null, and a record with null passes', async () => {
+    const { root, amendment } = fixture();
+    git(root, 'merge', '-q', '--no-ff', '--no-commit', 'feature');
+    put(join(root, brief), v3);
+    git(root, 'add', brief); git(root, 'commit', '-q', '-m', 'merge feature with an edit');
+    const merge = git(root, 'rev-parse', 'HEAD');
+    const { historicalRequirement } = await import(runtime);
+    const check = () => historicalRequirement(root, source, { path: brief, kind: 'requirement', sha256: hash(v1) }, (bytes: Buffer) => bytes);
+    writeRecord(root, [{ commit: amendment, from: v1, to: v2 }]);
+    expect(check).toThrow(`${merge} (fromSha256 null, toSha256 ${hash(v3)})`);
+    writeRecord(root, [{ commit: amendment, from: v1, to: v2 }, { commit: merge, from: '', to: v3 }]);
+    expect(check).toThrow(`Brief amendment ${merge} does not match its commit's brief bytes`);
+    writeRecord(root, [{ commit: amendment, from: v1, to: v2 }, { commit: merge, from: null, to: v3 }]);
+    expect(check().amendments).toEqual([
+      { commit: amendment, fromSha256: hash(v1), toSha256: hash(v2), decisions: ['D1'], summary: 'Owner-directed change.' },
+      { commit: merge, fromSha256: null, toSha256: hash(v3), decisions: ['D1'], summary: 'Owner-directed change.' },
+    ]);
+  });
+
+  it('[AC:spec-6-2] with two later brief commits and no record, the refusal names both in commit order joined by "; "', async () => {
+    const { root, amendment } = fixture();
+    git(root, 'checkout', '-q', 'feature');
+    put(join(root, brief), v3);
+    git(root, 'commit', '-q', '-am', 'amend brief again');
+    const second = git(root, 'rev-parse', 'HEAD');
+    const { historicalRequirement } = await import(runtime);
+    const check = () => historicalRequirement(root, source, { path: brief, kind: 'requirement', sha256: hash(v1) }, (bytes: Buffer) => bytes);
+    expect(check).toThrow(`: ${amendment} (fromSha256 ${hash(v1)}, toSha256 ${hash(v2)}); ${second} (fromSha256 ${hash(v2)}, toSha256 ${hash(v3)}))`);
   });
 });

@@ -85,7 +85,7 @@ describe('evidence.mjs receipt tail and long footer (spec 27)', () => {
   });
 });
 
-// Spec: docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md
+// Spec: docs/archive/2026-11-22-fixes-1-9-3/feature/specs/04-reviewer-start.md
 describe('report receipt refusal (1.9.3)', () => {
   it('[AC:spec-4-2] an observation without receipts is refused with the field to add and its shape', async () => {
     const { validateEvidence } = await import(pathToFileURL(script).href);

@@ -115,7 +115,9 @@ function briefAmendments(root, source, briefPath, later) {
   const recordPath = `${source}/brief-amendments.json`;
   const changed = `Original requirement changed after acceptance: ${briefPath}`;
   // Name what the record needs, so the agent writes it instead of guessing.
-  const entryFor = commit => `${commit} (fromSha256 ${sha256(committedBytes(root, `${commit}^`, briefPath) ?? Buffer.alloc(0))}, toSha256 ${sha256(committedBytes(root, commit, briefPath) ?? Buffer.alloc(0))})`;
+  // null marks a side with no brief, such as a first parent that lacks it.
+  const hashAt = revision => { const bytes = committedBytes(root, revision, briefPath); return bytes === null ? null : sha256(bytes); };
+  const entryFor = commit => `${commit} (fromSha256 ${hashAt(`${commit}^`)}, toSha256 ${hashAt(commit)})`;
   const howTo = 'with the answered owner decision that authorized it, as .joycraft/references/archive.md shows for brief-amendments.json';
   requireValue(existsSync(localPath(root, recordPath, true)), `${changed} (no ${recordPath} records its amendments; add one entry for each later brief commit, ${howTo}: ${later.map(entryFor).join('; ')})`);
   const record = parseJson(readLocal(root, recordPath), recordPath);
@@ -125,8 +127,7 @@ function briefAmendments(root, source, briefPath, later) {
     const entries = record.amendments.filter(item => isObject(item) && item.commit === commit);
     requireValue(entries.length === 1, `${changed} (commit ${commit} has no single amendment record; add one entry ${howTo}: ${entryFor(commit)})`);
     const entry = entries[0];
-    const before = committedBytes(root, `${commit}^`, briefPath), after = committedBytes(root, commit, briefPath);
-    requireValue(before !== null && after !== null && entry.fromSha256 === sha256(before) && entry.toSha256 === sha256(after), `Brief amendment ${commit} does not match its commit's brief bytes`);
+    requireValue(entry.fromSha256 === hashAt(`${commit}^`) && entry.toSha256 === hashAt(commit), `Brief amendment ${commit} does not match its commit's brief bytes`);
     requireValue(nonempty(entry.summary) && Array.isArray(entry.decisions) && entry.decisions.length > 0 && entry.decisions.every(nonempty), `Brief amendment ${commit} needs a summary and at least one owner decision`);
     for (const id of entry.decisions) {
       const matches = decisions.filter(decision => isObject(decision) && decision.id === id);

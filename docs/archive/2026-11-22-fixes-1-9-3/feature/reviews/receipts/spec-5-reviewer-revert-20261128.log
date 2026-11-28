@@ -1,0 +1,65 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-x-followups/.joycraft/local/scratch/rev5[39m
+
+ [31m❯[39m tests/runtime-archive-merge-amendment.test.ts [2m([22m[2m5 tests[22m[2m | [22m[31m3 failed[39m[2m)[22m[33m 2692[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:merge-keeps-parent-brief] a --no-ff merge into a main without the brief needs no amendment record [33m 631[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:merge-changes-brief] a merge whose brief differs from every parent still needs its own record [33m 750[2mms[22m[39m
+[31m   [31m×[31m archive brief amendments across a merge commit[2m > [22m[AC:spec-5-1] a missing amendment record names each later commit with its hashes and the reference that shows the record[39m[33m 368[2mms[22m[39m
+[31m     → expected [Function check] to throw error including 'no docs/features/f/brief-amendments.j…' but got 'Original requirement changed after ac…'[39m
+[31m   [31m×[31m archive brief amendments across a merge commit[2m > [22m[AC:spec-6-1] a commit whose first parent has no brief is named with fromSha256 null, and a record with null passes[39m[33m 505[2mms[22m[39m
+[31m     → expected [Function check] to throw error including '04f9a00a920180a6eb8fe447ece4554c57663…' but got 'Original requirement changed after ac…'[39m
+[31m   [31m×[31m archive brief amendments across a merge commit[2m > [22m[AC:spec-6-2] with two later brief commits and no record, the refusal names both in commit order joined by "; "[39m[33m 437[2mms[22m[39m
+[31m     → expected [Function check] to throw error including ': 782a44cb75bc4114c6daad7dec847dc0a6c…' but got 'Original requirement changed after ac…'[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-archive-merge-amendment.test.ts[2m > [22marchive brief amendments across a merge commit[2m > [22m[AC:spec-5-1] a missing amendment record names each later commit with its hashes and the reference that shows the record
+[31m[1mAssertionError[22m: expected [Function check] to throw error including 'no docs/features/f/brief-amendments.j…' but got 'Original requirement changed after ac…'[39m
+
+Expected: [32m"[7mno docs/features/f/brief-amendments.json records its amendments; add one entry for each later brief commit, with the answered owner decision that authorized it, as .joycraft/references/archive.md shows for brief-amendments.json: 3726238f921c5755a10fdca00d4c12c6121c49af (fromSha256 a616ae9a0e37ebef0ec8285f1cd717b0630c80a324fb7c2c425ace57a3f148ed, toSha256 4dc86ffae60b8d0f3ddbc75847c2a6b1802de40d834a04ff2b4b83ea598d0eae)[27m)"[39m
+Received: [31m"[7mOriginal requirement changed after acceptance: docs/features/f/brief.md (no docs/features/f/brief-amendments.json records its amendments[27m)"[39m
+
+[36m [2m❯[22m tests/runtime-archive-merge-amendment.test.ts:[2m82:19[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-archive-merge-amendment.test.ts[2m > [22marchive brief amendments across a merge commit[2m > [22m[AC:spec-6-1] a commit whose first parent has no brief is named with fromSha256 null, and a record with null passes
+[31m[1mAssertionError[22m: expected [Function check] to throw error including '04f9a00a920180a6eb8fe447ece4554c57663…' but got 'Original requirement changed after ac…'[39m
+
+Expected: [32m"[7m04f9a00a920180a6eb8fe447ece4554c57663a0f (fromSha256 null, toSha256 a41e58b446b358b8596135b7675f46b55936a68afe52081ec05a39e20bac6632[27m)"[39m
+Received: [31m"[7mOriginal requirement changed after acceptance: docs/features/f/brief.md (commit 04f9a00a920180a6eb8fe447ece4554c57663a0f has no single amendment record[27m)"[39m
+
+[36m [2m❯[22m tests/runtime-archive-merge-amendment.test.ts:[2m100:19[22m[39m
+    [90m 98| [39m    const check = () => historicalRequirement(root, source, { path: br…
+    [90m 99| [39m    [34mwriteRecord[39m(root[33m,[39m [{ commit[33m:[39m amendment[33m,[39m [35mfrom[39m[33m:[39m v1[33m,[39m to[33m:[39m v2 }])[33m;[39m
+    [90m100| [39m    expect(check).toThrow(`${merge} (fromSha256 null, toSha256 ${hash(…
+    [90m   | [39m                  [31m^[39m
+    [90m101| [39m    writeRecord(root, [{ commit: amendment, from: v1, to: v2 }, { comm…
+    [90m102| [39m    expect(check).toThrow(`Brief amendment ${merge} does not match its…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-archive-merge-amendment.test.ts[2m > [22marchive brief amendments across a merge commit[2m > [22m[AC:spec-6-2] with two later brief commits and no record, the refusal names both in commit order joined by "; "
+[31m[1mAssertionError[22m: expected [Function check] to throw error including ': 782a44cb75bc4114c6daad7dec847dc0a6c…' but got 'Original requirement changed after ac…'[39m
+
+Expected: [32m"[7m: 782a44cb75bc4114c6daad7dec847dc0a6caf4f8 (fromSha256 a616ae9a0e37ebef0ec8285f1cd717b0630c80a324fb7c2c425ace57a3f148ed, toSha256 4dc86ffae60b8d0f3ddbc75847c2a6b1802de40d834a04ff2b4b83ea598d0eae); d26a7d9244c1fac120130790ab32ae9231ed4c44 (fromSha256 4dc86ffae60b8d0f3ddbc75847c2a6b1802de40d834a04ff2b4b83ea598d0eae, toSha256 a41e58b446b358b8596135b7675f46b55936a68afe52081ec05a39e20bac6632)[27m)"[39m
+Received: [31m"[7mOriginal requirement changed after acceptance: docs/features/f/brief.md (no docs/features/f/brief-amendments.json records its amendments[27m)"[39m
+
+[36m [2m❯[22m tests/runtime-archive-merge-amendment.test.ts:[2m118:19[22m[39m
+    [90m116| [39m    [35mconst[39m { historicalRequirement } [33m=[39m [35mawait[39m [35mimport[39m(runtime)[33m;[39m
+    [90m117| [39m    const check = () => historicalRequirement(root, source, { path: br…
+    [90m118| [39m    expect(check).toThrow(`: ${amendment} (fromSha256 ${hash(v1)}, toS…
+    [90m   | [39m                  [31m^[39m
+    [90m119| [39m  })[33m;[39m
+    [90m120| [39m})[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 00:18:53
+[2m   Duration [22m 2.81s[2m (transform 98ms, setup 0ms, collect 15ms, tests 2.69s, environment 0ms, prepare 28ms)[22m
+
+joycraft-evidence: {"wallMs":3410,"load":[8.73193359375,8.2724609375],"cores":14,"loaded":false,"argv":["pnpm","exec","vitest","run","--root",".joycraft/local/scratch/rev5","tests/runtime-archive-merge-amendment.test.ts"],"exitCode":1,"timedOut":false,"revision":"86d8b62b6b9386beefb07f428eb9b98b3b295063","dirty":true,"env":["VITEST_MAX_FORKS","VITEST_MIN_FORKS"]}

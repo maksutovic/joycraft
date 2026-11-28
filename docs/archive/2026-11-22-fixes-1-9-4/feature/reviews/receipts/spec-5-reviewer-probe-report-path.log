@@ -1,0 +1,22 @@
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-x-followups/.joycraft/local/scratch-rev5
+
+stdout | tests/runtime-reopen.test.ts > reopen a done spec (1.9.4) > PROBE tampered acceptedReport.path
+PROBE
+../../outside.json => 2 Completion stopped: Parent traversal is not allowed: ../../outside.json
+submit ../../outside.json => 2 Completion stopped: Parent traversal is not allowed: ../../outside.json
+docs/features/2026-11-22-r/specs => 2 Completion stopped: Accepted report docs/features/2026-11-22-r/specs of spec 1 is missing or unreadable, so its inputs cannot be compared; restore it from Git (git checkout HEAD -- docs/features/2026-11-22-r/specs) before reopen
+submit docs/features/2026-11-22-r/specs => 0 Warning: criterion spec-2-1 has no [AC:spec-2-1] test in the spec's check inputs
+Warning: done spec 1's accepted report docs/features/2026-11-22-r/specs is missing or unreadable; restore it from Git: git checkout HEAD -- docs/features/2026-11-22-r/specs
+/etc/passwd => 2 Completion stopped: Expected a project-relative path; use a path relative to the project root, such as docs/features/example/brief.md, not absolute path: /etc/passwd
+submit /etc/passwd => 2 Completion stopped: Expected a project-relative path; use a path relative to the project root, such as docs/features/example/brief.md, not absolute path: /etc/passwd
+
+ ✓ tests/runtime-reopen.test.ts (7 tests | 6 skipped) 664ms
+   ✓ reopen a done spec (1.9.4) > PROBE tampered acceptedReport.path  664ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 6 skipped (7)
+   Start at  00:19:09
+   Duration  881ms (transform 35ms, setup 0ms, collect 42ms, tests 664ms, environment 0ms, prepare 33ms)
+

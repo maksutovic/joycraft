@@ -1,0 +1,31 @@
+payload/.joycraft/references/archive.md:96:`commit^`; use `null` for a side with no brief. Each named decision must occur
+payload/.joycraft/runtime/archive.mjs:97:  try { return gitIn(root, ['show', `${revision}:${file}`], true); } catch { return null; }
+payload/.joycraft/runtime/archive.mjs:100:const isDecisionAnswered = decision => ['clarified', 'assigned'].includes(decision.status) && (typeof decision.answer === 'string' ? nonempty(decision.answer) : decision.answer !== null && decision.answer !== undefined);
+payload/.joycraft/runtime/archive.mjs:112:    return parents.length > 1 && after !== null && parents.some(parent => committedBytes(root, parent, briefPath)?.equals(after));
+payload/.joycraft/runtime/archive.mjs:118:  // null marks a side with no brief, such as a first parent that lacks it.
+payload/.joycraft/runtime/archive.mjs:119:  const hashAt = revision => { const bytes = committedBytes(root, revision, briefPath); return bytes === null ? null : sha256(bytes); };
+payload/.joycraft/runtime/archive.mjs:186:  requireValue(current !== null && sha256(current) === sha256(readLocal(root, input.path)), `${changed} (current bytes differ from HEAD)`);
+payload/.joycraft/runtime/archive.mjs:193:    try { return bytes !== null && sha256(project(bytes)) === input.sha256; } catch { return false; }
+payload/.joycraft/runtime/archive.mjs:309:    if (waiver.review === undefined) return { kind: 'feature-waiver', path: waiverPath, sha256: waiver.sha256, report: null, covers: record.covers, receipts: [], limitations };
+payload/.joycraft/runtime/archive.mjs:323:    try { ownerBytes = readLocal(root, ownerPath); } catch { ownerBytes = null; }
+payload/.joycraft/runtime/archive.mjs:324:    requireValue(ownerBytes !== null && sha256(ownerBytes) === owner.sha256, `Legacy acceptance decision is missing or changed: ${ownerPath}. Restore it from git; if you cannot, stop and tell the user`);
+payload/.joycraft/runtime/archive.mjs:327:    return { kind: 'legacy-acceptance', path: ownerPath, sha256: owner.sha256, report: null, receipts: [], limitations: [`accepted as it is by the owner, with no review: "${decision.statement}"`] };
+payload/.joycraft/runtime/archive.mjs:416:    let reason = item?.status === 'done' ? null : `status ${item?.status}`;
+payload/.joycraft/runtime/archive.mjs:456:    let bytes = null;
+payload/.joycraft/runtime/archive.mjs:458:    if (bytes === null || (digest && sha256(bytes) !== digest)) { missing.push(file); return null; }
+payload/.joycraft/runtime/archive.mjs:465:    if (bytes !== null && record === spec?.ownerAcceptance && record.legacy !== true) { try { reports.push(JSON.parse(bytes.toString('utf8')).review); } catch { /* not JSON */ } }
+payload/.joycraft/runtime/archive.mjs:479:/** The spec's latest review report file in `folder`, or null: the plain name counts as round 1. */
+payload/.joycraft/runtime/archive.mjs:481:  if (!Number.isInteger(id) || !folder) return null;
+payload/.joycraft/runtime/archive.mjs:483:  try { names = readdirSync(localDirectory(root, folder)); } catch { return null; }
+payload/.joycraft/runtime/archive.mjs:486:  return best ? `${folder}/${best}` : null;
+payload/.joycraft/runtime/archive.mjs:646:    writeFileSync(path.join(stageLocal, 'archive-recovery.json'), `${JSON.stringify({ schemaVersion: 1, kind: 'joycraft-archive-recovery', feature: plan.feature, source: plan.source, destination: plan.destination, stage, phase: plan.phase, featureFiles: plan.featureFiles, copiedEvidence: plan.copiedEvidence, requirementHistory: plan.requirementHistory }, null, 2)}\n`, { flag: 'wx', mode: 0o600 });
+payload/.joycraft/runtime/archive.mjs:655:      requireValue(bytes !== null && sha256(bytes) === record.restoredSha256 && sha256(requirementProjection(bytes, record)) === record.acceptedSha256, `Historical requirement changed while restoring: ${record.path}`);
+payload/.joycraft/runtime/archive.mjs:661:    writeFileSync(path.join(stageLocal, 'archive-replay.json'), `${JSON.stringify(replayManifest(plan), null, 2)}\n`, { flag: 'wx', mode: 0o600 });
+payload/.joycraft/runtime/archive.mjs:729:  let fence = null, previous = 'blank';
+payload/.joycraft/runtime/archive.mjs:733:    if (fence) { if (marker && marker[0] === fence[0] && marker.length >= fence.length && /^ {0,3}[`~]+\s*$/.test(line)) fence = null; }
+payload/.joycraft/runtime/archive.mjs:795:  if (!command) return null;
+payload/.joycraft/runtime/archive.mjs:829:  let stat = null;
+payload/.joycraft/runtime/archive.mjs:832:  const text = stat ? readFileSync(file, 'utf8') : null;
+payload/.joycraft/runtime/archive.mjs:841:    writeFileSync(temporary, `${JSON.stringify({ ...preferences, archive: { ...(isObject(preferences.archive) ? preferences.archive : {}), ignore: 'declined' } }, null, 2)}\n`, { flag: 'wx', mode: 0o600 });
+payload/.joycraft/runtime/archive.mjs:881:  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+joycraft-evidence: {"wallMs":10,"load":[9.22509765625,9.22509765625],"cores":14,"loaded":false,"argv":["grep","-n","null","payload/.joycraft/references/archive.md","payload/.joycraft/runtime/archive.mjs"],"exitCode":0,"timedOut":false,"revision":"86d8b62b6b9386beefb07f428eb9b98b3b295063","dirty":true,"env":["VITEST_MAX_FORKS","VITEST_MIN_FORKS"]}

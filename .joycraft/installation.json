@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "joycraft": "1.10.2",
-  "tag": "payload-d9ed84c48883",
-  "sourceRevision": "d9ed84c48883a5446d36bb81afbc4896e7dd3ea576e23878111961f46ef5809b",
+  "joycraft": "1.10.3",
+  "tag": "payload-ae83b0daf3af",
+  "sourceRevision": "ae83b0daf3afad700f9c17913bfa8bc84fbe8847ead6113e20d1087b866087d3",
   "harness": "claude",
   "hosts": [
     "claude",
@@ -146,7 +146,7 @@
     },
     {
       "path": ".joycraft/references/archive.md",
-      "sha256": "8c63c71b3af56c3d6fe9aacb2869d124b30ea1a1be102fe9cce6651bd23e94e3"
+      "sha256": "8c996c4af23ae068e9ab7b81f1854821d09df1d8585ecf2f85489391123e2f38"
     },
     {
       "path": ".joycraft/references/artifacts.md",
@@ -170,7 +170,7 @@
     },
     {
       "path": ".joycraft/references/dispatch.md",
-      "sha256": "d0521fddb82b2b4ce0946a4398661554538ba624259d8b1328669bc8aa448982"
+      "sha256": "ab4e1966d0475117cc6d0d46c59cd669edafde65dcfa59abddd0c1c02c531dc0"
     },
     {
       "path": ".joycraft/references/doc-cleanup-LICENSE.md",
@@ -226,7 +226,7 @@
     },
     {
       "path": ".joycraft/runtime/archive.mjs",
-      "sha256": "d662ed35ebe19a54d39b8fd3567b992b2773510b2ea5ee423366937cd6c24e47"
+      "sha256": "a17f0119adf40962e09a2ac87ba9bd12d0bdbaa2901cecc255b4b8ff82e81e1d"
     },
     {
       "path": ".joycraft/runtime/artifacts/cli.mjs",
@@ -266,7 +266,7 @@
     },
     {
       "path": ".joycraft/runtime/completion.mjs",
-      "sha256": "d53a56b7702e9f5fea19e00970571e661c8751fc63e80c9159001b92ce53504a"
+      "sha256": "9106db5ec5108353fa89abb5c21a0cb9adefeaa43ab0fb31ebae1a748019ced3"
     },
     {
       "path": ".joycraft/runtime/config.mjs",
@@ -294,7 +294,7 @@
     },
     {
       "path": ".joycraft/runtime/dispatch-preflight.mjs",
-      "sha256": "25f2dd5db369685bf6b67729b317707b0564a10be7f2b4f2405eb574965acdbd"
+      "sha256": "b18e1871d6e084f33c6f196e3f519ce3545e4a7cf37e9598e9e845515bef168c"
     },
     {
       "path": ".joycraft/runtime/dispatch-start.mjs",
@@ -370,7 +370,7 @@
     },
     {
       "path": ".joycraft/runtime/worktrees.mjs",
-      "sha256": "7b3b0e793745c0280d3c652b9f32335f4e6ad75c39e5582e27987af000d46409"
+      "sha256": "20c4f02aa87aa4dafe4a8d972b4252a5d54e7b68685b4c7da693d0017a4dcfcd"
     },
     {
       "path": ".joycraft/templates/artifact.json",

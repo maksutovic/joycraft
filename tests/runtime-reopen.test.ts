@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { applyInstall, planInstall } from '../src/install-v1.js';
 
-// Spec: docs/features/2026-11-22-fixes-1-9-4/specs/01-reopen.md
+// Spec: docs/archive/2026-11-22-fixes-1-9-4/feature/specs/01-reopen.md
 const runtime = join(__dirname, '..', 'payload', '.joycraft', 'runtime');
 const git = (cwd: string, ...args: string[]) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const put = (file: string, body: string) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
@@ -138,5 +138,50 @@ describe('reopen a done spec (1.9.4)', () => {
     expect(output.reviewRound).toBe(1);
     expect(output.commands.checkReport).toContain(`--report ${folder}/specs/review-1-r2.report.json`);
     expect(existsSync(join(root, `${folder}/specs/review-1.report.json`))).toBe(true);
+  }, 60000);
+
+  // Spec: docs/archive/2026-11-22-fixes-1-9-4/feature/specs/05-missing-report.md
+  it('[AC:spec-5-1] reopen and submit say when a done spec\'s accepted report is missing or unreadable', () => {
+    const root = acceptedThenChanged();
+    const report = `${folder}/specs/review-1.report.json`;
+    rmSync(join(root, report));
+    const missing = completion(root, 'reopen', '--queue', queuePath, '--spec', '1', '--reason', 'x');
+    expect(missing.status).toBe(2);
+    expect(missing.stderr).toContain(`Accepted report ${report} of spec 1 is missing or unreadable`);
+    expect(missing.stderr).toContain(`restore it from Git (git checkout HEAD -- ${report})`);
+    expect(missing.stderr).not.toContain('No code, check or fixture input');
+    const submit = completion(root, 'submit', '--queue', queuePath, '--spec', '2');
+    expect(submit.status, submit.stderr).toBe(0);
+    expect(JSON.parse(submit.stdout).acceptedInputsChanged).toEqual([{ specId: 1, paths: [], reportMissing: report, next: `git checkout HEAD -- ${report}` }]);
+    expect(submit.stderr).toContain(`Warning: done spec 1's accepted report ${report} is missing or unreadable`);
+    // Not valid JSON counts the same as missing.
+    put(join(root, report), '{ not json');
+    const unreadable = completion(root, 'reopen', '--queue', queuePath, '--spec', '1', '--reason', 'x');
+    expect(unreadable.status).toBe(2);
+    expect(unreadable.stderr).toContain(`Accepted report ${report} of spec 1 is missing or unreadable`);
+    expect(queue(root).specs[0].status).toBe('done');
+  });
+
+  it('[AC:spec-5-2] reviewer startup in a worker tree skips a report path that exists only in the coordinator tree', () => {
+    const root = acceptedThenChanged({ install: true });
+    const pinned = realpathSync(mkdtempSync(join(tmpdir(), 'jc-reopen-pin-')));
+    dirs.push(pinned);
+    copyFileSync(join(root, '.joycraft/installation.json'), join(pinned, 'installation.json'));
+    expect(completion(root, 'reopen', '--queue', queuePath, '--spec', '1', '--reason', 'changed').status).toBe(0);
+    git(root, 'add', '-A'); git(root, 'commit', '-q', '-m', 'reopen');
+    // The worker tree is cut before the first report reached the coordinator tree's Git history.
+    const report = `${folder}/specs/review-1.report.json`;
+    git(root, 'rm', '-q', '--cached', report); git(root, 'commit', '-q', '-m', 'report kept on disk only');
+    const worker = join(pinned, 'worker');
+    git(root, 'worktree', 'add', '-q', '-b', 'worker', worker);
+    dirs.push(worker);
+    expect(existsSync(join(worker, report))).toBe(false);
+    expect(existsSync(join(root, report))).toBe(true);
+    const start = spawnSync(process.execPath, [join(worker, '.joycraft/runtime/dispatch-start.mjs'), '--worker-root', worker, '--expected-manifest', join(pinned, 'installation.json'),
+      '--coordinator', root, '--parallel', 'true', '--access', 'mutating',
+      '--queue', queuePath, '--spec', '1', '--role', 'reviewer', '--implementer-session', 'impl-1', '--out', '.joycraft/local/packets/r.json',
+      '--capabilities', 'filesystem:read,filesystem:write-report,agent:separate-context', '--native-session', 'review-2'], { cwd: worker, encoding: 'utf8' });
+    expect(start.status, start.stderr).toBe(0);
+    expect(JSON.parse(start.stdout).commands.checkReport).toContain(`--report ${folder}/specs/review-1-r2.report.json`);
   }, 60000);
 });

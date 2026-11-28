@@ -1,0 +1,42 @@
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-x-followups/.joycraft/local/scratch-rev6
+
+ ❯ tests/runtime-dispatch-parallel.test.ts (5 tests | 1 failed | 4 skipped) 414ms
+   ↓ parallel worker startup > [AC:spec-1-1] both parallel specs start in their worktrees.mjs trees with no workspace flags, from a main or a linked coordinator
+   ↓ parallel worker startup > [AC:spec-1-2] a tree with no worktrees.mjs record takes its coordinator from the lease; explicit flags still win
+   ↓ parallel worker startup > [AC:spec-1-3] with neither a record nor a lease, startup refuses and prints the exact startup with the workspace flags added
+   ↓ parallel worker startup > [AC:spec-2-1] worktrees.mjs create warns when a project agent type sets isolation: worktree
+   × parallel worker startup > [AC:spec-6-1] the isolation warning skips a directory named *.md and reads agent files in subfolders 413ms
+     → Worktrees stopped: EISDIR: illegal operation on a directory, read
+: expected 1 to be +0 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/runtime-dispatch-parallel.test.ts > parallel worker startup > [AC:spec-6-1] the isolation warning skips a directory named *.md and reads agent files in subfolders
+AssertionError: Worktrees stopped: EISDIR: illegal operation on a directory, read
+: expected 1 to be +0 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+ ❯ tests/runtime-dispatch-parallel.test.ts:141:44
+    139|     put(join(root, '.claude/agents/team/plain.md'), '---\nname: team-p…
+    140|     const created = node(root, 'worktrees.mjs', 'create', '--queue', q…
+    141|     expect(created.status, created.stderr).toBe(0);
+       |                                            ^
+    142|     const warnings: string[] = JSON.parse(created.stdout).warnings;
+    143|     expect(warnings).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 skipped (5)
+   Start at  00:18:36
+   Duration  623ms (transform 36ms, setup 0ms, collect 43ms, tests 414ms, environment 0ms, prepare 37ms)
+
+exit=1

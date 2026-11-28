@@ -1,0 +1,20 @@
+
+> joycraft@1.10.2 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-x-followups
+> vitest tests/runtime-dispatch-parallel.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-x-followups[39m
+
+ [32m✓[39m tests/runtime-dispatch-parallel.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 4330[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-1-1] both parallel specs start in their worktrees.mjs trees with no workspace flags, from a main or a linked coordinator [33m 2328[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-1-2] a tree with no worktrees.mjs record takes its coordinator from the lease; explicit flags still win [33m 610[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-1-3] with neither a record nor a lease, startup refuses and prints the exact startup with the workspace flags added [33m 509[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-2-1] worktrees.mjs create warns when a project agent type sets isolation: worktree [33m 537[2mms[22m[39m
+   [33m[2m✓[22m[39m parallel worker startup[2m > [22m[AC:spec-6-1] the isolation warning skips a directory named *.md and reads agent files in subfolders [33m 345[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 00:18:19
+[2m   Duration [22m 4.48s[2m (transform 35ms, setup 0ms, collect 42ms, tests 4.33s, environment 0ms, prepare 28ms)[22m
+
+joycraft-evidence: {"wallMs":5139,"load":[6.64453125,6.5126953125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-dispatch-parallel.test.ts"],"exitCode":0,"timedOut":false,"revision":"86d8b62b6b9386beefb07f428eb9b98b3b295063","dirty":true,"env":["VITEST_MAX_FORKS","VITEST_MIN_FORKS"]}

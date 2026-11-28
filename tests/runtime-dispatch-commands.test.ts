@@ -189,7 +189,7 @@ describe('task startup commands', () => {
     expect(quotedOnly.argv).toEqual(['runner', 'a && b', 'tests/a.test.ts']);
   }, 60_000);
 
-  // Spec: docs/features/2026-11-22-fixes-1-9-3/specs/04-reviewer-start.md
+  // Spec: docs/archive/2026-11-22-fixes-1-9-3/feature/specs/04-reviewer-start.md
   it('[AC:spec-4-1] --help prints the ready-to-run startup with placeholders and exits 0', () => {
     const { root } = fixture({});
     for (const flag of ['--help', '-h']) {

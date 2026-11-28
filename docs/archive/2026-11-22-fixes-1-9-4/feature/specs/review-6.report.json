@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "86d8b62b6b9386beefb07f428eb9b98b3b295063",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+    "specId": 6,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md",
+    "criteria": [
+      {
+        "id": "spec-6-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "followups-1-10-3",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "15b22be2d3a5882ed43508534f9c312eca13ebb1542cf02436e46894ca118b08",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "24074e13f2e19d8acfef5013589d96f3ef9fce699e882fc3ef18570255e08f84",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md",
+        "kind": "requirement",
+        "sha256": "ea5d60ef7965383def2a07ed028ea909e7296670ff27d9c21d9b9680cacc967b",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/worktrees.mjs",
+        "kind": "code",
+        "sha256": "20c4f02aa87aa4dafe4a8d972b4252a5d54e7b68685b4c7da693d0017a4dcfcd",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-dispatch-parallel.test.ts",
+        "kind": "check",
+        "sha256": "2a301dfbc61e9ecdc5953fe01b3b6af816e427969cb58dcef85f64c04cb8a7a6",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          6
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+          "anchors": [
+            "followups-1-10-3",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "07610e68d57d98d463b9b29a300f34522bccb6555d0f598efa7abbcca87ccb79"
+  },
+  "implementerSessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1"
+  },
+  "reviewer": {
+    "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+    "actor": {
+      "host": "claude",
+      "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+      "agentId": "a1592d367fca5bb14"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "spec-6-1-agents-folder",
+      "subjectIdentity": "07610e68d57d98d463b9b29a300f34522bccb6555d0f598efa7abbcca87ccb79",
+      "criteria": [
+        "spec-6-1"
+      ],
+      "representativeInput": "Fixture project with a directory .claude/agents/team.md, .claude/agents/opus-implementer.md (isolation: worktree), .claude/agents/team/reviewer.md (isolation: worktree) and .claude/agents/team/plain.md (no isolation); worktrees.mjs create for spec 1.",
+      "expected": "create exits 0 and returns one warning naming .claude/agents/opus-implementer.md and .claude/agents/team/reviewer.md, and not plain.md or the team.md directory.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "pnpm test tests/runtime-dispatch-parallel.test.ts exited 0: 5 of 5 tests passed, including [AC:spec-6-1], which asserts create status 0 and the single warning naming both isolated files by project-relative path (subfolder path included).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-6-reviewer-focused-20261128T081808376Z-39481-1.log",
+              "sha256": "c89ffc8219e3a0314bc6ff4cd595f57f4fa8f1c3d53d2ec654715859e82d7855"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-parallel.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Gate not rerun by the reviewer; .joycraft/local/gate/gate-86d8b62.log records pnpm test && pnpm typecheck exit 0 at 86d8b62, clean.",
+        "Probe (not receipted, observed in this session): a direct isolatedAgents call on a fixture with a symlink loop (sub/loop -> ..), a broken symlink broken.md, a directory dir.md and a symlink link.md -> sub/a.md returned [\".claude/agents/link.md\", \".claude/agents/sub/a.md\"] with no throw: symlinked directories are not followed, broken links skipped, symlinked files counted.",
+        "Whether Claude Code follows symlinked directories under .claude/agents was not checked; the code does not follow them."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/runtime-dispatch-parallel.test.ts:133",
+      "summary": "Test change matches class 1: the diff adds one test for the acceptance bullets; no existing assertion was removed or weakened."
+    },
+    {
+      "id": "f2",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-6-reviewer-revert-red.log",
+      "summary": "Can the test fail: in a scratch copy under .joycraft/local with worktrees.mjs restored to base b7bc26b, [AC:spec-6-1] failed (exit 1): create stopped with \"EISDIR: illegal operation on a directory, read\". In a second scratch run with only the subfolder recursion removed (directories skipped, not read), it failed (exit 1) on the warning text, which lacked .claude/agents/team/reviewer.md. Both halves of the criterion are guarded by the test. Receipts: docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-6-reviewer-revert-red.log sha256 a2ab770d6e16b1d25c56e9476072f181620fb8eb4cfee50826d6487c486bdd61; docs/features/2026-11-22-fixes-1-9-4/reviews/receipts/spec-6-reviewer-norecurse-red.log sha256 a490434b3b4d5bcb6a98c152c76157a5bf4d55b667dddcf58d6ba4280ed00356."
+    },
+    {
+      "id": "f3",
+      "class": "note",
+      "origin": "new",
+      "at": ".joycraft/runtime/worktrees.mjs:2",
+      "summary": "The dogfood install copy .joycraft/runtime/worktrees.mjs differs from payload/.joycraft/runtime/worktrees.mjs (it lacks this change); the repo has not been updated to the branch build yet. Not a criterion of this spec."
+    },
+    {
+      "id": "f4",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f5",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/follow-ups.json",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f6",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/receipts/spec-6-implementer-focused.log",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f7",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/receipts/spec-7-implementer-focused.log",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f8",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f9",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f10",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/06-amendment-absent-brief.md",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f11",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/07-reviewer-cd-reason.md",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f12",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/follow-ups.json",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f13",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-5-implementer-focused.log",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f14",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-6-implementer-focused.log",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f15",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f16",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/references/archive.md",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f17",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f18",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/PIN",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    },
+    {
+      "id": "f19",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/runtime-archive-merge-amendment.test.ts",
+      "summary": "Changed since the recorded base but declared by no spec of this queue (startup scope.outside); another queue or spec owns it."
+    }
+  ],
+  "createdAt": "2026-11-28T08:19:41.239Z"
+}

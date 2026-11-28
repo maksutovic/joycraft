@@ -427,10 +427,20 @@ export async function submit({ root = process.cwd(), queuePath, specId }) {
 
 /** The code, check and fixture inputs of a done spec's accepted report whose
  * bytes differ now. Requirements are left out: archive and review own them. */
+function acceptedReportOf(root, spec) {
+  try { return parseJson(readLocal(root, relativePath(spec.acceptedReport.path)), spec.acceptedReport.path); } catch { return null; }
+}
+
+/** The accepted report path of a done PASS spec when that file is missing or unreadable, else null. */
+export function missingAcceptedReport({ root, spec }) {
+  if (spec.status !== 'done' || !isObject(spec.acceptedReport)) return null;
+  return acceptedReportOf(root, spec) === null ? spec.acceptedReport.path : null;
+}
+
 export function changedAcceptedInputs({ root, spec }) {
   if (spec.status !== 'done' || !isObject(spec.acceptedReport)) return [];
-  let report;
-  try { report = parseJson(readLocal(root, relativePath(spec.acceptedReport.path)), spec.acceptedReport.path); } catch { return []; }
+  const report = acceptedReportOf(root, spec);
+  if (report === null) return [];
   const inputs = Array.isArray(report?.subject?.inputs) ? report.subject.inputs : [];
   return inputs.filter(input => isObject(input) && ['code', 'check', 'fixture'].includes(input.kind) && isSha256(input.sha256)).filter(input => {
     const file = localPath(root, relativePath(input.path), true);
@@ -440,11 +450,14 @@ export function changedAcceptedInputs({ root, spec }) {
   }).map(input => input.path);
 }
 
-/** Every other done spec whose accepted code, check or fixture input changed. */
+/** Every other done spec whose accepted code, check or fixture input changed, or whose accepted report is missing. */
 export function acceptedInputsChanged({ root, queuePath, queue, except }) {
-  return queue.specs.filter(spec => spec.id !== except).map(spec => ({ specId: spec.id, paths: changedAcceptedInputs({ root, spec }) }))
-    .filter(item => item.paths.length > 0)
-    .map(item => ({ ...item, next: `node .joycraft/runtime/completion.mjs reopen --queue ${queuePath} --spec ${item.specId} --reason <why it changed>` }));
+  return queue.specs.filter(spec => spec.id !== except).flatMap(spec => {
+    const missing = missingAcceptedReport({ root, spec });
+    if (missing !== null) return [{ specId: spec.id, paths: [], reportMissing: missing, next: `git checkout HEAD -- ${missing}` }];
+    const paths = changedAcceptedInputs({ root, spec });
+    return paths.length ? [{ specId: spec.id, paths, next: `node .joycraft/runtime/completion.mjs reopen --queue ${queuePath} --spec ${spec.id} --reason <why it changed>` }] : [];
+  });
 }
 
 /**
@@ -461,6 +474,8 @@ export async function reopen({ root = process.cwd(), queuePath, specId, reason }
     const state = readQueue({ root, queuePath, specId });
     requireValue(state.spec.status === 'done', `Spec ${specId} is ${state.spec.status}; reopen moves only a done spec back to in-review`);
     requireValue(isObject(state.spec.acceptedReport), `Spec ${specId} was accepted by an owner acceptance or waiver, not a PASS review; reopen does not apply`);
+    const missing = missingAcceptedReport({ root, spec: state.spec });
+    requireValue(missing === null, `Accepted report ${missing} of spec ${specId} is missing or unreadable, so its inputs cannot be compared; restore it from Git (git checkout HEAD -- ${missing}) before reopen`);
     const changed = changedAcceptedInputs({ root, spec: state.spec });
     requireValue(changed.length > 0, `No code, check or fixture input of spec ${specId} changed since its acceptance; nothing to review again`);
     const entry = { at: new Date().toISOString(), reason, report: state.spec.acceptedReport, changed };
@@ -848,7 +863,8 @@ export async function main(argv = process.argv.slice(2)) {
   } else if (command === 'submit') {
     result = await submit({ root, queuePath, specId: Number(flags['--spec']) });
     for (const id of result.untraced) process.stderr.write(`Warning: criterion ${id} has no [AC:${id}] test in the spec's check inputs\n`);
-    for (const item of result.acceptedInputsChanged ?? []) process.stderr.write(`Warning: done spec ${item.specId}'s accepted input changed: ${item.paths.join(', ')}; its acceptance no longer covers these bytes. Reopen it for a fresh review: ${item.next}\n`);
+    for (const item of result.acceptedInputsChanged ?? []) if (item.reportMissing) process.stderr.write(`Warning: done spec ${item.specId}'s accepted report ${item.reportMissing} is missing or unreadable; restore it from Git: ${item.next}\n`);
+    else process.stderr.write(`Warning: done spec ${item.specId}'s accepted input changed: ${item.paths.join(', ')}; its acceptance no longer covers these bytes. Reopen it for a fresh review: ${item.next}\n`);
   } else if (command === 'reopen') {
     result = await reopen({ root, queuePath, specId: Number(flags['--spec']), reason: flags['--reason'] });
   } else if (command === 'recover') result = recover({ root, queuePath });

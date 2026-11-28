@@ -425,9 +425,151 @@
       "submitted": {
         "at": "2026-11-23T05:29:14.582Z"
       },
+      "reopened": [
+        {
+          "at": "2026-11-28T08:09:35.434Z",
+          "reason": "Spec 6 changed briefAmendments in archive.mjs (null for a side with no brief) and added two tests to runtime-archive-merge-amendment.test.ts",
+          "report": {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-5.report.json",
+            "sha256": "dc592ae1b404d896ef195ee8a12e67f88be5c7a9f2657a46523313ebbe5024eb"
+          },
+          "changed": [
+            "payload/.joycraft/runtime/archive.mjs",
+            "tests/runtime-archive-merge-amendment.test.ts"
+          ]
+        }
+      ],
       "acceptedReport": {
-        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-5.report.json",
-        "sha256": "dc592ae1b404d896ef195ee8a12e67f88be5c7a9f2657a46523313ebbe5024eb"
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-5-r2.report.json",
+        "sha256": "004757e14e9a60106a0b3b13c167d1e984cb0b9809f9965173815a05dcf14203"
+      }
+    },
+    {
+      "id": 6,
+      "file": "06-amendment-absent-brief.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "followups-1-10-3",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/specs/06-amendment-absent-brief.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/archive.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/archive.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-archive-merge-amendment.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-6-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/06-amendment-absent-brief.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-6-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/06-amendment-absent-brief.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-28T08:09:29.827Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-6.report.json",
+        "sha256": "4d7eb5c5c43309190bc88fc3d3555479675e45f2b2bf22d260608bea0bd70b19"
+      }
+    },
+    {
+      "id": 7,
+      "file": "07-reviewer-cd-reason.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "followups-1-10-3",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/specs/07-reviewer-cd-reason.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/references/dispatch.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/text-worker-commands.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/payload-guard.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-7-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/specs/07-reviewer-cd-reason.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-28T08:15:11.096Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-7.report.json",
+        "sha256": "ffd40192b56c572e469215ace4e54a8a3b713ea0105d65d67388e684064e22eb"
       }
     }
   ]

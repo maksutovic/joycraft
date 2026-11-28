@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { applyInstall, planInstall } from '../src/install-v1.js';
 
-// Spec: docs/features/2026-11-22-fixes-1-9-3/specs/01-parallel-workspace.md
+// Spec: docs/archive/2026-11-22-fixes-1-9-3/feature/specs/01-parallel-workspace.md
 const git = (cwd: string, ...args: string[]) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const put = (file: string, body: string) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
 const folder = 'docs/features/2026-11-22-p';
@@ -117,7 +117,7 @@ describe('parallel worker startup', () => {
     expect(rerun.status, rerun.stderr).toBe(0);
   }, 60000);
 
-  // Spec: docs/features/2026-11-22-fixes-1-9-4/specs/02-isolation-warning.md
+  // Spec: docs/archive/2026-11-22-fixes-1-9-4/feature/specs/02-isolation-warning.md
   it('[AC:spec-2-1] worktrees.mjs create warns when a project agent type sets isolation: worktree', () => {
     const { root } = project();
     put(join(root, '.claude/agents/opus-implementer.md'), '---\nname: opus-implementer\nmodel: opus\nisolation: worktree\n---\nImplement.\n');
@@ -128,5 +128,19 @@ describe('parallel worker startup', () => {
     rmSync(join(root, '.claude/agents/opus-implementer.md'));
     const quiet = node(root, 'worktrees.mjs', 'create', '--queue', queuePath, '--spec', '2', '--session', 'coord-1');
     expect(JSON.parse(quiet.stdout).warnings).toBeUndefined();
+  }, 60000);
+
+  // Spec: docs/archive/2026-11-22-fixes-1-9-4/feature/specs/06-agents-folder.md
+  it('[AC:spec-6-1] the isolation warning skips a directory named *.md and reads agent files in subfolders', () => {
+    const { root } = project();
+    mkdirSync(join(root, '.claude/agents/team.md'), { recursive: true });
+    put(join(root, '.claude/agents/opus-implementer.md'), '---\nname: opus-implementer\nisolation: worktree\n---\nImplement.\n');
+    put(join(root, '.claude/agents/team/reviewer.md'), '---\nname: team-reviewer\nisolation: worktree\n---\nReview.\n');
+    put(join(root, '.claude/agents/team/plain.md'), '---\nname: team-plain\n---\nPlain.\n');
+    const created = node(root, 'worktrees.mjs', 'create', '--queue', queuePath, '--spec', '1', '--session', 'coord-1');
+    expect(created.status, created.stderr).toBe(0);
+    const warnings: string[] = JSON.parse(created.stdout).warnings;
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toMatch(/^\.claude\/agents\/opus-implementer\.md, \.claude\/agents\/team\/reviewer\.md set isolation: worktree,/);
   }, 60000);
 });

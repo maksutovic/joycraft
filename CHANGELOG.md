@@ -7,6 +7,30 @@ claim that a release has shipped.
 
 ---
 
+## 1.10.3 — Fixes from the 1.9.3 and 1.9.4 review follow-ups
+
+The 1.9.3 and 1.9.4 features still held 35 review follow-ups. Most needed no work;
+these four were real.
+
+### Fixed
+
+- **An amendment for a commit with no brief on one side can be recorded.** When a
+  brief commit's first parent has no brief (a merge from a branch without it),
+  archive's refusal prints `fromSha256 null` instead of the hash of empty content,
+  which no record could match. A `brief-amendments.json` entry with `null` for that
+  side passes; `archive.md` says so.
+- **Reopen and submit say when an accepted report is missing.** `reopen` on a done
+  spec whose accepted report file is missing or not valid JSON names that path and
+  says to restore it from Git, instead of "no input changed". `submit` lists such a
+  spec in its warnings with `git checkout HEAD -- <path>`.
+- **A reviewer in a worker tree gets a fresh report path.** Reviewer startup skips
+  a report path that exists in the coordinator's tree as well as its own.
+- **The isolation warning reads all of `.claude/agents`.** `worktrees.mjs create`
+  no longer fails on a directory whose name ends in `.md`, and it warns about an
+  `isolation: worktree` agent file in a subfolder, which Claude Code also loads.
+- **`dispatch.md` gives the reason for the `cd <worker-root> &&` form**, as the
+  implementer agent does.
+
 ## 1.10.2 — Review follow-ups that are handled stop being questions
 
 Field use of 1.10.0 showed reviewers filing checks that passed, other specs' files

@@ -1,0 +1,40 @@
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+ RUN  v3.2.4 /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-x-followups/.joycraft/local/scratch-rev6
+
+ ❯ tests/runtime-dispatch-parallel.test.ts (5 tests | 1 failed | 4 skipped) 367ms
+   ↓ parallel worker startup > [AC:spec-1-1] both parallel specs start in their worktrees.mjs trees with no workspace flags, from a main or a linked coordinator
+   ↓ parallel worker startup > [AC:spec-1-2] a tree with no worktrees.mjs record takes its coordinator from the lease; explicit flags still win
+   ↓ parallel worker startup > [AC:spec-1-3] with neither a record nor a lease, startup refuses and prints the exact startup with the workspace flags added
+   ↓ parallel worker startup > [AC:spec-2-1] worktrees.mjs create warns when a project agent type sets isolation: worktree
+   × parallel worker startup > [AC:spec-6-1] the isolation warning skips a directory named *.md and reads agent files in subfolders 367ms
+     → expected '.claude/agents/opus-implementer.md se…' to match /^\.claude\/agents\/opus-implem…/agents\
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/runtime-dispatch-parallel.test.ts > parallel worker startup > [AC:spec-6-1] the isolation warning skips a directory named *.md and reads agent files in subfolders
+AssertionError: expected '.claude/agents/opus-implementer.md se…' to match /^\.claude\/agents\/opus-implem…/agents\
+
+[32m- Expected:[39m 
+/^\.claude\/agents\/opus-implementer\.md, \.claude\/agents\/team\/reviewer\.md set isolation: worktree,/
+
+[31m+ Received:[39m 
+".claude/agents/opus-implementer.md sets isolation: worktree, so a worker launched as that agent type gets its own host worktree and cannot use this tree. Launch this worker as an agent type without it, such as joycraft-implementer or general-purpose."
+
+ ❯ tests/runtime-dispatch-parallel.test.ts:144:25
+    142|     const warnings: string[] = JSON.parse(created.stdout).warnings;
+    143|     expect(warnings).toHaveLength(1);
+    144|     expect(warnings[0]).toMatch(/^\.claude\/agents\/opus-implementer\.…
+       |                         ^
+    145|   }, 60000);
+    146| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 skipped (5)
+   Start at  00:18:45
+   Duration  704ms (transform 39ms, setup 0ms, collect 51ms, tests 367ms, environment 0ms, prepare 41ms)
+
+exit=1
