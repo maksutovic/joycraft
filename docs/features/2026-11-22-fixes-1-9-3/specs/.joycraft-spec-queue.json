@@ -379,7 +379,7 @@
       "id": 5,
       "file": "05-amendment-message.md",
       "depends_on": [],
-      "status": "done",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -425,10 +425,20 @@
       "submitted": {
         "at": "2026-11-23T05:29:14.582Z"
       },
-      "acceptedReport": {
-        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-5.report.json",
-        "sha256": "dc592ae1b404d896ef195ee8a12e67f88be5c7a9f2657a46523313ebbe5024eb"
-      }
+      "reopened": [
+        {
+          "at": "2026-11-28T08:09:35.434Z",
+          "reason": "Spec 6 changed briefAmendments in archive.mjs (null for a side with no brief) and added two tests to runtime-archive-merge-amendment.test.ts",
+          "report": {
+            "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-5.report.json",
+            "sha256": "dc592ae1b404d896ef195ee8a12e67f88be5c7a9f2657a46523313ebbe5024eb"
+          },
+          "changed": [
+            "payload/.joycraft/runtime/archive.mjs",
+            "tests/runtime-archive-merge-amendment.test.ts"
+          ]
+        }
+      ]
     },
     {
       "id": 6,
