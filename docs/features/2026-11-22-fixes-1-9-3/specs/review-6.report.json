@@ -100,7 +100,8 @@
     "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
     "actor": {
       "host": "claude",
-      "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1"
+      "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+      "agentId": "a4a4b615e87bbfba3"
     },
     "independent": true,
     "scopeReviewed": true
@@ -120,11 +121,15 @@
           "kind": "runtime",
           "method": "test",
           "result": "PASS",
-          "actual": "Focused file at 86d8b62: 5 tests passed, exit 0, including [AC:spec-6-1] (refusal names the merge with \"fromSha256 null, toSha256 <v3 hash>\"; empty-content hash refused with \"does not match its commit's brief bytes\"; null record returns both amendments).",
+          "actual": "Focused file at 86d8b62: 5 tests passed, exit 0, including [AC:spec-6-1] (refusal names the merge with \"fromSha256 null, toSha256 <v3 hash>\"; empty-content hash refused with \"does not match its commit's brief bytes\"; null record returns both amendments). Can-the-test-fail: in a scratch copy under .joycraft/local/mut6 with hashAt reverted to sha256(bytes ?? Buffer.alloc(0)) (old empty-content behavior), [AC:spec-6-1] and [AC:merge-changes-brief] went red (pnpm exec vitest run --root .joycraft/local/mut6, exit 1, second receipt).",
           "receipts": [
             {
               "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-focused-20261128T081804001Z-38997-1.log",
               "sha256": "0d98adbec926186f95eca6e4ed2ab47c62554b1fa7200b1fe285f1727474a1ae"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-mutant-null.log",
+              "sha256": "d29dc4c88db6a89048dc2feedf48cc8d79b14f96869f0d0e077e975f14538ff1"
             }
           ],
           "command": {
@@ -134,31 +139,6 @@
               "tests/runtime-archive-merge-amendment.test.ts"
             ],
             "exitCode": 0
-          }
-        },
-        {
-          "kind": "runtime",
-          "method": "test",
-          "result": "PASS",
-          "actual": "Can-the-test-fail: in a scratch copy under .joycraft/local/mut6, hashAt was reverted to sha256(bytes ?? Buffer.alloc(0)) (the old empty-content behavior). [AC:spec-6-1] and [AC:merge-changes-brief] went red, exit 1. The test can fail.",
-          "receipts": [
-            {
-              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-mutant-null.log",
-              "sha256": "d29dc4c88db6a89048dc2feedf48cc8d79b14f96869f0d0e077e975f14538ff1"
-            }
-          ],
-          "command": {
-            "argv": [
-              "pnpm",
-              "exec",
-              "vitest",
-              "run",
-              "--root",
-              ".joycraft/local/mut6",
-              "--config",
-              "vitest.config.mjs"
-            ],
-            "exitCode": 1
           }
         },
         {
@@ -185,7 +165,12 @@
           "method": "source",
           "result": "PASS",
           "actual": "payload/.joycraft/references/archive.md:96 now reads \"The before hash is at `commit^`; use `null` for a side with no brief.\" This matches archive.mjs:119-130 (hashAt returns null when committedBytes is null, and the check compares the record to hashAt on both sides).",
-          "receipts": []
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-doc-line.log",
+              "sha256": "155e6c7eee9575a27daf0e76fa42f53ad5af33a61f5071d5f3d5fd92b6d163bd"
+            }
+          ]
         }
       ],
       "limits": [
@@ -205,11 +190,15 @@
           "kind": "runtime",
           "method": "test",
           "result": "PASS",
-          "actual": "[AC:spec-6-2] passed in the focused run (exit 0): the message ends \": <amendment> (fromSha256 <v1>, toSha256 <v2>); <second> (fromSha256 <v2>, toSha256 <v3>))\".",
+          "actual": "[AC:spec-6-2] passed in the focused run (exit 0): the message ends \": <amendment> (fromSha256 <v1>, toSha256 <v2>); <second> (fromSha256 <v2>, toSha256 <v3>))\". Can-the-test-fail: with the refusal list reversed in the scratch copy, only [AC:spec-6-2] went red (exit 1, second receipt).",
           "receipts": [
             {
               "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-focused-20261128T081804001Z-38997-1.log",
               "sha256": "0d98adbec926186f95eca6e4ed2ab47c62554b1fa7200b1fe285f1727474a1ae"
+            },
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-mutant-order.log",
+              "sha256": "56feedef00b268a5bc1b841495a39a2540f36dbfb2cc7efbcc62ee2a5987b889"
             }
           ],
           "command": {
@@ -219,31 +208,6 @@
               "tests/runtime-archive-merge-amendment.test.ts"
             ],
             "exitCode": 0
-          }
-        },
-        {
-          "kind": "runtime",
-          "method": "test",
-          "result": "PASS",
-          "actual": "Can-the-test-fail: in the scratch copy the refusal list was reversed ([...later].reverse()). Only [AC:spec-6-2] went red, exit 1. The test can fail.",
-          "receipts": [
-            {
-              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-mutant-order.log",
-              "sha256": "56feedef00b268a5bc1b841495a39a2540f36dbfb2cc7efbcc62ee2a5987b889"
-            }
-          ],
-          "command": {
-            "argv": [
-              "pnpm",
-              "exec",
-              "vitest",
-              "run",
-              "--root",
-              ".joycraft/local/mut6",
-              "--config",
-              "vitest.config.mjs"
-            ],
-            "exitCode": 1
           }
         }
       ],
@@ -373,5 +337,5 @@
       "summary": "Changed since base but declared by no spec of this queue: tests/runtime-reopen.test.ts."
     }
   ],
-  "createdAt": "2026-11-28T08:20:11.308Z"
+  "createdAt": "2026-11-28T08:20:26.057Z"
 }

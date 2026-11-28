@@ -448,7 +448,7 @@
       "id": 6,
       "file": "06-amendment-absent-brief.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -507,6 +507,10 @@
       },
       "submitted": {
         "at": "2026-11-28T08:09:29.827Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-6.report.json",
+        "sha256": "4d7eb5c5c43309190bc88fc3d3555479675e45f2b2bf22d260608bea0bd70b19"
       }
     },
     {

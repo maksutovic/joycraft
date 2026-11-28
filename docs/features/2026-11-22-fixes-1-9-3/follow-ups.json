@@ -114,6 +114,12 @@
       "finding": "f1",
       "outcome": "dismissed",
       "reason": "Wording only: the reviewer agent gets the cd-form reason the next time its text changes. An edit to the agent alone forces a reviewer-bench re-record (~$30, [AC:sl3-07-bench-current]). dispatch.md gets the reason in spec 7."
+    },
+    {
+      "spec": 6,
+      "finding": "f1",
+      "outcome": "dismissed",
+      "reason": "Both sides go through the same hashAt helper in briefAmendments, so the from-side test exercises the code; the reviewer's probe (reviews/receipts/spec-6-reviewer-probe.log) recorded a deleted-then-restored brief passing with toSha256 null. A second fixture would add test time without a new failure mode."
     }
   ]
 }
