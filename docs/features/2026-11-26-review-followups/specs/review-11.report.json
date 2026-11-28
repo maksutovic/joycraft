@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "31e471f76899ba973d77a01f363d94c338ba0404",
+    "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+    "specId": 11,
+    "specPath": "docs/features/2026-11-26-review-followups/specs/11-manifest-default-tests.md",
+    "criteria": [
+      {
+        "id": "spec-11-1",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/11-manifest-default-tests.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-26-review-followups/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "triage",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "49e05fe8d189c97c149b8d46fee94f8025407a18486c3703a035c59915ddac4f",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "e9b4f4cf7d8a52592865206a0fac5586aff53365813b07d7d036c23d83b3b0d7",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/11-manifest-default-tests.md",
+        "kind": "requirement",
+        "sha256": "60839363d43ce14c918fcaed530c8a12eb4408a500eec98255506e8f5a043e99",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/review-10.report.json",
+        "kind": "requirement",
+        "sha256": "c747f835c8ac4fe08710d2d37c4158c305d4e0dfe4b0baea156319bb487bca00",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+        "kind": "code",
+        "sha256": "86d68920cd58ffb5be099ca3f8132f65543d1e4f8cd935de1037dcaf5e130254",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-dispatch-commands.test.ts",
+        "kind": "check",
+        "sha256": "f9f4683c81a429c0ad90918bb5a9f83f9ebded4f4d466f0997732cad043ac1e1",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          10,
+          11
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-26-review-followups/brief.md",
+          "anchors": [
+            "triage",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "cdb7fd22a5016d31929aefc4c2a76431fda9023740b294ef4ecda468b05970a4"
+  },
+  "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d"
+  },
+  "reviewer": {
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+      "agentId": "ad6a7f9d830698d18"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "unresolved": [],
+  "createdAt": "2026-11-28T03:21:19.122Z",
+  "flows": [
+    {
+      "id": "flow-manifest-default-order",
+      "criteria": [
+        "spec-11-1"
+      ],
+      "subjectIdentity": "cdb7fd22a5016d31929aefc4c2a76431fda9023740b294ef4ecda468b05970a4",
+      "representativeInput": "One repository with a coordinator worktree and a separate worker worktree; startupDefaults run in the worker with no lease and no record, then after claimQueue in the coordinator tree, then with a .joycraft/local/worktrees.json record for the worker naming the main checkout.",
+      "expected": "Worker manifest, then coordinator tree manifest, then the record-named tree manifest even with the lease naming the coordinator tree.",
+      "limits": [
+        "Gate not run by the reviewer, per the task; tests/trial-reviewer-bench.test.ts bench-current is the known pending re-record and not part of this spec."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-11-1] passed with the other 31 tests in the file (exit 0). The three sources are distinct paths (worker, lead, main), so each assertion separates one branch. Can it fail: in a scratch copy, line 360 without the record (lease only) fails at test line 336; without the lease (record only) fails at 333; fallback set to the main checkout fails at 330; coordinatorTree returning root always fails at 333; restored copy passes. Probe in scratch: a record for another path (../elsewhere) and an unreadable worktrees.json both fall back to the lease root (exit 0). The record shape in the test matches what worktrees.mjs create writes (path and coordinatorRoot relative to the main tree, . for main).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-11-reviewer-focused-20261128T031908130Z-23818-1.log",
+              "sha256": "adbcd48eacd0649e0d9b257efca7ab7d6041a7c443702ae4ca457a2f06f6cbfc"
+            },
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-11-reviewer-canfail-revert-record.log",
+              "sha256": "3b041295df2891e8e4a70bf06ca33a0d1c3f321a9779afb446dfa67786da8ca3"
+            },
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-11-reviewer-canfail-revert-lease.log",
+              "sha256": "991e97e98eed637a0f25c9729a1063864e03c219f3d4f3755975e9f0d4f65fd6"
+            },
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-11-reviewer-canfail-revert-self.log",
+              "sha256": "977dbffdfc0831d3f13663f129469aa76f084e15253e2ab9c8e064c5896ef6d2"
+            },
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-11-reviewer-canfail-revert-all.log",
+              "sha256": "a1c2c29fb377ced04c75b1fa31862b2483111f7756cc67289e9ac96b992a6bcd"
+            },
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-11-reviewer-canfail-restored.log",
+              "sha256": "7dfdf3d141741f2b4be79cf0e105e45f72021031418c9728bac5594437c738b6"
+            },
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-11-reviewer-probe-record.log",
+              "sha256": "da9db0b0bce89ea31bacfdb83f95ae50bc97c538b938d51cd92150921983d654"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/runtime-dispatch-commands.test.ts:320",
+      "summary": "Test change is class 1: one new case [AC:spec-11-1] plus the relative import; no existing assertion was weakened. The help-line and [AC:spec-10-1] edits in the same diff belong to spec 10."
+    },
+    {
+      "id": "f2",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/dispatch-start.mjs:356",
+      "summary": "No code or doc line changed for this spec, as it states; dispatch-start.mjs hash equals the one spec 10 reviewed. Spec 10 follow-up f1 is closed by this test."
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "31e471f76899ba973d77a01f363d94c338ba0404",
+    "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+    "specId": 10,
+    "specPath": "docs/features/2026-11-26-review-followups/specs/10-linked-worktree-manifest.md",
+    "criteria": [
+      {
+        "id": "spec-10-1",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/10-linked-worktree-manifest.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-10-2",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/10-linked-worktree-manifest.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "code",
+        "sha256": "44139cd01da9ec68021e94bfd1e5c2c2ffd18a0b8a7e7ba9f33dafc17b4b7d3d",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "triage",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "49e05fe8d189c97c149b8d46fee94f8025407a18486c3703a035c59915ddac4f",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "2549b0134136475b381b32cca7a7baa8245bcdd6128a3cd724de90bbd7de790b",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/10-linked-worktree-manifest.md",
+        "kind": "requirement",
+        "sha256": "40b64f0ada7b927f9af7a6467adda75635d7882b82714b022afb7ba41155ff26",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/dispatch.md",
+        "kind": "code",
+        "sha256": "d0521fddb82b2b4ce0946a4398661554538ba624259d8b1328669bc8aa448982",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+        "kind": "code",
+        "sha256": "86d68920cd58ffb5be099ca3f8132f65543d1e4f8cd935de1037dcaf5e130254",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/PIN",
+        "kind": "code",
+        "sha256": "6799308a3185ff7f7426e532868fcc5d07090bca7291febbcd4790b136e61199",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-dispatch-commands.test.ts",
+        "kind": "check",
+        "sha256": "a5dd026fc182c3999e17ae59e266bc6acc07f9fd1fecc2532d139681e1f21711",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "kind": "check",
+        "sha256": "5691585ba4d945ada95eb331f54e5606862036cd5b288752d3b438a753e56a11",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          10
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-26-review-followups/brief.md",
+          "anchors": [
+            "triage",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "5b83cfdc7a7413ca56bd4a2d3991d4382c07363dca6b918a660c33833d6aae3a"
+  },
+  "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d"
+  },
+  "reviewer": {
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+      "agentId": "afa84e896754a8b5f"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "unresolved": [],
+  "createdAt": "2026-11-28T03:17:45.010Z",
+  "flows": [
+    {
+      "id": "flow-linked-worktree-manifest",
+      "criteria": [
+        "spec-10-1"
+      ],
+      "subjectIdentity": "5b83cfdc7a7413ca56bd4a2d3991d4382c07363dca6b918a660c33833d6aae3a",
+      "representativeInput": "A claimed queue in a linked worktree whose main checkout commit has no .joycraft install; plus a scratch probe of startupDefaults with a lease root of ., a lease root of ../coord, a worktrees.json record only, and a tampered lease root.",
+      "expected": "Implementer startup succeeds with ready: true; the expected manifest is the record coordinator tree, else the lease root, else this tree, never the main checkout by default.",
+      "limits": [
+        "Gate not run by the reviewer, per the task; tests/trial-reviewer-bench.test.ts bench-current is the known pending re-record and not part of this spec."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-10-1] passed with the other 48 tests (2 files, 49 tests, exit 0). In a scratch copy with the default reverted to mainTree(root), the same test fails with the original ENOENT on the main checkout installation.json (exit 1), so the test can fail. Scratch probe: lease root . gives the main tree manifest, lease root ../coord gives coord, a worktrees.json record alone gives coord, so the record > lease > self order holds.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-10-reviewer-focused-20261128T031548234Z-35818-1.log",
+              "sha256": "e6384045b2ec642e936f52713c54a0e074c87fda1c4b6a56cfd59f2f83548b7f"
+            },
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-10-reviewer-canfail-revert.log",
+              "sha256": "6c7cc22e3b01518ddfa50668d2736d9f121c35ce8af9fc7575db1231699a49bb"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/text-worker-commands.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-help-and-docs",
+      "criteria": [
+        "spec-10-2"
+      ],
+      "subjectIdentity": "5b83cfdc7a7413ca56bd4a2d3991d4382c07363dca6b918a660c33833d6aae3a",
+      "representativeInput": "dispatch-start.mjs --help output, payload/.joycraft/references/dispatch.md, CHANGELOG 1.10.2 entry, every-spec word cap test.",
+      "expected": "--help prints the new --expected-manifest line; dispatch.md says the default is the coordinator tree copy; word caps hold.",
+      "limits": [
+        "Gate not run by the reviewer, per the task; tests/trial-reviewer-bench.test.ts bench-current is the known pending re-record and not part of this spec."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:sl2-06a-help] (expected line changed to the spec text verbatim), [AC:sl2-06a-defaults] and [AC:sl3-07-words] (unchanged; git diff of tests/text-worker-commands.test.ts is empty) passed, exit 0. dispatch.md now reads \"by default, the coordinator tree copy, from the worker record or queue lease\", which matches coordinatorTree(). The CHANGELOG line matches the code. payload/PIN hashes for dispatch-start.mjs and dispatch.md equal the reviewed files.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-10-reviewer-focused-20261128T031548234Z-35818-1.log",
+              "sha256": "e6384045b2ec642e936f52713c54a0e074c87fda1c4b6a56cfd59f2f83548b7f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/text-worker-commands.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-10-1",
+      "summary": "The [AC:spec-10-1] test claims the queue from the linked tree, so the lease root equals the tree itself; it cannot tell the lease branch from the self fallback, and no test covers the worktrees.mjs record branch. A scratch probe showed both branches correct.",
+      "assumption": "The spec names only this test as the check; coverage of the record and lease branches is a later test addition, not a blocker."
+    },
+    {
+      "id": "f2",
+      "class": "note",
+      "origin": "new",
+      "criterion": "spec-10-2",
+      "summary": "spec-10-2 is untraced (no [AC:spec-10-2] tag); the spec names [AC:sl2-06a-help], [AC:sl2-06a-defaults] and [AC:sl3-07-words] as its checks, and those pass."
+    },
+    {
+      "id": "f3",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/dispatch-start.mjs:356",
+      "summary": "Probe: a lease root edited to ../../../../etc moves the default expected manifest outside the repo. The lease is a local coordinator file, trusted the same way parallelWorkspace already trusts it; not a regression for outside input."
+    }
+  ]
+}

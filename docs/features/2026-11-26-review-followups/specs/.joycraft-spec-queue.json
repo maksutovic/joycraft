@@ -817,6 +817,10 @@
             "kind": "code"
           },
           {
+            "path": "scripts/trial/reviewer-bench.mjs",
+            "kind": "code"
+          },
+          {
             "path": "CHANGELOG.md",
             "kind": "code"
           },
@@ -867,8 +871,160 @@
             "requiredKinds": [
               "runtime"
             ]
+          },
+          {
+            "id": "spec-9-4",
+            "requirement": {
+              "path": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
           }
         ]
+      }
+    },
+    {
+      "id": 10,
+      "file": "10-linked-worktree-manifest.md",
+      "depends_on": [],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-26-review-followups/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "triage",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-26-review-followups/specs/10-linked-worktree-manifest.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/references/dispatch.md",
+            "kind": "code"
+          },
+          {
+            "path": "payload/PIN",
+            "kind": "code"
+          },
+          {
+            "path": "CHANGELOG.md",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-dispatch-commands.test.ts",
+            "kind": "check"
+          },
+          {
+            "path": "tests/text-worker-commands.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-10-1",
+            "requirement": {
+              "path": "docs/features/2026-11-26-review-followups/specs/10-linked-worktree-manifest.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-10-2",
+            "requirement": {
+              "path": "docs/features/2026-11-26-review-followups/specs/10-linked-worktree-manifest.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-28T03:15:22.496Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-26-review-followups/specs/review-10.report.json",
+        "sha256": "c747f835c8ac4fe08710d2d37c4158c305d4e0dfe4b0baea156319bb487bca00"
+      }
+    },
+    {
+      "id": 11,
+      "file": "11-manifest-default-tests.md",
+      "depends_on": [
+        10
+      ],
+      "status": "done",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-26-review-followups/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "triage",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-26-review-followups/specs/11-manifest-default-tests.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "docs/features/2026-11-26-review-followups/specs/review-10.report.json",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-start.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-dispatch-commands.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-11-1",
+            "requirement": {
+              "path": "docs/features/2026-11-26-review-followups/specs/11-manifest-default-tests.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-28T03:18:54.592Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-26-review-followups/specs/review-11.report.json",
+        "sha256": "082630ee020a850dac62d181aa8874fae55d418d279723aefa1907059661f091"
       }
     }
   ]

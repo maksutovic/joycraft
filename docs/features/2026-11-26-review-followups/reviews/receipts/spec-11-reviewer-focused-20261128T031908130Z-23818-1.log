@@ -1,0 +1,42 @@
+
+> joycraft@1.10.2 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-dispatch-commands.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/runtime-dispatch-commands.test.ts [2m([22m[2m32 tests[22m[2m)[22m[33m 21180[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-1] implementer and reviewer startup print the focused command built from the check inputs [33m 886[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-2] each step is one plain command with literal paths [33m 701[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-5-3] without tests.focused or without check inputs, focused is null with a note and startup succeeds [33m 551[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-1] printed commands run as printed through /bin/sh with a space in the worker root or a check path [33m 1967[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-2] {files} inside a word is replaced in place and quoted template arguments stay whole [33m 808[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-3] two startups in the same second print different receipt paths [33m 376[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[review-5-4] reviewer receipts go to reviews/receipts and implementer receipts to receipts [33m 841[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-1] a check path holding the literal {files} is never expanded again [33m 330[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-2] an unclosed quote in tests.focused gives focused null with a note, and startup exits 0 [33m 651[2mms[22m[39m
+   [33m[2m✓[22m[39m task startup commands[2m > [22m[AC:spec-29-3] a focused command with shell syntax runs as sh -c under evidence [33m 2730[2mms[22m[39m
+   [33m[2m✓[22m[39m packet readFirst (sl1-05)[2m > [22m[AC:sl1-05-readfirst] each packet lists AGENTS.md and the role skill only, with no runtime .mjs [33m 639[2mms[22m[39m
+   [33m[2m✓[22m[39m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-defaults] on a claimed queue, queue, spec, role and coordinator session are enough for both roles [33m 1111[2mms[22m[39m
+   [33m[2m✓[22m[39m startup flag defaults (sl2-06a)[2m > [22m[AC:spec-10-1] in a linked worktree whose main checkout has no install, startup pins this tree's manifest [33m 725[2mms[22m[39m
+   [33m[2m✓[22m[39m startup flag defaults (sl2-06a)[2m > [22m[AC:spec-11-1] the expected manifest default takes this tree's worker record first, then the lease root, then this tree [33m 651[2mms[22m[39m
+   [33m[2m✓[22m[39m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-one-refusal] one refusal lists every missing flag [33m 347[2mms[22m[39m
+   [33m[2m✓[22m[39m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-explicit-wins] explicit flags win, and --coordinator-session stays explicit [33m 660[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-check] check-report skips only the child-ID check in agent-at-finish mode [33m 492[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-finish] finalize-review writes the launch-result ID into the report, then checks and hashes it [33m 479[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-distinct] the distinct-actor check stays: the implementer's own ID or a different recorded ID is refused [33m 967[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-unchanged] a refused finalize leaves the report bytes unchanged, and the correct ID is accepted afterwards [33m 415[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-owner] a FAIL report from the agent-at-finish flow takes its ID with bind-reviewer, then accept-owner accepts it [33m 652[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-waiver] an UNVERIFIED tool-break report from the agent-at-finish flow takes its ID with bind-reviewer, then accept-waiver --report accepts it [33m 462[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-no-actor] a same-session report with no actor records fails agent-at-finish check-report and says what to write [33m 301[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-commands] a same-session reviewer with no agent ID gets check-report in agent-at-finish mode and no finalize step [33m 584[2mms[22m[39m
+   [33m[2m✓[22m[39m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-base] a first claim records HEAD as baseRevision; a renewal and a take-over keep it [33m 638[2mms[22m[39m
+   [33m[2m✓[22m[39m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-next] claim, implementer startup, submit and finalize-review each print a next command that runs unchanged [33m 903[2mms[22m[39m
+   [33m[2m✓[22m[39m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-changed] submit lists a changed file the inputs do not name and exits 0; reviewer startup notes it as scope [33m 578[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m32 passed[39m[22m[90m (32)[39m
+[2m   Start at [22m 19:19:24
+[2m   Duration [22m 21.46s[2m (transform 169ms, setup 0ms, collect 59ms, tests 21.18s, environment 0ms, prepare 50ms)[22m
+
+joycraft-evidence: {"wallMs":22135,"load":[9.65478515625,13.0859375],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-dispatch-commands.test.ts"],"exitCode":0,"timedOut":false,"revision":"31e471f76899ba973d77a01f363d94c338ba0404","dirty":true}

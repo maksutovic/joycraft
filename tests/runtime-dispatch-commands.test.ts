@@ -2,7 +2,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { basename, dirname, join, relative } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { afterEach, describe, expect, it } from 'vitest';
 import { applyInstall, planInstall } from '../src/install-v1.js';
@@ -298,6 +298,44 @@ describe('startup flag defaults (sl2-06a)', () => {
     expect(packetOf(reviewing.root, reviewer.output).implementerSessionId).toBe('lead-2');
   });
 
+  it('[AC:spec-10-1] in a linked worktree whose main checkout has no install, startup pins this tree\'s manifest', async () => {
+    const project = fixture({ focused: 'pnpm test {files}' });
+    const linked = join(dirname(project.root), `${basename(project.root)}-linked`);
+    dirs.push(linked);
+    git(project.root, 'worktree', 'add', '-q', '-b', 'work', linked);
+    const linkedRoot = realpathSync(linked);
+    // The main checkout moves to a commit with no Joycraft install, as a checkout on an older branch would.
+    git(project.root, 'rm', '-rq', '.joycraft');
+    git(project.root, 'commit', '-q', '-m', 'no install here');
+    claimQueue(linkedRoot, 'lead-linked');
+    const implementer = runStart(linkedRoot, ['--queue', queuePath, '--spec', '1', '--role', 'implementer', '--coordinator-session', 'lead-linked']);
+    expect(implementer.status, implementer.stderr).toBe(0);
+    expect(implementer.output.ready).toBe(true);
+    const { startupDefaults } = await import(pathToFileURL(join(linkedRoot, '.joycraft/runtime/dispatch-start.mjs')).href);
+    expect(startupDefaults({ '--queue': queuePath, '--spec': '1', '--role': 'implementer' }, linkedRoot).flags['--expected-manifest']).toBe(join(linkedRoot, '.joycraft/installation.json'));
+    // With no lease and no worker record, the default is this tree's own manifest.
+    expect(startupDefaults({ '--spec': '1', '--role': 'implementer' }, linkedRoot).flags['--expected-manifest']).toBe(join(linkedRoot, '.joycraft/installation.json'));
+  });
+
+  it('[AC:spec-11-1] the expected manifest default takes this tree\'s worker record first, then the lease root, then this tree', async () => {
+    const project = fixture({ focused: 'pnpm test {files}' });
+    const coordinator = join(dirname(project.root), `${basename(project.root)}-coordinator`);
+    const worker = join(dirname(project.root), `${basename(project.root)}-worker`);
+    dirs.push(coordinator, worker);
+    git(project.root, 'worktree', 'add', '-q', '-b', 'lead', coordinator);
+    git(project.root, 'worktree', 'add', '-q', '-b', 'w1', worker);
+    const [main, lead, work] = [project.root, realpathSync(coordinator), realpathSync(worker)];
+    const { startupDefaults } = await import(pathToFileURL(join(work, '.joycraft/runtime/dispatch-start.mjs')).href);
+    const manifestOf = () => startupDefaults({ '--queue': queuePath, '--spec': '1', '--role': 'implementer' }, work).flags['--expected-manifest'];
+    expect(manifestOf()).toBe(join(work, '.joycraft/installation.json'));
+    // A lease claimed in the coordinator tree: a worker with no record takes the lease root.
+    claimQueue(lead, 'lead-3');
+    expect(manifestOf()).toBe(join(lead, '.joycraft/installation.json'));
+    // A worktrees.mjs record for this tree wins over the lease.
+    put(join(main, '.joycraft/local/worktrees.json'), JSON.stringify({ schemaVersion: 1, trees: [{ path: relative(main, work), coordinatorRoot: '.' }] }));
+    expect(manifestOf()).toBe(join(main, '.joycraft/installation.json'));
+  });
+
   it('[AC:sl2-06a-one-refusal] one refusal lists every missing flag', () => {
     const { root } = fixture({});
     const bare = runStart(root, []);
@@ -333,7 +371,7 @@ describe('startup flag defaults (sl2-06a)', () => {
     const { root } = fixture({});
     const help = spawnSync(process.execPath, [join(root, '.joycraft/runtime/dispatch-start.mjs'), '--help'], { cwd: root, encoding: 'utf8' });
     expect(help.status).toBe(0);
-    for (const line of ['--worker-root: this folder.', '--expected-manifest: .joycraft/installation.json in the main checkout.', "--native-session: the coordinator lease's session", 'That default is a claim, not an observation']) expect(help.stdout).toContain(line);
+    for (const line of ['--worker-root: this folder.', "--expected-manifest: .joycraft/installation.json in the coordinator's tree (this tree's worktrees.mjs record, else the lease), else this folder.", "--native-session: the coordinator lease's session", 'That default is a claim, not an observation']) expect(help.stdout).toContain(line);
   });
 });
 
