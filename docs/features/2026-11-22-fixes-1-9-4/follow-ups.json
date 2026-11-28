@@ -72,6 +72,30 @@
       "finding": "untracked-followups",
       "outcome": "dismissed",
       "reason": "Fixed: review-followups.md was committed later (it is tracked on this branch)."
+    },
+    {
+      "spec": 1,
+      "finding": "f2",
+      "outcome": "fixed",
+      "by": 5
+    },
+    {
+      "spec": 1,
+      "finding": "f3",
+      "outcome": "fixed",
+      "by": 5
+    },
+    {
+      "spec": 2,
+      "finding": "f1",
+      "outcome": "fixed",
+      "by": 6
+    },
+    {
+      "spec": 2,
+      "finding": "f2",
+      "outcome": "fixed",
+      "by": 6
     }
   ]
 }

@@ -1,6 +1,6 @@
 ---
 id: 6
-status: todo
+status: in-review
 ---
 # An amendment for a commit with no brief on one side can be recorded
 

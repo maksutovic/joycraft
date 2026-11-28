@@ -90,6 +90,30 @@
       "finding": "f4",
       "outcome": "dismissed",
       "reason": "Archive preview for fixes-1-9-3 passes on 1.10.2: the 37c0fc6 brief change sits outside specs 1 and 2 scoped anchors, so no amendment record is needed."
+    },
+    {
+      "spec": 2,
+      "finding": "f2",
+      "outcome": "fixed",
+      "by": 7
+    },
+    {
+      "spec": 4,
+      "finding": "f1",
+      "outcome": "fixed",
+      "by": 7
+    },
+    {
+      "spec": 5,
+      "finding": "f2",
+      "outcome": "fixed",
+      "by": 6
+    },
+    {
+      "spec": 5,
+      "finding": "f3",
+      "outcome": "fixed",
+      "by": 6
     }
   ]
 }

@@ -434,7 +434,7 @@
       "id": 6,
       "file": "06-amendment-absent-brief.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -490,6 +490,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-28T08:09:29.827Z"
       }
     },
     {
