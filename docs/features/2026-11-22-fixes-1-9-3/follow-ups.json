@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "spec": 1,
+      "finding": "f1",
+      "outcome": "dismissed",
+      "reason": "Test-only: the rerun splits on spaces, but the code under test quotes such paths (shellQuote) and test temp dirs have no spaces on macOS or Linux CI; no product defect."
+    },
+    {
+      "spec": 1,
+      "finding": "f2",
+      "outcome": "dismissed",
+      "reason": "Agent-ID note: fixed in 1.10.0, where the coordinator passes the launch-result ID to finalize-review --reviewer-agent / bind-reviewer. The overwritten-report round count is fixed in 1.9.4: each reviewer startup gets its own report path (review-<id>-r<n>.report.json)."
+    },
+    {
+      "spec": 2,
+      "finding": "f1",
+      "outcome": "dismissed",
+      "reason": "Reviewer accepted it: a tag-only edit to Test changes, with the requiring line present at the base. Nothing to change."
+    },
+    {
+      "spec": 2,
+      "finding": "f3",
+      "outcome": "dismissed",
+      "reason": "Class-1 confirmation: the changed tests read no feature paths at runtime, and public-docs.test.ts is spec 3's declared change. No defect."
+    },
+    {
+      "spec": 2,
+      "finding": "f4",
+      "outcome": "dismissed",
+      "reason": "Agent-ID note: fixed in 1.10.0, where the coordinator passes the launch-result ID to finalize-review --reviewer-agent / bind-reviewer."
+    },
+    {
+      "spec": 2,
+      "finding": "f5",
+      "outcome": "dismissed",
+      "reason": "Shared-tree note from the serial run: other specs' uncommitted files, outside spec 2 scope; all spec 2 input hashes matched. No defect."
+    },
+    {
+      "spec": 3,
+      "finding": "f1",
+      "outcome": "dismissed",
+      "reason": "Untraced by design: spec-3-2 requires release-preparation.test.ts unchanged, so it cannot carry a tag; the reviewer judged it by running the file."
+    },
+    {
+      "spec": 3,
+      "finding": "f2",
+      "outcome": "dismissed",
+      "reason": "Changelog prose is judged by reading at review, by design; release-preparation and public-docs tests check the heading and release fields."
+    },
+    {
+      "spec": 3,
+      "finding": "f3",
+      "outcome": "dismissed",
+      "reason": "Old-install note: this repo now runs the 1.10.2 install (node dist/cli.js update . --yes); .claude/agents and .joycraft/runtime match payload/."
+    },
+    {
+      "spec": 4,
+      "finding": "f2",
+      "outcome": "dismissed",
+      "reason": "Old-install note: this repo now runs the 1.10.2 install (node dist/cli.js update . --yes); .claude/agents and .joycraft/runtime match payload/."
+    },
+    {
+      "spec": 4,
+      "finding": "f3",
+      "outcome": "dismissed",
+      "reason": "Archive preview for fixes-1-9-3 passes on 1.10.2: the brief sections added in 37c0fc6 are outside accepted specs' scoped anchors, so no brief-amendments.json entry is needed."
+    },
+    {
+      "spec": 4,
+      "finding": "f4",
+      "outcome": "dismissed",
+      "reason": "Class-1 confirmation: spec-4 test diffs are add-only it blocks that the acceptance bullets require. No defect."
+    },
+    {
+      "spec": 4,
+      "finding": "f5",
+      "outcome": "dismissed",
+      "reason": "Agent-ID note: fixed in 1.10.0, where the coordinator passes the launch-result ID to finalize-review --reviewer-agent / bind-reviewer."
+    },
+    {
+      "spec": 5,
+      "finding": "f1",
+      "outcome": "dismissed",
+      "reason": "Class-1 confirmation and a receipt note: the one added test is required by the acceptance bullet; the fails-before receipt revision is informational. No defect."
+    },
+    {
+      "spec": 5,
+      "finding": "f4",
+      "outcome": "dismissed",
+      "reason": "Archive preview for fixes-1-9-3 passes on 1.10.2: the 37c0fc6 brief change sits outside specs 1 and 2 scoped anchors, so no amendment record is needed."
+    }
+  ]
+}

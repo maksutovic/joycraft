@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "spec": 1,
+      "finding": "f1",
+      "outcome": "dismissed",
+      "reason": "Accepted design: reopen needs a done PASS acceptance and a real byte change, so rounds cannot be reset without an accepted PASS; local report JSON cannot authenticate time anyway."
+    },
+    {
+      "spec": 1,
+      "finding": "f4",
+      "outcome": "dismissed",
+      "reason": "Not a defect: a dependent's own accepted inputs are checked on every submit, and a dependency change that touches them warns with a reopen command. Flagging every dependent would be guard machinery for a rare case."
+    },
+    {
+      "spec": 2,
+      "finding": "f3",
+      "outcome": "dismissed",
+      "reason": "Test-tag namespace note: [AC:] ids are per queue by design; once fixes-1-9-3 is archived its tags leave live trace. No product defect."
+    },
+    {
+      "spec": 2,
+      "finding": "f4",
+      "outcome": "dismissed",
+      "reason": "Class-1 confirmation: the one added test is required by the acceptance bullet; nothing removed or weakened."
+    },
+    {
+      "spec": 3,
+      "finding": "cut-discovery",
+      "outcome": "dismissed",
+      "reason": "Intentional word cut (spec 3 was a field-text trim); the unresolved-coverage rule stays in architecture.md:49, which the skill links."
+    },
+    {
+      "spec": 3,
+      "finding": "cut-packet-location",
+      "outcome": "dismissed",
+      "reason": "Rule still carried: the implement skill says keep packets under .joycraft/local/packets/, and joycraft-verify, completion.md and dispatch.md repeat it."
+    },
+    {
+      "spec": 3,
+      "finding": "cut-dispatch-plan",
+      "outcome": "dismissed",
+      "reason": "Intentional word cut; host capabilities and lifecycle stay in worktrees.md:22-24. The lost wording was descriptive, not a rule any runtime enforces."
+    },
+    {
+      "spec": 3,
+      "finding": "cut-preflight-and-legacy",
+      "outcome": "dismissed",
+      "reason": "Reviewer checked it and found no loss."
+    },
+    {
+      "spec": 3,
+      "finding": "trace-tag-collision",
+      "outcome": "dismissed",
+      "reason": "Test-tag namespace note: [AC:] ids are per queue by design; archived features leave live trace. Not a defect of spec 3."
+    },
+    {
+      "spec": 4,
+      "finding": "spec-4-2-untraced",
+      "outcome": "dismissed",
+      "reason": "Untraced by design: spec-4-2 requires release-preparation.test.ts unchanged, so it cannot carry a tag; the reviewer judged it by running the file."
+    },
+    {
+      "spec": 4,
+      "finding": "changelog-length",
+      "outcome": "dismissed",
+      "reason": "Matches the 1.9.3 entry style and the releasing guide sections; the reviewer did not fail it."
+    },
+    {
+      "spec": 4,
+      "finding": "untracked-followups",
+      "outcome": "dismissed",
+      "reason": "Fixed: review-followups.md was committed later (it is tracked on this branch)."
+    }
+  ]
+}
