@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "joycraft": "1.10.2",
-  "tag": "payload-defddf3da903",
-  "sourceRevision": "defddf3da903f3a2e0e3b9b27d4ae95180ad19560455951a3341ffd8ec5f11ef",
+  "tag": "payload-d9ed84c48883",
+  "sourceRevision": "d9ed84c48883a5446d36bb81afbc4896e7dd3ea576e23878111961f46ef5809b",
   "harness": "claude",
   "hosts": [
     "claude",
@@ -58,7 +58,7 @@
     },
     {
       "path": ".agents/skills/joycraft-verify/SKILL.md",
-      "sha256": "7a312c538d4b8c24562facda734d9ff5904b77325af0453e40f6921d869d6522"
+      "sha256": "fc625129e1fd46ca8b664b28fd9dc52ebf2bdb7a5dc84a6bd9685a2a0ae46dc8"
     },
     {
       "path": ".claude/agents/joycraft-implementer.md",
@@ -118,7 +118,7 @@
     },
     {
       "path": ".claude/skills/joycraft-verify/SKILL.md",
-      "sha256": "7a312c538d4b8c24562facda734d9ff5904b77325af0453e40f6921d869d6522"
+      "sha256": "fc625129e1fd46ca8b664b28fd9dc52ebf2bdb7a5dc84a6bd9685a2a0ae46dc8"
     },
     {
       "path": ".joycraft/assets/artifacts/diagrams.js",

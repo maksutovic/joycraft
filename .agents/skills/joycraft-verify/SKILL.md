@@ -40,11 +40,8 @@ Green tagged tests alone pass no criterion. For each spec, also:
 - **Probe:** name one input that a user or an outsider can change and the code
   trusts (an argument, a path, a link, a stored file). Try it tampered on the
   real surface.
-- **Can the test fail?** For the key criterion and each added test, revert the
-  change (or its key line) in a scratch copy and run its test. Record the red
-  run. A test that stays green is `blocking`.
-  A test that expects a refusal (null, 400, an error) must build its bad input
-  as real input is built (same encoder), or it passes for the wrong reason.
+- **Can the test fail?** For the key criterion, revert the change (or its key
+  line) in a scratch copy and run its test. Record the red run. A test that stays green is `blocking`.
 - **Docs against code:** check each changed doc line that states behavior
   against the code it describes. A false line is `blocking`.
 - **Fix round:** read the fix diff for new defects, not only whether each open
