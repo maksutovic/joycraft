@@ -33,7 +33,9 @@ function writeLedger(root, ledger) {
   writeFileSync(path.join(root, ledgerPath), `${JSON.stringify(ledger, null, 2)}\n`);
 }
 
-function readQueueFile(root, queuePath) {
+// The coordinator's tree holds the current queue; the main checkout may lag behind it.
+function readQueueFile(roots, queuePath) {
+  const root = [roots].flat().find(base => existsSync(path.join(base, queuePath))) ?? [roots].flat()[0];
   const queue = parseJson(readLocal(root, queuePath), queuePath);
   validateQueue(queue, { select: () => false });
   return queue;
@@ -62,17 +64,18 @@ export function isolatedAgents(root) {
 export function createWorktree({ root = process.cwd(), queuePath, specId, session, base = 'HEAD' }) {
   const main = gitRoot(root);
   const here = realpathSync(git(root, ['rev-parse', '--show-toplevel']).trim());
+  // Base and queue come from the coordinator's tree; the tree itself is made under the main checkout.
+  let baseRevision;
+  try { baseRevision = git(here, ['rev-parse', '--verify', `${base}^{commit}`]).trim(); } catch { throw new Error(`Unknown base revision: ${base}`); }
   root = main;
   queuePath = relativePath(queuePath);
   requireValue(typeof session === 'string' && session.trim(), 'Creating a worker tree needs the coordinator --session');
-  const queue = readQueueFile(root, queuePath);
+  const queue = readQueueFile([here, root], queuePath);
   requireValue(/^[a-z0-9][a-z0-9-]*$/.test(queue.feature), 'Worker trees need a queue feature that is a lowercase slug');
   requireValue(queue.specs.some(spec => spec.id === specId), `Spec ${specId} does not exist in queue`);
   const name = `${queue.feature}-${specId}`;
   const treePath = `${treeHome}/${name}`;
   const branch = `joycraft/${name}`;
-  let baseRevision;
-  try { baseRevision = git(root, ['rev-parse', '--verify', `${base}^{commit}`]).trim(); } catch { throw new Error(`Unknown base revision: ${base}`); }
   ensureLocal(root);
   return withLock(path.join(root, ledgerPath), () => {
     const ledger = readLedger(root);
@@ -119,9 +122,9 @@ function sizeOf(target) {
   return total;
 }
 
-function queueSpec(root, entry, queues) {
+function queueSpec(roots, entry, queues) {
   try {
-    if (!queues.has(entry.queuePath)) queues.set(entry.queuePath, readQueueFile(root, entry.queuePath));
+    if (!queues.has(entry.queuePath)) queues.set(entry.queuePath, readQueueFile(roots, entry.queuePath));
     return queues.get(entry.queuePath).specs.find(spec => spec.id === entry.specId) ?? { status: 'missing' };
   } catch { return { status: 'unknown' }; }
 }
@@ -143,16 +146,19 @@ function citedReceipts(root, tree, report) {
   } catch { return []; }
 }
 
-function evidenceOnlyHere(root, tree, spec) {
+function evidenceOnlyHere(root, tree, spec, here = root) {
   const files = [spec.acceptedReport?.path, spec.ownerAcceptance?.path, spec.waiver?.path, spec.waiver?.review?.path,
     ...citedReceipts(root, tree, spec.acceptedReport?.path), ...citedReceipts(root, tree, spec.waiver?.review?.path)].filter(Boolean);
-  return [...new Set(files)].filter(file => existsSync(path.join(tree, file)) && !existsSync(path.join(root, file)));
+  return [...new Set(files)].filter(file => existsSync(path.join(tree, file)) && ![root, here].some(base => existsSync(path.join(base, file))));
 }
 
 /** Every linked tree with its owner, spec status, merged and clean state. */
 export function listWorktrees({ root = process.cwd(), into = 'HEAD', sizes = true } = {}) {
   const main = gitRoot(root);
   const here = realpathSync(git(root, ['rev-parse', '--show-toplevel']).trim());
+  // The integration ref is resolved in the coordinator's tree, so HEAD means its branch.
+  let target = into;
+  try { target = git(here, ['rev-parse', '--verify', `${into}^{commit}`]).trim(); } catch { /* an unknown ref leaves every tree unmerged */ }
   root = main;
   const ledger = readLedger(root);
   const owned = new Map(ledger.trees.map(entry => [path.resolve(root, entry.path), entry]));
@@ -163,14 +169,14 @@ export function listWorktrees({ root = process.cwd(), into = 'HEAD', sizes = tru
     const entry = owned.get(absolute) ?? owned.get(tree.worktree);
     if (entry) seen.add(entry.path);
     const exists = existsSync(absolute);
-    const spec = entry ? queueSpec(root, entry, queues) : null;
+    const spec = entry ? queueSpec([here, root], entry, queues) : null;
     const record = {
       path: path.relative(root, absolute) || '.',
       branch: typeof tree.branch === 'string' ? tree.branch.replace(/^refs\/heads\//, '') : null,
       owner: entry ? 'joycraft' : 'unknown-owner',
       ...(entry ? { feature: entry.feature, specId: entry.specId, coordinatorSession: entry.coordinatorSession, ledgerBranch: entry.branch, specStatus: spec.status } : {}),
-      ...(entry && exists ? { ignored: ignoredEntries(absolute), evidenceOnlyHere: evidenceOnlyHere(root, absolute, spec) } : {}),
-      merged: typeof tree.HEAD === 'string' && gitOk(root, ['merge-base', '--is-ancestor', tree.HEAD, into]),
+      ...(entry && exists ? { ignored: ignoredEntries(absolute), evidenceOnlyHere: evidenceOnlyHere(root, absolute, spec, here) } : {}),
+      merged: typeof tree.HEAD === 'string' && gitOk(root, ['merge-base', '--is-ancestor', tree.HEAD, target]),
       clean: exists && gitOk(absolute, ['diff', '--quiet', 'HEAD']) && git(absolute, ['status', '--porcelain']).trim() === '',
       exists,
     };

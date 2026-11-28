@@ -144,3 +144,71 @@ describe('parallel worker startup', () => {
     expect(warnings[0]).toMatch(/^\.claude\/agents\/opus-implementer\.md, \.claude\/agents\/team\/reviewer\.md set isolation: worktree,/);
   }, 60000);
 });
+
+// Spec: docs/features/2026-11-28-runtime-fixes-restate/specs/01-linked-coordinator.md
+describe('a coordinator in a linked worktree ahead of main', () => {
+  /** The project plus a linked coordinator tree with one commit main does not have. */
+  function ahead() {
+    const { root } = project();
+    const coordinator = join(root, '..', `${root.split('/').pop()}-coord`);
+    dirs.push(coordinator);
+    git(root, 'worktree', 'add', '-q', '-b', 'coord', coordinator);
+    const real = realpathSync(coordinator);
+    put(join(real, 'src/extra.ts'), 'export const extra = 1;\n');
+    git(real, 'add', '-A'); git(real, 'commit', '-q', '-m', 'coordinator-only commit');
+    return { root, coordinator: real, head: git(real, 'rev-parse', 'HEAD'), mainHead: git(root, 'rev-parse', 'HEAD') };
+  }
+  const create = (cwd: string, spec: number) => {
+    const created = node(cwd, 'worktrees.mjs', 'create', '--queue', queuePath, '--spec', String(spec), '--session', 'coord-1');
+    expect(created.status, created.stderr).toBe(0);
+    return JSON.parse(created.stdout);
+  };
+
+  it('[AC:spec-1-1] the worker tree starts from the coordinator HEAD, not main', () => {
+    const { coordinator, head, mainHead } = ahead();
+    expect(head).not.toBe(mainHead);
+    const tree = create(coordinator, 1);
+    expect(tree.baseRevision).toBe(head);
+    expect(git(tree.workerRoot, 'rev-parse', 'HEAD')).toBe(head);
+  }, 60000);
+
+  it('[AC:spec-1-2] create succeeds when the queue exists only on the coordinator branch', () => {
+    const { root, coordinator, head } = ahead();
+    git(root, 'rm', '-q', '-r', folder); git(root, 'commit', '-q', '-m', 'main drops the feature');
+    const tree = create(coordinator, 1);
+    expect(tree.baseRevision).toBe(head);
+    expect(tree.queuePath).toBe(queuePath);
+  }, 60000);
+
+  it('[AC:spec-1-3] prune with no --into removes the done, merged tree and keeps the unfinished one', () => {
+    const { coordinator } = ahead();
+    const one = create(coordinator, 1);
+    create(coordinator, 2);
+    put(join(one.workerRoot, 'src/s1.ts'), 'export const s = 11;\n');
+    git(one.workerRoot, 'commit', '-q', '-am', 'spec 1');
+    git(coordinator, 'merge', '-q', '--no-edit', 'joycraft/p-1');
+    const queue = JSON.parse(readFileSync(join(coordinator, queuePath), 'utf8'));
+    queue.specs[0].status = 'done';
+    put(join(coordinator, queuePath), JSON.stringify(queue, null, 2));
+    git(coordinator, 'commit', '-q', '-am', 'spec 1 done');
+    const pruned = node(coordinator, 'worktrees.mjs', 'prune', '--apply');
+    expect(pruned.status, pruned.stderr).toBe(0);
+    const plan: { specId: number; action: string; reason: string }[] = JSON.parse(pruned.stdout).plan;
+    expect(plan.find(item => item.specId === 1)).toMatchObject({ action: 'remove' });
+    expect(plan.find(item => item.specId === 2)).toMatchObject({ action: 'keep', reason: 'Spec 2 is todo; keep the tree until it is done.' });
+  }, 60000);
+
+  it('[AC:spec-1-4] a coordinator in the main checkout still bases trees on main and prunes against main', () => {
+    const { root } = project();
+    const tree = create(root, 1);
+    expect(tree.baseRevision).toBe(git(root, 'rev-parse', 'HEAD'));
+    expect(tree.coordinatorRoot).toBe('.');
+    const queue = JSON.parse(readFileSync(join(root, queuePath), 'utf8'));
+    queue.specs[0].status = 'done';
+    put(join(root, queuePath), JSON.stringify(queue, null, 2));
+    git(root, 'commit', '-q', '-am', 'spec 1 done');
+    const pruned = node(root, 'worktrees.mjs', 'prune', '--apply');
+    expect(pruned.status, pruned.stderr).toBe(0);
+    expect(JSON.parse(pruned.stdout).plan).toMatchObject([{ specId: 1, action: 'remove' }]);
+  }, 60000);
+});
