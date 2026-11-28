@@ -1,0 +1,49 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev9r2[39m
+
+ [31m❯[39m tests/trial-reviewer-bench.test.ts [2m([22m[2m15 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 3598[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-args] without --subjects it exits 2 with its usage line; --help exits 0; the source holds no home path[32m 63[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-score] partly counts as missed, a control finding is false only when its reproduction fails, and the four rule lines print [33m 351[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-bar] counts at the bar PASS with exit 0; one below any rule FAILs with exit 1; a cap stop is incomplete with exit 3[32m 170[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-today] <out>/today holds byte copies of the four reviewer files, and a saved prompt points at them[32m 266[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-score] each R6 and vacuous review runs in a copy of its subject[32m 210[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-score] a subject that cannot be copied, or a review that exits non-zero with no output, makes the run incomplete[32m 239[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-bar] the cap reserves each call's budget when it starts, so calls in flight cannot overrun it [33m 741[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:spec-9-3] the vacuous subject is reviewed --vacuous-runs times, the rule judges the rate, and a record needs 5 reviews [33m 655[2mms[22m[39m
+[31m   [31m×[31m reviewer benchmark (sl3-07)[2m > [22m[AC:spec-9-3] the vacuous rule holds at 2 of 5 caught reviews and fails at 1 of 5[39m[32m 3[2mms[22m[39m
+[31m     → expected false to be true // Object.is equality[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-score] a failed scorer call makes the subject incomplete, not missed[32m 244[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-current] --record refuses to overwrite the record from an incomplete run[32m 209[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m--reviewer vanilla runs the built-in /code-review with no Joycraft text, and its important findings block[32m 202[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m--reviewer pstack installs its .claude/ in the subject, starts with /poteto-mode, and logs the skill read and dropped runners[32m 242[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22mAGENTS.md holds the reviewer benchmark row in ## Commands[32m 0[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-current] the recorded run passes the bar and reviewed the reviewer text in this tree[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/trial-reviewer-bench.test.ts[2m > [22mreviewer benchmark (sl3-07)[2m > [22m[AC:spec-9-3] the vacuous rule holds at 2 of 5 caught reviews and fails at 1 of 5
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m tests/trial-reviewer-bench.test.ts:[2m198:28[22m[39m
+    [90m196| [39m    [35mconst[39m two [33m=[39m [34mvacuousLine[39m([34m2[39m)[33m;[39m
+    [90m197| [39m    [34mexpect[39m(two[33m.[39msummary[33m.[39mvacuous)[33m.[39m[34mtoEqual[39m({ found[33m:[39m [34m2[39m[33m,[39m [35mof[39m[33m:[39m [34m5[39m })[33m;[39m
+    [90m198| [39m    [34mexpect[39m(two[33m.[39mrule[33m.[39mholds)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   | [39m                           [31m^[39m
+    [90m199| [39m    [34mexpect[39m([34mvacuousLine[39m([34m0[39m)[33m.[39mrule[33m.[39mholds)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m200| [39m  })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m14 passed[39m[22m[90m (15)[39m
+[2m   Start at [22m 21:03:05
+[2m   Duration [22m 3.78s[2m (transform 29ms, setup 0ms, collect 34ms, tests 3.60s, environment 0ms, prepare 34ms)[22m
+
+joycraft-evidence: {"wallMs":4040,"load":[8.83740234375,8.83740234375],"cores":14,"loaded":false,"argv":["sh","-c","cd /private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev9r2 && ./node_modules/.bin/vitest run tests/trial-reviewer-bench.test.ts"],"exitCode":1,"timedOut":false,"revision":"b5e02d6947ddf436a7b181779c8d0d9682f19dcf","dirty":true}

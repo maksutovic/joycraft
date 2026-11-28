@@ -42,6 +42,12 @@
       "finding": "f1",
       "outcome": "fixed",
       "by": 11
+    },
+    {
+      "spec": 1,
+      "finding": "f1",
+      "outcome": "fixed",
+      "by": 9
     }
   ]
 }

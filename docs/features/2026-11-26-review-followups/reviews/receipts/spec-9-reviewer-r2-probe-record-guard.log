@@ -1,0 +1,7 @@
+PASS
+not recorded: a record needs 5 reviews of each vacuous subject, so scripts/trial/reviewer-bench.json keeps its last complete run
+exit=0
+PASS
+recorded scripts/trial/reviewer-bench.json (PASS)
+record-identical
+joycraft-evidence: {"wallMs":67,"load":[6.6875,6.6875],"cores":14,"loaded":false,"argv":["sh","-c","cd /private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev9r2 && node scripts/trial/reviewer-bench.mjs --from two-by-three.json --record | tail -2; echo exit=$?; node scripts/trial/reviewer-bench.mjs --from /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups/.joycraft/local/reviewer-bench/2026-11-28T04-38-58-800Z/results.json --record | tail -2; cmp scripts/trial/reviewer-bench.json rec.before && echo record-identical"],"exitCode":0,"timedOut":false,"revision":"b5e02d6947ddf436a7b181779c8d0d9682f19dcf","dirty":true}

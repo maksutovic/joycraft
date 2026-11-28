@@ -779,7 +779,7 @@
       "depends_on": [
         1
       ],
-      "status": "todo",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -883,6 +883,13 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-28T04:56:29.116Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-26-review-followups/specs/review-9-r2.report.json",
+        "sha256": "a80e9364a490f472cf326603bfb0872527f36099505589d6ea460122a3b175e3"
       }
     },
     {

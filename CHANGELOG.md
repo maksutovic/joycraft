@@ -31,6 +31,14 @@ to answer it, so a feature could not close.
   a fix spec in the same queue without a question, a scope change becomes a brief
   decision, and the rest are dismissed. The skill again states the `isolated` mode
   and owner-acceptance rules that an earlier trim weakened.
+- **A test that cannot fail blocks the spec.** The reviewer's definition of a
+  blocking finding now names a test shown unable to fail, even when the code is
+  right.
+  The reviewer benchmark reviews its seeded test that cannot fail 5 times and needs
+  a 40% catch rate, since one review was a coin flip.
+- **Startup works in a linked worktree.** The default expected manifest is the
+  coordinator tree's install (its worker record or the queue lease), not the main
+  checkout's, which may be another branch with no install.
 - **The `AGENTS.md` size budget counts only the project's own text.** Joycraft's
   managed block and review-loop section are not counted. The check stays advisory.
 

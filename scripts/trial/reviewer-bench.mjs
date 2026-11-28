@@ -29,7 +29,7 @@ import { fileURLToPath } from 'node:url';
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
-export const USAGE = 'usage: node scripts/trial/reviewer-bench.mjs --subjects <dir> [--effort medium] [--model <id>] [--reviewer joycraft|vanilla|pstack] [--pstack-from <.claude dir>] [--only replay,r6,controls,vacuous] [--jobs 4] [--budget-usd 35] [--review-budget-usd 3] [--out <dir>] [--record] [--help]';
+export const USAGE = 'usage: node scripts/trial/reviewer-bench.mjs --subjects <dir> [--effort medium] [--model <id>] [--reviewer joycraft|vanilla|pstack] [--pstack-from <.claude dir>] [--only replay,r6,controls,vacuous] [--jobs 4] [--budget-usd 35] [--review-budget-usd 3] [--vacuous-runs 5] [--out <dir>] [--record] [--help]';
 export const HELP = `${USAGE}
 
 Reruns past review subjects against the reviewer text in this tree and prints
@@ -47,6 +47,7 @@ PASS (exit 0), FAIL (exit 1) or incomplete (exit 3). Usage errors exit 2.
   --budget-usd <n>   cap: each call reserves its budget when it starts; a call waits while spent plus
                      reserved plus its budget passes this, and the run stops when spent alone does (default 35)
   --review-budget-usd <n>  one review call's --max-budget-usd (default 3)
+  --vacuous-runs <n> reviews of each vacuous subject (default 5); a record needs all 5
   --out <dir>        where runs, prompts and results.json go (default .joycraft/local/reviewer-bench/<stamp>/)
   --record           write scripts/trial/reviewer-bench.json from this run (refused for an incomplete run)
   --from <file>      print the verdict of a saved results.json (with --record: record it)
@@ -54,7 +55,10 @@ PASS (exit 0), FAIL (exit 1) or incomplete (exit 3). Usage errors exit 2.
 
 /** The pass bar, written before any run. */
 // Replay is a regression floor: every reviewer tried (Joycraft, vanilla /code-review, pstack) caught 3 to 6 of 18.
-export const BAR = { replayCaught: 4, r6Found: 5, controlsFalseMax: 1, vacuousFound: true };
+// One review of the vacuous subject is a coin flip (main's text caught it 0 of 3 times on 2026-11-28, and this
+// branch's text 7 of 13), so the subject is reviewed VACUOUS_RUNS times and the rule judges the rate.
+export const BAR = { replayCaught: 4, r6Found: 5, controlsFalseMax: 1, vacuousFound: true, vacuousRate: 0.4 };
+export const VACUOUS_RUNS = 5;
 export const GROUPS = ['replay', 'r6', 'controls', 'vacuous'];
 /** The reviewer files under test, in hash order: [name in <out>/today, path in the repo]. */
 export const REVIEWER_FILES = [
@@ -77,7 +81,7 @@ class UsageError extends Error {}
 
 /** Parsed options. Throws UsageError on a bad or missing value. */
 export function parseArgs(argv) {
-  const options = { reviewer: 'joycraft', model: MODEL, effort: 'medium', only: [...GROUPS], jobs: 4, budgetUsd: 35, record: false, help: false, noCheckout: false };
+  const options = { reviewer: 'joycraft', model: MODEL, effort: 'medium', only: [...GROUPS], jobs: 4, budgetUsd: 35, vacuousRuns: VACUOUS_RUNS, record: false, help: false, noCheckout: false };
   const value = (index, flag) => {
     const next = argv[index + 1];
     if (next === undefined || next.startsWith('--')) throw new UsageError(`${flag} needs a value`);
@@ -104,10 +108,10 @@ export function parseArgs(argv) {
       options.only = value(index++, flag).split(',').map(group => group.trim()).filter(Boolean);
       const bad = options.only.filter(group => !GROUPS.includes(group));
       if (bad.length || !options.only.length) throw new UsageError(`--only takes ${GROUPS.join(',')}`);
-    } else if (flag === '--jobs' || flag === '--budget-usd' || flag === '--review-budget-usd') {
+    } else if (flag === '--jobs' || flag === '--budget-usd' || flag === '--review-budget-usd' || flag === '--vacuous-runs') {
       const number = Number(value(index++, flag));
-      if (!(number > 0) || (flag === '--jobs' && !Number.isInteger(number))) throw new UsageError(`${flag} needs a positive number`);
-      options[{ '--jobs': 'jobs', '--budget-usd': 'budgetUsd', '--review-budget-usd': 'reviewBudgetUsd' }[flag]] = number;
+      if (!(number > 0) || ((flag === '--jobs' || flag === '--vacuous-runs') && !Number.isInteger(number))) throw new UsageError(`${flag} needs a positive number`);
+      options[{ '--jobs': 'jobs', '--budget-usd': 'budgetUsd', '--review-budget-usd': 'reviewBudgetUsd', '--vacuous-runs': 'vacuousRuns' }[flag]] = number;
     } else throw new UsageError(`unknown argument: ${flag}`);
   }
   if (!options.help && !options.subjects && !options.from) throw new UsageError('--subjects is required');
@@ -296,7 +300,7 @@ export function vanillaReviewText(text, findings) {
 }
 
 /** Every subject of the chosen groups, with its prompt source and answer key. */
-export function loadSubjects(subjectsDir, groups) {
+export function loadSubjects(subjectsDir, groups, vacuousRuns = VACUOUS_RUNS) {
   const subjects = [];
   if (groups.includes('replay') || groups.includes('controls')) {
     const list = JSON.parse(readFileSync(need(subjectsDir, 'control/subjects.json'), 'utf8'));
@@ -334,7 +338,9 @@ export function loadSubjects(subjectsDir, groups) {
     if (!names.length) throw new UsageError('the subjects folder has no subject in control/part2/subjects/');
     for (const name of names) {
       const text = seed.replace(/^#.*\n/, '').trim().replace(/\s+/g, ' ');
-      subjects.push({ id: `vacuous-${name}`, group: 'vacuous', kind: 'copy', source: path.join(subjectsDir, 'control/part2/subjects', name), request, base: bases[name] ?? 'HEAD~1', reference: [{ id: 'V1', at: name, text }] });
+      for (let run = 1; run <= vacuousRuns; run++) {
+        subjects.push({ id: run === 1 ? `vacuous-${name}` : `vacuous-${name}-r${run}`, key: `vacuous-${name}`, group: 'vacuous', kind: 'copy', source: path.join(subjectsDir, 'control/part2/subjects', name), request, base: bases[name] ?? 'HEAD~1', reference: [{ id: 'V1', at: name, text }] });
+      }
     }
   }
   return subjects;
@@ -442,7 +448,7 @@ async function callClaude(context, { role, subject, cwd, prompt, budget, effort,
   const name = `${subject.id}.${role}`;
   writeFileSync(path.join(context.out, 'prompts', `${name}.md`), prompt);
   const args = ['-p', prompt, '--model', model, '--effort', effort, '--setting-sources', 'project,local', '--output-format', stream ? 'stream-json' : 'json', ...(stream ? ['--verbose'] : []), '--max-budget-usd', String(budget), ...extra];
-  const env = { ...process.env, JOYCRAFT_BENCH_ROLE: role, JOYCRAFT_BENCH_SUBJECT: subject.id };
+  const env = { ...process.env, JOYCRAFT_BENCH_ROLE: role, JOYCRAFT_BENCH_SUBJECT: subject.key ?? subject.id };
   const result = await run(context.claude, args, { cwd, env, timeout: CALL_TIMEOUT_MS });
   writeFileSync(path.join(context.out, 'runs', `${name}.${stream ? 'jsonl' : 'json'}`), result.stdout);
   if (result.stderr) writeFileSync(path.join(context.out, 'runs', `${name}.err`), result.stderr);
@@ -486,7 +492,7 @@ Reply with one JSON object and nothing else: {"levels":[{"id":"<defect id>","lev
 
 /** Review one subject, then score it (or reproduce a control's blocking findings) and tag its misses. */
 async function runSubject(context, subject) {
-  const record = { id: subject.id, group: subject.group };
+  const record = { id: subject.id, key: subject.key ?? subject.id, group: subject.group };
   const work = await prepare(context, subject, 'review');
   record.setupOk = work.ok;
   // A subject whose folder could not be made is not reviewed, and the run cannot pass or fail on it.
@@ -589,7 +595,8 @@ export function summarize(records, groupsRun, stopped = false) {
     replay: { caught: replay.filter(record => record.caught).length, of: replay.length },
     r6: { found: r6.reduce((sum, record) => sum + (record.found ?? 0), 0), of: r6.reduce((sum, record) => sum + (record.defects?.length ?? 0), 0) },
     controlsFalse: of('controls').reduce((sum, record) => sum + (record.falseBlocking ?? 0), 0),
-    vacuousFound: of('vacuous').length > 0 && of('vacuous').every(record => record.caught),
+    vacuous: { found: of('vacuous').filter(record => record.caught).length, of: of('vacuous').length },
+    vacuousFound: of('vacuous').length > 0 && of('vacuous').filter(record => record.caught).length >= BAR.vacuousRate * of('vacuous').length,
     incomplete: stopped || records.some(record => record.incomplete) || GROUPS.some(group => !groupsRun.includes(group)),
     costUsd: Math.round(records.reduce((sum, record) => sum + (record.cost ?? 0), 0) * 100) / 100,
     medianSeconds: median(records.filter(record => record.seconds !== undefined).map(record => record.seconds)),
@@ -604,7 +611,7 @@ export function judge(summary) {
     { name: 'replay', holds: ran('replay') && summary.replay.caught >= BAR.replayCaught, line: `Replay: at least ${BAR.replayCaught} of 18 caught (caught ${summary.replay.caught} of ${summary.replay.of})` },
     { name: 'r6', holds: ran('r6') && summary.r6.found >= BAR.r6Found, line: `R6: at least ${BAR.r6Found} of 8 found (found ${summary.r6.found} of ${summary.r6.of})` },
     { name: 'controls', holds: ran('controls') && summary.controlsFalse <= BAR.controlsFalseMax, line: `Controls: at most ${BAR.controlsFalseMax} false blocking finding (false ${summary.controlsFalse})` },
-    { name: 'vacuous', holds: ran('vacuous') && summary.vacuousFound === BAR.vacuousFound, line: `Vacuous test found as a blocking finding (${summary.vacuousFound ? 'found' : 'not found'})` },
+    { name: 'vacuous', holds: ran('vacuous') && summary.vacuousFound === BAR.vacuousFound, line: `Vacuous test found as a blocking finding in at least ${BAR.vacuousRate * 100}% of its reviews (${summary.vacuous ? `found ${summary.vacuous.found} of ${summary.vacuous.of}` : summary.vacuousFound ? 'found' : 'not found'})` },
   ];
   const verdict = summary.incomplete ? 'incomplete' : rules.every(rule => rule.holds) ? 'PASS' : 'FAIL';
   return { rules, verdict };
@@ -651,9 +658,12 @@ async function pool(items, jobs, task) {
 function writeRecord(result) {
   const { summary } = result;
   if (result.verdict === 'incomplete' || summary.incomplete) return 'not recorded: the run is incomplete, so scripts/trial/reviewer-bench.json keeps its last complete run';
+  const perSubject = {};
+  for (const record of result.records ?? []) if (record.group === 'vacuous') { const key = record.key ?? record.id.replace(/-r\d+$/, ''); perSubject[key] = (perSubject[key] ?? 0) + 1; }
+  if (!Object.keys(perSubject).length || Object.values(perSubject).some(count => count < VACUOUS_RUNS)) return `not recorded: a record needs ${VACUOUS_RUNS} reviews of each vacuous subject, so scripts/trial/reviewer-bench.json keeps its last complete run`;
   const record = {
     textSha256: result.textSha256, effort: result.effort, date: result.date,
-    replay: summary.replay, r6: summary.r6, controlsFalse: summary.controlsFalse, vacuousFound: summary.vacuousFound,
+    replay: summary.replay, r6: summary.r6, controlsFalse: summary.controlsFalse, vacuous: summary.vacuous, vacuousFound: summary.vacuousFound,
     verdict: result.verdict,
   };
   writeFileSync(RECORD_FILE, JSON.stringify(record, null, 2) + '\n');
@@ -663,7 +673,7 @@ function writeRecord(result) {
 async function bench(options) {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const out = options.out ?? path.join(repo, '.joycraft', 'local', 'reviewer-bench', stamp);
-  const subjects = loadSubjects(options.subjects, options.only);
+  const subjects = loadSubjects(options.subjects, options.only, options.vacuousRuns);
   for (const dir of ['runs', 'prompts', 'work', 'scores']) mkdirSync(path.join(out, dir), { recursive: true });
   const todayDir = path.join(out, 'today');
   copyToday(todayDir);

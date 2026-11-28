@@ -3,7 +3,7 @@ import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, re
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { REVIEWER_FILES, textSha256 } from '../scripts/trial/reviewer-bench.mjs';
+import { REVIEWER_FILES, VACUOUS_RUNS, judge, summarize, textSha256 } from '../scripts/trial/reviewer-bench.mjs';
 
 // Spec: .joycraft/local/loop/iter4/spec-reviewer.md, sl3-07 Change 7 (the standing benchmark).
 const root = join(__dirname, '..');
@@ -56,7 +56,7 @@ function bench(args: string[], { from = subjects, fail = '', cost = '0.1', sleep
   const dir = tempDir();
   const out = join(dir, 'out');
   const env = { ...process.env, JOYCRAFT_BENCH_CLAUDE: stub(dir), STUB_CANNED: join(dir, 'canned.json'), STUB_LOG: join(dir, 'calls.log'), STUB_FAIL: fail, STUB_COST: cost, STUB_SLEEP_MS: sleepMs, STUB_EVENTS: JSON.stringify(events) };
-  const run = spawnSync(process.execPath, [script, '--subjects', from, '--out', out, '--no-checkout', '--jobs', '2', ...args], { cwd: root, encoding: 'utf8', env });
+  const run = spawnSync(process.execPath, [script, '--subjects', from, '--out', out, '--no-checkout', '--jobs', '2', '--vacuous-runs', '1', ...args], { cwd: root, encoding: 'utf8', env });
   const calls = existsSync(env.STUB_LOG) ? readFileSync(env.STUB_LOG, 'utf8').trim().split('\n').map(line => JSON.parse(line)) : [];
   return { run, out, calls, dir };
 }
@@ -91,7 +91,7 @@ describe('reviewer benchmark (sl3-07)', () => {
     expect(results.summary.vacuousFound).toBe(true);
     expect(results.summary.missLevels).toEqual({ 'static-check': 1 });
     for (const rule of ['1. Replay: at least 4 of 18 caught (caught 1 of 2): holds: no', '2. R6: at least 5 of 8 found (found 1 of 1): holds: no',
-      '3. Controls: at most 1 false blocking finding (false 1): holds: yes', '4. Vacuous test found as a blocking finding (found): holds: yes']) {
+      '3. Controls: at most 1 false blocking finding (false 1): holds: yes', '4. Vacuous test found as a blocking finding in at least 40% of its reviews (found 1 of 1): holds: yes']) {
       expect(run.stdout).toContain(rule);
     }
     expect(run.stdout.trim().split('\n')).toContain('FAIL');
@@ -166,6 +166,39 @@ describe('reviewer benchmark (sl3-07)', () => {
     expect(roomy.calls.filter(call => call.key.endsWith('.review'))).toHaveLength(2);
   });
 
+  it('[AC:spec-9-3] the vacuous subject is reviewed --vacuous-runs times, the rule judges the rate, and a record needs 5 reviews', () => {
+    const { run, out, calls } = bench(['--only', 'vacuous', '--vacuous-runs', '5']);
+    expect(calls.filter(call => call.key === 'vacuous-demo-vacuous.review')).toHaveLength(5);
+    expect(JSON.parse(readFileSync(join(out, 'results.json'), 'utf8')).summary.vacuous).toEqual({ found: 5, of: 5 });
+    expect(run.stdout).toContain('4. Vacuous test found as a blocking finding in at least 40% of its reviews (found 5 of 5): holds: yes');
+    expect(run.stdout).toContain('| vacuous-demo-vacuous-r5 | caught |');
+    const before = existsSync(recordFile) ? readFileSync(recordFile, 'utf8') : null;
+    try {
+      const { run: one } = bench(['--record'], { from: subjects });
+      expect(one.stdout).toContain('not recorded: a record needs 5 reviews of each vacuous subject');
+      expect(existsSync(recordFile) ? readFileSync(recordFile, 'utf8') : null).toBe(before);
+    } finally {
+      if (before !== null) writeFileSync(recordFile, before);
+    }
+  });
+
+  it('[AC:spec-9-3] the vacuous rule holds at 2 of 5 caught reviews and fails at 1 of 5', () => {
+    expect(VACUOUS_RUNS).toBe(5);
+    const vacuousLine = (caught: number) => {
+      const records = Array.from({ length: 5 }, (_, index) => ({ id: index ? `vacuous-s-r${index + 1}` : 'vacuous-s', key: 'vacuous-s', group: 'vacuous', caught: index < caught }));
+      const summary = summarize(records, ['vacuous']);
+      return { summary, rule: judge(summary).rules.find((rule: { name: string }) => rule.name === 'vacuous') };
+    };
+    const one = vacuousLine(1);
+    expect(one.summary.vacuous).toEqual({ found: 1, of: 5 });
+    expect(one.rule.holds).toBe(false);
+    expect(one.rule.line).toBe('Vacuous test found as a blocking finding in at least 40% of its reviews (found 1 of 5)');
+    const two = vacuousLine(2);
+    expect(two.summary.vacuous).toEqual({ found: 2, of: 5 });
+    expect(two.rule.holds).toBe(true);
+    expect(vacuousLine(0).rule.holds).toBe(false);
+  });
+
   it('[AC:sl3-07-bench-score] a failed scorer call makes the subject incomplete, not missed', () => {
     const { run, out } = bench(['--only', 'vacuous'], { fail: 'vacuous-demo-vacuous.score' });
     const record = JSON.parse(readFileSync(join(out, 'results.json'), 'utf8')).records[0];
@@ -200,7 +233,7 @@ describe('reviewer benchmark (sl3-07)', () => {
     expect(record).toMatchObject({ blocking: 1, caught: true, trace: { reportFindings: 2 } });
     const scorePrompt = readFileSync(join(out, 'prompts', 'vacuous-demo-vacuous.score.md'), 'utf8');
     expect(scorePrompt).toContain('- [blocking] src/share.test.ts:9: the test asserts nothing');
-    expect(run.stdout).toContain('Vacuous test found as a blocking finding (found)');
+    expect(run.stdout).toContain('Vacuous test found as a blocking finding in at least 40% of its reviews (found 1 of 1)');
   });
 
   it('--reviewer pstack installs its .claude/ in the subject, starts with /poteto-mode, and logs the skill read and dropped runners', () => {
