@@ -29,6 +29,7 @@ The `joycraft` npm package. Its CLI installs and updates Joycraft, a skill bundl
 - Never reference absolute paths: everything in `payload/` uses project-relative paths.
 - Never put methodology research, project assessments or personal notes in the shipped tool.
 - Never amend a commit that has been pushed.
+- Dogfood the release being built: before a queue here, run `pnpm build && node dist/cli.js update . --yes` so reviews use the branch's rules, and update again after each release. Max, 2026-11-27: "how can you be the maintainer of this library without constantly updating your own versions to dog food?"
 
 ## Commands
 
