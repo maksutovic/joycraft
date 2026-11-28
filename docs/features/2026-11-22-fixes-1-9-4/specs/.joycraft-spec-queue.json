@@ -328,7 +328,7 @@
       "id": 5,
       "file": "05-missing-report.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -387,13 +387,17 @@
       },
       "submitted": {
         "at": "2026-11-28T08:12:25.090Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-5.report.json",
+        "sha256": "c130640784f66fe124ce5afc98dc6c29b5e6fd2e867ddd8b45212651251e512a"
       }
     },
     {
       "id": 6,
       "file": "06-agents-folder.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -438,6 +442,10 @@
       },
       "submitted": {
         "at": "2026-11-28T08:13:47.443Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-6.report.json",
+        "sha256": "ed758c03dcebb3e3cd1212baeabb9858342b20bba1ea4700d9ab7612e6232726"
       }
     }
   ]

@@ -1,0 +1,183 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "86d8b62b6b9386beefb07f428eb9b98b3b295063",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+    "specId": 5,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md",
+    "criteria": [
+      {
+        "id": "spec-5-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "amendment-message",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "0af7f4e656db9715879d68b89c64b6be2debc2a35ec588c183133f178bc5c9b9",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "088b50dfc70df21bad3ae9c404a612931e56c81e09bea42b9dac87f7c0407b59",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md",
+        "kind": "requirement",
+        "sha256": "0f20224724fbe821e0113b8c6287d6a4a7d7a905f2bbad18fba3e374a2e54de5",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "a17f0119adf40962e09a2ac87ba9bd12d0bdbaa2901cecc255b4b8ff82e81e1d",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-merge-amendment.test.ts",
+        "kind": "check",
+        "sha256": "8cf534eb17ae1264272a29fc9b66b55b8b2b0dbf7c55983672063a0ae5247a17",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          5
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+          "anchors": [
+            "amendment-message",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "186db70b71bca375ee275b47686900ece72463f84acd23700cd131896303133e"
+  },
+  "implementerSessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1"
+  },
+  "reviewer": {
+    "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+    "actor": {
+      "host": "claude",
+      "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+      "agentId": "abf3aa2325e1d0876"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-spec-5-1",
+      "subjectIdentity": "186db70b71bca375ee275b47686900ece72463f84acd23700cd131896303133e",
+      "criteria": [
+        "spec-5-1"
+      ],
+      "representativeInput": "Temporary Git repos: (a) the test fixture, a brief accepted on a feature branch and amended once, historicalRequirement called with no record, an empty record, then a matching record; (b) a reviewer probe repo with tampered brief-amendments.json records. Re-review after spec 6 changed briefAmendments (hashAt, null for an absent side) and added tests to the same file; diff e98f7b96..86d8b62 of archive.mjs and the test read.",
+      "expected": "As stated by the criterion",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "pnpm test tests/runtime-archive-merge-amendment.test.ts: 5 tests passed, exit 0, including [AC:spec-5-1]. It asserts the no-record refusal 'no docs/features/f/brief-amendments.json records its amendments; add one entry for each later brief commit, with the answered owner decision that authorized it, as .joycraft/references/archive.md shows for brief-amendments.json: <commit> (fromSha256 <hash v1>, toSha256 <hash v2>)', the empty-record refusal naming the same entry, and that a record with those hashes and answered D1 passes. Source after spec 6: entryFor and the match check both use hashAt(commit^) and hashAt(commit), so the printed hashes are exactly what the match requires; the refusal itself is kept. merge-changes-brief is unchanged and still passes on its prefix.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-5-reviewer-focused-20261128T081803547Z-38845-1.log",
+              "sha256": "bcf215a6accb8ea94974e6afbfd3f3a52fecb5cb2a709ee1a0dcd5939b3c1462"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-merge-amendment.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe on the real payload archive.mjs with a tampered stored brief-amendments.json: no record -> refusal names the commit with both hashes; swapped hashes, fromSha256 null while the parent has a brief, and fromSha256 missing -> each refused 'does not match its commit's brief bytes' (spec 6's null does not open a bypass); unknown decision D9 -> refused; short commit id -> refused with the full entry named; the named hashes plus answered D1 -> passes. Exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-5-reviewer-probe-20261128.log",
+              "sha256": "5be4f40853701e5e8ef905fe57cd2f591d63cffc9400bb4f882f184260186e3f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/scratch/rev5probe/probe.mjs",
+              "<worker-root>/payload/.joycraft/runtime/archive.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Focused test only; project gate not rerun (coordinator receipt .joycraft/local/gate/gate-86d8b62.log, exit 0, revision 86d8b62).",
+        "The worker tree had uncommitted CHANGELOG.md, package.json and src/joycraft-release.json edits during review; none is an input of this subject."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "n0",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-5-reviewer-revert-20261128.log",
+      "summary": "Can the test fail (receipt sha256 c3f70268484b70a1cfb09f408523630f25406fb679eeb3be9275485269cfbc5b, exit 1 as intended): Can the test fail: in a scratch copy (.joycraft/local/scratch/rev5) both refusal messages were reverted to the pre-spec text ('(no <record> records its amendments)' and '(commit <c> has no single amendment record)'). The same test file run against it: [AC:spec-5-1] failed (with spec-6-1 and spec-6-2), merge-keeps-parent-brief and merge-changes-brief stayed green; exit 1. The key test goes red without the change."
+    },
+    {
+      "id": "n1",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:118",
+      "summary": "Fix round: spec 6's hashAt change read for new defects in spec 5's scope. The refusal text and the match check share one hash source; a null side is accepted only when the brief is really absent (probe case 3). Round 1 follow-ups f2 (empty-buffer hash) and f3 (two-commit joining untested) are now closed by spec 6 and its tests spec-6-1/spec-6-2."
+    },
+    {
+      "id": "n2",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/runtime-archive-merge-amendment.test.ts:42",
+      "summary": "Test changes: since the round-1 review the file gained spec 6's two tests and writeRecord now accepts null (strings hash as before). The spec-5-1 test and merge-changes-brief are unchanged; the class-1 test change matches its declaration."
+    },
+    {
+      "id": "n3",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+      "summary": "Changed files no spec of this queue declares (startup 'outside'): docs/features/2026-11-22-fixes-1-9-3/follow-ups.json, docs/features/2026-11-22-fixes-1-9-3/receipts/spec-6-implementer-focused.log, docs/features/2026-11-22-fixes-1-9-3/receipts/spec-7-implementer-focused.log, docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json, docs/features/2026-11-22-fixes-1-9-4/follow-ups.json, docs/features/2026-11-22-fixes-1-9-4/receipts/spec-5-implementer-focused.log, docs/features/2026-11-22-fixes-1-9-4/receipts/spec-6-implementer-focused.log, docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json, docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md, docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md, payload/.joycraft/runtime/completion.mjs, payload/PIN, tests/runtime-reopen.test.ts."
+    }
+  ],
+  "createdAt": "2026-11-28T08:25:00.000Z"
+}

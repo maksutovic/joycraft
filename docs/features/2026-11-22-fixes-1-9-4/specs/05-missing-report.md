@@ -1,6 +1,6 @@
 ---
 id: 5
-status: in-review
+status: done
 ---
 # Reopen and submit say when an accepted report is missing; report paths skip the coordinator's reports
 

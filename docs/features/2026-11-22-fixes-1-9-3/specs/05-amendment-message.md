@@ -1,6 +1,6 @@
 ---
 id: 5
-status: in-review
+status: done
 ---
 # A brief amendment refusal says what to record
 

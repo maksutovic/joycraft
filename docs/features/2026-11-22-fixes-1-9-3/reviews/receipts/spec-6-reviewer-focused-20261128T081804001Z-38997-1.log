@@ -1,0 +1,20 @@
+
+> joycraft@1.10.3 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-x-followups
+> vitest tests/runtime-archive-merge-amendment.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-1-9-x-followups[39m
+
+ [32m✓[39m tests/runtime-archive-merge-amendment.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 4634[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:merge-keeps-parent-brief] a --no-ff merge into a main without the brief needs no amendment record [33m 759[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:merge-changes-brief] a merge whose brief differs from every parent still needs its own record [33m 960[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:spec-5-1] a missing amendment record names each later commit with its hashes and the reference that shows the record [33m 893[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:spec-6-1] a commit whose first parent has no brief is named with fromSha256 null, and a record with null passes [33m 1443[2mms[22m[39m
+   [33m[2m✓[22m[39m archive brief amendments across a merge commit[2m > [22m[AC:spec-6-2] with two later brief commits and no record, the refusal names both in commit order joined by "; " [33m 579[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 00:18:22
+[2m   Duration [22m 4.78s[2m (transform 95ms, setup 0ms, collect 17ms, tests 4.63s, environment 0ms, prepare 29ms)[22m
+
+joycraft-evidence: {"wallMs":5417,"load":[6.5126953125,6.39111328125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-archive-merge-amendment.test.ts"],"exitCode":0,"timedOut":false,"revision":"86d8b62b6b9386beefb07f428eb9b98b3b295063","dirty":true,"env":["VITEST_MAX_FORKS","VITEST_MIN_FORKS"]}

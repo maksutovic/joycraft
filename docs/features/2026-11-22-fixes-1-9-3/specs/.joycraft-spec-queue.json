@@ -379,7 +379,7 @@
       "id": 5,
       "file": "05-amendment-message.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -438,7 +438,11 @@
             "tests/runtime-archive-merge-amendment.test.ts"
           ]
         }
-      ]
+      ],
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-5-r2.report.json",
+        "sha256": "004757e14e9a60106a0b3b13c167d1e984cb0b9809f9965173815a05dcf14203"
+      }
     },
     {
       "id": 6,
@@ -509,7 +513,7 @@
       "id": 7,
       "file": "07-reviewer-cd-reason.md",
       "depends_on": [],
-      "status": "in-review",
+      "status": "done",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -558,6 +562,10 @@
       },
       "submitted": {
         "at": "2026-11-28T08:15:11.096Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/review-7.report.json",
+        "sha256": "ffd40192b56c572e469215ace4e54a8a3b713ea0105d65d67388e684064e22eb"
       }
     }
   ]

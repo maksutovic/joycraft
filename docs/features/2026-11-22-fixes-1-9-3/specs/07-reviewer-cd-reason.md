@@ -1,6 +1,6 @@
 ---
 id: 7
-status: in-review
+status: done
 ---
 # dispatch.md gives the cd form with its reason
 

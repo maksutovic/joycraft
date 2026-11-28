@@ -1,6 +1,6 @@
 ---
 id: 6
-status: in-review
+status: done
 ---
 # The isolation warning reads all of .claude/agents and skips directories
 

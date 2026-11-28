@@ -1,0 +1,377 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "86d8b62b6b9386beefb07f428eb9b98b3b295063",
+    "queuePath": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+    "specId": 6,
+    "specPath": "docs/features/2026-11-22-fixes-1-9-3/specs/06-amendment-absent-brief.md",
+    "criteria": [
+      {
+        "id": "spec-6-1",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/06-amendment-absent-brief.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-6-2",
+        "requirement": {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/specs/06-amendment-absent-brief.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "followups-1-10-3",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "93657942817f0b9edcbeeb1d9e3018021c394a13fef64ec176f3bb8ded0cf434",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "5fe4867e3b80bed201f89f458faf44b746a78393a3851804f9150bc074e184ae",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-22-fixes-1-9-3/specs/06-amendment-absent-brief.md",
+        "kind": "requirement",
+        "sha256": "4b3899adf5a26bfce36bf0d820320d1903675913343750e7bb35b0a61c5be44c",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/archive.md",
+        "kind": "code",
+        "sha256": "8c996c4af23ae068e9ab7b81f1854821d09df1d8585ecf2f85489391123e2f38",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/archive.mjs",
+        "kind": "code",
+        "sha256": "a17f0119adf40962e09a2ac87ba9bd12d0bdbaa2901cecc255b4b8ff82e81e1d",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-archive-merge-amendment.test.ts",
+        "kind": "check",
+        "sha256": "8cf534eb17ae1264272a29fc9b66b55b8b2b0dbf7c55983672063a0ae5247a17",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          6
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-22-fixes-1-9-3/brief.md",
+          "anchors": [
+            "followups-1-10-3",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "e34e140c4b425e9049ad9bc437be8cd63ebcfff90220120d96e4174b1241f415"
+  },
+  "implementerSessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+  "implementerActor": {
+    "host": "claude",
+    "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1"
+  },
+  "reviewer": {
+    "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1",
+    "actor": {
+      "host": "claude",
+      "sessionId": "a7df57bd-1681-4f63-af42-b64ca8e363b1"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-spec-6-1",
+      "subjectIdentity": "e34e140c4b425e9049ad9bc437be8cd63ebcfff90220120d96e4174b1241f415",
+      "criteria": [
+        "spec-6-1"
+      ],
+      "representativeInput": "Fixture repo where main lacks the brief and a --no-ff merge of the feature branch edits it to v3; record files with no entry, a hash of empty content, and null for the merge commit. Probe repo where one commit deletes the brief and the next re-adds it.",
+      "expected": "Refusal prints fromSha256 null (or toSha256 null) for the absent side; a record with null on that side passes; a hash (including the empty-content hash) where the brief is absent is refused as not matching; archive.md says null marks a side with no brief.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Focused file at 86d8b62: 5 tests passed, exit 0, including [AC:spec-6-1] (refusal names the merge with \"fromSha256 null, toSha256 <v3 hash>\"; empty-content hash refused with \"does not match its commit's brief bytes\"; null record returns both amendments).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-focused-20261128T081804001Z-38997-1.log",
+              "sha256": "0d98adbec926186f95eca6e4ed2ab47c62554b1fa7200b1fe285f1727474a1ae"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-merge-amendment.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Can-the-test-fail: in a scratch copy under .joycraft/local/mut6, hashAt was reverted to sha256(bytes ?? Buffer.alloc(0)) (the old empty-content behavior). [AC:spec-6-1] and [AC:merge-changes-brief] went red, exit 1. The test can fail.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-mutant-null.log",
+              "sha256": "d29dc4c88db6a89048dc2feedf48cc8d79b14f96869f0d0e077e975f14538ff1"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "--root",
+              ".joycraft/local/mut6",
+              "--config",
+              "vitest.config.mjs"
+            ],
+            "exitCode": 1
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe on the real payload runtime (delete-then-re-add brief): no record -> refusal names \"<del> (fromSha256 <v1>, toSha256 null); <readd> (fromSha256 null, toSha256 <v2>)\"; correct nulls -> PASS; omitted hash keys, the string \"null\", the empty-content hash on the absent side, and null where the brief is present -> each refused \"does not match its commit's brief bytes\". Exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-probe.log",
+              "sha256": "35b69025b51b8ec19bc79eb2ecfa8242c902c46d13ecd02289cd6daee9fd63b9"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              ".joycraft/local/mut6/probe.mjs"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "payload/.joycraft/references/archive.md:96 now reads \"The before hash is at `commit^`; use `null` for a side with no brief.\" This matches archive.mjs:119-130 (hashAt returns null when committedBytes is null, and the check compares the record to hashAt on both sides).",
+          "receipts": []
+        }
+      ],
+      "limits": [
+        "Project gate not rerun by the reviewer; the coordinator receipt .joycraft/local/gate/gate-86d8b62.log records it green at 86d8b62."
+      ]
+    },
+    {
+      "id": "flow-spec-6-2",
+      "subjectIdentity": "e34e140c4b425e9049ad9bc437be8cd63ebcfff90220120d96e4174b1241f415",
+      "criteria": [
+        "spec-6-2"
+      ],
+      "representativeInput": "Fixture repo with two later brief commits on the feature branch (v1->v2, v2->v3) and no brief-amendments.json.",
+      "expected": "The refusal names both commits with their hashes, in commit order, joined by \"; \".",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-6-2] passed in the focused run (exit 0): the message ends \": <amendment> (fromSha256 <v1>, toSha256 <v2>); <second> (fromSha256 <v2>, toSha256 <v3>))\".",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-focused-20261128T081804001Z-38997-1.log",
+              "sha256": "0d98adbec926186f95eca6e4ed2ab47c62554b1fa7200b1fe285f1727474a1ae"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-archive-merge-amendment.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Can-the-test-fail: in the scratch copy the refusal list was reversed ([...later].reverse()). Only [AC:spec-6-2] went red, exit 1. The test can fail.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-22-fixes-1-9-3/reviews/receipts/spec-6-reviewer-mutant-order.log",
+              "sha256": "56feedef00b268a5bc1b841495a39a2540f36dbfb2cc7efbcc62ee2a5987b889"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "exec",
+              "vitest",
+              "run",
+              "--root",
+              ".joycraft/local/mut6",
+              "--config",
+              "vitest.config.mjs"
+            ],
+            "exitCode": 1
+          }
+        }
+      ],
+      "limits": []
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "criterion": "spec-6-1",
+      "at": "tests/runtime-archive-merge-amendment.test.ts:91",
+      "summary": "The [AC:spec-6-1] test covers only the absent first-parent side (fromSha256 null). The toSha256 null side (brief absent at commit) has no test; the reviewer probe showed it works (receipt spec-6-reviewer-probe.log).",
+      "assumption": "The bullet's \"(or toSha256 null)\" is met by the shared hashAt code path; a missing test for that side is not a failing criterion."
+    },
+    {
+      "id": "f2",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/runtime-archive-merge-amendment.test.ts:42",
+      "summary": "Test changes match class 1: two tests added; existing test bodies unchanged. writeRecord now accepts null and maps it to a null hash; string inputs hash as before."
+    },
+    {
+      "id": "f3",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/archive.mjs:130",
+      "summary": "The old explicit before !== null && after !== null guard is gone; a record hash string never equals null, so a hash on an absent side is still refused (probe). No regression seen."
+    },
+    {
+      "id": "f4",
+      "class": "note",
+      "origin": "unknown",
+      "summary": "Working tree was dirty during review (CHANGELOG.md, package.json, src/joycraft-release.json modified, not by this reviewer); evidence receipts record dirty: true at 86d8b62. None of these files is a spec-6 input."
+    },
+    {
+      "id": "o1",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/follow-ups.json",
+      "summary": "Changed since base but declared by no spec of this queue: docs/features/2026-11-22-fixes-1-9-3/follow-ups.json."
+    },
+    {
+      "id": "o2",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/receipts/spec-6-implementer-focused.log",
+      "summary": "Changed since base but declared by no spec of this queue: docs/features/2026-11-22-fixes-1-9-3/receipts/spec-6-implementer-focused.log."
+    },
+    {
+      "id": "o3",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/receipts/spec-7-implementer-focused.log",
+      "summary": "Changed since base but declared by no spec of this queue: docs/features/2026-11-22-fixes-1-9-3/receipts/spec-7-implementer-focused.log."
+    },
+    {
+      "id": "o4",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json",
+      "summary": "Changed since base but declared by no spec of this queue: docs/features/2026-11-22-fixes-1-9-3/specs/.joycraft-spec-queue.json."
+    },
+    {
+      "id": "o5",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/follow-ups.json",
+      "summary": "Changed since base but declared by no spec of this queue: docs/features/2026-11-22-fixes-1-9-4/follow-ups.json."
+    },
+    {
+      "id": "o6",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-5-implementer-focused.log",
+      "summary": "Changed since base but declared by no spec of this queue: docs/features/2026-11-22-fixes-1-9-4/receipts/spec-5-implementer-focused.log."
+    },
+    {
+      "id": "o7",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/receipts/spec-6-implementer-focused.log",
+      "summary": "Changed since base but declared by no spec of this queue: docs/features/2026-11-22-fixes-1-9-4/receipts/spec-6-implementer-focused.log."
+    },
+    {
+      "id": "o8",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json",
+      "summary": "Changed since base but declared by no spec of this queue: docs/features/2026-11-22-fixes-1-9-4/specs/.joycraft-spec-queue.json."
+    },
+    {
+      "id": "o9",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md",
+      "summary": "Changed since base but declared by no spec of this queue: docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md."
+    },
+    {
+      "id": "o10",
+      "class": "note",
+      "origin": "unknown",
+      "at": "docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md",
+      "summary": "Changed since base but declared by no spec of this queue: docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md."
+    },
+    {
+      "id": "o11",
+      "class": "note",
+      "origin": "unknown",
+      "at": "payload/.joycraft/runtime/completion.mjs",
+      "summary": "Changed since base but declared by no spec of this queue: payload/.joycraft/runtime/completion.mjs."
+    },
+    {
+      "id": "o12",
+      "class": "note",
+      "origin": "unknown",
+      "at": "payload/PIN",
+      "summary": "Changed since base but declared by no spec of this queue: payload/PIN."
+    },
+    {
+      "id": "o13",
+      "class": "note",
+      "origin": "unknown",
+      "at": "tests/runtime-reopen.test.ts",
+      "summary": "Changed since base but declared by no spec of this queue: tests/runtime-reopen.test.ts."
+    }
+  ],
+  "createdAt": "2026-11-28T08:20:11.308Z"
+}
