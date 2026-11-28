@@ -1,12 +1,15 @@
 ---
 name: joycraft-entry
-description: Start any Joycraft work. After Joycraft is installed, when asked to "set up Joycraft", "check the context map", change Joycraft settings or remove Joycraft, read the project, interview the user and build the context map in AGENTS.md; then turn a repair, feature, or mixed request into a context-backed brief and the next useful action.
+description: Set up Joycraft or start a feature. After Joycraft is installed, when asked to "set up Joycraft", "check the context map", change Joycraft settings or remove Joycraft, read the project, interview the user and build the context map in AGENTS.md. Then turn a repair, feature, or mixed request into a context-backed brief and the next useful action.
 compatibility: Setup helpers require Node.js 22+ and the installed .joycraft runtime only when used; ordinary brief and context navigation has no project-stack prerequisite.
 ---
 
+A small job by the `Work` line in `AGENTS.md` does not use this skill and reads
+nothing here. Start your reply with `Path: feature`.
+
 Run `node .joycraft/runtime/update-check.mjs check` first, once per session. If it
-prints nothing, say nothing. If it prints JSON, follow
-[updates](../../../.joycraft/references/update.md).
+prints nothing, say nothing. If it prints one line, end your next reply with it.
+If it prints JSON, follow [updates](../../../.joycraft/references/update.md).
 
 Then run `node .joycraft/runtime/wiring.mjs --root .`. When the check exits 2, or right after an install, or when the user
 asks to set up Joycraft or check the context map, say in one line that you are
@@ -27,9 +30,7 @@ choosing skills; preserved custom content is not a completed migration.
 On a bare project, offer the
 [kickoff](../../../.joycraft/references/setup.md#kickoff-for-a-new-project)
 in one line before any brief or scaffold, and run it when the user asks for it on
-any project. On first entry, setup and upgrade, also run the review-loop plan in
-[review loop tools](../../../.joycraft/references/setup.md#review-loop-tools);
-install nothing without the user's yes.
+any project.
 Continue the user's work after setup; setup alone does not require a feature
 brief, spec queue or app scaffold.
 
@@ -73,9 +74,9 @@ the answer instead of a reviewer discovering it.
 and its tools required. Record a waiver only from the user's own words in that
 feature's interview: put them in the note of a settled brief decision and write
 the feature's `waiver.json` naming that decision, before any review runs
-(`.joycraft/references/completion.md`). A `no-review` waiver blocks reviewer
-dispatch for the feature. Never propose or ask about one, and never carry it
-into the next feature.
+(`.joycraft/references/completion.md`). Never propose or ask about one, and
+never carry it into the next feature. A small job has no code review: its look
+and the tests that its close runs are its checks.
 
 **Feature sessions stay quiet about the review loop.** A feature interview
 asks nothing about review tools: read the recorded `## Review loop` and write
@@ -88,12 +89,9 @@ record the answer, so it is not asked again.
 **Ask in the user's question style.** When the user must choose between
 options, record each choice as a brief decision. Then run
 `node .joycraft/runtime/artifacts/cli.mjs questions --brief <brief>` and ask as
-it says: one decision at a time with a short discussion after each answer, or a
-page of decisions; in the decision artifact or as numbered prose in chat. Give
-each consequential question its context, options with an example and a
-trade-off, and your recommendation with the reason, in Simplified Technical
-English. Never assume the user remembers what you remember. Save every answer
-to the brief. Follow
+it prints. Give each consequential question its context, options with an example
+and a trade-off, and your recommendation with the reason, in Simplified Technical
+English. Save every answer to the brief. Follow
 [asking questions](../../../.joycraft/references/artifacts.md#asking-questions).
 Plain chat with no decision is only for one quick yes/no or an open question
 with no options.
@@ -112,12 +110,10 @@ page, connect their wiki, see their settings or remove Joycraft, follow
 what they do, follow [gates](../../../.joycraft/references/gates.md).
 
 **Show documents as pages.** A brief, plan, spec set, report or review that the
-user must read or approve is also rendered, never left as Markdown in chat. The
-artifact engine builds each page: decisions from the brief, documents with
+user must read or approve is also rendered, never left as Markdown in chat. A
+brief with no open decision gets no page. The artifact engine builds each page: decisions from the brief, documents with
 `--doc`, both on one page when a document has questions. Never write your own HTML page. Show it as
 [showing a page](../../../.joycraft/references/artifacts.md#showing-a-page) says and give its path.
-If the project's `AGENTS.md` lacks this rule or its context-map row for
-`.joycraft/references/artifacts.md`, add them as `setup.md` describes.
 
 For a request to keep an artifact theme or colors from now on, record
 `artifacts.theme` or `artifacts.colors` in that project's
@@ -130,10 +126,6 @@ Choose the next action from what is missing: inspect code for facts, use
 `joycraft-decompose` for understood authorized work. Ask a short contextual
 question only when its consequential answer is absent; typically one choice is
 enough. Do not ask again for settled intent or routine implementation refinements.
-For a small authorized tooling repair or content operation, use the project's
-existing direct path when it fits the request. Do not turn routine data entry
-into a code-spec factory or create per-record plans when an approved batch tool
-already owns the operation. Preserve its validation, approval and readback rules.
 
 Use `joycraft-context` when you need to find relevant project files beyond the
 context map. Its deterministic search provides pointers; read the selected

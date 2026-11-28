@@ -1,0 +1,86 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev9r2[39m
+
+ [31m❯[39m tests/trial-reviewer-bench.test.ts [2m([22m[2m15 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 3578[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-args] without --subjects it exits 2 with its usage line; --help exits 0; the source holds no home path[32m 62[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-score] partly counts as missed, a control finding is false only when its reproduction fails, and the four rule lines print [33m 344[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-bar] counts at the bar PASS with exit 0; one below any rule FAILs with exit 1; a cap stop is incomplete with exit 3[32m 172[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-today] <out>/today holds byte copies of the four reviewer files, and a saved prompt points at them[32m 258[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-score] each R6 and vacuous review runs in a copy of its subject[32m 210[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-score] a subject that cannot be copied, or a review that exits non-zero with no output, makes the run incomplete[32m 240[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-bar] the cap reserves each call's budget when it starts, so calls in flight cannot overrun it [33m 748[2mms[22m[39m
+[31m   [31m×[31m reviewer benchmark (sl3-07)[2m > [22m[AC:spec-9-3] the vacuous subject is reviewed --vacuous-runs times, the rule judges the rate, and a record needs 5 reviews[39m[33m 656[2mms[22m[39m
+[31m     → expected '## replay\n\n| subject | result | blo…' to contain 'not recorded: a record needs 5 review…'[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:spec-9-3] the vacuous rule holds at 2 of 5 caught reviews and fails at 1 of 5[32m 0[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-score] a failed scorer call makes the subject incomplete, not missed[32m 233[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-current] --record refuses to overwrite the record from an incomplete run[32m 202[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m--reviewer vanilla runs the built-in /code-review with no Joycraft text, and its important findings block[32m 206[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m--reviewer pstack installs its .claude/ in the subject, starts with /poteto-mode, and logs the skill read and dropped runners[32m 246[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22mAGENTS.md holds the reviewer benchmark row in ## Commands[32m 0[2mms[22m[39m
+   [32m✓[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-current] the recorded run passes the bar and reviewed the reviewer text in this tree[32m 1[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/trial-reviewer-bench.test.ts[2m > [22mreviewer benchmark (sl3-07)[2m > [22m[AC:spec-9-3] the vacuous subject is reviewed --vacuous-runs times, the rule judges the rate, and a record needs 5 reviews
+[31m[1mAssertionError[22m: expected '## replay\n\n| subject | result | blo…' to contain 'not recorded: a record needs 5 review…'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- not recorded: a record needs 5 reviews of each vacuous subject[39m
+[31m+ ## replay[39m
+[31m+[39m
+[31m+ | subject | result | blocking | seconds | cost |[39m
+[31m+ |---|---|---|---|---|[39m
+[31m+ | replay-1 | caught | 1 | 0 | 0.20 |[39m
+[31m+ | replay-2 | missed | 0 | 0 | 0.30 |[39m
+[31m+[39m
+[31m+ ## r6[39m
+[31m+[39m
+[31m+ | subject | result | blocking | seconds | cost |[39m
+[31m+ |---|---|---|---|---|[39m
+[31m+ | r6-demo-r1 | found 1 of 1 | 1 | 0 | 0.20 |[39m
+[31m+[39m
+[31m+ ## controls[39m
+[31m+[39m
+[31m+ | subject | result | blocking | seconds | cost |[39m
+[31m+ |---|---|---|---|---|[39m
+[31m+ | control-3 | 1 false of 2 | 2 | 0 | 0.20 |[39m
+[31m+[39m
+[31m+ ## vacuous[39m
+[31m+[39m
+[31m+ | subject | result | blocking | seconds | cost |[39m
+[31m+ |---|---|---|---|---|[39m
+[31m+ | vacuous-demo-vacuous | caught | 1 | 0 | 0.20 |[39m
+[31m+[39m
+[31m+ Misses by cheapest level: static-check 1[39m
+[31m+[39m
+[31m+ 1. Replay: at least 4 of 18 caught (caught 1 of 2): holds: no[39m
+[31m+ 2. R6: at least 5 of 8 found (found 1 of 1): holds: no[39m
+[31m+ 3. Controls: at most 1 false blocking finding (false 1): holds: yes[39m
+[31m+ 4. Vacuous test found as a blocking finding in at least 40% of its reviews (found 1 of 1): holds: yes[39m
+[31m+[39m
+[31m+ cost $1.10, median 0 s per review[39m
+[31m+[39m
+[31m+ FAIL[39m
+[31m+ results: ../../../../../../var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-reviewer-bench-hSto4T/out/results.json[39m
+[31m+ recorded scripts/trial/reviewer-bench.json (FAIL)[39m
+[31m+[39m
+
+[36m [2m❯[22m tests/trial-reviewer-bench.test.ts:[2m178:26[22m[39m
+    [90m176| [39m    [35mtry[39m {
+    [90m177| [39m      [35mconst[39m { run[33m:[39m one } [33m=[39m [34mbench[39m([[32m'--record'[39m][33m,[39m { [35mfrom[39m[33m:[39m subjects })[33m;[39m
+    [90m178| [39m      expect(one.stdout).toContain('not recorded: a record needs 5 rev…
+    [90m   | [39m                         [31m^[39m
+    [90m179| [39m      expect(existsSync(recordFile) ? readFileSync(recordFile, 'utf8')…
+    [90m180| [39m    } [35mfinally[39m {
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m14 passed[39m[22m[90m (15)[39m
+[2m   Start at [22m 21:03:16
+[2m   Duration [22m 3.76s[2m (transform 29ms, setup 0ms, collect 33ms, tests 3.58s, environment 0ms, prepare 33ms)[22m
+
+joycraft-evidence: {"wallMs":3992,"load":[8.02587890625,7.462890625],"cores":14,"loaded":false,"argv":["sh","-c","cd /private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev9r2 && ./node_modules/.bin/vitest run tests/trial-reviewer-bench.test.ts"],"exitCode":1,"timedOut":false,"revision":"b5e02d6947ddf436a7b181779c8d0d9682f19dcf","dirty":true}

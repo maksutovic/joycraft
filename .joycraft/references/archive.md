@@ -8,7 +8,8 @@ review, hook event, or ordinary verification must never invoke it.
 `docs/features/<feature>` or `docs/features/YYYY-MM-DD-<feature>`. Two dated
 matches stop it; pass a folder name. `<slug>` below is the folder name.
 
-Prepare a project-relative attestation file:
+Prepare a project-relative attestation file (`close.mjs --feature` builds it from
+`--session` and `--context`):
 
 ```json
 {
@@ -28,7 +29,7 @@ Prepare a project-relative attestation file:
 ```
 
 `quiescent` attests that no active worker and no unfinished work requiring the
-feature's live paths remains; it does not ask for a new human permission. The
+feature's live paths remains. The
 current Markdown context references must already exist outside `docs/features/`
 and `docs/archive/`, showing that constraints worth keeping were carried into
 current documentation. Reuse the project's existing home, such as `AGENTS.md` or

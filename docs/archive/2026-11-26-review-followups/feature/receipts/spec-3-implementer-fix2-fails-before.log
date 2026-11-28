@@ -1,0 +1,50 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-follow-ups-ledger.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [31m❯[39m tests/runtime-follow-ups-ledger.test.ts [2m([22m[2m10 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 7606[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-1] follow-ups.mjs records fixed, decided and dismissed entries and refuses what the accepted report or queue lacks [33m 989[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] fixed by a done spec: no question; the other follow-up still is one [33m 680[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] fixed by a spec that is not done: still a question [33m 574[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] decided by an answered decision: no question; by an open or assigned one: still a question [33m 576[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] dismissed with a reason: no question; with an empty reason: still a question [33m 476[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] a malformed follow-ups.json is a problem naming the file, and every follow-up stays a question [33m 527[2mms[22m[39m
+[31m   [31m×[31m follow-ups ledger[2m > [22m[AC:spec-3-2] a malformed follow-ups.json makes gate check and close --feature name the file[39m[33m 552[2mms[22m[39m
+[31m     → expected 'Joycraft gate: undefined does not par…' to contain 'Joycraft gate: docs/features/x/follow…'[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-3] close refuses on exactly the unhandled follow-up, naming follow-ups.mjs, then archives with follow-ups.json once both are handled [33m 1622[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-4] a feature whose report holds old follow-ups closes once each is dismissed, with no report bytes changed [33m 1610[2mms[22m[39m
+   [32m✓[39m follow-ups ledger[2m > [22m[AC:spec-3-5] session end asks only the questions status lists and records each answer with follow-ups.mjs[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-follow-ups-ledger.test.ts[2m > [22mfollow-ups ledger[2m > [22m[AC:spec-3-2] a malformed follow-ups.json makes gate check and close --feature name the file
+[31m[1mAssertionError[22m: expected 'Joycraft gate: undefined does not par…' to contain 'Joycraft gate: docs/features/x/follow…'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Joycraft gate: [7mdocs/features/x/follow-ups.json does not parse[27m[39m
+[31m+ Joycraft gate: [7mundefined does not parse: Invalid JSON: docs/features/x/follow-ups.json. Every follow-up stays a question until it is fixed. Repair undefined and tell the user.[27m[39m
+[31m+[39m
+
+[36m [2m❯[22m tests/runtime-follow-ups-ledger.test.ts:[2m168:22[22m[39m
+    [90m166| [39m    [35mconst[39m gateText [33m=[39m [32m`[39m[36m${[39mgate[33m.[39mstdout[36m}[39m[32m[39m[36m${[39mgate[33m.[39mstderr[36m}[39m[32m`[39m[33m;[39m
+    [90m167| [39m    [34mexpect[39m(gate[33m.[39mstatus)[33m.[39mnot[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m168| [39m    expect(gateText).toContain(`Joycraft gate: ${ledgerPath} does not …
+    [90m   | [39m                     [31m^[39m
+    [90m169| [39m    [34mexpect[39m(gateText)[33m.[39m[34mtoContain[39m([32m`Repair [39m[36m${[39mledgerPath[36m}[39m[32m`[39m)[33m;[39m
+    [90m170| [39m    [34mexpect[39m(gateText)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m'undefined'[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m9 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 09:03:40
+[2m   Duration [22m 7.80s[2m (transform 78ms, setup 0ms, collect 24ms, tests 7.61s, environment 0ms, prepare 33ms)[22m
+
+ ELIFECYCLE  Test failed. See above for more details.
+joycraft-evidence: {"wallMs":8472,"load":[5.2802734375,8.28271484375],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-follow-ups-ledger.test.ts"],"exitCode":1,"timedOut":false,"revision":"844fc46a6cc5468d639de06e00a8e7b3fa99a40e","dirty":true}

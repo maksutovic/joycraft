@@ -1,0 +1,5 @@
+
+> joycraft@1.10.1 typecheck /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> tsc --noEmit
+
+joycraft-evidence: {"wallMs":797,"load":[15.4140625,15.4140625],"cores":14,"loaded":true,"argv":["pnpm","typecheck"],"exitCode":0,"timedOut":false,"revision":"21870bd7b1ddfdac100c75dba6eb25b591989a81","dirty":true}

@@ -1,0 +1,15 @@
+
+> joycraft@1.10.2 test /private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev11
+> vitest tests/runtime-dispatch-commands.test.ts -t spec-11-1
+
+
+ RUN  v3.2.4 /private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev11
+
+ ✓ tests/runtime-dispatch-commands.test.ts (32 tests | 31 skipped) 579ms
+   ✓ startup flag defaults (sl2-06a) > [AC:spec-11-1] the expected manifest default takes this tree's worker record first, then the lease root, then this tree  579ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 31 skipped (32)
+   Start at  19:20:52
+   Duration  793ms (transform 85ms, setup 0ms, collect 53ms, tests 579ms, environment 0ms, prepare 46ms)
+

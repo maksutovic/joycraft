@@ -1,0 +1,32 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/text-session-end-pr.test.ts tests/runtime-follow-ups-ledger.test.ts tests/payload-guard.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/text-session-end-pr.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 1013[2mms[22m[39m
+   [33m[2m✓[22m[39m session end review-25 runtime[2m > [22m[review-25-1] a records commit, then the tidy fix: tidy --verify passes on the new HEAD [33m 1011[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12180 (cap 12256, 76 spare)
+on-demand words: 20821 (cap 21163, 342 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1533[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 425[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 394[2mms[22m[39m
+ [32m✓[39m tests/runtime-follow-ups-ledger.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 6396[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-1] follow-ups.mjs records fixed, decided and dismissed entries and refuses what the accepted report or queue lacks [33m 1028[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] fixed by a done spec: no question; the other follow-up still is one [33m 665[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] fixed by a spec that is not done: still a question [33m 538[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] decided by an answered decision: no question; by an open or assigned one: still a question [33m 494[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] dismissed with a reason: no question; with an empty reason: still a question [33m 425[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] a malformed follow-ups.json is a problem naming the file, and every follow-up stays a question [33m 464[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-3] close refuses on exactly the unhandled follow-up, naming follow-ups.mjs, then archives with follow-ups.json once both are handled [33m 1425[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-4] a feature whose report holds old follow-ups closes once each is dismissed, with no report bytes changed [33m 1355[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m35 passed[39m[22m[90m (35)[39m
+[2m   Start at [22m 08:58:51
+[2m   Duration [22m 6.60s[2m (transform 126ms, setup 0ms, collect 103ms, tests 8.94s, environment 0ms, prepare 134ms)[22m
+
+joycraft-evidence: {"wallMs":7319,"load":[14.2412109375,13.4208984375],"cores":14,"loaded":true,"argv":["pnpm","test","tests/text-session-end-pr.test.ts","tests/runtime-follow-ups-ledger.test.ts","tests/payload-guard.test.ts"],"exitCode":0,"timedOut":false,"revision":"8ef652df4d50f3a558d5822d1894df3baceb98d1","dirty":true}

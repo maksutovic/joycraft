@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "b5e02d6947ddf436a7b181779c8d0d9682f19dcf",
+    "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+    "specId": 9,
+    "specPath": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+    "criteria": [
+      {
+        "id": "spec-9-1",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-9-2",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-9-3",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-9-4",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "code",
+        "sha256": "b04bbcfe7dc131fc40719a4638538da37545ab458f836d22d1bc40430686a9fd",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "reviewer-notes",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "c44e4181c0508a340ee2b64a8bf2efae2da4a2a75b28fcf39479e982c375ef8e",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "48df3f69e16a07ed7f3a2f5bff3a2b001c21a3acce464c207841305722f0a491",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/09-reviewer-can-fail.md",
+        "kind": "requirement",
+        "sha256": "d193e62dc401447d8f633dbcf5e167fe65b6af436fa84c0ca464027126cadfa2",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/review-1.report.json",
+        "kind": "requirement",
+        "sha256": "294a77a413c3afa9cc3bfa69c636859e6e9fbed52caffab122e30050ac03bfd9",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+        "kind": "code",
+        "sha256": "fc625129e1fd46ca8b664b28fd9dc52ebf2bdb7a5dc84a6bd9685a2a0ae46dc8",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/PIN",
+        "kind": "code",
+        "sha256": "7e6297e9177917a535af0560d6e075bbcdb5820330ed31a845aa6a2c8d03a963",
+        "normalization": "none"
+      },
+      {
+        "path": "scripts/trial/reviewer-bench.json",
+        "kind": "code",
+        "sha256": "0ff8ea71326d0d5832e5ab253b50d9d43b47f86f52f439c0ce0f473c7490ad27",
+        "normalization": "none"
+      },
+      {
+        "path": "scripts/trial/reviewer-bench.mjs",
+        "kind": "code",
+        "sha256": "58d282890f6cdba06fe8b5f4b55737007ed9b54a363909cff03adbf15bb91843",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "ce946f413bae5831664c7074f4e710d7975e54763758a61ff8b0b39ab62de8bc",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-reviewer-can-fail.test.ts",
+        "kind": "check",
+        "sha256": "69e609efc381f354ea65da1e87138ac7100d0c962db69ffaa03cad84277c0950",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "kind": "check",
+        "sha256": "5691585ba4d945ada95eb331f54e5606862036cd5b288752d3b438a753e56a11",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/trial-reviewer-bench.test.ts",
+        "kind": "check",
+        "sha256": "b57465fb9215c3e990e8da7fe4045a43893c92a38768dcc4887017d7ef0f56cd",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          9
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-26-review-followups/brief.md",
+          "anchors": [
+            "reviewer-notes",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "29f1c42b3e6bd959983f739fe48628addb8d42df81a2968eb076d65c766b1352"
+  },
+  "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d"
+  },
+  "reviewer": {
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+      "agentId": "a12e7f137c1281cea"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "FAIL",
+  "flows": [
+    {
+      "id": "flow-blocking-definition",
+      "criteria": [
+        "spec-9-1"
+      ],
+      "subjectIdentity": "29f1c42b3e6bd959983f739fe48628addb8d42df81a2968eb076d65c766b1352",
+      "representativeInput": "payload/.agents/skills/joycraft-verify/SKILL.md as shipped, and a scratch copy with \"a test you showed cannot fail,\" removed from the findings rule.",
+      "expected": "The text names a test shown unable to fail as blocking; the test goes red when that phrase is removed.",
+      "limits": [
+        "Project gate not run by the reviewer, per the task. Reviewer benchmark not rerun (spends money); the record was checked against the saved run .joycraft/local/reviewer-bench/2026-11-28T04-38-58-800Z/results.json."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-9-1] passed in the focused run (4 files, 49 tests, exit 0). The \"Can the test fail?\" bullet keeps its key-criterion revert and \"A test that stays green is `blocking`.\" The findings rule now reads \"`blocking` is only a failing stated criterion, a test you showed cannot fail, or a defect...\". The dispatch line ends \"Do not invent IDs.\" Can it fail: with the new phrase removed in a scratch copy the test fails (exit 1).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-9-reviewer-focused-20261128T045644455Z-46868-1.log",
+              "sha256": "c77f9f899d550fd6e3260e4e10972ade0e28a2d65350c31be828235a15fad27a"
+            },
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-9-reviewer-canfail-revert-findings-line.log",
+              "sha256": "0645a9f888f5648c6d0134f1282ef8f5bf6270afc398484774ed5bfa2b617f2f"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-reviewer-can-fail.test.ts",
+              "tests/trial-reviewer-bench.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-bench-record",
+      "criteria": [
+        "spec-9-2"
+      ],
+      "subjectIdentity": "29f1c42b3e6bd959983f739fe48628addb8d42df81a2968eb076d65c766b1352",
+      "representativeInput": "scripts/trial/reviewer-bench.json against the textSha256 of this tree and the newest saved run.",
+      "expected": "Record is a full PASS run of this tree reviewer text.",
+      "limits": [
+        "Project gate not run by the reviewer, per the task. Reviewer benchmark not rerun (spends money); the record was checked against the saved run .joycraft/local/reviewer-bench/2026-11-28T04-38-58-800Z/results.json."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:sl3-07-bench-current] (unchanged in the diff) passed: verdict PASS, replay 5 of 18, r6 5 of 8, controlsFalse 0, vacuous 4 of 5, textSha256 88b2e3be... equals this tree. The record matches the saved run 2026-11-28T04-38-58-800Z/results.json (incomplete false, all four groups, cost 26.47 USD; vacuous runs r1-r5 caught true,true,true,false,true).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-9-reviewer-focused-20261128T045644455Z-46868-1.log",
+              "sha256": "c77f9f899d550fd6e3260e4e10972ade0e28a2d65350c31be828235a15fad27a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-reviewer-can-fail.test.ts",
+              "tests/trial-reviewer-bench.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-vacuous-rate",
+      "criteria": [
+        "spec-9-3"
+      ],
+      "subjectIdentity": "29f1c42b3e6bd959983f739fe48628addb8d42df81a2968eb076d65c766b1352",
+      "representativeInput": "reviewer-bench.mjs with the stub claude: --only vacuous --vacuous-runs 5; a 1-run --record; summarize() fed 1, 2 and 5 caught of 5; --vacuous-runs 0 and 2.5; scratch copies with the run loop, the record guard and the 40% rate rule each reverted.",
+      "expected": "Five reviews per vacuous subject, rule holds at 2 of 5 and not at 1 of 5, line prints found n of m, record keeps vacuous {found, of} and needs 5 reviews; each reverted line turns the test red.",
+      "limits": [
+        "Project gate not run by the reviewer, per the task. Reviewer benchmark not rerun (spends money); the record was checked against the saved run .joycraft/local/reviewer-bench/2026-11-28T04-38-58-800Z/results.json."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-9-4] passed: 5 review calls, summary.vacuous {found 5, of 5}, the rule line prints \"found 5 of 5\", and a 1-run --record prints \"not recorded: a record needs 5 reviews\" with the record file unchanged. Reverting the run loop to 1 fails it (length 1, exit 1); reverting the record guard fails it (exit 1, separate scratch run, same assertion as shown in the reviewer shell).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-9-reviewer-focused-20261128T045644455Z-46868-1.log",
+              "sha256": "c77f9f899d550fd6e3260e4e10972ade0e28a2d65350c31be828235a15fad27a"
+            },
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-9-reviewer-canfail-revert-runs-loop.log",
+              "sha256": "2444353a66a525ce48b831b60c113c508b4cb724c72d99bd57be1585e5e9acae"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-reviewer-can-fail.test.ts",
+              "tests/trial-reviewer-bench.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "command",
+          "result": "PASS",
+          "actual": "Probe: summarize()+judge() on 5 vacuous records with 1, 2, 5 caught gives holds false, true, true and lines \"found 1 of 5\", \"found 2 of 5\", \"found 5 of 5\". --vacuous-runs 0 and 2.5 are refused with \"--vacuous-runs needs a positive number\" (exit 2). Behaviour is right.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-9-reviewer-focused-20261128T045644455Z-46868-1.log",
+              "sha256": "c77f9f899d550fd6e3260e4e10972ade0e28a2d65350c31be828235a15fad27a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "node",
+              "--input-type=module",
+              "-e",
+              "summarize/judge probe"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "FAIL",
+          "actual": "Can the test fail, for the rate rule: in a scratch copy, vacuousFound reverted to of(vacuous).every(record => record.caught) (the old all-must-catch rule). tests/trial-reviewer-bench.test.ts stays green, 14 of 14 (exit 0). No test feeds a run where some but not all vacuous reviews catch the seed (the stub answers by subject key, so all runs get the same answer), so the 40% threshold, the heart of the criterion, is untested.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-9-reviewer-canfail-revert-rate-rule.log",
+              "sha256": "526848b28d4ba9e16f50809d9cffad5999e1420bd81e1cfb23fa69cb4529d03d"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "--dir",
+              "<scratch copy>",
+              "exec",
+              "vitest",
+              "run",
+              "tests/trial-reviewer-bench.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-caps",
+      "criteria": [
+        "spec-9-4"
+      ],
+      "subjectIdentity": "29f1c42b3e6bd959983f739fe48628addb8d42df81a2968eb076d65c766b1352",
+      "representativeInput": "Focused run of text-worker-commands and payload-guard.",
+      "expected": "Both pass unchanged.",
+      "limits": [
+        "Project gate not run by the reviewer, per the task. Reviewer benchmark not rerun (spends money); the record was checked against the saved run .joycraft/local/reviewer-bench/2026-11-28T04-38-58-800Z/results.json."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:sl3-07-words] and tests/payload-guard.test.ts pass (18 and 16 tests, exit 0); neither file is in the diff. Verify skill is 1330 words against the 1367 cap (HEAD 1364).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-9-reviewer-focused-20261128T045644455Z-46868-1.log",
+              "sha256": "c77f9f899d550fd6e3260e4e10972ade0e28a2d65350c31be828235a15fad27a"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-reviewer-can-fail.test.ts",
+              "tests/trial-reviewer-bench.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "unresolved": [
+    "f1: the 40% vacuous rate rule in reviewer-bench.mjs summarize() has no test that can fail; reverting it to all-must-catch keeps the suite green."
+  ],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "blocking",
+      "origin": "new",
+      "criterion": "spec-9-3",
+      "at": "scripts/trial/reviewer-bench.mjs:599",
+      "summary": "Test cannot fail for the rate rule: reverting vacuousFound to every(record => record.caught) keeps tests/trial-reviewer-bench.test.ts green (14/14, exit 0, receipt spec-9-reviewer-canfail-revert-rate-rule.log). Add a case with mixed caught results (e.g. 2 of 5 holds, 1 of 5 does not), via a stub answer keyed by run id or a direct summarize()/judge() test."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-verify/SKILL.md:80",
+      "summary": "The diff trims more than the dispatch line the spec names: it drops \"Completion validates the report, receipts, actors and subject freshness.\" and the owner-acceptance caveat that the path \"validates bindings and receipts, not the authenticity of a human instruction\". The cap needed about 3 words (HEAD 1364 + 6 new against 1367); the dispatch trim alone gives 9.",
+      "assumption": "Read as allowed edits to stay under the caps (the every-spec total also counts), since the benchmark record covers this exact text; owner may want the authenticity caveat back."
+    },
+    {
+      "id": "f3",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "scripts/trial/reviewer-bench.mjs:661",
+      "summary": "The record guard checks the total vacuous count (subjects x runs) >= 5, so two vacuous subjects at --vacuous-runs 3 would record with 3 reviews each. Today the subjects folder has one vacuous subject.",
+      "assumption": "The spec says \"a record needs all 5 reviews\" for the one subject; the guard meets that for the current subjects."
+    },
+    {
+      "id": "f4",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "tests/trial-reviewer-bench.test.ts:169",
+      "assumption": "The tag should read spec-9-3 (the bullet it checks); retag in the fix round.",
+      "summary": "Criterion ids are positional: spec-9-3 is the vacuous-rule bullet and spec-9-4 the caps bullet, but the spec and the new test tag the vacuous test [AC:spec-9-4], so startup traces it to the caps criterion and lists spec-9-3 as untraced. Reviewed by bullet: the vacuous test is judged under spec-9-3. spec-9-2 and spec-9-4 rest on existing tests that pass unchanged."
+    },
+    {
+      "id": "f5",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/trial-reviewer-bench.test.ts:59",
+      "summary": "Test change matches its declared class 1: the helper adds --vacuous-runs 1 and two expected rule lines change to the new text; one new test for spec-9-4; no assertion weakened."
+    },
+    {
+      "id": "f6",
+      "class": "note",
+      "origin": "pre-existing",
+      "at": "payload/PIN",
+      "summary": "The re-pin also picks up dispatch.md and dispatch-start.mjs hashes changed by commit 2a340b2 (specs 10, 11), and the CHANGELOG hunk adds the specs 10/11 \"Startup works in a linked worktree\" line."
+    }
+  ],
+  "createdAt": "2026-11-28T04:59:43.818Z"
+}

@@ -6,7 +6,7 @@ import { parseYaml, readConfig } from './config.mjs';
 import { isObject, parseJson, requireValue } from './identity.mjs';
 import { namesCommand } from './queue-check.mjs';
 import { projectStatus } from './status.mjs';
-import { managedState } from './wiring.mjs';
+import { managedClose, managedOpen, managedState } from './wiring.mjs';
 import { listWorktrees } from './worktrees.mjs';
 
 // A sweep for stale project knowledge. Every check is deterministic: files,
@@ -32,6 +32,17 @@ function markdownFiles(root, folder, skip = []) {
   };
   walk(folder);
   return out.sort();
+}
+
+// An entry file's own text: without Joycraft's managed block, and without the
+// `## Review loop` section through its marker line. A part with no end marker stays.
+function ownText(text) {
+  const lines = text.split('\n');
+  const cut = (start, end) => { if (start !== -1 && end > start) lines.splice(start, end - start + 1); };
+  cut(lines.findIndex(line => line.trim() === managedOpen), lines.findIndex(line => line.trim() === managedClose));
+  const heading = lines.findIndex(line => line.trim() === '## Review loop');
+  cut(heading, lines.findIndex((line, index) => index > heading && /^<!-- joycraft:review-loop v\d+ /.test(line.trim())));
+  return lines.join('\n');
 }
 
 const readText = (root, file) => { try { return readFileSync(path.join(root, file), 'utf8'); } catch { return null; } };
@@ -258,7 +269,7 @@ export const checkList = [
   ['broken-link', 'report', 'A Markdown link to a file that does not exist'],
   ['missing-path', 'mechanical', 'A backticked project path that does not exist and Git does not ignore (fixed when Git shows one rename)'],
   ['unmapped', 'report', 'A context page that only other context pages mention'],
-  ['entry-size', 'report', 'An entry file over cleanup.entryWords words (default 1000)'],
+  ['entry-size', 'report', "An entry file whose own text (not Joycraft's block or review-loop section) is over cleanup.entryWords words (default 1000)"],
   ['temporal', 'report', 'A date (YYYY-MM-DD) or a link to a dated file in an entry file, outside code spans'],
   ['script-name', 'report', 'A package script that an entry file names and no package.json defines'],
   ['gate-rule', 'report', 'An entry-file line outside a table that names the recorded tests.gate or tests.full command'],
@@ -320,13 +331,19 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   // missing-path: a backticked project path that names nothing in the project,
   // read from the root or, in a context page, from the page's own folder.
   // History pages (a decision log, a shipped ledger) rightly name removed paths.
+  // Joycraft's managed block is Joycraft's text, so its lines are not read here:
+  // entry-check.mjs reports a page that the block names and the project lacks (block-page).
   const exists = relative => existsSync(path.join(root, relative));
   const missing = [];
   for (const file of authorities) {
     const { text, spans } = parsed.get(file);
     if (historyPage(file, text)) continue;
+    const lines = file === 'AGENTS.md' ? text.split(/\r?\n/).map(line => line.trimEnd()) : [];
+    const open = lines.indexOf(managedOpen), close = lines.indexOf(managedClose);
+    const managed = line => open !== -1 && close > open && line > open + 1 && line < close + 1;
     const seen = new Set();
     for (const { span, line } of spans) {
+      if (managed(line)) continue;
       const target = projectPath(span, exists);
       if (!target || seen.has(target)) continue;
       seen.add(target);
@@ -355,9 +372,8 @@ export function cleanupReport({ root = process.cwd(), now = Date.now() } = {}) {
   // entry-size: entry files load into every session; keep them within budget.
   const entries = authorities.filter(file => entryFiles.includes(file));
   for (const file of entries) {
-    const { text } = parsed.get(file);
-    const words = text.split(/\s+/).filter(Boolean).length;
-    if (words > config.cleanup.entryWords) findings.push({ check: 'entry-size', path: file, detail: `${words} words; the budget is ${config.cleanup.entryWords} (cleanup.entryWords).`, fix: 'Move reference detail into context pages and leave a map row that says when to read each.', words });
+    const words = ownText(parsed.get(file).text).split(/\s+/).filter(Boolean).length;
+    if (words > config.cleanup.entryWords) findings.push({ check: 'entry-size', path: file, detail: `${words} own words; the budget is ${config.cleanup.entryWords} (cleanup.entryWords). Joycraft's block and review-loop section are not counted.`, fix: 'Move reference detail into context pages and leave a map row that says when to read each.', words });
   }
   // temporal: an entry file is a lasting entry point. A date, or a pointer to a
   // dated file, outside a code span does not last. The record that owns it keeps it.

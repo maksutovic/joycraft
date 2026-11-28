@@ -114,13 +114,16 @@ function briefAmendments(root, source, briefPath, later) {
   later = later.filter(commit => !keepsParentBrief(commit));
   const recordPath = `${source}/brief-amendments.json`;
   const changed = `Original requirement changed after acceptance: ${briefPath}`;
-  requireValue(existsSync(localPath(root, recordPath, true)), `${changed} (no ${recordPath} records its amendments)`);
+  // Name what the record needs, so the agent writes it instead of guessing.
+  const entryFor = commit => `${commit} (fromSha256 ${sha256(committedBytes(root, `${commit}^`, briefPath) ?? Buffer.alloc(0))}, toSha256 ${sha256(committedBytes(root, commit, briefPath) ?? Buffer.alloc(0))})`;
+  const howTo = 'with the answered owner decision that authorized it, as .joycraft/references/archive.md shows for brief-amendments.json';
+  requireValue(existsSync(localPath(root, recordPath, true)), `${changed} (no ${recordPath} records its amendments; add one entry for each later brief commit, ${howTo}: ${later.map(entryFor).join('; ')})`);
   const record = parseJson(readLocal(root, recordPath), recordPath);
   requireValue(isObject(record) && record.schemaVersion === 1 && record.kind === 'joycraft-brief-amendments' && record.brief === briefPath && Array.isArray(record.amendments), `Brief amendment record is malformed: ${recordPath}`);
   const decisions = briefDecisionRecords(readLocal(root, briefPath), briefPath);
   return later.map(commit => {
     const entries = record.amendments.filter(item => isObject(item) && item.commit === commit);
-    requireValue(entries.length === 1, `${changed} (commit ${commit} has no single amendment record)`);
+    requireValue(entries.length === 1, `${changed} (commit ${commit} has no single amendment record; add one entry ${howTo}: ${entryFor(commit)})`);
     const entry = entries[0];
     const before = committedBytes(root, `${commit}^`, briefPath), after = committedBytes(root, commit, briefPath);
     requireValue(before !== null && after !== null && entry.fromSha256 === sha256(before) && entry.toSha256 === sha256(after), `Brief amendment ${commit} does not match its commit's brief bytes`);

@@ -1,0 +1,14 @@
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev9[39m
+
+ [32m✓[39m tests/trial-reviewer-bench.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 3672[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-score] partly counts as missed, a control finding is false only when its reproduction fails, and the four rule lines print [33m 345[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-bar] the cap reserves each call's budget when it starts, so calls in flight cannot overrun it [33m 753[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:spec-9-4] the vacuous subject is reviewed --vacuous-runs times, the rule judges the rate, and a record needs 5 reviews [33m 706[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m14 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m 20:58:34
+[2m   Duration [22m 3.85s[2m (transform 30ms, setup 0ms, collect 33ms, tests 3.67s, environment 0ms, prepare 36ms)[22m
+
+joycraft-evidence: {"wallMs":4402,"load":[5.47412109375,6.31689453125],"cores":14,"loaded":false,"argv":["pnpm","--dir","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev9","exec","vitest","run","tests/trial-reviewer-bench.test.ts"],"exitCode":0,"timedOut":false,"revision":"b5e02d6947ddf436a7b181779c8d0d9682f19dcf","dirty":true}

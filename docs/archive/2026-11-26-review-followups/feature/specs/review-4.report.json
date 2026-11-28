@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "5242ac27734b3b6f9aabf8bc209f1a93a2d8d82d",
+    "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+    "specId": 4,
+    "specPath": "docs/features/2026-11-26-review-followups/specs/04-entry-size-own-text.md",
+    "criteria": [
+      {
+        "id": "spec-4-1",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/04-entry-size-own-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-2",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/04-entry-size-own-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-3",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/04-entry-size-own-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-4-4",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/04-entry-size-own-text.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-26-review-followups/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "entry-size-own-text",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "ea7dafd8eeaac9a482b3d000e370b7a87e0d35b46c3cd12a440466513be680e0",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "fb716a6cb0961a012fafc97776640a8e1b4b22a8e9cb84fffa97b251285796e7",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/04-entry-size-own-text.md",
+        "kind": "requirement",
+        "sha256": "1489cedfb85444ff21a0857f2350df2a01cb4d54419428e3a11de4e5e23374dc",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/references/cleanup.md",
+        "kind": "code",
+        "sha256": "d8650a9484c1555cb0ce94be3c4b70f3babc417302e2506f400a92853e8f7ce4",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/references/settings.md",
+        "kind": "code",
+        "sha256": "dd5f323660090d8da15f6ad3d9d5a939c2a1f8c3e215346b68251f1c3a113fc4",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/cleanup.mjs",
+        "kind": "code",
+        "sha256": "d931eb94412feaed8ece8efede6c6f6fee835cf0dc39ef22095cda9294967ab4",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/entry-check.mjs",
+        "kind": "code",
+        "sha256": "be376385558c0207deb883564eb3ca45191a466d41bf205ce09bcac607f74639",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/review-tools.mjs",
+        "kind": "code",
+        "sha256": "91d647d9b2a3fbaf62dbc083c7cce8a02640eca8ff76aed8898e7b95af50236d",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/wiring.mjs",
+        "kind": "code",
+        "sha256": "5d4193bad15e0811c86a920d05edb4f0481d131164ba78ce158128759f8e17f0",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/PIN",
+        "kind": "code",
+        "sha256": "32043b3798d747d78640787aaffddd00bbaf16346bd0a14c66da20cd116e06dd",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "ce946f413bae5831664c7074f4e710d7975e54763758a61ff8b0b39ab62de8bc",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-cleanup-checks.test.ts",
+        "kind": "check",
+        "sha256": "04bd476a21f807fa8b76fcc062f6044837345c9e24dc107b0b65d49e8a32f292",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          4
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-26-review-followups/brief.md",
+          "anchors": [
+            "entry-size-own-text",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "f79c46f3ad0aa7fc011a6fa9babee9d867d323f784373ef5f8215cbada637fd3"
+  },
+  "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d"
+  },
+  "reviewer": {
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+      "agentId": "ad5a433c4cb45693d"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-own-text",
+      "criteria": [
+        "spec-4-1"
+      ],
+      "representativeInput": "AGENTS.md = '# A' + wiring.mjs managedBlock + 898 or 1098 own words + a review-loop section ending in its v2 marker.",
+      "expected": "No entry-size finding at 900 own words; one finding with words 1100 at 1100 own words.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-1] passed (5 files, 49 tests, exit 0, revision 5242ac2, clean tree). Source: ownText() in cleanup.mjs splices managedOpen..managedClose (exact trimmed line match, imported from wiring.mjs) and '## Review loop' through the first later line matching '<!-- joycraft:review-loop v<n> ', the same marker review-tools.mjs writes. Probe: payload cleanup.mjs on this repo's AGENTS.md (1327 words total) gives no entry-size finding.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-4-reviewer-focused-20261126T171236012Z-76675-1.log",
+              "sha256": "07eee3058b0b935e7dce918ab58d4c472edf1693cb64e942b074aa6f130811ea"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-checks.test.ts",
+              "tests/payload-entry-check.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/runtime-cleanup-checks-seam.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture git project; cleanup.mjs run from payload/ copies, not an installed 1.10.2 consumer. Project gate not rerun by reviewer: coordinator receipts spec-4-gate-test.log / spec-4-gate-typecheck.log (two tests timed out under load there; spec-3-gate-timeouts-rerun.log shows them passing alone)."
+      ],
+      "subjectIdentity": "f79c46f3ad0aa7fc011a6fa9babee9d867d323f784373ef5f8215cbada637fd3"
+    },
+    {
+      "id": "flow-detail",
+      "criteria": [
+        "spec-4-2"
+      ],
+      "representativeInput": "Same fixture at 1100 own words.",
+      "expected": "detail names the own-text count and says Joycraft's block and review-loop section are not counted; words is the own-text count.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-2] passed. Source: detail is '<n> own words; the budget is <b> (cleanup.entryWords). Joycraft's block and review-loop section are not counted.' and words is the ownText count.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-4-reviewer-focused-20261126T171236012Z-76675-1.log",
+              "sha256": "07eee3058b0b935e7dce918ab58d4c472edf1693cb64e942b074aa6f130811ea"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-checks.test.ts",
+              "tests/payload-entry-check.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/runtime-cleanup-checks-seam.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture git project; cleanup.mjs run from payload/ copies, not an installed 1.10.2 consumer. Project gate not rerun by reviewer: coordinator receipts spec-4-gate-test.log / spec-4-gate-typecheck.log (two tests timed out under load there; spec-3-gate-timeouts-rerun.log shows them passing alone)."
+      ],
+      "subjectIdentity": "f79c46f3ad0aa7fc011a6fa9babee9d867d323f784373ef5f8215cbada637fd3"
+    },
+    {
+      "id": "flow-no-markers",
+      "criteria": [
+        "spec-4-3"
+      ],
+      "representativeInput": "AGENTS.md with no markers at 1100 words; AGENTS.md with a managed open marker and no close marker.",
+      "expected": "Both counted whole.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-3] passed. Source: cut() only splices when both indexes are found and end > start, so a missing close (or a review-loop heading with no marker) leaves the text whole.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-4-reviewer-focused-20261126T171236012Z-76675-1.log",
+              "sha256": "07eee3058b0b935e7dce918ab58d4c472edf1693cb64e942b074aa6f130811ea"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-checks.test.ts",
+              "tests/payload-entry-check.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/runtime-cleanup-checks-seam.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture git project; cleanup.mjs run from payload/ copies, not an installed 1.10.2 consumer. Project gate not rerun by reviewer: coordinator receipts spec-4-gate-test.log / spec-4-gate-typecheck.log (two tests timed out under load there; spec-3-gate-timeouts-rerun.log shows them passing alone)."
+      ],
+      "subjectIdentity": "f79c46f3ad0aa7fc011a6fa9babee9d867d323f784373ef5f8215cbada637fd3"
+    },
+    {
+      "id": "flow-advisory-text",
+      "criteria": [
+        "spec-4-4"
+      ],
+      "representativeInput": "entry-check.mjs gateChecks, cleanup.mjs --checks, payload settings.md and cleanup.md.",
+      "expected": "entry-size not in gateChecks; checkList line, the cleanup.entryWords row and cleanup.md say the budget counts own text.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-4-4] passed. Source: gateChecks unchanged (missing-path, broken-link, script-name, codex-bytes, import); checkList, settings.md row and cleanup.md each name own text, not Joycraft's block or review loop. PIN regenerated; payload-guard passed. codex-bytes (line 342) still counts the whole file, as the spec's Not covered states.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-4-reviewer-focused-20261126T171236012Z-76675-1.log",
+              "sha256": "07eee3058b0b935e7dce918ab58d4c472edf1693cb64e942b074aa6f130811ea"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-cleanup-checks.test.ts",
+              "tests/payload-entry-check.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/runtime-cleanup-checks-seam.test.ts",
+              "tests/drift-tidy-text.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture git project; cleanup.mjs run from payload/ copies, not an installed 1.10.2 consumer. Project gate not rerun by reviewer: coordinator receipts spec-4-gate-test.log / spec-4-gate-typecheck.log (two tests timed out under load there; spec-3-gate-timeouts-rerun.log shows them passing alone)."
+      ],
+      "subjectIdentity": "f79c46f3ad0aa7fc011a6fa9babee9d867d323f784373ef5f8215cbada637fd3"
+    }
+  ],
+  "unresolved": [],
+  "findings": [],
+  "createdAt": "2026-11-26T17:13:29.000Z"
+}

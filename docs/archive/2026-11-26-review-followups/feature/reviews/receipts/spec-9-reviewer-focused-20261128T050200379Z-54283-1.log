@@ -1,0 +1,27 @@
+
+> joycraft@1.10.2 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/text-reviewer-can-fail.test.ts tests/trial-reviewer-bench.test.ts tests/text-worker-commands.test.ts tests/payload-guard.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/text-reviewer-can-fail.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 1[2mms[22m[39m
+ [32m✓[39m tests/text-worker-commands.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 228[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12152 (cap 12256, 104 spare)
+on-demand words: 20841 (cap 21163, 322 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1357[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 360[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 348[2mms[22m[39m
+ [32m✓[39m tests/trial-reviewer-bench.test.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 3506[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-score] partly counts as missed, a control finding is false only when its reproduction fails, and the four rule lines print [33m 332[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:sl3-07-bench-bar] the cap reserves each call's budget when it starts, so calls in flight cannot overrun it [33m 732[2mms[22m[39m
+   [33m[2m✓[22m[39m reviewer benchmark (sl3-07)[2m > [22m[AC:spec-9-3] the vacuous subject is reviewed --vacuous-runs times, the rule judges the rate, and a record needs 5 reviews [33m 656[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m4 passed[39m[22m[90m (4)[39m
+[2m      Tests [22m [1m[32m50 passed[39m[22m[90m (50)[39m
+[2m   Start at [22m 21:02:28
+[2m   Duration [22m 3.71s[2m (transform 65ms, setup 0ms, collect 128ms, tests 5.09s, environment 0ms, prepare 140ms)[22m
+
+joycraft-evidence: {"wallMs":4287,"load":[3.001953125,13.01123046875],"cores":14,"loaded":false,"argv":["pnpm","test","tests/text-reviewer-can-fail.test.ts","tests/trial-reviewer-bench.test.ts","tests/text-worker-commands.test.ts","tests/payload-guard.test.ts"],"exitCode":0,"timedOut":false,"revision":"b5e02d6947ddf436a7b181779c8d0d9682f19dcf","dirty":true}

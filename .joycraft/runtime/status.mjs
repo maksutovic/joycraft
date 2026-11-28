@@ -3,7 +3,9 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { journalPath, validateOwnerAcceptance, visibleReports } from './completion.mjs';
 import { workPaths } from './config.mjs';
+import { nextCommand } from './coordinator.mjs';
 import { readFooter } from './evidence.mjs';
+import { handledBy, readLedger } from './follow-ups.mjs';
 import { reviewRoundKey } from './dispatch-start.mjs';
 import { briefDecisionRecords, isObject, localPath, nonempty, parseJson, readLocal, sha256, snapshot, specStatus, validateQueue } from './identity.mjs';
 import { decide, listWorktrees } from './worktrees.mjs';
@@ -20,6 +22,17 @@ function queuePaths(root) {
   return readdirSync(home, { withFileTypes: true })
     .filter(entry => entry.isDirectory() && existsSync(path.join(home, entry.name, queueName)))
     .map(entry => `${featuresHome}/${entry.name}/${queueName}`).sort();
+}
+
+/** Briefs under the features folder with no queue: small jobs not yet closed. Report only; they never change the exit code. */
+function openBriefs(root) {
+  const featuresHome = workPaths(root).features;
+  const home = path.join(root, featuresHome);
+  if (!existsSync(home)) return [];
+  return readdirSync(home, { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && existsSync(path.join(home, entry.name, 'brief.md')) && !existsSync(path.join(home, entry.name, queueName)))
+    .map(entry => ({ folder: `${featuresHome}/${entry.name}`, brief: `${featuresHome}/${entry.name}/brief.md` }))
+    .sort((left, right) => left.folder.localeCompare(right.folder));
 }
 
 // A legacy acceptance has no review behind it, so its decision file must still hold the owner's words.
@@ -48,13 +61,14 @@ function question(feature, spec, finding, report) {
   return { feature, specId: spec.id, class: finding.class, id: finding.id, summary: finding.summary, ...Object.fromEntries(optional.map(key => [key, finding[key]])), report };
 }
 
-/** The follow-ups of a done spec's accepted report, from the queue's acceptedReport receipt. */
-function followUps(root, feature, spec, unread) {
+/** The follow-ups of a done spec's accepted report, from the queue's acceptedReport receipt,
+ * less those follow-ups.json records as handled. */
+function followUps(root, feature, spec, unread, handled) {
   const receipt = spec.acceptedReport;
   try {
     const bytes = readLocal(root, receipt.path);
     if (sha256(bytes) !== receipt.sha256) throw new Error('changed');
-    return findingsOf(parseJson(bytes, receipt.path), 'follow-up').map(finding => question(feature, spec, finding, receipt.path));
+    return findingsOf(parseJson(bytes, receipt.path), 'follow-up').filter(finding => !handled(spec.id, finding.id)).map(finding => question(feature, spec, finding, receipt.path));
   } catch {
     unread.push({ feature, specId: spec.id, path: receipt.path, reason: 'The accepted report is missing or changed here, so its follow-ups cannot be listed.' });
     return [];
@@ -116,9 +130,10 @@ function loadLine(root, receipts) {
   return `${loaded.length} of ${footers.length} test runs started above the core count${counts.length ? ` (${list} cores)` : ''}. An overloaded machine makes slow, flaky runs that agents rerun. Cap workers per run with the runner's own flag; see setup.`;
 }
 
-/** Report every queue's specs (in paths.features), drift between queue and frontmatter, features ready to archive,
- * a feature's `load` line when its test runs started loaded, and the questions for the user: follow-ups of accepted reports and decision-needed findings of current reports. */
-export function projectStatus({ root = process.cwd(), fix = false } = {}) {
+/** Report every queue's specs (in paths.features, or only `queue` when given), drift between queue and frontmatter, features ready to archive,
+ * a feature's `load` line when its test runs started loaded, and the questions for the user: follow-ups of accepted reports that follow-ups.json
+ * does not record as handled, and decision-needed findings of current reports. */
+export function projectStatus({ root = process.cwd(), fix = false, queue: only = null } = {}) {
   const features = [];
   const drift = [];
   const fixed = [];
@@ -127,12 +142,16 @@ export function projectStatus({ root = process.cwd(), fix = false } = {}) {
   const questions = [];
   const unreadReports = [];
   const legacyDecisions = [];
-  for (const queuePath of queuePaths(root)) {
+  const named = only === null ? null : path.posix.normalize((path.isAbsolute(only) ? path.relative(root, only) : only).split(path.sep).join('/'));
+  for (const queuePath of named === null ? queuePaths(root) : [named]) {
     const folder = path.posix.dirname(path.posix.dirname(queuePath));
     let queue;
     try { queue = parseJson(readLocal(root, queuePath), queuePath); validateQueue(queue, { select: () => false }); }
     catch (error) { problems.push({ queuePath, problem: error.message }); continue; }
     const pendingJournal = existsSync(localPath(root, journalPath(queuePath), true));
+    const ledger = readLedger(root, queuePath);
+    if (ledger.problem) problems.push({ path: ledger.path, problem: ledger.problem });
+    const handled = handledBy(root, queuePath, queue, ledger.entries);
     const specs = queue.specs.map(spec => {
       const specPath = path.posix.join(path.posix.dirname(queuePath), spec.file);
       let frontmatter = null;
@@ -151,7 +170,7 @@ export function projectStatus({ root = process.cwd(), fix = false } = {}) {
           row.frontmatter = spec.status;
         } else drift.push({ feature: queue.feature, specId: spec.id, file: specPath, queue: spec.status, frontmatter, fixable, reason });
       }
-      if (spec.status === 'done' && isObject(spec.acceptedReport)) questions.push(...followUps(root, queue.feature, spec, unreadReports));
+      if (spec.status === 'done' && isObject(spec.acceptedReport)) questions.push(...followUps(root, queue.feature, spec, unreadReports, handled));
       if (spec.status === 'done' && spec.ownerAcceptance?.legacy === true && !legacyIntact(root, queuePath, spec)) {
         legacyDecisions.push({ feature: queue.feature, specId: spec.id, file: specPath, path: spec.ownerAcceptance.path, reason: 'The legacy decision file is missing or changed.' });
       }
@@ -159,20 +178,22 @@ export function projectStatus({ root = process.cwd(), fix = false } = {}) {
       return row;
     });
     const load = loadLine(root, receiptPaths(root, folder, queuePath, queue.specs));
-    features.push({ feature: queue.feature, queuePath, pendingJournal, specs, ...(load ? { load } : {}) });
+    let next = null;
+    try { next = nextCommand({ root, queuePath }); } catch { /* an unreadable lease leaves next empty */ }
+    features.push({ feature: queue.feature, queuePath, pendingJournal, specs, next, ...(load ? { load } : {}) });
     if (queue.specs.every(spec => spec.status === 'done')) readyToArchive.push({ feature: queue.feature, folder, openDecisions: openDecisions(root, folder) });
   }
-  return { features, drift, fixed, readyToArchive, worktrees: worktreeCounts(root), problems, questions, unreadReports, legacyDecisions };
+  return { features, drift, fixed, readyToArchive, worktrees: worktreeCounts(root), problems, questions, unreadReports, legacyDecisions, openBriefs: openBriefs(root) };
 }
 
 export async function main(argv = process.argv.slice(2)) {
   const flags = {};
   for (let index = 0; index < argv.length; index += 1) {
     if (argv[index] === '--fix') { flags['--fix'] = true; continue; }
-    if (argv[index] === '--root') { flags['--root'] = argv[index + 1]; index += 1; continue; }
-    throw new Error('Usage: status.mjs [--root <project>] [--fix]');
+    if (['--root', '--queue'].includes(argv[index]) && argv[index + 1] !== undefined && !argv[index + 1].startsWith('--')) { flags[argv[index]] = argv[index + 1]; index += 1; continue; }
+    throw new Error('Usage: status.mjs [--root <project>] [--queue <queue-path>] [--fix]');
   }
-  const result = projectStatus({ root: path.resolve(flags['--root'] ?? '.'), fix: flags['--fix'] === true });
+  const result = projectStatus({ root: path.resolve(flags['--root'] ?? '.'), fix: flags['--fix'] === true, queue: flags['--queue'] ?? null });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (result.drift.length || result.problems.length || result.legacyDecisions.length) process.exitCode = 2;
   return result;

@@ -9,13 +9,13 @@ compatibility: Requires Node.js 22+ and the installed .joycraft runtime for the 
 Start with the clean-tree check: run `git status --porcelain`. When it prints
 anything, the tree holds the user's work: report what the steps below find, fix
 nothing, commit nothing of the user's and push nothing. Run each step in its
-read-only form only: `status.mjs` without `--fix`, `cleanup.mjs tidy` to report,
+read-only form: `status.mjs` without `--fix`, `cleanup.mjs tidy` to report,
 the prune preview without `--apply`, the archive preview without `--apply`.
 Gate messages, cleanup fixes and the lease release also wait.
 
-The steps run in this order: records and their commit, one tidy commit,
-worktree prune, archive last with its commit, then one push that opens the PR.
-That one push can carry up to three commits.
+When every spec of the queue is done, run `node .joycraft/runtime/close.mjs --feature <slug> --session <id> --context <pages>`
+and act on what it prints. Use the steps below only when it refuses or the queue
+is not finished.
 
 Read each touched queue and report the real state of every affected spec: `todo`, `in-review`, or `done`. `done` must have either an accepted PASS report receipt or a completion-helper owner-acceptance record bound to a current failed or unverified report; a commit, PASS command, or implementer assertion is not acceptance. Keep blocked or failed dependency branches explicit while identifying independent ready work that can continue next.
 
@@ -29,22 +29,22 @@ For each completed spec, report the implementation revision, independent reviewe
 
 If a completion operation failed or was interrupted, do not declare success or hand-edit statuses. Keep the helper's error and journal, then follow the recovery in [completion guidance](../../../.joycraft/references/completion.md).
 
-Leave the paths and next actions another session needs to resume the ready queue without redoing settled context or decisions.
+Leave the paths and next actions another session needs to resume the queue without redoing settled decisions.
 
 ## Records
 
-Run `node .joycraft/runtime/status.mjs --fix` (repairs lagging frontmatter of
-accepted specs, lists features ready to archive) and
-`node .joycraft/runtime/gate.mjs check`. Do the step each gate message names,
-such as a completing command. Tell the user each message you could not clear.
-Ask the user each status `questions` entry (findings rule: `$joycraft-verify`).
-Write each answer where it lasts: a decision in the decision log; a requested
-change in a new spec or the held spec. Never archive a feature whose question
-the user asked to wait.
+Run `node .joycraft/runtime/status.mjs --fix` (repairs accepted specs' lagging
+frontmatter, lists features ready to archive) and
+`node .joycraft/runtime/gate.mjs check`. Do each gate message's step; tell
+the user any you could not clear. Ask the user only the status
+`questions` entries (findings rule: `$joycraft-verify`). Record each answer with
+`node .joycraft/runtime/follow-ups.mjs`: a decision in the brief, then
+`--decided`; a requested change in a new spec or the held spec, then
+`--fixed` once done; a "no" as `--dismissed` with the user's words. Never
+archive a feature whose question the user asked to wait.
 
-When an `UNVERIFIED` review identifies only an environment condition, record
-that condition and arrange a fresh review after it is corrected. Do not create
-an unchanged-code fix round.
+When an `UNVERIFIED` review names only an environment condition, record it and
+arrange a fresh review once it is fixed; make no unchanged-code fix round.
 
 Route each reusable fact the session established (a decision, a trap, a reference, a production fact) to its one home, as [knowledge guidance](../../../.joycraft/references/knowledge.md) says. Leave feature intent in the brief.
 

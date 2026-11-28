@@ -1,7 +1,7 @@
 {
-  "textSha256": "4a6295b37aedafed10a80e9eae74a4a6f21c286da0ee6170548d18c3b11d5872",
+  "textSha256": "88b2e3be829cf4fa82e561aa3e721ee464b8088bc41e7e171d64851622cc650f",
   "effort": "medium",
-  "date": "2026-11-23",
+  "date": "2026-11-28",
   "replay": {
     "caught": 5,
     "of": 18
@@ -11,6 +11,10 @@
     "of": 8
   },
   "controlsFalse": 0,
+  "vacuous": {
+    "found": 4,
+    "of": 5
+  },
   "vacuousFound": true,
   "verdict": "PASS"
 }

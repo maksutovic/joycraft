@@ -11,6 +11,9 @@ const results = new Set(['PASS', 'FAIL', 'UNVERIFIED']);
 const text = value => typeof value === 'string' && value.trim().length > 0;
 const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 const texts = value => Array.isArray(value) && value.every(text);
+// An argv as `run` emits it: a nonempty string array whose first word is not blank. Later words may be empty.
+const commandArgv = value => Array.isArray(value) && value.length > 0
+  && value.every(word => typeof word === 'string') && text(value[0]);
 const hash = value => typeof value === 'string' && /^[a-f0-9]{64}$/i.test(value);
 const relativePath = value => text(value) && !/[\\\0]/.test(value)
   && !value.startsWith('/') && !/^[a-z]:/i.test(value)
@@ -103,7 +106,7 @@ export function validateEvidence(report, criteria) {
         fail(`${at}: a source scan supports structural claims only`);
       }
       if (!Array.isArray(observation.receipts) || observation.receipts.length === 0) {
-        fail(`${at} needs supporting receipt references`);
+        fail(`${at} needs supporting receipt references: add "receipts": [{ "path": "<project-relative receipt path>", "sha256": "<its SHA-256>" }] for the receipt that evidence.mjs run --receipt wrote for this check`);
       } else {
         observation.receipts.forEach((receipt, receiptIndex) => {
           if (!record(receipt) || !relativePath(receipt.path) || !hash(receipt.sha256)) {
@@ -114,7 +117,7 @@ export function validateEvidence(report, criteria) {
       if (observation.method === 'test' || observation.method === 'command'
         || observation.command !== undefined) {
         const command = observation.command;
-        if (!record(command) || !texts(command.argv) || command.argv.length === 0) {
+        if (!record(command) || !commandArgv(command.argv)) {
           fail(`${at} needs the executed command argv`);
         }
         if (!record(command) || !Number.isInteger(command.exitCode) || command.exitCode !== 0) {
@@ -375,7 +378,7 @@ function readEnvMap(root) {
  * Every refusal happens before the child starts and carries exitCode 2.
  */
 export async function runEvidence({ root = process.cwd(), receipt, timeoutMs = defaultTimeoutMs, argv, patch }) {
-  refuse(Array.isArray(argv) && argv.length > 0 && argv.every(value => typeof value === 'string') && argv[0] !== '', `A command is needed after --. ${usage}`);
+  refuse(commandArgv(argv), `A command is needed after --. ${usage}`);
   refuse(Number.isSafeInteger(timeoutMs) && timeoutMs > 0 && timeoutMs <= 2 ** 31 - 1, `--timeout-ms must be a whole number of milliseconds from 1 to ${2 ** 31 - 1}`);
   const envMap = readEnvMap(root);
   const applied = envMap && Object.keys(envMap);

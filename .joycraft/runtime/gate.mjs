@@ -50,6 +50,9 @@ export function checkGates(root = process.cwd()) {
         continue;
       }
       failures.push({ kind: 'queue', queuePath: problem.queuePath, message: repair(problem.queuePath, problem.problem) });
+    } else if (problem.specPath === undefined && problem.path !== undefined) {
+      // A feature file such as follow-ups.json, keyed by its path.
+      failures.push({ kind: 'file', file: problem.path, message: repair(problem.path, problem.problem) });
     } else {
       failures.push({ kind: 'spec', file: problem.specPath, message: repair(problem.specPath, problem.problem) });
     }

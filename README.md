@@ -271,7 +271,9 @@ changed.
 You can start a queue and leave. The agent asks its questions before the queue
 starts. Work stops only for an answer that must come from you or for a broken
 project. A broken tool that the agent cannot repair holds its spec, not the queue.
-Other open points wait for you as a list of follow-up questions at session end.
+After each review, the agent fixes each follow-up that is inside your brief's
+intent with a new spec in the same queue, without asking. Only a follow-up that
+changes scope or has no safe default waits for you as a question at session end.
 You do not run a command at any step.
 
 **Before the queue starts.** The agent checks each spec for gaps that a program can
@@ -301,8 +303,9 @@ Specs that do not depend on it go on.
 
 **When you come back.** A case that the spec does not decide does not stop the
 queue. The reviewer takes the reading closest to your brief and writes down that
-assumption, and the spec can complete. At session end, the agent asks you each
-follow-up question with its spec. For a case the spec did not decide, the question
+assumption, and the spec can complete. A follow-up that the agent fixed, decided
+or dismissed is recorded in the feature's `follow-ups.json` and is not asked again.
+At session end, the agent asks you each follow-up question that is left, with its spec. For a case the spec did not decide, the question
 gives the assumption the reviewer made. The agent also asks each mandatory question
 that holds a spec. A spec that a broken tool, a refused fourth review or a second
 FAIL holds is not in this list of questions. Session end reports it with its

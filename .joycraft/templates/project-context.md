@@ -18,6 +18,13 @@ Who uses it, what they are trying to do, and who else has a stake.
 The first result that counts as done. The first brief owns its "Done when";
 link it here.
 
+## How it works
+
+In 5 to 12 lines: the main code paths, the purpose of each, and the data
+sources. End with one line:
+
+Run and look: the command that starts the result, and where to look at it.
+
 ## Non-goals
 
 What this project will not do, as the user stated it.

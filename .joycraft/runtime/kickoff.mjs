@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { appendFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -35,6 +36,17 @@ export function detectBare(root) {
     && !file.startsWith('docs/') && !/^(README|LICENSE|AGENTS\.md$|CLAUDE\.md$|GEMINI\.md$)/i.test(file));
   return { bare: source.length === 0, source: source.slice(0, 5) };
 }
+
+/** Git as setup settles it: `git` is true inside a Git work tree, `commit` when HEAD names a commit.
+ * Submit and the small-job close need both, so setup asks once and the runtime refuses early. */
+export function gitState(root) {
+  const ok = args => { try { execFileSync('git', args, { cwd: root, stdio: 'ignore' }); return true; } catch { return false; } };
+  const git = ok(['rev-parse', '--is-inside-work-tree']);
+  return { git, commit: git && ok(['rev-parse', '--verify', '--quiet', 'HEAD^{commit}']) };
+}
+
+/** The plain refusal when a step needs a commit and the folder has none. */
+export const noGitCommit = verb => `this folder is not a Git repository with a commit. Run git init, commit, then ${verb} again.`;
 
 /** Offer automatically only on a bare project; an explicit request works anywhere. */
 export function shouldOffer(root, { requested = false } = {}) {
@@ -151,7 +163,7 @@ export async function main(argv = process.argv.slice(2)) {
   const root = path.resolve(flags['--root'] ?? '.');
   requireDir(root);
   let result;
-  if (command === 'detect') result = { ...detectBare(root), offer: shouldOffer(root, { requested: flags['--requested'] === true }) };
+  if (command === 'detect') result = { ...detectBare(root), git: gitState(root).git, offer: shouldOffer(root, { requested: flags['--requested'] === true }) };
   else if (command === 'start') { startKickoff(root); result = { started: true, notes: notesPath }; }
   else if (command === 'note') { appendNote(root, readFileSync(0, 'utf8')); result = { appended: notesPath }; }
   else if (command === 'round') result = nextRound(root, { answered: (flags['--answered'] ?? '').split(',').filter(Boolean), enough: flags['--enough'] === true });

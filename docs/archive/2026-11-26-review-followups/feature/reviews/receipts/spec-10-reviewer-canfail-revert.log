@@ -1,0 +1,68 @@
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev10[39m
+
+ [31m❯[39m tests/runtime-dispatch-commands.test.ts [2m([22m[2m31 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m30 skipped[39m[2m)[22m[33m 584[2mms[22m[39m
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[AC:spec-5-1] implementer and reviewer startup print the focused command built from the check inputs
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[AC:spec-5-2] each step is one plain command with literal paths
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[AC:spec-5-3] without tests.focused or without check inputs, focused is null with a note and startup succeeds
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[review-5-1] printed commands run as printed through /bin/sh with a space in the worker root or a check path
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[review-5-2] {files} inside a word is replaced in place and quoted template arguments stay whole
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[review-5-3] two startups in the same second print different receipt paths
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[review-5-4] reviewer receipts go to reviews/receipts and implementer receipts to receipts
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[AC:spec-29-1] a check path holding the literal {files} is never expanded again
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[AC:spec-29-2] an unclosed quote in tests.focused gives focused null with a note, and startup exits 0
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[AC:spec-29-3] a focused command with shell syntax runs as sh -c under evidence
+   [2m[90m↓[39m[22m task startup commands[2m > [22m[AC:spec-4-1] --help prints the ready-to-run startup with placeholders and exits 0
+   [2m[90m↓[39m[22m no Git: early plain refusal (sl1-03)[2m > [22m[AC:sl1-03-submit] submit exits 1 with the plain message and leaves the spec todo
+   [2m[90m↓[39m[22m no Git: early plain refusal (sl1-03)[2m > [22m[AC:sl1-03-submit] a repository with no commit gets the same refusal
+   [2m[90m↓[39m[22m no Git: early plain refusal (sl1-03)[2m > [22m[AC:sl1-03-start] task startup with no Git says the same instead of the ignore message
+   [2m[90m↓[39m[22m packet readFirst (sl1-05)[2m > [22m[AC:sl1-05-readfirst] each packet lists AGENTS.md and the role skill only, with no runtime .mjs
+   [2m[90m↓[39m[22m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-defaults] on a claimed queue, queue, spec, role and coordinator session are enough for both roles
+[31m   [31m×[31m startup flag defaults (sl2-06a)[2m > [22m[AC:spec-10-1] in a linked worktree whose main checkout has no install, startup pins this tree's manifest[39m[33m 584[2mms[22m[39m
+[31m     → Task startup stopped: ENOENT: no such file or directory, open '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-dispatch-commands-Exs9fK/.joycraft/installation.json'
+: expected 1 to be +0 // Object.is equality[39m
+   [2m[90m↓[39m[22m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-one-refusal] one refusal lists every missing flag
+   [2m[90m↓[39m[22m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-explicit-wins] explicit flags win, and --coordinator-session stays explicit
+   [2m[90m↓[39m[22m startup flag defaults (sl2-06a)[2m > [22m[AC:sl2-06a-help] --help names each default and says the capabilities default is a claim
+   [2m[90m↓[39m[22m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-check] check-report skips only the child-ID check in agent-at-finish mode
+   [2m[90m↓[39m[22m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-finish] finalize-review writes the launch-result ID into the report, then checks and hashes it
+   [2m[90m↓[39m[22m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-distinct] the distinct-actor check stays: the implementer's own ID or a different recorded ID is refused
+   [2m[90m↓[39m[22m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-unchanged] a refused finalize leaves the report bytes unchanged, and the correct ID is accepted afterwards
+   [2m[90m↓[39m[22m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-owner] a FAIL report from the agent-at-finish flow takes its ID with bind-reviewer, then accept-owner accepts it
+   [2m[90m↓[39m[22m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-waiver] an UNVERIFIED tool-break report from the agent-at-finish flow takes its ID with bind-reviewer, then accept-waiver --report accepts it
+   [2m[90m↓[39m[22m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-no-actor] a same-session report with no actor records fails agent-at-finish check-report and says what to write
+   [2m[90m↓[39m[22m reviewer agent ID bound at finish (sl2-06c)[2m > [22m[AC:sl2-06c-commands] a same-session reviewer with no agent ID gets check-report in agent-at-finish mode and no finalize step
+   [2m[90m↓[39m[22m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-base] a first claim records HEAD as baseRevision; a renewal and a take-over keep it
+   [2m[90m↓[39m[22m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-next] claim, implementer startup, submit and finalize-review each print a next command that runs unchanged
+   [2m[90m↓[39m[22m the runtime prints the next command (sl3-04)[2m > [22m[AC:sl3-04-changed] submit lists a changed file the inputs do not name and exits 0; reviewer startup notes it as scope
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m tests/runtime-dispatch-commands.test.ts[2m > [22mstartup flag defaults (sl2-06a)[2m > [22m[AC:spec-10-1] in a linked worktree whose main checkout has no install, startup pins this tree's manifest
+[31m[1mAssertionError[22m: Task startup stopped: ENOENT: no such file or directory, open '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-dispatch-commands-Exs9fK/.joycraft/installation.json'
+: expected 1 to be +0 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 1[39m
+
+[36m [2m❯[22m tests/runtime-dispatch-commands.test.ts:[2m312:52[22m[39m
+    [90m310| [39m    [34mclaimQueue[39m(linkedRoot[33m,[39m [32m'lead-linked'[39m)[33m;[39m
+    [90m311| [39m    const implementer = runStart(linkedRoot, ['--queue', queuePath, '-…
+    [90m312| [39m    [34mexpect[39m(implementer[33m.[39mstatus[33m,[39m implementer[33m.[39mstderr)[33m.[39m[34mtoBe[39m([34m0[39m)[33m;[39m
+    [90m   | [39m                                                   [31m^[39m
+    [90m313| [39m    [34mexpect[39m(implementer[33m.[39moutput[33m.[39mready)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m314| [39m    const { startupDefaults } = await import(pathToFileURL(join(linked…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m30 skipped[39m[90m (31)[39m
+[2m   Start at [22m 19:16:57
+[2m   Duration [22m 792ms[2m (transform 46ms, setup 0ms, collect 52ms, tests 584ms, environment 0ms, prepare 43ms)[22m
+
+joycraft-evidence: {"wallMs":1186,"load":[5.34033203125,5.34033203125],"cores":14,"loaded":false,"argv":["sh","-c","cd /private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/rev10 && npx vitest run tests/runtime-dispatch-commands.test.ts -t spec-10-1"],"exitCode":1,"timedOut":false,"revision":"31e471f76899ba973d77a01f363d94c338ba0404","dirty":true}

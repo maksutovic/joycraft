@@ -1,0 +1,27 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/text-follow-up-triage.test.ts tests/text-wave-gate.test.ts tests/payload-guard.test.ts tests/text-worker-commands.test.ts tests/text-owner-gate-lines.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/text-worker-commands.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 272[2mms[22m[39m
+ [32m✓[39m tests/text-owner-gate-lines.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 310[2mms[22m[39m
+   [33m[2m✓[22m[39m owner gate lines[2m > [22m[AC:spec-16-2] [AC:spec-28-3] setup and update show the entry-check gate-rule finding once and records the answer; cleanup.md names the check [33m 308[2mms[22m[39m
+ [32m✓[39m tests/text-wave-gate.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 468[2mms[22m[39m
+ [32m✓[39m tests/text-follow-up-triage.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 1114[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-up triage[2m > [22m[AC:spec-5-2] a fix spec appended after spec 1 is done leaves its accepted report valid and passes queue-check [33m 1112[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12179 (cap 12256, 77 spare)
+on-demand words: 20841 (cap 21163, 322 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1546[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 400[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 396[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m5 passed[39m[22m[90m (5)[39m
+[2m      Tests [22m [1m[32m52 passed[39m[22m[90m (52)[39m
+[2m   Start at [22m 09:32:42
+[2m   Duration [22m 1.75s[2m (transform 160ms, setup 0ms, collect 187ms, tests 3.71s, environment 0ms, prepare 252ms)[22m
+
+joycraft-evidence: {"wallMs":2421,"load":[37.169921875,37.169921875],"cores":14,"loaded":true,"argv":["pnpm","test","tests/text-follow-up-triage.test.ts","tests/text-wave-gate.test.ts","tests/payload-guard.test.ts","tests/text-worker-commands.test.ts","tests/text-owner-gate-lines.test.ts"],"exitCode":0,"timedOut":false,"revision":"2286138bd40887fb092ed3ce5d4693841ef034da","dirty":false}

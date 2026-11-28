@@ -1,0 +1,273 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 71f14c3..b6bb679 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -7,6 +7,40 @@ claim that a release has shipped.
+ 
+ ---
+ 
++## 1.10.2 — Review follow-ups that are handled stop being questions
++
++Field use of 1.10.0 showed reviewers filing checks that passed, other specs' files
++and archived test tags as follow-ups, and status asking about each one with no way
++to answer it, so a feature could not close.
++
++### Fixed
++
++- **A `note` class for findings that need no work.** A reviewer files a passed
++  check, another spec's file, an archived feature's tag, a "Deferred until deploy"
++  item or log noise as a `note`. A note never blocks completion, and status never
++  asks about it.
++- **Reviewers are not shown other work as their own.** Reviewer startup lists
++  changed files of sibling specs as `siblings` and tags from archived features as
++  `archivedTags`; reviewers do not file them. A tag that names a criterion of the
++  current queue is never an archived tag.
++- **Handled follow-ups are recorded.** Each feature may hold `follow-ups.json`, and
++  `follow-ups.mjs` records a follow-up as fixed (by a spec), decided (by a brief
++  decision) or dismissed (with a reason). Status and `close.mjs --feature` stop
++  asking about handled follow-ups, and a malformed `follow-ups.json` fails the gate.
++- **The implement skill triages follow-ups after each review wave.** A defect gets
++  a fix spec in the same queue without a question, a scope change becomes a brief
++  decision, and the rest are dismissed. The skill again states the `isolated` mode
++  and owner-acceptance rules that an earlier trim weakened.
++- **The `AGENTS.md` size budget counts only the project's own text.** Joycraft's
++  managed block and review-loop section are not counted. The check stays advisory.
++
++### Update notes
++
++- **Leftover 1.10.0 follow-ups can be dismissed.** A feature that cannot close
++  because of noise follow-ups closes after you record each one with
++  `follow-ups.mjs --dismissed <reason>`; the records go in the feature's
++  `follow-ups.json`. New reviews file such findings as `note`.
++
+ ## 1.10.1 — The AGENTS.md block names no fixed doc pages
+ 
+ A field report against 1.10.0 showed a project guard, which checks that every page
+diff --git a/payload/.joycraft/runtime/close.mjs b/payload/.joycraft/runtime/close.mjs
+index 9e52cbe..0458882 100644
+--- a/payload/.joycraft/runtime/close.mjs
++++ b/payload/.joycraft/runtime/close.mjs
+@@ -297,7 +297,10 @@ function featureProblems(root, options, paths, git) {
+   const repairs = new Set(status.drift.filter(item => item.fixable).map(item => item.file));
+   for (const failure of checkGates(root).failures) if (!(failure.kind === 'drift' && repairs.has(failure.file))) found.push(failure.message);
+   for (const item of status.questions) {
+-    found.push(`Status question on spec ${item.specId} (${item.class} ${item.id}): ${item.summary} Ask the user, then follow the session-end steps.`);
++    const answer = item.class === 'follow-up'
++      ? `Ask the user, then record the answer with node .joycraft/runtime/follow-ups.mjs --queue ${queuePath} --spec ${item.specId} --finding ${item.id} --fixed <spec> | --decided <decision> | --dismissed <reason>.`
++      : 'Ask the user, then follow the session-end steps.';
++    found.push(`Status question on spec ${item.specId} (${item.class} ${item.id}): ${item.summary} ${answer}`);
+   }
+   try {
+     const lease = readLease(root, queue.feature);
+diff --git a/payload/.joycraft/runtime/follow-ups.mjs b/payload/.joycraft/runtime/follow-ups.mjs
+new file mode 100644
+index 0000000..1771dab
+--- /dev/null
++++ b/payload/.joycraft/runtime/follow-ups.mjs
+@@ -0,0 +1,132 @@
++import { existsSync, mkdirSync, renameSync, writeFileSync } from 'node:fs';
++import path from 'node:path';
++import { pathToFileURL } from 'node:url';
++import { briefDecisionRecords, isObject, localPath, nonempty, parseJson, readLocal, sha256 } from './identity.mjs';
++
++// A feature's follow-ups.json records how each follow-up of an accepted report
++// was handled: fixed by a spec of the same queue, decided by a brief decision,
++// or dismissed with a reason. Reports never change; status reads this file and
++// stops asking about a handled follow-up.
++export const ledgerName = 'follow-ups.json';
++const outcomes = ['fixed', 'decided', 'dismissed'];
++const refusal = message => Object.assign(new Error(message), { refusal: true });
++
++/** The feature folder of a queue at <folder>/specs/.joycraft-spec-queue.json. */
++export const featureFolderOf = queuePath => path.posix.dirname(path.posix.dirname(queuePath));
++export const ledgerPathOf = queuePath => `${featureFolderOf(queuePath)}/${ledgerName}`;
++
++function validEntry(entry) {
++  if (!isObject(entry) || !['string', 'number'].includes(typeof entry.spec) || !nonempty(entry.finding) || !outcomes.includes(entry.outcome)) return false;
++  if (entry.outcome === 'dismissed') return typeof entry.reason === 'string';
++  return ['string', 'number'].includes(typeof entry.by) && String(entry.by).trim() !== '';
++}
++
++/** The ledger of a queue's feature: { path, entries } (entries empty when the file is absent), or { path, entries: [], problem } when malformed. */
++export function readLedger(root, queuePath) {
++  const file = ledgerPathOf(queuePath);
++  if (!existsSync(localPath(root, file, true))) return { path: file, entries: [] };
++  try {
++    const ledger = parseJson(readLocal(root, file), file);
++    if (!isObject(ledger) || ledger.schemaVersion !== 1 || !Array.isArray(ledger.entries)) throw new Error(`${file} needs { "schemaVersion": 1, "entries": [...] }`);
++    const bad = ledger.entries.findIndex(entry => !validEntry(entry));
++    if (bad !== -1) throw new Error(`${file} entries[${bad}] needs spec, finding, an outcome of ${outcomes.join(', ')}, and by (or reason when dismissed)`);
++    return { path: file, entries: ledger.entries };
++  } catch (error) {
++    return { path: file, entries: [], problem: `${error.message}. Every follow-up stays a question until it is fixed.` };
++  }
++}
++
++function briefDecisions(root, queuePath) {
++  const brief = `${featureFolderOf(queuePath)}/brief.md`;
++  try { return existsSync(localPath(root, brief, true)) ? briefDecisionRecords(readLocal(root, brief), brief).filter(isObject) : []; }
++  catch { return []; }
++}
++
++/** A predicate: is this spec's finding handled? Fixed needs a done spec, decided an answered
++ * (not open or assigned) brief decision, dismissed a nonempty reason. */
++export function handledBy(root, queuePath, queue, entries) {
++  if (!entries.length) return () => false;
++  const decisions = briefDecisions(root, queuePath);
++  const ok = entry => {
++    if (entry.outcome === 'dismissed') return nonempty(entry.reason);
++    if (entry.outcome === 'fixed') return queue.specs.some(spec => String(spec.id) === String(entry.by) && spec.status === 'done');
++    const decision = decisions.find(record => record.id === entry.by);
++    return Boolean(decision) && nonempty(decision.status) && !['open', 'assigned'].includes(decision.status);
++  };
++  const latest = new Map(entries.map(entry => [`${entry.spec}\u0000${entry.finding}`, entry]));
++  return (specId, findingId) => {
++    const entry = latest.get(`${specId}\u0000${findingId}`);
++    return Boolean(entry) && ok(entry);
++  };
++}
++
++/** The follow-up findings of a done spec's accepted report. */
++function acceptedFollowUps(root, spec) {
++  if (spec.status !== 'done' || !isObject(spec.acceptedReport)) throw refusal(`Spec ${spec.id} has no accepted report; only follow-ups of an accepted report are recorded here.`);
++  const receipt = spec.acceptedReport;
++  const bytes = readLocal(root, receipt.path);
++  if (sha256(bytes) !== receipt.sha256) throw refusal(`The accepted report of spec ${spec.id} (${receipt.path}) changed; nothing was recorded.`);
++  const report = parseJson(bytes, receipt.path);
++  return (Array.isArray(report?.findings) ? report.findings : []).filter(finding => isObject(finding) && finding.class === 'follow-up');
++}
++
++/** Add (or replace) one entry. Returns the entry written. */
++export function recordFollowUp({ root = process.cwd(), queuePath, spec: specId, finding, fixed, decided, dismissed }) {
++  const given = [['fixed', fixed], ['decided', decided], ['dismissed', dismissed]].filter(([, value]) => value !== undefined);
++  if (given.length !== 1) throw refusal('Give exactly one of --fixed <spec>, --decided <decision> or --dismissed <reason>.');
++  if (!nonempty(queuePath) || !nonempty(String(specId ?? '')) || !nonempty(finding)) throw refusal('Give --queue, --spec and --finding.');
++  const queue = parseJson(readLocal(root, queuePath), queuePath);
++  if (!isObject(queue) || !Array.isArray(queue.specs)) throw refusal(`${queuePath} has no specs list.`);
++  const spec = queue.specs.find(item => String(item.id) === String(specId));
++  if (!spec) throw refusal(`Spec ${specId} is not in ${queuePath}.`);
++  const findings = acceptedFollowUps(root, spec);
++  if (!findings.some(item => item.id === finding)) throw refusal(`The accepted report of spec ${spec.id} has no follow-up ${finding}.`);
++  const [outcome, value] = given[0];
++  const entry = { spec: spec.id, finding, outcome };
++  if (outcome === 'fixed') {
++    const by = queue.specs.find(item => String(item.id) === String(value));
++    if (!by) throw refusal(`--fixed ${value}: no spec ${value} in ${queuePath}.`);
++    entry.by = by.id;
++  } else if (outcome === 'decided') {
++    if (!briefDecisions(root, queuePath).some(record => record.id === value)) throw refusal(`--decided ${value}: the brief has no decision ${value}.`);
++    entry.by = value;
++  } else {
++    if (!nonempty(value)) throw refusal('--dismissed needs a nonempty reason.');
++    entry.reason = value.trim();
++  }
++  const current = readLedger(root, queuePath);
++  if (current.problem) throw refusal(current.problem);
++  const entries = [...current.entries.filter(item => !(String(item.spec) === String(entry.spec) && item.finding === entry.finding)), entry];
++  const target = localPath(root, current.path, true);
++  mkdirSync(path.dirname(target), { recursive: true });
++  const temporary = `${target}.${process.pid}.tmp`;
++  writeFileSync(temporary, `${JSON.stringify({ schemaVersion: 1, entries }, null, 2)}\n`);
++  renameSync(temporary, target);
++  return { path: current.path, entry };
++}
++
++const usage = 'Usage: follow-ups.mjs --queue <queue> --spec <id> --finding <id> (--fixed <spec> | --decided <decision> | --dismissed <reason>) [--root <project>]';
++
++export function main(argv = process.argv.slice(2)) {
++  const flags = {};
++  for (let index = 0; index < argv.length; index += 2) {
++    const name = argv[index];
++    if (!['--queue', '--spec', '--finding', '--fixed', '--decided', '--dismissed', '--root'].includes(name) || argv[index + 1] === undefined) {
++      process.stderr.write(`${usage}\n`); process.exitCode = 2; return null;
++    }
++    if (flags[name] !== undefined) { process.stderr.write(`${name} is given twice. ${usage}\n`); process.exitCode = 2; return null; }
++    flags[name] = argv[index + 1];
++  }
++  try {
++    const result = recordFollowUp({ root: path.resolve(flags['--root'] ?? '.'), queuePath: flags['--queue'], spec: flags['--spec'], finding: flags['--finding'],
++      fixed: flags['--fixed'], decided: flags['--decided'], dismissed: flags['--dismissed'] });
++    process.stdout.write(`${JSON.stringify(result)}\n`);
++    return result;
++  } catch (error) {
++    process.stderr.write(`Follow-up not recorded: ${error.message}\n`);
++    process.exitCode = error.refusal ? 2 : 1;
++    return null;
++  }
++}
++
++if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) main();
+diff --git a/payload/.joycraft/runtime/gate.mjs b/payload/.joycraft/runtime/gate.mjs
+index 40dbfde..7fb3b68 100644
+--- a/payload/.joycraft/runtime/gate.mjs
++++ b/payload/.joycraft/runtime/gate.mjs
+@@ -50,6 +50,9 @@ export function checkGates(root = process.cwd()) {
+         continue;
+       }
+       failures.push({ kind: 'queue', queuePath: problem.queuePath, message: repair(problem.queuePath, problem.problem) });
++    } else if (problem.specPath === undefined && problem.path !== undefined) {
++      // A feature file such as follow-ups.json, keyed by its path.
++      failures.push({ kind: 'file', file: problem.path, message: repair(problem.path, problem.problem) });
+     } else {
+       failures.push({ kind: 'spec', file: problem.specPath, message: repair(problem.specPath, problem.problem) });
+     }
+diff --git a/payload/.joycraft/runtime/status.mjs b/payload/.joycraft/runtime/status.mjs
+index f898708..9ba9e01 100644
+--- a/payload/.joycraft/runtime/status.mjs
++++ b/payload/.joycraft/runtime/status.mjs
+@@ -5,6 +5,7 @@ import { journalPath, validateOwnerAcceptance, visibleReports } from './completi
+ import { workPaths } from './config.mjs';
+ import { nextCommand } from './coordinator.mjs';
+ import { readFooter } from './evidence.mjs';
++import { handledBy, readLedger } from './follow-ups.mjs';
+ import { reviewRoundKey } from './dispatch-start.mjs';
+ import { briefDecisionRecords, isObject, localPath, nonempty, parseJson, readLocal, sha256, snapshot, specStatus, validateQueue } from './identity.mjs';
+ import { decide, listWorktrees } from './worktrees.mjs';
+@@ -60,13 +61,14 @@ function question(feature, spec, finding, report) {
+   return { feature, specId: spec.id, class: finding.class, id: finding.id, summary: finding.summary, ...Object.fromEntries(optional.map(key => [key, finding[key]])), report };
+ }
+ 
+-/** The follow-ups of a done spec's accepted report, from the queue's acceptedReport receipt. */
+-function followUps(root, feature, spec, unread) {
++/** The follow-ups of a done spec's accepted report, from the queue's acceptedReport receipt,
++ * less those follow-ups.json records as handled. */
++function followUps(root, feature, spec, unread, handled) {
+   const receipt = spec.acceptedReport;
+   try {
+     const bytes = readLocal(root, receipt.path);
+     if (sha256(bytes) !== receipt.sha256) throw new Error('changed');
+-    return findingsOf(parseJson(bytes, receipt.path), 'follow-up').map(finding => question(feature, spec, finding, receipt.path));
++    return findingsOf(parseJson(bytes, receipt.path), 'follow-up').filter(finding => !handled(spec.id, finding.id)).map(finding => question(feature, spec, finding, receipt.path));
+   } catch {
+     unread.push({ feature, specId: spec.id, path: receipt.path, reason: 'The accepted report is missing or changed here, so its follow-ups cannot be listed.' });
+     return [];
+@@ -129,7 +131,8 @@ function loadLine(root, receipts) {
+ }
+ 
+ /** Report every queue's specs (in paths.features, or only `queue` when given), drift between queue and frontmatter, features ready to archive,
+- * a feature's `load` line when its test runs started loaded, and the questions for the user: follow-ups of accepted reports and decision-needed findings of current reports. */
++ * a feature's `load` line when its test runs started loaded, and the questions for the user: follow-ups of accepted reports that follow-ups.json
++ * does not record as handled, and decision-needed findings of current reports. */
+ export function projectStatus({ root = process.cwd(), fix = false, queue: only = null } = {}) {
+   const features = [];
+   const drift = [];
+@@ -146,6 +149,9 @@ export function projectStatus({ root = process.cwd(), fix = false, queue: only =
+     try { queue = parseJson(readLocal(root, queuePath), queuePath); validateQueue(queue, { select: () => false }); }
+     catch (error) { problems.push({ queuePath, problem: error.message }); continue; }
+     const pendingJournal = existsSync(localPath(root, journalPath(queuePath), true));
++    const ledger = readLedger(root, queuePath);
++    if (ledger.problem) problems.push({ path: ledger.path, problem: ledger.problem });
++    const handled = handledBy(root, queuePath, queue, ledger.entries);
+     const specs = queue.specs.map(spec => {
+       const specPath = path.posix.join(path.posix.dirname(queuePath), spec.file);
+       let frontmatter = null;
+@@ -164,7 +170,7 @@ export function projectStatus({ root = process.cwd(), fix = false, queue: only =
+           row.frontmatter = spec.status;
+         } else drift.push({ feature: queue.feature, specId: spec.id, file: specPath, queue: spec.status, frontmatter, fixable, reason });
+       }
+-      if (spec.status === 'done' && isObject(spec.acceptedReport)) questions.push(...followUps(root, queue.feature, spec, unreadReports));
++      if (spec.status === 'done' && isObject(spec.acceptedReport)) questions.push(...followUps(root, queue.feature, spec, unreadReports, handled));
+       if (spec.status === 'done' && spec.ownerAcceptance?.legacy === true && !legacyIntact(root, queuePath, spec)) {
+         legacyDecisions.push({ feature: queue.feature, specId: spec.id, file: specPath, path: spec.ownerAcceptance.path, reason: 'The legacy decision file is missing or changed.' });
+       }
+joycraft-evidence: {"wallMs":28,"load":[7.27783203125,7.27783203125],"cores":14,"loaded":false,"argv":["git","diff","f4c4f48","--","CHANGELOG.md","payload/.joycraft/runtime/gate.mjs","payload/.joycraft/runtime/status.mjs","payload/.joycraft/runtime/follow-ups.mjs","payload/.joycraft/runtime/close.mjs"],"exitCode":0,"timedOut":false,"revision":"5fba769d0987fb8c592e6ab3f9e3dec5e22f47da","dirty":true}

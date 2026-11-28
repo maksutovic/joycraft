@@ -1,0 +1,43 @@
+
+> joycraft@1.10.2 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/package-acceptance.test.ts tests/runtime-archive-named-files.test.ts tests/runtime-report-gate.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "only-built-dependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "only-built-dependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+ [32m✓[39m tests/package-acceptance.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 6533[2mms[22m[39m
+   [33m[2m✓[22m[39m package compatibility contract[2m > [22mruns the real retained package CLI in isolated consumers and writes a complete report [33m 4544[2mms[22m[39m
+   [33m[2m✓[22m[39m package compatibility contract[2m > [22mreports every row failed when an installed packaged executable is a no-op [33m 961[2mms[22m[39m
+   [33m[2m✓[22m[39m package compatibility contract[2m > [22mretains structured CLI errors when the packaged process exits unsuccessfully [33m 1025[2mms[22m[39m
+ [32m✓[39m tests/runtime-report-gate.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 7448[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-1] a report whose observation ran the recorded gate is refused, also in a shell form [33m 531[2mms[22m[39m
+   [33m[2m✓[22m[39m check-report refuses a report that ran the gate[2m > [22m[AC:spec-6-2] a report that ran only focused commands passes, and a project with no gate is not checked [33m 437[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate wrappers and a broken joycraft.yaml (spec 27)[2m > [22m[AC:spec-27-3] each shell or env wrapper of the gate is refused; more arguments pass; a broken joycraft.yaml refuses [33m 1901[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate runner aliases and a done spec re-check (1.9.1 spec 2)[2m > [22m[AC:spec-2-1] npx, pnpm exec and the run of pnpm run name the same gate; a focused npx run passes [33m 1078[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate runner aliases and a done spec re-check (1.9.1 spec 2)[2m > [22m[AC:spec-2-2] a done spec re-checked with its accepted report is unchanged after tests.gate is recorded; an in-review one is refused [33m 608[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-1] one part of a chained gate is refused like the whole gate; focused runs and a one-part gate are unchanged [33m 2517[2mms[22m[39m
+   [33m[2m✓[22m[39m report gate parts of a chained gate (1.9.2 spec 1)[2m > [22m[AC:spec-1-2] a done spec re-checked with a report that ran a gate part stays done; gateRuns still turns the check off [33m 375[2mms[22m[39m
+ [32m✓[39m tests/runtime-archive-named-files.test.ts [2m([22m[2m14 tests[22m[2m)[22m[33m 8514[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-2] namedFiles lists the full path, split segments and the dated name, not look-alikes; marks only a non-test migration [33m 351[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-3] --apply moves as 1.8.1 does, edits nothing outside the docs root, and names each listed test in next [33m 353[2mms[22m[39m
+   [33m[2m✓[22m[39m archive lists only (spec 30)[2m > [22m[AC:spec-30-4] --rewrite is an unknown argument, and neither a preview nor an --apply writes under .joycraft/local [33m 428[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (check) [33m 371[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[owner-check-n1] [AC:spec-30-5] [AC:spec-32-2] two plain applies of one feature: one archives, the other exits 2 with no manual step and no stage folder (stage) [33m 424[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[AC:spec-1-5] next names only tests that name the folder outside a comment, at that line; namedFiles matches the preview [33m 1172[2mms[22m[39m
+   [33m[2m✓[22m[39m archive owner check of spec 13[2m > [22m[AC:spec-9-1] only sure comments are comment-only; a closed /* */ before code, a .ts #field and a bare * line are code [33m 2186[2mms[22m[39m
+   [33m[2m✓[22m[39m archive reads every line ending (1.9.2 spec 4)[2m > [22m[AC:spec-4-2] a CR-only test file gets real line numbers and its comment line counts as a comment; LF, CRLF, U+2028 and U+2029 agree [33m 1814[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m26 passed[39m[22m[90m (26)[39m
+[2m   Start at [22m 09:36:36
+[2m   Duration [22m 8.73s[2m (transform 72ms, setup 0ms, collect 102ms, tests 22.49s, environment 0ms, prepare 109ms)[22m
+
+joycraft-evidence: {"wallMs":9380,"load":[41.10693359375,38.3544921875],"cores":14,"loaded":true,"argv":["pnpm","test","tests/package-acceptance.test.ts","tests/runtime-archive-named-files.test.ts","tests/runtime-report-gate.test.ts"],"exitCode":0,"timedOut":false,"revision":"131ec95d4bfd73b6ab5148a085dbecf8167137e5","dirty":false}

@@ -12,7 +12,10 @@
       "verification": {
         "inputs": [
           { "path": "docs/features/example-feature/brief.md", "kind": "requirement" },
-          { "path": "docs/features/example-feature/specs/01-outcome.md", "kind": "requirement" }
+          { "path": "docs/features/example-feature/specs/01-outcome.md", "kind": "requirement" },
+          { "path": "src/example.ts", "kind": "code" },
+          { "path": "tests/example.test.ts", "kind": "check" },
+          { "path": "tests/fixtures/example.json", "kind": "fixture" }
         ],
         "criteria": [
           {

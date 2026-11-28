@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "421b920603d00e8dec06b2c3fc516b32b433f866",
+    "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+    "specId": 5,
+    "specPath": "docs/features/2026-11-26-review-followups/specs/05-follow-up-triage.md",
+    "criteria": [
+      {
+        "id": "spec-5-1",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/05-follow-up-triage.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-5-2",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/05-follow-up-triage.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-26-review-followups/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "triage",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "49e05fe8d189c97c149b8d46fee94f8025407a18486c3703a035c59915ddac4f",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "aba9dced33fc15595176cd10bbcc33a19680eeda5975d2327fd121381a937e07",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/05-follow-up-triage.md",
+        "kind": "requirement",
+        "sha256": "d32081a5428cf09a848adf66a678f0e6d5538785e9313ce37efbb282dc4de4cd",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-implement/SKILL.md",
+        "kind": "code",
+        "sha256": "2921cb1eae4a1c9e4823e24c55588ef25bbc5e3d394a55c6054b48b24dbe21ec",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/follow-ups.mjs",
+        "kind": "code",
+        "sha256": "6b05fb77e1f823acfe4362a639b27ed7e36bee17025f00042c21e10dfb608a68",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/identity.mjs",
+        "kind": "code",
+        "sha256": "dd8f611b6ace66aa111c0301eda65667f786c33e329e2369c6e2da0a0add1421",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/PIN",
+        "kind": "code",
+        "sha256": "12263fa39959cf0b32dca351938666462d67e2a000906e6d79f9886efdceb68a",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/payload-guard.test.ts",
+        "kind": "check",
+        "sha256": "ce946f413bae5831664c7074f4e710d7975e54763758a61ff8b0b39ab62de8bc",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-follow-up-triage.test.ts",
+        "kind": "check",
+        "sha256": "690fb6693ba282396f4ed45da403977051e127feaecc9af79d45a5363526b5f5",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-wave-gate.test.ts",
+        "kind": "check",
+        "sha256": "c13ecbc0651135883306c0d3d6f2f3e3cd61b841a0022fda18760d842f92d6d4",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          3,
+          5
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-26-review-followups/brief.md",
+          "anchors": [
+            "triage",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "bcec533261a966cb095dbbeb01c423aafdb76efa23f8745c868420f0604b16fa"
+  },
+  "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d"
+  },
+  "reviewer": {
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+      "agentId": "af5dc655484a268e4"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-triage-step",
+      "criteria": [
+        "spec-5-1"
+      ],
+      "subjectIdentity": "bcec533261a966cb095dbbeb01c423aafdb76efa23f8745c868420f0604b16fa",
+      "representativeInput": "payload/.agents/skills/joycraft-implement/SKILL.md at 421b920, compared with 2802017.",
+      "expected": "A step after each review wave (and after each accepted spec in checkpoint) names follow-ups.mjs and the three outcomes, with no question for an in-intent fix; the skill stays under its word cap; payload-guard.test.ts unchanged and passing.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-5-1] passed; 7 files, 143 tests, exit 0, revision 421b920, clean tree. Read the step (SKILL.md, paragraph before 'After review and completion'): it names 'node .joycraft/runtime/follow-ups.mjs --queue <queue> --spec <id> --finding <id>' and the three outcomes (fix spec in this queue with no question then --fixed; open brief decision then --decided; --dismissed <reason>), matching the brief's triage section and the settled rule at brief.md:90. The flags match recordFollowUp in follow-ups.mjs. wc -w gives 1309 against the 1309 cap in text-wave-gate.test.ts. git diff 2802017..HEAD shows no change to tests/payload-guard.test.ts or tests/text-wave-gate.test.ts. Compared each reworded paragraph against 2802017: the rules stay, except the two wording losses filed as follow-ups f1 and f2.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-5-reviewer-focused-20261126T172559799Z-1487-1.log",
+              "sha256": "df8d12ed8c7d716984cd4b80df126c21a412b7c517c04e9d5fc8d318a8f1bcbf"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-follow-up-triage.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/text-small-job.test.ts",
+              "tests/text-owner-gate-lines.test.ts",
+              "tests/runtime-dispatch-commands.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Project gate not rerun by reviewer: coordinator receipts spec-5-gate-test.log / spec-5-gate-typecheck.log (typecheck exit 0; test exit 1 from one load timeout in runtime-report-gate.test.ts spec-1-1, which spec-3-gate-timeouts-rerun.log shows passing alone, and trial-reviewer-bench bench-current, the known pending re-record filed in review-1)."
+      ]
+    },
+    {
+      "id": "flow-appended-spec",
+      "criteria": [
+        "spec-5-2"
+      ],
+      "subjectIdentity": "bcec533261a966cb095dbbeb01c423aafdb76efa23f8745c868420f0604b16fa",
+      "representativeInput": "Temp git fixture: spec 1 done by a PASS report with follow-up f1; fix spec 2 (depends on 1) appended and committed; follow-ups.mjs --fixed 2 recorded.",
+      "expected": "status.mjs shows no drift and no unread report before and after the append; queue-check.mjs exits 0 with no gaps; f1 stays a question until spec 2 is done.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-5-2] passed in the same run. The test file is class 1 (new file), as the spec's Test changes says; it asserts drift [], unreadReports [], unchanged problems, spec 1 still done, queue-check exit 0 with empty stderr and gaps [], and f1 still a question after --fixed 2 (follow-ups.mjs handledBy needs a done spec).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-5-reviewer-focused-20261126T172559799Z-1487-1.log",
+              "sha256": "df8d12ed8c7d716984cd4b80df126c21a412b7c517c04e9d5fc8d318a8f1bcbf"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/text-follow-up-triage.test.ts",
+              "tests/payload-guard.test.ts",
+              "tests/text-wave-gate.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/text-small-job.test.ts",
+              "tests/text-owner-gate-lines.test.ts",
+              "tests/runtime-dispatch-commands.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture project with runtime run from payload/, not an installed 1.10.2 consumer. The fix spec's own review was not run in the fixture; the spec's criteria do not require it.",
+        "Project gate not rerun by reviewer: coordinator receipts spec-5-gate-test.log / spec-5-gate-typecheck.log (typecheck exit 0; test exit 1 from one load timeout in runtime-report-gate.test.ts spec-1-1, which spec-3-gate-timeouts-rerun.log shows passing alone, and trial-reviewer-bench bench-current, the known pending re-record filed in review-1)."
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "f1",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-implement/SKILL.md:56",
+      "summary": "The reword dropped 'also' from 'In `isolated`, also give each implementation spec a fresh agent context'. The skill no longer says that isolated mode keeps checkpoint's per-spec commit, integrate and review, and this is the only place that defines it. It is also unclear if the new triage step runs after each spec in isolated mode.",
+      "assumption": "Isolated mode still follows checkpoint's per-spec cadence. Put the word back and cut one somewhere else to stay at the 1309 cap."
+    },
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "new",
+      "at": "payload/.agents/skills/joycraft-implement/SKILL.md:92",
+      "summary": "In the owner-acceptance paragraph, the reword dropped 'explicitly' twice ('can explicitly accept', 'already explicitly accepted') and 'in the decision record'. The paragraph still says a general 'continue' is not acceptance, so the rule mostly holds, but it is weaker than at 2802017.",
+      "assumption": "The acceptance still has to be explicit and is recorded in the owner-acceptance decision file from completion.md."
+    }
+  ],
+  "createdAt": "2026-11-26T17:30:00.000Z"
+}

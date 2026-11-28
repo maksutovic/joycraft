@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "5fba769d0987fb8c592e6ab3f9e3dec5e22f47da",
+    "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+    "specId": 6,
+    "specPath": "docs/features/2026-11-26-review-followups/specs/06-release-1-10-2.md",
+    "criteria": [
+      {
+        "id": "spec-6-1",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/06-release-1-10-2.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-6-2",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/06-release-1-10-2.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "CHANGELOG.md",
+        "kind": "code",
+        "sha256": "965afe102bd3c4231d882a668d1c3e833e87f969eb29a93b49f7fee3b45b589d",
+        "normalization": "none"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "3a3cd40ac1f3b8e14a047a939ac59bfebcf23e688470e9fadc9393c8fec0c0d0",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "8367990d2e19c353866af2e72f4065930f0ff22a9791912d76d475e3bf3b4fb8",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/06-release-1-10-2.md",
+        "kind": "requirement",
+        "sha256": "ff64bbdd439815ca5e57128e9a47eee97586af74b7269043d5e48a48cb8b6a2b",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "package.json",
+        "kind": "code",
+        "sha256": "87e525b5d6cf28c44e01d3b9b80d38b124a32d74a4e04f21aaaa404af8289136",
+        "normalization": "none"
+      },
+      {
+        "path": "src/joycraft-release.json",
+        "kind": "code",
+        "sha256": "b3bacbad91b4aa1639842d4355349ebf9d122bbc9ab1d2311a33b22242dae697",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/public-docs.test.ts",
+        "kind": "check",
+        "sha256": "15aedb051c9ae98ff6b4a947c0c5cfdd8d0d7008abc8171439a0fa2c452eed9f",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/release-preparation.test.ts",
+        "kind": "check",
+        "sha256": "32ae9ce8e74fbe4fdd872c1859b29a9e130f6c19b0a744132421085554204d9c",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-26-review-followups/brief.md",
+          "anchors": [
+            "release",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "294b217a977885d904a81db83b76266d787bdc56845459e99ea44c6ab3060e69"
+  },
+  "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d"
+  },
+  "reviewer": {
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+      "agentId": "a9fb8bb612fbd8151"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "unresolved": [],
+  "createdAt": "2026-11-26T17:42:02.366Z",
+  "flows": [
+    {
+      "id": "flow-release-fields",
+      "criteria": [
+        "spec-6-1"
+      ],
+      "subjectIdentity": "294b217a977885d904a81db83b76266d787bdc56845459e99ea44c6ab3060e69",
+      "representativeInput": "package.json and src/joycraft-release.json at 5fba769 (unchanged since round 1).",
+      "expected": "version, joycraft.release and releaseVersion are 1.10.2; summary is one line of at most 300 characters; the [AC:spec-6-1] release-fields tests pass.",
+      "limits": [
+        "Gate not run by the reviewer; coordinator gate receipts spec-6-gate-test.log, spec-6-gate-typecheck.log and spec-6-gate-package-acceptance-rebuilt.log were supplied; since then only CHANGELOG.md changed (spec-6-implementer-fix1.log). Reviewer ran pnpm build before the focused tests."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "Focused run exit 0 at 5fba769, clean tree: 3 files, 44 tests passed, including both [AC:spec-6-1] release-fields tests (public-docs.test.ts:79, :86). package.json and src/joycraft-release.json are byte-identical to round 1.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-6-reviewer-focused-20261126T174052616Z-98018-1.log",
+              "sha256": "333bb297b7f76ec651757236337203e261c2fe0fdda0ab912fe97c2dad4c8486"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts",
+              "tests/package-acceptance.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-changelog-entry",
+      "criteria": [
+        "spec-6-2"
+      ],
+      "subjectIdentity": "294b217a977885d904a81db83b76266d787bdc56845459e99ea44c6ab3060e69",
+      "representativeInput": "CHANGELOG.md 1.10.2 entry at 5fba769, the fix diff git diff ff5d294 -- CHANGELOG.md, and git diff f4c4f48 -- payload src.",
+      "expected": "A ## 1.10.2 entry above 1.10.1 that lists what specs 1-5, 7 and 8 shipped, every line true of the code, with an Update notes line on follow-ups.json and note; release-preparation tests pass unchanged.",
+      "limits": [
+        "Gate not run by the reviewer; coordinator gate receipts spec-6-gate-test.log, spec-6-gate-typecheck.log and spec-6-gate-package-acceptance-rebuilt.log were supplied; since then only CHANGELOG.md changed (spec-6-implementer-fix1.log). Reviewer ran pnpm build before the focused tests."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "release-preparation.test.ts (unchanged since f4c4f48) and the public-docs changelog test passed in the focused run, exit 0.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-6-reviewer-focused-20261126T174052616Z-98018-1.log",
+              "sha256": "333bb297b7f76ec651757236337203e261c2fe0fdda0ab912fe97c2dad4c8486"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/public-docs.test.ts",
+              "tests/release-preparation.test.ts",
+              "tests/package-acceptance.test.ts"
+            ],
+            "exitCode": 0
+          }
+        },
+        {
+          "kind": "structural",
+          "method": "source",
+          "result": "PASS",
+          "actual": "Round-1 f1 is closed. The fix changes only CHANGELOG.md:28-29 to: status and close.mjs --feature stop asking about handled follow-ups, and a malformed follow-ups.json fails the gate. Checked against source: status.mjs filters follow-ups by handledBy() from follow-ups.json and pushes a {path, problem} entry when readLedger() finds the file malformed (follow-ups.mjs:25-36); gate.mjs:53-55 turns such a problem into a kind file failure; close.mjs reads status.questions and adds the follow-ups.mjs answer command. The other lines were re-read against the payload diff (note class, siblings/archivedTags, implement triage, entry-size own text, Update notes --dismissed flag in follow-ups.mjs main) and stay true. No new defect in the fix diff.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-6-reviewer-source-r2.log",
+              "sha256": "e4c9246ce362608abeb46c8f827adbd795d582a56bce90b9af593f76630147e4"
+            }
+          ],
+          "command": {
+            "argv": [
+              "git",
+              "diff",
+              "f4c4f48",
+              "--",
+              "CHANGELOG.md",
+              "payload/.joycraft/runtime/gate.mjs",
+              "payload/.joycraft/runtime/status.mjs",
+              "payload/.joycraft/runtime/follow-ups.mjs",
+              "payload/.joycraft/runtime/close.mjs"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "id": "f2",
+      "class": "follow-up",
+      "origin": "pre-existing",
+      "criterion": "spec-6-2",
+      "summary": "Carried from round 1, not new: spec-6-2 has no [AC:spec-6-2] tagged test because its check is release-preparation.test.ts passing unchanged.",
+      "assumption": "Untraced by design; judged by the unchanged test passing and source review."
+    }
+  ]
+}

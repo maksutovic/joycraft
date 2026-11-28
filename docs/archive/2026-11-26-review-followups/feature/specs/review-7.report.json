@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "ea752ca87632dff6741c12647731c532fa7374e4",
+    "queuePath": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+    "specId": 7,
+    "specPath": "docs/features/2026-11-26-review-followups/specs/07-archived-tags-fix.md",
+    "criteria": [
+      {
+        "id": "spec-7-1",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/07-archived-tags-fix.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-7-2",
+        "requirement": {
+          "path": "docs/features/2026-11-26-review-followups/specs/07-archived-tags-fix.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-26-review-followups/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "wave-noise",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "9f06fa815c441115cce97827cc90c9e590caec6bd6da968c4028465f27f486b2",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "29f04c08e7cbda88c71bb0fb86a9dfb384014e76aae0d678bbff792dd324c4cd",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/07-archived-tags-fix.md",
+        "kind": "requirement",
+        "sha256": "6bc001495d4c2276dee08925f16b785dbe2be6f26e1fe57c31859f775f725f43",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "docs/features/2026-11-26-review-followups/specs/review-2.report.json",
+        "kind": "requirement",
+        "sha256": "1bbeae92b2d72fe9fe0edc099055cda31dc568db6933fa62239a95f6e7f4340c",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.agents/skills/joycraft-verify/SKILL.md",
+        "kind": "code",
+        "sha256": "18f4d5488270b041e55a1bfab1302035b1dec569aa258c8ed3e7cfbe8621b11c",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/.joycraft/runtime/trace.mjs",
+        "kind": "code",
+        "sha256": "278e71998f24a4abb0b8a33d2c55c12dfec1c6945b35ba60116e3d9b8381361c",
+        "normalization": "none"
+      },
+      {
+        "path": "payload/PIN",
+        "kind": "code",
+        "sha256": "566f93e03d91334866c965d77721d8b969422933289844cba237c4c3c9f63d6b",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-review-notes.test.ts",
+        "kind": "check",
+        "sha256": "610904fcd675ac376e4ce6253246e7759b05a49822c4223029400d3e2d855228",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-trace-archived.test.ts",
+        "kind": "check",
+        "sha256": "38255412562071baa86e003ee04259af0e8fbfb2f200cf0efe4d4e20b5ac3af8",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/text-worker-commands.test.ts",
+        "kind": "check",
+        "sha256": "5691585ba4d945ada95eb331f54e5606862036cd5b288752d3b438a753e56a11",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          2,
+          7
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-26-review-followups/brief.md",
+          "anchors": [
+            "wave-noise",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "9fb3b70fc69c54c0480cf711780b9a477fee99fb6c21bd621679fa9635525dc3"
+  },
+  "implementerSessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d"
+  },
+  "reviewer": {
+    "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "6236aa4a-204a-4910-a1b4-7ce77fac5f4d",
+      "agentId": "a81692a6241fc3b5d"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-current-first",
+      "criteria": [
+        "spec-7-1"
+      ],
+      "representativeInput": "Fixture: archived queue holds criteria old-7 and spec-1-1; current queue spec 1 also has spec-1-1; trace spec 2 over a test file tagged spec-1-1, old-7, nowhere-9.",
+      "expected": "archivedTags = [old-7]; unknownTags = [spec-1-1, nowhere-9].",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-7-1] passed (5 files, 73 tests, exit 0, revision ea752ca, clean tree). Source: trace.mjs builds the set of every current-queue criterion id and deletes it from the archived set before filtering archivedTags. Probe: payload trace.mjs for this repo's spec 2 now lists only spec-23-1/spec-23-2 as archived; spec-1-1 and spec-3-1 are unknown (they were archived in review-2's f2).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-7-reviewer-focused-20261126T171741108Z-69970-1.log",
+              "sha256": "0ac097f96e2ae60fb98a548aefe5fb2878901210d45ca4b82f2d6a6bb041fed0"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-trace-archived.test.ts",
+              "tests/runtime-review-notes.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Temp fixture git project; trace.mjs run from payload/, not an installed 1.10.2 consumer. Project gate not rerun by reviewer: coordinator receipts spec-7-gate-test.log / spec-7-gate-typecheck.log (two load timeouts; spec-3-gate-timeouts-rerun.log shows them passing alone; trial-reviewer-bench bench-current is a known pending re-record filed in review-1)."
+      ],
+      "subjectIdentity": "9fb3b70fc69c54c0480cf711780b9a477fee99fb6c21bd621679fa9635525dc3"
+    },
+    {
+      "id": "flow-one-rule",
+      "criteria": [
+        "spec-7-2"
+      ],
+      "representativeInput": "payload/.agents/skills/joycraft-verify/SKILL.md findings rule.",
+      "expected": "siblings and archivedTags are never filed; another spec's file or an archived feature's tag that startup did not list is a note; old double listing gone; skill under its word cap.",
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-7-2] passed; runtime-review-notes.test.ts and text-worker-commands.test.ts passed (sl3-07-words cap 1367; wc -w gives 1364). Read the rule text: 'Do not file `siblings` or `archivedTags`.' then the note list names 'another spec's file or an archived feature's tag that startup did not list'; the old 'a changed file of another spec, a test tag of an archived feature' phrase is gone. Test change in runtime-trace-archived.test.ts is class 1 (fixture parameter plus two new cases, no existing expectation changed), matching the spec's Test changes.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-26-review-followups/reviews/receipts/spec-7-reviewer-focused-20261126T171741108Z-69970-1.log",
+              "sha256": "0ac097f96e2ae60fb98a548aefe5fb2878901210d45ca4b82f2d6a6bb041fed0"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-trace-archived.test.ts",
+              "tests/runtime-review-notes.test.ts",
+              "tests/text-worker-commands.test.ts",
+              "tests/runtime-dispatch-commands.test.ts",
+              "tests/payload-guard.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ],
+      "limits": [
+        "Project gate not rerun by reviewer: coordinator receipts spec-7-gate-test.log / spec-7-gate-typecheck.log (two load timeouts; spec-3-gate-timeouts-rerun.log shows them passing alone; trial-reviewer-bench bench-current is a known pending re-record filed in review-1)."
+      ],
+      "subjectIdentity": "9fb3b70fc69c54c0480cf711780b9a477fee99fb6c21bd621679fa9635525dc3"
+    }
+  ],
+  "unresolved": [],
+  "findings": [],
+  "createdAt": "2026-11-26T17:20:00.000Z"
+}

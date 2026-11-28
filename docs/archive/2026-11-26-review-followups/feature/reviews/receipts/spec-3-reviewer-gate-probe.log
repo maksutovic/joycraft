@@ -1,0 +1,2 @@
+Joycraft gate: undefined does not parse: Invalid JSON: docs/features/x/follow-ups.json. Every follow-up stays a question until it is fixed. Repair undefined and tell the user.
+joycraft-evidence: {"wallMs":91,"load":[9.13525390625,9.13525390625],"cores":14,"loaded":false,"argv":["node","payload/.joycraft/runtime/gate.mjs","check","--root","/private/tmp/claude-501/-Users-compiler--claude-spares-spare-kxw8hY/6236aa4a-204a-4910-a1b4-7ce77fac5f4d/scratchpad/gate-probe"],"exitCode":2,"timedOut":false,"revision":"6770c2562ed022d8a7e5890b15c09b9ab9ee46fb","dirty":true}

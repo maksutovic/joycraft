@@ -1,0 +1,40 @@
+
+> joycraft@1.10.2 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/public-docs.test.ts tests/release-preparation.test.ts tests/package-acceptance.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/public-docs.test.ts [2m([22m[2m18 tests[22m[2m)[22m[32m 32[2mms[22m[39m
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-OxcgJM/remote.git
+ * [new branch]      main -> main
+Cloning into '/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-OxcgJM/work'...
+done.
+Switched to a new branch 'release/joycraft'
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-OxcgJM/remote.git
+ * [new branch]      release/joycraft -> release/joycraft
+Switched to branch 'main'
+To /var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/joycraft-git-release-OxcgJM/remote.git
+   f771505..d8f19cb  main -> main
+ [32m✓[39m tests/release-preparation.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 2220[2mms[22m[39m
+   [33m[2m✓[22m[39m release preparation[2m > [22mcoalesces docs pushes after a prepared baseline while retaining later product changes [33m 539[2mms[22m[39m
+   [33m[2m✓[22m[39m release preparation[2m > [22mrefreshes an existing release branch with ordinary Git operations and edits one PR [33m 1009[2mms[22m[39m
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "only-built-dependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown env config "only-built-dependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+ [32m✓[39m tests/package-acceptance.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 5809[2mms[22m[39m
+   [33m[2m✓[22m[39m package compatibility contract[2m > [22mruns the real retained package CLI in isolated consumers and writes a complete report [33m 3914[2mms[22m[39m
+   [33m[2m✓[22m[39m package compatibility contract[2m > [22mreports every row failed when an installed packaged executable is a no-op [33m 927[2mms[22m[39m
+   [33m[2m✓[22m[39m package compatibility contract[2m > [22mretains structured CLI errors when the packaged process exits unsuccessfully [33m 964[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m44 passed[39m[22m[90m (44)[39m
+[2m   Start at [22m 09:38:10
+[2m   Duration [22m 6.00s[2m (transform 71ms, setup 0ms, collect 105ms, tests 8.06s, environment 0ms, prepare 107ms)[22m
+
+joycraft-evidence: {"wallMs":6592,"load":[11.46142578125,10.86376953125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/public-docs.test.ts","tests/release-preparation.test.ts","tests/package-acceptance.test.ts"],"exitCode":0,"timedOut":false,"revision":"78b48a50210571f325d68cbe115dfed65c9c15d7","dirty":false}

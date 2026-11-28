@@ -1,0 +1,53 @@
+
+> joycraft@1.10.1 test /Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups
+> vitest tests/runtime-follow-ups-ledger.test.ts tests/runtime-close-feature.test.ts tests/runtime-close.test.ts tests/text-session-end-pr.test.ts tests/payload-guard.test.ts tests/install-v1.test.ts
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90m/Users/compiler/Developer/Joycraft/worktrees/joycraft-review-followups[39m
+
+ [32m✓[39m tests/text-session-end-pr.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 1235[2mms[22m[39m
+   [33m[2m✓[22m[39m session end review-25 runtime[2m > [22m[review-25-1] a records commit, then the tidy fix: tidy --verify passes on the new HEAD [33m 1233[2mms[22m[39m
+[90mstdout[2m | tests/payload-guard.test.ts[2m > [22m[2mshipped payload text[2m > [22m[2m[AC:spec-1-2] [AC:spec-7-2] [AC:spec-2-4] every-spec and on-demand words stay under their own caps
+[22m[39mevery-spec words: 12180 (cap 12256, 76 spare)
+on-demand words: 20821 (cap 21163, 342 spare)
+
+ [32m✓[39m tests/payload-guard.test.ts [2m([22m[2m16 tests[22m[2m)[22m[33m 1811[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-legacy-acceptance] accept-owner --legacy accepts done specs on a decision file, and then the gates turn on [33m 504[2mms[22m[39m
+   [33m[2m✓[22m[39m shipped payload text[2m > [22m[AC:vendored-archive-dated-folder] a dated folder with an undated queue feature archives by the feature name, and replays by either name [33m 421[2mms[22m[39m
+ [32m✓[39m tests/install-v1.test.ts [2m([22m[2m15 tests[22m[2m)[22m[33m 3329[2mms[22m[39m
+   [33m[2m✓[22m[39m sl3-02: update refreshes the managed block[2m > [22m[AC:sl3-02-no-touch] no markers, one marker, a fenced block, a current block, init and --plan leave AGENTS.md as it is [33m 915[2mms[22m[39m
+   [33m[2m✓[22m[39m sl3-02: update refreshes the managed block[2m > [22m[AC:fix-1-10-1-plan] update --plan says what update --yes then does to the block, and a current block plans no change [33m 414[2mms[22m[39m
+ [32m✓[39m tests/runtime-close-feature.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 5453[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-close] a done, accepted queue closes with at most 2 commits, an archived folder, a released lease and the one line [33m 1955[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-refuse] an in-review spec, a dirty tree and a missing context page give exit 2, all three named, nothing changed [33m 675[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-refuse] another session's lease stops the close [33m 536[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs --feature[2m > [22m[AC:sl3-05-same-checks] the archive is byte-equal to the one the manual session-end steps write [33m 2286[2mms[22m[39m
+ [32m✓[39m tests/runtime-close.test.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 6359[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] archives an untracked brief in a repository with a commit, and the move is in HEAD [33m 777[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] an unborn HEAD gives one commit and sets the first-commit flag [33m 439[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] an unmarked line gives exit 2 and moves nothing; --accept closes and counts it as not checked [33m 470[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] names every problem together: no look, a missing test file, an existing target [33m 318[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] a stale "not established" line outside the managed block stops the close; --accept passes it [33m 524[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs[2m > [22m[AC:sl2-01] no brief stops the close; notes name unstaged files and other open briefs [33m 445[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs runs the recorded tests (sl3-01)[2m > [22m[AC:sl3-01-close-green] one passing test file: exit 0 and "Tests: 1 files passed." [33m 390[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs runs the recorded tests (sl3-01)[2m > [22m[AC:sl3-01-close-red] a failing test file: exit 2 names the command and status and moves nothing; --accept closes [33m 592[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs runs the recorded tests (sl3-01)[2m > [22m[AC:sl3-01-close-no-command] no joycraft.yaml: exit 0 and the line says no test command is recorded [33m 341[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs runs the recorded tests (sl3-01)[2m > [22m[AC:sl3-01-close-no-command] a command but no `test:` line: exit 0 and nothing runs [33m 324[2mms[22m[39m
+   [33m[2m✓[22m[39m close.mjs in the sl1-01 fixture[2m > [22m[AC:sl2-01] wiring, status, cleanup and gate check report nothing new after a close [33m 1554[2mms[22m[39m
+ [32m✓[39m tests/runtime-follow-ups-ledger.test.ts [2m([22m[2m10 tests[22m[2m)[22m[33m 8715[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-1] follow-ups.mjs records fixed, decided and dismissed entries and refuses what the accepted report or queue lacks [33m 1164[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] fixed by a done spec: no question; the other follow-up still is one [33m 710[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] fixed by a spec that is not done: still a question [33m 643[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] decided by an answered decision: no question; by an open or assigned one: still a question [33m 633[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] dismissed with a reason: no question; with an empty reason: still a question [33m 552[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] a malformed follow-ups.json is a problem naming the file, and every follow-up stays a question [33m 636[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-2] a malformed follow-ups.json makes gate check and close --feature name the file [33m 950[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-3] close refuses on exactly the unhandled follow-up, naming follow-ups.mjs, then archives with follow-ups.json once both are handled [33m 1770[2mms[22m[39m
+   [33m[2m✓[22m[39m follow-ups ledger[2m > [22m[AC:spec-3-4] a feature whose report holds old follow-ups closes once each is dismissed, with no report bytes changed [33m 1657[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m6 passed[39m[22m[90m (6)[39m
+[2m      Tests [22m [1m[32m68 passed[39m[22m[90m (68)[39m
+[2m   Start at [22m 09:06:29
+[2m   Duration [22m 8.98s[2m (transform 285ms, setup 0ms, collect 351ms, tests 26.90s, environment 0ms, prepare 331ms)[22m
+
+joycraft-evidence: {"wallMs":9605,"load":[13.212890625,12.798828125],"cores":14,"loaded":false,"argv":["pnpm","test","tests/runtime-follow-ups-ledger.test.ts","tests/runtime-close-feature.test.ts","tests/runtime-close.test.ts","tests/text-session-end-pr.test.ts","tests/payload-guard.test.ts","tests/install-v1.test.ts"],"exitCode":0,"timedOut":false,"revision":"e48c75977f1c31ab300c2cde5db87d0117956ca6","dirty":false}
