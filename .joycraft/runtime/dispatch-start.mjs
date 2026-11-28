@@ -332,7 +332,7 @@ export const usage = `Usage: node .joycraft/runtime/dispatch-start.mjs \\
   [--brief <path>] [--changes-base <sha>] [--json]
 Pass --coordinator-session on a claimed queue. The output is the short form; --json prints all of it. A flag you pass wins over its default:
   --worker-root: this folder.
-  --expected-manifest: .joycraft/installation.json in the main checkout.
+  --expected-manifest: .joycraft/installation.json in the coordinator's tree (this tree's worktrees.mjs record, else the lease), else this folder.
   --native-session: the coordinator lease's session (a child of that session).
   --implementer-session: the native session for an implementer, the lease session for a reviewer.
   --out: a fresh packet under .joycraft/local/packets/.
@@ -350,8 +350,19 @@ function queueLease(root, queuePath) {
   catch { return null; }
 }
 
+/** The coordinator's tree for a worker at root: this tree's worktrees.mjs
+ * record, else the queue lease's root, else root itself. The main checkout
+ * may be another branch with no install, so it is never the default. */
+function coordinatorTree(root, lease) {
+  const main = mainTree(root);
+  let recorded;
+  try { recorded = readLedger(main).trees.find(tree => path.resolve(main, tree.path) === root)?.coordinatorRoot; } catch { /* An unreadable ledger falls back to the lease. */ }
+  const relative = recorded ?? lease?.root;
+  return typeof relative === 'string' ? path.resolve(main, relative) : root;
+}
+
 /** Startup flags with each absent default filled: the worker root from cwd,
- * the expected manifest from the main checkout's .joycraft/installation.json,
+ * the expected manifest from the coordinator tree's .joycraft/installation.json,
  * the native and implementer sessions from the coordinator lease, a fresh
  * packet path and the role's capabilities. `--coordinator-session` has no
  * default. Returns the filled flags and every required flag still missing. */
@@ -359,8 +370,8 @@ export function startupDefaults(given, cwd = process.cwd()) {
   const flags = { ...given };
   flags['--worker-root'] ??= realpathSync(cwd);
   const root = flags['--worker-root'];
-  flags['--expected-manifest'] ??= path.join(mainTree(root), '.joycraft', 'installation.json');
   const lease = flags['--queue'] ? queueLease(root, flags['--queue']) : null;
+  flags['--expected-manifest'] ??= path.join(coordinatorTree(root, lease), '.joycraft', 'installation.json');
   if (lease) flags['--native-session'] ??= lease.sessionId;
   if (flags['--role'] === 'implementer') flags['--implementer-session'] ??= flags['--native-session'];
   else if (lease) flags['--implementer-session'] ??= lease.sessionId;

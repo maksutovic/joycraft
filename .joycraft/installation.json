@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "joycraft": "1.10.2",
-  "tag": "payload-f887f14b49ee",
-  "sourceRevision": "f887f14b49ee14e3aff2beb34a9a79a59ffd72383760f1f22822d9f57d050eca",
+  "tag": "payload-defddf3da903",
+  "sourceRevision": "defddf3da903f3a2e0e3b9b27d4ae95180ad19560455951a3341ffd8ec5f11ef",
   "harness": "claude",
   "hosts": [
     "claude",
@@ -58,7 +58,7 @@
     },
     {
       "path": ".agents/skills/joycraft-verify/SKILL.md",
-      "sha256": "8cd7a58d6d8ce1553d5900b2da2806cdadd9a80355e3723afb683a88ec39a973"
+      "sha256": "7a312c538d4b8c24562facda734d9ff5904b77325af0453e40f6921d869d6522"
     },
     {
       "path": ".claude/agents/joycraft-implementer.md",
@@ -118,7 +118,7 @@
     },
     {
       "path": ".claude/skills/joycraft-verify/SKILL.md",
-      "sha256": "8cd7a58d6d8ce1553d5900b2da2806cdadd9a80355e3723afb683a88ec39a973"
+      "sha256": "7a312c538d4b8c24562facda734d9ff5904b77325af0453e40f6921d869d6522"
     },
     {
       "path": ".joycraft/assets/artifacts/diagrams.js",
@@ -170,7 +170,7 @@
     },
     {
       "path": ".joycraft/references/dispatch.md",
-      "sha256": "26179aeafbe521050a18892e5bbac1518e0006956cae570aca7aa3a37979f7df"
+      "sha256": "d0521fddb82b2b4ce0946a4398661554538ba624259d8b1328669bc8aa448982"
     },
     {
       "path": ".joycraft/references/doc-cleanup-LICENSE.md",
@@ -298,7 +298,7 @@
     },
     {
       "path": ".joycraft/runtime/dispatch-start.mjs",
-      "sha256": "bacc1cd60e5e16e81316e781f4246c066c38103d1b498fcd19263523675c4fc2"
+      "sha256": "86d68920cd58ffb5be099ca3f8132f65543d1e4f8cd935de1037dcaf5e130254"
     },
     {
       "path": ".joycraft/runtime/entry-check.mjs",

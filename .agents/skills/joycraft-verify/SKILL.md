@@ -29,7 +29,7 @@ Reviewer startup also carries `trace`, the spec's criteria with the tests
 tagged `[AC:<criterion-id>]`. Report untraced criteria as findings; a missing tag alone is
 not a FAIL.
 
-Dispatch `collaboration.spawn_agent` with `fork_turns: "none"` and the packet's raw sources and output contract. In Claude Code, use its `Agent` tool with the same limited inputs and the `joycraft-reviewer` agent type when installed (otherwise the project-selected reviewer model); a fresh worker is the separate review context. Otherwise use a separate accessible review context. Record its returned native host, session and child agent identity; a shared parent session does not make two native actors the same. Follow the actor-report fields in the dispatch reference. Do not invent IDs or create a worktree solely to obtain a different session string.
+Dispatch `collaboration.spawn_agent` with `fork_turns: "none"` and the packet's raw sources and output contract. In Claude Code, use its `Agent` tool with the same limited inputs and the `joycraft-reviewer` agent type when installed (otherwise the project-selected reviewer model); a fresh worker is the separate review context. Otherwise use a separate accessible review context. Record its returned native host, session and child agent identity; a shared parent session does not make two native actors the same. Follow the actor-report fields in the dispatch reference. Do not invent IDs.
 
 As the dispatched reviewer, review directly; do not dispatch another. Read the parent brief, spec, queue entry, declared criteria and exact verification inputs. Use the supplied subject, set independence truthfully, and do not self-certify implementation from your own context.
 
@@ -40,9 +40,11 @@ Green tagged tests alone pass no criterion. For each spec, also:
 - **Probe:** name one input that a user or an outsider can change and the code
   trusts (an argument, a path, a link, a stored file). Try it tampered on the
   real surface.
-- **Can the test fail?** For the key criterion, revert the change (or its key
-  line) in a scratch copy and run its test. Record the red run. A test that
-  stays green is `blocking`.
+- **Can the test fail?** For the key criterion and each added test, revert the
+  change (or its key line) in a scratch copy and run its test. Record the red
+  run. A test that stays green is `blocking`.
+  A test that expects a refusal (null, 400, an error) must build its bad input
+  as real input is built (same encoder), or it passes for the wrong reason.
 - **Docs against code:** check each changed doc line that states behavior
   against the code it describes. A false line is `blocking`.
 - **Fix round:** read the fix diff for new defects, not only whether each open
@@ -64,9 +66,8 @@ Items under a spec's "Deferred until deploy" section are not criteria; each is a
 
 Findings rule: give each `findings` entry its `class`, `origin`, and `criterion`
 or `at` (file:line or receipt). `blocking` is only a failing stated criterion,
-or a defect or regression in the changed code that you reproduced (command, exit
-status, what you saw). A reproduced defect is never a `follow-up`. A
-tagged test you showed cannot fail is `blocking`, even when the code is right. A defect
+a test you showed cannot fail, or a defect or regression in the changed code that you reproduced (command, exit
+status, what you saw). A reproduced defect is never a `follow-up`. A defect
 inside a criterion's scope that a user would hit blocks the spec: reproduce it.
 A case the spec does not decide is a `follow-up`: take the reading closest to
 the brief's intent, recorded as `assumption`. `decision-needed` is only for two readings that give
@@ -93,6 +94,5 @@ For a current `FAIL` or `UNVERIFIED` report, preserve the evidence, receipt,
 subject identity, and explicit limits. Do not solicit owner acceptance as part
 of review or soften the verdict. The implementer may repair it or, after a
 trusted human explicitly accepts this spec's current findings, use the separate
-owner-acceptance completion path described in [completion guidance](../../../.joycraft/references/completion.md). That path validates bindings and
-receipts, not the authenticity of a human instruction; it never turns this
-report into PASS or verified evidence.
+owner-acceptance completion path described in [completion guidance](../../../.joycraft/references/completion.md). It never turns
+this report into PASS.

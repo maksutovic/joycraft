@@ -113,8 +113,8 @@ neither; see `completion.md` for the legacy fallback.
 
 The setup/export flow writes `.joycraft/installation.json` with the
 actual exported file paths and SHA-256 values. Startup compares role/shared
-files against the worker's copy and the expected manifest (by default, the main
-checkout's copy). A worker's own manifest cannot attest that an old, internally
+files against the worker's copy and the expected manifest (by default, the coordinator
+tree's copy, from the worker record or queue lease). A worker's own manifest cannot attest that an old, internally
 consistent installation is the intended export.
 Include the reviewer skill, every reference it needs, and every runtime module
 it needs in `delivery.roles`. A matching path is insufficient when the bytes
