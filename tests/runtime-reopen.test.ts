@@ -6,7 +6,7 @@ import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { applyInstall, planInstall } from '../src/install-v1.js';
 
-// Spec: docs/features/2026-11-22-fixes-1-9-4/specs/01-reopen.md
+// Spec: docs/archive/2026-11-22-fixes-1-9-4/feature/specs/01-reopen.md
 const runtime = join(__dirname, '..', 'payload', '.joycraft', 'runtime');
 const git = (cwd: string, ...args: string[]) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const put = (file: string, body: string) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
@@ -140,7 +140,7 @@ describe('reopen a done spec (1.9.4)', () => {
     expect(existsSync(join(root, `${folder}/specs/review-1.report.json`))).toBe(true);
   }, 60000);
 
-  // Spec: docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md
+  // Spec: docs/archive/2026-11-22-fixes-1-9-4/feature/specs/05-missing-report.md
   it('[AC:spec-5-1] reopen and submit say when a done spec\'s accepted report is missing or unreadable', () => {
     const root = acceptedThenChanged();
     const report = `${folder}/specs/review-1.report.json`;

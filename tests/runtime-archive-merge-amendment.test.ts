@@ -72,7 +72,7 @@ describe('archive brief amendments across a merge commit', () => {
     expect(check).toThrow(`Brief amendment ${merge} does not match its commit's brief bytes`);
   });
 
-  // Spec: docs/features/2026-11-22-fixes-1-9-3/specs/05-amendment-message.md
+  // Spec: docs/archive/2026-11-22-fixes-1-9-3/feature/specs/05-amendment-message.md
   it('[AC:spec-5-1] a missing amendment record names each later commit with its hashes and the reference that shows the record', async () => {
     const { root, amendment } = fixture();
     git(root, 'checkout', '-q', 'feature');
@@ -87,7 +87,7 @@ describe('archive brief amendments across a merge commit', () => {
     expect(check().amendments.map((item: { commit: string }) => item.commit)).toEqual([amendment]);
   });
 
-  // Spec: docs/features/2026-11-22-fixes-1-9-3/specs/06-amendment-absent-brief.md
+  // Spec: docs/archive/2026-11-22-fixes-1-9-3/feature/specs/06-amendment-absent-brief.md
   it('[AC:spec-6-1] a commit whose first parent has no brief is named with fromSha256 null, and a record with null passes', async () => {
     const { root, amendment } = fixture();
     git(root, 'merge', '-q', '--no-ff', '--no-commit', 'feature');
