@@ -6,7 +6,7 @@
       "id": 1,
       "file": "01-linked-coordinator.md",
       "depends_on": [],
-      "status": "done",
+      "status": "in-review",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -86,10 +86,19 @@
       "submitted": {
         "at": "2026-11-28T19:11:28.463Z"
       },
-      "acceptedReport": {
-        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/review-1.report.json",
-        "sha256": "174f25fdf271ced7a854f1f34b82abffeda5802a74dbbe75de0a9a37a9569f77"
-      }
+      "reopened": [
+        {
+          "at": "2026-11-28T19:26:26.412Z",
+          "reason": "spec 3 changed close.mjs, an accepted input of spec 1 (shared spawn helper import)",
+          "report": {
+            "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/review-1.report.json",
+            "sha256": "174f25fdf271ced7a854f1f34b82abffeda5802a74dbbe75de0a9a37a9569f77"
+          },
+          "changed": [
+            "payload/.joycraft/runtime/close.mjs"
+          ]
+        }
+      ]
     },
     {
       "id": 2,
