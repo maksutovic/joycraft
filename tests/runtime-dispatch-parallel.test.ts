@@ -129,4 +129,18 @@ describe('parallel worker startup', () => {
     const quiet = node(root, 'worktrees.mjs', 'create', '--queue', queuePath, '--spec', '2', '--session', 'coord-1');
     expect(JSON.parse(quiet.stdout).warnings).toBeUndefined();
   }, 60000);
+
+  // Spec: docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md
+  it('[AC:spec-6-1] the isolation warning skips a directory named *.md and reads agent files in subfolders', () => {
+    const { root } = project();
+    mkdirSync(join(root, '.claude/agents/team.md'), { recursive: true });
+    put(join(root, '.claude/agents/opus-implementer.md'), '---\nname: opus-implementer\nisolation: worktree\n---\nImplement.\n');
+    put(join(root, '.claude/agents/team/reviewer.md'), '---\nname: team-reviewer\nisolation: worktree\n---\nReview.\n');
+    put(join(root, '.claude/agents/team/plain.md'), '---\nname: team-plain\n---\nPlain.\n');
+    const created = node(root, 'worktrees.mjs', 'create', '--queue', queuePath, '--spec', '1', '--session', 'coord-1');
+    expect(created.status, created.stderr).toBe(0);
+    const warnings: string[] = JSON.parse(created.stdout).warnings;
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toMatch(/^\.claude\/agents\/opus-implementer\.md, \.claude\/agents\/team\/reviewer\.md set isolation: worktree,/);
+  }, 60000);
 });

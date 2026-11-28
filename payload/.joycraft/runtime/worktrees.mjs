@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, writeFileSync } from 'node:fs';
+import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { ensureLocal, mainTree, withLock } from './coordinator.mjs';
@@ -40,14 +40,22 @@ function readQueueFile(root, queuePath) {
 }
 
 /** Claude agent files whose frontmatter asks for host worktree isolation: a
- * worker launched as one of them cannot use a Joycraft worker tree. */
+ * worker launched as one of them cannot use a Joycraft worker tree. Claude Code
+ * reads .claude/agents recursively, so subfolders count; a directory named *.md does not. */
 export function isolatedAgents(root) {
-  const folder = path.join(root, '.claude', 'agents');
-  if (!existsSync(folder)) return [];
-  return readdirSync(folder).filter(name => name.endsWith('.md')).sort().filter(name => {
-    const frontmatter = /^(?:\uFEFF)?---\r?\n([\s\S]*?)\r?\n---/.exec(readFileSync(path.join(folder, name), 'utf8'))?.[1] ?? '';
+  const base = path.join(root, '.claude', 'agents');
+  const files = folder => readdirSync(folder, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name)).flatMap(entry => {
+    const full = path.join(folder, entry.name);
+    if (entry.isDirectory()) return files(full);
+    let isFile = entry.isFile();
+    if (entry.isSymbolicLink()) { try { isFile = statSync(full).isFile(); } catch { isFile = false; } }
+    return isFile && entry.name.endsWith('.md') ? [full] : [];
+  });
+  if (!existsSync(base)) return [];
+  return files(base).filter(file => {
+    const frontmatter = /^(?:\uFEFF)?---\r?\n([\s\S]*?)\r?\n---/.exec(readFileSync(file, 'utf8'))?.[1] ?? '';
     return /^isolation:\s*["']?worktree["']?\s*$/m.test(frontmatter);
-  }).map(name => `.claude/agents/${name}`);
+  }).map(file => `.claude/agents/${path.relative(base, file).split(path.sep).join('/')}`);
 }
 
 /** Create a worker tree for one spec from a captured base revision and record its owner. */

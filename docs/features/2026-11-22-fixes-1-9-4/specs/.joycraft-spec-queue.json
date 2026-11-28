@@ -393,7 +393,7 @@
       "id": 6,
       "file": "06-agents-folder.md",
       "depends_on": [],
-      "status": "todo",
+      "status": "in-review",
       "mode": "checkpoint",
       "execution": {
         "parallel": false
@@ -435,6 +435,9 @@
             ]
           }
         ]
+      },
+      "submitted": {
+        "at": "2026-11-28T08:13:47.443Z"
       }
     }
   ]
