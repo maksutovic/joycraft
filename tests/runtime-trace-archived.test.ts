@@ -7,8 +7,8 @@ import { applyInstall, planInstall } from '../src/install-v1.js';
 // @ts-expect-error The runtime is plain JavaScript.
 import { traceSpec } from '../payload/.joycraft/runtime/trace.mjs';
 
-// Spec: docs/features/2026-11-26-review-followups/specs/02-wave-noise.md
-// Spec: docs/features/2026-11-26-review-followups/specs/07-archived-tags-fix.md
+// Spec: docs/archive/2026-11-26-review-followups/feature/specs/02-wave-noise.md
+// Spec: docs/archive/2026-11-26-review-followups/feature/specs/07-archived-tags-fix.md
 const git = (cwd: string, ...args: string[]) => execFileSync('git', ['-c', 'user.name=t', '-c', 'user.email=t@example.com', ...args], { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 const put = (file: string, body: string) => { mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, body); };
 const node = (root: string, script: string, args: string[]) => spawnSync(process.execPath, [join(root, '.joycraft/runtime', script), ...args], { cwd: root, encoding: 'utf8' });

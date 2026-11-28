@@ -124,7 +124,7 @@ describe('cleanup review fixes', () => {
   });
 });
 
-// Spec: docs/features/2026-11-26-review-followups/specs/04-entry-size-own-text.md
+// Spec: docs/archive/2026-11-26-review-followups/feature/specs/04-entry-size-own-text.md
 describe('entry-size counts only the project\'s own text', () => {
   const ownWords = (count: number) => Array.from({ length: count }, (_, index) => `w${index}`).join(' ');
   const reviewLoop = ['## Review loop', '', 'Recorded by Joycraft setup. The implementer, reviewer and UI checks use these tools.', '',
