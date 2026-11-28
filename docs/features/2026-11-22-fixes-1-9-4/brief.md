@@ -39,6 +39,10 @@ The implement skill names the agent-type frontmatter, reruns the focused tests a
 
 `package.json`, `src/joycraft-release.json` and `CHANGELOG.md` carry 1.9.4.
 
+### followups-1-10-3
+
+Three review follow-ups, shipped in 1.10.3. `reopen` and `submit` say when a done spec's accepted report is missing, instead of "no input changed". Reviewer startup in a worker tree also skips a report path that exists in the coordinator's tree. `worktrees.mjs create` does not fail on a directory under `.claude/agents` whose name ends in `.md`, and it also warns about agent files in subfolders, which Claude Code loads.
+
 ## Scope and limits
 
 - No change to an owner-accepted or waived spec: `reopen` applies only to a PASS acceptance.

@@ -323,6 +323,116 @@
         "path": "docs/features/2026-11-22-fixes-1-9-4/specs/review-4.report.json",
         "sha256": "5fac27120b8decbc980761250d755a103785d65d84d53dd691f303ce02f0a9fd"
       }
+    },
+    {
+      "id": 5,
+      "file": "05-missing-report.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "followups-1-10-3",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/completion.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "payload/.joycraft/runtime/dispatch-preflight.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-reopen.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-5-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          },
+          {
+            "id": "spec-5-2",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/specs/05-missing-report.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "file": "06-agents-folder.md",
+      "depends_on": [],
+      "status": "todo",
+      "mode": "checkpoint",
+      "execution": {
+        "parallel": false
+      },
+      "verification": {
+        "inputs": [
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-4/brief.md",
+            "kind": "requirement",
+            "scope": {
+              "anchors": [
+                "followups-1-10-3",
+                "scope-and-limits"
+              ]
+            }
+          },
+          {
+            "path": "docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md",
+            "kind": "requirement"
+          },
+          {
+            "path": "payload/.joycraft/runtime/worktrees.mjs",
+            "kind": "code"
+          },
+          {
+            "path": "tests/runtime-dispatch-parallel.test.ts",
+            "kind": "check"
+          }
+        ],
+        "criteria": [
+          {
+            "id": "spec-6-1",
+            "requirement": {
+              "path": "docs/features/2026-11-22-fixes-1-9-4/specs/06-agents-folder.md",
+              "anchor": "acceptance"
+            },
+            "requiredKinds": [
+              "runtime"
+            ]
+          }
+        ]
+      }
     }
   ]
 }

@@ -53,6 +53,10 @@ A brief edited after acceptance stays a requirement change: archive keeps refusi
 
 `package.json`, `src/joycraft-release.json` and `CHANGELOG.md` carry 1.9.3.
 
+### followups-1-10-3
+
+Two review follow-ups, shipped in 1.10.3. An amendment refusal for a commit whose parent has no brief prints the hash of empty content, which no record can match; it prints `null` instead, and a record with `null` for the absent side passes. The reviewer agent and `dispatch.md` give the `cd <worker-root> &&` form with the reason the implementer agent gives.
+
 ## Scope and limits
 
 - No change to how a serial spec starts, to reviewer startup, or to explicit workspace flags.
