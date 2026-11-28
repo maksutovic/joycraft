@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "subject": {
+    "schemaVersion": 1,
+    "implementationRevision": "b7d35966386759d2fd993de164e75052cde85cf8",
+    "queuePath": "docs/features/2026-11-28-runtime-fixes-restate/specs/.joycraft-spec-queue.json",
+    "specId": 2,
+    "specPath": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+    "criteria": [
+      {
+        "id": "spec-2-1",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-2",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-3",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      },
+      {
+        "id": "spec-2-4",
+        "requirement": {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+          "anchor": "acceptance"
+        },
+        "requiredKinds": [
+          "runtime"
+        ]
+      }
+    ],
+    "inputs": [
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+        "kind": "requirement",
+        "scope": {
+          "anchors": [
+            "dispatch-manifest",
+            "scope-and-limits"
+          ]
+        },
+        "sha256": "b90f509ca8e2f60bba04505582537c9f6e3ada9da456082120413af4a7b70117",
+        "normalization": "requirement-scope"
+      },
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/.joycraft-spec-queue.json",
+        "kind": "requirement",
+        "sha256": "b1080b80dfa4876641c665acd48707f3d5a7c2af17acfe3701b5a312afe9a25a",
+        "normalization": "queue-scope"
+      },
+      {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/02-dispatch-manifest.md",
+        "kind": "requirement",
+        "sha256": "d1d2db6edbcb409f0a24337f87c2450a2ab758a1358e13aab1d2f33884c115fd",
+        "normalization": "spec-status"
+      },
+      {
+        "path": "payload/.joycraft/runtime/dispatch-preflight.mjs",
+        "kind": "code",
+        "sha256": "174eb238114db76bbd7c3131c14d3fb1417d07e3fcd9dca72b451f4b60d64345",
+        "normalization": "none"
+      },
+      {
+        "path": "tests/runtime-dispatch-manifest.test.ts",
+        "kind": "check",
+        "sha256": "c5c1912294d90fd54ce00c8f4a829373d884f4d38b985b54ff656e0a178df6c3",
+        "normalization": "none"
+      }
+    ],
+    "binding": {
+      "version": 1,
+      "queue": {
+        "specIds": [
+          1,
+          2
+        ]
+      },
+      "governing": [
+        {
+          "path": "docs/features/2026-11-28-runtime-fixes-restate/brief.md",
+          "anchors": [
+            "dispatch-manifest",
+            "scope-and-limits"
+          ]
+        }
+      ]
+    },
+    "identity": "bb663cd8e00b9e1e0e4ad32c5386201df5abe7afcbbb34bb1924a6fb3f0a925e"
+  },
+  "implementerSessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+  "implementerActor": {
+    "host": "claude-code",
+    "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593"
+  },
+  "reviewer": {
+    "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+    "actor": {
+      "host": "claude-code",
+      "sessionId": "5030ebbd-6f55-4385-ab22-00ecf5f22593",
+      "agentId": "aacbf31ebd430313c"
+    },
+    "independent": true,
+    "scopeReviewed": true
+  },
+  "verdict": "PASS",
+  "flows": [
+    {
+      "id": "flow-unrelated-edit",
+      "criteria": [
+        "spec-2-1"
+      ],
+      "subjectIdentity": "bb663cd8e00b9e1e0e4ad32c5386201df5abe7afcbbb34bb1924a6fb3f0a925e",
+      "representativeInput": "Claude+Codex install; one blank line appended to both joycraft-session-end/SKILL.md copies; implementer dispatch-start with pinned manifest.",
+      "expected": "Exit 0, ready true, no manifest refusal.",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator ran it at b7d3596.",
+        "Revert and probe runs used a scratch copy outside the repo; their output is in the revert-red and probe receipts."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-1] passes (4/4 in file). preflightDispatch now hashes only roles.flatMap(files) (dispatch-preflight.mjs:362). Reverted to b7d3596~1 the test fails with the refusal.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-focused-20261128T192037670Z-70705-1.log",
+              "sha256": "2e63ac9cda152f6529b67f43b1e947cc0d0c8e3ccf07548f40b36b4123bbe796"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-revert-red.log",
+              "sha256": "54e1bf8ef3baf74ab1b79d5d9c5a53b2aba8773820d85827b52a1df7d3a4704c"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-probe.log",
+              "sha256": "c03fef7f3de22237d5b6c3b5d89010905664d9c90381e25922ea78c19991fc00"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-manifest.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-crlf",
+      "criteria": [
+        "spec-2-2"
+      ],
+      "subjectIdentity": "bb663cd8e00b9e1e0e4ad32c5386201df5abe7afcbbb34bb1924a6fb3f0a925e",
+      "representativeInput": "Role skill .claude/skills/joycraft-implement/SKILL.md converted LF to CRLF.",
+      "expected": "No refusal, exit 0.",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator ran it at b7d3596.",
+        "Revert and probe runs used a scratch copy outside the repo; their output is in the revert-red and probe receipts."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-2] passes; CRLF bytes are normalised to LF before hashing only when a CR is present. Reverted: fails. Probe: CRLF plus a real content edit still refuses naming the file.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-focused-20261128T192037670Z-70705-1.log",
+              "sha256": "2e63ac9cda152f6529b67f43b1e947cc0d0c8e3ccf07548f40b36b4123bbe796"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-revert-red.log",
+              "sha256": "54e1bf8ef3baf74ab1b79d5d9c5a53b2aba8773820d85827b52a1df7d3a4704c"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-probe.log",
+              "sha256": "c03fef7f3de22237d5b6c3b5d89010905664d9c90381e25922ea78c19991fc00"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-manifest.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-edited-role",
+      "criteria": [
+        "spec-2-3"
+      ],
+      "subjectIdentity": "bb663cd8e00b9e1e0e4ad32c5386201df5abe7afcbbb34bb1924a6fb3f0a925e",
+      "representativeInput": "Role skill gets an appended content line.",
+      "expected": "Non-zero exit, stderr names \"Installed file differs from manifest: .claude/skills/joycraft-implement/SKILL.md\".",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator ran it at b7d3596.",
+        "Revert and probe runs used a scratch copy outside the repo; their output is in the revert-red and probe receipts."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-3] passes with the unchanged message. Green on the pre-change code by design (guard); deleting only the verifyInstalledFiles call turns it red. Probe: an edited reviewer-only skill does not block implementer dispatch; a deleted role runtime file still fails.",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-focused-20261128T192037670Z-70705-1.log",
+              "sha256": "2e63ac9cda152f6529b67f43b1e947cc0d0c8e3ccf07548f40b36b4123bbe796"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-revert-red.log",
+              "sha256": "54e1bf8ef3baf74ab1b79d5d9c5a53b2aba8773820d85827b52a1df7d3a4704c"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-probe.log",
+              "sha256": "c03fef7f3de22237d5b6c3b5d89010905664d9c90381e25922ea78c19991fc00"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-manifest.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-once",
+      "criteria": [
+        "spec-2-4"
+      ],
+      "subjectIdentity": "bb663cd8e00b9e1e0e4ad32c5386201df5abe7afcbbb34bb1924a6fb3f0a925e",
+      "representativeInput": "Implementer startup under a readFileSync-counting preload.",
+      "expected": "installation.json read once, role skill read once, unrelated skills read 0 times.",
+      "limits": [
+        "Project gate not run by the reviewer; the coordinator ran it at b7d3596.",
+        "Revert and probe runs used a scratch copy outside the repo; their output is in the revert-red and probe receipts."
+      ],
+      "observations": [
+        {
+          "kind": "runtime",
+          "method": "test",
+          "result": "PASS",
+          "actual": "[AC:spec-2-4] passes: prepareDispatch reads the manifest once and passes it to rolePaths and preflightDispatch. Reverted: fails (manifest read twice and every entry hashed).",
+          "receipts": [
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-focused-20261128T192037670Z-70705-1.log",
+              "sha256": "2e63ac9cda152f6529b67f43b1e947cc0d0c8e3ccf07548f40b36b4123bbe796"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-revert-red.log",
+              "sha256": "54e1bf8ef3baf74ab1b79d5d9c5a53b2aba8773820d85827b52a1df7d3a4704c"
+            },
+            {
+              "path": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-probe.log",
+              "sha256": "c03fef7f3de22237d5b6c3b5d89010905664d9c90381e25922ea78c19991fc00"
+            }
+          ],
+          "command": {
+            "argv": [
+              "pnpm",
+              "test",
+              "tests/runtime-dispatch-manifest.test.ts"
+            ],
+            "exitCode": 0
+          }
+        }
+      ]
+    }
+  ],
+  "unresolved": [],
+  "findings": [
+    {
+      "id": "n-outside",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/PIN",
+      "summary": "Changed paths no spec declares: implementer and spec-1 receipts, the queue file, review-1.report.json and payload/PIN (pin regenerated for the payload edit)."
+    },
+    {
+      "id": "n-tests",
+      "class": "note",
+      "origin": "new",
+      "at": "tests/runtime-dispatch-manifest.test.ts:1",
+      "summary": "Test change is class 1 as declared: new file, 4 cases each tagged; all four go red on one of the two reverts."
+    },
+    {
+      "id": "n-red-run",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-revert-red.log",
+      "summary": "Can-the-test-fail: dispatch-preflight.mjs reverted to b7d3596~1 gives 3 failed (spec-2-1, 2-2, 2-4), exit 1; deleting only the verifyInstalledFiles call gives 2 failed (spec-2-3, 2-4), exit 1."
+    },
+    {
+      "id": "n-probe",
+      "class": "note",
+      "origin": "new",
+      "at": "docs/features/2026-11-28-runtime-fixes-restate/reviews/receipts/spec-2-reviewer-probe.log",
+      "summary": "Probe on the installed files (tampered on the real dispatch-start surface): CRLF+content edit refuses; deleted role runtime file fails; edited reviewer-only skill does not block implementer. 7/7 pass, exit 0."
+    },
+    {
+      "id": "n-callers",
+      "class": "note",
+      "origin": "new",
+      "at": "payload/.joycraft/runtime/dispatch-preflight.mjs:234",
+      "summary": "readInstallationManifest no longer hashes files; its only callers are in this file and each now runs preflightDispatch, which hashes the role files. No other module relied on the old check."
+    }
+  ],
+  "createdAt": "2026-11-28T19:22:50.208Z"
+}

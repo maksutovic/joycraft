@@ -97,7 +97,7 @@
       "depends_on": [
         1
       ],
-      "status": "in-review",
+      "status": "done",
       "mode": "batch",
       "execution": {
         "parallel": false
@@ -172,6 +172,10 @@
       },
       "submitted": {
         "at": "2026-11-28T19:18:55.707Z"
+      },
+      "acceptedReport": {
+        "path": "docs/features/2026-11-28-runtime-fixes-restate/specs/review-2.report.json",
+        "sha256": "6f264421aabe8ec34dd1f3d71d4373071b93adf716e1a2c0e25ac4ec9095437d"
       }
     },
     {

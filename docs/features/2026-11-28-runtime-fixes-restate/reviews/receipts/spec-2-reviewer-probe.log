@@ -1,0 +1,24 @@
+# Scratch copy of b7d3596 (unmodified code); tests/probe-manifest.test.ts = the spec test file plus 3 probes: CRLF+content edit to role skill, deleted role runtime file, edited reviewer-only skill under implementer dispatch
+$ npx vitest run tests/probe-manifest.test.ts
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+ RUN  v3.2.4 /private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec2-revert
+
+stdout | tests/probe-manifest.test.ts > probe > probe deleted role runtime file refuses
+DELETED [33m1[39m node:internal/modules/esm/resolve:272
+    throw new ERR_MODULE_NOT_FOUND(
+          ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0vf040000gn/T/jc-manifest-nUmMWD/.joycraft/runtime/scope.mjs' imported from /private/var/folders/7b/hnd5l9kd7k3cgpzjfdh0
+
+stdout | tests/probe-manifest.test.ts > probe > probe edited reviewer-only file does not block implementer
+VERIFYEDIT [33m0[39m 
+
+ ✓ tests/probe-manifest.test.ts (7 tests) 1735ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  11:22:08
+   Duration  1.94s (transform 33ms, setup 0ms, collect 39ms, tests 1.73s, environment 0ms, prepare 30ms)
+
+exit status: 0

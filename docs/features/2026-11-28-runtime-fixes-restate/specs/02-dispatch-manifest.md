@@ -1,6 +1,6 @@
 ---
 id: 2
-status: in-review
+status: done
 ---
 # Dispatch checks only the role's installed files, ignoring line endings
 

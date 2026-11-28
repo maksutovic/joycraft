@@ -1,0 +1,138 @@
+# Scratch copy of b7d3596 with payload/.joycraft/runtime/dispatch-preflight.mjs reverted to b7d3596~1, payload repinned
+$ npx vitest run tests/runtime-dispatch-manifest.test.ts
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+ RUN  v3.2.4 /private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec2-revert
+
+ ❯ tests/runtime-dispatch-manifest.test.ts (4 tests | 3 failed) 1095ms
+   × dispatch installed-manifest check > [AC:spec-2-1] a blank line added to an unrelated installed skill (Claude and Codex copies) does not refuse implementer dispatch 269ms
+     → expected 'Task startup stopped: Installed file …' not to contain 'Installed file differs from manifest'
+   × dispatch installed-manifest check > [AC:spec-2-2] a role file whose only change is LF to CRLF does not refuse 263ms
+     → expected 'Task startup stopped: Installed file …' not to contain 'Installed file differs from manifest'
+   ✓ dispatch installed-manifest check > [AC:spec-2-3] a real content edit to a role file still refuses with the message naming the file 268ms
+   × dispatch installed-manifest check > [AC:spec-2-4] the installation manifest is read once per dispatch and unrelated files are not hashed 295ms
+     → expected 2 to be 1 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/runtime-dispatch-manifest.test.ts > dispatch installed-manifest check > [AC:spec-2-1] a blank line added to an unrelated installed skill (Claude and Codex copies) does not refuse implementer dispatch
+AssertionError: expected 'Task startup stopped: Installed file …' not to contain 'Installed file differs from manifest'
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Installed file differs from manifest[39m
+[31m+ [7mTask startup stopped: [27mInstalled file differs from manifest[7m: .agents/skills/joycraft-session-end/SKILL.md[27m[39m
+[31m+[39m
+
+ ❯ tests/runtime-dispatch-manifest.test.ts:59:31
+     57|     const fixture = project(root => { for (const file of unrelated) wr…
+     58|     const result = start(fixture);
+     59|     expect(result.stderr).not.toContain('Installed file differs from m…
+       |                               ^
+     60|     expect(result.status, result.stderr).toBe(0);
+     61|     expect(JSON.parse(result.stdout).ready).toBe(true);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/runtime-dispatch-manifest.test.ts > dispatch installed-manifest check > [AC:spec-2-2] a role file whose only change is LF to CRLF does not refuse
+AssertionError: expected 'Task startup stopped: Installed file …' not to contain 'Installed file differs from manifest'
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Installed file differs from manifest[39m
+[31m+ [7mTask startup stopped: [27mInstalled file differs from manifest[7m: .claude/skills/joycraft-implement/SKILL.md[27m[39m
+[31m+[39m
+
+ ❯ tests/runtime-dispatch-manifest.test.ts:68:31
+     66|     expect(readFileSync(join(fixture.root, roleSkill), 'utf8')).toCont…
+     67|     const result = start(fixture);
+     68|     expect(result.stderr).not.toContain('Installed file differs from m…
+       |                               ^
+     69|     expect(result.status, result.stderr).toBe(0);
+     70|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/runtime-dispatch-manifest.test.ts > dispatch installed-manifest check > [AC:spec-2-4] the installation manifest is read once per dispatch and unrelated files are not hashed
+AssertionError: expected 2 to be 1 // Object.is equality
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 2[39m
+
+ ❯ tests/runtime-dispatch-manifest.test.ts:86:71
+     84|     expect(result.status, result.stderr).toBe(0);
+     85|     const counts: Record<string, number> = JSON.parse(readFileSync(cou…
+     86|     expect(counts[join(fixture.root, '.joycraft/installation.json')]).…
+       |                                                                       ^
+     87|     expect(counts[join(fixture.root, roleSkill)]).toBe(1);
+     88|     for (const file of unrelated) expect(counts[join(fixture.root, fil…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed (4)
+   Start at  11:21:58
+   Duration  1.28s (transform 32ms, setup 0ms, collect 37ms, tests 1.10s, environment 0ms, prepare 31ms)
+
+exit status: 1
+
+# Scratch copy of b7d3596 with only the verifyInstalledFiles(...) call in preflightDispatch deleted, payload repinned
+$ npx vitest run tests/runtime-dispatch-manifest.test.ts
+npm warn Unknown user config "onlyBuiltDependencies". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+ RUN  v3.2.4 /private/tmp/claude-501/-Users-compiler--claude-spares-spare-6ON7kT/5030ebbd-6f55-4385-ab22-00ecf5f22593/scratchpad/spec2-revert
+
+ ❯ tests/runtime-dispatch-manifest.test.ts (4 tests | 2 failed) 1273ms
+   ✓ dispatch installed-manifest check > [AC:spec-2-1] a blank line added to an unrelated installed skill (Claude and Codex copies) does not refuse implementer dispatch  350ms
+   ✓ dispatch installed-manifest check > [AC:spec-2-2] a role file whose only change is LF to CRLF does not refuse  308ms
+   × dispatch installed-manifest check > [AC:spec-2-3] a real content edit to a role file still refuses with the message naming the file 351ms
+     → expected +0 not to be +0 // Object.is equality
+   × dispatch installed-manifest check > [AC:spec-2-4] the installation manifest is read once per dispatch and unrelated files are not hashed 264ms
+     → expected undefined to be 1 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/runtime-dispatch-manifest.test.ts > dispatch installed-manifest check > [AC:spec-2-3] a real content edit to a role file still refuses with the message naming the file
+AssertionError: expected +0 not to be +0 // Object.is equality
+ ❯ tests/runtime-dispatch-manifest.test.ts:75:31
+     73|     const fixture = project(root => { const file = join(root, roleSkil…
+     74|     const result = start(fixture);
+     75|     expect(result.status).not.toBe(0);
+       |                               ^
+     76|     expect(result.stderr).toContain(`Installed file differs from manif…
+     77|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/runtime-dispatch-manifest.test.ts > dispatch installed-manifest check > [AC:spec-2-4] the installation manifest is read once per dispatch and unrelated files are not hashed
+AssertionError: expected undefined to be 1 // Object.is equality
+
+[32m- Expected:[39m 
+1
+
+[31m+ Received:[39m 
+undefined
+
+ ❯ tests/runtime-dispatch-manifest.test.ts:87:51
+     85|     const counts: Record<string, number> = JSON.parse(readFileSync(cou…
+     86|     expect(counts[join(fixture.root, '.joycraft/installation.json')]).…
+     87|     expect(counts[join(fixture.root, roleSkill)]).toBe(1);
+       |                                                   ^
+     88|     for (const file of unrelated) expect(counts[join(fixture.root, fil…
+     89|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  11:21:59
+   Duration  1.53s (transform 34ms, setup 0ms, collect 39ms, tests 1.27s, environment 0ms, prepare 35ms)
+
+exit status: 1
